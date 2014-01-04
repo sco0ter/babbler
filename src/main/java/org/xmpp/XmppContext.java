@@ -33,6 +33,9 @@ import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
 import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.extension.lastactivity.LastActivityManager;
+import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
+import org.xmpp.extension.messagedeliveryreceipts.Received;
+import org.xmpp.extension.messagedeliveryreceipts.Request;
 import org.xmpp.extension.servicediscovery.ItemDiscovery;
 import org.xmpp.extension.servicediscovery.ServiceDiscovery;
 import org.xmpp.im.Roster;
@@ -112,15 +115,17 @@ public abstract class XmppContext {
             // Delayed Delivery
             registerExtension(DelayedDelivery.class);
 
+            // Message Delivery Receipts
+            registerManager(MessageDeliveryReceiptsManager.class);
+            registerExtension(Received.class);
+            registerExtension(Request.class);
+
             // Last Activity
             registerExtension(LastActivity.class);
             registerManager(LastActivityManager.class);
 
             // BOSH
             registerExtension(Body.class);
-
-            // Delayed Delivery
-            registerExtension(DelayedDelivery.class);
 
             // Service Discovery
             registerExtension(ServiceDiscovery.class, ItemDiscovery.class);

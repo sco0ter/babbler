@@ -152,44 +152,43 @@ public class MessageTest extends BaseTest {
 
     @Test
     public void marshalChatMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.CHAT);
+        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.CHAT);
         String xml = marshall(message);
-        Assert.assertEquals(xml, "<message type=\"chat\"></message>");
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"chat\"></message>");
     }
 
     @Test
     public void marshalGroupChatMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.GROUPCHAT);
+        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.GROUPCHAT);
         String xml = marshall(message);
-        Assert.assertEquals(xml, "<message type=\"groupchat\"></message>");
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"groupchat\"></message>");
     }
 
     @Test
     public void marshalNormalMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.NORMAL);
+        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.NORMAL);
         String xml = marshall(message);
-        Assert.assertEquals(xml, "<message type=\"normal\"></message>");
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"normal\"></message>");
     }
 
     @Test
     public void marshalHeadlineMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.HEADLINE);
+        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.HEADLINE);
         String xml = marshall(message);
-        Assert.assertEquals(xml, "<message type=\"headline\"></message>");
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"headline\"></message>");
     }
 
     @Test
     public void marshalErrorMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.ERROR);
+        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.ERROR);
         String xml = marshall(message);
-        Assert.assertEquals(xml, "<message type=\"error\"></message>");
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"error\"></message>");
     }
 
     @Test
     public void marshalMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.CHAT);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
         message.setId("id");
-        message.setTo(new Jid("to", "domain"));
         message.setFrom(new Jid("from", "domain"));
         String xml = marshall(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"></message>");
@@ -197,9 +196,8 @@ public class MessageTest extends BaseTest {
 
     @Test
     public void marshalMessageThread() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.CHAT);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
         message.setId("id");
-        message.setTo(new Jid("to", "domain"));
         message.setFrom(new Jid("from", "domain"));
         message.setThread("thread");
         String xml = marshall(message);
@@ -208,9 +206,8 @@ public class MessageTest extends BaseTest {
 
     @Test
     public void marshalMessageParentThread() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.CHAT);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
         message.setId("id");
-        message.setTo(new Jid("to", "domain"));
         message.setFrom(new Jid("from", "domain"));
         message.setThread("thread");
         message.setParentThread("parentThread");
@@ -220,9 +217,8 @@ public class MessageTest extends BaseTest {
 
     @Test
     public void marshalMessageParentThreadWithoutThread() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.CHAT);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
         message.setId("id");
-        message.setTo(new Jid("to", "domain"));
         message.setFrom(new Jid("from", "domain"));
         message.setParentThread("parentThread");
         String xml = marshall(message);
@@ -231,9 +227,8 @@ public class MessageTest extends BaseTest {
 
     @Test
     public void marshalMessageBody() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.CHAT);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
         message.setId("id");
-        message.setTo(new Jid("to", "domain"));
         message.setFrom(new Jid("from", "domain"));
         message.getBodies().add(new Message.Body("body", "de"));
         Message.Body body2 = new Message.Body("body2");
@@ -245,9 +240,8 @@ public class MessageTest extends BaseTest {
 
     @Test
     public void marshalMessageSubject() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Message.Type.CHAT);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
         message.setId("id");
-        message.setTo(new Jid("to", "domain"));
         message.setFrom(new Jid("from", "domain"));
         message.getSubjects().add(new Message.Subject("subject1", "de"));
         Message.Subject subject2 = new Message.Subject("subject2");

@@ -24,11 +24,21 @@
 
 package org.xmpp.extension.messagedeliveryreceipts;
 
-/**
- * @author Christian Schudt
- */
-public interface MessageDeliveryListener {
+import java.util.EventListener;
 
-    void messageDelivered(String id);
+/**
+ * A listener which allows to listen for delivered messages.
+ *
+ * @author Christian Schudt
+ * @see MessageDeliveryReceiptsManager#addMessageDeliveredListener(MessageDeliveredListener)
+ */
+public interface MessageDeliveredListener extends EventListener {
+
+    /**
+     * Called when a message has been successfully delivered.
+     *
+     * @param e The event object.
+     */
+    void messageDelivered(MessageDeliveredEvent e);
 
 }

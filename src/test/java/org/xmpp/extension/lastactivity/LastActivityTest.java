@@ -63,7 +63,7 @@ public class LastActivityTest extends BaseTest {
 
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(LastActivityManager.feature));
 
-        lastActivityManager.disable();
+        lastActivityManager.setEnabled(false);
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(LastActivityManager.feature));
 
     }

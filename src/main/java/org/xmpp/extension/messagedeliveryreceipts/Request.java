@@ -27,6 +27,8 @@ package org.xmpp.extension.messagedeliveryreceipts;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <request/>} element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "request")

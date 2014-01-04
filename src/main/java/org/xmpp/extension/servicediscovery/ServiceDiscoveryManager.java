@@ -34,6 +34,8 @@ import java.util.*;
  */
 public class ServiceDiscoveryManager extends ExtensionManager {
 
+    static final Feature feature = new Feature("http://jabber.org/protocol/disco#info");
+
     private final List<Identity> identities;
 
     private final Set<Feature> features;
@@ -43,7 +45,12 @@ public class ServiceDiscoveryManager extends ExtensionManager {
         this.identities = new ArrayList<>();
         this.features = new HashSet<>();
 
-        features.add(new Feature("http://jabber.org/protocol/disco#info"));
+        features.add(feature);
+    }
+
+    @Override
+    protected Feature getFeature() {
+        return feature;
     }
 
     /**

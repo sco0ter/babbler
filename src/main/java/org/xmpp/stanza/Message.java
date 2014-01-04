@@ -24,6 +24,8 @@
 
 package org.xmpp.stanza;
 
+import org.xmpp.Jid;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -58,29 +60,39 @@ public final class Message extends Stanza {
     @XmlElement(name = "thread")
     private Thread thread;
 
-    /**
-     * Constructs an empty message.
-     */
-    public Message() {
+    private Message() {
     }
 
     /**
-     * Constructs a message with body and type.
+     * Constructs an empty message.
      *
-     * @param body The message body.
-     * @param type The message type.
+     * @param to The recipient.
      */
-    public Message(String body, Type type) {
-        this.bodies.add(new Body(body));
-        this.type = type;
+    public Message(Jid to) {
+        this.to = to;
     }
 
     /**
      * Constructs a message with a type.
      *
+     * @param to   The recipient.
      * @param type The message type.
      */
-    public Message(Type type) {
+    public Message(Jid to, Type type) {
+        this.to = to;
+        this.type = type;
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to   The recipient.
+     * @param body The message body.
+     * @param type The message type.
+     */
+    public Message(Jid to, Type type, String body) {
+        this.to = to;
+        this.bodies.add(new Body(body));
         this.type = type;
     }
 
@@ -282,7 +294,7 @@ public final class Message extends Stanza {
 
     @Override
     public Message createError(Error error) {
-        Message message = new Message(Type.ERROR);
+        Message message = new Message(getFrom(), Type.ERROR);
         createError(message, error);
         return message;
     }

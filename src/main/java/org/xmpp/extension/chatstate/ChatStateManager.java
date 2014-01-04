@@ -4,7 +4,6 @@ import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.servicediscovery.Feature;
-import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.im.ChatSession;
 import org.xmpp.im.ChatSessionEvent;
 import org.xmpp.im.ChatSessionListener;
@@ -23,6 +22,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class ChatStateManager extends ExtensionManager {
 
+    private static final Feature feature = new Feature("http://jabber.org/protocol/chatstates");
+
     private Set<ChatStateListener> chatStateListeners = new CopyOnWriteArraySet<>();
 
     private Map<ChatSession, ChatState> chatSessionMap = new ConcurrentHashMap<>();
@@ -31,8 +32,6 @@ public final class ChatStateManager extends ExtensionManager {
 
     public ChatStateManager(final Connection connection) {
         super(connection);
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/chatstates"));
         connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
             @Override
             public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
@@ -79,6 +78,11 @@ public final class ChatStateManager extends ExtensionManager {
         });
     }
 
+    @Override
+    protected Feature getFeature() {
+        return feature;
+    }
+
     private void notifyChatStateListeners(ChatSession chatSession, ChatState chatState, boolean local) {
         for (ChatStateListener chatStateListener : chatStateListeners) {
             chatStateListener.chatStateUpdated(new ChatStateEvent(this, chatSession, chatState, local));
@@ -120,7 +124,7 @@ public final class ChatStateManager extends ExtensionManager {
                     state = new Active();
                     break;
             }
-            Message message = new Message();
+            Message message = new Message(chatSession.getChatPartner());
             message.getExtensions().add(state);
             chatSession.send(message);
         }

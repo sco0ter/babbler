@@ -48,6 +48,9 @@ import javafx.util.Callback;
 import org.xmpp.*;
 import org.xmpp.extension.bosh.BoshConnection;
 import org.xmpp.extension.lastactivity.LastActivityManager;
+import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
+import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredListener;
+import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
 
@@ -62,6 +65,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
 
@@ -192,7 +196,7 @@ public class JavaFXApp extends Application {
                                         Platform.runLater(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Jid chatPartner = chatSession.getChatPartner();
+                                                Jid chatPartner = chatSession.getChatPartner().toBareJid();
                                                 ChatWindow chatWindow = windows.get(chatPartner);
                                                 if (chatWindow == null) {
                                                     chatWindow = new ChatWindow(chatPartner, connection);
@@ -251,6 +255,14 @@ public class JavaFXApp extends Application {
                                         }
                                     });
                                 }
+                            }
+                        });
+
+                        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection.getExtensionManager(MessageDeliveryReceiptsManager.class);
+                        messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
+                            @Override
+                            public void messageDelivered(MessageDeliveredEvent e) {
+                                System.out.println("Message delivered: " + e.getMessageId());
                             }
                         });
 
@@ -360,9 +372,9 @@ public class JavaFXApp extends Application {
                     if (chatSession == null) {
                         chatSession = connection.getChatManager().newChatSession(chatPartner);
                     }
-                    Message message = new Message(textArea.getText(), Message.Type.CHAT);
+                    Message message = new Message(chatSession.getChatPartner(), Message.Type.CHAT, textArea.getText());
+                    message.setId(UUID.randomUUID().toString());
                     chatSession.send(message);
-                    appendMessage(message);
                     textArea.clear();
                 }
             });

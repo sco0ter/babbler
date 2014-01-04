@@ -28,6 +28,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <received/>} element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "received")

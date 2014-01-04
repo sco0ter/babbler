@@ -25,13 +25,8 @@
 package org.xmpp.extension;
 
 import org.xmpp.Connection;
-import org.xmpp.extension.chatstate.*;
-import org.xmpp.extension.delayeddelivery.DelayedDelivery;
-import org.xmpp.extension.lastactivity.LastActivity;
-import org.xmpp.extension.lastactivity.LastActivityManager;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 
 /**
  * @author Christian Schudt
@@ -40,7 +35,38 @@ public abstract class ExtensionManager {
 
     protected final Connection connection;
 
+    private volatile boolean enabled;
+
     protected ExtensionManager(Connection connection) {
         this.connection = connection;
     }
+
+    /**
+     * Gets the value, whether this extension is enabled or not.
+     *
+     * @return True, if the extension is enabled.
+     * @see #setEnabled(boolean)
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Enables or disables support for the extension.
+     *
+     * @see #isEnabled()
+     */
+    public void setEnabled(boolean enabled) {
+        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        if (serviceDiscoveryManager != null) {
+            if (enabled) {
+                serviceDiscoveryManager.addFeature(getFeature());
+            } else {
+                serviceDiscoveryManager.removeFeature(getFeature());
+            }
+        }
+        this.enabled = enabled;
+    }
+
+    protected abstract Feature getFeature();
 }

@@ -28,7 +28,6 @@ import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.servicediscovery.Feature;
-import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.*;
 
 import java.util.Date;
@@ -51,7 +50,7 @@ import java.util.concurrent.TimeoutException;
  * last activity by idle mouse activity.
  * </p>
  * <p>
- * Automatic inclusion of last activity information in presence stanzas and support for this protocol can be {@linkplain #enable() enabled} or {@linkplain #disable() disabled}.
+ * Automatic inclusion of last activity information in presence stanzas and support for this protocol can be {@linkplain #setEnabled(boolean)} enabled or disabled}.
  * </p>
  * <h3>Code sample</h3>
  * <pre>
@@ -69,8 +68,6 @@ public final class LastActivityManager extends ExtensionManager {
 
     private volatile LastActivityStrategy lastActivityStrategy;
 
-    private volatile boolean enabled;
-
     public LastActivityManager(final Connection connection) {
         super(connection);
         lastActivityStrategy = new DefaultLastActivityStrategy(connection);
@@ -78,7 +75,7 @@ public final class LastActivityManager extends ExtensionManager {
         connection.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
-                if (!e.isIncoming() && enabled) {
+                if (!e.isIncoming() && isEnabled()) {
                     Presence presence = e.getPresence();
                     // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
                     if (presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
@@ -95,7 +92,7 @@ public final class LastActivityManager extends ExtensionManager {
                     IQ iq = e.getIQ();
                     // If someone asks me to get my last activity, reply.
                     if (iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
-                        if (enabled) {
+                        if (isEnabled()) {
                             IQ result = iq.createResult();
                             result.setExtension(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity())));
                             connection.send(result);
@@ -107,33 +104,12 @@ public final class LastActivityManager extends ExtensionManager {
                 }
             }
         });
-        enable();
+        setEnabled(true);
     }
 
-    /**
-     * Enables support for last activity. Sent presence stanzas with <show/> element 'away' or 'xa' will contain last activity information.
-     *
-     * @see #disable()
-     */
-    public void enable() {
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        if (serviceDiscoveryManager != null) {
-            serviceDiscoveryManager.addFeature(feature);
-        }
-        enabled = true;
-    }
-
-    /**
-     * Disables support for last activity. Sent presence stanzas with <show/> element 'away' or 'xa' won't contain last activity information.
-     *
-     * @see #enable()
-     */
-    public void disable() {
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        if (serviceDiscoveryManager != null) {
-            serviceDiscoveryManager.removeFeature(feature);
-        }
-        enabled = false;
+    @Override
+    protected Feature getFeature() {
+        return feature;
     }
 
     private long getSecondsSince(Date date) {

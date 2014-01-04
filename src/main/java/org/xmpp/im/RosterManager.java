@@ -25,6 +25,8 @@
 package org.xmpp.im;
 
 import org.xmpp.Connection;
+import org.xmpp.ConnectionEvent;
+import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
 import org.xmpp.stanza.*;
 
@@ -70,6 +72,14 @@ public final class RosterManager {
                             updateRoster(roster);
                         }
                     }
+                }
+            }
+        });
+        connection.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == Connection.Status.CLOSED) {
+                    rosterListeners.clear();
                 }
             }
         });

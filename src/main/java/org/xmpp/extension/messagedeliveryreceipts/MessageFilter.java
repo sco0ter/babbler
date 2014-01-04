@@ -29,7 +29,7 @@ import org.xmpp.stanza.Message;
 /**
  * @author Christian Schudt
  */
-public interface MessageFilter {
+interface MessageFilter {
 
     boolean accept(Message message);
 }

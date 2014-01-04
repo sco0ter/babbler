@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.xmpp</groupId>
+    <artifactId>babbler</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+    <name>babbler</name>
+    <organization>
+        <name>${name}</name>
+        <url>https://bitbucket.org/sco0ter/xmpp</url>
+    </organization>
+    <inceptionYear>2014</inceptionYear>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                        <configuration>
+                            <destDir>apidocs</destDir>
+                            <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+                            <includeDependencySources>false</includeDependencySources>
+                            <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
+                            <nodeprecated>true</nodeprecated>
+                            <nodeprecatedlist>true</nodeprecatedlist>
+                            <doctitle>${project.name} ${project.version}</doctitle>
+                            <windowtitle>${project.name} ${project.version}</windowtitle>
+                            <javadocDirectory>src/main/javadoc</javadocDirectory>
+                            <docfilessubdirs>true</docfilessubdirs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Make the zip file for API docs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <finalName>${project.artifactId}-${project.version}-apidocs</finalName>
+                    <descriptors>
+                        <descriptor>src/main/assembly/zip.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make zip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>

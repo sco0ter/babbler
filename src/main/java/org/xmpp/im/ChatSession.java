@@ -52,7 +52,7 @@ public final class ChatSession {
 
     private final Connection connection;
 
-    private final Set<MessageListener> stanzaListeners = new CopyOnWriteArraySet<>();
+    private final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
 
     volatile Jid chatPartner;
 
@@ -76,7 +76,7 @@ public final class ChatSession {
      * @see #removeMessageListener(org.xmpp.stanza.MessageListener)
      */
     public void addMessageListener(MessageListener stanzaListener) {
-        stanzaListeners.add(stanzaListener);
+        messageListeners.add(stanzaListener);
     }
 
     /**
@@ -86,13 +86,13 @@ public final class ChatSession {
      * @see #addMessageListener(org.xmpp.stanza.MessageListener)
      */
     public void removeMessageListener(MessageListener stanzaListener) {
-        stanzaListeners.remove(stanzaListener);
+        messageListeners.remove(stanzaListener);
     }
 
-    void notifyIncomingMessage(Message message) {
-        for (MessageListener messageListener : stanzaListeners) {
+    void notifyMessageListeners(Message message, boolean incoming) {
+        for (MessageListener messageListener : messageListeners) {
             try {
-                messageListener.handle(new MessageEvent(this, message, true));
+                messageListener.handle(new MessageEvent(this, message, incoming));
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -120,5 +120,14 @@ public final class ChatSession {
      */
     public Jid getChatPartner() {
         return chatPartner;
+    }
+
+    /**
+     * Gets the thread id which is used for this chat session.
+     *
+     * @return The thread id.
+     */
+    public String getThread() {
+        return thread;
     }
 }

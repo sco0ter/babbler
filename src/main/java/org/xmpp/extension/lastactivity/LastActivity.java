@@ -27,6 +27,8 @@ package org.xmpp.extension.lastactivity;
 import javax.xml.bind.annotation.*;
 
 /**
+ * The implementation of the <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> protocol extension.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
@@ -39,19 +41,36 @@ public final class LastActivity {
     @XmlValue
     private String status;
 
+    /**
+     * Creates an empty last activity instance, used for querying another entity.
+     */
     public LastActivity() {
     }
 
+    /**
+     * Creates a last activity instance with a number of seconds, used as response.
+     *
+     * @param seconds The number of seconds since the last activity.
+     */
     public LastActivity(long seconds) {
         this.seconds = seconds;
     }
 
+    /**
+     * Gets the number of seconds since the last activity.
+     *
+     * @return The number of seconds since the last activity.
+     */
     public long getSeconds() {
         return seconds;
     }
 
+    /**
+     * Gets the status message of the last unavailable presence received from the user, if the last activity request was a <a href="http://xmpp.org/extensions/xep-0012.html#offline">Offline User Query</a>.
+     *
+     * @return The status message of the last unavailable presence received from the user or null.
+     */
     public String getStatus() {
         return status;
     }
-
 }

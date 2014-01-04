@@ -95,11 +95,12 @@ public final class ChatManager {
             @Override
             public void handle(MessageEvent e) {
                 Message message = e.getMessage();
-                if (e.isIncoming() && message.getType() == Message.Type.CHAT) {
+                if (message.getType() == Message.Type.CHAT) {
+                    Jid chatPartner = e.isIncoming() ? message.getFrom() : message.getTo();
                     // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
                     // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).
                     String threadId = message.getThread() != null ? message.getThread() : UUID.randomUUID().toString();
-                    Jid contact = message.getFrom().toBareJid();
+                    Jid contact = chatPartner.toBareJid();
                     synchronized (chatSessions) {
                         // If there are no chat sessions with that contact yet, put the contact into the map.
                         if (!chatSessions.containsKey(contact)) {
@@ -107,14 +108,16 @@ public final class ChatManager {
                         }
                         Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
                         if (!chatSessionMap.containsKey(threadId)) {
-                            ChatSession chatSession = new ChatSession(message.getFrom(), threadId, connection);
+                            ChatSession chatSession = new ChatSession(chatPartner, threadId, connection);
                             chatSessionMap.put(threadId, chatSession);
-                            notifyChatSessionCreated(chatSession, true);
+                            notifyChatSessionCreated(chatSession, e.isIncoming());
                         }
                         ChatSession chatSession = chatSessionMap.get(threadId);
-                        // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
-                        chatSession.chatPartner = message.getFrom();
-                        chatSession.notifyIncomingMessage(message);
+                        if (e.isIncoming()) {
+                            // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
+                            chatSession.chatPartner = message.getFrom();
+                        }
+                        chatSession.notifyMessageListeners(message, e.isIncoming());
                     }
                 }
             }
@@ -185,8 +188,32 @@ public final class ChatManager {
      * @return The chat session.
      */
     public ChatSession newChatSession(Jid chatPartner) {
+        if (chatPartner == null) {
+            throw new IllegalArgumentException("chatPartner must not be null.");
+        }
         ChatSession chatSession = new ChatSession(chatPartner, UUID.randomUUID().toString(), connection);
         notifyChatSessionCreated(chatSession, false);
         return chatSession;
+    }
+
+    /**
+     * Destroys the chat session.
+     *
+     * @param chatSession The chat session.
+     */
+    public void destroyChatSession(ChatSession chatSession) {
+        if (chatSession == null) {
+            throw new IllegalArgumentException("chatSession must not be null.");
+        }
+        Jid user = chatSession.getChatPartner().toBareJid();
+        synchronized (chatSessions) {
+            if (chatSessions.containsKey(user)) {
+                Map<String, ChatSession> chatSessionMap = chatSessions.get(user);
+                chatSessionMap.remove(chatSession.getThread());
+                if (chatSessionMap.isEmpty()) {
+                    chatSessions.remove(user);
+                }
+            }
+        }
     }
 }

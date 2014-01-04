@@ -28,6 +28,8 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -45,6 +47,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.xmpp.*;
 import org.xmpp.extension.bosh.BoshConnection;
+import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
 
@@ -56,6 +59,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -94,6 +98,29 @@ public class JavaFXApp extends Application {
         final CheckBox useBosh = new CheckBox();
         useBosh.setText("Use BOSH");
 
+        ComboBox<Presence.Show> comboBox = new ComboBox<>();
+        comboBox.setItems(FXCollections.<Presence.Show>observableList(Arrays.asList(Presence.Show.CHAT, Presence.Show.AWAY, Presence.Show.XA, Presence.Show.DND)));
+        comboBox.setCellFactory(new Callback<ListView<Presence.Show>, ListCell<Presence.Show>>() {
+            @Override
+            public ListCell<Presence.Show> call(ListView<Presence.Show> presenceListView) {
+                return new ListCell<Presence.Show>() {
+                    @Override
+                    protected void updateItem(Presence.Show item, boolean isEmpty) {
+                        super.updateItem(item, isEmpty);
+                        if (item != null) {
+                            setText(item.toString().toLowerCase());
+                        }
+                    }
+                };
+            }
+        });
+        comboBox.setButtonCell(comboBox.getCellFactory().call(null));
+        comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Presence.Show>() {
+            @Override
+            public void changed(ObservableValue<? extends Presence.Show> observableValue, Presence.Show show, Presence.Show show2) {
+                connection.send(new Presence(show2));
+            }
+        });
 
         final Map<Roster.Contact, ContactItem> contactMap = new HashMap<>();
 
@@ -109,7 +136,6 @@ public class JavaFXApp extends Application {
         final Logger logger = Logger.getLogger("org.xmpp");
         //logger.addHandler(consoleHandler);
         logger.setLevel(Level.FINE);
-
 
         //LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME).setLevel(Level.OFF);
 
@@ -248,18 +274,30 @@ public class JavaFXApp extends Application {
             public ListCell<ContactItem> call(ListView<ContactItem> contactListView) {
                 final ListCell<ContactItem> listCell = new ListCell<ContactItem>() {
                     @Override
-                    protected void updateItem(ContactItem item, boolean empty) {
+                    protected void updateItem(final ContactItem item, boolean empty) {
                         super.updateItem(item, empty);
                         setGraphic(null);
+                        setContextMenu(null);
                         if (item != null) {
                             setGraphic(new ContactItemView(item));
+                            ContextMenu contextMenu = new ContextMenu();
+                            MenuItem lastActivityMenuItem = new MenuItem("Get last activity");
+                            lastActivityMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+                                    lastActivityManager.getLastActivity(item.contact.get().getJid());
+                                }
+                            });
+                            contextMenu.getItems().add(lastActivityMenuItem);
+                            setContextMenu(contextMenu);
                         }
                     }
                 };
                 listCell.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-                        if (mouseEvent.getClickCount() == 2) {
+                        if (mouseEvent.getClickCount() == 2 && listCell.getItem() != null) {
                             Jid chatPartner = listCell.getItem().contact.get().getJid().toBareJid();
                             ChatWindow chatWindow = windows.get(chatPartner);
                             if (chatWindow == null) {
@@ -271,6 +309,7 @@ public class JavaFXApp extends Application {
                         }
                     }
                 });
+
                 return listCell;
             }
         });
@@ -297,7 +336,7 @@ public class JavaFXApp extends Application {
                 System.exit(0);
             }
         });
-        vBox.getChildren().addAll(txtDomain, txtServer, txtPort, txtUser, txtPassword, useBosh, btnConnect, listView, btnClose, btnExit);
+        vBox.getChildren().addAll(txtDomain, txtServer, txtPort, txtUser, txtPassword, useBosh, btnConnect, comboBox, listView, btnClose, btnExit);
 
         Scene scene = new Scene(vBox);
         stage.setScene(scene);

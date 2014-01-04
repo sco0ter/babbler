@@ -29,54 +29,121 @@ import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.servicediscovery.Feature;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
-import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.*;
 
+import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
+ * <blockquote>
+ * <p><cite><a href="http://xmpp.org/extensions/xep-0012.html#intro">1. Introduction</a></cite></p>
+ * <p>It is often helpful to know the time of the last activity associated with a entity. The canonical usage is to discover when a disconnected user last accessed its server. The 'jabber:iq:last' namespace provides a method for retrieving that information. The 'jabber:iq:last' namespace can also be used to discover or publicize when a connected user was last active on the server (i.e., the user's idle time) or to query servers and components about their current uptime.</p>
+ * </blockquote>
+ * This class also takes care about the following use case, by automatically appending last activity information to 'away' and 'xa' presences:
+ * <blockquote>
+ * <p><cite><a href="http://xmpp.org/extensions/xep-0256.html#away">1.2 Away and Extended Away</a></cite></p>
+ * <p>When a client automatically sets the user's <show/> value to "away" or "xa" (extended away), it can indicate when that particular was last active during the current presence session.</p>
+ * </blockquote>
+ * <p>
+ * By default last activity for the connected resource is updated whenever a message or available non-away, non-xa presence is sent.
+ * This strategy of determining last activity can be changed by {@linkplain #setLastActivityStrategy(LastActivityStrategy) setting another strategy}, e.g. a strategy which determines
+ * last activity by idle mouse activity.
+ * </p>
+ * <p>
+ * Automatic inclusion of last activity information in presence stanzas and support for this protocol can be {@linkplain #enable() enabled} or {@linkplain #disable() disabled}.
+ * </p>
+ * <h3>Code sample</h3>
+ * <pre>
+ * <code>
+ * LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+ * LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.fromString("juliet@example.com/balcony"));
+ * </code>
+ * </pre>
+ *
  * @author Christian Schudt
  */
 public final class LastActivityManager extends ExtensionManager {
 
-    static {
-        ServiceDiscoveryManager.INSTANCE.addFeature(new Feature("jabber:iq:last"));
-    }
+    static final Feature feature = new Feature("jabber:iq:last");
 
-    private LastActivityStrategy lastActivityStrategy;
+    private volatile LastActivityStrategy lastActivityStrategy;
+
+    private volatile boolean enabled;
 
     public LastActivityManager(final Connection connection) {
         super(connection);
-        /*connection.addStanzaInterceptor(new StanzaInterceptor() {
+        lastActivityStrategy = new DefaultLastActivityStrategy(connection);
+
+        connection.addPresenceListener(new PresenceListener() {
             @Override
-            public void intercept(Stanza stanza) {
-                if (stanza instanceof Presence) {
-                    Presence presence = (Presence) stanza;
-                    // If an available presence is sent.
-                    if (presence.getType() == null && presence.getExtension(LastActivity.class) == null) {
-                        //presence.getExtensions().add(new LastActivity(lastActivityStrategy.getLastActivity()));
+            public void handle(PresenceEvent e) {
+                if (!e.isIncoming() && enabled) {
+                    Presence presence = e.getPresence();
+                    // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
+                    if (presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                        presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity())));
                     }
                 }
             }
         });
 
-        connection.addStanzaListener(new StanzaListener() {
+        connection.addIQListener(new IQListener() {
             @Override
-            public void handle(Stanza stanza) {
-                if (stanza instanceof IQ) {
-                    IQ iq = (IQ) stanza;
-                    if (iq.getType() == IQ.Type.GET && iq.getExtension() instanceof LastActivity) {
-                        IQ result = iq.createResult();
-                        result.setExtension(new LastActivity(lastActivityStrategy.getLastActivity()));
-                        connection.send(result);
+            public void handle(IQEvent e) {
+                if (e.isIncoming()) {
+                    IQ iq = e.getIQ();
+                    // If someone asks me to get my last activity, reply.
+                    if (iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
+                        if (enabled) {
+                            IQ result = iq.createResult();
+                            result.setExtension(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity())));
+                            connection.send(result);
+                        } else {
+                            IQ result = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
+                            connection.send(result);
+                        }
                     }
                 }
             }
-        });  */
+        });
+        enable();
+    }
+
+    /**
+     * Enables support for last activity. Sent presence stanzas with <show/> element 'away' or 'xa' will contain last activity information.
+     *
+     * @see #disable()
+     */
+    public void enable() {
+        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        if (serviceDiscoveryManager != null) {
+            serviceDiscoveryManager.addFeature(feature);
+        }
+        enabled = true;
+    }
+
+    /**
+     * Disables support for last activity. Sent presence stanzas with <show/> element 'away' or 'xa' won't contain last activity information.
+     *
+     * @see #enable()
+     */
+    public void disable() {
+        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        if (serviceDiscoveryManager != null) {
+            serviceDiscoveryManager.removeFeature(feature);
+        }
+        enabled = false;
+    }
+
+    private long getSecondsSince(Date date) {
+        return Math.max(0, System.currentTimeMillis() - date.getTime()) / 1000;
     }
 
     /**
      * Gets the last activity of the specified user.
      * <blockquote>
+     * <p><cite><a href="http://xmpp.org/extensions/xep-0012.html#impl">7. Implementation Notes</a></cite></p>
      * <p>The information contained in an IQ reply for this namespace is inherently ambiguous. Specifically, for a bare JID {@code <localpart@domain.tld>} the information is the time since the JID was last connected to its server; for a full JID {@code <localpart@domain.tld/resource>} the information is the time since the resource was last active in the context of an existing session; and for a bare domain the information is the uptime for the server or component. An application MUST take these differences into account when presenting the information to a human user (if any).</p>
      * </blockquote>
      *
@@ -92,17 +159,62 @@ public final class LastActivityManager extends ExtensionManager {
         } catch (TimeoutException e) {
             return null;
         }
+        // If there's an error, e.g. service-unavailable, return null.
         if (result.getError() != null) {
             return null;
         }
         return result.getExtension(LastActivity.class);
     }
 
+    /**
+     * Gets the currently used strategy to determine last activity of a client.
+     *
+     * @return The strategy.
+     * @see #setLastActivityStrategy(LastActivityStrategy)
+     */
     public LastActivityStrategy getLastActivityStrategy() {
         return this.lastActivityStrategy;
     }
 
+    /**
+     * Sets a strategy, which is used to determine last activity of a client.
+     *
+     * @param lastActivityStrategy The strategy.
+     * @see #getLastActivityStrategy()
+     */
     public void setLastActivityStrategy(LastActivityStrategy lastActivityStrategy) {
         this.lastActivityStrategy = lastActivityStrategy;
+    }
+
+    /**
+     * The default strategy to determine last activity. It simply sets the date of last activity, whenever a message or presence is sent.
+     */
+    private static class DefaultLastActivityStrategy implements LastActivityStrategy {
+        private volatile Date lastActivity;
+
+        public DefaultLastActivityStrategy(Connection connection) {
+            connection.addMessageListener(new MessageListener() {
+                @Override
+                public void handle(MessageEvent e) {
+                    if (!e.isIncoming()) {
+                        lastActivity = new Date();
+                    }
+                }
+            });
+            connection.addPresenceListener(new PresenceListener() {
+                @Override
+                public void handle(PresenceEvent e) {
+                    Presence presence = e.getPresence();
+                    if (!e.isIncoming() && (!presence.isAvailable() || presence.getShow() != Presence.Show.AWAY && presence.getShow() != Presence.Show.XA)) {
+                        lastActivity = new Date();
+                    }
+                }
+            });
+        }
+
+        @Override
+        public Date getLastActivity() {
+            return lastActivity;
+        }
     }
 }

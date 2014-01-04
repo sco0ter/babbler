@@ -25,6 +25,7 @@
 package org.xmpp.extension.messagedeliveryreceipts;
 
 import org.xmpp.Connection;
+import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.servicediscovery.Feature;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.Message;
@@ -38,19 +39,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @author Christian Schudt
  */
-public final class MessageDeliveryReceiptsManager {
-    static {
-        ServiceDiscoveryManager.INSTANCE.addFeature(new Feature("urn:xmpp:receipts"));
-    }
-
+public final class MessageDeliveryReceiptsManager extends ExtensionManager {
     private final List<MessageDeliveryListener> messageDeliveryListeners = new CopyOnWriteArrayList<>();
 
     private final List<MessageFilter> messageFilters = new CopyOnWriteArrayList<>();
 
     private Connection connection;
 
-    public MessageDeliveryReceiptsManager() {
-
+    public MessageDeliveryReceiptsManager(Connection connection) {
+        super(connection);
+        connection.getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("urn:xmpp:receipts"));
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
         messageFilters.add(new MessageFilter() {

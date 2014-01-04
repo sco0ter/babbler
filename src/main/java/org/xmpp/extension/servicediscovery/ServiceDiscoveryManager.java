@@ -24,24 +24,24 @@
 
 package org.xmpp.extension.servicediscovery;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.xmpp.Connection;
+import org.xmpp.extension.ExtensionManager;
+
+import java.util.*;
 
 /**
  * @author Christian Schudt
  */
-public enum ServiceDiscoveryManager {
-
-    INSTANCE;
+public class ServiceDiscoveryManager extends ExtensionManager {
 
     private final List<Identity> identities;
 
-    private final List<Feature> features;
+    private final Set<Feature> features;
 
-    private ServiceDiscoveryManager() {
+    public ServiceDiscoveryManager(Connection connection) {
+        super(connection);
         this.identities = new ArrayList<>();
-        this.features = new ArrayList<>();
+        this.features = new HashSet<>();
 
         features.add(new Feature("http://jabber.org/protocol/disco#info"));
     }
@@ -64,8 +64,8 @@ public enum ServiceDiscoveryManager {
         return Collections.unmodifiableList(identities);
     }
 
-    public List<Feature> getFeatures() {
-        return Collections.unmodifiableList(features);
+    public Set<Feature> getFeatures() {
+        return Collections.unmodifiableSet(features);
     }
 
     /**
@@ -74,10 +74,10 @@ public enum ServiceDiscoveryManager {
      * @param feature The feature.
      */
     public void addFeature(Feature feature) {
-        if (features.contains(feature)) {
-            throw new IllegalArgumentException("The feature already exists.");
-        }
-
         features.add(feature);
+    }
+
+    public void removeFeature(Feature feature) {
+        features.remove(feature);
     }
 }

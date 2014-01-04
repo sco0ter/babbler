@@ -28,6 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -52,6 +54,17 @@ public class LastActivityTest extends BaseTest {
         LastActivity lastActivity = iq.getExtension(LastActivity.class);
         Assert.assertNotNull(lastActivity);
         Assert.assertEquals(lastActivity.getSeconds(), 903);
+    }
+
+    @Test
+    public void testLastActivityManager() {
+        LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(LastActivityManager.feature));
+
+        lastActivityManager.disable();
+        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(LastActivityManager.feature));
 
     }
 }

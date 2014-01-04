@@ -119,16 +119,16 @@ public class ServiceDiscoveryTest extends BaseTest {
         Assert.assertEquals(itemDiscovery.getItems().get(2).getName(), "Music from the time of Shakespeare");
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void testAddFeatureTwice() {
-        ServiceDiscoveryManager serviceDiscoveryManager = ServiceDiscoveryManager.INSTANCE;
+        ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(connection);
         serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
         serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testAddIdentityTwice() {
-        ServiceDiscoveryManager serviceDiscoveryManager = ServiceDiscoveryManager.INSTANCE;
+        ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(connection);
         serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));
         serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name2", "en"));
     }

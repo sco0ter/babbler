@@ -24,11 +24,15 @@
 
 package org.xmpp.extension.lastactivity;
 
+import java.util.Date;
+
 /**
+ * Allows to specify an alternative strategy for determining last activity.
+ *
  * @author Christian Schudt
  */
 public interface LastActivityStrategy {
 
-    long getLastActivity();
+    Date getLastActivity();
 
 }

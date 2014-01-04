@@ -48,5 +48,4 @@ public enum ChatState {
      * User had been composing but now has stopped.
      */
     PAUSED
-
 }

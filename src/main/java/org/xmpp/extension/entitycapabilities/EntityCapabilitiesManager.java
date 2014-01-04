@@ -48,7 +48,7 @@ public class EntityCapabilitiesManager {
     private Connection connection;
 
     public EntityCapabilitiesManager() {
-        List<Identity> identityList = ServiceDiscoveryManager.INSTANCE.getIdentities();
+
         /*
         connection.addStanzaListener(new StanzaListener() {
             @Override

@@ -48,7 +48,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
 
     private static final Feature FEATURE = new Feature("jabber:iq:version");
 
-    private volatile SoftwareVersion softwareVersion;
+    private SoftwareVersion softwareVersion;
 
     public SoftwareVersionManager(final Connection connection) {
         super(connection);
@@ -58,13 +58,15 @@ public final class SoftwareVersionManager extends ExtensionManager {
                 IQ iq = e.getIQ();
                 // If an entity asks us for our software version, reply.
                 if (e.isIncoming() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {
-                    if (isEnabled() && softwareVersion != null) {
-                        IQ result = iq.createResult();
-                        result.setExtension(softwareVersion);
-                        connection.send(result);
-                    } else {
-                        IQ error = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
-                        connection.send(error);
+                    synchronized (SoftwareVersionManager.this) {
+                        if (isEnabled() && softwareVersion != null) {
+                            IQ result = iq.createResult();
+                            result.setExtension(softwareVersion);
+                            connection.send(result);
+                        } else {
+                            IQ error = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
+                            connection.send(error);
+                        }
                     }
                 }
             }
@@ -75,7 +77,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
     /**
      * Gets the software version of another entity.
      *
-     * @param jid The JID. You can also pass null, if you want to get the server's software version.
+     * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to get the server's software version.
      * @return The software version or null, if this protocol is not supported.
      * @throws TimeoutException If the request timed out.
      */
@@ -96,7 +98,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
      * @return My software version.
      * @see #setSoftwareVersion(SoftwareVersion)
      */
-    public SoftwareVersion getSoftwareVersion() {
+    public synchronized SoftwareVersion getSoftwareVersion() {
         return softwareVersion;
     }
 
@@ -106,7 +108,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
      * @param softwareVersion My software version.
      * @see #getSoftwareVersion()
      */
-    public void setSoftwareVersion(SoftwareVersion softwareVersion) {
+    public synchronized void setSoftwareVersion(SoftwareVersion softwareVersion) {
         this.softwareVersion = softwareVersion;
     }
 

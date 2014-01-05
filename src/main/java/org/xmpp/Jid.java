@@ -24,12 +24,21 @@
 
 package org.xmpp;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * The implementation of the JID as described in <a href="http://xmpp.org/rfcs/rfc6122.html">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
  *
  * @author Christian Schudt
  */
 public final class Jid {
+
+    private static final Pattern ESCAPE_PATTERN = Pattern.compile("[ \"&'/:<>@\\\\]");
+
+    private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\([0-9a-fA-F]{2})");
+
+    private final String escapedLocal;
 
     private final String local;
 
@@ -46,6 +55,7 @@ public final class Jid {
         validateDomain(domain);
         this.domain = domain;
         this.local = null;
+        this.escapedLocal = null;
         this.resource = null;
     }
 
@@ -60,6 +70,7 @@ public final class Jid {
         validateLength(local, "local");
         this.domain = domain;
         this.local = local;
+        this.escapedLocal = local != null ? escape(local) : null;
         this.resource = null;
     }
 
@@ -75,6 +86,7 @@ public final class Jid {
         validateLength(local, "local");
         validateLength(resource, "resource");
         this.local = local;
+        this.escapedLocal = local != null ? escape(local) : null;
         this.domain = domain;
         this.resource = resource;
     }
@@ -101,10 +113,10 @@ public final class Jid {
         String domain;
         String resource = null;
 
-        int indexOfAt = jid.indexOf("@");
-        int indexOfSlash = jid.indexOf("/");
+        int indexOfAt = jid.lastIndexOf("@");
+        int indexOfSlash = jid.lastIndexOf("/");
         if (indexOfAt > -1) {
-            local = jid.substring(0, indexOfAt);
+            local = unescape(jid.substring(0, indexOfAt));
             if (indexOfSlash > -1) {
                 domain = jid.substring(indexOfAt + 1, indexOfSlash);
             } else {
@@ -122,6 +134,30 @@ public final class Jid {
         }
 
         return new Jid(local, domain, resource);
+    }
+
+    private static String escape(String string) {
+        Matcher matcher = ESCAPE_PATTERN.matcher(string);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String match = matcher.group();
+            matcher.appendReplacement(sb, String.format("\\\\%x", match.getBytes()[0]));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static String unescape(String string) {
+        Matcher matcher = UNESCAPE_PATTERN.matcher(string);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String match = matcher.group(1);
+            int num = Integer.parseInt(match, 16);
+            String value = String.valueOf((char) num);
+            matcher.appendReplacement(sb, value);
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     private void validateDomain(String domain) {
@@ -229,6 +265,10 @@ public final class Jid {
         return resource;
     }
 
+    public String toEscapedString() {
+        return toString(escapedLocal, domain, resource);
+    }
+
     /**
      * Converts the JID into its string representation, i.e. [ localpart "@" ] domainpart [ "/" resourcepart ].
      *
@@ -236,6 +276,10 @@ public final class Jid {
      */
     @Override
     public String toString() {
+        return toString(local, domain, resource);
+    }
+
+    private String toString(String local, String domain, String resource) {
         StringBuilder sb = new StringBuilder();
         if (local != null) {
             sb.append(local);

@@ -13,3 +13,4 @@
 * [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html)
 * [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
 * [XEP-0199: XMPP Ping](http://xmpp.org/extensions/xep-0199.html)
+* [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)

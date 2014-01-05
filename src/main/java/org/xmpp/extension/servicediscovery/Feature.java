@@ -70,7 +70,6 @@ public final class Feature implements Comparable<Feature> {
         int result = 17;
         result = 31 * result + ((var == null) ? 0 : var.hashCode());
         return result;
-
     }
 
     @Override

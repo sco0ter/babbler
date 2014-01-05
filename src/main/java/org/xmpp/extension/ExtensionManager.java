@@ -35,10 +35,17 @@ public abstract class ExtensionManager {
 
     protected final Connection connection;
 
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
+
     private volatile boolean enabled;
 
     protected ExtensionManager(Connection connection) {
         this.connection = connection;
+        if (this instanceof ServiceDiscoveryManager) {
+            serviceDiscoveryManager = (ServiceDiscoveryManager) this;
+        } else {
+            serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        }
     }
 
     /**
@@ -57,7 +64,6 @@ public abstract class ExtensionManager {
      * @see #isEnabled()
      */
     public void setEnabled(boolean enabled) {
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         if (serviceDiscoveryManager != null) {
             if (enabled) {
                 serviceDiscoveryManager.addFeature(getFeature());

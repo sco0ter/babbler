@@ -419,7 +419,7 @@ public abstract class Connection implements Closeable {
      * This method blocks until a result was received or a timeout occurred.
      * </p>
      *
-     * @param iq The {@code <iq/>} stanza, which must be of type {@link IQ.Type#GET get} or {@link IQ.Type#SET set}.
+     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain org.xmpp.stanza.IQ.Type#GET get} or {@linkplain org.xmpp.stanza.IQ.Type#SET set}.
      * @return The result {@code <iq/>} stanza. If an error occurred, the stanza contains an {@linkplain org.xmpp.stanza.IQ#getError() error}.
      * @throws TimeoutException If no response was received in time.
      */

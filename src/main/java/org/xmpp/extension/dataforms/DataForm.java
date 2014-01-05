@@ -25,6 +25,8 @@
 package org.xmpp.extension.dataforms;
 
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +50,13 @@ public final class DataForm {
 
     @XmlElement(name = "field")
     private List<Field> fields = new ArrayList<>();
+
+    @XmlElement(name = "item")
+    private List<Item> items = new ArrayList<>();
+
+    @XmlElementWrapper(name = "reported")
+    @XmlElement(name = "field")
+    private List<Field> reportedFields = new ArrayList<>();
 
     /**
      * Gets the title of the form.
@@ -100,6 +109,16 @@ public final class DataForm {
         this.type = type;
     }
 
+
+
+    public List<Field> getReportedFields() {
+        return reportedFields;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
     /**
      *
      */
@@ -128,6 +147,7 @@ public final class DataForm {
         SUBMIT
     }
 
+    @XmlRootElement(name = "field")
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Field {
 
@@ -237,6 +257,16 @@ public final class DataForm {
              */
             @XmlEnumValue(value = "text-single")
             TEXT_SINGLE
+        }
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class Item {
+        @XmlElement(name = "field")
+        private List<Field> fields = new ArrayList<>();
+
+        public List<Field> getFields() {
+            return fields;
         }
     }
 

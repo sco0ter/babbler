@@ -38,6 +38,7 @@ import org.xmpp.extension.messagedeliveryreceipts.Received;
 import org.xmpp.extension.messagedeliveryreceipts.Request;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
+import org.xmpp.extension.search.Search;
 import org.xmpp.extension.servicediscovery.ItemDiscovery;
 import org.xmpp.extension.servicediscovery.ServiceDiscovery;
 import org.xmpp.im.Roster;
@@ -140,6 +141,9 @@ public abstract class XmppContext {
             // Ping
             registerExtension(Ping.class);
             registerManager(PingManager.class);
+
+            // Search
+            registerExtension(Search.class);
 
         }
     }

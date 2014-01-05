@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2013 Christian Schudt
+ * Copyright (c) 2014 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +52,8 @@ import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredListener;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.ping.PingManager;
+import org.xmpp.extension.search.Search;
+import org.xmpp.extension.search.SearchManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
 
@@ -314,7 +316,25 @@ public class JavaFXApp extends Application {
                                     }
                                 }
                             });
-                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem);
+                            MenuItem searchMenuItem = new MenuItem("Search");
+                            searchMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    SearchManager searchManager = connection.getExtensionManager(SearchManager.class);
+                                    try {
+                                        Search search = new Search();
+                                        search.setFirst("22*");
+                                        searchManager.discoverSearchFields(new Jid("search.dev"));
+                                        Search result = searchManager.search(search, new Jid("search.dev"));
+                                        for (Search.Item item : result.getItems()) {
+                                            System.out.println(item.getJid());
+                                        }
+                                    } catch (TimeoutException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem);
                             setContextMenu(contextMenu);
                         }
                     }

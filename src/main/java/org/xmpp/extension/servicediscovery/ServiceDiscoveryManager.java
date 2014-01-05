@@ -36,15 +36,12 @@ public class ServiceDiscoveryManager extends ExtensionManager {
 
     static final Feature feature = new Feature("http://jabber.org/protocol/disco#info");
 
-    private final List<Identity> identities;
+    private final List<Identity> identities = new ArrayList<>();
 
-    private final Set<Feature> features;
+    private final Set<Feature> features = new HashSet<>();
 
     public ServiceDiscoveryManager(Connection connection) {
         super(connection);
-        this.identities = new ArrayList<>();
-        this.features = new HashSet<>();
-
         features.add(feature);
     }
 

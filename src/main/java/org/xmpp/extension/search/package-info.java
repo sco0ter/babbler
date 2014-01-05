@@ -22,29 +22,10 @@
  * THE SOFTWARE.
  */
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>.
  */
-public class LogFormatter extends SimpleFormatter {
-    @Override
-    public String format(LogRecord record) {
-        StringBuilder sb = new StringBuilder();
-        DateFormat dateFormat = DateFormat.getDateTimeInstance();
-        Date resultDate = new Date(record.getMillis());
-        sb.append(dateFormat.format(resultDate));
-        sb.append(" ");
-        sb.append(record.getLevel());
-        sb.append("  ");
-        sb.append(formatMessage(record));
-        if (record.getThrown() != null) {
-            record.getThrown().printStackTrace();
-        }
-        sb.append("\n");
-        return sb.toString();
-    }
-}
+@XmlSchema(namespace = "jabber:iq:search", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.search;
+
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

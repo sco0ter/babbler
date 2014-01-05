@@ -54,6 +54,8 @@ import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
+import org.xmpp.extension.version.SoftwareVersion;
+import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
 
@@ -269,9 +271,11 @@ public class JavaFXApp extends Application {
                             }
                         });
 
+                        SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
+                        softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
                         try {
                             connection.connect();
-                            connection.login(txtUser.getText(), txtPassword.getText());
+                            connection.login(txtUser.getText(), txtPassword.getText(), "test");
                             connection.send(new Presence());
                         } catch (TimeoutException | LoginException | IOException e) {
                             e.printStackTrace();
@@ -334,7 +338,21 @@ public class JavaFXApp extends Application {
                                     }
                                 }
                             });
-                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem);
+                            MenuItem softwareVersionItem = new MenuItem("Get Software Version");
+                            softwareVersionItem.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
+                                    try {
+                                        SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(item.contact.get().getJid());
+                                        if (softwareVersion != null)
+                                            System.out.println(softwareVersion.getName());
+                                    } catch (TimeoutException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem);
                             setContextMenu(contextMenu);
                         }
                     }

@@ -39,8 +39,11 @@ import org.xmpp.extension.messagedeliveryreceipts.Request;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.search.Search;
+import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ItemDiscovery;
 import org.xmpp.extension.servicediscovery.ServiceDiscovery;
+import org.xmpp.extension.version.SoftwareVersion;
+import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
 import org.xmpp.im.session.Session;
 import org.xmpp.sasl.Mechanisms;
@@ -144,6 +147,11 @@ public abstract class XmppContext {
 
             // Search
             registerExtension(Search.class);
+            registerManager(SearchManager.class);
+
+            // XEP-0092: Software Version
+            registerExtension(SoftwareVersion.class);
+            registerManager(SoftwareVersionManager.class);
 
         }
     }

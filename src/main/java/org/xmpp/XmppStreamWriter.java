@@ -93,7 +93,7 @@ final class XmppStreamWriter {
         keepAliveExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                if (connection.getStatus() == Connection.Status.CONNECTED) {
+                if (false&&connection.getStatus() == Connection.Status.CONNECTED) {
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {

@@ -36,6 +36,8 @@ import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.messagedeliveryreceipts.Received;
 import org.xmpp.extension.messagedeliveryreceipts.Request;
+import org.xmpp.extension.ping.Ping;
+import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.servicediscovery.ItemDiscovery;
 import org.xmpp.extension.servicediscovery.ServiceDiscovery;
 import org.xmpp.im.Roster;
@@ -134,6 +136,11 @@ public abstract class XmppContext {
 
             // Compression
             registerExtension(Compression.class);
+
+            // Ping
+            registerExtension(Ping.class);
+            registerManager(PingManager.class);
+
         }
     }
 }

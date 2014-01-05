@@ -51,6 +51,7 @@ import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredListener;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
+import org.xmpp.extension.ping.PingManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
 
@@ -301,7 +302,19 @@ public class JavaFXApp extends Application {
                                     lastActivityManager.getLastActivity(item.contact.get().getJid());
                                 }
                             });
-                            contextMenu.getItems().add(lastActivityMenuItem);
+                            MenuItem pingMenuItem = new MenuItem("Ping");
+                            pingMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    PingManager pingManager = connection.getExtensionManager(PingManager.class);
+                                    try {
+                                        pingManager.pingServer();
+                                    } catch (TimeoutException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem);
                             setContextMenu(contextMenu);
                         }
                     }

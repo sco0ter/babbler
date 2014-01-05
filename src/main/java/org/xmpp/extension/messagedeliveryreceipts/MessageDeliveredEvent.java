@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.EventObject;
 
 /**
- * This event notifies listeners, if a message has been successfully delivered.
+ * This event notifies listeners, when a message has been successfully delivered.
  *
  * @author Christian Schudt
  * @see MessageDeliveredListener
@@ -17,8 +17,9 @@ public final class MessageDeliveredEvent extends EventObject {
     /**
      * Constructs a message delivered event.
      *
-     * @param source    The object on which the event initially occurred.
-     * @param messageId The message id of the delivered message.
+     * @param source       The object on which the event initially occurred.
+     * @param messageId    The message id of the delivered message.
+     * @param deliveryDate The date of the delivery.
      * @throws IllegalArgumentException if source is null.
      */
     MessageDeliveredEvent(Object source, String messageId, Date deliveryDate) {

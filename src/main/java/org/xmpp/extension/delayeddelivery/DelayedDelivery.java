@@ -34,6 +34,7 @@ import java.util.Date;
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203: Delayed Delivery</a>.
  * <blockquote>
+ * <p><cite><a href="http://xmpp.org/extensions/xep-0203.html#protocol">2. Protocol Definition</a></cite></p>
  * <p>The XML namespace defined herein is used to provide timestamp information about data stored for later delivery. The most common uses of this namespace are to stamp:</p>
  * <ul>
  * <li>A message that is sent to an offline entity and stored for later delivery (see Best Practices for Handling Offline Messages [3]).</li>
@@ -74,7 +75,7 @@ public final class DelayedDelivery {
     }
 
     /**
-     * Gets the he time when the XML stanza was originally sent.
+     * Gets the time when the XML stanza was originally sent.
      *
      * @return The time when the XML stanza was originally sent.
      */

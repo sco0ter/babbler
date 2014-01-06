@@ -26,6 +26,8 @@ package org.xmpp;
 
 import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.attention.Attention;
+import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.bosh.Body;
 import org.xmpp.extension.chatstate.*;
 import org.xmpp.extension.compression.Compression;
@@ -38,6 +40,7 @@ import org.xmpp.extension.messagedeliveryreceipts.Received;
 import org.xmpp.extension.messagedeliveryreceipts.Request;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
+import org.xmpp.extension.privacylists.Privacy;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ItemDiscovery;
@@ -153,6 +156,12 @@ public abstract class XmppContext {
             registerExtension(SoftwareVersion.class);
             registerManager(SoftwareVersionManager.class);
 
+            // XEP-0016: Privacy Lists
+            registerExtension(Privacy.class);
+
+            // XEP-0224: Attention
+            registerExtension(Attention.class);
+            registerManager(AttentionManager.class);
         }
     }
 }

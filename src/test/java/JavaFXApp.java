@@ -46,6 +46,8 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.xmpp.*;
+import org.xmpp.extension.attention.Attention;
+import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.bosh.BoshConnection;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;

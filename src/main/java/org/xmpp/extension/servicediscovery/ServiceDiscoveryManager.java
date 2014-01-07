@@ -25,23 +25,48 @@
 package org.xmpp.extension.servicediscovery;
 
 import org.xmpp.Connection;
+import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.IQEvent;
+import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.Stanza;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
  */
-public class ServiceDiscoveryManager extends ExtensionManager {
+public final class ServiceDiscoveryManager extends ExtensionManager {
 
     static final Feature feature = new Feature("http://jabber.org/protocol/disco#info");
 
-    private final List<Identity> identities = new ArrayList<>();
+    private final Set<Identity> identities = new HashSet<>();
 
     private final Set<Feature> features = new HashSet<>();
 
-    public ServiceDiscoveryManager(Connection connection) {
+    public ServiceDiscoveryManager(final Connection connection) {
         super(connection);
+        connection.addIQListener(new IQListener() {
+            @Override
+            public void handle(IQEvent e) {
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && iq.getType() == IQ.Type.GET && iq.getExtension(ServiceDiscovery.class) != null) {
+                    if (isEnabled()) {
+                        IQ result = iq.createResult();
+                        ServiceDiscovery serviceDiscovery = new ServiceDiscovery(identities, features);
+                        result.setExtension(serviceDiscovery);
+                        connection.send(result);
+                    } else {
+                        IQ error = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
+                        connection.send(error);
+                    }
+                }
+            }
+        });
         features.add(feature);
     }
 
@@ -56,16 +81,11 @@ public class ServiceDiscoveryManager extends ExtensionManager {
      * @param identity The identity.
      */
     public void addIdentity(Identity identity) {
-        // the <query/> element MAY include multiple <identity/> elements with the same category+type but with different 'xml:lang' values, however the <query/> element MUST NOT include multiple <identity/> elements with the same category+type+xml:lang but with different 'name' values
-        if (identities.contains(identity)) {
-            throw new IllegalArgumentException("An identity with that category, type and language already exists.");
-        }
-
         identities.add(identity);
     }
 
-    public List<Identity> getIdentities() {
-        return Collections.unmodifiableList(identities);
+    public Set<Identity> getIdentities() {
+        return Collections.unmodifiableSet(identities);
     }
 
     public Set<Feature> getFeatures() {
@@ -83,5 +103,35 @@ public class ServiceDiscoveryManager extends ExtensionManager {
 
     public void removeFeature(Feature feature) {
         features.remove(feature);
+    }
+
+    /**
+     * Discovers information about another XMPP entity.
+     * <blockquote>
+     * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
+     * <p>A requesting entity may want to discover information about another entity on the network. The information desired generally is of two kinds:</p>
+     * <ol>
+     * <li>The target entity's identity.</li>
+     * <li>The features offered and protocols supported by the target entity.</li>
+     * </ol>
+     * </blockquote>
+     *
+     * @param jid The entity's JID.
+     * @return The service discovery result.
+     * @throws TimeoutException
+     */
+    public ServiceDiscovery discoverInformation(Jid jid) throws TimeoutException {
+        IQ iq = new IQ(IQ.Type.GET, new ServiceDiscovery());
+        iq.setTo(jid);
+        IQ result = connection.query(iq);
+        return result.getExtension(ServiceDiscovery.class);
+    }
+
+    public ItemDiscovery discoverItems(Jid jid) throws TimeoutException {
+        IQ iq = new IQ(IQ.Type.GET, new ServiceDiscovery());
+        iq.setTo(jid);
+        IQ result = connection.query(iq);
+
+        return result.getExtension(ItemDiscovery.class);
     }
 }

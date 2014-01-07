@@ -30,6 +30,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Represents a feature offered or protocol supported by an XMPP entity.
+ * <blockquote>
+ * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
+ * <p>This information helps requesting entities determine what actions are possible with regard to this entity (registration, search, join, etc.), what protocols the entity supports, and specific feature types of interest, if any (e.g., for the purpose of feature negotiation).</p>
+ * </blockquote>
+ *
  * @author Christian Schudt
  */
 @XmlRootElement
@@ -45,14 +51,30 @@ public final class Feature implements Comparable<Feature> {
     private Feature() {
     }
 
+    /**
+     * Creates a feature.
+     *
+     * @param var A protocol namespace or other feature offered by the entity.
+     */
     public Feature(String var) {
         this.var = var;
     }
 
+    /**
+     * Gets the 'var' attribute, whose value is either a protocol namespace or other feature offered by the entity.
+     *
+     * @return A protocol namespace or other feature offered by the entity.
+     */
     public String getVar() {
         return var;
     }
 
+    /**
+     * A feature is considered equal to another one, if their 'var' attribute are equal.
+     *
+     * @param o The other entity.
+     * @return True, if the both features are equal.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == this) {
@@ -72,6 +94,13 @@ public final class Feature implements Comparable<Feature> {
         return result;
     }
 
+    /**
+     * Implements a natural ordering of a feature, as suggested and required by <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
+     * (The 'var' attributes are compared to each other).
+     *
+     * @param o The other feature.
+     * @return The result of the comparison.
+     */
     @Override
     public int compareTo(Feature o) {
         int result;

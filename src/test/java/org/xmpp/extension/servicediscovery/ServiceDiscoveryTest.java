@@ -70,19 +70,19 @@ public class ServiceDiscoveryTest extends BaseTest {
         Assert.assertNotNull(serviceDiscovery);
         Assert.assertEquals(serviceDiscovery.getIdentities().size(), 2);
         Assert.assertEquals(serviceDiscovery.getFeatures().size(), 7);
-        Assert.assertEquals(serviceDiscovery.getIdentities().get(0).getCategory(), "conference");
-        Assert.assertEquals(serviceDiscovery.getIdentities().get(0).getName(), "Play-Specific Chatrooms");
-        Assert.assertEquals(serviceDiscovery.getIdentities().get(0).getType(), "text");
-        Assert.assertEquals(serviceDiscovery.getIdentities().get(1).getCategory(), "directory");
-        Assert.assertEquals(serviceDiscovery.getIdentities().get(1).getName(), "Play-Specific Chatrooms");
-        Assert.assertEquals(serviceDiscovery.getIdentities().get(1).getType(), "chatroom");
-        Assert.assertEquals(serviceDiscovery.getFeatures().get(0).getVar(), "http://jabber.org/protocol/disco#info");
-        Assert.assertEquals(serviceDiscovery.getFeatures().get(1).getVar(), "http://jabber.org/protocol/disco#items");
-        Assert.assertEquals(serviceDiscovery.getFeatures().get(2).getVar(), "http://jabber.org/protocol/muc");
-        Assert.assertEquals(serviceDiscovery.getFeatures().get(3).getVar(), "jabber:iq:register");
-        Assert.assertEquals(serviceDiscovery.getFeatures().get(4).getVar(), "jabber:iq:search");
-        Assert.assertEquals(serviceDiscovery.getFeatures().get(5).getVar(), "jabber:iq:time");
-        Assert.assertEquals(serviceDiscovery.getFeatures().get(6).getVar(), "jabber:iq:version");
+
+        Identity identity1 = new Identity("conference", "text", "Play-Specific Chatrooms");
+        Identity identity2 = new Identity("directory", "chatroom", "Play-Specific Chatrooms");
+
+        Assert.assertTrue(serviceDiscovery.getIdentities().contains(identity1));
+        Assert.assertTrue(serviceDiscovery.getIdentities().contains(identity2));
+        Assert.assertTrue(serviceDiscovery.getFeatures().contains(new Feature("http://jabber.org/protocol/disco#info")));
+        Assert.assertTrue(serviceDiscovery.getFeatures().contains(new Feature("http://jabber.org/protocol/disco#items")));
+        Assert.assertTrue(serviceDiscovery.getFeatures().contains(new Feature("http://jabber.org/protocol/muc")));
+        Assert.assertTrue(serviceDiscovery.getFeatures().contains(new Feature("jabber:iq:register")));
+        Assert.assertTrue(serviceDiscovery.getFeatures().contains(new Feature("jabber:iq:search")));
+        Assert.assertTrue(serviceDiscovery.getFeatures().contains(new Feature("jabber:iq:time")));
+        Assert.assertTrue(serviceDiscovery.getFeatures().contains(new Feature("jabber:iq:version")));
     }
 
     @Test

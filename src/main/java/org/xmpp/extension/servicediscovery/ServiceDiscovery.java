@@ -25,42 +25,61 @@
 package org.xmpp.extension.servicediscovery;
 
 import javax.xml.bind.annotation.*;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 /**
+ * The implementation of the {@code <query/>} element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSeeAlso({Feature.class, Identity.class})
 public final class ServiceDiscovery {
 
     @XmlAttribute(name = "node")
     private String node;
 
     @XmlElement(name = "identity")
-    private List<Identity> identities;
+    private Set<Identity> identities;
 
     @XmlElement(name = "feature")
-    private List<Feature> features;
+    private Set<Feature> features;
 
     public ServiceDiscovery() {
+    }
 
+    public ServiceDiscovery(Set<Identity> identities, Set<Feature> features) {
+        this.identities = identities;
+        this.features = features;
     }
 
     public ServiceDiscovery(String node) {
         this.node = node;
     }
 
-    public List<Identity> getIdentities() {
-        return Collections.unmodifiableList(identities);
+    /**
+     * Gets the identities.
+     *
+     * @return The identities.
+     */
+    public Set<Identity> getIdentities() {
+        return identities;
     }
 
-    public List<Feature> getFeatures() {
+    /**
+     * Gets the features.
+     *
+     * @return The features.
+     */
+    public Set<Feature> getFeatures() {
         return features;
     }
 
+    /**
+     * Gets the node.
+     *
+     * @return The node.
+     */
     public String getNode() {
         return node;
     }

@@ -148,7 +148,7 @@ public final class BoshConnection extends Connection {
      * Creates a BOSH connection on basis of the XMPP service domain through a proxy.
      *
      * @param xmppServiceDomain The XMPP service domain.
-     * @param proxy             The proxy, which should be of type {@link Proxy.Type#HTTP}
+     * @param proxy             The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
      * @see #BoshConnection(String)
      */
     public BoshConnection(String xmppServiceDomain, Proxy proxy) {
@@ -185,7 +185,7 @@ public final class BoshConnection extends Connection {
      * @param hostname The hostname.
      * @param port     The port.
      * @param file     The file, which is needed to construct the URL, e.g. "/http-bind/".
-     * @param proxy    The proxy, which should be of type {@link Proxy.Type#HTTP}
+     * @param proxy    The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
      */
     public BoshConnection(String hostname, int port, String file, Proxy proxy) {
         this(null, hostname, port, file, proxy, XmppContext.getDefault(), null, (short) 60);
@@ -199,7 +199,7 @@ public final class BoshConnection extends Connection {
      * @param hostname          The host.
      * @param port              The port.
      * @param file              The file, which is needed to construct the URL, e.g. "/http-bind/".
-     * @param proxy             The proxy, which should be of type {@link Proxy.Type#HTTP}
+     * @param proxy             The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
      * @param xmppContext       The XMPP context, which is used for this connection.
      * @param route             The route, formatted as "proto:host:port" (e.g., "xmpp:example.com:9999").
      * @param wait              The maximal number of seconds to wait between two requests. If a request exceeds this time an exception is thrown, which will terminate the connection.

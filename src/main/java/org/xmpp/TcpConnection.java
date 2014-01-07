@@ -74,7 +74,7 @@ public final class TcpConnection extends Connection {
      * Creates a default connection through a proxy to a XMPP server by only using a XMPP service domain.
      *
      * @param xmppServiceDomain The XMPP service domain.
-     * @param proxy             The proxy, whose type should be {@link Proxy.Type#SOCKS}
+     * @param proxy             The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
      * @see #TcpConnection(String)
      */
     public TcpConnection(String xmppServiceDomain, Proxy proxy) {
@@ -98,7 +98,7 @@ public final class TcpConnection extends Connection {
      * @param xmppServiceDomain The XMPP service domain, which will only be used in the opening XMPP stream as the value in the 'to' attribute.
      * @param hostname          The hostname.
      * @param port              The port.
-     * @param proxy             The proxy, whose type should be {@link Proxy.Type#SOCKS}
+     * @param proxy             The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
      * @param xmppContext       The XMPP context.
      * @see #TcpConnection(String, String, int)
      */
@@ -121,7 +121,7 @@ public final class TcpConnection extends Connection {
      *
      * @param hostname The hostname.
      * @param port     The port.
-     * @param proxy    The proxy, whose type should be {@link Proxy.Type#SOCKS}
+     * @param proxy    The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
      * @see #TcpConnection(String, int)
      */
     public TcpConnection(String hostname, int port, Proxy proxy) {

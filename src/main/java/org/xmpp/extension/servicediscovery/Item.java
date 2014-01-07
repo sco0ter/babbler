@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "item", namespace = "http://jabber.org/protocol/disco#items")
-public class Item {
+public final class Item {
     @XmlJavaTypeAdapter(JidAdapter.class)
     @XmlAttribute(name = "jid")
     private Jid jid;
@@ -46,14 +46,29 @@ public class Item {
     @XmlAttribute(name = "node")
     private String node;
 
+    /**
+     * Gets the JID.
+     *
+     * @return The JID.
+     */
     public Jid getJid() {
         return jid;
     }
 
+    /**
+     * Gets the name.
+     *
+     * @return The name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the node.
+     *
+     * @return The node.
+     */
     public String getNode() {
         return node;
     }

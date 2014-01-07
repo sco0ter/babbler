@@ -13,6 +13,8 @@
 * [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html)
 * [XEP-0199: XMPP Ping](http://xmpp.org/extensions/xep-0199.html)
 * [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
+* [XEP-0202: Entity Time](http://xmpp.org/extensions/xep-0202.html)
 * [XEP-0203: Delayed Delivery](http://xmpp.org/extensions/xep-0203.html)
 * [XEP-0206: XMPP Over BOSH](http://xmpp.org/extensions/xep-0206.html)
+* [XEP-0224: Attention](http://xmpp.org/extensions/xep-0224.html)
 * [XEP-0256: Last Activity in Presence](http://xmpp.org/extensions/xep-0256.html)

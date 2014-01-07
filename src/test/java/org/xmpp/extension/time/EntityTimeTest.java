@@ -33,13 +33,22 @@ import org.xmpp.stanza.IQ;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
  * @author Christian Schudt
  */
 public class EntityTimeTest extends BaseTest {
+
+    @Test
+    public void marshalEntityTimeRequest() throws XMLStreamException, JAXBException, IOException {
+        IQ iq = new IQ("time_1", IQ.Type.GET, new EntityTime());
+        String xml = marshall(iq);
+        Assert.assertEquals(xml, "<iq id=\"time_1\" type=\"get\"><time xmlns=\"urn:xmpp:time\"></time></iq>");
+    }
 
     @Test
     public void unmarshalEntityTimeResponse() throws XMLStreamException, JAXBException {
@@ -60,6 +69,23 @@ public class EntityTimeTest extends BaseTest {
         calendar.setTimeZone(entityTime.getTimezone());
         calendar.setTime(entityTime.getDate());
         Assert.assertEquals(calendar.get(Calendar.HOUR_OF_DAY), 11);
+    }
+
+    @Test
+    public void marshalEntityTimeResponse() throws Exception, JAXBException, IOException {
+        TimeZone timeZone = TimeZone.getTimeZone("GMT-2:00");
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        calendar.set(Calendar.YEAR, 2014);
+        calendar.set(Calendar.MONTH, Calendar.JANUARY);
+        calendar.set(Calendar.DATE, 7);
+        calendar.set(Calendar.HOUR_OF_DAY, 3);
+        calendar.set(Calendar.MINUTE, 34);
+        calendar.set(Calendar.SECOND, 3);
+        calendar.set(Calendar.MILLISECOND, 1);
+
+        String xml = marshall(new EntityTime(timeZone, calendar.getTime()));
+        Assert.assertEquals(xml, "<time xmlns=\"urn:xmpp:time\"><tzo>-02:00</tzo><utc>2014-01-07T03:34:03.001Z</utc></time>");
     }
 
     @Test

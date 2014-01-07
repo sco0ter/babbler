@@ -46,8 +46,6 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.xmpp.*;
-import org.xmpp.extension.attention.Attention;
-import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.bosh.BoshConnection;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
@@ -56,6 +54,7 @@ import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
+import org.xmpp.extension.servicediscovery.ServiceDiscovery;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
@@ -354,7 +353,17 @@ public class JavaFXApp extends Application {
                                     }
                                 }
                             });
-                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem);
+                            MenuItem serviceDiscoveryMenuItem = new MenuItem("Get Software Version");
+                            serviceDiscoveryMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    ServiceDiscovery serviceDiscovery = new ServiceDiscovery();
+                                    IQ iq = new IQ(IQ.Type.GET, serviceDiscovery);
+                                    connection.send(iq);
+
+                                }
+                            });
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem);
                             setContextMenu(contextMenu);
                         }
                     }

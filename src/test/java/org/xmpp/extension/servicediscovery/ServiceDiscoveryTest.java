@@ -126,7 +126,7 @@ public class ServiceDiscoveryTest extends BaseTest {
         serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void testAddIdentityTwice() {
         ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(connection);
         serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));

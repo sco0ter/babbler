@@ -41,6 +41,7 @@ import org.xmpp.extension.messagedeliveryreceipts.Request;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privacylists.Privacy;
+import org.xmpp.extension.rosterx.RosterExchange;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ItemDiscovery;
@@ -167,6 +168,9 @@ public abstract class XmppContext {
             // XEP-0224: Attention
             registerExtension(Attention.class);
             registerManager(AttentionManager.class);
+
+            // XEP-0144: Roster Item Exchange
+            registerExtension(RosterExchange.class);
        }
     }
 }

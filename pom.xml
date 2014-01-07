@@ -38,7 +38,7 @@
     </properties>
     <name>babbler</name>
     <organization>
-        <name>${name}</name>
+        <name>${project.name}</name>
         <url>https://bitbucket.org/sco0ter/xmpp</url>
     </organization>
     <inceptionYear>2014</inceptionYear>

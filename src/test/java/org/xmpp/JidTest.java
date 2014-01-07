@@ -52,8 +52,20 @@ public class JidTest {
 
     @Test
     public void testJidParseDomain() {
-        Jid jid = Jid.fromString("domain");
+        Jid jid = Jid.fromString("domain.com");
+        Assert.assertEquals("domain.com", jid.toString());
+    }
+
+    @Test
+    public void testJidFromEscapedString() {
+        Jid jid = Jid.fromEscapedString("domain");
         Assert.assertEquals("domain", jid.toString());
+        Jid jid2 = Jid.fromEscapedString("domain/resource");
+        Assert.assertEquals("domain/resource", jid2.toString());
+        Jid jid3 = Jid.fromEscapedString("local@domain");
+        Assert.assertEquals("local@domain", jid3.toString());
+        Jid jid4 = Jid.fromEscapedString("local@domain/resource");
+        Assert.assertEquals("local@domain/resource", jid4.toString());
     }
 
     @Test
@@ -154,15 +166,25 @@ public class JidTest {
     }
 
     @Test
+    public void testWithJidAsResource() {
+        Jid jid = Jid.fromString("node@domain/user@conference.com/nick");
+        Assert.assertEquals(jid.getDomain(), "domain");
+        Assert.assertEquals(jid.getLocal(), "node");
+        Assert.assertEquals(jid.getResource(), "user@conference.com/nick");
+    }
+
+    @Test
     public void testJidEscaping() {
         Jid jid = Jid.fromString("d'artagnan@musketeers.lit");
         Assert.assertEquals(jid.toString(), "d'artagnan@musketeers.lit");
         Assert.assertEquals(jid.toEscapedString(), "d\\27artagnan@musketeers.lit");
 
-        Jid jid2 = Jid.fromString("d\\27artagnan@musketeers.lit");
+        Jid jid2 = Jid.fromEscapedString("d\\27artagnan@musketeers.lit");
+        Assert.assertEquals(jid2.toString(), "d'artagnan@musketeers.lit");
+        Assert.assertEquals(jid2.toEscapedString(), "d\\27artagnan@musketeers.lit");
         Assert.assertEquals(jid, jid2);
 
-        Jid jid3 = Jid.fromString("treville\\40musketeers.lit@smtp.gascon.fr");
+        Jid jid3 = Jid.fromEscapedString("treville\\40musketeers.lit@smtp.gascon.fr");
         Assert.assertEquals(jid3.getLocal(), "treville@musketeers.lit");
         Assert.assertEquals(jid3.toString(), "treville@musketeers.lit@smtp.gascon.fr");
         Assert.assertEquals(jid3.toEscapedString(), "treville\\40musketeers.lit@smtp.gascon.fr");
@@ -170,5 +192,14 @@ public class JidTest {
         Jid jid4 = Jid.fromString("\"&'/:<>@\\@domain/resource");
         Assert.assertEquals(jid4.toEscapedString(), "\\22\\26\\27\\2f\\3a\\3c\\3e\\40\\5c@domain/resource");
         Assert.assertEquals(jid4.toString(), "\"&'/:<>@\\@domain/resource");
+    }
+
+    @Test
+    public void testComplexJid() {
+        Jid jid = Jid.fromString("d'art@a/gnan@musketeers.lit/another/@Jid@test.de");
+
+        Assert.assertEquals(jid.getLocal(), "d'art@a/gnan");
+        Assert.assertEquals(jid.getDomain(), "musketeers.lit");
+        Assert.assertEquals(jid.getResource(), "another/@Jid@test.de");
     }
 }

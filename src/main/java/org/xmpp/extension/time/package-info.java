@@ -22,30 +22,10 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.util;
-
-import org.xmpp.Jid;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
 /**
- * Converts a String representation of a JID to JID object and vice a versa.
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>.
  */
-public final class JidAdapter extends XmlAdapter<String, Jid> {
+@XmlSchema(namespace = "urn:xmpp:time", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.time;
 
-    @Override
-    public Jid unmarshal(String v) throws Exception {
-        if (v != null) {
-            return Jid.fromEscapedString(v);
-        }
-        return null;
-    }
-
-    @Override
-    public String marshal(Jid v) throws Exception {
-        if (v != null) {
-            return v.toEscapedString();
-        }
-        return null;
-    }
-}
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

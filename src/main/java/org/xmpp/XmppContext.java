@@ -45,6 +45,7 @@ import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ItemDiscovery;
 import org.xmpp.extension.servicediscovery.ServiceDiscovery;
+import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
@@ -156,12 +157,16 @@ public abstract class XmppContext {
             registerExtension(SoftwareVersion.class);
             registerManager(SoftwareVersionManager.class);
 
+
+            // XEP-0202: Entity Time
+            registerExtension(EntityTime.class);
+
             // XEP-0016: Privacy Lists
             registerExtension(Privacy.class);
 
             // XEP-0224: Attention
             registerExtension(Attention.class);
             registerManager(AttentionManager.class);
-        }
+       }
     }
 }

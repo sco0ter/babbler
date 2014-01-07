@@ -29,6 +29,9 @@ import java.util.regex.Pattern;
 
 /**
  * The implementation of the JID as described in <a href="http://xmpp.org/rfcs/rfc6122.html">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
+ * <p>
+ * <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a> is also supported.
+ * </p>
  *
  * @author Christian Schudt
  */
@@ -37,6 +40,8 @@ public final class Jid {
     private static final Pattern ESCAPE_PATTERN = Pattern.compile("[ \"&'/:<>@\\\\]");
 
     private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\([0-9a-fA-F]{2})");
+
+    private static final Pattern JID = Pattern.compile("((?<local>.{0,1023}?)@)?(?<domain>(?:(?!\\d|-)[a-zA-Z0-9\\-]{1,63}(?<!-)\\.?)+(?:[a-zA-Z]{2,}))(/(?<resource>.{0,1023}))?");
 
     private final String escapedLocal;
 
@@ -99,7 +104,14 @@ public final class Jid {
      * @return The JID.
      */
     public static Jid fromString(String jid) {
+        return parseJid(jid, false);
+    }
 
+    public static Jid fromEscapedString(String jid) {
+        return parseJid(jid, true);
+    }
+
+    private static Jid parseJid(String jid, boolean unescape) {
         if (jid == null) {
             throw new IllegalArgumentException("jid must not be null.");
         }
@@ -109,31 +121,13 @@ public final class Jid {
             throw new IllegalArgumentException("jid must not be empty.");
         }
 
-        String local = null;
-        String domain;
-        String resource = null;
-
-        int indexOfAt = jid.lastIndexOf("@");
-        int indexOfSlash = jid.lastIndexOf("/");
-        if (indexOfAt > -1) {
-            local = unescape(jid.substring(0, indexOfAt));
-            if (indexOfSlash > -1) {
-                domain = jid.substring(indexOfAt + 1, indexOfSlash);
-            } else {
-                domain = jid.substring(indexOfAt + 1);
-            }
+        Matcher matcher = JID.matcher(jid);
+        if (matcher.find()) {
+            String local = matcher.group("local");
+            return new Jid(unescape && local != null ? unescape(local) : local, matcher.group("domain"), matcher.group("resource"));
         } else {
-            if (indexOfSlash > -1) {
-                domain = jid.substring(0, indexOfSlash);
-            } else {
-                domain = jid.substring(0);
-            }
+            throw new IllegalArgumentException("Could not parse JID.");
         }
-        if (indexOfSlash > -1) {
-            resource = jid.substring(indexOfSlash + 1);
-        }
-
-        return new Jid(local, domain, resource);
     }
 
     private static String escape(String string) {
@@ -265,6 +259,12 @@ public final class Jid {
         return resource;
     }
 
+    /**
+     * Gets the JID in escaped form as described in <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>.
+     *
+     * @return The escaped JID.
+     * @see #toString()
+     */
     public String toEscapedString() {
         return toString(escapedLocal, domain, resource);
     }
@@ -273,6 +273,7 @@ public final class Jid {
      * Converts the JID into its string representation, i.e. [ localpart "@" ] domainpart [ "/" resourcepart ].
      *
      * @return The JID.
+     * @see #toEscapedString()
      */
     @Override
     public String toString() {

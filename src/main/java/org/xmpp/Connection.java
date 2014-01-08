@@ -102,7 +102,7 @@ public abstract class Connection implements Closeable {
 
     private final SecurityManager securityManager;
 
-    private final Executor stanzaListenerExecutor;
+    Executor stanzaListenerExecutor;
 
     private final AuthenticationManager authenticationManager;
 
@@ -148,7 +148,7 @@ public abstract class Connection implements Closeable {
     /**
      * The user, which is assigned by the server after resource binding.
      */
-    private volatile Jid connectedResource;
+    volatile Jid connectedResource;
 
     /**
      * The resource, which the user requested during resource binding. This value is stored, so that it can be reused during reconnection.

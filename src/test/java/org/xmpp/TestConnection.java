@@ -24,6 +24,8 @@
 
 package org.xmpp;
 
+import org.xmpp.stanza.Stanza;
+
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
@@ -31,14 +33,30 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Proxy;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.Executor;
 
 /**
  * @author Christian Schudt
  */
 public class TestConnection extends Connection {
+
+    private MockServer mockServer;
+
     public TestConnection() {
         super("", Proxy.NO_PROXY);
+    }
+
+    public TestConnection(Jid jid, MockServer mockServer) {
+        super("", Proxy.NO_PROXY);
+        connectedResource = jid;
+        stanzaListenerExecutor = new Executor() {
+            @Override
+            public void execute(Runnable runnable) {
+                runnable.run();
+            }
+        };
+        this.mockServer = mockServer;
+        mockServer.registerConnection(this);
     }
 
     @Override
@@ -46,7 +64,22 @@ public class TestConnection extends Connection {
     }
 
     @Override
+    public void send(Object element) {
+        super.send(element);
+        if (element instanceof Stanza) {
+            ((Stanza) element).setFrom(connectedResource);
+            mockServer.receive(((Stanza) element));
+        }
+    }
+
+    @Override
     protected void restartStream() {
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        updateStatus(Status.CLOSED);
     }
 
     @Override

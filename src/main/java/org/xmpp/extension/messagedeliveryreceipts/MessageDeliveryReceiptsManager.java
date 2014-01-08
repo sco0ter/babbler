@@ -71,7 +71,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
     static final Feature feature = new Feature("urn:xmpp:receipts");
 
-    private final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
+    final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
     private final List<MessageFilter> messageFilters = new CopyOnWriteArrayList<>();
 

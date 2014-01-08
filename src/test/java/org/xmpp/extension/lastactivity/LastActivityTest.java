@@ -27,14 +27,18 @@ package org.xmpp.extension.lastactivity;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
+import org.xmpp.MockServer;
+import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.servicediscovery.Feature;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
-import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.*;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * @author Christian Schudt
@@ -57,14 +61,115 @@ public class LastActivityTest extends BaseTest {
     }
 
     @Test
-    public void testLastActivityManager() {
-        LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+    public void testLastActivityManagerIsCleared() throws IOException {
+        TestConnection connection1 = new TestConnection();
+        LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
+        lastActivityManager.setLastActivityStrategy(new LastActivityStrategy() {
+            @Override
+            public Date getLastActivity() {
+                return new Date();
+            }
+        });
+        connection1.close();
+        Assert.assertNull(lastActivityManager.getLastActivityStrategy());
+    }
 
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(LastActivityManager.feature));
+    @Test
+    public void testGetLastActivity() {
+        MockServer mockServer = new MockServer();
+        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
+        new TestConnection(JULIET, mockServer);
+        LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
+        LastActivity lastActivity = lastActivityManager.getLastActivity(JULIET);
+        Assert.assertNotNull(lastActivity);
+    }
 
+    @Test
+    public void testGetLastActivityIfDisabled() {
+        MockServer mockServer = new MockServer();
+        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
+        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        connection2.getExtensionManager(LastActivityManager.class).setEnabled(false);
+        LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
+        LastActivity lastActivity = lastActivityManager.getLastActivity(JULIET);
+        Assert.assertNull(lastActivity);
+    }
+
+    @Test
+    public void testLastActivityInAwayPresence() {
+        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        connection1.addPresenceListener(new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
+            }
+        });
+        connection1.send(new Message(JULIET));
+        connection1.send(new Presence(Presence.Show.AWAY));
+    }
+
+    @Test
+    public void testLastActivityInXAPresence() {
+        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        connection1.addPresenceListener(new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
+            }
+        });
+        connection1.send(new Message(JULIET));
+        connection1.send(new Presence(Presence.Show.AWAY));
+    }
+
+    @Test
+    public void testLastActivityInChatPresence() {
+        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        connection1.addPresenceListener(new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
+            }
+        });
+        connection1.send(new Message(JULIET));
+        connection1.send(new Presence(Presence.Show.CHAT));
+    }
+
+    @Test
+    public void testLastActivityInDndPresence() {
+        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        connection1.addPresenceListener(new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
+            }
+        });
+        connection1.send(new Message(JULIET));
+        connection1.send(new Presence(Presence.Show.DND));
+    }
+
+    @Test
+    public void testLastActivityInInitialPresence() {
+        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        connection1.addPresenceListener(new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
+            }
+        });
+        connection1.send(new Presence(Presence.Show.AWAY));
+    }
+
+    @Test
+    public void testServiceDiscoveryEntry() {
+        TestConnection connection1 = new TestConnection();
+        LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
+        // By default, the manager should be enabled.
+        Assert.assertTrue(lastActivityManager.isEnabled());
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        Feature feature = new Feature("jabber:iq:last");
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         lastActivityManager.setEnabled(false);
-        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(LastActivityManager.feature));
-
+        Assert.assertFalse(lastActivityManager.isEnabled());
+        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
     }
 }

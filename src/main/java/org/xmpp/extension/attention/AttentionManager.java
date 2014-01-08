@@ -34,7 +34,6 @@ import org.xmpp.stanza.Message;
  * </code>
  * </pre>
  *
- *
  * @author Christian Schudt
  */
 public final class AttentionManager extends ExtensionManager {

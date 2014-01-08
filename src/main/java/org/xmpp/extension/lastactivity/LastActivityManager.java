@@ -25,6 +25,8 @@
 package org.xmpp.extension.lastactivity;
 
 import org.xmpp.Connection;
+import org.xmpp.ConnectionEvent;
+import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.servicediscovery.Feature;
@@ -64,7 +66,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class LastActivityManager extends ExtensionManager {
 
-    static final Feature feature = new Feature("jabber:iq:last");
+    static final Feature FEATURE = new Feature("jabber:iq:last");
 
     private volatile LastActivityStrategy lastActivityStrategy;
 
@@ -72,13 +74,21 @@ public final class LastActivityManager extends ExtensionManager {
         super(connection);
         lastActivityStrategy = new DefaultLastActivityStrategy(connection);
 
+        connection.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == Connection.Status.CLOSED) {
+                    lastActivityStrategy = null;
+                }
+            }
+        });
         connection.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
                 if (!e.isIncoming() && isEnabled()) {
                     Presence presence = e.getPresence();
                     // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                    if (presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                    if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
                         presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity())));
                     }
                 }
@@ -94,7 +104,8 @@ public final class LastActivityManager extends ExtensionManager {
                     if (iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
                         if (isEnabled()) {
                             IQ result = iq.createResult();
-                            result.setExtension(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity())));
+                            long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
+                            result.setExtension(new LastActivity(seconds));
                             connection.send(result);
                         } else {
                             IQ result = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
@@ -109,7 +120,7 @@ public final class LastActivityManager extends ExtensionManager {
 
     @Override
     protected Feature getFeature() {
-        return feature;
+        return FEATURE;
     }
 
     private long getSecondsSince(Date date) {

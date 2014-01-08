@@ -24,6 +24,9 @@
 
 package org.xmpp;
 
+import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.IQEvent;
+import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.Stanza;
 
 import javax.xml.bind.Marshaller;
@@ -34,6 +37,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Proxy;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -70,6 +74,26 @@ public class TestConnection extends Connection {
             ((Stanza) element).setFrom(connectedResource);
             mockServer.receive(((Stanza) element));
         }
+    }
+
+    @Override
+    public IQ query(final IQ iq) throws TimeoutException {
+        final IQ[] result = new IQ[1];
+
+        final IQListener iqListener = new IQListener() {
+            @Override
+            public void handle(IQEvent e) {
+                if (e.isIncoming() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
+                    result[0] = e.getIQ();
+                }
+            }
+        };
+
+        addIQListener(iqListener);
+        send(iq);
+
+        removeIQListener(iqListener);
+        return result[0];
     }
 
     @Override

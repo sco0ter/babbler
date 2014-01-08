@@ -3,6 +3,9 @@ package org.xmpp.extension.attention;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.*;
+import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
+import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
@@ -44,6 +47,7 @@ public class AttentionTest extends BaseTest {
             public void handle(MessageEvent e) {
                 if (e.isIncoming() && e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == Message.Type.HEADLINE) {
                     attentionReceived[0] = true;
+                    Assert.assertEquals(e.getMessage().getType(), Message.Type.HEADLINE);
                 }
             }
         });
@@ -53,5 +57,19 @@ public class AttentionTest extends BaseTest {
 
         Assert.assertTrue(attentionReceived[0]);
 
+    }
+
+    @Test
+    public void testServiceDiscoveryEntry() {
+
+        TestConnection connection1 = new TestConnection();
+        AttentionManager attentionManager = connection1.getExtensionManager(AttentionManager.class);
+        Assert.assertFalse(attentionManager.isEnabled());
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        Feature feature = new Feature("urn:xmpp:attention:0");
+        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
+        attentionManager.setEnabled(true);
+        Assert.assertTrue(attentionManager.isEnabled());
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
     }
 }

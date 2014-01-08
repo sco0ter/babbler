@@ -48,6 +48,7 @@ import javafx.util.Callback;
 import org.xmpp.*;
 import org.xmpp.extension.bosh.BoshConnection;
 import org.xmpp.extension.lastactivity.LastActivityManager;
+import org.xmpp.extension.lastactivity.LastActivityStrategy;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredListener;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
@@ -68,10 +69,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
 
@@ -107,6 +105,17 @@ public class JavaFXApp extends Application {
         txtPassword.setPromptText("Password");
         final CheckBox useBosh = new CheckBox();
         useBosh.setText("Use BOSH");
+
+        for (int i = 0; i < 100; i++) {
+            Connection connection1 = new TestConnection();
+            connection1.getExtensionManager(LastActivityManager.class).setLastActivityStrategy(new LastActivityStrategy() {
+                @Override
+                public Date getLastActivity() {
+                    return null;
+                }
+            });
+            connection1.close();
+        }
 
         ComboBox<Presence.Show> comboBox = new ComboBox<>();
         comboBox.setItems(FXCollections.<Presence.Show>observableList(Arrays.asList(Presence.Show.CHAT, Presence.Show.AWAY, Presence.Show.XA, Presence.Show.DND)));

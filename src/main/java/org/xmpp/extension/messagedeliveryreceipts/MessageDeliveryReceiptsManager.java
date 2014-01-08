@@ -30,7 +30,6 @@ import org.xmpp.ConnectionListener;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
 import org.xmpp.extension.servicediscovery.Feature;
-import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
@@ -69,7 +68,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
-    static final Feature feature = new Feature("urn:xmpp:receipts");
+    private static final Feature FEATURE = new Feature("urn:xmpp:receipts");
 
     final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
@@ -82,7 +81,6 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      */
     public MessageDeliveryReceiptsManager(final Connection connection) {
         super(connection);
-        connection.getExtensionManager(ServiceDiscoveryManager.class).addFeature(feature);
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
         messageFilters.add(new MessageFilter() {
@@ -91,7 +89,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                 return message.getType() != Message.Type.ERROR;
             }
         });
-        //if (true)return;
+
         connection.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
@@ -156,7 +154,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
     @Override
     protected Feature getFeature() {
-        return feature;
+        return FEATURE;
     }
 
     /**

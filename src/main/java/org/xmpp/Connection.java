@@ -423,7 +423,7 @@ public abstract class Connection implements Closeable {
      * @return The result {@code <iq/>} stanza. If an error occurred, the stanza contains an {@linkplain org.xmpp.stanza.IQ#getError() error}.
      * @throws TimeoutException If no response was received in time.
      */
-    public final IQ query(final IQ iq) throws TimeoutException {
+    public IQ query(final IQ iq) throws TimeoutException {
         if (!(iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET)) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }

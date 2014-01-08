@@ -27,6 +27,8 @@ package org.xmpp.extension.messagedeliveryreceipts;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.*;
+import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
@@ -227,6 +229,18 @@ public class MessageDeliveryReceiptsTest extends BaseTest {
         connection1.close();
         // Listeners should be cleared now.
         Assert.assertEquals(messageDeliveryReceiptsManager.messageDeliveredListeners.size(), 0);
+    }
 
+    @Test
+    public void testServiceDiscoveryEntry() {
+        TestConnection connection1 = new TestConnection();
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        Feature feature = new Feature("urn:xmpp:receipts");
+        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
+        messageDeliveryReceiptsManager.setEnabled(true);
+        Assert.assertTrue(messageDeliveryReceiptsManager.isEnabled());
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
     }
 }

@@ -30,3 +30,130 @@ In development (or just in experimental state):
 * [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 * [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
 
+# License
+
+This project is licensed under [MIT License](http://opensource.org/licenses/MIT).
+
+# Getting started
+
+## Creating a XMPP connection
+
+There are two kinds of connection:
+
+1. A [standard TCP connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
+2. A [BOSH connection](http://xmpp.org/extensions/xep-0124.html)
+
+The following will create a normal connection to the given host:
+
+```
+Connection connection = new TcpConnection("hostname", 5222);
+```
+
+If you want to establish a BOSH connection, use the following class instead:
+```
+Connection connection = new BoshConnection("hostname", 5222);
+```
+
+In either case you get an abstract connection object, you can now work with.
+
+## Preparing your connection
+
+Before actually connecting to the server, you should setup your environment:
+
+* Setting up event listeners in order to listen for incoming messages, roster and presence changes or to modify outgoing messages.
+* Configure how features are negotiated, e.g. by setting up a `SSLContext`.
+* Configure extensions, e.g.
+ * Enable or disable certain extensions
+ * Set an identity for the connection (Service Discovery)
+ * ...
+
+
+```
+// Setting a custom SSL context
+connection.getSecurityManager().setSSLContext(sslContext);
+// Listen for presence changes
+connection.addPresenceListener(new PresenceListener() {
+    @Override
+    public void handle(PresenceEvent e) {
+        if (e.isIncoming()) {
+            // Handle incoming presence.
+        }
+    }
+});
+// Listen for messages
+connection.addMessageListener(new MessageListener() {
+    @Override
+    public void handle(MessageEvent e) {
+        // Handle outgoing or incoming message
+    }
+});
+// Listen for roster pushes
+connection.getRosterManager().addRosterListener(new RosterListener() {
+    @Override
+    public void rosterChanged(RosterEvent e) {
+    }
+});
+```
+
+## Connecting
+
+If you want to connect to the server, you can do it like that:
+
+```
+try {
+   connection.connect();
+} catch (IOException e) {
+   // e.g. UnknownHostException
+}
+```
+
+This will
+
+* open the initial XMPP stream to the server.
+* negotiate any features offered by the server, especially TLS.
+
+## Authenticating and binding a resource
+
+After connecting, you have to authenticate and bind a resource, in order to become a "connected resource". After that step you will be able to send message, presence and iq stanzas.
+
+```
+try {
+   connection.login("username", "password", "resource");
+} catch (FailedLoginException e) {
+   // Login failed, due to wrong username/password
+}
+```
+
+## Establishing a presence session
+After you are connected, authenticated and have bound a resource you should now establish a presence session, by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
+```
+connection.send(new Presence());
+```
+
+# Managing extensions
+## Getting extensions from stanzas
+```
+DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
+```
+```
+Attention attention = message.getExtension(Attention.class);
+```
+## Enabling and using extensions
+```
+MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection.getExtensionManager(MessageDeliveryReceiptsManager.class);
+messageDeliveryReceiptsManager.setEnabled(true);
+messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
+    @Override
+    public void messageDelivered(MessageDeliveredEvent e) {
+        System.out.println("Message delivered: " + e.getMessageId());
+    }
+});
+```
+```
+LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
+```
+```
+SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
+SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));
+```

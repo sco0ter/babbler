@@ -273,7 +273,12 @@ public class JavaFXApp extends Application {
                                 }
                             }
                         });
+                        connection.addMessageListener(new MessageListener() {
+                            @Override
+                            public void handle(MessageEvent e) {
 
+                            }
+                        });
                         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection.getExtensionManager(MessageDeliveryReceiptsManager.class);
                         messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
                             @Override

@@ -3,12 +3,14 @@ package org.xmpp.extension.rosterx;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.im.Roster;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -39,7 +41,7 @@ public class RosterExchangeManager extends ExtensionManager {
     }
 
     @Override
-    protected Feature getFeature() {
-        return null;
+    protected Collection<Feature> getFeatures() {
+        return Arrays.asList();
     }
 }

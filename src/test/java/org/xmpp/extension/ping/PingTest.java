@@ -30,7 +30,7 @@ import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
 import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.IQ;
 
@@ -60,7 +60,7 @@ public class PingTest extends BaseTest {
     public void testPing() throws IOException, TimeoutException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
-        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        new TestConnection(JULIET, mockServer);
         PingManager pingManager = connection1.getExtensionManager(PingManager.class);
         boolean pingResult = pingManager.ping(JULIET);
         Assert.assertTrue(pingResult);

@@ -26,10 +26,9 @@ package org.xmpp.extension.entitycapabilities;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
-import org.xmpp.extension.servicediscovery.Feature;
-import org.xmpp.extension.servicediscovery.Identity;
-import org.xmpp.extension.servicediscovery.ServiceDiscovery;
-import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
+import org.xmpp.extension.servicediscovery.info.Feature;
+import org.xmpp.extension.servicediscovery.info.Identity;
+import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
@@ -41,9 +40,9 @@ import java.util.*;
  */
 public class EntityCapabilitiesManager {
 
-    private Map<Jid, ServiceDiscovery> entityCapabilities;
+    private Map<Jid, InfoDiscovery> entityCapabilities;
 
-    private Map<String, ServiceDiscovery> cache = new HashMap<>();
+    private Map<String, InfoDiscovery> cache = new HashMap<>();
 
     private Connection connection;
 

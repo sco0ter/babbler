@@ -27,8 +27,8 @@ package org.xmpp.extension.entitycapabilities;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
-import org.xmpp.extension.servicediscovery.Feature;
-import org.xmpp.extension.servicediscovery.Identity;
+import org.xmpp.extension.servicediscovery.info.Feature;
+import org.xmpp.extension.servicediscovery.info.Identity;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

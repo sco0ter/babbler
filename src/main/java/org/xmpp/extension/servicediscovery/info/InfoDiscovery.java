@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.servicediscovery;
+package org.xmpp.extension.servicediscovery.info;
 
 import javax.xml.bind.annotation.*;
 import java.util.Set;
@@ -34,7 +34,7 @@ import java.util.Set;
  */
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class ServiceDiscovery {
+public final class InfoDiscovery {
 
     @XmlAttribute(name = "node")
     private String node;
@@ -45,16 +45,30 @@ public final class ServiceDiscovery {
     @XmlElement(name = "feature")
     private Set<Feature> features;
 
-    public ServiceDiscovery() {
+    /**
+     * Creates an empty element, used for info discovery requests.
+     */
+    public InfoDiscovery() {
     }
 
-    public ServiceDiscovery(Set<Identity> identities, Set<Feature> features) {
+    /**
+     * Creates an info discovery element with a node attribute.
+     *
+     * @param node The node.
+     */
+    public InfoDiscovery(String node) {
+        this.node = node;
+    }
+
+    /**
+     * Creates an info discovery element, used in discovery info responses.
+     *
+     * @param identities The identities
+     * @param features   The features.
+     */
+    public InfoDiscovery(Set<Identity> identities, Set<Feature> features) {
         this.identities = identities;
         this.features = features;
-    }
-
-    public ServiceDiscovery(String node) {
-        this.node = node;
     }
 
     /**

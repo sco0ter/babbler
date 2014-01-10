@@ -27,9 +27,11 @@ package org.xmpp.extension.search;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -90,7 +92,7 @@ public final class SearchManager extends ExtensionManager {
     }
 
     @Override
-    protected Feature getFeature() {
-        return FEATURE;
+    protected Collection<Feature> getFeatures() {
+        return Arrays.asList(FEATURE);
     }
 }

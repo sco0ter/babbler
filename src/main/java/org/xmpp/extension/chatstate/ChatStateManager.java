@@ -27,7 +27,7 @@ package org.xmpp.extension.chatstate;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.im.ChatSession;
 import org.xmpp.im.ChatSessionEvent;
 import org.xmpp.im.ChatSessionListener;
@@ -35,9 +35,7 @@ import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -46,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class ChatStateManager extends ExtensionManager {
 
-    private static final Feature feature = new Feature("http://jabber.org/protocol/chatstates");
+    private static final Feature FEATURE = new Feature("http://jabber.org/protocol/chatstates");
 
     private Set<ChatStateListener> chatStateListeners = new CopyOnWriteArraySet<>();
 
@@ -103,8 +101,8 @@ public final class ChatStateManager extends ExtensionManager {
     }
 
     @Override
-    protected Feature getFeature() {
-        return feature;
+    protected Collection<Feature> getFeatures() {
+        return Arrays.asList(FEATURE);
     }
 
     private void notifyChatStateListeners(ChatSession chatSession, ChatState chatState, boolean local) {

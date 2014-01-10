@@ -25,8 +25,10 @@
 package org.xmpp.extension;
 
 import org.xmpp.Connection;
-import org.xmpp.extension.servicediscovery.Feature;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
+import org.xmpp.extension.servicediscovery.info.Feature;
+
+import java.util.Collection;
 
 /**
  * @author Christian Schudt
@@ -66,13 +68,13 @@ public abstract class ExtensionManager {
     public void setEnabled(boolean enabled) {
         if (serviceDiscoveryManager != null) {
             if (enabled) {
-                serviceDiscoveryManager.getFeatures().add(getFeature());
+                serviceDiscoveryManager.getFeatures().addAll(getFeatures());
             } else {
-                serviceDiscoveryManager.getFeatures().remove(getFeature());
+                serviceDiscoveryManager.getFeatures().removeAll(getFeatures());
             }
         }
         this.enabled = enabled;
     }
 
-    protected abstract Feature getFeature();
+    protected abstract Collection<Feature> getFeatures();
 }

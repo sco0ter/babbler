@@ -29,15 +29,12 @@ import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -153,8 +150,8 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
     }
 
     @Override
-    protected Feature getFeature() {
-        return FEATURE;
+    protected Collection<Feature> getFeatures() {
+        return Arrays.asList(FEATURE);
     }
 
     /**

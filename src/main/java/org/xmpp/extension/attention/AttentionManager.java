@@ -3,8 +3,11 @@ package org.xmpp.extension.attention;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.Message;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * This manager allows to capture another user's attention.
@@ -56,7 +59,7 @@ public final class AttentionManager extends ExtensionManager {
     }
 
     @Override
-    protected Feature getFeature() {
-        return FEATURE;
+    protected Collection<Feature> getFeatures() {
+        return Arrays.asList(FEATURE);
     }
 }

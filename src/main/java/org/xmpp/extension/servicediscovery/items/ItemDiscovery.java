@@ -22,46 +22,48 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.servicediscovery;
-
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+package org.xmpp.extension.servicediscovery.items;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.List;
 
 /**
+ * The implementation of the {@code <query/>} element.
+ *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "item", namespace = "http://jabber.org/protocol/disco#items")
-public final class Item {
-    @XmlJavaTypeAdapter(JidAdapter.class)
-    @XmlAttribute(name = "jid")
-    private Jid jid;
-
-    @XmlAttribute(name = "name")
-    private String name;
+@XmlRootElement(name = "query")
+public final class ItemDiscovery {
 
     @XmlAttribute(name = "node")
     private String node;
 
+    @XmlElement(name = "item")
+    private List<Item> items;
+
     /**
-     * Gets the JID.
-     *
-     * @return The JID.
+     * Creates an empty element, used for item discovery requests.
      */
-    public Jid getJid() {
-        return jid;
+    public ItemDiscovery() {
     }
 
     /**
-     * Gets the name.
+     * Creates an item discovery element with a node attribute.
      *
-     * @return The name.
+     * @param node The node.
      */
-    public String getName() {
-        return name;
+    public ItemDiscovery(String node) {
+        this.node = node;
+    }
+    /**
+     * Gets the items.
+     *
+     * @return The items.
+     */
+    public List<Item> getItems() {
+        return items;
     }
 
     /**

@@ -29,9 +29,11 @@ import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.*;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
@@ -119,8 +121,8 @@ public final class LastActivityManager extends ExtensionManager {
     }
 
     @Override
-    protected Feature getFeature() {
-        return FEATURE;
+    protected Collection<Feature> getFeatures() {
+        return Arrays.asList(FEATURE);
     }
 
     private long getSecondsSince(Date date) {

@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.servicediscovery;
+package org.xmpp.extension.servicediscovery.info;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

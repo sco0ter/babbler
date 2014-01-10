@@ -30,7 +30,7 @@ import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
 import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.*;
 

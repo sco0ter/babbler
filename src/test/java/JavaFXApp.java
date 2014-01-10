@@ -55,7 +55,7 @@ import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
-import org.xmpp.extension.servicediscovery.ServiceDiscovery;
+import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
@@ -370,7 +370,7 @@ public class JavaFXApp extends Application {
                                     ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
                                     try {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain(), "test");
-                                        ServiceDiscovery serviceDiscovery = serviceDiscoveryManager.discoverInformation(jid);
+                                        InfoDiscovery serviceDiscovery = serviceDiscoveryManager.discoverInformation(jid);
                                         int i = 0;
                                     } catch (TimeoutException e) {
                                         e.printStackTrace();

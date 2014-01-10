@@ -27,7 +27,7 @@ package org.xmpp.extension.messagedeliveryreceipts;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.*;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;

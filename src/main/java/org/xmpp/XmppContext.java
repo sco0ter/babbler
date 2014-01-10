@@ -44,8 +44,8 @@ import org.xmpp.extension.privacylists.Privacy;
 import org.xmpp.extension.rosterx.RosterExchange;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
-import org.xmpp.extension.servicediscovery.ItemDiscovery;
-import org.xmpp.extension.servicediscovery.ServiceDiscovery;
+import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
@@ -139,7 +139,7 @@ public abstract class XmppContext {
             registerExtension(Body.class);
 
             // Service Discovery
-            registerExtension(ServiceDiscovery.class, ItemDiscovery.class);
+            registerExtension(InfoDiscovery.class, ItemDiscovery.class);
 
             registerExtension(DataForm.class);
 

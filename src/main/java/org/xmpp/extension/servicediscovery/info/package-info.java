@@ -22,32 +22,10 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.servicediscovery;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.List;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery (#info)</a>.
  */
-@XmlRootElement(name="query", namespace = "http://jabber.org/protocol/disco#items")
-@XmlSeeAlso({Item.class})
-public final class ItemDiscovery {
+@XmlSchema(namespace = "http://jabber.org/protocol/disco#info", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.servicediscovery.info;
 
-    @XmlAttribute(name = "node")
-    private String node;
-
-    @XmlElement(name = "item", namespace = "http://jabber.org/protocol/disco#items")
-    private List<Item> items;
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public String getNode() {
-        return node;
-    }
-}
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

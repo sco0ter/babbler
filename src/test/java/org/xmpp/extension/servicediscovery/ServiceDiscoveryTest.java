@@ -26,14 +26,19 @@ package org.xmpp.extension.servicediscovery;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.Jid;
-import org.xmpp.UnmarshalHelper;
+import org.xmpp.*;
+import org.xmpp.extension.ping.PingManager;
+import org.xmpp.extension.servicediscovery.info.Feature;
+import org.xmpp.extension.servicediscovery.info.Identity;
+import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -66,7 +71,7 @@ public class ServiceDiscoveryTest extends BaseTest {
                 "</iq>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
-        ServiceDiscovery serviceDiscovery = iq.getExtension(ServiceDiscovery.class);
+        InfoDiscovery serviceDiscovery = iq.getExtension(InfoDiscovery.class);
         Assert.assertNotNull(serviceDiscovery);
         Assert.assertEquals(serviceDiscovery.getIdentities().size(), 2);
         Assert.assertEquals(serviceDiscovery.getFeatures().size(), 7);
@@ -120,16 +125,45 @@ public class ServiceDiscoveryTest extends BaseTest {
     }
 
     @Test
-    public void testAddFeatureTwice() {
+    public void testFeatureEquals() {
         ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(connection);
         serviceDiscoveryManager.getFeatures().add(new Feature("http://jabber.org/protocol/muc"));
-        serviceDiscoveryManager.getFeatures().add(new Feature("http://jabber.org/protocol/muc"));
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(new Feature("http://jabber.org/protocol/muc")));
     }
 
     @Test
-    public void testAddIdentityTwice() {
+    public void testItemsEquals() {
         ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(connection);
         serviceDiscoveryManager.getIdentities().add(new Identity("conference", "text", "name1", "en"));
-        serviceDiscoveryManager.getIdentities().add(new Identity("conference", "text", "name2", "en"));
+        Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(new Identity("conference", "text", "name2", "en")));
+    }
+
+    @Test
+    public void testInfoDiscovery() throws IOException, TimeoutException {
+        MockServer mockServer = new MockServer();
+        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
+        new TestConnection(JULIET, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        InfoDiscovery result = serviceDiscoveryManager.discoverInformation(JULIET);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.getFeatures().size() > 1);
+        //  Every entity MUST have at least one identity
+        Assert.assertTrue(result.getIdentities().size() > 0);
+    }
+
+    @Test
+    public void testServiceDiscoveryEntry() {
+        TestConnection connection1 = new TestConnection();
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        // By default, the manager should be enabled.
+        Assert.assertTrue(serviceDiscoveryManager.isEnabled());
+        Feature featureInfo = new Feature("http://jabber.org/protocol/disco#info");
+        Feature featureItems = new Feature("http://jabber.org/protocol/disco#items");
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(featureInfo));
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(featureItems));
+        serviceDiscoveryManager.setEnabled(false);
+        Assert.assertFalse(serviceDiscoveryManager.isEnabled());
+        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureInfo));
+        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureItems));
     }
 }

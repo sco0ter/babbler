@@ -2,12 +2,14 @@ package org.xmpp.extension.privacylists;
 
 import org.xmpp.Connection;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.Feature;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -104,7 +106,7 @@ public class PrivacyListManager extends ExtensionManager {
     }
 
     @Override
-    protected Feature getFeature() {
-        return null;
+    protected Collection<Feature> getFeatures() {
+        return Arrays.asList();
     }
 }

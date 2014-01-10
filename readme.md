@@ -23,6 +23,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * [XEP-0256: Last Activity in Presence](http://xmpp.org/extensions/xep-0256.html)
 
 In development (or just in experimental state):
+
 * [XEP-0016: Privacy Lists](http://xmpp.org/extensions/xep-0016.html)
 * [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)
 * [XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)

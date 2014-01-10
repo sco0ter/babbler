@@ -25,8 +25,6 @@
 package org.xmpp.extension.dataforms;
 
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +106,6 @@ public final class DataForm {
     public void setType(Type type) {
         this.type = type;
     }
-
 
 
     public List<Field> getReportedFields() {

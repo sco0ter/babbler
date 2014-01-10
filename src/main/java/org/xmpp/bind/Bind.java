@@ -24,8 +24,8 @@
 
 package org.xmpp.bind;
 
-import org.xmpp.stream.Feature;
 import org.xmpp.Jid;
+import org.xmpp.stream.Feature;
 import org.xmpp.util.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;

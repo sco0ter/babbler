@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.compression;
 
-import org.xmpp.sasl.*;
 import org.xmpp.stream.Feature;
 
 import javax.xml.bind.annotation.*;

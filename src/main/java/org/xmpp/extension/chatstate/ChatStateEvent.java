@@ -38,6 +38,7 @@ public final class ChatStateEvent extends EventObject {
     private final ChatState chatState;
 
     private final boolean local;
+
     /**
      * Constructs a prototypical Event.
      *

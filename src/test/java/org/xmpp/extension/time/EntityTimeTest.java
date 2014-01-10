@@ -27,7 +27,12 @@ package org.xmpp.extension.time;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
+import org.xmpp.MockServer;
+import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.ping.PingManager;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
+import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -37,6 +42,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -94,5 +100,42 @@ public class EntityTimeTest extends BaseTest {
         TimeZone timeZone = TimeZone.getTimeZone("GMT-08:00");
         String str = adapter.marshal(timeZone);
         Assert.assertEquals(str, "-08:00");
+    }
+
+    @Test
+    public void testEntityTimeManager() throws IOException, TimeoutException {
+        MockServer mockServer = new MockServer();
+        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
+        new TestConnection(JULIET, mockServer);
+        EntityTimeManager entityTimeManager = connection1.getExtensionManager(EntityTimeManager.class);
+        EntityTime entityTime = entityTimeManager.getEntityTime(JULIET);
+        Assert.assertNotNull(entityTime);
+        Assert.assertNotNull(entityTime.getDate());
+        Assert.assertNotNull(entityTime.getTimezone());
+    }
+
+    @Test
+    public void testEntityTimeIfDisabled() throws IOException, TimeoutException {
+        MockServer mockServer = new MockServer();
+        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
+        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        connection2.getExtensionManager(EntityTimeManager.class).setEnabled(false);
+        EntityTimeManager entityTimeManager = connection1.getExtensionManager(EntityTimeManager.class);
+        EntityTime entityTime = entityTimeManager.getEntityTime(JULIET);
+        Assert.assertNull(entityTime);
+    }
+
+    @Test
+    public void testServiceDiscoveryEntry() {
+        TestConnection connection1 = new TestConnection();
+        EntityTimeManager entityTimeManager = connection1.getExtensionManager(EntityTimeManager.class);
+        // By default, the manager should be enabled.
+        Assert.assertTrue(entityTimeManager.isEnabled());
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        Feature feature = new Feature("urn:xmpp:time");
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
+        entityTimeManager.setEnabled(false);
+        Assert.assertFalse(entityTimeManager.isEnabled());
+        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
     }
 }

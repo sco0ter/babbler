@@ -48,8 +48,6 @@ public final class PrivacyListEvent extends EventObject {
     }
 
     /**
-     *
-     *
      * @return The message id.
      */
     public String getListName() {

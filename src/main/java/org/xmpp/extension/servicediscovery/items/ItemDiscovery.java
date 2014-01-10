@@ -57,6 +57,7 @@ public final class ItemDiscovery {
     public ItemDiscovery(String node) {
         this.node = node;
     }
+
     /**
      * Gets the items.
      *

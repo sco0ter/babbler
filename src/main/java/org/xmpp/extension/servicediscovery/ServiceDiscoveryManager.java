@@ -58,6 +58,7 @@ import java.util.concurrent.TimeoutException;
 public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private static final Feature FEATURE_INFO = new Feature("http://jabber.org/protocol/disco#info");
+
     private static final Feature FEATURE_ITEMS = new Feature("http://jabber.org/protocol/disco#items");
 
     private final Set<Identity> identities = new CopyOnWriteArraySet<>();

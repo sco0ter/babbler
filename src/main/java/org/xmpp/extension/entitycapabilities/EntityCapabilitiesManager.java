@@ -33,7 +33,10 @@ import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Christian Schudt

@@ -678,6 +678,7 @@ public abstract class Stanza {
             static {
                 associatedErrorType.put(NotAcceptable.class, Type.MODIFY);
             }
+
             @Override
             public String toString() {
                 return "not-acceptable";

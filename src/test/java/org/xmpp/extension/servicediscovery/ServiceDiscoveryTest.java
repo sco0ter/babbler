@@ -27,7 +27,6 @@ package org.xmpp.extension.servicediscovery;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.*;
-import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;

@@ -28,6 +28,7 @@ import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
+import org.xmpp.extension.bob.Data;
 import org.xmpp.extension.bosh.Body;
 import org.xmpp.extension.chatstate.*;
 import org.xmpp.extension.compression.Compression;
@@ -47,6 +48,7 @@ import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.extension.time.EntityTime;
+import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
@@ -116,61 +118,61 @@ public abstract class XmppContext {
 
     private static class DefaultXmppContext extends XmppContext {
         private DefaultXmppContext() {
-            // Chat State Notifications
-            registerExtension(Active.class);
-            registerExtension(Composing.class);
-            registerExtension(Gone.class);
-            registerExtension(Inactive.class);
-            registerExtension(Paused.class);
 
-            // Delayed Delivery
-            registerExtension(DelayedDelivery.class);
+            // XEP-0004: Data Forms
+            registerExtension(DataForm.class);
 
-            // Message Delivery Receipts
-            registerManager(MessageDeliveryReceiptsManager.class);
-            registerExtension(Received.class);
-            registerExtension(Request.class);
-
-            // Last Activity
+            // XEP-0012: Last Activity
             registerExtension(LastActivity.class);
             registerManager(LastActivityManager.class);
 
-            // BOSH
-            registerExtension(Body.class);
+            // XEP-0016: Privacy Lists
+            registerExtension(Privacy.class);
 
-            // Service Discovery
+            // XEP-0030: Service Discovery
             registerExtension(InfoDiscovery.class, ItemDiscovery.class);
 
-            registerExtension(DataForm.class);
-
-            // Compression
-            registerExtension(Compression.class);
-
-            // Ping
-            registerExtension(Ping.class);
-            registerManager(PingManager.class);
-
-            // Search
+            // XEP-0055: Jabber Search
             registerExtension(Search.class);
             registerManager(SearchManager.class);
+
+            // XEP-0085: Chat State Notifications
+            registerExtension(Active.class, Composing.class, Gone.class, Inactive.class, Paused.class);
 
             // XEP-0092: Software Version
             registerExtension(SoftwareVersion.class);
             registerManager(SoftwareVersionManager.class);
 
+            // XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)
+            registerExtension(Body.class);
+
+            // XEP-0138: Stream Compression
+            registerExtension(Compression.class);
+
+            // XEP-0144: Roster Item Exchange
+            registerExtension(RosterExchange.class);
+
+            // XEP-0184: Message Delivery Receipts
+            registerManager(MessageDeliveryReceiptsManager.class);
+            registerExtension(Received.class, Request.class);
+
+            // XEP-0199: XMPP Ping
+            registerExtension(Ping.class);
+            registerManager(PingManager.class);
 
             // XEP-0202: Entity Time
             registerExtension(EntityTime.class);
+            registerManager(EntityTimeManager.class);
 
-            // XEP-0016: Privacy Lists
-            registerExtension(Privacy.class);
+            // XEP-0203: Delayed Delivery
+            registerExtension(DelayedDelivery.class);
+
+            // XEP-0231: Bits of Binary
+            registerExtension(Data.class);
 
             // XEP-0224: Attention
             registerExtension(Attention.class);
             registerManager(AttentionManager.class);
-
-            // XEP-0144: Roster Item Exchange
-            registerExtension(RosterExchange.class);
-       }
+        }
     }
 }

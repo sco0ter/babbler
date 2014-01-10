@@ -27,13 +27,20 @@ package org.xmpp.extension.version;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
+import org.xmpp.MockServer;
+import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
+import org.xmpp.extension.servicediscovery.info.Feature;
+import org.xmpp.extension.time.EntityTime;
+import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -82,5 +89,44 @@ public class SoftwareVersionTest extends BaseTest {
         SoftwareVersion softwareVersion = new SoftwareVersion("Babbler", "1.0");
         String xml = marshall(softwareVersion);
         Assert.assertEquals("<query xmlns=\"jabber:iq:version\"><name>Babbler</name><version>1.0</version><os>" + System.getProperty("os.name") + "</os></query>", xml);
+    }
+
+    @Test
+    public void testSoftwareVersionManager() throws IOException, TimeoutException {
+        MockServer mockServer = new MockServer();
+        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
+        new TestConnection(JULIET, mockServer);
+        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        connection2.getExtensionManager(SoftwareVersionManager.class).setSoftwareVersion(new SoftwareVersion("Name", "Version"));
+        SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
+        SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(JULIET);
+        Assert.assertNotNull(softwareVersion);
+        Assert.assertEquals(softwareVersion.getName(), "Name");
+        Assert.assertEquals(softwareVersion.getVersion(), "Version");
+    }
+
+    @Test
+    public void testSoftwareVersionManagerIfDisabled() throws IOException, TimeoutException {
+        MockServer mockServer = new MockServer();
+        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
+        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        connection2.getExtensionManager(SoftwareVersionManager.class).setEnabled(false);
+        SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
+        SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(JULIET);
+        Assert.assertNull(softwareVersion);
+    }
+
+    @Test
+    public void testServiceDiscoveryEntry() {
+        TestConnection connection1 = new TestConnection();
+        SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
+        // By default, the manager should be enabled.
+        Assert.assertTrue(softwareVersionManager.isEnabled());
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        Feature feature = new Feature("jabber:iq:version");
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
+        softwareVersionManager.setEnabled(false);
+        Assert.assertFalse(softwareVersionManager.isEnabled());
+        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
     }
 }

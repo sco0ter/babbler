@@ -54,17 +54,17 @@ public final class StreamError extends XmppError {
     private StreamError() {
     }
 
-//    /**
-//     * Creates a stream error with a given condition.
-//     * <blockquote>
-//     * <p>The {@code <error/>} element MUST contain a child element corresponding to one of the defined stream error conditions.</p>
-//     * </blockquote>
-//     *
-//     * @param condition The condition.
-//     */
-//    public StreamError(Condition condition) {
-//        super(condition);
-//    }
+    //    /**
+    //     * Creates a stream error with a given condition.
+    //     * <blockquote>
+    //     * <p>The {@code <error/>} element MUST contain a child element corresponding to one of the defined stream error conditions.</p>
+    //     * </blockquote>
+    //     *
+    //     * @param condition The condition.
+    //     */
+    //    public StreamError(Condition condition) {
+    //        super(condition);
+    //    }
 
     /**
      * Gets the language of the error text.
@@ -430,6 +430,7 @@ public final class StreamError extends XmppError {
         public String getOtherHost() {
             return value;
         }
+
         @Override
         public String toString() {
             return "see-other-host";

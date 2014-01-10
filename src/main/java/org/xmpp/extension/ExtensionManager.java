@@ -66,9 +66,9 @@ public abstract class ExtensionManager {
     public void setEnabled(boolean enabled) {
         if (serviceDiscoveryManager != null) {
             if (enabled) {
-                serviceDiscoveryManager.addFeature(getFeature());
+                serviceDiscoveryManager.getFeatures().add(getFeature());
             } else {
-                serviceDiscoveryManager.removeFeature(getFeature());
+                serviceDiscoveryManager.getFeatures().remove(getFeature());
             }
         }
         this.enabled = enabled;

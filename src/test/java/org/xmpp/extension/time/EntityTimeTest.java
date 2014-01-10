@@ -72,7 +72,7 @@ public class EntityTimeTest extends BaseTest {
     }
 
     @Test
-    public void marshalEntityTimeResponse() throws Exception, JAXBException, IOException {
+    public void marshalEntityTimeResponse() throws Exception {
         TimeZone timeZone = TimeZone.getTimeZone("GMT-2:00");
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTimeZone(TimeZone.getTimeZone("GMT"));

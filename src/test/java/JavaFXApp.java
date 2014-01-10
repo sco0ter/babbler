@@ -56,6 +56,7 @@ import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ServiceDiscovery;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
@@ -106,7 +107,7 @@ public class JavaFXApp extends Application {
         final CheckBox useBosh = new CheckBox();
         useBosh.setText("Use BOSH");
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             Connection connection1 = new TestConnection();
             connection1.getExtensionManager(LastActivityManager.class).setLastActivityStrategy(new LastActivityStrategy() {
                 @Override
@@ -362,16 +363,22 @@ public class JavaFXApp extends Application {
                                     }
                                 }
                             });
-                            MenuItem serviceDiscoveryMenuItem = new MenuItem("Get Software Version");
+                            MenuItem serviceDiscoveryMenuItem = new MenuItem("Discover Info");
                             serviceDiscoveryMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    ServiceDiscovery serviceDiscovery = new ServiceDiscovery();
-                                    IQ iq = new IQ(IQ.Type.GET, serviceDiscovery);
-                                    connection.send(iq);
+                                    ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+                                    try {
+                                        Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain(), "test");
+                                        ServiceDiscovery serviceDiscovery = serviceDiscoveryManager.discoverInformation(jid);
+                                        int i = 0;
+                                    } catch (TimeoutException e) {
+                                        e.printStackTrace();
+                                    }
 
                                 }
                             });
+
                             contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem);
                             setContextMenu(contextMenu);
                         }

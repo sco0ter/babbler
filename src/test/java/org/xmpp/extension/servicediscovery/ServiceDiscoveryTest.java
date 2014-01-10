@@ -122,14 +122,14 @@ public class ServiceDiscoveryTest extends BaseTest {
     @Test
     public void testAddFeatureTwice() {
         ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(connection);
-        serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
-        serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
+        serviceDiscoveryManager.getFeatures().add(new Feature("http://jabber.org/protocol/muc"));
+        serviceDiscoveryManager.getFeatures().add(new Feature("http://jabber.org/protocol/muc"));
     }
 
     @Test
     public void testAddIdentityTwice() {
         ServiceDiscoveryManager serviceDiscoveryManager = new ServiceDiscoveryManager(connection);
-        serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));
-        serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name2", "en"));
+        serviceDiscoveryManager.getIdentities().add(new Identity("conference", "text", "name1", "en"));
+        serviceDiscoveryManager.getIdentities().add(new Identity("conference", "text", "name2", "en"));
     }
 }

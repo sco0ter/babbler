@@ -32,9 +32,8 @@ import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.Stanza;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -42,11 +41,11 @@ import java.util.concurrent.TimeoutException;
  */
 public final class ServiceDiscoveryManager extends ExtensionManager {
 
-    static final Feature feature = new Feature("http://jabber.org/protocol/disco#info");
+    static final Feature FEATURE = new Feature("http://jabber.org/protocol/disco#info");
 
-    private final Set<Identity> identities = new HashSet<>();
+    private final Set<Identity> identities = new CopyOnWriteArraySet<>();
 
-    private final Set<Feature> features = new HashSet<>();
+    private final Set<Feature> features = new CopyOnWriteArraySet<>();
 
     public ServiceDiscoveryManager(final Connection connection) {
         super(connection);
@@ -67,42 +66,32 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
                 }
             }
         });
-        features.add(feature);
+        features.add(FEATURE);
+        setEnabled(true);
     }
 
     @Override
     protected Feature getFeature() {
-        return feature;
+        return FEATURE;
     }
 
     /**
-     * Adds an identity.
+     * Gets the identities.
      *
-     * @param identity The identity.
+     * @return The identities.
      */
-    public void addIdentity(Identity identity) {
-        identities.add(identity);
-    }
-
     public Set<Identity> getIdentities() {
-        return Collections.unmodifiableSet(identities);
-    }
-
-    public Set<Feature> getFeatures() {
-        return Collections.unmodifiableSet(features);
+        return identities;
     }
 
     /**
-     * Adds a feature.
+     * Gets the features. Features should not be added or removed directly. Instead enable or disable the respective extension manager, which will then add or remove the feature.
+     * That way, supported features are consistent with enabled extension managers and service discovery won't reveal features, that are in fact not supported.
      *
-     * @param feature The feature.
+     * @return The features.
      */
-    public void addFeature(Feature feature) {
-        features.add(feature);
-    }
-
-    public void removeFeature(Feature feature) {
-        features.remove(feature);
+    public Set<Feature> getFeatures() {
+        return features;
     }
 
     /**

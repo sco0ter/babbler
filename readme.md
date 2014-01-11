@@ -21,14 +21,15 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * [XEP-0206: XMPP Over BOSH](http://xmpp.org/extensions/xep-0206.html)
 * [XEP-0224: Attention](http://xmpp.org/extensions/xep-0224.html)
 * [XEP-0256: Last Activity in Presence](http://xmpp.org/extensions/xep-0256.html)
+* [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 
 In development (or just in experimental state):
 
 * [XEP-0016: Privacy Lists](http://xmpp.org/extensions/xep-0016.html)
 * [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)
 * [XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)
-* [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 * [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
+* [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 
 # License
 

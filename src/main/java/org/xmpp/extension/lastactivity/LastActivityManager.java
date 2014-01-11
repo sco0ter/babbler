@@ -68,7 +68,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class LastActivityManager extends ExtensionManager {
 
-    static final Feature FEATURE = new Feature("jabber:iq:last");
+    private static final Feature FEATURE = new Feature("jabber:iq:last");
 
     private volatile LastActivityStrategy lastActivityStrategy;
 

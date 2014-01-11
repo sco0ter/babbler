@@ -47,6 +47,7 @@ import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
+import org.xmpp.extension.stanzaforwarding.Forwarded;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.version.SoftwareVersion;
@@ -54,6 +55,9 @@ import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
 import org.xmpp.im.session.Session;
 import org.xmpp.sasl.Mechanisms;
+import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.Message;
+import org.xmpp.stanza.Presence;
 import org.xmpp.stanza.Stanza;
 import org.xmpp.stream.Features;
 import org.xmpp.stream.StreamError;
@@ -77,7 +81,7 @@ public abstract class XmppContext {
     private final Set<Class<? extends ExtensionManager>> managers = new HashSet<>();
 
     protected XmppContext() {
-        core.addAll(Arrays.asList(Features.class, StreamError.class, Stanza.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class));
+        core.addAll(Arrays.asList(Features.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class));
     }
 
     public static XmppContext getDefault() {
@@ -173,6 +177,9 @@ public abstract class XmppContext {
             // XEP-0224: Attention
             registerExtension(Attention.class);
             registerManager(AttentionManager.class);
+
+            // XEP-0297: Stanza Forwarding
+            registerExtension(Forwarded.class);
         }
     }
 }

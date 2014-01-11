@@ -45,7 +45,6 @@ import java.util.Map;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlTransient
-@XmlSeeAlso({Message.class, IQ.class, Presence.class})
 public abstract class Stanza {
 
     @XmlJavaTypeAdapter(JidAdapter.class)

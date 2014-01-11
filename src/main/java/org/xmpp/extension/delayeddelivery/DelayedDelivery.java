@@ -66,6 +66,28 @@ public final class DelayedDelivery {
     }
 
     /**
+     * Creates a element with only a timestamp attribute.
+     *
+     * @param timestamp The timestamp.
+     */
+    public DelayedDelivery(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    /**
+     * Creates a delayed delivery element with all attributes.
+     *
+     * @param timestamp The timestamp.
+     * @param from      The sender.
+     * @param reason    The reason.
+     */
+    public DelayedDelivery(Date timestamp, Jid from, String reason) {
+        this.timestamp = timestamp;
+        this.from = from;
+        this.reason = reason;
+    }
+
+    /**
      * Gets the Jabber ID of the entity that originally sent the XML stanza or that delayed the delivery of the stanza (e.g., the address of a multi-user chat room).
      *
      * @return The entity who originally sent the XML stanza.

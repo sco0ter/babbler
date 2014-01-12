@@ -57,6 +57,7 @@ import org.xmpp.extension.stanzaforwarding.Forwarded;
 import org.xmpp.extension.stanzaforwarding.StanzaForwardingManager;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
+import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
@@ -148,6 +149,9 @@ public abstract class XmppContext {
             // XEP-0047: In-Band Bytestreams
             registerExtension(org.xmpp.extension.ibb.Data.class, Open.class, Close.class);
             registerManager(InBandByteStreamManager.class);
+
+            // XEP-0054: vcard-temp
+            registerExtension(VCard.class);
 
             // XEP-0055: Jabber Search
             registerExtension(Search.class);

@@ -27,7 +27,6 @@ package org.xmpp.extension.rosterx;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.im.Roster;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Message;
@@ -55,17 +54,14 @@ public class RosterExchangeManager extends ExtensionManager {
         // http://xmpp.org/extensions/xep-0144.html#stanza
         Presence presence = connection.getPresenceManager().getPresence(jid);
         if (presence.isAvailable()) {
-            IQ iq = new IQ(IQ.Type.SET, rosterExchange);
-            iq.setTo(presence.getFrom());
-            connection.query(iq);
+            connection.query(new IQ(presence.getFrom(), IQ.Type.SET, rosterExchange));
         } else {
-            Message message = new Message(jid, Message.Type.NORMAL);
-            connection.send(message);
+            connection.send(new Message(jid, Message.Type.NORMAL));
         }
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
+    protected Collection<String> getFeatureNamespaces() {
         return Arrays.asList();
     }
 }

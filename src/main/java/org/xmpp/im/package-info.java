@@ -25,10 +25,18 @@
 /**
  * Contains classes for <a href="http://xmpp.org/rfcs/rfc6121.html">Instant Messaging and Presence Functionality</a>.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = "jabber:iq:roster", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.im;
 
+import org.xmpp.Jid;
+import org.xmpp.util.JidAdapter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 

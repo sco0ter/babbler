@@ -24,7 +24,9 @@
 
 package org.xmpp.extension.lastactivity;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> protocol extension.
@@ -32,10 +34,9 @@ import javax.xml.bind.annotation.*;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class LastActivity {
 
-    @XmlAttribute(name = "seconds")
+    @XmlAttribute
     private Long seconds;
 
     @XmlValue

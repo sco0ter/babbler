@@ -24,8 +24,6 @@
 
 package org.xmpp.sasl;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -38,7 +36,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "abort")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public final class Abort {
 }

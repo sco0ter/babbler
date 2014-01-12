@@ -39,22 +39,21 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class Search {
 
-    @XmlElement(name = "instructions")
+    @XmlElement
     private String instructions;
 
-    @XmlElement(name = "first")
+    @XmlElement
     private String first;
 
-    @XmlElement(name = "last")
+    @XmlElement
     private String last;
 
-    @XmlElement(name = "nick")
+    @XmlElement
     private String nick;
 
-    @XmlElement(name = "email")
+    @XmlElement
     private String email;
 
     @XmlElement(name = "item")

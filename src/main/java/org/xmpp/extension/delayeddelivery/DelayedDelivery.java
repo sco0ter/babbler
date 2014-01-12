@@ -27,7 +27,9 @@ package org.xmpp.extension.delayeddelivery;
 import org.xmpp.Jid;
 import org.xmpp.util.JidAdapter;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
@@ -46,15 +48,14 @@ import java.util.Date;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "delay")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class DelayedDelivery {
 
+    @XmlAttribute
     @XmlJavaTypeAdapter(JidAdapter.class)
-    @XmlAttribute(name = "from")
     private Jid from;
 
-    @XmlAttribute(name = "stamp")
-    private Date timestamp;
+    @XmlAttribute
+    private Date stamp;
 
     @XmlValue
     private String reason;
@@ -71,7 +72,7 @@ public final class DelayedDelivery {
      * @param timestamp The timestamp.
      */
     public DelayedDelivery(Date timestamp) {
-        this.timestamp = timestamp;
+        this.stamp = timestamp;
     }
 
     /**
@@ -82,7 +83,7 @@ public final class DelayedDelivery {
      * @param reason    The reason.
      */
     public DelayedDelivery(Date timestamp, Jid from, String reason) {
-        this.timestamp = timestamp;
+        this.stamp = timestamp;
         this.from = from;
         this.reason = reason;
     }
@@ -102,7 +103,7 @@ public final class DelayedDelivery {
      * @return The time when the XML stanza was originally sent.
      */
     public Date getTimeStamp() {
-        return timestamp;
+        return stamp;
     }
 
     /**

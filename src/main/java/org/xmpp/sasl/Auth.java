@@ -24,7 +24,9 @@
 
 package org.xmpp.sasl;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <auth/> } element to initialize the SASL authentication process.
@@ -36,14 +38,13 @@ import javax.xml.bind.annotation.*;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "auth")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public final class Auth {
 
     @XmlValue
     private byte[] initialResponse;
 
-    @XmlAttribute(name = "mechanism")
+    @XmlAttribute
     private String mechanism;
 
     /**

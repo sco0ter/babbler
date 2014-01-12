@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>If the failure case occurs, the receiving entity MUST return a {@code <failure/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-tls' namespace, close the XML stream, and terminate the underlying TCP connection.</p>
  * </blockquote>
  */
-@XmlRootElement(name = "failure")
+@XmlRootElement
 public final class Failure {
     private Failure() {
     }

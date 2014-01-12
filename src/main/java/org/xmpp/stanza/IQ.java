@@ -56,12 +56,11 @@ import java.util.UUID;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "iq")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 @XmlType(propOrder = {"from", "id", "to", "type", "extension", "error"})
 public final class IQ extends Stanza {
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private Type type;
 
     @XmlAnyElement(lax = true)

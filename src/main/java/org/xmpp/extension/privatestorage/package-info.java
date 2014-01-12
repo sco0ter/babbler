@@ -25,7 +25,10 @@
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "jabber:iq:private", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatestorage;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

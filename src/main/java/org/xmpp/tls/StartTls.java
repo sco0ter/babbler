@@ -26,7 +26,9 @@ package org.xmpp.tls;
 
 import org.xmpp.stream.Feature;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * Represents the STARTTLS feature and initiates the TLS negotiation process.
@@ -38,11 +40,10 @@ import javax.xml.bind.annotation.*;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "starttls")
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({Proceed.class, Failure.class})
 public final class StartTls extends Feature {
 
-    @XmlElement(name = "required")
+    @XmlElement
     protected String required;
 
     StartTls() {

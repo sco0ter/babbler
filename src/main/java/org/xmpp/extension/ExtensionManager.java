@@ -70,15 +70,19 @@ public abstract class ExtensionManager {
     public void setEnabled(boolean enabled) {
         if (serviceDiscoveryManager != null) {
             if (enabled) {
-                serviceDiscoveryManager.getFeatures().addAll(getFeatures());
+                for (String namespace : getFeatureNamespaces()) {
+                    serviceDiscoveryManager.getFeatures().add(new Feature(namespace));
+                }
             } else {
-                serviceDiscoveryManager.getFeatures().removeAll(getFeatures());
+                for (String namespace : getFeatureNamespaces()) {
+                    serviceDiscoveryManager.getFeatures().remove(new Feature(namespace));
+                }
             }
         }
         this.enabled = enabled;
     }
 
-    protected abstract Collection<Feature> getFeatures();
+    protected abstract Collection<String> getFeatureNamespaces();
 
     protected void sendServiceUnavailable(IQ iq) {
         connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable())));

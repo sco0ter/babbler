@@ -31,6 +31,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "ping")
+@XmlRootElement
 public final class Ping {
 }

@@ -27,11 +27,9 @@ package org.xmpp.extension.ping;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.Stanza;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +48,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class PingManager extends ExtensionManager {
 
-    private static final Feature FEATURE = new Feature("urn:xmpp:ping");
+    private static final String FEATURE = "urn:xmpp:ping";
 
     /**
      * Creates the ping manager.
@@ -66,12 +64,9 @@ public final class PingManager extends ExtensionManager {
                     IQ iq = e.getIQ();
                     if (iq.getType() == IQ.Type.GET && iq.getExtension(Ping.class) != null) {
                         if (isEnabled()) {
-                            IQ result = iq.createResult();
-                            connection.send(result);
+                            connection.send(iq.createResult());
                         } else {
-                            IQ error = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
-                            error.setExtension(new Ping());
-                            connection.send(error);
+                            sendServiceUnavailable(iq);
                         }
                     }
                 }
@@ -88,11 +83,8 @@ public final class PingManager extends ExtensionManager {
      * @throws TimeoutException If the ping timed out, i.e. no response has been received in time.
      */
     public boolean ping(Jid jid) throws TimeoutException {
-        IQ iq = new IQ(IQ.Type.GET, new Ping());
-        iq.setTo(jid);
-
         try {
-            IQ result = connection.query(iq);
+            IQ result = connection.query(new IQ(jid, IQ.Type.GET, new Ping()));
             return result.getError() == null;
         } catch (TimeoutException e) {
             return false;
@@ -110,7 +102,7 @@ public final class PingManager extends ExtensionManager {
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
+    protected Collection<String> getFeatureNamespaces() {
         return Arrays.asList(FEATURE);
     }
 }

@@ -26,7 +26,10 @@ package org.xmpp.stream;
 
 import org.xmpp.XmppError;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * The implementation of the {@code <stream:error/>} element.
@@ -35,7 +38,6 @@ import javax.xml.bind.annotation.*;
  * </p>
  */
 @XmlRootElement(name = "error")
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({StreamError.BadFormat.class, StreamError.BadNamespacePrefix.class, StreamError.Conflict.class, StreamError.ConnectionTimeout.class, StreamError.HostGone.class, StreamError.HostUnknown.class, StreamError.ImproperAddressing.class, StreamError.InternalServerError.class, StreamError.InvalidFrom.class, StreamError.InvalidNamespace.class, StreamError.InvalidXml.class, StreamError.NotAuthorized.class, StreamError.NotWellFormed.class, StreamError.PolicyViolation.class, StreamError.RemoteConnectionFailed.class, StreamError.Reset.class, StreamError.ResourceConstraint.class, StreamError.RestrictedXml.class, StreamError.SeeOtherHost.class, StreamError.SystemShutdown.class, StreamError.UndefinedCondition.class, StreamError.UnsupportedEncoding.class, StreamError.UnsupportedFeature.class, StreamError.UnsupportedStanzaType.class, StreamError.UnsupportedVersion.class})
 public final class StreamError extends XmppError {
 

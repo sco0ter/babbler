@@ -25,7 +25,10 @@
 /**
  * Contains classes for <a href="http://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a> (transport layer security).
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-tls", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.tls;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

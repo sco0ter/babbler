@@ -1,6 +1,6 @@
 # What is *Babbler*?
 
-*Babbler* is a yet experimental [XMPP](http://xmpp.org) library for Java SE based on JAXB as XML processing technology in a early stage.
+*Babbler* is a yet experimental [XMPP](http://xmpp.org) library for Java SE based on JAXB as XML processing technology.
 
 You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 
@@ -22,6 +22,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * [XEP-0224: Attention](http://xmpp.org/extensions/xep-0224.html)
 * [XEP-0256: Last Activity in Presence](http://xmpp.org/extensions/xep-0256.html)
 * [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
+* [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
 
 In development (or just in experimental state):
 

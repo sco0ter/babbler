@@ -34,16 +34,15 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "x")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class DataForm {
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private Type type;
 
-    @XmlElement(name = "instructions")
+    @XmlElement
     private List<String> instructions = new ArrayList<>();
 
-    @XmlElement(name = "title")
+    @XmlElement
     private String title;
 
     @XmlElement(name = "field")

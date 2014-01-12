@@ -25,7 +25,6 @@
 package org.xmpp.im;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -44,15 +43,14 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class Roster {
 
-    @XmlAttribute(name = "ver")
+    @XmlAttribute
     @SuppressWarnings("unused") // Only set by server.
-    private String version;
+    private String ver;
 
-    @XmlElement(name = "item")
-    private List<Contact> contacts = new ArrayList<>();
+    @XmlElement
+    private List<Contact> item = new ArrayList<>();
 
     /**
      * Gets the roster version.
@@ -60,7 +58,7 @@ public final class Roster {
      * @return The roster version.
      */
     public String getVersion() {
-        return version;
+        return ver;
     }
 
     /**
@@ -69,7 +67,7 @@ public final class Roster {
      * @return The contacts.
      */
     public List<Contact> getContacts() {
-        return contacts;
+        return item;
     }
 
     /**
@@ -79,28 +77,26 @@ public final class Roster {
      * <p>The {@code <query/>} element inside a roster set contains one {@code <item/>} child, and a roster result typically contains multiple {@code <item/>} children. Each {@code <item/>} element describes a unique "roster item" (sometimes also called a "contact").</p>
      * </blockquote>
      */
-    @XmlAccessorType(XmlAccessType.FIELD)
     public static final class Contact implements Comparable<Contact> {
 
-        @XmlAttribute(name = "approved")
+        @XmlAttribute
         Boolean approved;
 
         @XmlJavaTypeAdapter(PendingAdapter.class)
-        @XmlAttribute(name = "ask")
-        Boolean pending;
+        @XmlAttribute
+        Boolean ask;
 
-        @XmlJavaTypeAdapter(JidAdapter.class)
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "name")
+        @XmlAttribute
         private String name;
 
-        @XmlAttribute(name = "subscription")
+        @XmlAttribute
         private Subscription subscription;
 
-        @XmlElement(name = "group")
-        private List<String> groups = new ArrayList<>();
+        @XmlElement
+        private List<String> group = new ArrayList<>();
 
         /**
          * Private default constructor for unmarshalling.
@@ -139,7 +135,7 @@ public final class Roster {
         public Contact(Jid jid, String name, String... groups) {
             this.jid = jid;
             this.name = name;
-            this.groups.addAll(Arrays.asList(groups));
+            this.group.addAll(Arrays.asList(groups));
         }
 
         /**
@@ -199,7 +195,7 @@ public final class Roster {
          * @return The groups.
          */
         public List<String> getGroups() {
-            return groups;
+            return group;
         }
 
         /**
@@ -213,7 +209,7 @@ public final class Roster {
          * @return True, if a subscription request for the contact is pending, i.e. the contact has not yet approved or denied a subscription request.
          */
         public boolean isPending() {
-            return pending != null && pending;
+            return ask != null && ask;
         }
 
         /**
@@ -243,8 +239,8 @@ public final class Roster {
                     && (name == null ? other.name == null : name.equals(other.name))
                     && (subscription == null ? other.subscription == null : subscription.equals(other.subscription))
                     && (approved == null ? other.approved == null : approved.equals(other.approved))
-                    && (pending == null ? other.pending == null : pending.equals(other.pending))
-                    && (groups == null ? other.groups == null : (groups.containsAll(other.groups) && other.groups.containsAll(groups)));
+                    && (ask == null ? other.ask == null : ask.equals(other.ask))
+                    && (group == null ? other.group == null : (group.containsAll(other.group) && other.group.containsAll(group)));
 
         }
 
@@ -255,8 +251,8 @@ public final class Roster {
             result = 31 * result + ((name == null) ? 0 : name.hashCode());
             result = 31 * result + ((subscription == null) ? 0 : subscription.hashCode());
             result = 31 * result + ((approved == null) ? 0 : approved.hashCode());
-            result = 31 * result + ((pending == null) ? 0 : pending.hashCode());
-            result = 31 * result + ((groups == null) ? 0 : groups.hashCode());
+            result = 31 * result + ((ask == null) ? 0 : ask.hashCode());
+            result = 31 * result + ((group == null) ? 0 : group.hashCode());
             return result;
         }
 

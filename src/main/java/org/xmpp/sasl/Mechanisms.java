@@ -26,7 +26,9 @@ package org.xmpp.sasl;
 
 import org.xmpp.stream.Feature;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.List;
 
 /**
@@ -34,13 +36,12 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "mechanisms")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 @XmlSeeAlso({Abort.class, Auth.class, Challenge.class, Failure.class, Response.class, Success.class})
 public final class Mechanisms extends Feature {
 
-    @XmlElement(name = "mechanism")
-    private List<String> mechanisms;
+    @XmlElement
+    private List<String> mechanism;
 
     /**
      * Default constructor, needed for unmarshalling.
@@ -54,7 +55,7 @@ public final class Mechanisms extends Feature {
      * @return The list of mechanisms.s
      */
     public List<String> getMechanisms() {
-        return mechanisms;
+        return mechanism;
     }
 
     /**

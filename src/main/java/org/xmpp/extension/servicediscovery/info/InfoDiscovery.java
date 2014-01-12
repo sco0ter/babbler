@@ -36,7 +36,7 @@ import java.util.Set;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class InfoDiscovery {
 
-    @XmlAttribute(name = "node")
+    @XmlAttribute
     private String node;
 
     @XmlElement(name = "identity")

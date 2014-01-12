@@ -175,7 +175,7 @@ public class RosterTest extends BaseTest {
 
         Roster.Contact contact1 = new Roster.Contact(Jid.fromString("node1@domain"), "name");
         contact1.setSubscription(Roster.Contact.Subscription.FROM);
-        contact1.pending = true;
+        contact1.ask = true;
         contact1.approved = true;
         contact1.getGroups().add("group2");
         contact1.getGroups().add("group1");
@@ -184,7 +184,7 @@ public class RosterTest extends BaseTest {
         contact2.setSubscription(Roster.Contact.Subscription.FROM);
         contact2.getGroups().add("group1");
         contact2.getGroups().add("group2");
-        contact2.pending = true;
+        contact2.ask = true;
         contact2.approved = true;
         Assert.assertEquals(contact1, contact2);
     }

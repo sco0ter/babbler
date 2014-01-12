@@ -27,7 +27,6 @@ package org.xmpp.extension.search;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
 
 import java.util.Arrays;
@@ -44,8 +43,6 @@ import java.util.concurrent.TimeoutException;
  * @author Christian Schudt
  */
 public final class SearchManager extends ExtensionManager {
-
-    private static final Feature FEATURE = new Feature("jabber:iq:search");
 
     /**
      * Creates the search manager.
@@ -69,9 +66,7 @@ public final class SearchManager extends ExtensionManager {
      * @throws TimeoutException If the service does not respond in time.
      */
     public Search discoverSearchFields(Jid service) throws TimeoutException {
-        IQ iq = new IQ(IQ.Type.GET, new Search());
-        iq.setTo(service);
-        IQ result = connection.query(iq);
+        IQ result = connection.query(new IQ(service, IQ.Type.GET, new Search()));
         return result.getExtension(Search.class);
     }
 
@@ -85,14 +80,12 @@ public final class SearchManager extends ExtensionManager {
      * @throws TimeoutException If the service does not respond in time.
      */
     public Search search(Search search, Jid service) throws TimeoutException {
-        IQ iq = new IQ(IQ.Type.SET, search);
-        iq.setTo(service);
-        IQ result = connection.query(iq);
+        IQ result = connection.query(new IQ(service, IQ.Type.SET, search));
         return result.getExtension(Search.class);
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
-        return Arrays.asList(FEATURE);
+    protected Collection<String> getFeatureNamespaces() {
+        return Arrays.asList();
     }
 }

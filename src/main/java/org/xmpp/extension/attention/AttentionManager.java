@@ -27,7 +27,6 @@ package org.xmpp.extension.attention;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.Message;
 
 import java.util.Arrays;
@@ -65,7 +64,7 @@ import java.util.Collection;
  */
 public final class AttentionManager extends ExtensionManager {
 
-    private static final Feature FEATURE = new Feature("urn:xmpp:attention:0");
+    private static final String FEATURE = "urn:xmpp:attention:0";
 
     public AttentionManager(Connection connection) {
         super(connection);
@@ -83,7 +82,7 @@ public final class AttentionManager extends ExtensionManager {
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
+    protected Collection<String> getFeatureNamespaces() {
         return Arrays.asList(FEATURE);
     }
 }

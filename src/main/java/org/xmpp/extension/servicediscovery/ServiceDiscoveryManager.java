@@ -34,8 +34,9 @@ import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.Stanza;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -57,15 +58,15 @@ import java.util.concurrent.TimeoutException;
  */
 public final class ServiceDiscoveryManager extends ExtensionManager {
 
-    private static final Feature FEATURE_INFO = new Feature("http://jabber.org/protocol/disco#info");
+    private static final String FEATURE_INFO = "http://jabber.org/protocol/disco#info";
 
-    private static final Feature FEATURE_ITEMS = new Feature("http://jabber.org/protocol/disco#items");
+    private static final String FEATURE_ITEMS = "http://jabber.org/protocol/disco#items";
+
+    private static Identity defaultIdentity = new Identity("client", "pc");
 
     private final Set<Identity> identities = new CopyOnWriteArraySet<>();
 
     private final Set<Feature> features = new CopyOnWriteArraySet<>();
-
-    private static Identity defaultIdentity = new Identity("client", "pc");
 
     public ServiceDiscoveryManager(final Connection connection) {
         super(connection);
@@ -89,15 +90,17 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
                         result.setExtension(serviceDiscovery);
                         connection.send(result);
                     } else {
-                        IQ error = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
-                        connection.send(error);
+                        sendServiceUnavailable(iq);
                     }
                 }
             }
         });
-        features.add(FEATURE_INFO);
-        features.add(FEATURE_ITEMS);
         setEnabled(true);
+    }
+
+    @Override
+    protected Collection<String> getFeatureNamespaces() {
+        return Arrays.asList(FEATURE_INFO, FEATURE_ITEMS);
     }
 
     /**
@@ -106,7 +109,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @return The features.
      */
-    @Override
     public Set<Feature> getFeatures() {
         return features;
     }

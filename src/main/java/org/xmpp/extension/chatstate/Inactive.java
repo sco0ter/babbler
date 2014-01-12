@@ -29,6 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "inactive")
+@XmlRootElement
 public final class Inactive {
 }

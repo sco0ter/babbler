@@ -25,7 +25,10 @@
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/protocol/rosterx", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rosterx;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

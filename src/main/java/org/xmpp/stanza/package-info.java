@@ -25,7 +25,10 @@
 /**
  * Contains <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> ({@linkplain org.xmpp.stanza.Message}, {@linkplain org.xmpp.stanza.Presence} and {@linkplain org.xmpp.stanza.IQ}).
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "jabber:client", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stanza;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

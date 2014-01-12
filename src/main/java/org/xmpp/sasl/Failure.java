@@ -36,8 +36,7 @@ import javax.xml.bind.annotation.*;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "failure")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 @XmlSeeAlso({Failure.Aborted.class, Failure.AccountDisabled.class, Failure.CredentialsExpired.class, Failure.EncryptionRequired.class, Failure.IncorrectEncoding.class, Failure.InvalidAuthzid.class, Failure.InvalidMechanism.class, Failure.MalformedRequest.class, Failure.MechanismTooWeak.class, Failure.NotAuthorized.class, Failure.TemporaryAuthFailure.class})
 public final class Failure {
 

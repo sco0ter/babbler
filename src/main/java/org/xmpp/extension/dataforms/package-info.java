@@ -25,7 +25,10 @@
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "jabber:x:data", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.dataforms;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

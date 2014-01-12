@@ -27,11 +27,9 @@ package org.xmpp.extension.version;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.Stanza;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +46,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class SoftwareVersionManager extends ExtensionManager {
 
-    private static final Feature FEATURE = new Feature("jabber:iq:version");
+    private static final String FEATURE = "jabber:iq:version";
 
     private SoftwareVersion softwareVersion;
 
@@ -66,8 +64,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
                             result.setExtension(softwareVersion);
                             connection.send(result);
                         } else {
-                            IQ error = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
-                            connection.send(error);
+                            sendServiceUnavailable(iq);
                         }
                     }
                 }
@@ -115,7 +112,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
+    protected Collection<String> getFeatureNamespaces() {
         return Arrays.asList(FEATURE);
     }
 }

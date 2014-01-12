@@ -42,24 +42,23 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "presence")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"from", "id", "to", "type", "statuses", "show", "priority", "extensions", "error"})
+@XmlRootElement
+@XmlType(propOrder = {"from", "id", "to", "type", "status", "show", "priority", "extensions", "error"})
 public final class Presence extends Stanza implements Comparable<Presence> {
 
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new ArrayList<>();
 
-    @XmlElement(name = "status")
-    private List<Status> statuses = new ArrayList<>();
+    @XmlElement
+    private List<Status> status = new ArrayList<>();
 
-    @XmlElement(name = "priority")
+    @XmlElement
     private Byte priority;
 
-    @XmlElement(name = "show")
+    @XmlElement
     private Show show;
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private Type type;
 
     /**
@@ -176,7 +175,7 @@ public final class Presence extends Stanza implements Comparable<Presence> {
      * @see #getStatus()
      */
     public List<Status> getStatuses() {
-        return statuses;
+        return status;
     }
 
     /**
@@ -193,13 +192,13 @@ public final class Presence extends Stanza implements Comparable<Presence> {
      * @see #setStatus(String)
      */
     public String getStatus() {
-        for (Status status : statuses) {
+        for (Status status : this.status) {
             if (status.getLanguage() == null || status.getLanguage().isEmpty()) {
                 return status.getText();
             }
         }
-        if (!statuses.isEmpty()) {
-            return statuses.get(0).getText();
+        if (!status.isEmpty()) {
+            return status.get(0).getText();
         }
         return null;
     }
@@ -211,13 +210,13 @@ public final class Presence extends Stanza implements Comparable<Presence> {
      * @see #getStatus() ()
      */
     public void setStatus(String body) {
-        for (Status s : statuses) {
+        for (Status s : status) {
             if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
                 s.setText(body);
                 return;
             }
         }
-        this.statuses.add(new Status(body));
+        this.status.add(new Status(body));
     }
 
     /**

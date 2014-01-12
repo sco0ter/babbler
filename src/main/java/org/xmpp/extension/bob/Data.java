@@ -24,22 +24,23 @@
 
 package org.xmpp.extension.bob;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "data")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public final class Data {
 
-    @XmlAttribute(name = "cid")
+    @XmlAttribute
     private String cid;
 
     @XmlAttribute(name = "max-age")
     private int maxAge;
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private String type;
 
     @XmlValue

@@ -25,7 +25,4 @@
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
  */
-@XmlSchema(namespace = "http://jabber.org/protocol/disco#info", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.servicediscovery;
-
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+package org.xmpp.extension.servicediscovery;

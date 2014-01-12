@@ -25,8 +25,6 @@
 package org.xmpp.extension.time;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -42,7 +40,6 @@ import java.util.TimeZone;
  * @see EntityTimeManager
  */
 @XmlRootElement(name = "time")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class EntityTime {
 
     /**
@@ -52,17 +49,17 @@ public final class EntityTime {
     }
 
     EntityTime(TimeZone timeZone, Date date) {
-        this.timeZone = timeZone;
-        this.date = date;
+        this.tzo = timeZone;
+        this.utc = date;
     }
 
     @XmlJavaTypeAdapter(TimeZoneAdapter.class)
     @XmlElement(name = "tzo")
-    private TimeZone timeZone;
+    private TimeZone tzo;
 
     @XmlJavaTypeAdapter(UTCDateAdapter.class)
     @XmlElement(name = "utc")
-    private Date date;
+    private Date utc;
 
     /**
      * Gets the entity's time zone.
@@ -70,7 +67,7 @@ public final class EntityTime {
      * @return The time zone.
      */
     public TimeZone getTimezone() {
-        return timeZone;
+        return tzo;
     }
 
     /**
@@ -79,7 +76,7 @@ public final class EntityTime {
      * @return The date.
      */
     public Date getDate() {
-        return date;
+        return utc;
     }
 
     /**

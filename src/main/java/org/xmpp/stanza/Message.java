@@ -40,24 +40,23 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "message")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = {"from", "id", "to", "type", "bodies", "subjects", "thread", "extensions", "error"})
+@XmlRootElement
+@XmlType(propOrder = {"from", "id", "to", "type", "body", "subject", "thread", "extensions", "error"})
 public final class Message extends Stanza {
 
-    @XmlElement(name = "body")
-    private final List<Body> bodies = new ArrayList<>();
+    @XmlElement
+    private final List<Body> body = new ArrayList<>();
 
-    @XmlElement(name = "subject")
-    private final List<Subject> subjects = new ArrayList<>();
+    @XmlElement
+    private final List<Subject> subject = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new ArrayList<>();
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private Type type;
 
-    @XmlElement(name = "thread")
+    @XmlElement
     private Thread thread;
 
     private Message() {
@@ -92,7 +91,7 @@ public final class Message extends Stanza {
      */
     public Message(Jid to, Type type, String body) {
         this.to = to;
-        this.bodies.add(new Body(body));
+        this.body.add(new Body(body));
         this.type = type;
     }
 
@@ -107,7 +106,7 @@ public final class Message extends Stanza {
      * @see #getBody()
      */
     public List<Body> getBodies() {
-        return bodies;
+        return body;
     }
 
     /**
@@ -126,13 +125,13 @@ public final class Message extends Stanza {
      * @see #setBody(String)
      */
     public String getBody() {
-        for (Body body : bodies) {
+        for (Body body : this.body) {
             if (body.getLanguage() == null || body.getLanguage().isEmpty()) {
                 return body.getText();
             }
         }
-        if (!bodies.isEmpty()) {
-            return bodies.get(0).getText();
+        if (!body.isEmpty()) {
+            return body.get(0).getText();
         }
         return null;
     }
@@ -144,13 +143,13 @@ public final class Message extends Stanza {
      * @see #getBody()
      */
     public void setBody(String body) {
-        for (Body b : bodies) {
+        for (Body b : this.body) {
             if (b.getLanguage() == null || b.getLanguage().isEmpty()) {
                 b.setText(body);
                 return;
             }
         }
-        this.bodies.add(new Body(body));
+        this.body.add(new Body(body));
     }
 
     /**
@@ -164,7 +163,7 @@ public final class Message extends Stanza {
      * @see #getSubject()
      */
     public List<Subject> getSubjects() {
-        return subjects;
+        return subject;
     }
 
     /**
@@ -181,13 +180,13 @@ public final class Message extends Stanza {
      * @see #setSubject(String)
      */
     public String getSubject() {
-        for (Subject subject : subjects) {
+        for (Subject subject : this.subject) {
             if (subject.getLanguage() == null || subject.getLanguage().isEmpty()) {
                 return subject.getText();
             }
         }
-        if (!subjects.isEmpty()) {
-            return subjects.get(0).getText();
+        if (!subject.isEmpty()) {
+            return subject.get(0).getText();
         }
         return null;
     }
@@ -199,13 +198,13 @@ public final class Message extends Stanza {
      * @see #getSubject()
      */
     public void setSubject(String subject) {
-        for (Subject s : subjects) {
+        for (Subject s : this.subject) {
             if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
                 s.setText(subject);
                 return;
             }
         }
-        this.subjects.add(new Subject(subject));
+        this.subject.add(new Subject(subject));
     }
 
     /**

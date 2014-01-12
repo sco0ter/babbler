@@ -28,7 +28,6 @@ import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.Message;
 
 import java.util.Arrays;
@@ -55,7 +54,7 @@ import java.util.Date;
  */
 public final class StanzaForwardingManager extends ExtensionManager {
 
-    private static final Feature FEATURE = new Feature("urn:xmpp:forward:0");
+    private static final String FEATURE = "urn:xmpp:forward:0";
 
     /**
      * Creates the stanza forwarding manager.
@@ -82,7 +81,7 @@ public final class StanzaForwardingManager extends ExtensionManager {
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
+    protected Collection<String> getFeatureNamespaces() {
         return Arrays.asList(FEATURE);
     }
 }

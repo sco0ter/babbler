@@ -26,8 +26,12 @@
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a>.
  */
 // Some server BOSH implementations require the prefix to be "xmpp" for namespace "urn:xmpp:xbosh"
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/protocol/httpbind", elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = "urn:xmpp:xbosh")}) package org.xmpp.extension.bosh;
 
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import org.xmpp.Jid;
+import org.xmpp.util.JidAdapter;
+
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

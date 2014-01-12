@@ -25,7 +25,10 @@
 /**
  * Contains classes for <a href="http://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a> (authentication).
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-sasl", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.sasl;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

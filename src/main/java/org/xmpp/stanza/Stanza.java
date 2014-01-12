@@ -43,19 +43,18 @@ import java.util.Map;
  *
  * @author Christian Schudt
  */
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlTransient
 public abstract class Stanza {
 
     @XmlJavaTypeAdapter(JidAdapter.class)
-    @XmlAttribute(name = "to")
+    @XmlAttribute
     protected Jid to;
 
     @XmlJavaTypeAdapter(JidAdapter.class)
-    @XmlAttribute(name = "from")
+    @XmlAttribute
     protected Jid from;
 
-    @XmlAttribute(name = "id")
+    @XmlAttribute
     protected String id;
 
     @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)

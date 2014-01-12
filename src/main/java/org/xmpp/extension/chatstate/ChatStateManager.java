@@ -27,7 +27,6 @@ package org.xmpp.extension.chatstate;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.im.ChatSession;
 import org.xmpp.im.ChatSessionEvent;
 import org.xmpp.im.ChatSessionListener;
@@ -44,7 +43,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class ChatStateManager extends ExtensionManager {
 
-    private static final Feature FEATURE = new Feature("http://jabber.org/protocol/chatstates");
+    private static final String FEATURE = "http://jabber.org/protocol/chatstates";
 
     private Set<ChatStateListener> chatStateListeners = new CopyOnWriteArraySet<>();
 
@@ -101,7 +100,7 @@ public final class ChatStateManager extends ExtensionManager {
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
+    protected Collection<String> getFeatureNamespaces() {
         return Arrays.asList(FEATURE);
     }
 

@@ -27,11 +27,9 @@ package org.xmpp.extension.time;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.Stanza;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +47,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class EntityTimeManager extends ExtensionManager {
 
-    private static final Feature FEATURE = new Feature("urn:xmpp:time");
+    private static final String FEATURE = "urn:xmpp:time";
 
     public EntityTimeManager(final Connection connection) {
         super(connection);
@@ -63,8 +61,7 @@ public final class EntityTimeManager extends ExtensionManager {
                         result.setExtension(new EntityTime(TimeZone.getDefault(), new Date()));
                         connection.send(result);
                     } else {
-                        IQ error = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
-                        connection.send(error);
+                        sendServiceUnavailable(iq);
                     }
                 }
             }
@@ -80,9 +77,7 @@ public final class EntityTimeManager extends ExtensionManager {
      * @throws TimeoutException If the operation timed out.
      */
     public EntityTime getEntityTime(Jid jid) throws TimeoutException {
-        IQ iq = new IQ(IQ.Type.GET, new EntityTime());
-        iq.setTo(jid);
-        IQ result = connection.query(iq);
+        IQ result = connection.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
         if (result.getType() == IQ.Type.RESULT) {
             return result.getExtension(EntityTime.class);
         }
@@ -90,7 +85,7 @@ public final class EntityTimeManager extends ExtensionManager {
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
+    protected Collection<String> getFeatureNamespaces() {
         return Arrays.asList(FEATURE);
     }
 }

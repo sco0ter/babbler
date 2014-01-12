@@ -36,16 +36,16 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "item")
+@XmlRootElement
 public final class Item {
     @XmlJavaTypeAdapter(JidAdapter.class)
-    @XmlAttribute(name = "jid")
+    @XmlAttribute
     private Jid jid;
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute
     private String name;
 
-    @XmlAttribute(name = "node")
+    @XmlAttribute
     private String node;
 
     public Item() {

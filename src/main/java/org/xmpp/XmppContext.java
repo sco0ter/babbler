@@ -39,6 +39,8 @@ import org.xmpp.extension.ibb.InBandByteStreamManager;
 import org.xmpp.extension.ibb.Open;
 import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.extension.lastactivity.LastActivityManager;
+import org.xmpp.extension.messagecorrection.MessageCorrectionManager;
+import org.xmpp.extension.messagecorrection.Replace;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.messagedeliveryreceipts.Received;
 import org.xmpp.extension.messagedeliveryreceipts.Request;
@@ -46,6 +48,7 @@ import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privacylists.Privacy;
 import org.xmpp.extension.rosterx.RosterExchange;
+import org.xmpp.extension.rpc.Rpc;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
@@ -129,6 +132,9 @@ public abstract class XmppContext {
             // XEP-0004: Data Forms
             registerExtension(DataForm.class);
 
+            // XEP-0009: Jabber-RPC
+            registerExtension(Rpc.class);
+
             // XEP-0012: Last Activity
             registerExtension(LastActivity.class);
             registerManager(LastActivityManager.class);
@@ -188,6 +194,10 @@ public abstract class XmppContext {
             // XEP-0297: Stanza Forwarding
             registerExtension(Forwarded.class);
             registerManager(StanzaForwardingManager.class);
+
+            // XEP-0308: Last Message Correction
+            registerExtension(Replace.class);
+            registerManager(MessageCorrectionManager.class);
         }
     }
 }

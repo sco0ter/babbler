@@ -35,7 +35,7 @@ public class EntityCapabilities {
     /**
      * The hashing algorithm used to generate the verification string.
      */
-    @XmlAttribute(name = "hash")
+    @XmlAttribute
     private String hash;
 
     /**
@@ -44,14 +44,14 @@ public class EntityCapabilities {
      * <p>It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client; this enables a processing application to also determine a unique string for the generating application, which it could maintain in a list of known software implementations (e.g., associating the name received via the disco#info reply with the URL found in the caps data).</p>
      * </blockquote>
      */
-    @XmlAttribute(name = "node")
+    @XmlAttribute
     private String node;
 
     /**
      * The 'ver' attribute is a specially-constructed string (called a "verification string") that represents the entity's service discovery identity.
      */
-    @XmlAttribute(name = "ver")
-    private String verificationString;
+    @XmlAttribute
+    private String ver;
 
     public String getHash() {
         return hash;
@@ -70,10 +70,10 @@ public class EntityCapabilities {
     }
 
     public String getVerificationString() {
-        return verificationString;
+        return ver;
     }
 
     public void setVerificationString(String verificationString) {
-        this.verificationString = verificationString;
+        this.ver = verificationString;
     }
 }

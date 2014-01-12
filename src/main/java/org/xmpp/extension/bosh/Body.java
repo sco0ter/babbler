@@ -25,11 +25,9 @@
 package org.xmpp.extension.bosh;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +35,10 @@ import java.util.List;
 /**
  * The implementation of the {@code <body/>} wrapper element.
  */
-@XmlRootElement(name = "body")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public final class Body {
 
-    @XmlElement(name = "uri")
+    @XmlElement
     private URI uri;
 
     @XmlAnyElement(lax = true)
@@ -50,119 +47,118 @@ public final class Body {
     /**
      * The connection manager MAY include an 'accept' attribute in the session creation response element, to specify a space-separated list of the content encodings it can decompress. After receiving a session creation response with an 'accept' attribute, clients MAY include an HTTP Content-Encoding header in subsequent requests (indicating one of the encodings specified in the 'accept' attribute) and compress the bodies of the requests accordingly.
      */
-    @XmlAttribute(name = "accept")
+    @XmlAttribute
     private String accept;
 
     /**
      * A connection manager MAY include an 'ack' attribute (set to the value of the 'rid' attribute of the session creation request) to indicate that it will be using acknowledgements throughout the session and that the absence of an 'ack' attribute in any response is meaningful (see Acknowledgements).
      */
-    @XmlAttribute(name = "ack")
+    @XmlAttribute
     private Long ack;
 
-    @XmlAttribute(name = "authid")
-    private String authId;
+    @XmlAttribute
+    private String authid;
 
-    @XmlAttribute(name = "charsets")
+    @XmlAttribute
     private String charsets;
 
-    @XmlAttribute(name = "condition")
+    @XmlAttribute
     private Condition condition;
 
-    @XmlAttribute(name = "content")
+    @XmlAttribute
     private String content;
 
-    @XmlAttribute(name = "from")
-    @XmlJavaTypeAdapter(JidAdapter.class)
+    @XmlAttribute
     private Jid from;
 
     /**
      * This attribute informs the client about the maximum number of requests the connection manager will keep waiting at any one time during the session. This value MUST NOT be greater than the value specified by the client in the session request.
      */
-    @XmlAttribute(name = "hold")
+    @XmlAttribute
     private Byte hold;
 
     /**
      * This attribute specifies the longest allowable inactivity period (in seconds). This enables the client to ensure that the periods with no requests pending are never too long (see Polling Sessions and Inactivity).
      */
-    @XmlAttribute(name = "inactivity")
+    @XmlAttribute
     private Short inactivity;
 
-    @XmlAttribute(name = "key")
+    @XmlAttribute
     private String key;
 
     /**
      * If the connection manager supports session pausing (see Inactivity) then it SHOULD advertise that to the client by including a 'maxpause' attribute in the session creation response element. The value of the attribute indicates the maximum length of a temporary session pause (in seconds) that a client can request.
      */
-    @XmlAttribute(name = "maxpause")
-    private Short maxPause;
+    @XmlAttribute
+    private Short maxpause;
 
-    @XmlAttribute(name = "newkey")
-    private String newKey;
+    @XmlAttribute
+    private String newkey;
 
-    @XmlAttribute(name = "pause")
+    @XmlAttribute
     private Short pause;
 
     /**
      * This attribute specifies the shortest allowable polling interval (in seconds). This enables the client to not send empty request elements more often than desired (see Polling Sessions and Overactivity).
      */
-    @XmlAttribute(name = "polling")
+    @XmlAttribute
     private Short polling;
 
-    @XmlAttribute(name = "report")
+    @XmlAttribute
     private Integer report;
 
     /**
      * This attribute enables the connection manager to limit the number of simultaneous requests the client makes (see Overactivity and Polling Sessions). The RECOMMENDED values are either "2" or one more than the value of the 'hold' attribute specified in the session request.
      */
-    @XmlAttribute(name = "requests")
+    @XmlAttribute
     private Byte requests;
 
-    @XmlAttribute(name = "rid")
+    @XmlAttribute
     private Long rid;
 
-    @XmlAttribute(name = "route")
+    @XmlAttribute
     private String route;
 
-    @XmlAttribute(name = "secure")
+    @XmlAttribute
     private Boolean secure;
 
-    @XmlAttribute(name = "sid")
+    @XmlAttribute
     private String sid;
 
-    @XmlAttribute(name = "stream")
+    @XmlAttribute
     private String stream;
 
-    @XmlAttribute(name = "time")
+    @XmlAttribute
     private Short time;
 
     /**
      * This attribute communicates the identity of the backend server to which the client is attempting to connect.
      */
-    @XmlAttribute(name = "to")
+    @XmlAttribute
     private String to;
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private Type type;
 
     /**
      * This attribute specifies the highest version of the BOSH protocol that the connection manager supports, or the version specified by the client in its request, whichever is lower.
      */
-    @XmlAttribute(name = "ver")
-    private String version;
+    @XmlAttribute
+    private String ver;
 
-    @XmlAttribute(name = "wait")
+    @XmlAttribute
     private Short wait;
 
-    @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private String language;
+    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+    private String lang;
 
-    @XmlAttribute(name = "version", namespace = "urn:xmpp:xbosh")
-    private String xmppVersion;
+    @XmlAttribute(namespace = "urn:xmpp:xbosh")
+    private String version;
 
-    @XmlAttribute(name = "restartlogic", namespace = "urn:xmpp:xbosh")
+    @XmlAttribute(namespace = "urn:xmpp:xbosh")
     private Boolean restartLogic;
 
-    @XmlAttribute(name = "restart", namespace = "urn:xmpp:xbosh")
+    @XmlAttribute(namespace = "urn:xmpp:xbosh")
     private Boolean restart;
 
     public Body(Object wrappedObject) {
@@ -290,15 +286,15 @@ public final class Body {
      * @return The maximal pause in seconds.
      */
     public Short getMaxPause() {
-        return maxPause;
+        return maxpause;
     }
 
     public String getNewKey() {
-        return newKey;
+        return newkey;
     }
 
     public void setNewKey(String newKey) {
-        this.newKey = newKey;
+        this.newkey = newKey;
     }
 
     /**
@@ -506,11 +502,11 @@ public final class Body {
     }
 
     public String getLanguage() {
-        return language;
+        return lang;
     }
 
     public void setLanguage(String language) {
-        this.language = language;
+        this.lang = language;
     }
 
     public Condition getCondition() {
@@ -522,11 +518,11 @@ public final class Body {
     }
 
     public String getXmppVersion() {
-        return xmppVersion;
+        return version;
     }
 
     public void setXmppVersion(String xmppVersion) {
-        this.xmppVersion = xmppVersion;
+        this.version = xmppVersion;
     }
 
     public Boolean getRestartLogic() {

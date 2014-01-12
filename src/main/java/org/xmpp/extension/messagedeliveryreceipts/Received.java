@@ -24,8 +24,6 @@
 
 package org.xmpp.extension.messagedeliveryreceipts;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -34,11 +32,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "received")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public final class Received {
 
-    @XmlAttribute(name = "id")
+    @XmlAttribute
     public String id;
 
     private Received() {

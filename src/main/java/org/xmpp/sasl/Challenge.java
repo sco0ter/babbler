@@ -24,8 +24,6 @@
 
 package org.xmpp.sasl;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -39,8 +37,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Christian Schudt
  * @see Response
  */
-@XmlRootElement(name = "challenge")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public final class Challenge {
 
     @XmlValue

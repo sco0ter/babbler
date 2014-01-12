@@ -36,7 +36,6 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "x")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class RosterExchange {
 
     @XmlElement(name = "item")
@@ -48,14 +47,14 @@ public final class RosterExchange {
 
     public static class Item {
 
-        @XmlAttribute(name = "action")
+        @XmlAttribute
         private Action action;
 
         @XmlJavaTypeAdapter(JidAdapter.class)
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "name")
+        @XmlAttribute
         private String name;
 
         @XmlElement(name = "group")

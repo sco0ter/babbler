@@ -29,6 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "active")
+@XmlRootElement
 public final class Active {
 }

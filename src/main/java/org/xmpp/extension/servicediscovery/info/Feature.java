@@ -24,8 +24,6 @@
 
 package org.xmpp.extension.servicediscovery.info;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -39,13 +37,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class Feature implements Comparable<Feature> {
 
     /**
      * Each {@code <feature/>} element MUST possess a 'var' attribute whose value is a protocol namespace or other feature offered by the entity.
      */
-    @XmlAttribute(name = "var")
+    @XmlAttribute
     private String var;
 
     private Feature() {

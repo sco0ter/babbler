@@ -29,7 +29,6 @@ import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
-import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
@@ -65,7 +64,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
-    private static final Feature FEATURE = new Feature("urn:xmpp:receipts");
+    private static final String FEATURE = "urn:xmpp:receipts";
 
     final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
@@ -139,9 +138,6 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                         if (message.getExtension(Received.class) == null && message.getId() != null) {
                             // Add a delivery receipt request.
                             message.getExtensions().add(new Request());
-                            if (message.getId() == null) {
-                                message.setId(UUID.randomUUID().toString());
-                            }
                         }
                     }
                 }
@@ -150,7 +146,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
     }
 
     @Override
-    protected Collection<Feature> getFeatures() {
+    protected Collection<String> getFeatureNamespaces() {
         return Arrays.asList(FEATURE);
     }
 

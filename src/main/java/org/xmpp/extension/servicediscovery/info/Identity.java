@@ -25,8 +25,6 @@
 package org.xmpp.extension.servicediscovery.info;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -39,21 +37,20 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "identity")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public final class Identity implements Comparable<Identity> {
 
-    @XmlAttribute(name = "category")
+    @XmlAttribute
     private String category;
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute
     private String name;
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private String type;
 
-    @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private String language;
+    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+    private String lang;
 
     /**
      * Private default constructor for unmarshalling.
@@ -97,7 +94,7 @@ public final class Identity implements Comparable<Identity> {
         this.category = category;
         this.type = type;
         this.name = name;
-        this.language = language;
+        this.lang = language;
     }
 
     /**
@@ -133,7 +130,7 @@ public final class Identity implements Comparable<Identity> {
      * @return The language.
      */
     public String getLanguage() {
-        return language;
+        return lang;
     }
 
     /**
@@ -154,7 +151,7 @@ public final class Identity implements Comparable<Identity> {
 
         return (category == null ? other.category == null : category.equals(other.category))
                 && (type == null ? other.type == null : type.equals(other.type))
-                && (language == null ? other.language == null : language.equals(other.language));
+                && (lang == null ? other.lang == null : lang.equals(other.lang));
 
     }
 
@@ -163,7 +160,7 @@ public final class Identity implements Comparable<Identity> {
         int result = 17;
         result = 31 * result + ((category == null) ? 0 : category.hashCode());
         result = 31 * result + ((type == null) ? 0 : type.hashCode());
-        result = 31 * result + ((language == null) ? 0 : language.hashCode());
+        result = 31 * result + ((lang == null) ? 0 : lang.hashCode());
         return result;
     }
 

@@ -34,7 +34,6 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class Privacy {
 
     @XmlJavaTypeAdapter(ActiveNameAdapter.class)

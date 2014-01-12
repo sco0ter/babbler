@@ -24,8 +24,6 @@
 
 package org.xmpp.extension.version;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -35,16 +33,15 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class SoftwareVersion {
 
-    @XmlElement(name = "name")
+    @XmlElement
     private String name;
 
-    @XmlElement(name = "version")
+    @XmlElement
     private String version;
 
-    @XmlElement(name = "os")
+    @XmlElement
     private String os;
 
     SoftwareVersion() {

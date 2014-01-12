@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>If the proceed case occurs, the receiving entity MUST return a {@code <proceed/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-tls' namespace.</p>
  * </blockquote>
  */
-@XmlRootElement(name = "proceed")
+@XmlRootElement
 public final class Proceed {
     private Proceed() {
     }

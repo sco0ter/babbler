@@ -34,6 +34,9 @@ import org.xmpp.extension.chatstate.*;
 import org.xmpp.extension.compression.Compression;
 import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
+import org.xmpp.extension.ibb.Close;
+import org.xmpp.extension.ibb.InBandByteStreamManager;
+import org.xmpp.extension.ibb.Open;
 import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
@@ -48,6 +51,7 @@ import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.extension.stanzaforwarding.Forwarded;
+import org.xmpp.extension.stanzaforwarding.StanzaForwardingManager;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.version.SoftwareVersion;
@@ -58,7 +62,6 @@ import org.xmpp.sasl.Mechanisms;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
-import org.xmpp.stanza.Stanza;
 import org.xmpp.stream.Features;
 import org.xmpp.stream.StreamError;
 import org.xmpp.tls.StartTls;
@@ -136,6 +139,10 @@ public abstract class XmppContext {
             // XEP-0030: Service Discovery
             registerExtension(InfoDiscovery.class, ItemDiscovery.class);
 
+            // XEP-0047: In-Band Bytestreams
+            registerExtension(org.xmpp.extension.ibb.Data.class, Open.class, Close.class);
+            registerManager(InBandByteStreamManager.class);
+
             // XEP-0055: Jabber Search
             registerExtension(Search.class);
             registerManager(SearchManager.class);
@@ -180,6 +187,7 @@ public abstract class XmppContext {
 
             // XEP-0297: Stanza Forwarding
             registerExtension(Forwarded.class);
+            registerManager(StanzaForwardingManager.class);
         }
     }
 }

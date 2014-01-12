@@ -11,6 +11,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "close")
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class Close {
+
     @XmlAttribute(name = "sid")
     private String sid;
+
+    private Close() {
+
+    }
+
+    public Close(String sid) {
+        this.sid = sid;
+    }
+
+    public String getSessionId() {
+        return sid;
+    }
 }

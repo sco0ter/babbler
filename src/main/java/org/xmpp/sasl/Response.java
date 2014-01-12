@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Response {
 
     @XmlValue
-    private String value;
+    private byte[] value;
 
     /**
      * Default constructor, needed for unmarshalling.
@@ -55,9 +55,9 @@ public final class Response {
     /**
      * Creates a response to a {@link Challenge}.
      *
-     * @param value The base64 encoded value.
+     * @param value The value.
      */
-    public Response(String value) {
+    public Response(byte[] value) {
         this.value = value;
     }
 }

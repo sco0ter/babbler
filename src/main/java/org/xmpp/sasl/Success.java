@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Success {
 
     @XmlValue
-    private String additionalData;
+    private byte[] additionalData;
 
     /**
      * Default constructor, needed for unmarshalling.
@@ -52,12 +52,12 @@ public final class Success {
     }
 
     /**
-     * Gets a base 64 encoded string containing additional data.
+     * Gets additional data.
      * <blockquote><p>This element MAY contain XML character data (in SASL terminology, "additional data with success") if the chosen SASL mechanism supports or requires it.</p></blockquote>
      *
      * @return Additional data.
      */
-    public String getAdditionalData() {
+    public byte[] getAdditionalData() {
         return additionalData;
     }
 }

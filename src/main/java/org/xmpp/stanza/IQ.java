@@ -24,6 +24,8 @@
 
 package org.xmpp.stanza;
 
+import org.xmpp.Jid;
+
 import javax.xml.bind.annotation.*;
 import java.util.UUID;
 
@@ -111,12 +113,35 @@ public final class IQ extends Stanza {
      * @param extension The extension.
      */
     public IQ(String id, Type type, Object extension) {
+        this(null, id, type, extension);
+    }
+
+    /**
+     * Creates an IQ stanza with the given receiver, type and extension. The id attribute will be generated randomly.
+     *
+     * @param to        The receiver.
+     * @param type      The type.
+     * @param extension The extension.
+     */
+    public IQ(Jid to, Type type, Object extension) {
+        this(to, UUID.randomUUID().toString(), type, extension);
+    }
+
+    /**
+     * Creates an IQ stanza with the given receiver, id, type and extension.
+     *
+     * @param id        The id.
+     * @param type      The type.
+     * @param extension The extension.
+     */
+    public IQ(Jid to, String id, Type type, Object extension) {
         if (id == null) {
             throw new IllegalArgumentException("id must not be null.");
         }
         if (type == null) {
             throw new IllegalArgumentException("type must not be null.");
         }
+        this.to = to;
         this.id = id;
         this.type = type;
         this.extension = extension;

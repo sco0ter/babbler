@@ -36,7 +36,6 @@ import javax.security.sasl.RealmCallback;
 import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.security.Security;
 import java.util.HashMap;
@@ -232,9 +231,9 @@ public final class AuthenticationManager extends FeatureNegotiator {
             throw new SaslException("No SASL client found.");
         }
 
-        String initialResponse = null;
+        byte[] initialResponse = new byte[0];
         if (saslClient.hasInitialResponse()) {
-            initialResponse = DatatypeConverter.printBase64Binary(saslClient.evaluateChallenge(new byte[0]));
+            initialResponse = saslClient.evaluateChallenge(new byte[0]);
         }
         connection.send(new Auth(saslClient.getMechanismName(), initialResponse));
 
@@ -390,8 +389,8 @@ public final class AuthenticationManager extends FeatureNegotiator {
      * @see Response
      */
     private void sendResponse(Challenge challenge) throws SaslException {
-        byte[] responseArray = saslClient.evaluateChallenge(DatatypeConverter.parseBase64Binary(challenge.getValue()));
-        Response response = new Response(DatatypeConverter.printBase64Binary(responseArray));
+        byte[] responseArray = saslClient.evaluateChallenge(challenge.getValue());
+        Response response = new Response(responseArray);
         connection.send(response);
     }
 }

@@ -634,7 +634,7 @@ public abstract class Stanza {
                 associatedErrorType.put(ItemNotFound.class, Type.CANCEL);
             }
 
-            private ItemNotFound() {
+            public ItemNotFound() {
             }
 
             @Override

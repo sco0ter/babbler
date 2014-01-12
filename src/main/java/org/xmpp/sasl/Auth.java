@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.*;
 public final class Auth {
 
     @XmlValue
-    private String initialResponse;
+    private byte[] initialResponse;
 
     @XmlAttribute(name = "mechanism")
     private String mechanism;
@@ -54,10 +54,10 @@ public final class Auth {
 
     public Auth(String mechanism) {
         this.mechanism = mechanism;
-        this.initialResponse = "=";
+        this.initialResponse = new byte[0];
     }
 
-    public Auth(String mechanism, String initialResponse) {
+    public Auth(String mechanism, byte[] initialResponse) {
         this(mechanism);
         this.initialResponse = initialResponse;
     }

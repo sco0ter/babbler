@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Challenge {
 
     @XmlValue
-    private String value;
+    private byte[] value;
 
     /**
      * Private default constructor, needed for unmarshalling.
@@ -52,7 +52,12 @@ public final class Challenge {
     private Challenge() {
     }
 
-    public String getValue() {
-        return "=".equals(value) ? "" : value;
+    /**
+     * Gets the value, i.e. the challenge.
+     *
+     * @return The challenge.
+     */
+    public byte[] getValue() {
+        return value;
     }
 }

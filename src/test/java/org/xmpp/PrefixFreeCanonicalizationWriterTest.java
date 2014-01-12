@@ -32,6 +32,7 @@ import org.xmpp.stanza.IQ;
 import org.xmpp.sasl.Auth;
 import org.xmpp.sasl.Response;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -103,10 +104,10 @@ public class PrefixFreeCanonicalizationWriterTest {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
         Auth auth = new Auth("PLAIN");
-        Response response = new Response("");
+        Response response = new Response(new byte[0]);
         marshaller.marshal(auth, prefixFreeWriter);
         marshaller.marshal(response, prefixFreeWriter);
 
-        Assert.assertEquals(writer.toString(), "<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\">=</auth><response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"></response>");
+        Assert.assertEquals(writer.toString(), "<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth><response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"></response>");
     }
 }

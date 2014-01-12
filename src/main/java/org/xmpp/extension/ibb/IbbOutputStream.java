@@ -1,40 +1,57 @@
 package org.xmpp.extension.ibb;
 
-import org.xmpp.Connection;
-import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
  */
 final class IbbOutputStream extends OutputStream {
 
-    private final Connection connection;
+    private final IbbSession ibbSession;
 
     private final byte[] buffer;
 
-    private short writtenBytes;
+    private int n;
 
-    public IbbOutputStream(Connection connection, short blockSize) {
-        this.connection = connection;
+    public IbbOutputStream(IbbSession ibbSession, int blockSize) {
+        this.ibbSession = ibbSession;
         this.buffer = new byte[blockSize];
     }
 
     @Override
-    public void write(int b) throws IOException {
-
-        buffer[writtenBytes++] = (byte) b;
-        if (writtenBytes == buffer.length) {
+    public synchronized void write(int b) throws IOException {
+        buffer[n++] = (byte) b;
+        if (n == buffer.length) {
             flush();
         }
     }
 
     @Override
-    public void flush() throws IOException {
-        String bas64 = DatatypeConverter.printBase64Binary(buffer);
-        IQ iq = new IQ(IQ.Type.SET, new Data());
+    public synchronized void flush() throws IOException {
+        super.flush();
+
+        // If the buffer is empty, there's nothing to do.
+        if (n == 0) {
+            return;
+        }
+        try {
+            ibbSession.send(Arrays.copyOf(buffer, n));
+        } catch (TimeoutException | StanzaException e) {
+            throw new IOException(e);
+        } finally {
+            n = 0;
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        flush();
+        ibbSession.close();
     }
 }

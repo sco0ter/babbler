@@ -26,6 +26,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 In development (or just in experimental state):
 
 * [XEP-0016: Privacy Lists](http://xmpp.org/extensions/xep-0016.html)
+* [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
 * [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)
 * [XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)
 * [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)

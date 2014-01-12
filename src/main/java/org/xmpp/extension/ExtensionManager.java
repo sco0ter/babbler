@@ -27,6 +27,8 @@ package org.xmpp.extension;
 import org.xmpp.Connection;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
+import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.Stanza;
 
 import java.util.Collection;
 
@@ -77,4 +79,8 @@ public abstract class ExtensionManager {
     }
 
     protected abstract Collection<Feature> getFeatures();
+
+    protected void sendServiceUnavailable(IQ iq) {
+        connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable())));
+    }
 }

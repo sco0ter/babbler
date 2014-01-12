@@ -9,21 +9,33 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class Open {
     @XmlAttribute(name = "block-size")
-    private Short blockSize;
+    private Integer blockSize;
 
     @XmlAttribute(name = "sid")
     private String sid;
 
-    @XmlAttribute(name = "iq")
-    private String stanza;
+    @XmlAttribute(name = "stanza")
+    private StanzaType stanzaType;
 
     public Open() {
 
     }
 
-    public Open(short blockSize, String sid) {
+    public Open(int blockSize, String sid) {
         this.blockSize = blockSize;
         this.sid = sid;
+    }
+
+    public Integer getBlockSize() {
+        return blockSize;
+    }
+
+    public String getSessionId() {
+        return sid;
+    }
+
+    public StanzaType getStanzaType() {
+        return stanzaType;
     }
 
     @XmlEnum

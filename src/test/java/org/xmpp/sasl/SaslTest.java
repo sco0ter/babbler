@@ -105,7 +105,7 @@ public class SaslTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Success success = (Success) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(success);
-        Assert.assertEquals(success.getAdditionalData(), "base64");
+        Assert.assertNotNull(success.getAdditionalData());
     }
 
     @Test

@@ -26,9 +26,11 @@
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(type = Boolean.class, value = BooleanAdapter.class)
 @XmlSchema(namespace = "vcard-temp", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.vcard;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

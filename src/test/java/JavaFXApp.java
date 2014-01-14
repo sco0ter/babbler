@@ -374,8 +374,8 @@ public class JavaFXApp extends Application {
                                 public void handle(ActionEvent actionEvent) {
                                     ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
                                     try {
-                                        Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain(), "test");
-                                        InfoDiscovery serviceDiscovery = serviceDiscoveryManager.discoverInformation(jid);
+                                        Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
+                                        InfoDiscovery serviceDiscovery = serviceDiscoveryManager.discoverInformation(null);
                                         int i = 0;
                                     } catch (TimeoutException e) {
                                         e.printStackTrace();

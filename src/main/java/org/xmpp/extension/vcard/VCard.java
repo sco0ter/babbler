@@ -384,7 +384,6 @@ public final class VCard {
     }
 
     public static class CommunicationData extends ContactData {
-
         /**
          * to indicate the telephone number has voice messaging support
          */
@@ -450,6 +449,10 @@ public final class VCard {
          */
         @XmlElement(name = "NUMBER")
         private String number;
+
+        public CommunicationData() {
+            super(false, false, true);
+        }
 
         public CommunicationData(String number, boolean preferred) {
             this(number, preferred, false, true);

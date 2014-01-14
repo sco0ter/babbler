@@ -47,6 +47,8 @@ import org.xmpp.extension.messagedeliveryreceipts.Request;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privacylists.Privacy;
+import org.xmpp.extension.registration.Register;
+import org.xmpp.extension.registration.Registration;
 import org.xmpp.extension.rosterx.RosterExchange;
 import org.xmpp.extension.rpc.Rpc;
 import org.xmpp.extension.search.Search;
@@ -156,6 +158,9 @@ public abstract class XmppContext {
             // XEP-0055: Jabber Search
             registerExtension(Search.class);
             registerManager(SearchManager.class);
+
+            // XEP-0077: In-Band Registration
+            registerExtension(Register.class, Registration.class);
 
             // XEP-0085: Chat State Notifications
             registerExtension(Active.class, Composing.class, Gone.class, Inactive.class, Paused.class);

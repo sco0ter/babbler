@@ -5,11 +5,11 @@
 You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 
 # Supported extensions
-* [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)
-* [XEP-0012: Last Activity](http://xmpp.org/extensions/xep-0012.html)
-* [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
-* [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
-* [XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)
+* ![alt supported][supported] [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)
+* ![alt supported][supported] [XEP-0012: Last Activity](http://xmpp.org/extensions/xep-0012.html)
+* ![alt supported][supported] [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
+* ![alt supported][supported] [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
+* ![alt supported][supported] [XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)
 * [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
 * [XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)
 * [XEP-0156: Discovering Alternative XMPP Connection Methods](http://xmpp.org/extensions/xep-0156.html)
@@ -165,3 +165,4 @@ lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
 SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));
 ```
+[supported]: https://cdn1.iconfinder.com/data/icons/blueberry/32/check.png

@@ -22,17 +22,47 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.registration;
+package org.xmpp.extension.pubsub;
 
-import org.xmpp.stream.Feature;
+import org.xmpp.Jid;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "register", namespace = "http://jabber.org/features/iq-register")
-public final class Register extends Feature {
-    private Register() {
+public class Subscription {
+    @XmlAttribute(name = "node")
+    private String node;
+
+    @XmlAttribute(name = "jid")
+    private Jid jid;
+
+    @XmlAttribute(name = "subid")
+    private String subid;
+
+    @XmlAttribute(name = "subscription")
+    private SubscriptionType subscription;
+
+    @XmlElement(name = "subscribe-options")
+    private Options options;
+
+    public enum SubscriptionType {
+        @XmlEnumValue("none")
+        NONE,
+        @XmlEnumValue("pending")
+        PENDING,
+        @XmlEnumValue("subscribed")
+        SUBSCRIBED,
+        @XmlEnumValue("unconfigured")
+        UNCONFIGURED,
+    }
+
+    public static final class Options {
+
+        @XmlElement(name = "required")
+        private String required;
     }
 }

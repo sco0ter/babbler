@@ -22,17 +22,33 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.registration;
+package org.xmpp.extension.privatestorage;
 
-import org.xmpp.stream.Feature;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "register", namespace = "http://jabber.org/features/iq-register")
-public final class Register extends Feature {
-    private Register() {
+@XmlRootElement(name = "query")
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class PrivateData {
+    @XmlAnyElement(lax = true)
+    private final List<Object> privateData = new ArrayList<>();
+
+    private PrivateData() {
+
+    }
+
+    public PrivateData(Object privateData) {
+        this.privateData.add(privateData);
+    }
+
+    public List<Object> getPrivateData() {
+        return privateData;
     }
 }

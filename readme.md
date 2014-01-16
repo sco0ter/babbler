@@ -33,6 +33,11 @@ In development (or just in experimental state):
 * [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
 * [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 
+| First Header  | Second Header  |
+|---------------|----------------|
+| Row1 Cell1    |   Row1 Cell2   |
+| Row2 Cell1    |   Row2 Cell2   |
+
 # License
 
 This project is licensed under [MIT License](http://opensource.org/licenses/MIT).

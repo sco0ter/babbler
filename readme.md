@@ -165,4 +165,4 @@ lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
 SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));
 ```
-[supported]: https://cdn1.iconfinder.com/data/icons/blueberry/32/check.png
+[supported]: https://cdn1.iconfinder.com/data/icons/basicset/tick_16.png

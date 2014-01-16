@@ -5,12 +5,15 @@
 You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 
 # Supported extensions
-* ![alt supported][supported] [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)
-* ![alt supported][supported] [XEP-0012: Last Activity](http://xmpp.org/extensions/xep-0012.html)
-* ![alt supported][supported] [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
-* ![alt supported][supported] [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
-* ![alt supported][supported] [XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)
-* ![alt not supported][not supported] [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
+* ![alt supported][supported]          [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)
+* ![alt not supported][not supported]  [XEP-0009: Jabber-RPC](http://xmpp.org/extensions/xep-0009.html)
+* ![alt supported][supported]          [XEP-0012: Last Activity](http://xmpp.org/extensions/xep-0012.html)
+* ![alt not supported][not supported]  [XEP-0013: Flexible Offline Message Retrieval](http://xmpp.org/extensions/xep-0013.html)
+* ![alt in development][in development][XEP-0016: Privacy Lists](http://xmpp.org/extensions/xep-0016.html)
+* ![alt supported][supported]          [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
+* ![alt supported][supported]          [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
+* ![alt supported][supported]          [XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)
+* ![alt supported][supported]          [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
 * [XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)
 * [XEP-0156: Discovering Alternative XMPP Connection Methods](http://xmpp.org/extensions/xep-0156.html)
 * [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html)
@@ -23,6 +26,190 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * [XEP-0256: Last Activity in Presence](http://xmpp.org/extensions/xep-0256.html)
 * [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 * [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
+
+<tr style="background-color:#fde399">
+<td>[XEP-0016: 	Privacy Lists](http://xmpp.org/extensions/xep-0016.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0020: Feature Negotiation](http://xmpp.org/extensions/xep-0020.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0027: Current Jabber OpenPGP Usage](http://xmpp.org/extensions/xep-0027.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)</td>
+</tr>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0033: Extended Stanza Addressing](http://xmpp.org/extensions/xep-0033.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)</td>
+</tr>
+<tr style="background-color:#fde399">
+<td >[XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)</td>
+</tr>
+<tr style="background-color:#fde399"><td>[XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0048: Bookmarks](http://xmpp.org/extensions/xep-0048.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0050: Ad-Hoc Commands](http://xmpp.org/extensions/xep-0050.html)</td>
+</tr>
+<tr style="background-color:#fde399"><td>[XEP-0054: vcard-temp](http://xmpp.org/extensions/xep-0054.html)</td>
+</tr>
+<tr style="background-color:#fde399"><td>[XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0060: Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0071: XHTML-IM](http://xmpp.org/extensions/xep-0071.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td>[XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)</td>
+</tr>
+<tr style="background-color:#fde399">
+<td >[XEP-0077: In-Band Registration](http://xmpp.org/extensions/xep-0077.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td >[XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td >[XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html)</td>
+</tr>
+<tr style="background-color:#f9cba1">
+<td >[XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)</td>
+</tr>
+<tr style="background-color:#fde399">
+<td >[XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0095: Stream Initiation](http://xmpp.org/extensions/xep-0095.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0096: SI File Transfer](http://xmpp.org/extensions/xep-0096.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0107: User Mood](http://xmpp.org/extensions/xep-0107.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0108: User Activity](http://xmpp.org/extensions/xep-0108.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0114: Jabber Component Protocol](http://xmpp.org/extensions/xep-0114.html)</td>
+</tr>
+<tr style="background-color:#fde399">
+<td >[XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0131: Stanza Headers and Internet Metadata](http://xmpp.org/extensions/xep-0131.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0136: Message Archiving](http://xmpp.org/extensions/xep-0136.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0137: Publishing Stream Initiation Requests](http://xmpp.org/extensions/xep-0137.html)</td>
+</tr>
+<tr style="background-color:#fde399"><td>[XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)</td>
+</tr>
+<tr style="background-color:#fde399"><td>[XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0153: vCard-Based Avatars](http://xmpp.org/extensions/xep-0153.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0155: Stanza Session Negotiation](http://xmpp.org/extensions/xep-0155.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0156: Discovering Alternative XMPP Connection Methods](http://xmpp.org/extensions/xep-0156.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0158: CAPTCHA Forms](http://xmpp.org/extensions/xep-0158.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0163: Personal Eventing Protocol](http://xmpp.org/extensions/xep-0163.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0166: Jingle](http://xmpp.org/extensions/xep-0166.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0167: Jingle RTP Sessions](http://xmpp.org/extensions/xep-0167.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0172: User Nickname](http://xmpp.org/extensions/xep-0172.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0174: Serverless Messaging](http://xmpp.org/extensions/xep-0174.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0176: Jingle ICE-UDP Transport Method](http://xmpp.org/extensions/xep-0176.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0177: Jingle Raw UDP Transport Method](http://xmpp.org/extensions/xep-0177.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0191: Blocking Command](http://xmpp.org/extensions/xep-0191.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0198: Stream Management](http://xmpp.org/extensions/xep-0198.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0199: XMPP Ping](http://xmpp.org/extensions/xep-0199.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0202: Entity Time](http://xmpp.org/extensions/xep-0202.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0203: Delayed Delivery](http://xmpp.org/extensions/xep-0203.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0206: XMPP Over BOSH](http://xmpp.org/extensions/xep-0206.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0220: Server Dialback](http://xmpp.org/extensions/xep-0220.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0221: Data Forms Media Element](http://xmpp.org/extensions/xep-0221.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0224: Attention](http://xmpp.org/extensions/xep-0224.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0227: Portable Import/Export Format for XMPP-IM Servers](http://xmpp.org/extensions/xep-0227.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0229: Stream Compression with LZW](http://xmpp.org/extensions/xep-0229.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0231: Bits of Binary](http://xmpp.org/extensions/xep-0231.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0249: Direct MUC Invitations](http://xmpp.org/extensions/xep-0249.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0256: Last Activity in Presence](http://xmpp.org/extensions/xep-0256.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0258: Security Labels in XMPP](http://xmpp.org/extensions/xep-0258.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0260: Jingle SOCKS5 Bytestreams Transport Method](http://xmpp.org/extensions/xep-0260.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0261: Jingle In-Band Bytestreams Transport Method](http://xmpp.org/extensions/xep-0261.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0262: Use of ZRTP in Jingle RTP Sessions](http://xmpp.org/extensions/xep-0262.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0266: Codecs for Jingle Audio](http://xmpp.org/extensions/xep-0266.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0270: XMPP Compliance Suites 2010](http://xmpp.org/extensions/xep-0270.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0288: Bidirectional Server-to-Server Connections](http://xmpp.org/extensions/xep-0288.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)</td>
+</tr>
+<tr style="background-color:#f9cba1"><td>[XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)</td>
+</tr>
+<tr style="background-color:#d4e6a4"><td>[XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)</td>
+</tr>
+</table>
+
+
 
 In development (or just in experimental state):
 
@@ -165,5 +352,6 @@ lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
 SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));
 ```
-[supported]: https://cdn1.iconfinder.com/data/icons/basicset/tick_16.png
-[not supported]: https://cdn1.iconfinder.com/data/icons/basicset/delete_16.png
+[supported]: raw/tip/supported.png
+[not supported]: raw/tip/notsupported.png
+[in development]: raw/tip/development.png

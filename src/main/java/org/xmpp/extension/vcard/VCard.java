@@ -1319,16 +1319,16 @@ public final class VCard {
          * @param preferred Indicates a preferred number.
          * @param home      Indicates a home number.
          * @param work      Indicates a work number.
-         * @param message   Indicates the telephone number has voice messaging support
-         * @param voice     Indicates a voice telephone number
-         * @param fax       Indicates a facsimile telephone number
-         * @param cell      Indicates a cellular telephone number
-         * @param video     Indicates a video conferencing telephone number
-         * @param pager     Indicates a paging device telephone number
-         * @param bbs       Indicates a bulletin board system telephone number
-         * @param modem     Indicates a MODEM connected telephone number
-         * @param pcs       Indicates a personal communication services telephone number
-         * @param isdn      Indicates an ISDN service telephone number
+         * @param message   Indicates the telephone number has voice messaging support.
+         * @param voice     Indicates a voice telephone number.
+         * @param fax       Indicates a facsimile telephone number.
+         * @param cell      Indicates a cellular telephone number.
+         * @param video     Indicates a video conferencing telephone number.
+         * @param pager     Indicates a paging device telephone number.
+         * @param bbs       Indicates a bulletin board system telephone number.
+         * @param modem     Indicates a MODEM connected telephone number.
+         * @param pcs       Indicates a personal communication services telephone number.
+         * @param isdn      Indicates an ISDN service telephone number.
          */
         public TelephoneNumber(String number, boolean preferred, boolean home, boolean work, boolean message, boolean voice, boolean fax, boolean cell, boolean video, boolean pager, boolean bbs, boolean modem, boolean pcs, boolean isdn) {
             super(preferred, home, work);

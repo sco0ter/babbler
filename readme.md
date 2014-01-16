@@ -50,6 +50,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * ![alt not supported][not supported]   [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
 * ![alt in development][in development] [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 * ![alt not supported][not supported]   [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
+* ![alt not supported][not supported]   [XEP-0153: vCard-Based Avatars](http://xmpp.org/extensions/xep-0153.html)
 * ![alt not supported][not supported]   [XEP-0155: Stanza Session Negotiation](http://xmpp.org/extensions/xep-0155.html)
 * ![alt supported][supported]           [XEP-0156: Discovering Alternative XMPP Connection Methods](http://xmpp.org/extensions/xep-0156.html)
 * ![alt not supported][not supported]   [XEP-0158: CAPTCHA Forms](http://xmpp.org/extensions/xep-0158.html)
@@ -65,7 +66,6 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * ![alt not supported][not supported]   [XEP-0191: Blocking Command](http://xmpp.org/extensions/xep-0191.html)
 * ![alt not supported][not supported]   [XEP-0198: Stream Management](http://xmpp.org/extensions/xep-0198.html)
 * ![alt supported][supported]           [XEP-0199: XMPP Ping](http://xmpp.org/extensions/xep-0199.html)
-* ![alt supported][supported]           [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
 * ![alt supported][supported]           [XEP-0202: Entity Time](http://xmpp.org/extensions/xep-0202.html)
 * ![alt supported][supported]           [XEP-0203: Delayed Delivery](http://xmpp.org/extensions/xep-0203.html)
 * ![alt supported][supported]           [XEP-0206: XMPP Over BOSH](http://xmpp.org/extensions/xep-0206.html)
@@ -73,6 +73,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * ![alt not supported][not supported]   [XEP-0221: Data Forms Media Element](http://xmpp.org/extensions/xep-0221.html)
 * ![alt supported][supported]           [XEP-0224: Attention](http://xmpp.org/extensions/xep-0224.html)
 * ![alt not supported][not supported]   [XEP-0227: Portable Import/Export Format for XMPP-IM Servers](http://xmpp.org/extensions/xep-0227.html)
+* ![alt not supported][not supported]   [XEP-0229: Stream Compression with LZW](http://xmpp.org/extensions/xep-0229.html)
 * ![alt not supported][not supported]   [XEP-0231: Bits of Binary](http://xmpp.org/extensions/xep-0231.html)
 * ![alt not supported][not supported]   [XEP-0249: Direct MUC Invitations](http://xmpp.org/extensions/xep-0249.html)
 * ![alt supported][supported]           [XEP-0256: Last Activity in Presence](http://xmpp.org/extensions/xep-0256.html)
@@ -81,7 +82,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * ![alt not supported][not supported]   [XEP-0261: Jingle In-Band Bytestreams Transport Method](http://xmpp.org/extensions/xep-0261.html)
 * ![alt not supported][not supported]   [XEP-0262: Use of ZRTP in Jingle RTP Sessions](http://xmpp.org/extensions/xep-0262.html)
 * ![alt not supported][not supported]   [XEP-0266: Codecs for Jingle Audio](http://xmpp.org/extensions/xep-0266.html)
-* ![alt not supported][not supported]   [XEP-0266: Codecs for Jingle Audio](http://xmpp.org/extensions/xep-0266.html)
+* ![alt not supported][not supported]   [XEP-0270: XMPP Compliance Suites 2010](http://xmpp.org/extensions/xep-0270.html)
 * ![alt not supported][not supported]   [XEP-0288: Bidirectional Server-to-Server Connections](http://xmpp.org/extensions/xep-0288.html)
 * ![alt supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 * ![alt not supported][not supported]   [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
@@ -215,6 +216,6 @@ lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
 SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));
 ```
-[supported]: raw/tip/supported.png
-[not supported]: raw/tip/notsupported.png
-[in development]: raw/tip/development.png
+[supported]: raw/tip/supported.png "Is supported"
+[not supported]: raw/tip/notsupported.png "Is not supported"
+[in development]: raw/tip/development.png "Is in development or planned"

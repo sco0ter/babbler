@@ -52,6 +52,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Proxy;
 import java.util.Map;
@@ -758,7 +759,9 @@ public abstract class Connection implements Closeable {
             synchronized (instances) {
                 if ((instance = (T) instances.get(clazz)) == null) {
                     try {
-                        instance = clazz.getConstructor(Connection.class).newInstance(this);
+                        Constructor<T> constructor = clazz.getDeclaredConstructor(Connection.class);
+                        constructor.setAccessible(true);
+                        instance = constructor.newInstance(this);
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                         throw new IllegalArgumentException(e);
                     }

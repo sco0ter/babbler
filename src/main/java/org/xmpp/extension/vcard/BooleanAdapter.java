@@ -16,5 +16,4 @@ final class BooleanAdapter extends XmlAdapter<String, Boolean> {
     public String marshal(Boolean v) throws Exception {
         return (v != null && v) ? "" : null;
     }
-
 }

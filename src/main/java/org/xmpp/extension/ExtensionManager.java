@@ -69,13 +69,13 @@ public abstract class ExtensionManager {
      */
     public void setEnabled(boolean enabled) {
         if (serviceDiscoveryManager != null) {
-            if (enabled) {
+            if (getFeatureNamespaces() != null) {
                 for (String namespace : getFeatureNamespaces()) {
-                    serviceDiscoveryManager.getFeatures().add(new Feature(namespace));
-                }
-            } else {
-                for (String namespace : getFeatureNamespaces()) {
-                    serviceDiscoveryManager.getFeatures().remove(new Feature(namespace));
+                    if (enabled) {
+                        serviceDiscoveryManager.getFeatures().add(new Feature(namespace));
+                    } else {
+                        serviceDiscoveryManager.getFeatures().remove(new Feature(namespace));
+                    }
                 }
             }
         }

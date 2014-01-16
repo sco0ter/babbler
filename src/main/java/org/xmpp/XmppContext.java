@@ -60,6 +60,7 @@ import org.xmpp.extension.stanzaforwarding.StanzaForwardingManager;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.vcard.VCard;
+import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
@@ -154,6 +155,7 @@ public abstract class XmppContext {
 
             // XEP-0054: vcard-temp
             registerExtension(VCard.class);
+            registerManager(VCardManager.class);
 
             // XEP-0055: Jabber Search
             registerExtension(Search.class);

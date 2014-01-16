@@ -31,6 +31,7 @@ import org.xmpp.stanza.Presence;
 import org.xmpp.stanza.Stanza;
 
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -44,14 +45,8 @@ public final class Forwarded {
     @XmlElementRef
     private DelayedDelivery delayedDelivery;
 
-    @XmlElementRef
-    private Message message;
-
-    @XmlElementRef
-    private Presence presence;
-
-    @XmlElementRef
-    private IQ iq;
+    @XmlElementRefs({@XmlElementRef(type = Message.class), @XmlElementRef(type = Presence.class), @XmlElementRef(type = IQ.class)})
+    private Stanza stanza;
 
     private Forwarded() {
 
@@ -65,13 +60,7 @@ public final class Forwarded {
      */
     public Forwarded(DelayedDelivery delayedDelivery, Stanza stanza) {
         this.delayedDelivery = delayedDelivery;
-        if (stanza instanceof Message) {
-            this.message = (Message) stanza;
-        } else if (stanza instanceof Presence) {
-            this.presence = (Presence) stanza;
-        } else if (stanza instanceof IQ) {
-            this.iq = (IQ) stanza;
-        }
+        this.stanza = stanza;
     }
 
     /**
@@ -84,29 +73,11 @@ public final class Forwarded {
     }
 
     /**
-     * Gets the forwarded message.
+     * Gets the forwarded stanza.
      *
-     * @return The forwarded message.
+     * @return The forwarded stanza.
      */
-    public Message getMessage() {
-        return message;
-    }
-
-    /**
-     * Gets the forwarded presence.
-     *
-     * @return The forwarded presence.
-     */
-    public Presence getPresence() {
-        return presence;
-    }
-
-    /**
-     * Gets the forwarded iq.
-     *
-     * @return The forwarded iq.
-     */
-    public IQ getIq() {
-        return iq;
+    public Stanza getStanza() {
+        return stanza;
     }
 }

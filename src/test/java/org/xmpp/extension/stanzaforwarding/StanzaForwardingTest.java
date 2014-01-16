@@ -64,6 +64,7 @@ public class StanzaForwardingTest extends BaseTest {
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         Forwarded forwarded = message.getExtension(Forwarded.class);
         Assert.assertNotNull(forwarded);
+        Assert.assertTrue(forwarded.getStanza() instanceof Message);
     }
 
     @Test

@@ -3,17 +3,17 @@ package org.xmpp.extension.vcard;
 import org.xmpp.Jid;
 import org.xmpp.util.JidAdapter;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.net.URI;
+import java.net.URL;
+import java.util.*;
 
 /**
+ * The implementation of the {@code <vCard/>} element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "vCard")
@@ -48,11 +48,12 @@ public final class VCard {
      * To specify an image or photograph information that annotates some aspect of the object the vCard represents.
      */
     @XmlElement(name = "PHOTO")
-    private String photo;
+    private Image photo;
 
     /**
      * To specify the birth date of the object the vCard represents.
      */
+    @XmlJavaTypeAdapter(DateFormatterAdapter.class)
     @XmlElement(name = "BDAY")
     private Date birthday;
 
@@ -60,7 +61,7 @@ public final class VCard {
      * To specify a uniform resource locator associated with the object that the vCard refers to.
      */
     @XmlElement(name = "URL")
-    private String url;
+    private URL url;
 
     /**
      * To specify the organizational name and units associated with the vCard.
@@ -72,14 +73,14 @@ public final class VCard {
      * To specify the components of the delivery address for the vCard object.
      */
     @XmlElement(name = "ADR")
-    private List<Address> address;
+    private List<Address> addresses;
 
     /**
      * To specify the telephone number for telephony
      * communication with the object the vCard represents.
      */
     @XmlElement(name = "TEL")
-    private List<CommunicationData> communicationData;
+    private List<TelephoneNumber> telephoneNumbers;
 
     /**
      * To specify the electronic mail address for
@@ -92,7 +93,7 @@ public final class VCard {
      * To specify the formatted text corresponding to delivery address of the object the vCard represents.
      */
     @XmlElement(name = "LABEL")
-    private Label label;
+    private List<AddressLabel> labels;
 
     @XmlJavaTypeAdapter(JidAdapter.class)
     @XmlElement(name = "JABBERID")
@@ -138,12 +139,13 @@ public final class VCard {
      * To specify a graphic image of a logo associated with the object the vCard represents.
      */
     @XmlElement(name = "LOGO")
-    private String logo;
+    private Image logo;
 
     /**
      * To specify application category information about the vCard.
      */
-    @XmlElement(name = "CATEGORIES")
+    @XmlElementWrapper(name = "CATEGORIES")
+    @XmlElement(name = "KEYWORD")
     private List<String> categories;
 
     /**
@@ -189,20 +191,632 @@ public final class VCard {
      * associated with the object that the vCard represents.
      */
     @XmlElement(name = "KEY")
-    private String key;
+    private Key key;
+
+    @XmlJavaTypeAdapter(ClassificationAdapter.class)
+    @XmlElement(name = "CLASS")
+    private Classification classification;
 
     @XmlElement(name = "DESC")
     private String desc;
 
+    /**
+     * Gets the formatted text corresponding to the name.
+     *
+     * @return The formatted name.
+     * @see #setFormattedName(String)
+     */
+    public String getFormattedName() {
+        return formattedName;
+    }
+
+    /**
+     * Sets the formatted name.
+     *
+     * @param formattedName The formatted name.
+     * @see #getFormattedName()
+     */
+    public void setFormattedName(String formattedName) {
+        this.formattedName = formattedName;
+    }
+
+    /**
+     * Gets the name.
+     *
+     * @return The name.
+     * @see #setName(org.xmpp.extension.vcard.VCard.Name)
+     */
+    public Name getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param name The name.
+     * @see #getName()
+     */
+    public void setName(Name name) {
+        this.name = name;
+    }
+
+    /**
+     * Gets the nick name.
+     *
+     * @return The nick name.
+     * @see #setNickName(String)
+     */
+    public String getNickName() {
+        return nickName;
+    }
+
+    /**
+     * Sets the nick name.
+     *
+     * @param nickName The nick name.
+     * @see #getNickName()
+     */
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    /**
+     * Gets the photo.
+     *
+     * @return Either a URL to a photo or a base64 encoded photo.
+     * @see #setPhoto(org.xmpp.extension.vcard.VCard.Image)
+     */
+    public Image getPhoto() {
+        return photo;
+    }
+
+    /**
+     * Sets the photo.
+     *
+     * @param photo The photo.
+     * @see #getPhoto()
+     */
+    public void setPhoto(Image photo) {
+        this.photo = photo;
+    }
+
+    /**
+     * Gets the birthday.
+     * <p><b>Code sample:</b></p>
+     * <pre>
+     * <code>
+     * Calendar calendar = new GregorianCalendar();
+     * calendar.setTime(vCard.getBirthday());
+     * int year = calendar.get(Calendar.YEAR);
+     * int month = calendar.get(Calendar.MONTH);
+     * int day = calendar.get(Calendar.DATE);
+     * </code>
+     * </pre>
+     *
+     * @return The birth day.
+     * @see #setBirthday(java.util.Date)
+     */
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    /**
+     * Sets the birthday.
+     * <pre>
+     * <code>
+     * Calendar calendar = new GregorianCalendar();
+     * calendar.set(Calendar.YEAR, 2004);
+     * calendar.set(Calendar.MONTH, Calendar.MARCH);
+     * calendar.set(Calendar.DATE, 19);
+     * vCard.setBirthday(calendar.getTime());
+     * </code>
+     * </pre>
+     *
+     * @param birthday The birthday.
+     * @see #getBirthday()
+     */
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    /**
+     * Gets an URL associated with the object that the vCard refers to.
+     *
+     * @return The URL.
+     * @see #setUrl(java.net.URL)
+     */
+    public URL getUrl() {
+        return url;
+    }
+
+    /**
+     * Sets an URL.
+     *
+     * @param url The URL.
+     * @see #getUrl()
+     */
+    public void setUrl(URL url) {
+        this.url = url;
+    }
+
+    /**
+     * Gets the organization.
+     *
+     * @return The organization.
+     * @see #setOrganization(org.xmpp.extension.vcard.VCard.Organization)
+     */
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    /**
+     * Sets the organization.
+     *
+     * @param organization The organization.
+     * @see #getOrganization()
+     */
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    /**
+     * Gets the addresses.
+     *
+     * @return The addresses.
+     */
+    public List<Address> getAddresses() {
+        if (addresses == null) {
+            addresses = new ArrayList<>();
+        }
+        return addresses;
+    }
+
+    /**
+     * Gets the telephone numbers.
+     *
+     * @return The telephone numbers.
+     */
+    public List<TelephoneNumber> getTelephoneNumbers() {
+        if (telephoneNumbers == null) {
+            telephoneNumbers = new ArrayList<>();
+        }
+        return telephoneNumbers;
+    }
+
+    /**
+     * Gets the email addresses.
+     *
+     * @return The email addresses.
+     */
+    public List<Email> getEmails() {
+        if (emails == null) {
+            emails = new ArrayList<>();
+        }
+        return emails;
+    }
+
+    /**
+     * Gets the labels.
+     *
+     * @return The labels.
+     */
+    public List<AddressLabel> getLabels() {
+        if (labels == null) {
+            labels = new ArrayList<>();
+        }
+        return labels;
+    }
+
+    /**
+     * Gets the JID.
+     *
+     * @return The JID.
+     * @see #setJid(org.xmpp.Jid)
+     */
+    public Jid getJid() {
+        return jid;
+    }
+
+    /**
+     * Sets the JID.
+     *
+     * @param jid The JID.
+     * @see #getJid()
+     */
+    public void setJid(Jid jid) {
+        this.jid = jid;
+    }
+
+    /**
+     * Gets the type of electronic mail software that is used by the individual associated with the vCard.
+     *
+     * @return The mailer.
+     * @see #setMailer(String)
+     */
+    public String getMailer() {
+        return mailer;
+    }
+
+    /**
+     * Sets the mailer.
+     *
+     * @param mailer The mailer.
+     * @see #getMailer()
+     */
+    public void setMailer(String mailer) {
+        this.mailer = mailer;
+    }
+
+    /**
+     * Gets the time zone.
+     *
+     * @return The time zone.
+     * @see #setTimezone(String)
+     */
+    public String getTimezone() {
+        return timezone;
+    }
+
+    /**
+     * Sets the time zone.
+     *
+     * @param timezone The time zone.
+     * @see #getTimezone()
+     */
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
+    /**
+     * Gets information related to the global positioning of the object the vCard represents.
+     *
+     * @return The geo location.
+     * @see #setGeo(org.xmpp.extension.vcard.VCard.Geo)
+     */
+    public Geo getGeo() {
+        return geo;
+    }
+
+    /**
+     * Sets the geo location.
+     *
+     * @param geo The geo location.
+     * @see #getGeo()
+     */
+    public void setGeo(Geo geo) {
+        this.geo = geo;
+    }
+
+    /**
+     * Gets the job title, functional position or function of the object the vCard represents.
+     *
+     * @return The title.
+     * @see #setTitle(String)
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * Sets the title.
+     *
+     * @param title The title.
+     * @see #getTitle()
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * Gets information concerning the role, occupation, or business category of the object the vCard represents.
+     *
+     * @return The role.
+     * @see #setRole(String)
+     */
+    public String getRole() {
+        return role;
+    }
+
+    /**
+     * Sets the role.
+     *
+     * @param role The role.
+     * @see #getRole()
+     */
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    /**
+     * Gets information about another person who will act on behalf of the individual or resource associated with the vCard.
+     *
+     * @return The agent.
+     * @see #setAgent(String)
+     */
+    public String getAgent() {
+        return agent;
+    }
+
+    /**
+     * Sets the agent.
+     *
+     * @param agent The agent.
+     * @see #getAgent()
+     */
+    public void setAgent(String agent) {
+        this.agent = agent;
+    }
+
+    /**
+     * Gets the logo.
+     *
+     * @return Either an URL to an image or a base64 encoded image.
+     * @see #setLogo(org.xmpp.extension.vcard.VCard.Image)
+     */
+    public Image getLogo() {
+        return logo;
+    }
+
+    /**
+     * Sets the logo.
+     *
+     * @param logo The logo.
+     * @see #getLogo()
+     */
+    public void setLogo(Image logo) {
+        this.logo = logo;
+    }
+
+    /**
+     * Gets application category information about the vCard.
+     *
+     * @return The categories.
+     */
+    public List<String> getCategories() {
+        if (categories == null) {
+            categories = new ArrayList<>();
+        }
+        return categories;
+    }
+
+    /**
+     * Gets supplemental information or a comment that is associated with the vCard.
+     *
+     * @return The note.
+     * @see #setNote(String)
+     */
+    public String getNote() {
+        return note;
+    }
+
+    /**
+     * Sets a note.
+     *
+     * @param note The note.
+     * @see #getNote()
+     */
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    /**
+     * Gets the identifier for the product that created the vCard object.
+     *
+     * @return The product id.
+     * @see #setProductId(String)
+     */
+    public String getProductId() {
+        return productId;
+    }
+
+    /**
+     * Sets the product id.
+     *
+     * @param productId The product id.
+     * @see #getProductId()
+     */
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    /**
+     * Gets revision information about the current vCard.
+     *
+     * @return The revision.
+     * @see #setRevision(java.util.Date)
+     */
+    public Date getRevision() {
+        return revision;
+    }
+
+    /**
+     * Sets revision information.
+     *
+     * @param revision The revision information.
+     * @see #getRevision()
+     */
+    public void setRevision(Date revision) {
+        this.revision = revision;
+    }
+
+    /**
+     * Gets the sort string, specifying the family name or given name text to be used for national-language-specific sorting of the {@linkplain #getFormattedName() FN} and {@linkplain Name N} types.
+     *
+     * @return The sort string.
+     * @see #setSortString(String)
+     */
+    public String getSortString() {
+        return sortString;
+    }
+
+    /**
+     * Sets the sort string.
+     *
+     * @param sortString The sort string.
+     * @see #getSortString()
+     */
+    public void setSortString(String sortString) {
+        this.sortString = sortString;
+    }
+
+    /**
+     * Gets the sound, zo specify a digital sound content information that annotates some aspect of the vCard. By default this type is used to
+     * specify the proper pronunciation of the name type value of the vCard.
+     *
+     * @return The sound, either as pronunciation string, as URL or as base64 encoded binary.
+     * @see #setSound(String)
+     */
+    public String getSound() {
+        return sound;
+    }
+
+    /**
+     * Sets the sound.
+     *
+     * @param sound The sound.
+     * @see #getSound()
+     */
+    public void setSound(String sound) {
+        this.sound = sound;
+    }
+
+    /**
+     * Gets the UID, to specify a value that represents a globally unique identifier corresponding to the individual or resource associated
+     * with the vCard.
+     *
+     * @return The UID.
+     * @see #setUid(String)
+     */
+    public String getUid() {
+        return uid;
+    }
+
+    /**
+     * Sets the UID.
+     *
+     * @param uid The UID.
+     * @see #getUid()
+     */
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    /**
+     * Gets the authentication credential or encryption key.
+     *
+     * @return The key.
+     * @see #setKey(org.xmpp.extension.vcard.VCard.Key)
+     */
+    public Key getKey() {
+        return key;
+    }
+
+    /**
+     * Sets the authentication credential or encryption key.
+     *
+     * @param key The key.
+     * @see #getKey()
+     */
+    public void setKey(Key key) {
+        this.key = key;
+    }
+
+
+    /**
+     * Gets free-form descriptive text.
+     *
+     * @return The descriptive text.
+     * @see #setDesc(String)
+     */
+    public String getDesc() {
+        return desc;
+    }
+
+    /**
+     * Sets free-form descriptive text.
+     *
+     * @param desc The descriptive text.
+     * @see #getDesc()
+     */
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public Classification getClassification() {
+        return classification;
+    }
+
+    public void setClassification(Classification classification) {
+        this.classification = classification;
+    }
+
+    /**
+     * Stores information related to the global positioning.
+     */
     public static final class Geo {
 
         @XmlElement(name = "LAT")
-        private String latitude;
+        private Double latitude;
 
         @XmlElement(name = "LON")
-        private String longitude;
+        private Double longitude;
+
+        private Geo() {
+        }
+
+        /**
+         * @param latitude  The latitude.
+         * @param longitude The longitude.
+         */
+        public Geo(double latitude, double longitude) {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
+
+        /**
+         * Gets the latitude (represents the location north and south of the equator).
+         *
+         * @return The latitude.
+         * @see #setLatitude(double)
+         */
+        public double getLatitude() {
+            return latitude != null ? latitude.doubleValue() : 0;
+        }
+
+        /**
+         * Sets the latitude.
+         *
+         * @param latitude The latitude.
+         * @see #getLatitude()
+         */
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+
+        /**
+         * Gets the longitude (represents the location east and west of the prime meridian).
+         *
+         * @return The longitude.
+         * @see #setLongitude(double)
+         */
+        public double getLongitude() {
+            return longitude != null ? longitude.doubleValue() : 0;
+        }
+
+        /**
+         * Sets the longitude.
+         *
+         * @param longitude The longitude.
+         * @see #getLongitude()
+         */
+        public void setLongitude(double longitude) {
+            this.longitude = longitude;
+        }
     }
 
+    /**
+     * Represents structured address data.
+     */
     public static final class Address extends AbstractAddress {
         // The default is "TYPE=intl,postal,parcel,work".
 
@@ -245,17 +859,190 @@ public final class VCard {
         public Address(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international) {
             super(preferred, home, work, postal, parcel, international);
         }
-    }
 
-    public static class Label extends AbstractAddress {
-        @XmlElement(name = "LINE")
-        private List<String> line;
+        /**
+         * Gets the post office box.
+         *
+         * @return The post office box.
+         * @see #setPostOfficeBox(String)
+         */
+        public String getPostOfficeBox() {
+            return postOfficeBox;
+        }
 
-        public Label(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international) {
-            super(preferred, home, work, postal, parcel, international);
+        /**
+         * Sets the post office box.
+         *
+         * @param postOfficeBox The post office box.
+         * @see #getPostOfficeBox()
+         */
+        public void setPostOfficeBox(String postOfficeBox) {
+            this.postOfficeBox = postOfficeBox;
+        }
+
+        /**
+         * Gets the extended address.
+         *
+         * @return The extended address.
+         * @see #setExtendedAddress(String)
+         */
+        public String getExtendedAddress() {
+            return extendedAddress;
+        }
+
+        /**
+         * Sets the extended address.
+         *
+         * @param extendedAddress The extended address.
+         * @see #getExtendedAddress()
+         */
+        public void setExtendedAddress(String extendedAddress) {
+            this.extendedAddress = extendedAddress;
+        }
+
+        /**
+         * Gets the street.
+         *
+         * @return The street.
+         * @see #setStreet(String)
+         */
+        public String getStreet() {
+            return street;
+        }
+
+        /**
+         * Sets the street.
+         *
+         * @param street The street.
+         * @see #getStreet()
+         */
+        public void setStreet(String street) {
+            this.street = street;
+        }
+
+        /**
+         * Gets the city.
+         *
+         * @return The city.
+         * @see #setCity(String)
+         */
+        public String getCity() {
+            return city;
+        }
+
+        /**
+         * Sets the city.
+         *
+         * @param city The city.
+         * @see #getCity()
+         */
+        public void setCity(String city) {
+            this.city = city;
+        }
+
+        /**
+         * Gets the region.
+         *
+         * @return The region.
+         * @see #setRegion(String)
+         */
+        public String getRegion() {
+            return region;
+        }
+
+        /**
+         * Sets the region.
+         *
+         * @param region The region.
+         * @see #getRegion()
+         */
+        public void setRegion(String region) {
+            this.region = region;
+        }
+
+        /**
+         * Gets the postal code.
+         *
+         * @return The postal code.
+         * @see #setPostalCode(String)
+         */
+        public String getPostalCode() {
+            return postalCode;
+        }
+
+        /**
+         * Sets the postal code.
+         *
+         * @param postalCode The postal code.
+         * @see #getPostalCode()
+         */
+        public void setPostalCode(String postalCode) {
+            this.postalCode = postalCode;
+        }
+
+        /**
+         * Gets the country.
+         *
+         * @return The country.
+         * @see #setCountry(String)
+         */
+        public String getCountry() {
+            return country;
+        }
+
+        /**
+         * Sets the country.
+         *
+         * @param country The country.
+         * @see #getCountry()
+         */
+        public void setCountry(String country) {
+            this.country = country;
         }
     }
 
+    /**
+     * Represents the formatted text corresponding to a delivery address.
+     */
+    public static class AddressLabel extends AbstractAddress {
+
+        @XmlElement(name = "LINE")
+        private List<String> line;
+
+        /**
+         * Creates a default address label for an international, postal, parcel and work address.
+         *
+         * @param addressLine The address label lines.
+         */
+        public AddressLabel(String... addressLine) {
+            // The default is "TYPE=intl,postal,parcel,work"
+            this(false, false, true, true, true, true, addressLine);
+        }
+
+        /**
+         * Creates an address label.
+         *
+         * @param preferred     If it is a preferred address.
+         * @param home          If it is a home address.
+         * @param work          If it is a work address.
+         * @param postal        If it is a postal address.
+         * @param parcel        If it is a parcel address.
+         * @param international If it is a international address.
+         * @param addressLine   The address label lines.
+         */
+        public AddressLabel(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international, String... addressLine) {
+            super(preferred, home, work, postal, parcel, international);
+            // The DTD requires at least one LINE element.
+            if (addressLine.length == 0 || addressLine[0] == null) {
+                throw new IllegalArgumentException("At least one address line must be set.");
+            }
+            line = Arrays.asList(addressLine);
+        }
+    }
+
+    /**
+     * The abstract base class for {@link Address} and {@link AddressLabel}.
+     */
     @XmlTransient
     private static abstract class AbstractAddress extends ContactData {
 
@@ -271,6 +1058,16 @@ public final class VCard {
         @XmlElement(name = "DOM")
         private Boolean domestic;
 
+        /**
+         * Creates an abstract address.
+         *
+         * @param preferred     If it is a preferred address.
+         * @param home          If it is a home address.
+         * @param work          If it is a work address.
+         * @param postal        If it is a postal address.
+         * @param parcel        If it is a parcel address.
+         * @param international If it is a international address.
+         */
         public AbstractAddress(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international) {
             super(preferred, home, work);
             this.postal = postal;
@@ -281,12 +1078,17 @@ public final class VCard {
         /**
          * Indicates whether this address is domestic or international.
          *
-         * @return
+         * @return True if the address is international; false if it is domestic.
          */
         public boolean isInternational() {
             return international != null && international && domestic != null && !domestic;
         }
 
+        /**
+         * Sets, whether the address is international.
+         *
+         * @param international True, if is is international; false if it is domestic.
+         */
         public void setInternational(boolean international) {
             this.international = international;
             this.domestic = !international;
@@ -295,12 +1097,17 @@ public final class VCard {
         /**
          * Indicates a postal delivery address.
          *
-         * @return
+         * @return If it is a postal address.
          */
         public boolean isPostal() {
             return postal != null && postal;
         }
 
+        /**
+         * Sets, whether this is a postal delivery address.
+         *
+         * @param postal If it is a postal address.
+         */
         public void setPostal(boolean postal) {
             this.postal = postal;
         }
@@ -308,17 +1115,25 @@ public final class VCard {
         /**
          * Indicates a parcel delivery address.
          *
-         * @return
+         * @return If it is a parcel address.
          */
         public boolean isParcel() {
             return parcel != null && parcel;
         }
 
+        /**
+         * Sets, whether this is a parcel delivery address.
+         *
+         * @param parcel If it is a parcel address.
+         */
         public void setParcel(boolean parcel) {
             this.parcel = parcel;
         }
     }
 
+    /**
+     * The abstract base class for {@link Address} and {@link TelephoneNumber}.
+     */
     @XmlTransient
     private static abstract class ContactData extends Preferable {
         @XmlElement(name = "HOME")
@@ -327,63 +1142,98 @@ public final class VCard {
         @XmlElement(name = "WORK")
         private Boolean work;
 
-        public ContactData(boolean preferred, boolean home, boolean work) {
+        /**
+         * @param preferred If this is a preferred contact data.
+         * @param home      If this is a home contact data.
+         * @param work      If this is a work contact data.
+         */
+        protected ContactData(boolean preferred, boolean home, boolean work) {
             super(preferred);
             this.home = home;
             this.work = work;
         }
 
         /**
-         * Indicates a delivery address for a residence.
+         * Indicates a delivery address or telephone number for a residence.
          *
-         * @return
+         * @return True, if this is a home address.
+         * @see #setHome(boolean)
          */
         public boolean isHome() {
             return home != null && home;
         }
 
+        /**
+         * Sets, whether this a delivery address or telephone number for a residence.
+         *
+         * @param home If this is a home address.
+         * @see #isHome()
+         */
         public void setHome(boolean home) {
             this.home = home;
         }
 
         /**
-         * Indicate delivery address for a place of work.
+         * Indicate delivery address or telephone number for a place of work.
          *
-         * @return
+         * @return True, if this is a work address.
          */
         public boolean isWork() {
             return work != null && work;
         }
 
+        /**
+         * Sets, whether this a delivery address or telephone number for a place of work.
+         *
+         * @param work If this is a work address.
+         * @see #isWork() ()
+         */
         public void setWork(boolean work) {
             this.work = work;
         }
     }
 
+    /**
+     * An abstract base class for address, email and telephone data.
+     */
     @XmlTransient
     private static abstract class Preferable {
         @XmlElement(name = "PREF")
         private Boolean pref;
 
+        /**
+         * @param preferred If this is a preferred contact data.
+         */
         protected Preferable(boolean preferred) {
             this.pref = preferred;
         }
 
         /**
-         * Indicates the preferred delivery address when more than one address is specified.
+         * Indicates the preferred delivery address, email or telephone when more than one is specified.
          *
-         * @return
+         * @return True, if this is the preferred address, email or telephone.
+         * @see #setPreferred(boolean)
          */
         public boolean isPreferred() {
             return pref != null && pref;
         }
 
+        /**
+         * Sets, whether this is the preferred address, email or telephone.
+         *
+         * @param preferred True, if this is the preferred address, email or telephone.
+         * @see #isPreferred()
+         */
         public void setPreferred(boolean preferred) {
             this.pref = preferred;
         }
     }
 
-    public static class CommunicationData extends ContactData {
+    /**
+     * Represents a telephone number.
+     */
+    public static class TelephoneNumber extends ContactData {
+
         /**
          * to indicate the telephone number has voice messaging support
          */
@@ -450,19 +1300,37 @@ public final class VCard {
         @XmlElement(name = "NUMBER")
         private String number;
 
-        public CommunicationData() {
+        private TelephoneNumber() {
             super(false, false, true);
         }
 
-        public CommunicationData(String number, boolean preferred) {
+        public TelephoneNumber(String number, boolean preferred) {
             this(number, preferred, false, true);
         }
 
-        public CommunicationData(String number, boolean preferred, boolean home, boolean work) {
+        public TelephoneNumber(String number, boolean preferred, boolean home, boolean work) {
             this(number, preferred, home, work, false, true, false, false, false, false, false, false, false, false);
         }
 
-        public CommunicationData(String number, boolean preferred, boolean home, boolean work, boolean message, boolean voice, boolean fax, boolean cell, boolean video, boolean pager, boolean bbs, boolean modem, boolean pcs, boolean isdn) {
+        /**
+         * Creates a full telephone number object.
+         *
+         * @param number    The telephone number.
+         * @param preferred Indicates a preferred number.
+         * @param home      Indicates a home number.
+         * @param work      Indicates a work number.
+         * @param message   Indicates the telephone number has voice messaging support
+         * @param voice     Indicates a voice telephone number
+         * @param fax       Indicates a facsimile telephone number
+         * @param cell      Indicates a cellular telephone number
+         * @param video     Indicates a video conferencing telephone number
+         * @param pager     Indicates a paging device telephone number
+         * @param bbs       Indicates a bulletin board system telephone number
+         * @param modem     Indicates a MODEM connected telephone number
+         * @param pcs       Indicates a personal communication services telephone number
+         * @param isdn      Indicates an ISDN service telephone number
+         */
+        public TelephoneNumber(String number, boolean preferred, boolean home, boolean work, boolean message, boolean voice, boolean fax, boolean cell, boolean video, boolean pager, boolean bbs, boolean modem, boolean pcs, boolean isdn) {
             super(preferred, home, work);
             // If no telephone number is included in a <TEL/> element, an empty <NUMBER/> child MUST be included.
             this.number = number == null ? "" : number;
@@ -477,8 +1345,231 @@ public final class VCard {
             this.pcs = pcs;
             this.isdn = isdn;
         }
+
+        /**
+         * Indicates a voice telephone number.
+         *
+         * @return The value.
+         * @see #setVoice(boolean)
+         */
+        public boolean isVoice() {
+            return voice != null && voice;
+        }
+
+        /**
+         * Indicates a voice telephone number.
+         *
+         * @param voice The value.
+         * @see #isVoice()
+         */
+        public void setVoice(boolean voice) {
+            this.voice = voice;
+        }
+
+        /**
+         * Indicates a facsimile telephone telephone number.
+         *
+         * @return The value.
+         * @see #setFax(boolean)
+         */
+        public boolean isFax() {
+            return fax != null && fax;
+        }
+
+        /**
+         * Indicates a facsimile telephone telephone number.
+         *
+         * @param fax The value.
+         * @see #isFax()
+         */
+        public void setFax(boolean fax) {
+            this.fax = fax;
+        }
+
+        /**
+         * Indicates a cellular telephone number.
+         *
+         * @return The value.
+         * @see #setCell(boolean)
+         */
+        public boolean isCell() {
+            return cell != null && cell;
+        }
+
+        /**
+         * Indicates a cellular telephone number.
+         *
+         * @param cell The value.
+         * @see #isCell()
+         */
+        public void setCell(boolean cell) {
+            this.cell = cell;
+        }
+
+        /**
+         * Indicates a video conferencing telephone number.
+         *
+         * @return The value.
+         * @see #setVideo(boolean)
+         */
+        public boolean isVideo() {
+            return video != null && video;
+        }
+
+        /**
+         * Indicates a video conferencing telephone number.
+         *
+         * @param video The value.
+         * @see #isVideo()
+         */
+        public void setVideo(boolean video) {
+            this.video = video;
+        }
+
+        /**
+         * Indicates a paging device telephone number.
+         *
+         * @return The value.
+         * @see #setPager(boolean)
+         */
+        public boolean isPager() {
+            return pager != null && pager;
+        }
+
+        /**
+         * Indicates a paging device telephone number.
+         *
+         * @param pager The value.
+         * @see #isPager() ()
+         */
+        public void setPager(boolean pager) {
+            this.pager = pager;
+        }
+
+        /**
+         * Indicates a bulletin board system telephone number.
+         *
+         * @return The value.
+         * @see #setBbs(boolean)
+         */
+        public boolean isBbs() {
+            return bbs != null && bbs;
+        }
+
+        /**
+         * Indicates a bulletin board system telephone number.
+         *
+         * @param bbs The value.
+         * @see #isBbs()
+         */
+        public void setBbs(boolean bbs) {
+            this.bbs = bbs;
+        }
+
+        /**
+         * Indicates a MODEM connected telephone number.
+         *
+         * @return The value.
+         * @see #setModem(boolean)
+         */
+        public boolean isModem() {
+            return modem != null && modem;
+        }
+
+        /**
+         * Indicates a MODEM connected telephone number.
+         *
+         * @param modem The value.
+         * @see #isModem()
+         */
+        public void setModem(boolean modem) {
+            this.modem = modem;
+        }
+
+        /**
+         * Indicates a personal communication services telephone number.
+         *
+         * @return The value.
+         * @see #setPcs(boolean)
+         */
+        public boolean isPcs() {
+            return pcs != null && pcs;
+        }
+
+        /**
+         * Indicates a personal communication services telephone number.
+         *
+         * @param pcs The value.
+         * @see #isPcs()
+         */
+        public void setPcs(boolean pcs) {
+            this.pcs = pcs;
+        }
+
+        /**
+         * Indicates an ISDN service telephone number.
+         *
+         * @return The value.
+         * @see #setIsdn(boolean)
+         */
+        public boolean isIsdn() {
+            return isdn != null && isdn;
+        }
+
+        /**
+         * Indicates an ISDN service telephone number.
+         *
+         * @param isdn The value.
+         * @see #isIsdn()
+         */
+        public void setIsdn(boolean isdn) {
+            this.isdn = isdn;
+        }
+
+        /**
+         * Indicates the telephone number has voice messaging support.
+         *
+         * @return The value.
+         * @see #setMsg(boolean)
+         */
+        public boolean isMsg() {
+            return msg != null && msg;
+        }
+
+        /**
+         * Sets support for voice messaging.
+         *
+         * @param msg The value.
+         * @see #isMsg()
+         */
+        public void setMsg(boolean msg) {
+            this.msg = msg;
+        }
+
+        /**
+         * Gets the actual telephone number.
+         *
+         * @return The telephone number.
+         * @see #setNumber(String)
+         */
+        public String getNumber() {
+            return number;
+        }
+
+        /**
+         * Sets the actual telephone number.
+         *
+         * @param number The telephone number.
+         * @see #getNumber()
+         */
+        public void setNumber(String number) {
+            this.number = number;
+        }
     }
 
+    /**
+     * Represents an email address.
+     */
     public static final class Email extends Preferable {
 
         /**
@@ -493,9 +1584,6 @@ public final class VCard {
         @XmlElement(name = "X400")
         private Boolean x400;
 
-        /**
-         *
-         */
         @XmlElement(name = "USERID")
         private String userId;
 
@@ -503,10 +1591,24 @@ public final class VCard {
             super(false);
         }
 
+        /**
+         * Creates an email address.
+         *
+         * @param email     The email address.
+         * @param preferred If this is the preferred email address.
+         */
         public Email(String email, boolean preferred) {
             this(email, preferred, true, false);
         }
 
+        /**
+         * Creates an email address.
+         *
+         * @param email     The email address.
+         * @param preferred If this is the preferred email address.
+         * @param internet  Indicate an internet addressing type.
+         * @param x400      Indicate a X.400 addressing type.
+         */
         public Email(String email, boolean preferred, boolean internet, boolean x400) {
             super(preferred);
             this.userId = email;
@@ -514,31 +1616,70 @@ public final class VCard {
             this.x400 = x400;
         }
 
+        /**
+         * Gets, whether this is an internet email address.
+         *
+         * @return True, if this is an internet email address.
+         * @see #setInternet(boolean)
+         */
         public boolean isInternet() {
             return internet != null && internet;
         }
 
+        /**
+         * Sets, whether this is an internet email address.
+         *
+         * @param internet True, if this is an internet email address.
+         * @see #isInternet()
+         */
         public void setInternet(boolean internet) {
             this.internet = internet;
         }
 
+        /**
+         * Gets, whether this is an X.400 email address.
+         *
+         * @return True, if this is an X.400 email address.
+         * @see #setX400(boolean)
+         */
         public boolean isX400() {
             return x400 != null && x400;
         }
 
+        /**
+         * Sets, whether this is an X.400 email address.
+         *
+         * @param x400 True, if this is an X.400 email address.
+         * @see #isX400()
+         */
         public void setX400(boolean x400) {
             this.x400 = x400;
         }
 
+        /**
+         * Gets the actual email address.
+         *
+         * @return The email address.
+         * @see #setEmail(String)
+         */
         public String getEmail() {
             return userId;
         }
 
+        /**
+         * Sets the actual email address.
+         *
+         * @param email The email address.
+         * @see #getEmail() ()
+         */
         public void setEmail(String email) {
             this.userId = email;
         }
     }
 
+    /**
+     * Represents an organization.
+     */
     public static final class Organization {
 
         @XmlElement(name = "ORGNAME")
@@ -550,24 +1691,50 @@ public final class VCard {
         private Organization() {
         }
 
-        public Organization(String organizationName, String... orgUnit) {
+        /**
+         * Creates an organization.
+         *
+         * @param organizationName The organization name.
+         * @param orgUnits         The organization units.
+         */
+        public Organization(String organizationName, String... orgUnits) {
             this.organizationName = organizationName;
-            this.orgUnits = Arrays.asList(orgUnit);
+            this.orgUnits = Arrays.asList(orgUnits);
         }
 
+        /**
+         * Gets the organization name.
+         *
+         * @return The organization name.
+         * @see #setOrganizationName(String)
+         */
         public String getOrganizationName() {
             return organizationName;
         }
 
+        /**
+         * Sets the organization name.
+         *
+         * @param organizationName organization name.
+         * @see #getOrganizationName()
+         */
         public void setOrganizationName(String organizationName) {
             this.organizationName = organizationName;
         }
 
+        /**
+         * Gets the organization units.
+         *
+         * @return The units.
+         */
         public List<String> getOrgUnits() {
             return orgUnits;
         }
     }
 
+    /**
+     * Represents a name.
+     */
     public static final class Name {
         @XmlElement(name = "FAMILY")
         private String familyName;
@@ -587,10 +1754,26 @@ public final class VCard {
         private Name() {
         }
 
+        /**
+         * Creates name.
+         *
+         * @param familyName The family name.
+         * @param givenName  The given name.
+         * @param middleName The middle name.
+         */
         public Name(String familyName, String givenName, String middleName) {
             this(familyName, givenName, middleName, null, null);
         }
 
+        /**
+         * Creates a full name.
+         *
+         * @param familyName The family name.
+         * @param givenName  The given name.
+         * @param middleName The middle name.
+         * @param prefix     The prefix.
+         * @param suffix     The suffix.
+         */
         public Name(String familyName, String givenName, String middleName, String prefix, String suffix) {
             this.familyName = familyName;
             this.givenName = givenName;
@@ -599,44 +1782,372 @@ public final class VCard {
             this.suffix = suffix;
         }
 
+        /**
+         * Gets the family name.
+         *
+         * @return The family name.
+         * @see #setFamilyName(String)
+         */
         public String getFamilyName() {
             return familyName;
         }
 
+        /**
+         * Sets the family name.
+         *
+         * @param familyName The family name.
+         * @see #getFamilyName()
+         */
         public void setFamilyName(String familyName) {
             this.familyName = familyName;
         }
 
+        /**
+         * Gets the given name.
+         *
+         * @return The given name.
+         * @see #setGivenName(String)
+         */
         public String getGivenName() {
             return givenName;
         }
 
+        /**
+         * Sets the given name.
+         *
+         * @param givenName The given name.
+         * @see #setMiddleName(String)
+         */
         public void setGivenName(String givenName) {
             this.givenName = givenName;
         }
 
+        /**
+         * Gets the middle name.
+         *
+         * @return The middle name.
+         * @see #setMiddleName(String)
+         */
         public String getMiddleName() {
             return middleName;
         }
 
+        /**
+         * Sets the middle name.
+         *
+         * @param middleName The middle name.
+         * @see #getMiddleName()
+         */
         public void setMiddleName(String middleName) {
             this.middleName = middleName;
         }
 
+        /**
+         * Gets the prefix.
+         *
+         * @return The prefix.
+         * @see #setPrefix(String)
+         */
         public String getPrefix() {
             return prefix;
         }
 
+        /**
+         * Sets the prefix.
+         *
+         * @param prefix The prefix.
+         * @see #getPrefix()
+         */
         public void setPrefix(String prefix) {
             this.prefix = prefix;
         }
 
+        /**
+         * Gets the suffix.
+         *
+         * @return The suffix.
+         * @see #setSuffix(String)
+         */
         public String getSuffix() {
             return suffix;
         }
 
+        /**
+         * Sets the suffix.
+         *
+         * @param suffix The suffix.
+         * @see #getSuffix()
+         */
         public void setSuffix(String suffix) {
             this.suffix = suffix;
         }
+    }
+
+    /**
+     * Represents an image. The image is either defined by a type/binary value pair or it is referenced by an URI.
+     */
+    public static final class Image {
+        @XmlElement(name = "TYPE")
+        private String type;
+
+        @XmlElement(name = "BINVAL")
+        private byte[] value;
+
+        @XmlElement(name = "EXTVAL")
+        private URI uri;
+
+        /**
+         * Gets the mime type of the photo, e.g. image/png.
+         *
+         * @return The mime type.
+         * @see #setType(String)
+         */
+        public String getType() {
+            return type;
+        }
+
+        /**
+         * Sets the mime type of the photo, e.g. image/png.
+         *
+         * @param type The mime type.
+         * @see #getType()
+         */
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        /**
+         * Gets the photo as byte array.
+         *
+         * @return The photo.
+         * @see #setValue(byte[])
+         */
+        public byte[] getValue() {
+            return value;
+        }
+
+        /**
+         * Sets the photo as byte array.
+         *
+         * @param value The photo.
+         * @see #getValue()
+         */
+        public void setValue(byte[] value) {
+            this.value = value;
+        }
+
+        /**
+         * Gets the URI to an external photo.
+         *
+         * @return The URI.
+         */
+        public URI getUri() {
+            return uri;
+        }
+
+        /**
+         * Sets an URI to an external photo.
+         *
+         * @param uri The URI.
+         */
+        public void setUri(URI uri) {
+            this.uri = uri;
+        }
+    }
+
+    /**
+     * Represents an image. The image is either defined by a type/binary value pair or it is referenced by an URI.
+     */
+    public static final class Sound {
+
+        @XmlElement(name = "BINVAL")
+        private byte[] value;
+
+        @XmlElement(name = "EXTVAL")
+        private URI uri;
+
+        @XmlElement(name = "PHONETIC")
+        private String phonetic;
+
+        /**
+         * Gets the binary digital audio pronunciation.
+         *
+         * @return The photo.
+         * @see #setValue(byte[])
+         */
+        public byte[] getValue() {
+            return value;
+        }
+
+        /**
+         * Sets the binary digital audio pronunciation.
+         *
+         * @param value The photo.
+         * @see #getValue()
+         */
+        public void setValue(byte[] value) {
+            this.value = value;
+        }
+
+        /**
+         * Gets the URI to an external binary digital audio pronunciation.
+         *
+         * @return The URI.
+         */
+        public URI getUri() {
+            return uri;
+        }
+
+        /**
+         * Sets an URI to an external binary digital audio pronunciation.
+         *
+         * @param uri The URI.
+         */
+        public void setUri(URI uri) {
+            this.uri = uri;
+        }
+
+        /**
+         * Gets the textual phonetic pronunciation.
+         *
+         * @return The textual phonetic pronunciation
+         * @see #setPhonetic(String)
+         */
+        public String getPhonetic() {
+            return phonetic;
+        }
+
+        /**
+         * Sets the textual phonetic pronunciation.
+         *
+         * @param phonetic The textual phonetic pronunciation
+         * @see #getPhonetic()
+         */
+        public void setPhonetic(String phonetic) {
+            this.phonetic = phonetic;
+        }
+    }
+
+    public enum Classification {
+        PUBLIC,
+        PRIVATE,
+        CONFIDENTIAL
+    }
+
+    /**
+     * Represents an authentication credential or encryption key.
+     */
+    public static final class Key {
+
+        @XmlElement(name = "TYPE")
+        private String type;
+
+        @XmlElement(name = "CRED")
+        private String credential;
+
+        /**
+         * Gets the credential.
+         *
+         * @return The credential.
+         * @see #setCredential(String)
+         */
+        public String getCredential() {
+            return credential;
+        }
+
+        /**
+         * Sets the credential.
+         *
+         * @param credential The credential.
+         * @see #getCredential()
+         */
+        public void setCredential(String credential) {
+            this.credential = credential;
+        }
+
+        /**
+         * Gets the type.
+         *
+         * @return The type.
+         * @see #setType(String)
+         */
+        public String getType() {
+            return type;
+        }
+
+        /**
+         * Sets the type.
+         *
+         * @param type The type.
+         * @see #getType()
+         */
+        public void setType(String type) {
+            this.type = type;
+        }
+    }
+
+    private static final class DateFormatterAdapter extends XmlAdapter<String, Date> {
+
+        @Override
+        public Date unmarshal(final String v) throws Exception {
+            Calendar calendar = DatatypeConverter.parseDate(v);
+            return calendar.getTime();
+        }
+
+        @Override
+        public String marshal(final Date v) throws Exception {
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+            calendar.setTime(v);
+            return DatatypeConverter.printDate(calendar);
+        }
+    }
+
+    private static final class ClassificationAdapter extends XmlAdapter<Class, Classification> {
+
+        @Override
+        public Classification unmarshal(Class v) throws Exception {
+            if (v != null) {
+                if (v._public != null) {
+                    return Classification.PUBLIC;
+                } else if (v._private != null) {
+                    return Classification.PRIVATE;
+                } else if (v.confidential != null) {
+                    return Classification.CONFIDENTIAL;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public Class marshal(Classification v) throws Exception {
+            if (v != null) {
+                Class cl = new Class();
+                switch (v) {
+                    case PUBLIC:
+                        cl._public = "";
+                        break;
+                    case PRIVATE:
+                        cl._private = "";
+                        break;
+                    case CONFIDENTIAL:
+                        cl.confidential = "";
+                        break;
+                }
+                return cl;
+            }
+            return null;
+        }
+    }
+
+    private static final class Class {
+        @XmlElement(name = "PUBLIC")
+        private String _public;
+
+        @XmlElement(name = "PRIVATE")
+        private String _private;
+
+        @XmlElement(name = "CONFIDENTIAL")
+        private String confidential;
     }
 }

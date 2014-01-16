@@ -57,6 +57,8 @@ import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
+import org.xmpp.extension.vcard.VCard;
+import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
@@ -89,6 +91,7 @@ public class JavaFXApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        VCard vCard = new VCard();
         stage.setTitle("New");
         VBox vBox = new VBox(10);
         vBox.setPadding(new Insets(20, 20, 20, 20));
@@ -383,8 +386,23 @@ public class JavaFXApp extends Application {
 
                                 }
                             });
+                            MenuItem vCardItem = new MenuItem("Get VCard");
+                            vCardItem.setOnAction(new EventHandler<ActionEvent>() {
+                                                            @Override
+                                                            public void handle(ActionEvent actionEvent) {
+                                                                VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
+                                                                try {
+                                                                    Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
+                                                                    VCard vCard = vCardManager.getVCard(jid);
+                                                                    int i = 0;
+                                                                } catch (TimeoutException e) {
+                                                                    e.printStackTrace();
+                                                                }
 
-                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem);
+                                                            }
+                                                        });
+
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem);
                             setContextMenu(contextMenu);
                         }
                     }

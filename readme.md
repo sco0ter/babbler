@@ -6,6 +6,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 
 # Supported extensions
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final')*
+
 * ![alt supported][supported]           [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)
 * ![alt not supported][not supported]   [XEP-0009: Jabber-RPC](http://xmpp.org/extensions/xep-0009.html)
 * ![alt supported][supported]           [XEP-0012: Last Activity](http://xmpp.org/extensions/xep-0012.html)

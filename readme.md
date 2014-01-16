@@ -10,7 +10,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * ![alt supported][supported] [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
 * ![alt supported][supported] [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
 * ![alt supported][supported] [XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)
-* [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
+* ![alt not supported][not supported] [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
 * [XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)
 * [XEP-0156: Discovering Alternative XMPP Connection Methods](http://xmpp.org/extensions/xep-0156.html)
 * [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html)
@@ -166,3 +166,4 @@ SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(S
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));
 ```
 [supported]: https://cdn1.iconfinder.com/data/icons/basicset/tick_16.png
+[not supported]: https://cdn1.iconfinder.com/data/icons/basicset/delete_16.png

@@ -26,11 +26,9 @@ package org.xmpp.stanza;
 
 import org.xmpp.Jid;
 import org.xmpp.XmppError;
-import org.xmpp.util.JidAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,11 +44,9 @@ import java.util.Map;
 @XmlTransient
 public abstract class Stanza {
 
-    @XmlJavaTypeAdapter(JidAdapter.class)
     @XmlAttribute
     protected Jid to;
 
-    @XmlJavaTypeAdapter(JidAdapter.class)
     @XmlAttribute
     protected Jid from;
 
@@ -230,7 +226,6 @@ public abstract class Stanza {
      * </p>
      */
     @XmlRootElement(name = "error")
-    @XmlAccessorType(XmlAccessType.FIELD)
     @XmlSeeAlso({Error.BadRequest.class, Error.Conflict.class, Error.FeatureNotImplemented.class, Error.Conflict.class, Error.Forbidden.class, Error.Gone.class, Error.InternalServerError.class, Error.ItemNotFound.class, Error.JidMalformed.class, Error.NotAcceptable.class, Error.NotAllowed.class, Error.NotAuthorized.class, Error.PolicyViolation.class, Error.RecipientUnavailable.class, Error.Redirect.class, Error.RegistrationRequired.class, Error.RemoteServerNotFound.class, Error.RemoteServerTimeout.class, Error.ResourceConstraint.class, Error.ServiceUnavailable.class, Error.SubscriptionRequired.class, Error.UndefinedCondition.class, Error.UnexpectedRequest.class})
     public static final class Error extends XmppError {
 
@@ -238,7 +233,6 @@ public abstract class Stanza {
 
         private static final Map<Class<? extends Condition>, Type> associatedErrorType = new HashMap<>();
 
-        @XmlJavaTypeAdapter(JidAdapter.class)
         @XmlAttribute(name = "by")
         private Jid by;
 

@@ -23,17 +23,12 @@
  */
 
 /**
- * Contains <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> ({@linkplain org.xmpp.stanza.Message}, {@linkplain org.xmpp.stanza.Presence} and {@linkplain org.xmpp.stanza.IQ}).
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "jabber:client", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stanza;
-
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+@XmlSchema(namespace = "http://jabber.org/protocol/nick", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.nickname;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

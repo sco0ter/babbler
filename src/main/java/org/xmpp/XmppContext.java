@@ -44,6 +44,8 @@ import org.xmpp.extension.messagecorrection.Replace;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.messagedeliveryreceipts.Received;
 import org.xmpp.extension.messagedeliveryreceipts.Request;
+import org.xmpp.extension.mood.Mood;
+import org.xmpp.extension.nickname.Nickname;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privacylists.Privacy;
@@ -181,6 +183,9 @@ public abstract class XmppContext {
             registerExtension(SoftwareVersion.class);
             registerManager(SoftwareVersionManager.class);
 
+            // XEP-0107: User Mood
+            registerExtension(Mood.class);
+
             // XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)
             registerExtension(Body.class);
 
@@ -192,6 +197,9 @@ public abstract class XmppContext {
 
             // XEP-0145: Annotations
             registerExtension(Annotation.class);
+
+            // XEP-0172: User Nickname
+            registerExtension(Nickname.class);
 
             // XEP-0184: Message Delivery Receipts
             registerManager(MessageDeliveryReceiptsManager.class);

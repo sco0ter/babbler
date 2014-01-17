@@ -22,44 +22,69 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.privatestorage;
+package org.xmpp.extension.privatedata;
 
 import org.xmpp.Connection;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * This class implements <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
+ * <p>
+ * It allows to retrieve and store private data in the server's private XML storage.
+ * </p>
+ *
  * @author Christian Schudt
  */
-public class PrivateDataManager extends ExtensionManager {
+public final class PrivateDataManager extends ExtensionManager {
 
     public PrivateDataManager(Connection connection) {
         super(connection);
     }
 
+    /**
+     * Gets private data, which is stored on the server.
+     *
+     * @param type The class of the private data. Note that this class needs a no-arg default constructor.
+     * @param <T>  The type of private data.
+     * @return The list of stored items of the given type.
+     * @throws TimeoutException If the data could not be retrieved in time.
+     * @throws StanzaException  If the server returned an error, e.g. if the used namespace is reserved.
+     */
+    @SuppressWarnings("unchecked")
     public <T> List<T> getData(Class<T> type) throws TimeoutException, StanzaException {
         try {
-            T instance = type.newInstance();
+            Constructor<T> constructor = type.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            T instance = constructor.newInstance();
             IQ result = connection.query(new IQ(IQ.Type.GET, new PrivateData(instance)));
             if (result.getType() == IQ.Type.RESULT) {
                 PrivateData privateData = result.getExtension(PrivateData.class);
-                return (List<T>) privateData.getPrivateData();
+                return (List<T>) privateData.getItems();
+            } else if (result.getType() == IQ.Type.ERROR) {
+                throw new StanzaException(result.getError());
             }
-            else if (result.getType() == IQ.Type.ERROR)
-            {
-                                                      throw new StanzaException(result.getError());
-            }
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Cannot instantiate class. Is there a public no-args default constructor?", e);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalArgumentException("Cannot instantiate class.", e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("Could not find no-args default constructor.", e);
         }
         return null;
     }
 
+    /**
+     * Stores private data.
+     *
+     * @param privateData The private data. The class of this object must be annotated with JAXB annotations and must known to the XMPP context in order to marshal und unmarshal it.
+     * @throws TimeoutException
+     */
     public void storeData(Object privateData) throws TimeoutException {
         connection.query(new IQ(IQ.Type.SET, new PrivateData(privateData)));
     }

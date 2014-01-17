@@ -40,7 +40,7 @@ public final class SecurityManager extends FeatureNegotiator {
 
     private volatile SSLContext sslContext;
 
-    private boolean tlsEnabled = true;
+    private boolean tlsEnabled = false;
 
     public SecurityManager(Connection connection, FeatureListener featureListener) {
         super(StartTls.class);
@@ -70,7 +70,7 @@ public final class SecurityManager extends FeatureNegotiator {
                 if (tlsEnabled) {
                     connection.send(new StartTls());
                 } else {
-                    status = Status.SUCCESS;
+                    status = Status.IGNORE;
                 }
             } else if (element instanceof Proceed) {
                 status = Status.SUCCESS;

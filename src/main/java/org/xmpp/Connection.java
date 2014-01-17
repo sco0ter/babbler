@@ -92,12 +92,12 @@ public abstract class Connection implements Closeable {
 
     final Condition streamNegotiatedUntilSasl;
 
+    final Condition streamNegotiatedUntilResourceBinding;
+
     /**
      * A lock object, used to create wait conditions.
      */
     private final Lock lock = new ReentrantLock();
-
-    private final Condition bindReceived;
 
     private final XMLInputFactory xmlInputFactory;
 
@@ -279,13 +279,13 @@ public abstract class Connection implements Closeable {
         rosterManager = new RosterManager(this);
         presenceManager = new PresenceManager(this);
         streamNegotiatedUntilSasl = lock.newCondition();
-        bindReceived = lock.newCondition();
+        streamNegotiatedUntilResourceBinding = lock.newCondition();
 
         CompressionNegotiator compressionNegotiator = new CompressionNegotiator(this, new FeatureListener() {
             @Override
             public void negotiationStatusChanged(FeatureEvent featureEvent) {
                 if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
-                    // TODO: Compress stream!
+                    compressStream();
                 }
             }
         });
@@ -293,6 +293,24 @@ public abstract class Connection implements Closeable {
         featuresManager.addFeatureNegotiator(compressionNegotiator);
         featuresManager.addFeatureNegotiator(securityManager);
         featuresManager.addFeatureNegotiator(authenticationManager);
+        featuresManager.addFeatureNegotiator(new FeatureNegotiator(Bind.class) {
+            @Override
+            public Status processNegotiation(Object element) throws Exception {
+                lock.lock();
+                try {
+                    streamNegotiatedUntilResourceBinding.signal();
+                } finally {
+                    lock.unlock();
+                }
+                return Status.INCOMPLETE;
+            }
+
+            @Override
+            public boolean canProcess(Object element) {
+                return element instanceof Bind;
+            }
+        });
+
     }
 
     /**
@@ -452,7 +470,7 @@ public abstract class Connection implements Closeable {
         try {
             addIQListener(iqListener);
             send(iq);
-            if (!resultReceived.await(10, TimeUnit.SECONDS)) {
+            if (!resultReceived.await(20, TimeUnit.SECONDS)) {
                 throw new TimeoutException("Timeout reached, while waiting on a IQ response.");
             }
         } catch (InterruptedException e) {
@@ -599,7 +617,7 @@ public abstract class Connection implements Closeable {
         if (!featuresManager.getFeatures().containsKey(Bind.class)) {
             lock.lock();
             try {
-                if (!bindReceived.await(5, TimeUnit.SECONDS)) {
+                if (!streamNegotiatedUntilResourceBinding.await(5, TimeUnit.SECONDS)) {
                     throw new TimeoutException("Timeout reached during resource binding.");
                 }
             } catch (InterruptedException e) {
@@ -631,7 +649,14 @@ public abstract class Connection implements Closeable {
     /**
      * Secures the connection, i.e. negotiates TLS.
      */
-    protected abstract void secureConnection();
+    protected void secureConnection() {
+    }
+
+    /**
+     * Compresses the stream.
+     */
+    protected void compressStream() {
+    }
 
     /**
      * Handles a XMPP element.
@@ -667,14 +692,14 @@ public abstract class Connection implements Closeable {
             });
         } else if (element instanceof Features) {
             featuresManager.processFeatures((Features) element);
-            if (featuresManager.getFeatures().containsKey(Bind.class)) {
-                lock.lock();
-                try {
-                    bindReceived.signal();
-                } finally {
-                    lock.unlock();
-                }
-            }
+//            if (featuresManager.getFeatures().containsKey(Bind.class)) {
+//                lock.lock();
+//                try {
+//                    bindReceived.signal();
+//                } finally {
+//                    lock.unlock();
+//                }
+//            }
         } else if (element instanceof StreamError) {
             throw new StreamException((StreamError) element);
         } else {

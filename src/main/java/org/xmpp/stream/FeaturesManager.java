@@ -56,6 +56,8 @@ public final class FeaturesManager {
      */
     private final List<Feature> featuresToNegotiate = new ArrayList<>();
 
+    private final Set<Class<? extends Feature>> negotiatedFeatures = new HashSet<>();
+
     /**
      * The feature negotiators, which are responsible to negotiate each individual feature.
      */
@@ -77,11 +79,13 @@ public final class FeaturesManager {
                     case CONNECTING:
                         features.clear();
                         featuresToNegotiate.clear();
+                        negotiatedFeatures.clear();
                         break;
                     // If the connection is closed, clear everything.
                     case CLOSED:
                         featureNegotiators.clear();
                         featuresToNegotiate.clear();
+                        negotiatedFeatures.clear();
                         features.clear();
                         break;
                 }
@@ -132,20 +136,7 @@ public final class FeaturesManager {
             ((StartTls) featureList.get(0)).setMandatory(true);
         }
 
-        // Sort features, so that voluntary-to-negotiate features are negotiated first. The spec says:
-        // A <features/> element that contains both mandatory-to-negotiate and voluntary-to-negotiate features
-        // indicates that the negotiation is not complete but that the initiating entity MAY complete
-        // the voluntary-to-negotiate feature(s) before it attempts to negotiate the mandatory-to-negotiate feature(s).
-        Collections.sort(sortedFeatureList, new Comparator<Feature>() {
-            @Override
-            public int compare(Feature o1, Feature o2) {
-                int result = 0;
-                if (o1 != null && o2 != null) {
-                    result = Boolean.compare(o1.isMandatory(), o2.isMandatory());
-                }
-                return result;
-            }
-        });
+        Collections.sort(sortedFeatureList);
 
         // Store the list of features. Each feature will be negotiated sequentially, if there is a corresponding feature negotiator.
         featuresToNegotiate.addAll(sortedFeatureList);
@@ -166,8 +157,9 @@ public final class FeaturesManager {
         for (FeatureNegotiator featureNegotiator : featureNegotiators) {
             if (featureNegotiator.getFeatureClass() == element || featureNegotiator.canProcess(element)) {
                 FeatureNegotiator.Status status = featureNegotiator.processNegotiation(element);
+                negotiatedFeatures.add(featureNegotiator.getFeatureClass());
                 // If the feature has been successfully negotiated.
-                if (status == FeatureNegotiator.Status.SUCCESS) {
+                if (status == FeatureNegotiator.Status.SUCCESS || status == FeatureNegotiator.Status.IGNORE) {
                     // Check if the feature expects a restart now.
                     if (featureNegotiator.needsRestart()) {
                         return true;
@@ -189,20 +181,21 @@ public final class FeaturesManager {
      *
      * @throws Exception If an exception occurred during feature negotiation.
      */
-    private void negotiateNextFeature() throws Exception {
-        if (featuresToNegotiate.size() > 0 && connection.getStatus() == Connection.Status.CONNECTING) {
+    public void negotiateNextFeature() throws Exception {
+        if (featuresToNegotiate.size() > 0) {
             Feature advertisedFeature = featuresToNegotiate.remove(0);
 
-            // See if there's a feature negotiator associated with the feature.
-            for (FeatureNegotiator featureNegotiator : featureNegotiators) {
-                if (featureNegotiator.getFeatureClass() == advertisedFeature.getClass()) {
-                    // If feature negotiation is incomplete, return and wait until it is completed.
-                    if (featureNegotiator.processNegotiation(advertisedFeature) == FeatureNegotiator.Status.INCOMPLETE) {
-                        return;
+            if (!negotiatedFeatures.contains(advertisedFeature.getClass())) {
+                // See if there's a feature negotiator associated with the feature.
+                for (FeatureNegotiator featureNegotiator : featureNegotiators) {
+                    if (featureNegotiator.getFeatureClass() == advertisedFeature.getClass()) {
+                        // If feature negotiation is incomplete, return and wait until it is completed.
+                        if (featureNegotiator.processNegotiation(advertisedFeature) == FeatureNegotiator.Status.INCOMPLETE) {
+                            return;
+                        }
                     }
                 }
             }
-
             // If no feature negotiator was found or if the feature has been successfully negotiated, immediately go on with the next feature.
             negotiateNextFeature();
         }

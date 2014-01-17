@@ -53,10 +53,12 @@ import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredListener;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.ping.PingManager;
+import org.xmpp.extension.privatedata.PrivateDataManager;
+import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
-import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
+import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
@@ -388,21 +390,51 @@ public class JavaFXApp extends Application {
                             });
                             MenuItem vCardItem = new MenuItem("Get VCard");
                             vCardItem.setOnAction(new EventHandler<ActionEvent>() {
-                                                            @Override
-                                                            public void handle(ActionEvent actionEvent) {
-                                                                VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
-                                                                try {
-                                                                    Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
-                                                                    VCard vCard = vCardManager.getVCard(jid);
-                                                                    int i = 0;
-                                                                } catch (TimeoutException e) {
-                                                                    e.printStackTrace();
-                                                                }
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
+                                    try {
+                                        Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
+                                        VCard vCard = vCardManager.getVCard(jid);
+                                        int i = 0;
+                                    } catch (TimeoutException e) {
+                                        e.printStackTrace();
+                                    }
 
-                                                            }
-                                                        });
+                                }
+                            });
+                            MenuItem storeAnnotationsItems = new MenuItem("Store annotations");
+                            storeAnnotationsItems.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    PrivateDataManager privateDataManager = connection.getExtensionManager(PrivateDataManager.class);
+                                    try {
+                                        List<Annotation.Note> notes = new ArrayList<>();
+                                        notes.add(new Annotation.Note("Hallo", item.contact.get().getJid()));
+                                        privateDataManager.storeData(new Annotation(notes));
+                                    } catch (TimeoutException e) {
+                                        e.printStackTrace();
+                                    }
 
-                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem);
+                                }
+                            });
+                            MenuItem getAnnotationsItems = new MenuItem("Get annotations");
+                            getAnnotationsItems.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    PrivateDataManager privateDataManager = connection.getExtensionManager(PrivateDataManager.class);
+                                    try {
+                                        List<Annotation> annotations = privateDataManager.getData(Annotation.class);
+                                        int i = 0;
+                                    } catch (TimeoutException e) {
+                                        e.printStackTrace();
+                                    } catch (StanzaException e) {
+                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                    }
+
+                                }
+                            });
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem, storeAnnotationsItems, getAnnotationsItems);
                             setContextMenu(contextMenu);
                         }
                     }

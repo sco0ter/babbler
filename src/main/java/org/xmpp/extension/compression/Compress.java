@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "compress")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class Compress {
 
     @XmlElement

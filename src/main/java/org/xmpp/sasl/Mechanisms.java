@@ -44,12 +44,6 @@ public final class Mechanisms extends Feature {
     private List<String> mechanism;
 
     /**
-     * Default constructor, needed for unmarshalling.
-     */
-    private Mechanisms() {
-    }
-
-    /**
      * Gets the list of mechanisms supported by the server.
      *
      * @return The list of mechanisms.s
@@ -69,5 +63,10 @@ public final class Mechanisms extends Feature {
     @Override
     public boolean isMandatory() {
         return true;
+    }
+
+    @Override
+    public int getPriority() {
+        return 1;
     }
 }

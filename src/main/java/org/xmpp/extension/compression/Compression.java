@@ -34,7 +34,6 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "compression", namespace = "http://jabber.org/features/compress")
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({Compress.class, Compressed.class, Failure.class})
 public final class Compression extends Feature {
 
@@ -43,6 +42,11 @@ public final class Compression extends Feature {
 
     public List<Method> getMethods() {
         return methods;
+    }
+
+    @Override
+    public int getPriority() {
+        return 2;
     }
 
     /**

@@ -22,24 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.tls;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>.
  */
-public class SecurityConfiguration {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "storage:rosternotes", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatedata.annotations;
 
-    private boolean tlsEnabled = true;
-
-    public SecurityConfiguration() {
-
-    }
-
-    public boolean isTlsEnabled() {
-        return tlsEnabled;
-    }
-
-    public void setTlsEnabled(boolean tlsEnabled) {
-        this.tlsEnabled = tlsEnabled;
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

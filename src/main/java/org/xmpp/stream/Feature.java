@@ -29,7 +29,7 @@ package org.xmpp.stream;
  *
  * @author Christian Schudt
  */
-public abstract class Feature {
+public abstract class Feature implements Comparable<Feature> {
 
     /**
      * Indicates, whether this feature is mandatory to negotiate.
@@ -40,5 +40,32 @@ public abstract class Feature {
      */
     public boolean isMandatory() {
         return false;
+    }
+
+    public abstract int getPriority();
+
+    /**
+     * Compares two features by their priority and mandatory-to-negotiate flag.
+     * <blockquote>
+     * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">4.3.2.  Stream Features Format</a></cite></p>
+     * <p>A {@code <features/>} element that contains both mandatory-to-negotiate and voluntary-to-negotiate features
+     * indicates that the negotiation is not complete but that the initiating entity MAY complete
+     * the voluntary-to-negotiate feature(s) before it attempts to negotiate the mandatory-to-negotiate feature(s).
+     * </p>
+     * </blockquote>
+     *
+     * @param o The other feature.
+     * @return The comparison result.
+     * @see <a href="http://xmpp.org/extensions/xep-0170.html">XEP-0170: Recommended Order of Stream Feature Negotiation</a>
+     */
+    @Override
+    public int compareTo(Feature o) {
+        // First compare by their priority.
+        int result = Integer.compare(getPriority(), o.getPriority());
+        // If this is equal, put volunteer-to-negotiate features before mandatory ones.
+        if (result == 0) {
+            result = Boolean.compare(isMandatory(), o.isMandatory());
+        }
+        return result;
     }
 }

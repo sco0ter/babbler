@@ -147,6 +147,10 @@ public abstract class FeatureNegotiator {
         /**
          * If the feature negotiation is in progress and has not yet completed.
          */
-        INCOMPLETE
+        INCOMPLETE,
+        /**
+         * If the feature has been ignored.
+         */
+        IGNORE
     }
 }

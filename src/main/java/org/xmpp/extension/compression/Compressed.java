@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "compressed")
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class Compressed {
+    private Compressed() {
+    }
 }

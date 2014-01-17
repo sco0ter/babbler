@@ -47,4 +47,9 @@ public final class Session extends Feature {
     public boolean isMandatory() {
         return true;
     }
+
+    @Override
+    public int getPriority() {
+        return 4;
+    }
 }

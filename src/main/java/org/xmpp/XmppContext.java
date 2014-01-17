@@ -47,6 +47,9 @@ import org.xmpp.extension.messagedeliveryreceipts.Request;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privacylists.Privacy;
+import org.xmpp.extension.privatedata.PrivateData;
+import org.xmpp.extension.privatedata.PrivateDataManager;
+import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.pubsub.PubSub;
 import org.xmpp.extension.registration.Register;
 import org.xmpp.extension.registration.Registration;
@@ -154,6 +157,10 @@ public abstract class XmppContext {
             registerExtension(org.xmpp.extension.ibb.Data.class, Open.class, Close.class);
             registerManager(InBandByteStreamManager.class);
 
+            // XEP-0049: Private XML Storage
+            registerExtension(PrivateData.class);
+            registerManager(PrivateDataManager.class);
+
             // XEP-0054: vcard-temp
             registerExtension(VCard.class);
             registerManager(VCardManager.class);
@@ -182,6 +189,9 @@ public abstract class XmppContext {
 
             // XEP-0144: Roster Item Exchange
             registerExtension(RosterExchange.class);
+
+            // XEP-0145: Annotations
+            registerExtension(Annotation.class);
 
             // XEP-0184: Message Delivery Receipts
             registerManager(MessageDeliveryReceiptsManager.class);

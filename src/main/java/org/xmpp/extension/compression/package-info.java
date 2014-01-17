@@ -25,7 +25,10 @@
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/protocol/compress", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.compression;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

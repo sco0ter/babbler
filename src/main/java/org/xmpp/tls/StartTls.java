@@ -46,12 +46,14 @@ public final class StartTls extends Feature {
     @XmlElement
     protected String required;
 
-    StartTls() {
-    }
-
     @Override
     public boolean isMandatory() {
         return required != null;
+    }
+
+    @Override
+    public int getPriority() {
+        return -2;
     }
 
     public void setMandatory(boolean mandatory) {

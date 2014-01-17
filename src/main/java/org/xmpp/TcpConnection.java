@@ -34,12 +34,17 @@ import javax.naming.directory.InitialDirContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
@@ -58,6 +63,10 @@ public final class TcpConnection extends Connection {
     private XmppStreamWriter xmppStreamWriter;
 
     private XmppStreamReader xmppStreamReader;
+
+    private InputStream inputStream;
+
+    private OutputStream outputStream;
 
     /**
      * Creates a default connection to a XMPP server by only using a XMPP service domain.
@@ -160,10 +169,11 @@ public final class TcpConnection extends Connection {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
         }
 
-
+        outputStream = socket.getOutputStream();
+        inputStream = socket.getInputStream();
         // Start writing to the output stream.
         try {
-            xmppStreamWriter = new XmppStreamWriter(socket.getOutputStream(), this, this.xmlOutputFactory, this.marshaller);
+            xmppStreamWriter = new XmppStreamWriter(outputStream, this, this.xmlOutputFactory, this.marshaller);
         } catch (JAXBException | XMLStreamException e) {
             throw new IOException(e);
         }
@@ -175,7 +185,7 @@ public final class TcpConnection extends Connection {
         } catch (JAXBException e) {
             throw new IOException(e);
         }
-        xmppStreamReader.startReading(socket.getInputStream());
+        xmppStreamReader.startReading(inputStream);
 
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
         waitUntilSaslNegotiationStarted();
@@ -194,10 +204,26 @@ public final class TcpConnection extends Connection {
                     socket.getInetAddress().getHostAddress(),
                     socket.getPort(),
                     true);
+            inputStream = socket.getInputStream();
+            outputStream = socket.getOutputStream();
             isSecure = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void compressStream() {
+        inputStream = new InflaterInputStream(inputStream);
+        outputStream = new DeflaterOutputStream(outputStream, new Deflater(-1)) {
+            public void flush() throws IOException {
+                super.flush();
+                int byteCount;
+                while ((byteCount = def.deflate(buf, 0, buf.length, Deflater.SYNC_FLUSH)) != 0) {
+                    out.write(buf, 0, byteCount);
+                }
+            }
+        };
     }
 
     @Override
@@ -209,9 +235,9 @@ public final class TcpConnection extends Connection {
     @Override
     protected void restartStream() {
         try {
-            xmppStreamWriter.reset(socket.getOutputStream());
+            xmppStreamWriter.reset(outputStream);
             xmppStreamWriter.openStream(null);
-            xmppStreamReader.startReading(socket.getInputStream());
+            xmppStreamReader.startReading(inputStream);
         } catch (XMLStreamException | IOException e) {
             e.printStackTrace();
         }

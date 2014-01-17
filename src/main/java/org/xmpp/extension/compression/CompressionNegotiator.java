@@ -46,8 +46,12 @@ public class CompressionNegotiator extends FeatureNegotiator {
         Status status = Status.INCOMPLETE;
         try {
             if (element instanceof Compression) {
-                //connection.send(new Compress(new Compression.Method("zlib")));
-                status = Status.SUCCESS;
+                if (false) {
+                    connection.send(new Compress(new Compression.Method("zlib")));
+                    status = Status.INCOMPLETE;
+                } else {
+                    status = Status.IGNORE;
+                }
             } else if (element instanceof Compressed) {
                 status = Status.SUCCESS;
             } else if (element instanceof Failure) {

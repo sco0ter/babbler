@@ -84,4 +84,9 @@ public final class Bind extends Feature {
     public boolean isMandatory() {
         return true;
     }
+
+    @Override
+    public int getPriority() {
+        return 3;
+    }
 }

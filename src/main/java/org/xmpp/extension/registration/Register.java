@@ -35,4 +35,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public final class Register extends Feature {
     private Register() {
     }
+
+    @Override
+    public int getPriority() {
+        return 0;
+    }
 }

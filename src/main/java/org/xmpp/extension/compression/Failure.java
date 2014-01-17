@@ -30,7 +30,6 @@ import javax.xml.bind.annotation.*;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "failure")
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso({Failure.SetupFailed.class, Failure.ProcessingFailed.class, Failure.UnsupportedMethod.class})
 public final class Failure {
     @XmlElementRef

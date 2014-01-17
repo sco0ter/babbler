@@ -22,13 +22,30 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "jabber:iq:private", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatestorage;
+package org.xmpp.extension.privatedata;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author Christian Schudt
+ */
+@XmlRootElement(name = "query")
+public final class PrivateData {
+    @XmlAnyElement(lax = true)
+    private final List<Object> privateData = new ArrayList<>();
+
+    private PrivateData() {
+
+    }
+
+    public PrivateData(Object privateData) {
+        this.privateData.add(privateData);
+    }
+
+    public List<Object> getItems() {
+        return privateData;
+    }
+}

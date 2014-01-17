@@ -24,8 +24,6 @@
 
 package org.xmpp.extension.compression;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -33,15 +31,15 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "compress")
-public final class Compress {
+final class Compress {
 
     @XmlElement
-    private Compression.Method method;
+    private Method method;
 
     private Compress() {
     }
 
-    public Compress(Compression.Method method) {
+    public Compress(Method method) {
         this.method = method;
     }
 }

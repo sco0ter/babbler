@@ -1,8 +1,12 @@
-# What is *Babbler*?
+**Babbler** is a young [XMPP](http://xmpp.org) client library for Java SE 7 based on JAXB as XML processing technology.
 
-*Babbler* is a yet experimental [XMPP](http://xmpp.org) library for Java SE based on JAXB as XML processing technology.
+It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 250+ unit tests).
 
 You can find some more information [here](http://babbler-xmpp.blogspot.de/).
+
+It supports most of the core specifications ([RFC 6120] (http://xmpp.org/rfcs/rfc6120.html), [RFC 6121] (http://xmpp.org/rfcs/rfc6121.html), [RFC 6122] (http://xmpp.org/rfcs/rfc6122.html)), short of a few minor things like SCRAM-SHA-1 authentication.
+
+Since this project is quite young, the API might change. Comments on the API are appreciated.
 
 # Supported extensions
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final')*
@@ -19,7 +23,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * ![alt not supported][not supported]   [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)
 * ![alt in development][in development] [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
 * ![alt not supported][not supported]   [XEP-0048: Bookmarks](http://xmpp.org/extensions/xep-0048.html)
-* ![alt in development][in development] [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)
+* ![alt supported][supported]           [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)
 * ![alt not supported][not supported]   [XEP-0050: Ad-Hoc Commands](http://xmpp.org/extensions/xep-0050.html)
 * ![alt supported][supported]           [XEP-0054: vcard-temp](http://xmpp.org/extensions/xep-0054.html)
 * ![alt supported][supported]           [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
@@ -49,10 +53,10 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 * ![alt not supported][not supported]   [XEP-0131: Stanza Headers and Internet Metadata](http://xmpp.org/extensions/xep-0131.html)
 * ![alt not supported][not supported]   [XEP-0136: Message Archiving](http://xmpp.org/extensions/xep-0136.html)
 * ![alt not supported][not supported]   [XEP-0137: Publishing Stream Initiation Requests](http://xmpp.org/extensions/xep-0137.html)
-* ![alt not supported][not supported]   [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)
+* ![alt supported][supported]           [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)
 * ![alt not supported][not supported]   [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
 * ![alt in development][in development] [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
-* ![alt not supported][not supported]   [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
+* ![alt supported][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
 * ![alt not supported][not supported]   [XEP-0153: vCard-Based Avatars](http://xmpp.org/extensions/xep-0153.html)
 * ![alt not supported][not supported]   [XEP-0155: Stanza Session Negotiation](http://xmpp.org/extensions/xep-0155.html)
 * ![alt supported][supported]           [XEP-0156: Discovering Alternative XMPP Connection Methods](http://xmpp.org/extensions/xep-0156.html)

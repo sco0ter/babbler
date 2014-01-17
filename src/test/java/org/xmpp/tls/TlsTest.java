@@ -27,10 +27,7 @@ package org.xmpp.tls;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
-import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.Stanza;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;

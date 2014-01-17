@@ -30,13 +30,10 @@ import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.stanza.IQ;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.ImageOutputStream;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.IOException;
 
 /**
  * @author Christian Schudt

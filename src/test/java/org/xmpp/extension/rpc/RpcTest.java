@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;

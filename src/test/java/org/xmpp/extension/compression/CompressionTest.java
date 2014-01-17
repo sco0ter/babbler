@@ -50,13 +50,13 @@ public class CompressionTest extends BaseTest {
 
         Assert.assertNotNull(compression);
         Assert.assertEquals(compression.getMethods().size(), 2);
-        Assert.assertEquals(compression.getMethods().get(0).getName(), "zlib");
-        Assert.assertEquals(compression.getMethods().get(1).getName(), "lzw");
+        Assert.assertEquals(compression.getMethods().get(0), Method.ZLIB);
+        //Assert.assertEquals(compression.getMethods().get(1).getName(), "lzw");
     }
 
     @Test
     public void marshalCompress() throws JAXBException, XMLStreamException, IOException {
-        Compress compress = new Compress(new Compression.Method("zlib"));
+        Compress compress = new Compress(Method.ZLIB);
         String xml = marshall(compress);
         Assert.assertEquals(xml, "<compress xmlns=\"http://jabber.org/protocol/compress\"><method>zlib</method></compress>");
     }

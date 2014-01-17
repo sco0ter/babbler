@@ -40,8 +40,6 @@ public final class SecurityManager extends FeatureNegotiator {
 
     private volatile SSLContext sslContext;
 
-    private boolean tlsEnabled = false;
-
     public SecurityManager(Connection connection, FeatureListener featureListener) {
         super(StartTls.class);
         addFeatureListener(featureListener);
@@ -64,10 +62,10 @@ public final class SecurityManager extends FeatureNegotiator {
         try {
             if (element instanceof StartTls) {
                 StartTls startTls = (StartTls) element;
-                if (startTls.isMandatory() && !tlsEnabled) {
+                if (startTls.isMandatory() && !isEnabled()) {
                     throw new Exception("The server requires TLS, but you disabled it.");
                 }
-                if (tlsEnabled) {
+                if (isEnabled()) {
                     connection.send(new StartTls());
                 } else {
                     status = Status.IGNORE;
@@ -102,7 +100,5 @@ public final class SecurityManager extends FeatureNegotiator {
         this.sslContext = sslContext;
     }
 
-    public boolean isTlsEnabled() {
-        return tlsEnabled;
-    }
+
 }

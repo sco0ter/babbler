@@ -40,6 +40,7 @@ import java.io.IOException;
 public class BaseTest {
 
     protected static final Jid JULIET = Jid.fromString("juliet@example.com");
+
     protected static final Jid ROMEO = Jid.fromString("romeo@example.com");
 
     protected Marshaller marshaller;

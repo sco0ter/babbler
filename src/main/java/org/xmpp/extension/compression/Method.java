@@ -22,38 +22,19 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.messagecorrection;
+package org.xmpp.extension.compression;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
- * The implementation of the {@code <replace/>} element.
+ * Defines a compression method.
  *
  * @author Christian Schudt
  */
-@XmlRootElement
-public final class Replace {
-
-    @XmlAttribute
-    private String id;
-
-    private Replace() {
-    }
-
+public enum Method {
     /**
-     * @param id The id of the message which shall be corrected.
+     * The standard zlib compression method.
      */
-    public Replace(String id) {
-        this.id = id;
-    }
-
-    /**
-     * Gets the id of the message which shall be corrected.
-     *
-     * @return The message id.
-     */
-    public String getId() {
-        return id;
-    }
+    @XmlEnumValue("zlib")
+    ZLIB
 }

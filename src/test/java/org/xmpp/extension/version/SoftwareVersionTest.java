@@ -32,8 +32,6 @@ import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
-import org.xmpp.extension.time.EntityTime;
-import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;

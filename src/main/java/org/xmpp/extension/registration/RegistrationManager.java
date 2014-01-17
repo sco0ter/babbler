@@ -77,5 +77,4 @@ public final class RegistrationManager extends ExtensionManager {
     }
 
 
-
 }

@@ -26,11 +26,15 @@ package org.xmpp.extension.compression;
 
 import org.xmpp.stream.Feature;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the compression feature element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "compression", namespace = "http://jabber.org/features/compress")
@@ -40,6 +44,11 @@ public final class Compression extends Feature {
     @XmlElement(name = "method", namespace = "http://jabber.org/features/compress")
     private List<Method> methods = new ArrayList<>();
 
+    /**
+     * Gets the available compression methods.
+     *
+     * @return The compression methods.
+     */
     public List<Method> getMethods() {
         return methods;
     }
@@ -47,25 +56,5 @@ public final class Compression extends Feature {
     @Override
     public int getPriority() {
         return 2;
-    }
-
-    /**
-     *
-     */
-    public static final class Method {
-
-        @XmlValue
-        private String name;
-
-        private Method() {
-        }
-
-        public Method(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
     }
 }

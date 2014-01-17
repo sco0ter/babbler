@@ -27,7 +27,7 @@ package org.xmpp;
 import org.w3c.dom.Element;
 import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.compression.CompressionNegotiator;
+import org.xmpp.extension.compression.CompressionManager;
 import org.xmpp.im.ChatManager;
 import org.xmpp.im.PresenceManager;
 import org.xmpp.im.RosterManager;
@@ -103,8 +103,6 @@ public abstract class Connection implements Closeable {
 
     private final SecurityManager securityManager;
 
-    Executor stanzaListenerExecutor;
-
     private final AuthenticationManager authenticationManager;
 
     private final RosterManager rosterManager;
@@ -112,6 +110,8 @@ public abstract class Connection implements Closeable {
     private final ReconnectionManager reconnectionManager;
 
     private final PresenceManager presenceManager;
+
+    private final CompressionManager compressionManager;
 
     private final FeaturesManager featuresManager;
 
@@ -141,15 +141,17 @@ public abstract class Connection implements Closeable {
      */
     protected volatile boolean isSecure;
 
-    /**
-     * Holds the connection state.
-     */
-    private volatile Status status = Status.CLOSED;
+    Executor stanzaListenerExecutor;
 
     /**
      * The user, which is assigned by the server after resource binding.
      */
     volatile Jid connectedResource;
+
+    /**
+     * Holds the connection state.
+     */
+    private volatile Status status = Status.CLOSED;
 
     /**
      * The resource, which the user requested during resource binding. This value is stored, so that it can be reused during reconnection.
@@ -278,19 +280,10 @@ public abstract class Connection implements Closeable {
         });
         rosterManager = new RosterManager(this);
         presenceManager = new PresenceManager(this);
+
         streamNegotiatedUntilSasl = lock.newCondition();
         streamNegotiatedUntilResourceBinding = lock.newCondition();
 
-        CompressionNegotiator compressionNegotiator = new CompressionNegotiator(this, new FeatureListener() {
-            @Override
-            public void negotiationStatusChanged(FeatureEvent featureEvent) {
-                if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
-                    compressStream();
-                }
-            }
-        });
-
-        featuresManager.addFeatureNegotiator(compressionNegotiator);
         featuresManager.addFeatureNegotiator(securityManager);
         featuresManager.addFeatureNegotiator(authenticationManager);
         featuresManager.addFeatureNegotiator(new FeatureNegotiator(Bind.class) {
@@ -298,18 +291,29 @@ public abstract class Connection implements Closeable {
             public Status processNegotiation(Object element) throws Exception {
                 lock.lock();
                 try {
-                    streamNegotiatedUntilResourceBinding.signal();
+                    streamNegotiatedUntilResourceBinding.signalAll();
                 } finally {
                     lock.unlock();
                 }
+                // Resource binding will be negotiated manually
                 return Status.INCOMPLETE;
             }
 
             @Override
             public boolean canProcess(Object element) {
-                return element instanceof Bind;
+                return false;
             }
         });
+
+        compressionManager = new CompressionManager(this, new FeatureListener() {
+            @Override
+            public void negotiationStatusChanged(FeatureEvent featureEvent) {
+                if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
+                    compressStream();
+                }
+            }
+        });
+        featuresManager.addFeatureNegotiator(compressionManager);
 
     }
 
@@ -692,14 +696,14 @@ public abstract class Connection implements Closeable {
             });
         } else if (element instanceof Features) {
             featuresManager.processFeatures((Features) element);
-//            if (featuresManager.getFeatures().containsKey(Bind.class)) {
-//                lock.lock();
-//                try {
-//                    bindReceived.signal();
-//                } finally {
-//                    lock.unlock();
-//                }
-//            }
+            //            if (featuresManager.getFeatures().containsKey(Bind.class)) {
+            //                lock.lock();
+            //                try {
+            //                    bindReceived.signal();
+            //                } finally {
+            //                    lock.unlock();
+            //                }
+            //            }
         } else if (element instanceof StreamError) {
             throw new StreamException((StreamError) element);
         } else {
@@ -880,6 +884,15 @@ public abstract class Connection implements Closeable {
      */
     public final ChatManager getChatManager() {
         return chatManager;
+    }
+
+    /**
+     * Gets the compression manager, which is responsible for stream compression.
+     *
+     * @return The compression manager.
+     */
+    public final CompressionManager getCompressionManager() {
+        return compressionManager;
     }
 
     /**

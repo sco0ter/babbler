@@ -29,9 +29,8 @@ import java.util.logging.StreamHandler;
  */
 public class LogHandler extends StreamHandler {
 
-    public LogHandler()
-    {
-         super();
+    public LogHandler() {
+        super();
 
     }
 

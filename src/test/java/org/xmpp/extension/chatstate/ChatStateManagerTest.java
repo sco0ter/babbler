@@ -40,7 +40,6 @@ import javax.xml.stream.XMLStreamException;
 public class ChatStateManagerTest extends BaseTest {
 
 
-
     @Test
     public void unmarshalActiveState() throws XMLStreamException, JAXBException {
         String xml = "<message \n" +

@@ -29,15 +29,26 @@ import org.xmpp.stream.FeatureListener;
 import org.xmpp.stream.FeatureNegotiator;
 
 /**
+ * Manages stream compression as described in <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
+ * <blockquote>
+ * <p><cite><a href="http://xmpp.org/extensions/xep-0138.html#intro">1. Introduction</a></cite></p>
+ * <p>XMPP Core [1] specifies the use of Transport Layer Security (TLS; see RFC 5246 [2]) for encryption of XML streams, and TLS includes the ability to compress encrypted traffic (see RFC 3749 [3]). However, not all computing platforms are able to implement TLS, and traffic compression may be desirable for communication by applications on such computing platforms. This document defines a mechanism for negotiating the compression of XML streams outside the context of TLS.</p>
+ * </blockquote>
+ * If you enable this manager, stream compression will be used, if available. Note that stream compression should not be used, when you use TLS.
+ *
  * @author Christian Schudt
  */
-public class CompressionNegotiator extends FeatureNegotiator {
+public final class CompressionManager extends FeatureNegotiator {
 
     private final Connection connection;
 
-    public CompressionNegotiator(Connection connection, FeatureListener featureListener) {
+    // Currently only support zlib compression.
+    private final Method method = Method.ZLIB;
+
+    public CompressionManager(Connection connection, FeatureListener featureListener) {
         super(Compression.class);
         addFeatureListener(featureListener);
+        setEnabled(true);
         this.connection = connection;
     }
 
@@ -46,16 +57,19 @@ public class CompressionNegotiator extends FeatureNegotiator {
         Status status = Status.INCOMPLETE;
         try {
             if (element instanceof Compression) {
-                if (false) {
-                    connection.send(new Compress(new Compression.Method("zlib")));
-                    status = Status.INCOMPLETE;
-                } else {
-                    status = Status.IGNORE;
+                synchronized (this) {
+                    if (isEnabled() && method != null) {
+                        connection.send(new Compress(method));
+                        status = Status.INCOMPLETE;
+                    } else {
+                        status = Status.IGNORE;
+                    }
                 }
             } else if (element instanceof Compressed) {
                 status = Status.SUCCESS;
             } else if (element instanceof Failure) {
                 status = Status.FAILURE;
+                throw new Exception("Failure during compression negotiation: " + ((Failure) element).getCondition());
             }
         } finally {
             notifyFeatureNegotiated(status, element);
@@ -64,7 +78,9 @@ public class CompressionNegotiator extends FeatureNegotiator {
     }
 
     /**
-     * @return True, if the stream requires a restart after feature negotiation.
+     * {@inheritDoc}
+     *
+     * @return True, because compression needs a stream restart after feature negotiation.
      */
     public boolean needsRestart() {
         return true;
@@ -73,5 +89,9 @@ public class CompressionNegotiator extends FeatureNegotiator {
     @Override
     public boolean canProcess(Object element) {
         return element instanceof Compressed || element instanceof Failure;
+    }
+
+    public synchronized Method getMethod() {
+        return method;
     }
 }

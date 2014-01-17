@@ -24,14 +24,16 @@
 
 package org.xmpp.extension.compression;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "failure")
 @XmlSeeAlso({Failure.SetupFailed.class, Failure.ProcessingFailed.class, Failure.UnsupportedMethod.class})
-public final class Failure {
+final class Failure {
     @XmlElementRef
     private Condition condition;
 
@@ -43,24 +45,35 @@ public final class Failure {
     }
 
     public static abstract class Condition {
+        private final String name;
 
+        protected Condition(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     @XmlRootElement(name = "setup-failed")
     public static final class SetupFailed extends Condition {
         private SetupFailed() {
+            super("setup-failed");
         }
     }
 
     @XmlRootElement(name = "processing-failed")
     public static final class ProcessingFailed extends Condition {
         private ProcessingFailed() {
+            super("processing-failed");
         }
     }
 
     @XmlRootElement(name = "unsupported-method")
     public static final class UnsupportedMethod extends Condition {
         private UnsupportedMethod() {
+            super("unsupported-method");
         }
     }
 }

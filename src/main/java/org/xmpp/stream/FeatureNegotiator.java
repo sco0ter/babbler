@@ -46,6 +46,8 @@ public abstract class FeatureNegotiator {
 
     private final Class<? extends Feature> featureClass;
 
+    private boolean enabled = true;
+
     /**
      * Constructs a feature negotiator.
      *
@@ -130,6 +132,14 @@ public abstract class FeatureNegotiator {
      */
     public final Class<? extends Feature> getFeatureClass() {
         return featureClass;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**

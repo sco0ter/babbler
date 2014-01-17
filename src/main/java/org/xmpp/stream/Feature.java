@@ -42,6 +42,11 @@ public abstract class Feature implements Comparable<Feature> {
         return false;
     }
 
+    /**
+     * Gets the priority of the feature, i.e. when it will be negotiated during feature negotiation.
+     *
+     * @return The priority.
+     */
     public abstract int getPriority();
 
     /**

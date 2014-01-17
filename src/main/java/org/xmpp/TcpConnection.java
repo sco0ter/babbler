@@ -42,7 +42,6 @@ import java.net.Proxy;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
-import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -190,7 +189,7 @@ public final class TcpConnection extends Connection {
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
         waitUntilSaslNegotiationStarted();
 
-        if (!isSecure && getSecurityManager().isTlsEnabled()) {
+        if (!isSecure && getSecurityManager().isEnabled()) {
             throw new IllegalStateException("Connection could not be secured.");
         }
         updateStatus(Status.CONNECTED);
@@ -214,16 +213,13 @@ public final class TcpConnection extends Connection {
 
     @Override
     protected void compressStream() {
-        inputStream = new InflaterInputStream(inputStream);
-        outputStream = new DeflaterOutputStream(outputStream, new Deflater(-1)) {
-            public void flush() throws IOException {
-                super.flush();
-                int byteCount;
-                while ((byteCount = def.deflate(buf, 0, buf.length, Deflater.SYNC_FLUSH)) != 0) {
-                    out.write(buf, 0, byteCount);
-                }
-            }
-        };
+
+        switch (getCompressionManager().getMethod()) {
+            case ZLIB:
+                inputStream = new InflaterInputStream(inputStream);
+                outputStream = new DeflaterOutputStream(outputStream, true);
+                break;
+        }
     }
 
     @Override

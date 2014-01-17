@@ -4,7 +4,7 @@ It aims to provide good JavaDoc documentation, clean code, an easy to use API an
 
 You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 
-It supports most of the core specifications ([RFC 6120] (http://xmpp.org/rfcs/rfc6120.html), [RFC 6121] (http://xmpp.org/rfcs/rfc6121.html), [RFC 6122] (http://xmpp.org/rfcs/rfc6122.html)), short of a few minor things like SCRAM-SHA-1 authentication.
+It supports most of the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html)), short of a few minor things like SCRAM-SHA-1 authentication.
 
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 

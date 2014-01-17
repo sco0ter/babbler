@@ -219,6 +219,6 @@ lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
 SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));
 ```
-[supported]: raw/tip/supported.png "Is supported"
-[not supported]: raw/tip/notsupported.png "Is not supported"
-[in development]: raw/tip/development.png "Is in development or planned"
+[supported]: /sco0ter/babbler/raw/tip/supported.png "Is supported"
+[not supported]: /sco0ter/babbler/raw/tip/notsupported.png "Is not supported"
+[in development]: /sco0ter/babbler/raw/tip/development.png "Is in development or planned"

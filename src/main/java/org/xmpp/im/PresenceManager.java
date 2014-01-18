@@ -219,4 +219,13 @@ public final class PresenceManager {
         connection.send(presence);
         return presence.getId();
     }
+
+    /**
+     * Gets the last sent presence, that has been broadcast by the server.
+     *
+     * @return The presence.
+     */
+    public Presence getLastSentPresence() {
+        return lastSentPresences.get("");
+    }
 }

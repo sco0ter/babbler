@@ -745,7 +745,6 @@ public final class VCard {
         this.key = key;
     }
 
-
     /**
      * Gets free-form descriptive text.
      *
@@ -772,6 +771,12 @@ public final class VCard {
 
     public void setClassification(Classification classification) {
         this.classification = classification;
+    }
+
+    public enum Classification {
+        PUBLIC,
+        PRIVATE,
+        CONFIDENTIAL
     }
 
     /**
@@ -1911,6 +1916,7 @@ public final class VCard {
      * Represents an image. The image is either defined by a type/binary value pair or it is referenced by an URI.
      */
     public static final class Image {
+
         @XmlElement(name = "TYPE")
         private String type;
 
@@ -1919,6 +1925,29 @@ public final class VCard {
 
         @XmlElement(name = "EXTVAL")
         private URI uri;
+
+        private Image() {
+        }
+
+        /**
+         * Creates an image with a type and binary value.
+         *
+         * @param type  The type, e.g. "image/png"
+         * @param value The binary value.
+         */
+        public Image(String type, byte[] value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        /**
+         * Creates an image with an URI.
+         *
+         * @param uri The URI.
+         */
+        public Image(URI uri) {
+            this.uri = uri;
+        }
 
         /**
          * Gets the mime type of the photo, e.g. image/png.
@@ -2050,12 +2079,6 @@ public final class VCard {
         public void setPhonetic(String phonetic) {
             this.phonetic = phonetic;
         }
-    }
-
-    public enum Classification {
-        PUBLIC,
-        PRIVATE,
-        CONFIDENTIAL
     }
 
     /**

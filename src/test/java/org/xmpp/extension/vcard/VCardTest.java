@@ -34,11 +34,14 @@ import org.xmpp.stanza.IQ;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -170,5 +173,23 @@ public class VCardTest extends BaseTest {
         vCard.setBirthday(calendar.getTime());
         String xml = marshall(vCard);
         Assert.assertEquals("<vCard xmlns=\"vcard-temp\" version=\"3.0\"><BDAY>2004-03-19Z</BDAY></vCard>", xml);
+    }
+
+    @Test
+    public void testVCardAvatarUpdate() throws TimeoutException, IOException {
+        VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
+        VCard vCard = new VCard();
+        InputStream inputStream = getClass().getResourceAsStream("supported.png");
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            byteArrayOutputStream.write(data, 0, nRead);
+        }
+
+        byteArrayOutputStream.flush();
+        vCard.setPhoto(new VCard.Image("image/png", byteArrayOutputStream.toByteArray()));
+        vCardManager.setVCard(vCard);
     }
 }

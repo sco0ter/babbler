@@ -70,7 +70,7 @@ public class TestConnection extends Connection {
     @Override
     public void send(Object element) {
         super.send(element);
-        if (element instanceof Stanza) {
+        if (mockServer != null && element instanceof Stanza) {
             ((Stanza) element).setFrom(connectedResource);
             mockServer.receive(((Stanza) element));
         }

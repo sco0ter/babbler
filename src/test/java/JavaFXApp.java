@@ -32,11 +32,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -46,6 +49,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.xmpp.*;
+import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.bosh.BoshConnection;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.lastactivity.LastActivityStrategy;
@@ -61,15 +65,20 @@ import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
+import org.xmpp.extension.avatar.AvatarChangeEvent;
+import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
 
+import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.security.auth.login.LoginException;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -278,12 +287,27 @@ public class JavaFXApp extends Application {
                                 }
                             }
                         });
-                        connection.addMessageListener(new MessageListener() {
-                            @Override
-                            public void handle(MessageEvent e) {
 
+                        AvatarManager avatarManager = connection.getExtensionManager(AvatarManager.class);
+                        avatarManager.addAvatarChangeListener(new AvatarChangeListener() {
+                            @Override
+                            public void avatarChanged(final AvatarChangeEvent e) {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        Roster.Contact contact = connection.getRosterManager().getContact(e.getContact());
+                                        if (contact != null) {
+                                            ContactItem contactItem = contactMap.get(contact);
+                                            if (contactItem != null) {
+                                                contactItem.avatar.set(e.getAvatar().getImageData());
+                                            }
+                                        }
+                                    }
+                                });
                             }
                         });
+
                         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection.getExtensionManager(MessageDeliveryReceiptsManager.class);
                         messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
                             @Override
@@ -525,6 +549,8 @@ public class JavaFXApp extends Application {
 
     public static class ContactItemView extends HBox {
 
+        private ImageView imageView = new ImageView();
+
         private Label lblName = new Label();
 
         private Circle circle = new Circle(8);
@@ -532,7 +558,24 @@ public class JavaFXApp extends Application {
         public ContactItemView(final ContactItem contactItem) {
             setSpacing(10);
             setPadding(new Insets(5, 5, 5, 5));
+            imageView.imageProperty().bind(new ObjectBinding<Image>() {
+                {
+                    super.bind(contactItem.avatar);
+                }
 
+                @Override
+                protected Image computeValue() {
+                    if (contactItem.avatar.get() != null) {
+                        try {
+                            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(contactItem.avatar.get()));
+                            return SwingFXUtils.toFXImage(bufferedImage, null);
+                        } catch (IOException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }
+                    return null;
+                }
+            });
             lblName.textProperty().bind(new StringBinding() {
                 {
                     super.bind(contactItem.contact);
@@ -557,7 +600,7 @@ public class JavaFXApp extends Application {
                     return Color.LIGHTGREY;
                 }
             });
-
+            getChildren().add(imageView);
             getChildren().add(circle);
             getChildren().add(lblName);
         }
@@ -568,9 +611,12 @@ public class JavaFXApp extends Application {
 
         private final ObjectProperty<Presence> presence;
 
+        private final ObjectProperty<byte[]> avatar;
+
         public ContactItem(Roster.Contact contact) {
             this.contact = new SimpleObjectProperty<>(contact);
             this.presence = new SimpleObjectProperty<>();
+            this.avatar = new SimpleObjectProperty<>();
         }
 
         @Override

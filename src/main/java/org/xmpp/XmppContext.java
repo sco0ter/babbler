@@ -28,6 +28,7 @@ import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
+import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.bob.Data;
 import org.xmpp.extension.bosh.Body;
 import org.xmpp.extension.chatstate.*;
@@ -67,6 +68,7 @@ import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
+import org.xmpp.extension.vcard.avatar.AvatarUpdate;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
@@ -197,6 +199,10 @@ public abstract class XmppContext {
 
             // XEP-0145: Annotations
             registerExtension(Annotation.class);
+
+            // XEP-0153: vCard-Based Avatars
+            registerExtension(AvatarUpdate.class);
+            registerManager(AvatarManager.class);
 
             // XEP-0172: User Nickname
             registerExtension(Nickname.class);

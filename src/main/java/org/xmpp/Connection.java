@@ -207,7 +207,7 @@ public abstract class Connection implements Closeable {
         this.xmlInputFactory = XMLInputFactory.newFactory();
         this.xmlOutputFactory = XMLOutputFactory.newFactory();
 
-        this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);

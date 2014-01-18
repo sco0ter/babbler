@@ -25,11 +25,13 @@
 package org.xmpp.extension.vcard;
 
 import org.xmpp.Connection;
+import org.xmpp.ConnectionEvent;
+import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.Presence;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.TimeoutException;
 
@@ -43,13 +45,25 @@ import java.util.concurrent.TimeoutException;
  */
 public final class VCardManager extends ExtensionManager {
 
-    public VCardManager(Connection connection) {
+    private volatile VCard myVCard;
+
+    public VCardManager(final Connection connection) {
         super(connection);
+        setEnabled(true);
+
+        connection.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == Connection.Status.CLOSED) {
+                    myVCard = null;
+                }
+            }
+        });
     }
 
     @Override
     protected Collection<String> getFeatureNamespaces() {
-        return new ArrayList<>();
+        return null;
     }
 
     /**
@@ -59,11 +73,41 @@ public final class VCardManager extends ExtensionManager {
      * @throws TimeoutException If the server did not answer in time.
      */
     public VCard getVCard() throws TimeoutException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new VCard()));
-        if (result.getType() == IQ.Type.RESULT) {
-            return result.getExtension(VCard.class);
+        if (myVCard != null) {
+            return myVCard;
         }
-        return null;
+        IQ result = connection.query(new IQ(IQ.Type.GET, new VCard()));
+        if (result != null && result.getType() == IQ.Type.RESULT) {
+            myVCard = result.getExtension(VCard.class);
+        } else {
+            // Make sure, that if a vCard has been loaded, a non-null vCard object is returned.
+            myVCard = new VCard();
+        }
+        return myVCard;
+    }
+
+    /**
+     * Saves or updates a vCard.
+     *
+     * @param vCard The vCard.
+     * @throws TimeoutException If the server did not answer in time.
+     */
+    public void setVCard(VCard vCard) throws TimeoutException {
+        if (vCard == null) {
+            throw new IllegalArgumentException("vCard must not be null.");
+        }
+        // Update the vCard
+        connection.query(new IQ(IQ.Type.SET, vCard));
+        myVCard = vCard;
+        // Then inform about the update by sending a presence. The avatar manager will add the update extension.
+        if (isEnabled() && vCard.getPhoto() != null) {
+            Presence presence = connection.getPresenceManager().getLastSentPresence();
+            if (presence == null) {
+                presence = new Presence();
+            }
+            presence.getExtensions().clear();
+            connection.send(presence);
+        }
     }
 
     /**
@@ -82,15 +126,5 @@ public final class VCardManager extends ExtensionManager {
             return result.getExtension(VCard.class);
         }
         return null;
-    }
-
-    /**
-     * Saves or updates a vCard.
-     *
-     * @param vCard The vCard.
-     * @throws TimeoutException If the server did not answer in time.
-     */
-    public void setVCard(VCard vCard) throws TimeoutException {
-        connection.query(new IQ(IQ.Type.SET, vCard));
     }
 }

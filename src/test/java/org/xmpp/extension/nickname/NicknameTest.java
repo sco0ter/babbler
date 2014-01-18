@@ -27,21 +27,13 @@ package org.xmpp.extension.nickname;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.extension.ping.Ping;
-import org.xmpp.extension.ping.PingManager;
-import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
-import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Presence;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt

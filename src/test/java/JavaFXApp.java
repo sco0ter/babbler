@@ -32,6 +32,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -49,6 +51,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.xmpp.*;
+import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
@@ -109,7 +112,6 @@ public class JavaFXApp extends Application {
         final TextField txtDomain = new TextField();
         txtDomain.setPromptText("XMPP domain");
         final TextField txtServer = new TextField();
-        txtServer.setText("localhost");
         txtServer.setPromptText("Server");
         final TextField txtPort = new TextField();
         txtPort.setPromptText("Port");
@@ -342,7 +344,37 @@ public class JavaFXApp extends Application {
                         super.updateItem(item, empty);
                         setGraphic(null);
                         setContextMenu(null);
+
                         if (item != null) {
+                            final Jid user = item.contact.get().getJid();
+                            if (item.avatar.get() == null) {
+                                final Task<Avatar> task = new Task<Avatar>() {
+                                    @Override
+                                    protected Avatar call() throws Exception {
+                                        AvatarManager avatarManager = connection.getExtensionManager(AvatarManager.class);
+                                        try {
+                                            return avatarManager.getAvatar(user);
+                                        } catch (TimeoutException e) {
+                                            e.printStackTrace();
+                                        }
+                                        return null;
+                                    }
+                                };
+                                task.stateProperty().addListener(new ChangeListener<Worker.State>() {
+                                    @Override
+                                    public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State state, Worker.State state2) {
+                                        switch (state2) {
+                                            case SUCCEEDED:
+                                                Avatar avatar = task.getValue();
+                                                if (avatar != null) {
+                                                    item.avatar.set(avatar.getImageData());
+                                                }
+                                        }
+                                    }
+                                });
+                                new Thread(task).start();
+                            }
+
                             setGraphic(new ContactItemView(item));
                             ContextMenu contextMenu = new ContextMenu();
                             MenuItem lastActivityMenuItem = new MenuItem("Get last activity");

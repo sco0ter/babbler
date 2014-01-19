@@ -87,4 +87,8 @@ public abstract class ExtensionManager {
     protected void sendServiceUnavailable(IQ iq) {
         connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable())));
     }
+
+    public Connection getConnection() {
+        return connection;
+    }
 }

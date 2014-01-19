@@ -26,7 +26,7 @@
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "vcard-temp:x:update", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.vcard.avatar;
+@XmlSchema(namespace = "vcard-temp:x:update", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.avatar.vcard;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

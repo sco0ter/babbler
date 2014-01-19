@@ -67,26 +67,6 @@ public final class VCardManager extends ExtensionManager {
     }
 
     /**
-     * Gets the vCard of the current user.
-     *
-     * @return The vCard.
-     * @throws TimeoutException If the server did not answer in time.
-     */
-    public VCard getVCard() throws TimeoutException {
-        if (myVCard != null) {
-            return myVCard;
-        }
-        IQ result = connection.query(new IQ(IQ.Type.GET, new VCard()));
-        if (result != null && result.getType() == IQ.Type.RESULT) {
-            myVCard = result.getExtension(VCard.class);
-        } else {
-            // Make sure, that if a vCard has been loaded, a non-null vCard object is returned.
-            myVCard = new VCard();
-        }
-        return myVCard;
-    }
-
-    /**
      * Saves or updates a vCard.
      *
      * @param vCard The vCard.
@@ -111,6 +91,26 @@ public final class VCardManager extends ExtensionManager {
     }
 
     /**
+     * Gets the vCard of the current user.
+     *
+     * @return The vCard.
+     * @throws TimeoutException If the server did not answer in time.
+     */
+    public VCard getVCard() throws TimeoutException {
+        if (myVCard != null) {
+            return myVCard;
+        }
+        IQ result = connection.query(new IQ(IQ.Type.GET, new VCard()));
+        if (result != null && result.getType() == IQ.Type.RESULT) {
+            myVCard = result.getExtension(VCard.class);
+        } else {
+            // Make sure, that if a vCard has been loaded, a non-null vCard object is returned.
+            myVCard = new VCard();
+        }
+        return myVCard;
+    }
+
+    /**
      * Gets the vCard of another user.
      *
      * @param jid The user's JID.
@@ -122,7 +122,7 @@ public final class VCardManager extends ExtensionManager {
             throw new IllegalArgumentException("jid must not be null.");
         }
         IQ result = connection.query(new IQ(jid.toBareJid(), IQ.Type.GET, new VCard()));
-        if (result.getType() == IQ.Type.RESULT) {
+        if (result != null && result.getType() == IQ.Type.RESULT) {
             return result.getExtension(VCard.class);
         }
         return null;

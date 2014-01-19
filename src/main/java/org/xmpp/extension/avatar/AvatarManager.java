@@ -31,14 +31,18 @@ import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
-import org.xmpp.extension.vcard.avatar.AvatarUpdate;
+import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.stanza.Presence;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -56,17 +60,11 @@ public final class AvatarManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(VCardManager.class.getName());
 
-    private final Map<byte[], Avatar> avatars = new HashMap<>();
+    private final Map<byte[], Avatar> avatars = new ConcurrentHashMap<>();
+
+    private final Map<Jid, byte[]> userAvatars = new ConcurrentHashMap<>();
 
     private final Set<AvatarChangeListener> avatarChangeListeners = new CopyOnWriteArraySet<>();
-
-    private final Map<Jid, byte[]> userAvatars = new HashMap<>();
-
-    private volatile boolean myVCardLoaded;
-
-    private volatile byte[] myCurrentHash;
-
-    private volatile byte[] myCurrentPhoto;
 
     protected AvatarManager(final Connection connection) {
         super(connection);
@@ -74,8 +72,6 @@ public final class AvatarManager extends ExtensionManager {
             @Override
             public void statusChanged(ConnectionEvent e) {
                 if (e.getStatus() == Connection.Status.CLOSED) {
-                    myVCardLoaded = false;
-                    myCurrentHash = null;
                     avatarChangeListeners.clear();
                     avatars.clear();
                 }
@@ -95,29 +91,19 @@ public final class AvatarManager extends ExtensionManager {
                             // Check, if we already know this avatar.
                             Avatar avatar = avatars.get(avatarUpdate.getHash());
                             // If the hash is unknown.
+                            Jid contact = presence.getFrom().toBareJid();
                             if (avatar == null) {
                                 try {
-                                    // Load the vCard for that user
-                                    VCard vCard = vCardManager.getVCard(presence.getFrom().toBareJid());
-                                    // And check if it has a photo.
-                                    VCard.Image image = vCard.getPhoto();
-                                    if (image != null && image.getValue() != null) {
-                                        myCurrentHash = getHash(image.getValue());
-                                        if (myCurrentHash != null) {
-                                            // Store the hash and the avatar.
-                                            avatar = new Avatar(image.getType(), image.getValue());
-                                            avatars.put(myCurrentHash, avatar);
-                                        }
-                                    }
+                                    // Get the avatar for this user.
+                                    avatar = getAvatar(contact);
                                 } catch (TimeoutException e1) {
                                     logger.log(Level.WARNING, e1.getMessage(), e1);
                                 }
                             }
                             // If the avatar was either known before or could be successfully retrieved from the vCard.
                             if (avatar != null) {
-                                Jid contact = presence.getFrom().toBareJid();
                                 byte[] hash = userAvatars.get(contact);
-                                // If the hash is unknown for this user, notify listeners.
+                                // Compare the old hash and the new hash. If both are different notify listeners.
                                 if (!Arrays.equals(hash, avatarUpdate.getHash())) {
                                     for (AvatarChangeListener avatarChangeListener : avatarChangeListeners) {
                                         try {
@@ -126,24 +112,26 @@ public final class AvatarManager extends ExtensionManager {
                                             logger.log(Level.WARNING, e1.getMessage(), e1);
                                         }
                                     }
+                                    // Then store the new hash for that user.
+                                    userAvatars.put(contact, avatarUpdate.getHash());
                                 }
-                                userAvatars.put(contact, avatarUpdate.getHash());
                             }
                         }
                     } else if (!e.isIncoming() && vCardManager.isEnabled()) {
                         // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
 
                         // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element, i.e.:
-                        if (!myVCardLoaded) {
-                            // Load my own vCard in order to advertise an image.
+                        final Jid me = connection.getConnectedResource().toBareJid();
+                        byte[] myHash = userAvatars.get(me);
+                        if (myHash == null) {
+                            // Load my own avatar in order to advertise an image.
                             new Thread() {
                                 @Override
                                 public void run() {
                                     try {
-                                        VCard vCard = vCardManager.getVCard();
-                                        myVCardLoaded = true;
+                                        Avatar avatar = getAvatar(me);
                                         // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
-                                        if (vCard != null && vCard.getPhoto() != null) {
+                                        if (avatar != null && avatar.getImageData() != null) {
                                             // As soon as the vCard has been loaded, broadcast presence, in order to update the avatar.
                                             Presence presence = connection.getPresenceManager().getLastSentPresence();
                                             if (presence == null) {
@@ -162,18 +150,13 @@ public final class AvatarManager extends ExtensionManager {
                         } else {
                             try {
                                 VCard vCard = vCardManager.getVCard();
-                                // 3. If there is no avatar image to be advertised, the photo element MUST be empty, i.e.:
-                                if (vCard == null || vCard.getPhoto() == null || vCard.getPhoto().getValue() == null) {
-                                    myCurrentHash = new byte[0];
-                                    myCurrentPhoto = new byte[0];
-                                } else {
-                                    // If I updated my photo, recalculate hash.
-                                    if (!Arrays.equals(vCard.getPhoto().getValue(), myCurrentPhoto)) {
-                                        myCurrentHash = getHash(vCard.getPhoto().getValue());
-                                    }
-                                    myCurrentPhoto = vCard.getPhoto().getValue();
+                                // 3. If there is no avatar image to be advertised, the photo element MUST be empty
+                                byte[] currentHash = new byte[0];
+                                // If we have a avatar, include its hash.
+                                if (vCard != null && vCard.getPhoto() != null && vCard.getPhoto().getValue() != null) {
+                                    currentHash = getHash(vCard.getPhoto().getValue());
                                 }
-                                presence.getExtensions().add(new AvatarUpdate(myCurrentHash));
+                                presence.getExtensions().add(new AvatarUpdate(currentHash));
                             } catch (TimeoutException e1) {
                                 logger.log(Level.WARNING, e1.getMessage(), e1);
                             }
@@ -194,7 +177,50 @@ public final class AvatarManager extends ExtensionManager {
         } catch (NoSuchAlgorithmException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
         }
-        return null;
+        return new byte[0];
+    }
+
+    /**
+     * Gets the user avatar.
+     *
+     * @param user The user.
+     * @return The user's avatar or null, if it has no avatar.
+     */
+    public Avatar getAvatar(Jid user) throws TimeoutException {
+        if (user == null) {
+            throw new IllegalArgumentException("user must not be null.");
+        }
+        Avatar avatar = null;
+        user = user.toBareJid();
+        synchronized (avatars) {
+            // Let's see, if there's a stored image already.
+            byte[] hash = userAvatars.get(user);
+            if (hash != null) {
+                return avatars.get(hash);
+            } else {
+                // If there's no avatar for that user, load it.
+                VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
+                hash = new byte[0];
+
+                // Load the vCard for that user
+                VCard vCard = vCardManager.getVCard(user);
+                if (vCard != null) {
+                    // And check if it has a photo.
+                    VCard.Image image = vCard.getPhoto();
+                    if (image != null && image.getValue() != null) {
+                        hash = getHash(image.getValue());
+                        if (hash != null) {
+                            avatar = new Avatar(image.getType(), image.getValue());
+                        }
+                    }
+                }
+                userAvatars.put(user, hash);
+                if (avatar != null) {
+                    avatars.put(hash, avatar);
+                }
+            }
+        }
+        return avatar;
     }
 
     @Override

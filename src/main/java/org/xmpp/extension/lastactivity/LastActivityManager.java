@@ -91,7 +91,7 @@ public final class LastActivityManager extends ExtensionManager {
                     synchronized (LastActivityManager.this) {
                         // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
                         if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
-                            presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity())));
+                            presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity()), presence.getStatus()));
                         }
                     }
                 }
@@ -109,7 +109,7 @@ public final class LastActivityManager extends ExtensionManager {
                             if (isEnabled()) {
                                 IQ result = iq.createResult();
                                 long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
-                                result.setExtension(new LastActivity(seconds));
+                                result.setExtension(new LastActivity(seconds, null));
                                 connection.send(result);
                             } else {
                                 sendServiceUnavailable(iq);

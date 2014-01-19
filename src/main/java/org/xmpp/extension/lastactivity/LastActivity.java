@@ -53,8 +53,9 @@ public final class LastActivity {
      *
      * @param seconds The number of seconds since the last activity.
      */
-    public LastActivity(long seconds) {
+    public LastActivity(long seconds, String status) {
         this.seconds = seconds;
+        this.status = status;
     }
 
     /**

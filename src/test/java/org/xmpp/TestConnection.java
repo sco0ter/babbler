@@ -47,7 +47,7 @@ public class TestConnection extends Connection {
     private MockServer mockServer;
 
     public TestConnection() {
-        super("", Proxy.NO_PROXY);
+        this(Jid.fromString("test@domain/resource"), new MockServer());
     }
 
     public TestConnection(Jid jid, MockServer mockServer) {

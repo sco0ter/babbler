@@ -95,7 +95,7 @@ public final class ChatManager {
             @Override
             public void handle(MessageEvent e) {
                 Message message = e.getMessage();
-                if (message.getType() == Message.Type.CHAT) {
+                if (message.getType() == Message.Type.CHAT && message.getBody() != null && !message.getBody().isEmpty()) {
                     Jid chatPartner = e.isIncoming() ? message.getFrom() : message.getTo();
                     // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
                     // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).

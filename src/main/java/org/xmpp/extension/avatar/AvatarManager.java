@@ -129,17 +129,15 @@ public final class AvatarManager extends ExtensionManager {
                                 @Override
                                 public void run() {
                                     try {
-                                        Avatar avatar = getAvatar(me);
+                                        getAvatar(me);
                                         // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
-                                        if (avatar != null && avatar.getImageData() != null) {
-                                            // As soon as the vCard has been loaded, broadcast presence, in order to update the avatar.
-                                            Presence presence = connection.getPresenceManager().getLastSentPresence();
-                                            if (presence == null) {
-                                                presence = new Presence();
-                                            }
-                                            presence.getExtensions().clear();
-                                            connection.send(presence);
+                                        // As soon as the vCard has been loaded, broadcast presence, in order to update the avatar.
+                                        Presence presence = connection.getPresenceManager().getLastSentPresence();
+                                        if (presence == null) {
+                                            presence = new Presence();
                                         }
+                                        presence.getExtensions().clear();
+                                        connection.send(presence);
                                     } catch (TimeoutException e1) {
                                         logger.log(Level.WARNING, e1.getMessage(), e1);
                                     }

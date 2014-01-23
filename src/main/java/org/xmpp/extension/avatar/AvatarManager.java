@@ -29,9 +29,9 @@ import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
-import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.stanza.Presence;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
@@ -188,7 +188,7 @@ public final class AvatarManager extends ExtensionManager {
         if (user == null) {
             throw new IllegalArgumentException("user must not be null.");
         }
-        Avatar avatar = null;
+        Avatar avatar = new Avatar(null, null);
         user = user.toBareJid();
         synchronized (avatars) {
             // Let's see, if there's a stored image already.
@@ -213,9 +213,7 @@ public final class AvatarManager extends ExtensionManager {
                     }
                 }
                 userAvatars.put(user, hash);
-                if (avatar != null) {
-                    avatars.put(hash, avatar);
-                }
+                avatars.put(hash, avatar);
             }
         }
         return avatar;

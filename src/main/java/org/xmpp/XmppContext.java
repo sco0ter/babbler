@@ -29,6 +29,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.avatar.AvatarManager;
+import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.extension.bob.Data;
 import org.xmpp.extension.bosh.Body;
 import org.xmpp.extension.chatstate.*;
@@ -53,6 +54,7 @@ import org.xmpp.extension.privacylists.Privacy;
 import org.xmpp.extension.privatedata.PrivateData;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
+import org.xmpp.extension.privatedata.rosterdelimiter.RosterDelimiter;
 import org.xmpp.extension.pubsub.PubSub;
 import org.xmpp.extension.registration.Register;
 import org.xmpp.extension.registration.Registration;
@@ -68,7 +70,6 @@ import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
-import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
@@ -177,6 +178,9 @@ public abstract class XmppContext {
 
             // XEP-0077: In-Band Registration
             registerExtension(Register.class, Registration.class);
+
+            // XEP-0083: Nested Roster Groups
+            registerExtension(RosterDelimiter.class);
 
             // XEP-0085: Chat State Notifications
             registerExtension(Active.class, Composing.class, Gone.class, Inactive.class, Paused.class);

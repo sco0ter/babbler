@@ -22,33 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.avatar;
-
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.extension.avatar.vcard.AvatarUpdate;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>.
  */
-public class AvatarTest extends BaseTest {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "roster:delimiter", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatedata.rosterdelimiter;
 
-    @Test
-    public void marshalVCardUpdateWithEmptyPhotoElement() throws JAXBException, XMLStreamException, IOException {
-        AvatarUpdate avatarUpdate = new AvatarUpdate(new byte[0]);
-        String xml = marshall(avatarUpdate);
-        Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"><photo></photo></x>", xml);
-    }
-
-    @Test
-    public void marshalVCardUpdateWithNoPhotoElement() throws JAXBException, XMLStreamException, IOException {
-        AvatarUpdate avatarUpdate = new AvatarUpdate();
-        String xml = marshall(avatarUpdate);
-        Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"></x>", xml);
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

@@ -1,6 +1,6 @@
 **Babbler** is a young [XMPP](http://xmpp.org) client library for Java SE 7 based on JAXB as XML processing technology.
 
-It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 250+ unit tests).
+It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 400+ unit tests).
 
 You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 
@@ -43,7 +43,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt not supported][not supported]   [XEP-0095: Stream Initiation](http://xmpp.org/extensions/xep-0095.html)
 * ![alt not supported][not supported]   [XEP-0096: SI File Transfer](http://xmpp.org/extensions/xep-0096.html)
 * ![alt supported][supported]           [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
-* ![alt not supported][not supported]   [XEP-0107: User Mood](http://xmpp.org/extensions/xep-0107.html)
+* ![alt supported][supported]           [XEP-0107: User Mood](http://xmpp.org/extensions/xep-0107.html)
 * ![alt not supported][not supported]   [XEP-0108: User Activity](http://xmpp.org/extensions/xep-0108.html)
 * ![alt not supported][not supported]   [XEP-0114: Jabber Component Protocol](http://xmpp.org/extensions/xep-0114.html)
 * ![alt in development][in development] [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)

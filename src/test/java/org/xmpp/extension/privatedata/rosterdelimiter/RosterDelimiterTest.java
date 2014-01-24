@@ -27,10 +27,8 @@ package org.xmpp.extension.privatedata.rosterdelimiter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
-import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.privatedata.PrivateData;
-import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -45,10 +43,12 @@ public class RosterDelimiterTest extends BaseTest {
 
     @Test
     public void unmarshalAnnotations() throws XMLStreamException, JAXBException {
-        String xml = "<iq type='get'\n" +
-                "    id='1'>\n" +
+        String xml = "<iq type='result'\n" +
+                "    id='1'\n" +
+                "    from='bill@shakespeare.lit/Globe'\n" +
+                "    to='bill@shakespeare.lit/Globe'>\n" +
                 "  <query xmlns='jabber:iq:private'>\n" +
-                "    <roster xmlns='roster:delimiter'/>\n" +
+                "    <roster xmlns='roster:delimiter'>::</roster>\n" +
                 "  </query>\n" +
                 "</iq>\n";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
@@ -56,17 +56,9 @@ public class RosterDelimiterTest extends BaseTest {
         PrivateData privateData = iq.getExtension(PrivateData.class);
         Assert.assertNotNull(privateData);
         Assert.assertEquals(privateData.getItems().size(), 1);
-        Assert.assertTrue(privateData.getItems().get(0) instanceof Annotation);
-        Annotation annotations = (Annotation) privateData.getItems().get(0);
-        Assert.assertEquals(annotations.getNotes().size(), 2);
-        Assert.assertEquals(annotations.getNotes().get(0).getJid(), Jid.fromString("hamlet@shakespeare.lit"));
-        Assert.assertEquals(annotations.getNotes().get(0).getValue(), "Seems to be a good writer");
-        Assert.assertNotNull(annotations.getNotes().get(0).getCreationDate());
-        Assert.assertNotNull(annotations.getNotes().get(0).getModificationDate());
-        Assert.assertEquals(annotations.getNotes().get(1).getJid(), Jid.fromString("juliet@capulet.com"));
-        Assert.assertEquals(annotations.getNotes().get(1).getValue(), "Oh my sweetest love ...");
-        Assert.assertNotNull(annotations.getNotes().get(1).getCreationDate());
-        Assert.assertNotNull(annotations.getNotes().get(1).getModificationDate());
+        Assert.assertTrue(privateData.getItems().get(0) instanceof RosterDelimiter);
+        RosterDelimiter rosterDelimiter = (RosterDelimiter) privateData.getItems().get(0);
+        Assert.assertEquals(rosterDelimiter.getRosterDelimiter(), "::");
     }
 
     @Test

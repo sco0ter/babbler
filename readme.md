@@ -171,6 +171,7 @@ connection.getRosterManager().addRosterListener(new RosterListener() {
 
 If you want to connect to the server, you can do it like that:
 
+
 ```java
 try {
    connection.connect();
@@ -188,6 +189,7 @@ This will
 
 After connecting, you have to authenticate and bind a resource, in order to become a "connected resource". After that step you will be able to send message, presence and iq stanzas.
 
+
 ```java
 try {
    connection.login("username", "password", "resource");
@@ -198,19 +200,24 @@ try {
 
 ## Establishing a presence session
 After you are connected, authenticated and have bound a resource you should now establish a presence session, by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
+
+
 ```java
 connection.send(new Presence());
 ```
 
 # Managing extensions
 ## Getting extensions from stanzas
+
 ```java
 DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
 ```
+
 ```java
 Attention attention = message.getExtension(Attention.class);
 ```
 ## Enabling and using extensions
+
 ```java
 MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection.getExtensionManager(MessageDeliveryReceiptsManager.class);
 messageDeliveryReceiptsManager.setEnabled(true);
@@ -221,14 +228,17 @@ messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredL
     }
 });
 ```
+
 ```java
 LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
 lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
 ```
+
 ```java
 SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));
 ```
+
 [supported]: /sco0ter/babbler/raw/tip/supported.png "Is supported"
 [not supported]: /sco0ter/babbler/raw/tip/notsupported.png "Is not supported"
 [in development]: /sco0ter/babbler/raw/tip/development.png "Is in development or planned"

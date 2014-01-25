@@ -234,6 +234,8 @@ LastActivityManager lastActivityManager = connection.getExtensionManager(LastAct
 lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
 ```
 
+
+
 ```java
 SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.fromString("romeo@example.net"));

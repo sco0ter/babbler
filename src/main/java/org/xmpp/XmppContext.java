@@ -36,6 +36,7 @@ import org.xmpp.extension.chatstate.*;
 import org.xmpp.extension.compression.Compression;
 import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
+import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
 import org.xmpp.extension.ibb.Close;
 import org.xmpp.extension.ibb.InBandByteStreamManager;
 import org.xmpp.extension.ibb.Open;
@@ -154,6 +155,9 @@ public abstract class XmppContext {
 
             // XEP-0016: Privacy Lists
             registerExtension(Privacy.class);
+
+            // XEP-0020: Feature Negotiation
+            registerExtension(FeatureNegotiation.class);
 
             // XEP-0030: Service Discovery
             registerExtension(InfoDiscovery.class, ItemDiscovery.class);

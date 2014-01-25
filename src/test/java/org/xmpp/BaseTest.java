@@ -51,6 +51,7 @@ public class BaseTest {
 
     public BaseTest() {
         connection = new TestConnection();
+
     }
 
     @BeforeClass
@@ -60,7 +61,6 @@ public class BaseTest {
     }
 
     protected String marshall(Object object) throws XMLStreamException, JAXBException, IOException {
-        TestConnection connection = new TestConnection();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         XMLStreamWriter xmlStreamWriter = connection.createXMLStreamWriter(outputStream);
         marshaller.marshal(object, xmlStreamWriter);

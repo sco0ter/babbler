@@ -16,7 +16,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt supported][supported]           [XEP-0012: Last Activity](http://xmpp.org/extensions/xep-0012.html)
 * ![alt not supported][not supported]   [XEP-0013: Flexible Offline Message Retrieval](http://xmpp.org/extensions/xep-0013.html)
 * ![alt in development][in development] [XEP-0016: Privacy Lists](http://xmpp.org/extensions/xep-0016.html)
-* ![alt not supported][not supported]   [XEP-0020: Feature Negotiation](http://xmpp.org/extensions/xep-0020.html)
+* ![alt supported][supported]           [XEP-0020: Feature Negotiation](http://xmpp.org/extensions/xep-0020.html)
 * ![alt not supported][not supported]   [XEP-0027: Current Jabber OpenPGP Usage](http://xmpp.org/extensions/xep-0027.html)
 * ![alt supported][supported]           [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
 * ![alt not supported][not supported]   [XEP-0033: Extended Stanza Addressing](http://xmpp.org/extensions/xep-0033.html)

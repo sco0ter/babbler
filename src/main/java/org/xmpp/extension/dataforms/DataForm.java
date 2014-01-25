@@ -26,6 +26,7 @@ package org.xmpp.extension.dataforms;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,7 +36,6 @@ import java.util.List;
  */
 @XmlRootElement(name = "x")
 public final class DataForm {
-
     @XmlAttribute
     private Type type;
 
@@ -54,6 +54,25 @@ public final class DataForm {
     @XmlElementWrapper(name = "reported")
     @XmlElement(name = "field")
     private List<Field> reportedFields = new ArrayList<>();
+
+    private DataForm() {
+
+    }
+
+    public DataForm(Type type) {
+        this.type = type;
+    }
+
+    public DataForm(Type type, String title) {
+        this.type = type;
+        this.title = title;
+    }
+
+    public DataForm(Type type, String title, String... instructions) {
+        this.type = type;
+        this.title = title;
+        this.instructions.addAll(Arrays.asList(instructions));
+    }
 
     /**
      * Gets the title of the form.
@@ -105,7 +124,6 @@ public final class DataForm {
     public void setType(Type type) {
         this.type = type;
     }
-
 
     public List<Field> getReportedFields() {
         return reportedFields;
@@ -167,6 +185,19 @@ public final class DataForm {
 
         @XmlAttribute(name = "var")
         private String var;
+
+        private Field() {
+
+        }
+
+        public Field(Type type) {
+            this.type = type;
+        }
+
+        public Field(Type type, String var) {
+            this.type = type;
+            this.var = var;
+        }
 
         public Type getType() {
             return type;
@@ -268,11 +299,24 @@ public final class DataForm {
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Option {
+
         @XmlAttribute(name = "label")
         private String label;
 
         @XmlElement(name = "value")
         private String value;
+
+        private Option() {
+        }
+
+        public Option(String value) {
+            this.value = value;
+        }
+
+        public Option(String value, String label) {
+            this.value = value;
+            this.label = label;
+        }
 
         public String getLabel() {
             return label;

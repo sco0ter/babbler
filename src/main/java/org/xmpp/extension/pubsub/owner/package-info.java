@@ -22,55 +22,18 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+/**
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a> (#owner).
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
+@XmlSchema(namespace = "http://jabber.org/protocol/pubsub#owner", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.pubsub.owner;
 
 import org.xmpp.Jid;
+import org.xmpp.util.JidAdapter;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnumValue;
-
-/**
- * @author Christian Schudt
- */
-public class Subscription {
-    @XmlAttribute(name = "node")
-    private String node;
-
-    @XmlAttribute(name = "jid")
-    private Jid jid;
-
-    @XmlAttribute(name = "subid")
-    private String subid;
-
-    @XmlAttribute(name = "subscription")
-    private SubscriptionType type;
-
-    @XmlElement(name = "subscribe-options")
-    private Options options;
-
-    public Options getOptions() {
-        return options;
-    }
-
-    public SubscriptionType getType() {
-        return type;
-    }
-
-    public enum SubscriptionType {
-        @XmlEnumValue("none")
-        NONE,
-        @XmlEnumValue("pending")
-        PENDING,
-        @XmlEnumValue("subscribed")
-        SUBSCRIBED,
-        @XmlEnumValue("unconfigured")
-        UNCONFIGURED,
-    }
-
-    public static final class Options {
-
-        @XmlElement(name = "required")
-        private String required;
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

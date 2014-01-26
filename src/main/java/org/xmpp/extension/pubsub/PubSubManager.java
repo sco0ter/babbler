@@ -26,6 +26,7 @@ package org.xmpp.extension.pubsub;
 
 import org.xmpp.Connection;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.stanza.IQ;
 
 import java.util.Collection;
@@ -47,31 +48,59 @@ public final class PubSubManager extends ExtensionManager {
 
     public List<Subscription> getSubscriptions(String node) throws TimeoutException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Subscriptions(node)));
-        PubSub.Subscriptions subscription = result.getExtension(PubSub.Subscriptions.class);
-
-        return null;
-
+        PubSub.Subscriptions subscriptions = result.getExtension(PubSub.Subscriptions.class);
+        return subscriptions.getSubscriptions();
     }
 
-    public List<PubSub.Affiliations.Affiliation> getAffiliations(String node) throws TimeoutException {
+    public List<Affiliation> getAffiliations(String node) throws TimeoutException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Affiliations(node)));
         PubSub.Affiliations affiliations = result.getExtension(PubSub.Affiliations.class);
+        return affiliations.getAffiliations();
+    }
+
+    public Subscription subscribe(String node) throws TimeoutException {
+        IQ result = connection.query(new IQ(IQ.Type.SET, new PubSub.Subscribe(node, connection.getConnectedResource().toBareJid())));
+        if (result.getType() == IQ.Type.RESULT) {
+            PubSub pubSub = result.getExtension(PubSub.class);
+            return pubSub.getSubscription();
+        }
+        return null;
+    }
+
+    public void unsubscribe(String node) throws TimeoutException {
+        IQ result = connection.query(new IQ(IQ.Type.SET, new PubSub.Unsubscribe(node, connection.getConnectedResource().toBareJid())));
+        if (result.getType() == IQ.Type.RESULT) {
+            PubSub pubSub = result.getExtension(PubSub.class);
+
+        }
+    }
+
+    public DataForm requestSubscriptionOptions(String node) throws TimeoutException {
+        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Options(node)));
+        PubSub pubSub = result.getExtension(PubSub.class);
+        if (pubSub != null) {
+            return pubSub.getOptions().getDataForm();
+        }
+        return null;
+    }
+
+    public DataForm requestDefaultSubscriptionConfigurationOptions(String node) throws TimeoutException {
+        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Default(node)));
+        PubSub pubSub = result.getExtension(PubSub.class);
+        if (pubSub != null) {
+            return pubSub.getOptions().getDataForm();
+        }
+        return null;
+    }
+
+    public List<Item> getItems(String node) throws TimeoutException {
+        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Items(node)));
 
         return null;
-
-    }
-
-    public Subscription subscribe(String node) {
-        IQ result = new IQ(IQ.Type.SET, new PubSub.Subscribe(node, connection.getConnectedResource().toBareJid()));
-        return result.getExtension(Subscription.class);
-    }
-
-    public void unsubscribe(String node) {
-
     }
 
     @Override
     protected Collection<String> getFeatureNamespaces() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }

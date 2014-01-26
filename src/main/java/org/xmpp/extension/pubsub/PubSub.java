@@ -39,6 +39,19 @@ public final class PubSub {
     @XmlElement
     private Publish publish;
 
+    @XmlElement
+    private Subscription subscription;
+
+    private Options options;
+
+    public Subscription getSubscription() {
+        return subscription;
+    }
+
+    public Options getOptions() {
+        return options;
+    }
+
     public static final class Create {
         @XmlAttribute(name = "node")
         private String node;
@@ -89,7 +102,22 @@ public final class PubSub {
     }
 
     public static final class Options {
+        @XmlAttribute(name = "node")
+        private String node;
 
+        @XmlAttribute(name = "jid")
+        private Jid jid;
+
+        @XmlElementRef
+        private DataForm dataForm;
+
+        public Options(String node) {
+            this.node = node;
+        }
+
+        public DataForm getDataForm() {
+            return dataForm;
+        }
     }
 
     public static final class Affiliations {
@@ -107,38 +135,25 @@ public final class PubSub {
             this.node = node;
         }
 
-        public static final class Affiliation {
-
-            @XmlAttribute(name = "node")
-            private String node;
-
-            @XmlAttribute(name = "affiliation")
-            private Type affiliation;
-
-            public enum Type {
-                @XmlEnumValue("member")
-                MEMBER,
-                @XmlEnumValue("none")
-                NONE,
-                @XmlEnumValue("outcast")
-                OUTCAST,
-                @XmlEnumValue("owner")
-                OWNER,
-                @XmlEnumValue("publisher")
-                PUBLISHER,
-                @XmlEnumValue("publish-only")
-                PUBLISH_ONLY
-            }
+        public List<Affiliation> getAffiliations() {
+            return affiliations;
         }
     }
 
     public static final class Default {
-
         @XmlAttribute(name = "node")
         private String node;
 
         @XmlAttribute(name = "type")
         private Type type;
+
+        private Default() {
+
+        }
+
+        public Default(String node) {
+            this.node = node;
+        }
 
         public enum Type {
             @XmlEnumValue("collection")
@@ -165,13 +180,23 @@ public final class PubSub {
         }
     }
 
-    @XmlRootElement(name = "item")
-    public static final class Item {
-        @XmlAnyElement
-        private Object object;
+    @XmlRootElement(name = "items")
+    public static final class Items {
 
-        @XmlAttribute(name = "id")
-        private String id;
+        private List<Item> items;
+
+        @XmlAttribute(name = "max_items")
+        private Long maxItems;
+
+        @XmlAttribute(name = "node")
+        private String node;
+
+        @XmlAttribute(name = "subid")
+        private String subid;
+
+        public Items(String node) {
+             this.node = node;
+        }
     }
 
     public static final class Subscriptions {
@@ -189,6 +214,9 @@ public final class PubSub {
 
         }
 
+        public List<Subscription> getSubscriptions() {
+            return subscriptions;
+        }
     }
 
 }

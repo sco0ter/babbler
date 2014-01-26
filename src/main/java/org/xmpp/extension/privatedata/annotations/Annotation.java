@@ -74,7 +74,7 @@ public final class Annotation {
          * Creates a roster note.
          *
          * @param note The note.
-         * @param jid  The 'jid' attribute of the <note/> element SHOULD be used without a resource.
+         * @param jid  The 'jid' attribute of the {@code <note/>} element SHOULD be used without a resource.
          */
         public Note(String note, Jid jid) {
             this(note, jid, null, null);

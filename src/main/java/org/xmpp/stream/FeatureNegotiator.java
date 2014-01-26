@@ -80,7 +80,8 @@ public abstract class FeatureNegotiator {
     /**
      * Notifies the listener, if a feature negotiation has completed.
      *
-     * @param status The status of the feature negotiation process.
+     * @param status  The status of the feature negotiation process.
+     * @param element The element, which triggered the feature status change.
      */
     protected void notifyFeatureNegotiated(Status status, Object element) {
         if (status == null) {

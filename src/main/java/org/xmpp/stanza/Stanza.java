@@ -489,9 +489,6 @@ public abstract class Stanza {
                 associatedErrorType.put(BadRequest.class, Type.MODIFY);
             }
 
-            private BadRequest() {
-            }
-
             @Override
             public String toString() {
                 return "bad-request";

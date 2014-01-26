@@ -98,7 +98,8 @@ Since this project is quite young, the API might change. Comments on the API are
 Additionally following informational XEP documents are respected:
 
 * ![alt supported][supported]           [XEP-0082: XMPP Date and Time Profiles](http://xmpp.org/extensions/xep-0082.html)
-* ![alt supported][supported]           [XEP-0083: Nested Roster Groups](xmpp.org/extensions/xep-0083.html)
+* ![alt supported][supported]           [XEP-0083: Nested Roster Groups](http://xmpp.org/extensions/xep-0083.html)
+* ![alt supported][supported]           [XEP-0128: Service Discovery Extensions](http://xmpp.org/extensions/xep-0128.html)
 * ![alt supported][supported]           [XEP-0170: Recommended Order of Stream Feature Negotiation](http://xmpp.org/extensions/xep-0170.html)
 * ![alt supported][supported]           [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
 

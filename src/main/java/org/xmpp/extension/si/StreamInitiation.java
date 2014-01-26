@@ -58,4 +58,20 @@ public final class StreamInitiation {
     public StreamInitiation(String profile, String mimeType, Object profileElement, FeatureNegotiation featureNegotiation) {
 
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public Object getProfileElement() {
+        return profileElement;
+    }
 }

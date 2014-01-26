@@ -22,43 +22,10 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.avatar;
-
 /**
- * Represents an avatar image.
- *
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.
  */
-public final class Avatar {
-    private final String type;
+@XmlSchema(namespace = "http://jabber.org/protocol/offline", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.offlinemessages;
 
-    private final byte[] imageData;
-
-    /**
-     * @param type      The image type.
-     * @param imageData The image data.
-     */
-    Avatar(String type, byte[] imageData) {
-        this.type = type;
-        this.imageData = imageData;
-
-    }
-
-    /**
-     * Gets the image type, e.g. "image/jpeg"
-     *
-     * @return The type.
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Gets the binary image data.
-     *
-     * @return The image data.
-     */
-    public byte[] getImageData() {
-        return imageData;
-    }
-}
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

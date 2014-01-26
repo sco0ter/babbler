@@ -129,6 +129,7 @@ public final class IQ extends Stanza {
     /**
      * Creates an IQ stanza with the given receiver, id, type and extension.
      *
+     * @param to        The receiver.
      * @param id        The id.
      * @param type      The type.
      * @param extension The extension.

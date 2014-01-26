@@ -183,6 +183,7 @@ public final class AvatarManager extends ExtensionManager {
      *
      * @param user The user.
      * @return The user's avatar or null, if it has no avatar.
+     * @throws TimeoutException If the operation timed out.
      */
     public Avatar getAvatar(Jid user) throws TimeoutException {
         if (user == null) {

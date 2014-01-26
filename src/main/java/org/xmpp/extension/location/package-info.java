@@ -22,43 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.avatar;
-
 /**
- * Represents an avatar image.
- *
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>.
  */
-public final class Avatar {
-    private final String type;
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "http://jabber.org/protocol/geoloc", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.location;
 
-    private final byte[] imageData;
-
-    /**
-     * @param type      The image type.
-     * @param imageData The image data.
-     */
-    Avatar(String type, byte[] imageData) {
-        this.type = type;
-        this.imageData = imageData;
-
-    }
-
-    /**
-     * Gets the image type, e.g. "image/jpeg"
-     *
-     * @return The type.
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * Gets the binary image data.
-     *
-     * @return The image data.
-     */
-    public byte[] getImageData() {
-        return imageData;
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

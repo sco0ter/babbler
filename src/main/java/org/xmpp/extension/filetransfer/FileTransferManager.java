@@ -31,19 +31,81 @@ import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
 import org.xmpp.extension.si.StreamInitiation;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.IQEvent;
+import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.Stanza;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.Collection;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
 public final class FileTransferManager extends ExtensionManager {
-    protected FileTransferManager(Connection connection) {
+    private static final Logger logger = Logger.getLogger(FileTransferManager.class.getName());
+
+    private final Set<FileTransferListener> fileTransferListeners = new CopyOnWriteArraySet<>();
+
+    protected FileTransferManager(final Connection connection) {
         super(connection);
+
+        connection.addIQListener(new IQListener() {
+            @Override
+            public void handle(IQEvent e) {
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && iq.getType() == IQ.Type.SET) {
+                    StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
+                    if (streamInitiation != null && streamInitiation.getProfile() != null && streamInitiation.getProfile().equals(FileTransfer.PROFILE)) {
+                        Object profileElement = streamInitiation.getProfileElement();
+                        if (profileElement instanceof FileTransfer) {
+                            FileTransfer fileTransfer = (FileTransfer) profileElement;
+                            notifyIncomingFileTransferRequest();
+
+                        } else {
+                            IQ result = iq.createError(new Stanza.Error(new Stanza.Error.BadRequest()));
+                            connection.send(result);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void notifyIncomingFileTransferRequest() {
+        for (FileTransferListener fileTransferListener : fileTransferListeners) {
+            try {
+                fileTransferListener.fileTransferRequest(new FileTransferRequestEvent(this));
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * Adds a file transfer listener, which allows to listen for incoming file transfer requests.
+     *
+     * @param fileTransferListener The listener.
+     * @see #removeFileTransferListener(FileTransferListener)
+     */
+    public void addFileTransferListener(FileTransferListener fileTransferListener) {
+        fileTransferListeners.add(fileTransferListener);
+    }
+
+    /**
+     * Removes a previously added file transfer listener.
+     *
+     * @param fileTransferListener The listener.
+     * @see #addFileTransferListener(FileTransferListener)
+     */
+    public void removeFileTransferListener(FileTransferListener fileTransferListener) {
+        fileTransferListeners.remove(fileTransferListener);
     }
 
     public void sendFile(File file, Jid jid) {

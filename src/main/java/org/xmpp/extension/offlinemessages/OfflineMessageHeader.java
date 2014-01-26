@@ -22,48 +22,21 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.chatstate;
+package org.xmpp.extension.offlinemessages;
 
-import org.xmpp.im.ChatSession;
-
-import java.util.EventObject;
+import org.xmpp.Jid;
 
 /**
  * @author Christian Schudt
  */
-public final class ChatStateEvent extends EventObject {
+public final class OfflineMessageHeader {
 
-    private final ChatSession chatSession;
+    private final Jid sender;
 
-    private final ChatState chatState;
+    private final String id;
 
-    private final boolean local;
-
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source      The object on which the Event initially occurred.
-     * @param chatSession The chat session.
-     * @param chatState   The chat state.
-     * @param local       True, if the chat state has been changed locally, i.e. by me. False if the chat state was updated by the chat partner.
-     * @throws IllegalArgumentException if source is null.
-     */
-    public ChatStateEvent(Object source, ChatSession chatSession, ChatState chatState, boolean local) {
-        super(source);
-        this.chatSession = chatSession;
-        this.chatState = chatState;
-        this.local = local;
-    }
-
-    public ChatState getChatState() {
-        return chatState;
-    }
-
-    public ChatSession getChatSession() {
-        return chatSession;
-    }
-
-    public boolean isLocal() {
-        return local;
+    OfflineMessageHeader(Jid sender, String id) {
+        this.sender = sender;
+        this.id = id;
     }
 }

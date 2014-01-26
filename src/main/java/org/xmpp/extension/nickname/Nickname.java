@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlValue;
  * The implementation of <a href="http://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>.
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0172.html#intro">1. Introduction</a></cite></p>
- * <p>A nickname is a global, memorable (but not necessarily unique) friendly or informal name chosen by the owner of a bare JID <localpart@domain.tld> for the purpose of associating a distinctive mapping between the person's unique JID and non-unique nickname.</p>
+ * <p>A nickname is a global, memorable (but not necessarily unique) friendly or informal name chosen by the owner of a bare JID {@code <localpart@domain.tld>} for the purpose of associating a distinctive mapping between the person's unique JID and non-unique nickname.</p>
  * </blockquote>
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0172.html#usecases">4. Use Cases</a></cite></p>

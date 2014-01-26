@@ -46,7 +46,7 @@ import java.util.Collection;
  * connection.addMessageListener(new MessageListener() {
  *     {@literal @}Override
  *     public void handle(MessageEvent e) {
- *         if (e.isIncoming() && e.getMessage().getExtension(Attention.class) != null) {
+ *         if (e.isIncoming() &amp;&amp; e.getMessage().getExtension(Attention.class) != null) {
  *             // Handle attention request.
  *         }
  *     }

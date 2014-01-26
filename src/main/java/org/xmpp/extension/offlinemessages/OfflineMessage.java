@@ -22,48 +22,65 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.chatstate;
+package org.xmpp.extension.offlinemessages;
 
-import org.xmpp.im.ChatSession;
+import org.xmpp.Jid;
 
-import java.util.EventObject;
+import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-public final class ChatStateEvent extends EventObject {
+@XmlRootElement(name = "offline")
+public final class OfflineMessage {
 
-    private final ChatSession chatSession;
+    @XmlElement(name = "item")
+    private List<Item> items = new ArrayList<>();
 
-    private final ChatState chatState;
+    @XmlElement(name = "fetch")
+    private String fetch;
 
-    private final boolean local;
+    @XmlElement(name = "purge")
+    private String purge;
 
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source      The object on which the Event initially occurred.
-     * @param chatSession The chat session.
-     * @param chatState   The chat state.
-     * @param local       True, if the chat state has been changed locally, i.e. by me. False if the chat state was updated by the chat partner.
-     * @throws IllegalArgumentException if source is null.
-     */
-    public ChatStateEvent(Object source, ChatSession chatSession, ChatState chatState, boolean local) {
-        super(source);
-        this.chatSession = chatSession;
-        this.chatState = chatState;
-        this.local = local;
+    public OfflineMessage() {
     }
 
-    public ChatState getChatState() {
-        return chatState;
+    public OfflineMessage(boolean fetch, boolean purge) {
+        this.fetch = fetch ? "" : null;
+        this.purge = purge ? "" : null;
     }
 
-    public ChatSession getChatSession() {
-        return chatSession;
+    public List<Item> getItems() {
+        return items;
     }
 
-    public boolean isLocal() {
-        return local;
+    public static final class Item {
+        @XmlAttribute(name = "node")
+        private String id;
+
+        //@XmlAttribute(name = "jid")
+        //private Jid jid;
+
+        @XmlAttribute(name = "action")
+        private Action action;
+
+        private Item() {
+        }
+
+        public Item(String id, Action action) {
+            this.id = id;
+            this.action = action;
+        }
+
+        @XmlEnum
+        public enum Action {
+            @XmlEnumValue("remove")
+            REMOVE,
+            @XmlEnumValue("view")
+            VIEW
+        }
     }
 }

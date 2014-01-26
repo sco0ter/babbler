@@ -24,7 +24,11 @@
 
 package org.xmpp.extension.servicediscovery.info;
 
+import org.xmpp.extension.dataforms.DataForm;
+
 import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -44,6 +48,9 @@ public final class InfoDiscovery {
 
     @XmlElement(name = "feature")
     private Set<Feature> features;
+
+    @XmlElementRef
+    private List<DataForm> extensions = new ArrayList<>();
 
     /**
      * Creates an empty element, used for info discovery requests.
@@ -96,5 +103,14 @@ public final class InfoDiscovery {
      */
     public String getNode() {
         return node;
+    }
+
+    /**
+     * Gets the service discovery extensions as described in <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     *
+     * @return The service discovery extensions.
+     */
+    public List<DataForm> getExtensions() {
+        return extensions;
     }
 }

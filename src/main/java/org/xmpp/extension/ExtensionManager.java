@@ -65,6 +65,7 @@ public abstract class ExtensionManager {
     /**
      * Enables or disables support for the extension.
      *
+     * @param enabled True, if support for the managed extension should be enabled; otherwise false.
      * @see #isEnabled()
      */
     public void setEnabled(boolean enabled) {

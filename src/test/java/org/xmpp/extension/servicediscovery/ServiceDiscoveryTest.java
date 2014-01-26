@@ -27,6 +27,7 @@ package org.xmpp.extension.servicediscovery;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.*;
+import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
@@ -164,5 +165,48 @@ public class ServiceDiscoveryTest extends BaseTest {
         Assert.assertFalse(serviceDiscoveryManager.isEnabled());
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureInfo));
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureItems));
+    }
+
+    @Test
+    public void unmarshalServiceDiscoveryExtension() throws JAXBException, XMLStreamException {
+        String xml = "<iq type='result'\n" +
+                "    from='shakespeare.lit'\n" +
+                "    to='capulet.com'\n" +
+                "    id='disco1'>\n" +
+                "  <query xmlns='http://jabber.org/protocol/disco#info'>\n" +
+                "    <identity\n" +
+                "        category='server'\n" +
+                "        type='im'\n" +
+                "        name='shakespeare.lit jabber server'/>\n" +
+                "    <feature var='jabber:iq:register'/>\n" +
+                "    <x xmlns='jabber:x:data' type='result'>\n" +
+                "      <field var='FORM_TYPE' type='hidden'>\n" +
+                "        <value>http://jabber.org/network/serverinfo</value>\n" +
+                "      </field>\n" +
+                "      <field var='c2s_port'>\n" +
+                "        <value>5222</value>\n" +
+                "      </field>\n" +
+                "      <field var='c2s_port_ssl'>\n" +
+                "        <value>5223</value>\n" +
+                "      </field>\n" +
+                "      <field var='http_access'>\n" +
+                "        <value>http://shakespeare.lit/jabber</value>\n" +
+                "      </field>\n" +
+                "      <field var='ip_version'>\n" +
+                "        <value>ipv4</value>\n" +
+                "        <value>ipv6</value>\n" +
+                "      </field>\n" +
+                "      <field var='info_url'>\n" +
+                "        <value>http://shakespeare.lit/support.php</value>\n" +
+                "      </field>\n" +
+                "    </x>\n" +
+                "  </query>\n" +
+                "</iq>\n";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
+        InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
+        Assert.assertNotNull(infoDiscovery);
+        Assert.assertEquals(infoDiscovery.getExtensions().size(), 1);
+        Assert.assertEquals(infoDiscovery.getExtensions().get(0).getType(), DataForm.Type.RESULT);
     }
 }

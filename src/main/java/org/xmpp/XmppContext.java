@@ -42,6 +42,7 @@ import org.xmpp.extension.ibb.InBandByteStreamManager;
 import org.xmpp.extension.ibb.Open;
 import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.extension.lastactivity.LastActivityManager;
+import org.xmpp.extension.location.GeoLocation;
 import org.xmpp.extension.messagecorrection.MessageCorrectionManager;
 import org.xmpp.extension.messagecorrection.Replace;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager;
@@ -49,6 +50,7 @@ import org.xmpp.extension.messagedeliveryreceipts.Received;
 import org.xmpp.extension.messagedeliveryreceipts.Request;
 import org.xmpp.extension.mood.Mood;
 import org.xmpp.extension.nickname.Nickname;
+import org.xmpp.extension.offlinemessages.OfflineMessage;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privacylists.Privacy;
@@ -153,6 +155,9 @@ public abstract class XmppContext {
             registerExtension(LastActivity.class);
             registerManager(LastActivityManager.class);
 
+            // XEP-0013: Flexible Offline Message Retrieval
+            registerExtension(OfflineMessage.class);
+
             // XEP-0016: Privacy Lists
             registerExtension(Privacy.class);
 
@@ -182,6 +187,9 @@ public abstract class XmppContext {
 
             // XEP-0077: In-Band Registration
             registerExtension(Register.class, Registration.class);
+
+            // XEP-0080: User Location
+            registerExtension(GeoLocation.class);
 
             // XEP-0083: Nested Roster Groups
             registerExtension(RosterDelimiter.class);

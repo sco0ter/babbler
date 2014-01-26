@@ -45,7 +45,7 @@ import java.util.concurrent.TimeoutException;
  * This class also takes care about the following use case, by automatically appending last activity information to 'away' and 'xa' presences:
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0256.html#away">1.2 Away and Extended Away</a></cite></p>
- * <p>When a client automatically sets the user's <show/> value to "away" or "xa" (extended away), it can indicate when that particular was last active during the current presence session.</p>
+ * <p>When a client automatically sets the user's {@code <show/>} value to "away" or "xa" (extended away), it can indicate when that particular was last active during the current presence session.</p>
  * </blockquote>
  * <p>
  * By default last activity for the connected resource is updated whenever a message or available non-away, non-xa presence is sent.

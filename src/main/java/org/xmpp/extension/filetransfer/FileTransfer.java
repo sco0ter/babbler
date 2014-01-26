@@ -50,7 +50,7 @@ public final class FileTransfer {
     private String hash;
 
     @XmlElement(name = "desc")
-    private String desc;
+    private String description;
 
     @XmlElement(name = "range")
     private Range range;
@@ -61,6 +61,30 @@ public final class FileTransfer {
     public FileTransfer(String name, long size) {
         this.name = name;
         this.size = size;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Range getRange() {
+        return range;
     }
 
     public static class Range {

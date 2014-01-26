@@ -52,6 +52,7 @@ public final class LastActivity {
      * Creates a last activity instance with a number of seconds, used as response.
      *
      * @param seconds The number of seconds since the last activity.
+     * @param status  The status text.
      */
     public LastActivity(long seconds, String status) {
         this.seconds = seconds;

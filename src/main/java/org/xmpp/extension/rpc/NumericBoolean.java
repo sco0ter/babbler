@@ -24,8 +24,28 @@
 
 package org.xmpp.extension.rpc;
 
+import javax.xml.bind.annotation.XmlValue;
+
 /**
  * @author Christian Schudt
  */
-public class NumericBoolean {
+final class NumericBoolean {
+    @XmlValue
+    private Integer value;
+
+    private NumericBoolean() {
+    }
+
+    public NumericBoolean(Boolean b) {
+        this.value = b != null && b ? 1 : 0;
+    }
+
+    Integer getValue() {
+        return value;
+    }
+
+    Boolean getAsBoolean()
+    {
+        return value != null ? value != 0 : null;
+    }
 }

@@ -24,16 +24,20 @@
 
 package org.xmpp.extension.rpc;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSeeAlso({NumericBoolean.class, ArrayType.class})
 public final class Rpc {
 
     @XmlElement(name = "methodCall")
@@ -42,18 +46,36 @@ public final class Rpc {
     @XmlElement(name = "methodResponse")
     private String methodResponse;
 
+    private Rpc() {
+
+    }
+
+    public Rpc(String methodName, Value... parameters) {
+        this.methodCall = new MethodCall(methodName, parameters);
+    }
+
     public MethodCall getMethodCall() {
         return methodCall;
     }
 
-    public static class MethodCall {
-
+    public static final class MethodCall {
         @XmlElement(name = "methodName")
         private String methodName;
 
         @XmlElementWrapper(name = "params")
         @XmlElement(name = "param")
-        private List<Parameter> parameters;
+        private List<Parameter> parameters = new ArrayList<>();
+
+        private MethodCall() {
+
+        }
+
+        public MethodCall(String methodName, Value... parameters) {
+            this.methodName = methodName;
+            for (Value value : parameters) {
+                this.parameters.add(new Parameter(value));
+            }
+        }
 
         public String getMethodName() {
             return methodName;
@@ -68,24 +90,48 @@ public final class Rpc {
             @XmlElement(name = "value")
             private Value value;
 
+            private Parameter() {
+            }
+
+            public Parameter(Value value) {
+                this.value = value;
+            }
+
+            public Parameter(Integer integer) {
+                this.value = new Value(integer);
+            }
+
+            public Parameter(String string) {
+                this.value = new Value(string);
+            }
+
+            public Parameter(Double d) {
+                this.value = new Value(d);
+            }
+
+            public Parameter(byte[] bytes) {
+                this.value = new Value(bytes);
+            }
+
+            public Parameter(Boolean b) {
+                this.value = new Value(b);
+            }
+
+            public Parameter(Date date) {
+                this.value = new Value(date);
+            }
+
+            public Parameter(List<Value> list) {
+                this.value = new Value(list);
+            }
+
+            public Parameter(Map<String, Value> map) {
+                this.value = new Value(map);
+            }
+
             public Value getValue() {
                 return value;
             }
-        }
-
-        public static class Value {
-            @XmlElements(value = {
-                    @XmlElement(name = "i4", type = Integer.class),
-                    @XmlElement(name = "int", type = Integer.class),
-                    @XmlElement(name = "string", type = String.class),
-                    @XmlElement(name = "double", type = Double.class),
-                    @XmlElement(name = "base64", type = byte[].class),
-                    @XmlElement(name = "boolean", type = Boolean.class),
-                    @XmlElement(name = "dateTime.iso8601", type = Date.class),
-                    @XmlElement(name = "array", type = ArrayList.class),
-                    @XmlElement(name = "struct", type = ArrayList.class),
-            })
-            private Object value;
         }
     }
 }

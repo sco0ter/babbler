@@ -71,6 +71,7 @@ import org.xmpp.extension.stanzaforwarding.Forwarded;
 import org.xmpp.extension.stanzaforwarding.StanzaForwardingManager;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
+import org.xmpp.extension.tune.Tune;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
@@ -203,6 +204,9 @@ public abstract class XmppContext {
 
             // XEP-0107: User Mood
             registerExtension(Mood.class);
+
+            // XEP-0118: User Tune
+            registerExtension(Tune.class);
 
             // XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)
             registerExtension(Body.class);

@@ -29,6 +29,7 @@ import org.xmpp.Jid;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
@@ -68,6 +69,7 @@ public class Subscription {
         UNCONFIGURED,
     }
 
+    @XmlType(name = "subscription-options")
     public static final class Options {
 
         @XmlElement(name = "required")

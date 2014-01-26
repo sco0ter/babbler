@@ -42,6 +42,7 @@ public final class PubSub {
     @XmlElement
     private Subscription subscription;
 
+    @XmlElement(name = "options")
     private Options options;
 
     public Subscription getSubscription() {

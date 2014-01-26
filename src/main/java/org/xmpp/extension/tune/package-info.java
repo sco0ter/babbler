@@ -22,20 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
-
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0118.html">XEP-0118: User Tune</a>.
  */
-@XmlRootElement(name = "item")
-public final class Item {
-    @XmlAnyElement
-    private Object object;
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "http://jabber.org/protocol/tune", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.tune;
 
-    @XmlAttribute(name = "id")
-    private String id;
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

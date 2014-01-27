@@ -24,8 +24,6 @@
 
 package org.xmpp.extension.offlinemessages;
 
-import org.xmpp.Jid;
-
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;

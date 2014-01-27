@@ -24,10 +24,6 @@
 
 package org.xmpp.extension.filetransfer;
 
-import org.testng.annotations.Test;
-
-import java.io.File;
-
 /**
  * @author Christian Schudt
  */

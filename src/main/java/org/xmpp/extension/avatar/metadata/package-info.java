@@ -22,29 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.rpc;
-
-import javax.xml.bind.annotation.XmlValue;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
  */
-final class NumericBoolean {
-    @XmlValue
-    private Integer value;
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "urn:xmpp:avatar:metadata", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.avatar.metadata;
 
-    private NumericBoolean() {
-    }
-
-    public NumericBoolean(Boolean b) {
-        this.value = b != null && b ? 1 : 0;
-    }
-
-    Integer getValue() {
-        return value;
-    }
-
-    Boolean getAsBoolean() {
-        return value != null ? value != 0 : null;
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

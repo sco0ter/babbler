@@ -28,13 +28,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.extension.nickname.Nickname;
-import org.xmpp.stanza.Presence;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 
 /**
  * @author Christian Schudt

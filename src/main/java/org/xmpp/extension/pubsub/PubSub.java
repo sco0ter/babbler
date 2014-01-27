@@ -196,7 +196,7 @@ public final class PubSub {
         private String subid;
 
         public Items(String node) {
-             this.node = node;
+            this.node = node;
         }
     }
 

@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-public final class PubSub2 {
+public final class PubSub {
     @XmlElement(name = "affiliations")
     private Affiliations affiliations;
 

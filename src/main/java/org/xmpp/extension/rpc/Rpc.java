@@ -27,9 +27,7 @@ package org.xmpp.extension.rpc;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,14 +35,13 @@ import java.util.Map;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
-@XmlSeeAlso({NumericBoolean.class, ArrayType.class})
 public final class Rpc {
 
     @XmlElement(name = "methodCall")
     private MethodCall methodCall;
 
     @XmlElement(name = "methodResponse")
-    private String methodResponse;
+    private MethodResponse methodResponse;
 
     private Rpc() {
 
@@ -58,7 +55,11 @@ public final class Rpc {
         return methodCall;
     }
 
-    public static final class MethodCall {
+    public MethodResponse getMethodResponse() {
+        return methodResponse;
+    }
+
+    static final class MethodCall {
         @XmlElement(name = "methodName")
         private String methodName;
 
@@ -85,52 +86,67 @@ public final class Rpc {
             return parameters;
         }
 
-        public static class Parameter {
+
+    }
+
+    static final class MethodResponse {
+        private MethodResponse() {
+        }
+
+        MethodResponse(Value value) {
+            this.parameters.add(new Parameter(value));
+        }
+
+        MethodResponse(Fault fault) {
+            this.fault = fault;
+        }
+
+        @XmlElementWrapper(name = "params")
+        @XmlElement(name = "param")
+        private List<Parameter> parameters = new ArrayList<>();
+
+        @XmlElement(name = "fault")
+        private Fault fault;
+
+        public Value getResponse() {
+            if (parameters != null && !parameters.isEmpty()) {
+                return parameters.get(0).getValue();
+            }
+            return null;
+        }
+
+        public Fault getFault() {
+            return fault;
+        }
+
+        public static final class Fault {
 
             @XmlElement(name = "value")
             private Value value;
 
-            private Parameter() {
+            public int getFaultCode() {
+                if (value != null) {
+                    Map<String, Value> map = value.getAsMap();
+                    Value faultCode = map.get("faultCode");
+                    if (faultCode != null) {
+                        Integer value = faultCode.getAsInteger();
+                        if (value != null) {
+                            return value.intValue();
+                        }
+                    }
+                }
+                return 0;
             }
 
-            public Parameter(Value value) {
-                this.value = value;
-            }
-
-            public Parameter(Integer integer) {
-                this.value = new Value(integer);
-            }
-
-            public Parameter(String string) {
-                this.value = new Value(string);
-            }
-
-            public Parameter(Double d) {
-                this.value = new Value(d);
-            }
-
-            public Parameter(byte[] bytes) {
-                this.value = new Value(bytes);
-            }
-
-            public Parameter(Boolean b) {
-                this.value = new Value(b);
-            }
-
-            public Parameter(Date date) {
-                this.value = new Value(date);
-            }
-
-            public Parameter(List<Value> list) {
-                this.value = new Value(list);
-            }
-
-            public Parameter(Map<String, Value> map) {
-                this.value = new Value(map);
-            }
-
-            public Value getValue() {
-                return value;
+            public String getFaultString() {
+                if (value != null) {
+                    Map<String, Value> map = value.getAsMap();
+                    Value faultCode = map.get("faultCode");
+                    if (faultCode != null) {
+                        return faultCode.getAsString();
+                    }
+                }
+                return null;
             }
         }
     }

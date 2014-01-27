@@ -20,12 +20,11 @@ public final class Value {
             @XmlElement(name = "boolean", type = NumericBoolean.class),
             @XmlElement(name = "dateTime.iso8601", type = Date.class),
             @XmlElement(name = "array", type = ArrayType.class),
-            @XmlElement(name = "struct", type = StructType.class),
+            @XmlElement(name = "struct", type = StructType.class)
     })
     private Object value;
 
     private Value() {
-
     }
 
     public Value(Integer integer) {

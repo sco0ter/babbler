@@ -105,7 +105,6 @@ public class JavaFXApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        VCard vCard = new VCard();
         stage.setTitle("New");
         VBox vBox = new VBox(10);
         vBox.setPadding(new Insets(20, 20, 20, 20));

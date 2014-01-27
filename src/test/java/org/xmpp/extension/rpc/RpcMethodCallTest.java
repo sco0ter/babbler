@@ -134,9 +134,9 @@ public class RpcMethodCallTest extends BaseTest {
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><array><data><value><int>1</int></value><value><int>2</int></value></data></array></value></param></params></methodCall></query>");
     }
 
-    //@Test
+    @Test
     public void marshalRpcMethodCallWithMap() throws JAXBException, XMLStreamException, IOException {
-        Map<String, Value> map = new HashMap<>();
+        Map<String, Value> map = new LinkedHashMap<>();
         map.put("key1", new Value(1));
         map.put("key2", new Value(true));
         Rpc rpc = new Rpc("testMethod", new Value(map));

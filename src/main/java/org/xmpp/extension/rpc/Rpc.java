@@ -28,10 +28,16 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * The implementation of the {@code <query />} element.
+ * <p>
+ * Note that this class should and cannot be used directly. Instead make remote procedure calls via the {@link RpcManager}.
+ * </p>
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
@@ -47,15 +53,23 @@ public final class Rpc {
 
     }
 
-    public Rpc(String methodName, Value... parameters) {
+    Rpc(String methodName, Value... parameters) {
         this.methodCall = new MethodCall(methodName, parameters);
     }
 
-    public MethodCall getMethodCall() {
+    Rpc(Value value) {
+        this.methodResponse = new MethodResponse(value);
+    }
+
+    Rpc(MethodResponse.Fault fault) {
+        this.methodResponse = new MethodResponse(fault);
+    }
+
+    MethodCall getMethodCall() {
         return methodCall;
     }
 
-    public MethodResponse getMethodResponse() {
+    MethodResponse getMethodResponse() {
         return methodResponse;
     }
 
@@ -90,6 +104,13 @@ public final class Rpc {
     }
 
     static final class MethodResponse {
+        @XmlElementWrapper(name = "params")
+        @XmlElement(name = "param")
+        private List<Parameter> parameters = new ArrayList<>();
+
+        @XmlElement(name = "fault")
+        private Fault fault;
+
         private MethodResponse() {
         }
 
@@ -100,13 +121,6 @@ public final class Rpc {
         MethodResponse(Fault fault) {
             this.fault = fault;
         }
-
-        @XmlElementWrapper(name = "params")
-        @XmlElement(name = "param")
-        private List<Parameter> parameters = new ArrayList<>();
-
-        @XmlElement(name = "fault")
-        private Fault fault;
 
         public Value getResponse() {
             if (parameters != null && !parameters.isEmpty()) {
@@ -120,9 +134,18 @@ public final class Rpc {
         }
 
         public static final class Fault {
-
             @XmlElement(name = "value")
             private Value value;
+
+            private Fault() {
+            }
+
+            public Fault(int faultCode, String faultString) {
+                Map<String, Value> faultMap = new LinkedHashMap<>();
+                faultMap.put("faultCode", new Value(faultCode));
+                faultMap.put("faultString", new Value(faultString));
+                this.value = new Value(faultMap);
+            }
 
             public int getFaultCode() {
                 if (value != null) {
@@ -131,7 +154,7 @@ public final class Rpc {
                     if (faultCode != null) {
                         Integer value = faultCode.getAsInteger();
                         if (value != null) {
-                            return value.intValue();
+                            return value;
                         }
                     }
                 }
@@ -141,7 +164,7 @@ public final class Rpc {
             public String getFaultString() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();
-                    Value faultCode = map.get("faultCode");
+                    Value faultCode = map.get("faultString");
                     if (faultCode != null) {
                         return faultCode.getAsString();
                     }

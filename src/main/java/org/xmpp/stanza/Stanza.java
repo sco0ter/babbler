@@ -602,9 +602,6 @@ public abstract class Stanza {
                 associatedErrorType.put(InternalServerError.class, Type.CANCEL);
             }
 
-            private InternalServerError() {
-            }
-
             @Override
             public String toString() {
                 return "internal-server-error";
@@ -622,9 +619,6 @@ public abstract class Stanza {
         public static final class ItemNotFound extends Condition {
             static {
                 associatedErrorType.put(ItemNotFound.class, Type.CANCEL);
-            }
-
-            public ItemNotFound() {
             }
 
             @Override

@@ -83,7 +83,7 @@ public final class PrivateDataManager extends ExtensionManager {
      * Stores private data.
      *
      * @param privateData The private data. The class of this object must be annotated with JAXB annotations and must known to the XMPP context in order to marshal und unmarshal it.
-     * @throws TimeoutException
+     * @throws TimeoutException If the operation timed out.
      */
     public void storeData(Object privateData) throws TimeoutException {
         connection.query(new IQ(IQ.Type.SET, new PrivateData(privateData)));

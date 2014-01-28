@@ -48,7 +48,9 @@ public final class PrivacyListEvent extends EventObject {
     }
 
     /**
-     * @return The message id.
+     * Gets the created or updated list name.
+     *
+     * @return The list name.
      */
     public String getListName() {
         return listName;

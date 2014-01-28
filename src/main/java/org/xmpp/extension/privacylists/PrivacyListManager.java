@@ -25,6 +25,8 @@
 package org.xmpp.extension.privacylists;
 
 import org.xmpp.Connection;
+import org.xmpp.ConnectionEvent;
+import org.xmpp.ConnectionListener;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
@@ -39,13 +41,38 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeoutException;
 
 /**
+ * This class manages privacy lists, which allow users to block communications from other users as described in <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
+ * <blockquote>
+ * <p><cite><a href="http://xmpp.org/extensions/xep-0016.html#protocol">2. Protocol</a></cite></p>
+ * <p>Server-side privacy lists enable successful completion of the following use cases:</p>
+ * <ul>
+ * <li>Retrieving one's privacy lists.</li>
+ * <li>Adding, removing, and editing one's privacy lists.</li>
+ * <li>Setting, changing, or declining active lists.</li>
+ * <li>Setting, changing, or declining the default list (i.e., the list that is active by default).</li>
+ * <li>Allowing or blocking messages based on JID, group, or subscription type (or globally).</li>
+ * <li>Allowing or blocking inbound presence notifications based on JID, group, or subscription type (or globally).</li>
+ * <li>Allowing or blocking outbound presence notifications based on JID, group, or subscription type (or globally).</li>
+ * <li>Allowing or blocking IQ stanzas based on JID, group, or subscription type (or globally).</li>
+ * <li>Allowing or blocking all communications based on JID, group, or subscription type (or globally).</li>
+ * </ul>
+ * </blockquote>
+ *
  * @author Christian Schudt
  */
-public class PrivacyListManager extends ExtensionManager {
+public final class PrivacyListManager extends ExtensionManager {
     private final Set<PrivacyListListener> privacyListListeners = new CopyOnWriteArraySet<>();
 
     public PrivacyListManager(final Connection connection) {
         super(connection);
+        connection.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == Connection.Status.CLOSED) {
+                    privacyListListeners.clear();
+                }
+            }
+        });
         connection.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
@@ -57,7 +84,7 @@ public class PrivacyListManager extends ExtensionManager {
 
                     Privacy privacy = iq.getExtension(Privacy.class);
                     if (privacy != null) {
-                        List<Privacy.PrivacyList> privacyLists = privacy.getPrivacyLists();
+                        List<PrivacyList> privacyLists = privacy.getPrivacyLists();
                         if (privacyLists.size() == 1) {
                             // Notify the listeners about the reception.
                             for (PrivacyListListener privacyListListener : privacyListListeners) {
@@ -70,53 +97,89 @@ public class PrivacyListManager extends ExtensionManager {
         });
     }
 
+    /**
+     * Adds a privacy list listener.
+     *
+     * @param privacyListListener The listener.
+     * @see #removePrivacyListListener(PrivacyListListener)
+     */
     public void addPrivacyListListener(PrivacyListListener privacyListListener) {
         privacyListListeners.add(privacyListListener);
     }
 
+    /**
+     * Removes a previously added privacy list listener.
+     *
+     * @param privacyListListener The listener.
+     * @see #addPrivacyListListener(PrivacyListListener)
+     */
     public void removePrivacyListListener(PrivacyListListener privacyListListener) {
         privacyListListeners.remove(privacyListListener);
     }
 
-    public Privacy.PrivacyList getPrivacyList(String name) throws TimeoutException, StanzaException {
-        IQ iq = new IQ(IQ.Type.GET, new Privacy(new Privacy.PrivacyList(name)));
-        IQ result = connection.query(iq);
+    public Privacy getPrivacyLists() throws TimeoutException, StanzaException {
+        IQ result = connection.query(new IQ(IQ.Type.GET, new Privacy()));
+        if (result.getError() != null) {
+            throw new StanzaException(result.getError());
+        }
+        return result.getExtension(Privacy.class);
+    }
+
+    /**
+     * Gets a privacy list.
+     *
+     * @param name The privacy list name.
+     * @return The privacy list.
+     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException  If the privacy list was not found.
+     */
+    public PrivacyList getPrivacyList(String name) throws TimeoutException, StanzaException {
+        IQ result = connection.query(new IQ(IQ.Type.GET, new Privacy(new PrivacyList(name))));
 
         if (result.getError() != null) {
             throw new StanzaException(result.getError());
         }
-        if (result.getType() == IQ.Type.RESULT) {
-            Privacy privacy = result.getExtension(Privacy.class);
-            if (privacy != null) {
-                return privacy.getPrivacyLists().get(0);
-            }
+
+        Privacy privacy = result.getExtension(Privacy.class);
+        if (privacy != null) {
+            return privacy.getPrivacyLists().get(0);
         }
         return null;
     }
 
-    public void setActive(String name) throws TimeoutException, StanzaException {
+    public void setActiveList(String name) throws TimeoutException, StanzaException {
         Privacy privacy = new Privacy();
         privacy.setActiveName(name);
-        IQ iq = new IQ(IQ.Type.SET, privacy);
-        IQ result = connection.query(iq);
+        IQ result = connection.query(new IQ(IQ.Type.SET, privacy));
         if (result.getError() != null) {
             throw new StanzaException(result.getError());
         }
     }
 
-    public void setDefault(String name) throws TimeoutException, StanzaException {
-        Privacy privacy = new Privacy();
-        privacy.setDefaultName(name);
-        setPrivacy(privacy);
+    public void declineActiveList() {
+
     }
 
-    public void updateList(Privacy.PrivacyList privacyList) throws TimeoutException, StanzaException {
+    public void setDefaultList(String name) throws TimeoutException, StanzaException {
+        Privacy privacy = new Privacy();
+        privacy.setDefaultName(name);
+        IQ result = connection.query(new IQ(IQ.Type.SET, privacy));
+        if (result.getError() != null) {
+            throw new StanzaException(result.getError());
+        }
+    }
+
+    public void declineDefaultList() {
+
+    }
+
+    public void updateList(PrivacyList privacyList) throws TimeoutException, StanzaException {
         Privacy privacy = new Privacy(privacyList);
         setPrivacy(privacy);
     }
 
     public void removePrivacyList(String name) throws TimeoutException, StanzaException {
-        Privacy privacy = new Privacy(new Privacy.PrivacyList(name));
+        Privacy privacy = new Privacy(new PrivacyList(name));
         setPrivacy(privacy);
     }
 

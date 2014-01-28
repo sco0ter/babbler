@@ -22,43 +22,61 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.privatedata;
+package org.xmpp.extension.privacylists;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the {@code <query/>} element.
- *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0049.html#sect-id236947">2. jabber:iq:private Namespace</a>
  */
-@XmlRootElement(name = "query")
-public final class PrivateData {
-    @XmlAnyElement(lax = true)
-    private final List<Object> privateData = new ArrayList<>();
+public final class PrivacyList {
+    @XmlAttribute(name = "name")
+    private String name;
 
-    private PrivateData() {
+    @XmlElement(name = "item")
+    private List<PrivacyRule> items = new ArrayList<>();
 
+    private PrivacyList() {
     }
 
     /**
-     * Creates private data.
+     * Creates a privacy list.
      *
-     * @param privateData The private data.
+     * @param name The privacy list's name.
      */
-    public PrivateData(Object privateData) {
-        this.privateData.add(privateData);
+    public PrivacyList(String name) {
+        this.name = name;
     }
 
     /**
-     * Gets the private data items.
+     * Gets the privacy rules.
      *
-     * @return The items.
+     * @return The privacy rules.
      */
-    public List<Object> getItems() {
-        return privateData;
+    public List<PrivacyRule> getItems() {
+        return items;
+    }
+
+    /**
+     * Gets the name of the privacy list.
+     *
+     * @return The name.
+     * @see #setName(String)
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the privacy list.
+     *
+     * @param name The name.
+     * @see #getName()
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 }

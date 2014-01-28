@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>.
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster PrivacyRule Exchange</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/protocol/rosterx", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rosterx;

@@ -24,14 +24,20 @@
 
 package org.xmpp.extension.privacylists;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <query/>} element.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-syntax">2.1 Syntax and Semantics</a>
  */
 @XmlRootElement(name = "query")
 public final class Privacy {
@@ -47,172 +53,81 @@ public final class Privacy {
     @XmlElement(name = "list")
     private List<PrivacyList> privacyLists = new ArrayList<>();
 
+    /**
+     * Creates an empty privacy element.
+     */
     public Privacy() {
-
     }
 
-    public Privacy(PrivacyList privacyList) {
-        privacyLists.add(privacyList);
+    /**
+     * Creates a privacy element with one or more privacy lists.
+     *
+     * @param privacyLists The privacy list(s).
+     */
+    public Privacy(PrivacyList... privacyLists) {
+        this.privacyLists.addAll(Arrays.asList(privacyLists));
     }
 
+    /**
+     * Gets the active list name.
+     *
+     * @return The active list name.
+     * @see #setActiveName(String)
+     */
     public String getActiveName() {
         return activeName;
     }
 
+    /**
+     * Sets the active list name.
+     *
+     * @param activeName The active list name.
+     * @see #getActiveName()
+     */
     public void setActiveName(String activeName) {
         this.activeName = activeName;
     }
 
+    /**
+     * Sets the default list name.
+     *
+     * @return The default list name.
+     * @see #setDefaultName(String)
+     */
     public String getDefaultName() {
         return defaultName;
     }
 
+    /**
+     * Gets the default list name.
+     *
+     * @param defaultName The default list name.
+     * @see #getDefaultName()
+     */
     public void setDefaultName(String defaultName) {
         this.defaultName = defaultName;
     }
 
+    /**
+     * Gets the privacy lists.
+     *
+     * @return The privacy lists.
+     */
     public List<PrivacyList> getPrivacyLists() {
         return privacyLists;
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class PrivacyList {
-        @XmlAttribute(name = "name")
-        private String name;
-
-        @XmlElement(name = "item")
-        private List<Item> items = new ArrayList<>();
-
-        private PrivacyList() {
-
-        }
-
-        public PrivacyList(String name) {
-            this.name = name;
-        }
-
-        public List<Item> getItems() {
-            return items;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        @XmlAccessorType(XmlAccessType.FIELD)
-        public static class Item {
-            @XmlAttribute(name = "order")
-            private int order;
-
-            @XmlAttribute(name = "value")
-            private String value;
-
-            @XmlAttribute(name = "type")
-            private Type type;
-
-            @XmlAttribute(name = "action")
-            private Action action;
-
-            public Type getType() {
-                return type;
-            }
-
-            public void setType(Type type) {
-                this.type = type;
-            }
-
-            public Action getAction() {
-                return action;
-            }
-
-            public void setAction(Action action) {
-                this.action = action;
-            }
-
-            public String getValue() {
-                return value;
-            }
-
-            public void setValue(String value) {
-                this.value = value;
-            }
-
-            public int getOrder() {
-                return order;
-            }
-
-            public void setOrder(int order) {
-                this.order = order;
-            }
-
-            @XmlEnum
-            public enum Type {
-                /**
-                 *
-                 */
-                @XmlEnumValue("group")
-                GROUP,
-                /**
-                 *
-                 */
-                @XmlEnumValue("jid")
-                JID,
-                /**
-                 *
-                 */
-                @XmlEnumValue("subscription")
-                SUBSCRIPTION
-            }
-
-            @XmlEnum
-            public enum Action {
-                /**
-                 *
-                 */
-                @XmlEnumValue("allow")
-                ALLOW,
-                /**
-                 *
-                 */
-                @XmlEnumValue("deny")
-                DENY
-            }
-
-            public static class Message {
-
-            }
-
-            public static class IQ {
-
-            }
-
-            public static class PresenceIn {
-
-            }
-
-            public static class PresenceOut {
-
-            }
-        }
-    }
-
-    @XmlAccessorType(XmlAccessType.FIELD)
-    private static class Active {
+    private static final class Active {
         @XmlAttribute(name = "name")
         private String name;
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    private static class Default {
+    private static final class Default {
         @XmlAttribute(name = "name")
         private String name;
     }
 
-    private static class ActiveNameAdapter extends XmlAdapter<Active, String> {
+    private static final class ActiveNameAdapter extends XmlAdapter<Active, String> {
 
         @Override
         public String unmarshal(Active v) throws Exception {
@@ -233,7 +148,7 @@ public final class Privacy {
         }
     }
 
-    private static class DefaultNameAdapter extends XmlAdapter<Default, String> {
+    private static final class DefaultNameAdapter extends XmlAdapter<Default, String> {
 
         @Override
         public String unmarshal(Default v) throws Exception {

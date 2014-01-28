@@ -214,7 +214,7 @@ public abstract class XmppContext {
             // XEP-0138: Stream Compression
             registerExtension(Compression.class);
 
-            // XEP-0144: Roster Item Exchange
+            // XEP-0144: Roster PrivacyRule Exchange
             registerExtension(RosterExchange.class);
 
             // XEP-0145: Annotations

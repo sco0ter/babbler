@@ -75,7 +75,7 @@ public class PrivacyListTest extends BaseTest {
 
     @Test
     public void marshalPrivacyListRequest() throws XMLStreamException, JAXBException, IOException {
-        IQ iq = new IQ(IQ.Type.GET, new Privacy(new Privacy.PrivacyList("public")));
+        IQ iq = new IQ(IQ.Type.GET, new Privacy(new PrivacyList("public")));
         iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
         iq.setId("getlist1");
         String xml = marshall(iq);
@@ -102,11 +102,11 @@ public class PrivacyListTest extends BaseTest {
         Assert.assertEquals(privacy.getPrivacyLists().size(), 1);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getName(), "public");
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().size(), 2);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), Privacy.PrivacyList.Item.Type.JID);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), PrivacyRule.Type.JID);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getValue(), "tybalt@example.com");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), Privacy.PrivacyList.Item.Action.DENY);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), PrivacyRule.Action.DENY);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 1);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getAction(), Privacy.PrivacyList.Item.Action.ALLOW);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getAction(), PrivacyRule.Action.ALLOW);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getOrder(), 2);
     }
 
@@ -130,11 +130,11 @@ public class PrivacyListTest extends BaseTest {
         Assert.assertEquals(privacy.getPrivacyLists().size(), 1);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getName(), "private");
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().size(), 2);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), Privacy.PrivacyList.Item.Type.SUBSCRIPTION);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), PrivacyRule.Type.SUBSCRIPTION);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getValue(), "both");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), Privacy.PrivacyList.Item.Action.ALLOW);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), PrivacyRule.Action.ALLOW);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 10);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getAction(), Privacy.PrivacyList.Item.Action.DENY);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getAction(), PrivacyRule.Action.DENY);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getOrder(), 15);
     }
 
@@ -159,9 +159,38 @@ public class PrivacyListTest extends BaseTest {
         Assert.assertEquals(privacy.getPrivacyLists().size(), 1);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getName(), "message-group-example");
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().size(), 1);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), Privacy.PrivacyList.Item.Type.GROUP);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), PrivacyRule.Type.GROUP);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getValue(), "Enemies");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), Privacy.PrivacyList.Item.Action.DENY);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), PrivacyRule.Action.DENY);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 4);
+    }
+
+    @Test
+    public void unmarshalPrivacyListResponse4() throws JAXBException, XMLStreamException {
+        String xml = "<iq from='romeo@example.net/orchard' type='set' id='msg1'>\n" +
+                "<query xmlns='jabber:iq:privacy'>\n" +
+                "  <list name='message-jid-example'>\n" +
+                "    <item type='jid'\n" +
+                "          value='tybalt@example.com'\n" +
+                "          action='deny'\n" +
+                "          order='3'>\n" +
+                "      <message/>\n" +
+                "    </item>\n" +
+                "  </list>\n" +
+                "</query>\n" +
+                "</iq>\n";
+
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
+        Privacy privacy = iq.getExtension(Privacy.class);
+        Assert.assertNotNull(privacy);
+        Assert.assertEquals(privacy.getPrivacyLists().size(), 1);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getName(), "message-jid-example");
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().size(), 1);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), PrivacyRule.Type.JID);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getValue(), "tybalt@example.com");
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), PrivacyRule.Action.DENY);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 3);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 3);
     }
 }

@@ -35,6 +35,7 @@ import org.xmpp.extension.bosh.Body;
 import org.xmpp.extension.chatstate.*;
 import org.xmpp.extension.compression.Compression;
 import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.dataforms.media.Media;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
 import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
 import org.xmpp.extension.ibb.Close;
@@ -57,6 +58,7 @@ import org.xmpp.extension.privacylists.Privacy;
 import org.xmpp.extension.privatedata.PrivateData;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
+import org.xmpp.extension.privatedata.bookmarks.BookmarkStorage;
 import org.xmpp.extension.privatedata.rosterdelimiter.RosterDelimiter;
 import org.xmpp.extension.pubsub.PubSub;
 import org.xmpp.extension.registration.Register;
@@ -172,6 +174,9 @@ public abstract class XmppContext {
             registerExtension(org.xmpp.extension.ibb.Data.class, Open.class, Close.class);
             registerManager(InBandByteStreamManager.class);
 
+            // XEP-0048: BookmarkStorage
+            registerExtension(BookmarkStorage.class);
+
             // XEP-0049: Private XML Storage
             registerExtension(PrivateData.class);
             registerManager(PrivateDataManager.class);
@@ -242,12 +247,15 @@ public abstract class XmppContext {
             // XEP-0203: Delayed Delivery
             registerExtension(DelayedDelivery.class);
 
-            // XEP-0231: Bits of Binary
-            registerExtension(Data.class);
+            // XEP-0221: Data Forms Media Element
+            registerExtension(Media.class);
 
             // XEP-0224: Attention
             registerExtension(Attention.class);
             registerManager(AttentionManager.class);
+
+            // XEP-0231: Bits of Binary
+            registerExtension(Data.class);
 
             // XEP-0297: Stanza Forwarding
             registerExtension(Forwarded.class);

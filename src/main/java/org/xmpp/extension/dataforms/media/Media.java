@@ -26,6 +26,7 @@ package org.xmpp.extension.dataforms.media;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import java.net.URI;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
+@XmlRootElement(name = "media")
 public final class Media {
 
     @XmlElement(name = "uri")

@@ -12,7 +12,7 @@ Since this project is quite young, the API might change. Comments on the API are
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final')*
 
 * ![alt supported][supported]           [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)
-* ![alt not supported][not supported]   [XEP-0009: Jabber-RPC](http://xmpp.org/extensions/xep-0009.html)
+* ![alt in development][in development] [XEP-0009: Jabber-RPC](http://xmpp.org/extensions/xep-0009.html)
 * ![alt supported][supported]           [XEP-0012: Last Activity](http://xmpp.org/extensions/xep-0012.html)
 * ![alt not supported][not supported]   [XEP-0013: Flexible Offline Message Retrieval](http://xmpp.org/extensions/xep-0013.html)
 * ![alt in development][in development] [XEP-0016: Privacy Lists](http://xmpp.org/extensions/xep-0016.html)
@@ -22,7 +22,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt not supported][not supported]   [XEP-0033: Extended Stanza Addressing](http://xmpp.org/extensions/xep-0033.html)
 * ![alt not supported][not supported]   [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)
 * ![alt in development][in development] [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
-* ![alt not supported][not supported]   [XEP-0048: Bookmarks](http://xmpp.org/extensions/xep-0048.html)
+* ![alt supported][supported]           [XEP-0048: Bookmarks](http://xmpp.org/extensions/xep-0048.html)
 * ![alt supported][supported]           [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)
 * ![alt not supported][not supported]   [XEP-0050: Ad-Hoc Commands](http://xmpp.org/extensions/xep-0050.html)
 * ![alt supported][supported]           [XEP-0054: vcard-temp](http://xmpp.org/extensions/xep-0054.html)

@@ -175,6 +175,9 @@ public final class DataForm {
         @XmlElement(name = "value")
         private List<String> values = new ArrayList<>();
 
+        @XmlElementRef
+        private Media media;
+
         @XmlElement(name = "option")
         private List<Option> options = new ArrayList<>();
 
@@ -187,8 +190,6 @@ public final class DataForm {
         @XmlAttribute(name = "var")
         private String var;
 
-        @XmlElement(name = "media")
-        private Media media;
 
         private Field() {
 

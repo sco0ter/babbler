@@ -101,13 +101,13 @@ public class PrivacyListTest extends BaseTest {
         Assert.assertNotNull(privacy);
         Assert.assertEquals(privacy.getPrivacyLists().size(), 1);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getName(), "public");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().size(), 2);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), PrivacyRule.Type.JID);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getValue(), "tybalt@example.com");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), PrivacyRule.Action.DENY);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 1);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getAction(), PrivacyRule.Action.ALLOW);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getOrder(), 2);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().size(), 2);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getType(), PrivacyRule.Type.JID);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getValue(), "tybalt@example.com");
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getAction(), PrivacyRule.Action.DENY);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getOrder(), 1);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(1).getAction(), PrivacyRule.Action.ALLOW);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(1).getOrder(), 2);
     }
 
     @Test
@@ -129,13 +129,13 @@ public class PrivacyListTest extends BaseTest {
         Assert.assertNotNull(privacy);
         Assert.assertEquals(privacy.getPrivacyLists().size(), 1);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getName(), "private");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().size(), 2);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), PrivacyRule.Type.SUBSCRIPTION);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getValue(), "both");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), PrivacyRule.Action.ALLOW);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 10);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getAction(), PrivacyRule.Action.DENY);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(1).getOrder(), 15);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().size(), 2);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getType(), PrivacyRule.Type.SUBSCRIPTION);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getValue(), "both");
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getAction(), PrivacyRule.Action.ALLOW);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getOrder(), 10);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(1).getAction(), PrivacyRule.Action.DENY);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(1).getOrder(), 15);
     }
 
     @Test
@@ -158,11 +158,11 @@ public class PrivacyListTest extends BaseTest {
         Assert.assertNotNull(privacy);
         Assert.assertEquals(privacy.getPrivacyLists().size(), 1);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getName(), "message-group-example");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().size(), 1);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), PrivacyRule.Type.GROUP);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getValue(), "Enemies");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), PrivacyRule.Action.DENY);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 4);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().size(), 1);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getType(), PrivacyRule.Type.GROUP);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getValue(), "Enemies");
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getAction(), PrivacyRule.Action.DENY);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getOrder(), 4);
     }
 
     @Test
@@ -186,11 +186,11 @@ public class PrivacyListTest extends BaseTest {
         Assert.assertNotNull(privacy);
         Assert.assertEquals(privacy.getPrivacyLists().size(), 1);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getName(), "message-jid-example");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().size(), 1);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getType(), PrivacyRule.Type.JID);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getValue(), "tybalt@example.com");
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getAction(), PrivacyRule.Action.DENY);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 3);
-        Assert.assertEquals(privacy.getPrivacyLists().get(0).getItems().get(0).getOrder(), 3);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().size(), 1);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getType(), PrivacyRule.Type.JID);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getValue(), "tybalt@example.com");
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getAction(), PrivacyRule.Action.DENY);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getOrder(), 3);
+        Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getOrder(), 3);
     }
 }

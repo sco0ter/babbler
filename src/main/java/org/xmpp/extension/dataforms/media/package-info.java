@@ -22,23 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.headers;
-
-import javax.xml.bind.annotation.XmlAttribute;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0221.html">XEP-0221: Data Forms Media Element</a>.
  */
-public final class Header {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "urn:xmpp:media-element", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.dataforms.media;
 
-    @XmlAttribute(name = "name")
-    private String name;
-
-    public Header(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

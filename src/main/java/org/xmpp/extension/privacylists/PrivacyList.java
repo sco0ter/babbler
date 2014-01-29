@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ *
  * @author Christian Schudt
  */
 public final class PrivacyList {
@@ -56,7 +57,7 @@ public final class PrivacyList {
      *
      * @return The privacy rules.
      */
-    public List<PrivacyRule> getItems() {
+    public List<PrivacyRule> getPrivacyRules() {
         return items;
     }
 

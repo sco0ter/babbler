@@ -77,7 +77,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt supported][supported]           [XEP-0203: Delayed Delivery](http://xmpp.org/extensions/xep-0203.html)
 * ![alt supported][supported]           [XEP-0206: XMPP Over BOSH](http://xmpp.org/extensions/xep-0206.html)
 * ![alt not supported][not supported]   [XEP-0220: Server Dialback](http://xmpp.org/extensions/xep-0220.html)
-* ![alt not supported][not supported]   [XEP-0221: Data Forms Media Element](http://xmpp.org/extensions/xep-0221.html)
+* ![alt supported][supported]           [XEP-0221: Data Forms Media Element](http://xmpp.org/extensions/xep-0221.html)
 * ![alt supported][supported]           [XEP-0224: Attention](http://xmpp.org/extensions/xep-0224.html)
 * ![alt not supported][not supported]   [XEP-0227: Portable Import/Export Format for XMPP-IM Servers](http://xmpp.org/extensions/xep-0227.html)
 * ![alt not supported][not supported]   [XEP-0229: Stream Compression with LZW](http://xmpp.org/extensions/xep-0229.html)

@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.dataforms;
 
+import org.xmpp.extension.dataforms.media.Media;
+
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -162,8 +164,7 @@ public final class DataForm {
     }
 
     @XmlRootElement(name = "field")
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Field {
+    public static final class Field {
 
         @XmlElement(name = "desc")
         private String description;
@@ -185,6 +186,9 @@ public final class DataForm {
 
         @XmlAttribute(name = "var")
         private String var;
+
+        @XmlElement(name = "media")
+        private Media media;
 
         private Field() {
 
@@ -229,6 +233,14 @@ public final class DataForm {
 
         public List<String> getValues() {
             return values;
+        }
+
+        public Media getMedia() {
+            return media;
+        }
+
+        public void setMedia(Media media) {
+            this.media = media;
         }
 
         @XmlEnum
@@ -287,8 +299,7 @@ public final class DataForm {
         }
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Item {
+    public static final class Item {
         @XmlElement(name = "field")
         private List<Field> fields = new ArrayList<>();
 
@@ -297,8 +308,7 @@ public final class DataForm {
         }
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Option {
+    public static final class Option {
 
         @XmlAttribute(name = "label")
         private String label;

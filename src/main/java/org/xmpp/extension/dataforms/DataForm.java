@@ -33,6 +33,9 @@ import java.util.List;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>.
+ * <blockquote>
+ * <p>This specification defines an XMPP protocol extension for data forms that can be used in workflows such as service configuration as well as for application-specific data description and reporting. The protocol includes lightweight semantics for forms processing (such as request, response, submit, and cancel), defines several common field types (boolean, list options with single or multiple choice, text with single line or multiple lines, single or multiple JabberIDs, hidden fields, etc.), provides extensibility for future data types, and can be embedded in a wide range of applications. The protocol is not intended to provide complete forms-processing functionality as is provided in the W3C XForms technology, but instead provides a basic subset of such functionality for use by XMPP entities.</p>
+ * </blockquote>
  *
  * @author Christian Schudt
  */
@@ -58,18 +61,35 @@ public final class DataForm {
     private List<Field> reportedFields = new ArrayList<>();
 
     private DataForm() {
-
     }
 
+    /**
+     * Creates a data form.
+     *
+     * @param type The form type.
+     */
     public DataForm(Type type) {
         this.type = type;
     }
 
+    /**
+     * Creates a data form.
+     *
+     * @param type  The form type.
+     * @param title The form title.
+     */
     public DataForm(Type type, String title) {
         this.type = type;
         this.title = title;
     }
 
+    /**
+     * Creates a data form.
+     *
+     * @param type         The form type.
+     * @param title        The form title.
+     * @param instructions The instructions.
+     */
     public DataForm(Type type, String title, String... instructions) {
         this.type = type;
         this.title = title;
@@ -119,24 +139,46 @@ public final class DataForm {
         return instructions;
     }
 
+    /**
+     * Gets the type of the form.
+     *
+     * @return The type.
+     * @see #setType(org.xmpp.extension.dataforms.DataForm.Type)
+     */
     public Type getType() {
         return type;
     }
 
+    /**
+     * Sets the form type.
+     *
+     * @param type The form type.
+     * @see #getType()
+     */
     public void setType(Type type) {
         this.type = type;
     }
 
+    /**
+     * Gets the reported fields, which can be understood as "table headers" describing the data to follow.
+     *
+     * @return The reported fields.
+     */
     public List<Field> getReportedFields() {
         return reportedFields;
     }
 
+    /**
+     * Gets the items, which can be understood as "table rows" containing data (if any) that matches the request.
+     *
+     * @return The items.
+     */
     public List<Item> getItems() {
         return items;
     }
 
     /**
-     *
+     * The form type.
      */
     @XmlEnum
     @XmlType(name = "form-type")
@@ -163,6 +205,11 @@ public final class DataForm {
         SUBMIT
     }
 
+    /**
+     * A form field.
+     *
+     * @see <a href="http://xmpp.org/extensions/xep-0004.html#protocol-field">3.2 The Field Element</a>
+     */
     @XmlRootElement(name = "field")
     public static final class Field {
 
@@ -190,60 +237,172 @@ public final class DataForm {
         @XmlAttribute(name = "var")
         private String var;
 
-
         private Field() {
-
         }
 
+        /**
+         * Creates a field.
+         *
+         * @param type The field type.
+         */
         public Field(Type type) {
             this.type = type;
         }
 
+        /**
+         * Creates a field.
+         *
+         * @param type The field type.
+         * @param var  The unique identifier for the field.
+         */
         public Field(Type type, String var) {
             this.type = type;
             this.var = var;
         }
 
+        /**
+         * Gets the field type.
+         *
+         * @return The field type.
+         */
         public Type getType() {
             return type;
         }
 
+        /**
+         * Sets the field type.
+         *
+         * @param type The type.
+         */
         public void setType(Type type) {
             this.type = type;
         }
 
+        /**
+         * Gets a unique identifier for the field in the context of the form.
+         *
+         * @return The var attribute.
+         * @see #setVar(String)
+         */
         public String getVar() {
             return var;
         }
 
+        /**
+         * Sets a unique identifier for the field in the context of the form.
+         *
+         * @param var The var attribute.
+         * @see #getVar()
+         */
         public void setVar(String var) {
             this.var = var;
         }
 
+        /**
+         * Gets the field label.
+         *
+         * @return The label.
+         * @see #setLabel(String)
+         */
         public String getLabel() {
             return label;
         }
 
+        /**
+         * Sets the field label.
+         *
+         * @param label The label.
+         * @see #getLabel()
+         */
         public void setLabel(String label) {
             this.label = label;
         }
 
+        /**
+         * Gets the options if the field type is {@link Field.Type#LIST_SINGLE} or {@link Field.Type#LIST_MULTI}.
+         *
+         * @return The options.
+         */
         public List<Option> getOptions() {
             return options;
         }
 
+        /**
+         * Gets the values of the field. Fields of type {@link Field.Type#LIST_MULTI}, {@link Field.Type#JID_MULTI} or {@link Field.Type#TEXT_MULTI} may contain multiple values.
+         *
+         * @return The values.
+         */
         public List<String> getValues() {
             return values;
         }
 
+        /**
+         * Gets the media element.
+         *
+         * @return The media element.
+         * @see #setMedia(org.xmpp.extension.dataforms.media.Media)
+         */
         public Media getMedia() {
             return media;
         }
 
+        /**
+         * Sets a media element.
+         *
+         * @param media The media element.
+         * @see #getMedia()
+         */
         public void setMedia(Media media) {
             this.media = media;
         }
 
+        /**
+         * Gets a natural-language description of the field, intended for presentation in a user-agent (e.g., as a "tool-tip", help button, or explanatory text provided near the field).
+         *
+         * @return The description.
+         * @see #setDescription(String)
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * Sets a description of the field.
+         *
+         * @param description The description.
+         * @see #getDescription()
+         */
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        /**
+         * If the field as required in order for the form to be considered valid.
+         *
+         * @return True, if the field is required.
+         * @see #setRequired(boolean)
+         */
+        public boolean isRequired() {
+            return required != null;
+        }
+
+        /**
+         * Sets the field as required.
+         *
+         * @param required If the field is required.
+         * @see #isRequired()
+         */
+        public void setRequired(boolean required) {
+            this.required = required ? "" : null;
+        }
+
+        /**
+         * Defines field types.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/extensions/xep-0004.html#protocol-fieldtypes">3.3 Field Types</a></cite></p>
+         * <p>The following field types represent data "types" that are commonly exchanged between Jabber/XMPP entities.</p>
+         * </blockquote>
+         */
         @XmlEnum
         @XmlType(name = "field-type")
         public static enum Type {
@@ -300,15 +459,26 @@ public final class DataForm {
         }
     }
 
+    /**
+     * An item which can be understood as a table row. The fields can be understood as table cells.
+     */
     public static final class Item {
         @XmlElement(name = "field")
         private List<Field> fields = new ArrayList<>();
 
+        /**
+         * Gets the fields.
+         *
+         * @return The fields.
+         */
         public List<Field> getFields() {
             return fields;
         }
     }
 
+    /**
+     * Defines an option in a field of type {@link DataForm.Field.Type#LIST_SINGLE} or {@link DataForm.Field.Type#LIST_MULTI}.
+     */
     public static final class Option {
 
         @XmlAttribute(name = "label")
@@ -320,29 +490,42 @@ public final class DataForm {
         private Option() {
         }
 
+        /**
+         * Creates an option.
+         *
+         * @param value The option value.
+         */
         public Option(String value) {
             this.value = value;
         }
 
+        /**
+         * Creates an option.
+         *
+         * @param value The option value.
+         * @param label A human-readable name for the option.
+         */
         public Option(String value, String label) {
             this.value = value;
             this.label = label;
         }
 
+        /**
+         * Gets the label.
+         *
+         * @return The label.
+         */
         public String getLabel() {
             return label;
         }
 
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
+        /**
+         * Gets the value of the option.
+         *
+         * @return The option.
+         */
         public String getValue() {
             return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
         }
     }
 }

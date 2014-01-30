@@ -117,7 +117,7 @@ public final class AvatarManager extends ExtensionManager {
                                 }
                             }
                         }
-                    } else if (!e.isIncoming() && vCardManager.isEnabled()) {
+                    } else if (!e.isIncoming() && vCardManager.isEnabled() && presence.isAvailable()) {
                         // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
 
                         // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element, i.e.:

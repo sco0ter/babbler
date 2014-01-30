@@ -35,6 +35,9 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <query/>} element.
+ * <p>
+ * This class contains information about the active and default list and holds the privacy lists.
+ * </p>
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-syntax">2.1 Syntax and Semantics</a>
@@ -141,7 +144,7 @@ public final class Privacy {
         public Active marshal(String v) throws Exception {
             if (v != null) {
                 Active active = new Active();
-                active.name = v;
+                active.name = v.isEmpty() ? null : v;
                 return active;
             }
             return null;
@@ -162,7 +165,7 @@ public final class Privacy {
         public Default marshal(String v) throws Exception {
             if (v != null) {
                 Default def = new Default();
-                def.name = v;
+                def.name = v.isEmpty() ? null : v;
                 return def;
             }
             return null;

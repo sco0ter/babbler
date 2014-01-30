@@ -193,4 +193,48 @@ public class PrivacyListTest extends BaseTest {
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getOrder(), 3);
         Assert.assertEquals(privacy.getPrivacyLists().get(0).getPrivacyRules().get(0).getOrder(), 3);
     }
+
+    @Test
+    public void marshalChangeActiveListRequest() throws XMLStreamException, JAXBException, IOException {
+        Privacy privacy = new Privacy();
+        privacy.setActiveName("special");
+        IQ iq = new IQ(IQ.Type.GET, privacy);
+        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setId("getlist1");
+        String xml = marshall(iq);
+        Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><active name=\"special\"></active></query></iq>");
+    }
+
+    @Test
+    public void marshalDeclineActiveListRequest() throws XMLStreamException, JAXBException, IOException {
+        Privacy privacy = new Privacy();
+        privacy.setActiveName("");
+        IQ iq = new IQ(IQ.Type.GET, privacy);
+        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setId("getlist1");
+        String xml = marshall(iq);
+        Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><active></active></query></iq>");
+    }
+
+    @Test
+    public void marshalChangeDefaultListRequest() throws XMLStreamException, JAXBException, IOException {
+        Privacy privacy = new Privacy();
+        privacy.setDefaultName("special");
+        IQ iq = new IQ(IQ.Type.GET, privacy);
+        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setId("getlist1");
+        String xml = marshall(iq);
+        Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><default name=\"special\"></default></query></iq>");
+    }
+
+    @Test
+    public void marshalDeclineDefaultListRequest() throws XMLStreamException, JAXBException, IOException {
+        Privacy privacy = new Privacy();
+        privacy.setDefaultName("");
+        IQ iq = new IQ(IQ.Type.GET, privacy);
+        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setId("getlist1");
+        String xml = marshall(iq);
+        Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><default></default></query></iq>");
+    }
 }

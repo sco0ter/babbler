@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "c")
 public final class EntityCapabilities extends Feature {
+
     /**
      * The hashing algorithm used to generate the verification string.
      */
@@ -48,6 +49,12 @@ public final class EntityCapabilities extends Feature {
      */
     @XmlAttribute
     private String ver;
+
+    public EntityCapabilities(String node, String hash, String ver) {
+        this.node = node;
+        this.hash = hash;
+        this.ver = ver;
+    }
 
     /**
      * Gets the hashing algorithm used to generate the verification string.

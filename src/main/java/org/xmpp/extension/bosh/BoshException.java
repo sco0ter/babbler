@@ -27,9 +27,12 @@ package org.xmpp.extension.bosh;
 import java.net.URI;
 
 /**
+ * A BOSH exception is thrown when the BOSH connection manager returned an error condition or the HTTP request responded with an HTTP error code.
+ *
  * @author Christian Schudt
+ * @see Body.Condition
  */
-public class BoshException extends Exception {
+public final class BoshException extends Exception {
     private final Body.Condition condition;
 
     private URI uri;
@@ -52,14 +55,29 @@ public class BoshException extends Exception {
         this.condition = condition;
     }
 
+    /**
+     * Gets the BOSH error condition.
+     *
+     * @return The BOSH error condition.
+     */
     public Body.Condition getCondition() {
         return condition;
     }
 
+    /**
+     * Gets the URI in case of a "see-other-uri" error.
+     *
+     * @return The URI.
+     */
     public URI getUri() {
         return uri;
     }
 
+    /**
+     * Gets the HTTP error code.
+     *
+     * @return The HTTP error code.
+     */
     public int getHttpErrorCode() {
         return httpErrorCode;
     }

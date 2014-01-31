@@ -32,7 +32,6 @@ import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
@@ -145,8 +144,8 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         InfoDiscovery infoDiscovery = new InfoDiscovery();
         infoDiscovery.getFeatures().addAll(features);
         infoDiscovery.getIdentities().addAll(identities);
-        byte[] verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
-        Assert.assertEquals(DatatypeConverter.printBase64Binary(verificationString), "QgayPKawpkPSDYmwT/WM94uAlu0=");
+        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
+        Assert.assertEquals(verificationString, "QgayPKawpkPSDYmwT/WM94uAlu0=");
     }
 
     /**
@@ -179,8 +178,8 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         infoDiscovery.getFeatures().addAll(features);
         infoDiscovery.getIdentities().addAll(identities);
         infoDiscovery.getExtensions().add(dataForm);
-        byte[] verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
-        Assert.assertEquals(DatatypeConverter.printBase64Binary(verificationString), "q07IKJEyjvHSyhy//CH0CxmKi8w=");
+        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
+        Assert.assertEquals(verificationString, "q07IKJEyjvHSyhy//CH0CxmKi8w=");
     }
 
     @Test
@@ -214,7 +213,7 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         infoDiscovery.getExtensions().add(dataForm2);
         infoDiscovery.getExtensions().add(dataForm3);
 
-        byte[] verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
-        Assert.assertEquals(DatatypeConverter.printBase64Binary(verificationString), "EwaG/3/PLTavYdlrevpQmoqM3nw=");
+        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
+        Assert.assertEquals(verificationString, "EwaG/3/PLTavYdlrevpQmoqM3nw=");
     }
 }

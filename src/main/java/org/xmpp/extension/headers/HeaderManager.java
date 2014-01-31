@@ -89,8 +89,8 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
      *
      * @param jid The JID.
      * @return The list of supported headers.
-     * @throws StanzaException
-     * @throws TimeoutException
+     * @throws StanzaException  If entity returns an error.
+     * @throws TimeoutException If the operation timed out.
      */
     public List<String> discoverSupportedHeaders(Jid jid) throws StanzaException, TimeoutException {
         InfoDiscovery infoDiscovery = serviceDiscoveryManager.discoverInformation(jid, FEATURE);

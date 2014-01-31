@@ -28,13 +28,21 @@ import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.stanza.Presence;
+import org.xmpp.stanza.PresenceEvent;
+import org.xmpp.stanza.PresenceListener;
+import org.xmpp.stanza.StanzaException;
 
+import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -46,14 +54,88 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
     // It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client;
     private static final String NODE = "http://babbler-xmpp.blogspot.de/";
 
-    private Map<Jid, InfoDiscovery> entityCapabilities;
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     private Map<String, InfoDiscovery> cache = new HashMap<>();
 
+    private Map<Jid, InfoDiscovery> jidInfos = new ConcurrentHashMap<>();
+
     private Connection connection;
 
-    public EntityCapabilitiesManager(Connection connection) {
+    protected EntityCapabilitiesManager(final Connection connection) {
         super(connection);
+        serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        connection.addPresenceListener(new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                Presence presence = e.getPresence();
+                // a client SHOULD include entity capabilities with every presence notification it sends.
+                if (!e.isIncoming()) {
+                    if (isEnabled() && presence.isAvailable()) {
+                        InfoDiscovery infoDiscovery = new InfoDiscovery();
+                        infoDiscovery.getFeatures().addAll(serviceDiscoveryManager.getFeatures());
+                        infoDiscovery.getIdentities().addAll(serviceDiscoveryManager.getIdentities());
+                        presence.getExtensions().add(new EntityCapabilities(NODE, "sha-1", getVerificationString(infoDiscovery)));
+                    }
+                } else {
+                    EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
+                    if (entityCapabilities != null) {
+                        if (cache.containsKey(entityCapabilities.getVerificationString()))
+                        {
+
+                        }
+                        // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver'
+                        String hashAlgorithm = entityCapabilities.getHashingAlgorithm();
+                        if (hashAlgorithm != null) {
+                            // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
+                            if (!hashAlgorithm.toLowerCase().equals("sha-1")) {
+                                try {
+                                    // 2.1 Send a service discovery information request to the generating entity.
+                                    // 2.2 Receive a service discovery information response from the generating entity.
+                                    InfoDiscovery infoDiscovery = serviceDiscoveryManager.discoverInformation(presence.getFrom(), entityCapabilities.getNode());
+                                    // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
+                                    jidInfos.put(presence.getFrom(), infoDiscovery);
+                                } catch (TimeoutException | StanzaException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                            // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
+                            else {
+                                try {
+                                    // 3.1 Send a service discovery information request to the generating entity.
+                                    // 3.2 Receive a service discovery information response from the generating entity.
+                                    InfoDiscovery infoDiscovery = serviceDiscoveryManager.discoverInformation(presence.getFrom(), entityCapabilities.getNode());
+                                    // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
+                                    // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
+                                    // => not possible due to java.util.Set semantics and equals method.
+
+                                    // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
+                                    // => TODO
+                                    // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
+                                    // => TODO
+
+                                    // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
+                                    String verificationString = getVerificationString(infoDiscovery);
+
+                                    // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
+                                    if (verificationString.equals(entityCapabilities.getVerificationString())) {
+                                        cache.put(verificationString, infoDiscovery);
+                                    }
+                                    jidInfos.put(presence.getFrom(), infoDiscovery);
+
+                                    // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
+
+                                } catch (TimeoutException | StanzaException e1) {
+                                    e1.printStackTrace();
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
         /*
         connection.addStanzaListener(new StanzaListener() {
             @Override
@@ -97,7 +179,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
         */
     }
 
-    byte[] getVerificationString(InfoDiscovery infoDiscovery) {
+    String getVerificationString(InfoDiscovery infoDiscovery) {
 
         List<Identity> identities = new ArrayList<>(infoDiscovery.getIdentities());
         List<Feature> features = new ArrayList<>(infoDiscovery.getFeatures());
@@ -185,7 +267,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             messageDigest = MessageDigest.getInstance("sha-1");
             messageDigest.reset();
             messageDigest.update(plainString.getBytes());
-            return messageDigest.digest();
+            return DatatypeConverter.printBase64Binary(messageDigest.digest());
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

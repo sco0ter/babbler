@@ -276,8 +276,9 @@ public final class DataForm implements Comparable<DataForm> {
         /**
          * Creates a field.
          *
-         * @param type The field type.
-         * @param var  The unique identifier for the field.
+         * @param type   The field type.
+         * @param var    The unique identifier for the field.
+         * @param values The values.
          */
         public Field(Type type, String var, String... values) {
             this.type = type;

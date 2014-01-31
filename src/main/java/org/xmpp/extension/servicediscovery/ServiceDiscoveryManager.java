@@ -151,7 +151,8 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @param jid The entity's JID.
      * @return The service discovery result.
-     * @throws TimeoutException
+     * @throws StanzaException  If the entity returned an error.
+     * @throws TimeoutException If the operation timed out.
      */
     public InfoDiscovery discoverInformation(Jid jid) throws TimeoutException, StanzaException {
         return discoverInformation(jid, null);
@@ -164,9 +165,11 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * <p>A disco#info query MAY also be directed to a specific node identifier associated with a JID.</p>
      * </blockquote>
      *
-     * @param jid The entity's JID.
+     * @param jid  The entity's JID.
+     * @param node The node.
      * @return The info discovery result or null, if info discovery is not supported.
-     * @throws TimeoutException
+     * @throws StanzaException  If the entity returned an error.
+     * @throws TimeoutException If the operation timed out.
      * @see #discoverInformation(org.xmpp.Jid)
      */
     public InfoDiscovery discoverInformation(Jid jid, String node) throws TimeoutException, StanzaException {
@@ -184,7 +187,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @param jid The JID.
      * @return The discovered items.
-     * @throws TimeoutException
+     * @throws TimeoutException If the operation timed out.
      */
     public ItemDiscovery discoverItems(Jid jid) throws TimeoutException {
         return discoverItems(jid, null);
@@ -193,9 +196,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     /**
      * Discovers item associated with another XMPP entity.
      *
-     * @param jid The JID.
+     * @param jid  The JID.
+     * @param node The node.
      * @return The discovered items.
-     * @throws TimeoutException
+     * @throws TimeoutException If the operation timed out.
      */
     public ItemDiscovery discoverItems(Jid jid, String node) throws TimeoutException {
         IQ iq = new IQ(IQ.Type.GET, new ItemDiscovery(node));
@@ -222,10 +226,20 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
         infoNodeMap.remove(node);
     }
 
+    /**
+     * Adds an item node.
+     *
+     * @param itemNode The item node.
+     */
     public void addItemNode(ItemNode itemNode) {
         itemNodeMap.put(itemNode.getNode(), itemNode);
     }
 
+    /**
+     * Removes an item node.
+     *
+     * @param node The item node.
+     */
     public void removeItemNode(String node) {
         itemNodeMap.remove(node);
     }

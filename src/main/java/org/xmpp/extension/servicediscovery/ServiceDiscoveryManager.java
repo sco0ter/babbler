@@ -97,7 +97,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
                                 InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
                                 if (infoNode != null) {
                                     IQ result = iq.createResult();
-                                    result.setExtension(new InfoDiscovery(infoNode.getIdentities(), infoNode.getFeatures()));
+                                    result.setExtension(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures()));
                                     connection.send(result);
                                 } else {
                                     connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ItemNotFound())));

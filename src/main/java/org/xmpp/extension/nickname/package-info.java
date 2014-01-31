@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>.
+ * <p>
+ * It defines a protocol for communicating user nicknames, either in XMPP presence subscription requests or in XMPP messages.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/protocol/nick", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.nickname;

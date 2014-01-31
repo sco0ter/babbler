@@ -40,7 +40,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "x")
-public final class DataForm {
+public final class DataForm implements Comparable<DataForm> {
     @XmlAttribute
     private Type type;
 
@@ -94,6 +94,15 @@ public final class DataForm {
         this.type = type;
         this.title = title;
         this.instructions.addAll(Arrays.asList(instructions));
+    }
+
+    private static String getFormType(DataForm dataForm) {
+        for (Field field : dataForm.getFields()) {
+            if ("FORM_TYPE".equals(field.getVar()) && !field.getValues().isEmpty()) {
+                return field.getValues().get(0);
+            }
+        }
+        return null;
     }
 
     /**
@@ -177,6 +186,21 @@ public final class DataForm {
         return items;
     }
 
+    @Override
+    public int compareTo(DataForm o) {
+        String ft = getFormType(this);
+        String fto = getFormType(o);
+        if (ft == null && fto == null) {
+            return 0;
+        } else if (ft == null) {
+            return 1;
+        } else if (fto == null) {
+            return -1;
+        } else {
+            return ft.compareTo(fto);
+        }
+    }
+
     /**
      * The form type.
      */
@@ -211,7 +235,7 @@ public final class DataForm {
      * @see <a href="http://xmpp.org/extensions/xep-0004.html#protocol-field">3.2 The Field Element</a>
      */
     @XmlRootElement(name = "field")
-    public static final class Field {
+    public static final class Field implements Comparable<Field> {
 
         @XmlElement(name = "desc")
         private String description;
@@ -255,9 +279,10 @@ public final class DataForm {
          * @param type The field type.
          * @param var  The unique identifier for the field.
          */
-        public Field(Type type, String var) {
+        public Field(Type type, String var, String... values) {
             this.type = type;
             this.var = var;
+            this.values = Arrays.asList(values);
         }
 
         /**
@@ -394,6 +419,24 @@ public final class DataForm {
          */
         public void setRequired(boolean required) {
             this.required = required ? "" : null;
+        }
+
+        @Override
+        public int compareTo(Field o) {
+
+            if ("FORM_TYPE".equals(getVar()) && !"FORM_TYPE".equals(o.getVar())) {
+                return -1;
+            }
+
+            if (getVar() == null && o.getVar() == null) {
+                return 0;
+            } else if (getVar() == null) {
+                return -1;
+            } else if (o.getVar() == null) {
+                return 1;
+            } else {
+                return getVar().compareTo(o.getVar());
+            }
         }
 
         /**

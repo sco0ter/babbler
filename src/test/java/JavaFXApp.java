@@ -64,9 +64,6 @@ import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
-import org.xmpp.extension.rpc.RpcException;
-import org.xmpp.extension.rpc.RpcManager;
-import org.xmpp.extension.rpc.Value;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;

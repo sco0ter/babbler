@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0020.html">XEP-0020: Feature Negotiation</a>.
+ * <p>
+ * It defines an XMPP protocol extension that enables two entities to mutually negotiate feature options, such as parameters related to a file transfer or a communications session.
+ * </p>
  */
 @XmlSchema(namespace = "http://jabber.org/protocol/feature-neg", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.featurenegotiation;
 

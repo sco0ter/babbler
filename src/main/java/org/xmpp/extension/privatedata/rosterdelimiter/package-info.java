@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>.
+ * <p>
+ * It defines an XMPP protocol extension that enables nested sub-groups to exist within the Jabber roster, while retaining backwards compatibility and ensuring that the roster remains usable by all clients.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "roster:delimiter", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatedata.rosterdelimiter;

@@ -23,15 +23,6 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
- * <p>
- * It defines an XMPP protocol extension for negotiating compression of XML streams, especially in situations where standard TLS compression cannot be negotiated. The protocol provides a modular framework that can accommodate a wide range of compression algorithms; the ZLIB compression algorithm is mandatory-to-implement, but implementations may support other algorithms in addition.
- * </p>
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a> and <a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/compress", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.compression;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+package org.xmpp.extension.avatar;

@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a>.
+ * <p>
+ * It defines an XMPP protocol extension for getting the attention of another user.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:attention:0", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.attention;

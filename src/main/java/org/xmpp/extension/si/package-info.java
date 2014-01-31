@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>.
+ * <p>
+ * It defines an XMPP protocol extension for initiating a data stream between any two XMPP entities. The protocol includes the ability to include metadata about the stream and provides a pluggable framework so that various profiles of stream initiation can be defined for particular use cases (such as file transfer).
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/protocol/si", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.si;

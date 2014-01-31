@@ -24,10 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>.
- * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0308.html#intro">1. Introduction</a></cite></p>
- * <p>When sending a message, people often introduce typing errors and send a follow-up message to correct them. This specification allows the sending client to flag the second message as correcting the first.</p>
- * </blockquote>
+ * <p>
+ * It defines a method for indicating that a message is a correction of the last sent message.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:message-correct:0", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.messagecorrection;

@@ -24,10 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
- * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0012.html#intro">1. Introduction</a></cite></p>
- * <p>It is often helpful to know the time of the last activity associated with a entity. The canonical usage is to discover when a disconnected user last accessed its server. The 'jabber:iq:last' namespace provides a method for retrieving that information. The 'jabber:iq:last' namespace can also be used to discover or publicize when a connected user was last active on the server (i.e., the user's idle time) or to query servers and components about their current uptime.</p>
- * </blockquote>
+ * <p>
+ * It defines an XMPP protocol extension for communicating information about the last activity associated with an XMPP entity. It is typically used by an IM client to retrieve the most recent presence information from an offline contact by sending a last activity request to the server that hosts the account controlled by the contact.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "jabber:iq:last", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.lastactivity;

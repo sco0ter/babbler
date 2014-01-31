@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203: Delayed Delivery</a>.
+ * <p>
+ * It defines an XMPP protocol extension for communicating the fact that an XML stanza has been delivered with a delay, for example because a message has been stored on a server while the intended recipient was offline or because a message is contained in the history of a multi-user chat room.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:delay", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.delayeddelivery;

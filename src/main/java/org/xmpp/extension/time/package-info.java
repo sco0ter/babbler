@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>.
+ * <p>
+ * It defines an XMPP protocol extension for communicating the local time of an entity, including the time in UTC according to the entity as well as the offset from UTC. The time format itself conforms to the dateTime profile of ISO 8601 defined in XEP-0082.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:time", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.time;

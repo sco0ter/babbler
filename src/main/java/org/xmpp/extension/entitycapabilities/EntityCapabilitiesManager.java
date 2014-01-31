@@ -26,22 +26,25 @@ package org.xmpp.extension.entitycapabilities;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 
-import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Christian Schudt
  */
-public class EntityCapabilitiesManager {
+public final class EntityCapabilitiesManager extends ExtensionManager {
+
+    private static final String FEATURE = "http://jabber.org/protocol/caps";
+
+    // It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client;
+    private static final String NODE = "http://babbler-xmpp.blogspot.de/";
 
     private Map<Jid, InfoDiscovery> entityCapabilities;
 
@@ -49,8 +52,8 @@ public class EntityCapabilitiesManager {
 
     private Connection connection;
 
-    public EntityCapabilitiesManager() {
-
+    public EntityCapabilitiesManager(Connection connection) {
+        super(connection);
         /*
         connection.addStanzaListener(new StanzaListener() {
             @Override
@@ -61,13 +64,13 @@ public class EntityCapabilitiesManager {
 
                     if (entityCapabilities != null) {
                         // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver' or treat it as generated in accordance with the Legacy Format (if supported).
-                        if (entityCapabilities.getHash() == null) {
+                        if (entityCapabilities.getHashingAlgorithm() == null) {
                             return;
                         }
 
                         MessageDigest messageDigest;
                         try {
-                            messageDigest = MessageDigest.getInstance(entityCapabilities.getHash());
+                            messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
                             // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
 
                             // 3.1 Send a service discovery information request to the generating entity.
@@ -94,11 +97,19 @@ public class EntityCapabilitiesManager {
         */
     }
 
-    String getVerificationString(List<Identity> identities, List<Feature> features) {
+    byte[] getVerificationString(InfoDiscovery infoDiscovery) {
 
+        List<Identity> identities = new ArrayList<>(infoDiscovery.getIdentities());
+        List<Feature> features = new ArrayList<>(infoDiscovery.getFeatures());
+        List<DataForm> dataForms = new ArrayList<>(infoDiscovery.getExtensions());
+
+        // 1. Initialize an empty string S.
         StringBuilder sb = new StringBuilder();
 
-        sortIdentities(identities);
+        // 2. Sort the service discovery identities [15] by category and then by type and then by xml:lang (if it exists), formatted as CATEGORY '/' [TYPE] '/' [LANG] '/' [NAME]. [16] Note that each slash is included even if the LANG or NAME is not included (in accordance with XEP-0030, the category and type MUST be included.
+        Collections.sort(identities);
+
+        // 3. For each identity, append the 'category/type/lang/name' to S, followed by the '<' character.
         for (Identity identity : identities) {
             if (identity.getCategory() != null) {
                 sb.append(identity.getCategory());
@@ -118,7 +129,10 @@ public class EntityCapabilitiesManager {
             sb.append("<");
         }
 
-        sortFeatures(features);
+        // 4. Sort the supported service discovery features.
+        Collections.sort(features);
+
+        // 5. For each feature, append the feature to S, followed by the '<' character.
         for (Feature feature : features) {
             if (feature.getVar() != null) {
                 sb.append(feature.getVar());
@@ -126,14 +140,52 @@ public class EntityCapabilitiesManager {
             sb.append("<");
         }
 
+        // 6. If the service discovery information response includes XEP-0128 data forms, sort the forms by the FORM_TYPE (i.e., by the XML character data of the <value/> element).
+        Collections.sort(dataForms);
+
+        // 7. For each extended service discovery information form:
+        for (DataForm dataForm : dataForms) {
+
+            // 7.2. Sort the fields by the value of the "var" attribute.
+            Collections.sort(dataForm.getFields());
+
+            if (!dataForm.getFields().isEmpty()) {
+
+                if (!"FORM_TYPE".equals(dataForm.getFields().get(0).getVar())) {
+                    continue;
+                }
+
+                for (DataForm.Field field : dataForm.getFields()) {
+                    // 7.3. For each field other than FORM_TYPE:
+                    if (!"FORM_TYPE".equals(field.getVar())) {
+                        // 7.3.1. Append the value of the "var" attribute, followed by the '<' character.
+                        sb.append(field.getVar());
+                        sb.append("<");
+
+                        // 7.3.2. Sort values by the XML character data of the <value/> element.
+                        Collections.sort(field.getValues());
+                    }
+                    // 7.1. Append the XML character data of the FORM_TYPE field's <value/> element, followed by the '<' character.
+                    // 7.3.3. For each <value/> element, append the XML character data, followed by the '<' character.
+                    for (String value : field.getValues()) {
+                        sb.append(value);
+                        sb.append("<");
+                    }
+                }
+
+            }
+        }
+
+        // 8. Ensure that S is encoded according to the UTF-8 encoding
         String plainString = sb.toString();
 
+        // 9. Compute the verification string by hashing S using the algorithm specified in the 'hash' attribute.
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("sha-1");
             messageDigest.reset();
             messageDigest.update(plainString.getBytes());
-            return DatatypeConverter.printBase64Binary(messageDigest.digest());
+            return messageDigest.digest();
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -141,16 +193,12 @@ public class EntityCapabilitiesManager {
         return null;
     }
 
-    void sortIdentities(List<Identity> identities) {
-        // Sort the service discovery identities [15] by category and then by type and then by xml:lang (if it exists), formatted as CATEGORY '/' [TYPE] '/' [LANG] '/' [NAME]. [16] Note that each slash is included even if the LANG or NAME is not included (in accordance with XEP-0030, the category and type MUST be included.
-        Collections.sort(identities);
-    }
-
-    void sortFeatures(List<Feature> features) {
-        Collections.sort(features);
-    }
-
     public boolean supportsProtocol(Jid jid, String protocolNamespace) {
         return true;
+    }
+
+    @Override
+    protected Collection<String> getFeatureNamespaces() {
+        return Arrays.asList(FEATURE);
     }
 }

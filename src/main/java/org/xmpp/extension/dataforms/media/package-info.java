@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0221.html">XEP-0221: Data Forms Media Element</a>.
+ * <p>
+ * It defines an XMPP protocol extension for including media data in XEP-0004 data forms.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:media-element", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.dataforms.media;

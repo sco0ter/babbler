@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a>.
+ * <p>
+ * It defines a transport protocol that emulates the semantics of a long-lived, bidirectional TCP connection between two entities (such as a client and a server) by efficiently using multiple synchronous HTTP request/response pairs without requiring the use of frequent polling or chunked responses.
+ * </p>
  */
 // Some server BOSH implementations require the prefix to be "xmpp" for namespace "urn:xmpp:xbosh"
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)

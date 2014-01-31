@@ -24,6 +24,9 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>.
+ * <p>
+ * It defines a protocol for making annotations about roster items and other entities.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "storage:rosternotes", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatedata.annotations;

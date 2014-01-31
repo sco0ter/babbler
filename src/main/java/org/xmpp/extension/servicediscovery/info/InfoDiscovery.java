@@ -28,6 +28,7 @@ import org.xmpp.extension.dataforms.DataForm;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -44,10 +45,10 @@ public final class InfoDiscovery {
     private String node;
 
     @XmlElement(name = "identity")
-    private Set<Identity> identities;
+    private Set<Identity> identities = new HashSet<>();
 
     @XmlElement(name = "feature")
-    private Set<Feature> features;
+    private Set<Feature> features = new HashSet<>();
 
     @XmlElementRef
     private List<DataForm> extensions = new ArrayList<>();
@@ -74,6 +75,19 @@ public final class InfoDiscovery {
      * @param features   The features.
      */
     public InfoDiscovery(Set<Identity> identities, Set<Feature> features) {
+        this.identities = identities;
+        this.features = features;
+    }
+
+    /**
+     * Creates an info discovery element, used in discovery info responses.
+     *
+     * @param node       The node.
+     * @param identities The identities
+     * @param features   The features.
+     */
+    public InfoDiscovery(String node, Set<Identity> identities, Set<Feature> features) {
+        this.node = node;
         this.identities = identities;
         this.features = features;
     }

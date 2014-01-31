@@ -126,7 +126,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @return The features.
      */
     public Set<Feature> getFeatures() {
-        return features;
+        return Collections.unmodifiableSet(features);
     }
 
     /**
@@ -135,7 +135,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @return The identities.
      */
     public Set<Identity> getIdentities() {
-        return identities;
+        return Collections.unmodifiableSet(identities);
     }
 
     /**

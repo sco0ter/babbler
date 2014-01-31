@@ -12,7 +12,7 @@ Since this project is quite young, the API might change. Comments on the API are
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final')*
 
 * ![alt supported][supported]           [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)
-* ![alt in development][in development] [XEP-0009: Jabber-RPC](http://xmpp.org/extensions/xep-0009.html)
+* ![alt supported][supported]           [XEP-0009: Jabber-RPC](http://xmpp.org/extensions/xep-0009.html)
 * ![alt supported][supported]           [XEP-0012: Last Activity](http://xmpp.org/extensions/xep-0012.html)
 * ![alt not supported][not supported]   [XEP-0013: Flexible Offline Message Retrieval](http://xmpp.org/extensions/xep-0013.html)
 * ![alt supported][supported]           [XEP-0016: Privacy Lists](http://xmpp.org/extensions/xep-0016.html)
@@ -50,7 +50,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt in development][in development] [XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)
 * ![alt not supported][not supported]   [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
 * ![alt supported][supported]           [XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)
-* ![alt not supported][not supported]   [XEP-0131: Stanza Headers and Internet Metadata](http://xmpp.org/extensions/xep-0131.html)
+* ![alt supported][supported]           [XEP-0131: Stanza Headers and Internet Metadata](http://xmpp.org/extensions/xep-0131.html)
 * ![alt not supported][not supported]   [XEP-0136: Message Archiving](http://xmpp.org/extensions/xep-0136.html)
 * ![alt not supported][not supported]   [XEP-0137: Publishing Stream Initiation Requests](http://xmpp.org/extensions/xep-0137.html)
 * ![alt supported][supported]           [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)

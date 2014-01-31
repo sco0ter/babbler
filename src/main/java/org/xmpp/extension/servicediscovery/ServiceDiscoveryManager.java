@@ -30,15 +30,13 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
-import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.IQEvent;
-import org.xmpp.stanza.IQListener;
+import org.xmpp.extension.servicediscovery.items.ItemNode;
+import org.xmpp.stanza.*;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeoutException;
 
@@ -68,29 +66,47 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private final Set<Feature> features = new CopyOnWriteArraySet<>();
 
+    private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
+
+    private final Map<String, ItemNode> itemNodeMap = new ConcurrentHashMap<>();
+
     public ServiceDiscoveryManager(final Connection connection) {
         super(connection);
         connection.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && iq.getType() == IQ.Type.GET && iq.getExtension(InfoDiscovery.class) != null) {
-                    if (isEnabled()) {
-                        IQ result = iq.createResult();
-                        Set<Identity> ids;
-                        //  Every entity MUST have at least one identity
-                        if (!identities.isEmpty()) {
-                            ids = new HashSet<>(identities);
-                        } else {
-                            ids = new HashSet<>();
-                            ids.add(defaultIdentity);
-                        }
+                if (e.isIncoming() && iq.getType() == IQ.Type.GET) {
+                    InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
+                    if (infoDiscovery != null) {
+                        if (isEnabled()) {
 
-                        InfoDiscovery serviceDiscovery = new InfoDiscovery(ids, features);
-                        result.setExtension(serviceDiscovery);
-                        connection.send(result);
-                    } else {
-                        sendServiceUnavailable(iq);
+                            if (infoDiscovery.getNode() == null) {
+                                Set<Identity> ids;
+                                //  Every entity MUST have at least one identity
+                                if (!identities.isEmpty()) {
+                                    ids = new HashSet<>(identities);
+                                } else {
+                                    ids = new HashSet<>();
+                                    ids.add(defaultIdentity);
+                                }
+                                IQ result = iq.createResult();
+                                result.setExtension(new InfoDiscovery(ids, features));
+                                connection.send(result);
+                            } else {
+                                InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
+                                if (infoNode != null) {
+                                    IQ result = iq.createResult();
+                                    result.setExtension(new InfoDiscovery(infoNode.getIdentities(), infoNode.getFeatures()));
+                                    connection.send(result);
+                                } else {
+                                    connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ItemNotFound())));
+                                }
+                            }
+
+                        } else {
+                            sendServiceUnavailable(iq);
+                        }
                     }
                 }
             }
@@ -137,7 +153,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @return The service discovery result.
      * @throws TimeoutException
      */
-    public InfoDiscovery discoverInformation(Jid jid) throws TimeoutException {
+    public InfoDiscovery discoverInformation(Jid jid) throws TimeoutException, StanzaException {
         return discoverInformation(jid, null);
     }
 
@@ -153,11 +169,14 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws TimeoutException
      * @see #discoverInformation(org.xmpp.Jid)
      */
-    public InfoDiscovery discoverInformation(Jid jid, String node) throws TimeoutException {
-        IQ iq = new IQ(IQ.Type.GET, new InfoDiscovery(node));
-        iq.setTo(jid);
+    public InfoDiscovery discoverInformation(Jid jid, String node) throws TimeoutException, StanzaException {
+        IQ iq = new IQ(jid, IQ.Type.GET, new InfoDiscovery(node));
         IQ result = connection.query(iq);
-        return result.getExtension(InfoDiscovery.class);
+        if (result.getType() == IQ.Type.RESULT) {
+            return result.getExtension(InfoDiscovery.class);
+        } else {
+            throw new StanzaException(result.getError());
+        }
     }
 
     /**
@@ -183,5 +202,31 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
         iq.setTo(jid);
         IQ result = connection.query(iq);
         return result.getExtension(ItemDiscovery.class);
+    }
+
+    /**
+     * Adds an info node.
+     *
+     * @param infoNode The info node.
+     */
+    public void addInfoNode(InfoNode infoNode) {
+        infoNodeMap.put(infoNode.getNode(), infoNode);
+    }
+
+    /**
+     * Removes an info node.
+     *
+     * @param node The node name.
+     */
+    public void removeInfoNode(String node) {
+        infoNodeMap.remove(node);
+    }
+
+    public void addItemNode(ItemNode itemNode) {
+        itemNodeMap.put(itemNode.getNode(), itemNode);
+    }
+
+    public void removeItemNode(String node) {
+        itemNodeMap.remove(node);
     }
 }

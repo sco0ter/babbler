@@ -38,6 +38,9 @@ public final class Headers {
     @XmlElement(name = "header")
     private List<Header> headers = new ArrayList<>();
 
+    private Headers() {
+    }
+
     public Headers(List<Header> headers) {
         this.headers = headers;
     }

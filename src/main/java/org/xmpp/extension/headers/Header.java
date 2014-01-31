@@ -25,8 +25,11 @@
 package org.xmpp.extension.headers;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
+ * A header element which hold stanza header information or internet metadata.
+ *
  * @author Christian Schudt
  */
 public final class Header {
@@ -34,11 +37,38 @@ public final class Header {
     @XmlAttribute(name = "name")
     private String name;
 
-    public Header(String name) {
-        this.name = name;
+    @XmlValue
+    private String value;
+
+    private Header() {
     }
 
+    /**
+     * Creates a header.
+     *
+     * @param name  The name of the header. See <a href="http://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a> for registered headers.
+     * @param value The header value.
+     */
+    public Header(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    /**
+     * Gets the name of the header.
+     *
+     * @return The header.
+     */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets the value of the header.
+     *
+     * @return The header.
+     */
+    public String getValue() {
+        return value;
     }
 }

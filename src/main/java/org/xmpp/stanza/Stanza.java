@@ -508,9 +508,6 @@ public abstract class Stanza {
                 associatedErrorType.put(Conflict.class, Type.CANCEL);
             }
 
-            private Conflict() {
-            }
-
             @Override
             public String toString() {
                 return "conflict";
@@ -549,9 +546,6 @@ public abstract class Stanza {
                 associatedErrorType.put(Forbidden.class, Type.AUTH);
             }
 
-            private Forbidden() {
-            }
-
             @Override
             public String toString() {
                 return "forbidden";
@@ -569,9 +563,6 @@ public abstract class Stanza {
         public static final class Gone extends Condition {
             static {
                 associatedErrorType.put(Gone.class, Type.CANCEL);
-            }
-
-            private Gone() {
             }
 
             /**
@@ -640,9 +631,6 @@ public abstract class Stanza {
                 associatedErrorType.put(JidMalformed.class, Type.MODIFY);
             }
 
-            private JidMalformed() {
-            }
-
             @Override
             public String toString() {
                 return "jid-malformed";
@@ -700,9 +688,6 @@ public abstract class Stanza {
                 associatedErrorType.put(NotAuthorized.class, Type.AUTH);
             }
 
-            private NotAuthorized() {
-            }
-
             @Override
             public String toString() {
                 return "not-authorized";
@@ -720,9 +705,6 @@ public abstract class Stanza {
         public static final class PolicyViolation extends Condition {
             static {
                 associatedErrorType.put(PolicyViolation.class, Type.MODIFY);
-            }
-
-            private PolicyViolation() {
             }
 
             @Override
@@ -744,9 +726,6 @@ public abstract class Stanza {
                 associatedErrorType.put(RecipientUnavailable.class, Type.WAIT);
             }
 
-            private RecipientUnavailable() {
-            }
-
             @Override
             public String toString() {
                 return "recipient-unavailable";
@@ -764,9 +743,6 @@ public abstract class Stanza {
         public static final class Redirect extends Condition {
             static {
                 associatedErrorType.put(Redirect.class, Type.MODIFY);
-            }
-
-            private Redirect() {
             }
 
             /**
@@ -797,9 +773,6 @@ public abstract class Stanza {
                 associatedErrorType.put(RegistrationRequired.class, Type.AUTH);
             }
 
-            private RegistrationRequired() {
-            }
-
             @Override
             public String toString() {
                 return "registration-required";
@@ -819,9 +792,6 @@ public abstract class Stanza {
                 associatedErrorType.put(RemoteServerNotFound.class, Type.CANCEL);
             }
 
-            private RemoteServerNotFound() {
-            }
-
             @Override
             public String toString() {
                 return "remote-server-not-found";
@@ -839,9 +809,6 @@ public abstract class Stanza {
         public static final class RemoteServerTimeout extends Condition {
             static {
                 associatedErrorType.put(RemoteServerTimeout.class, Type.WAIT);
-            }
-
-            private RemoteServerTimeout() {
             }
 
             @Override
@@ -899,9 +866,6 @@ public abstract class Stanza {
         public static final class SubscriptionRequired extends Condition {
             static {
                 associatedErrorType.put(SubscriptionRequired.class, Type.AUTH);
-            }
-
-            private SubscriptionRequired() {
             }
 
             @Override

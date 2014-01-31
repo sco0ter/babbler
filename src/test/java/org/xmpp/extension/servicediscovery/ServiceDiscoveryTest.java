@@ -33,6 +33,7 @@ import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -139,7 +140,7 @@ public class ServiceDiscoveryTest extends BaseTest {
     }
 
     @Test
-    public void testInfoDiscovery() throws IOException, TimeoutException {
+    public void testInfoDiscovery() throws IOException, TimeoutException, StanzaException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);

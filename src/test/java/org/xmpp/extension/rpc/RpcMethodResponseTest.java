@@ -60,4 +60,38 @@ public class RpcMethodResponseTest extends BaseTest {
         Assert.assertNotNull(rpc);
         Assert.assertEquals(rpc.getMethodResponse().getResponse().getAsString(), "Colorado");
     }
+
+    @Test
+    public void unmarshalFault() throws XMLStreamException, JAXBException {
+        String xml = "<iq type='result' \n" +
+                "    from='responder@company-a.com/jrpc-server' \n" +
+                "    to='requester@company-b.com/jrpc-client' \n" +
+                "    id='rpc1'>\n" +
+                "  <query xmlns='jabber:iq:rpc'>\n" +
+                "   <methodResponse>\n" +
+                "  <fault>\n" +
+                "    <value>\n" +
+                "      <struct>\n" +
+                "        <member>\n" +
+                "          <name>faultCode</name>\n" +
+                "          <value><int>4</int></value>\n" +
+                "        </member>\n" +
+                "        <member>\n" +
+                "          <name>faultString</name>\n" +
+                "          <value><string>Too many parameters.</string></value>\n" +
+                "        </member>\n" +
+                "      </struct>\n" +
+                "    </value>\n" +
+                "  </fault>\n" +
+                "</methodResponse>" +
+                "  </query>\n" +
+                "</iq>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
+        Rpc rpc = iq.getExtension(Rpc.class);
+        Assert.assertNotNull(rpc);
+        Assert.assertNotNull(rpc.getMethodResponse().getFault());
+        Assert.assertEquals(rpc.getMethodResponse().getFault().getFaultCode(), 4);
+        Assert.assertEquals(rpc.getMethodResponse().getFault().getFaultString(), "Too many parameters.");
+    }
 }

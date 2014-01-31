@@ -33,6 +33,7 @@ import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.items.Item;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +54,7 @@ public final class OfflineMessageManager extends ExtensionManager {
 
     }
 
-    public int requestNumberOfMessages() throws TimeoutException {
+    public int requestNumberOfMessages() throws TimeoutException, StanzaException {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         InfoDiscovery infoDiscovery = serviceDiscoveryManager.discoverInformation(null, NODE);
         DataForm dataForm = infoDiscovery.getExtensions().get(0);

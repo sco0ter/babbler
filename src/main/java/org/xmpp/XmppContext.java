@@ -38,6 +38,8 @@ import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.dataforms.media.Media;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
 import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
+import org.xmpp.extension.headers.HeaderManager;
+import org.xmpp.extension.headers.Headers;
 import org.xmpp.extension.ibb.Close;
 import org.xmpp.extension.ibb.InBandByteStreamManager;
 import org.xmpp.extension.ibb.Open;
@@ -215,6 +217,10 @@ public abstract class XmppContext {
 
             // XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)
             registerExtension(Body.class);
+
+            // XEP-0131: Stanza Headers and Internet Metadata
+            registerExtension(Headers.class);
+            registerManager(HeaderManager.class);
 
             // XEP-0138: Stream Compression
             registerExtension(Compression.class);

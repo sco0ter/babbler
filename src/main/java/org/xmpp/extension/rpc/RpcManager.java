@@ -122,13 +122,20 @@ public final class RpcManager extends ExtensionManager {
      */
     public Value call(Jid jid, String methodName, Value... parameters) throws TimeoutException, StanzaException, RpcException {
         IQ result = connection.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
-        if (result != null && result.getType() == IQ.Type.RESULT) {
-            Rpc rpc = result.getExtension(Rpc.class);
-            if (rpc != null) {
-                Rpc.MethodResponse methodResponse = rpc.getMethodResponse();
-                if (methodResponse != null) {
-                    return methodResponse.getResponse();
+        if (result != null) {
+            if (result.getType() == IQ.Type.RESULT) {
+                Rpc rpc = result.getExtension(Rpc.class);
+                if (rpc != null) {
+                    Rpc.MethodResponse methodResponse = rpc.getMethodResponse();
+                    if (methodResponse != null) {
+                        if (methodResponse.getFault() != null) {
+                            throw new RpcException(methodResponse.getFault().getFaultCode(), methodResponse.getFault().getFaultString());
+                        }
+                        return methodResponse.getResponse();
+                    }
                 }
+            } else if (result.getType() == IQ.Type.ERROR) {
+                throw new StanzaException(result.getError());
             }
         }
         return null;

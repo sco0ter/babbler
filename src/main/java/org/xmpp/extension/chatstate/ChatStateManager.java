@@ -51,7 +51,7 @@ public final class ChatStateManager extends ExtensionManager {
 
     private Map<Jid, Boolean> contactSupportsChatStateNotifications = new HashMap<>();
 
-    public ChatStateManager(final Connection connection) {
+    private ChatStateManager(final Connection connection) {
         super(connection);
         connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
             @Override

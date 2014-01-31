@@ -38,7 +38,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class PubSubManager extends ExtensionManager {
 
-    public PubSubManager(Connection connection) {
+    private PubSubManager(Connection connection) {
         super(connection);
     }
 

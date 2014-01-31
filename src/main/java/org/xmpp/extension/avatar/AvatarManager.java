@@ -66,7 +66,7 @@ public final class AvatarManager extends ExtensionManager {
 
     private final Set<AvatarChangeListener> avatarChangeListeners = new CopyOnWriteArraySet<>();
 
-    protected AvatarManager(final Connection connection) {
+    private AvatarManager(final Connection connection) {
         super(connection);
         connection.addConnectionListener(new ConnectionListener() {
             @Override

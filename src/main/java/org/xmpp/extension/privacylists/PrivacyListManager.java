@@ -63,7 +63,7 @@ import java.util.concurrent.TimeoutException;
 public final class PrivacyListManager extends ExtensionManager {
     private final Set<PrivacyListListener> privacyListListeners = new CopyOnWriteArraySet<>();
 
-    public PrivacyListManager(final Connection connection) {
+    private PrivacyListManager(final Connection connection) {
         super(connection);
         connection.addConnectionListener(new ConnectionListener() {
             @Override

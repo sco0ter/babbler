@@ -55,7 +55,7 @@ public final class PingManager extends ExtensionManager {
      *
      * @param connection The underlying connection.
      */
-    public PingManager(final Connection connection) {
+    private PingManager(final Connection connection) {
         super(connection);
         connection.addIQListener(new IQListener() {
             @Override

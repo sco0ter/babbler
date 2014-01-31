@@ -47,7 +47,7 @@ public final class VCardManager extends ExtensionManager {
 
     private volatile VCard myVCard;
 
-    public VCardManager(final Connection connection) {
+    private VCardManager(final Connection connection) {
         super(connection);
         setEnabled(true);
 

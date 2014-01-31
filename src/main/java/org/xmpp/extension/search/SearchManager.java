@@ -49,7 +49,7 @@ public final class SearchManager extends ExtensionManager {
      *
      * @param connection The search manager.
      */
-    public SearchManager(Connection connection) {
+    private SearchManager(Connection connection) {
         super(connection);
     }
 

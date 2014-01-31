@@ -50,7 +50,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
 
     private SoftwareVersion softwareVersion;
 
-    public SoftwareVersionManager(final Connection connection) {
+    private SoftwareVersionManager(final Connection connection) {
         super(connection);
         connection.addIQListener(new IQListener() {
             @Override

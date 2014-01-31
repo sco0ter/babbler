@@ -49,7 +49,7 @@ public final class EntityTimeManager extends ExtensionManager {
 
     private static final String FEATURE = "urn:xmpp:time";
 
-    public EntityTimeManager(final Connection connection) {
+    private EntityTimeManager(final Connection connection) {
         super(connection);
         connection.addIQListener(new IQListener() {
             @Override

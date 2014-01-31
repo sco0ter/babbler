@@ -75,7 +75,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      *
      * @param connection The underlying connection.
      */
-    public MessageDeliveryReceiptsManager(final Connection connection) {
+    private MessageDeliveryReceiptsManager(final Connection connection) {
         super(connection);
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.

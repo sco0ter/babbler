@@ -55,7 +55,7 @@ public final class MessageCorrectionManager extends ExtensionManager {
 
     private static final String FEATURE = "urn:xmpp:message-correct:0";
 
-    public MessageCorrectionManager(Connection connection) {
+    private MessageCorrectionManager(Connection connection) {
         super(connection);
     }
 

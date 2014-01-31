@@ -55,7 +55,7 @@ public final class RpcManager extends ExtensionManager {
 
     private RpcHandler rpcHandler;
 
-    protected RpcManager(final Connection connection) {
+    private RpcManager(final Connection connection) {
         super(connection);
         // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
         connection.addConnectionListener(new ConnectionListener() {

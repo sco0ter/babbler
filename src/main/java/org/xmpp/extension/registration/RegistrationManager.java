@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
  * @author Christian Schudt
  */
 public final class RegistrationManager extends ExtensionManager {
-    protected RegistrationManager(Connection connection) {
+    private RegistrationManager(Connection connection) {
         super(connection);
     }
 

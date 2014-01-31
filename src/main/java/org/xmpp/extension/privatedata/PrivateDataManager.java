@@ -45,7 +45,7 @@ import java.util.concurrent.TimeoutException;
  */
 public final class PrivateDataManager extends ExtensionManager {
 
-    public PrivateDataManager(Connection connection) {
+    private PrivateDataManager(Connection connection) {
         super(connection);
     }
 

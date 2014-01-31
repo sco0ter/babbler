@@ -62,7 +62,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private Connection connection;
 
-    protected EntityCapabilitiesManager(final Connection connection) {
+    private EntityCapabilitiesManager(final Connection connection) {
         super(connection);
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         connection.addPresenceListener(new PresenceListener() {

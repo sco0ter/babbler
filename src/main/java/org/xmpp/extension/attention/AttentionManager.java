@@ -66,7 +66,7 @@ public final class AttentionManager extends ExtensionManager {
 
     private static final String FEATURE = "urn:xmpp:attention:0";
 
-    public AttentionManager(Connection connection) {
+    private AttentionManager(Connection connection) {
         super(connection);
     }
 

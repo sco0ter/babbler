@@ -71,7 +71,7 @@ public final class LastActivityManager extends ExtensionManager {
 
     private volatile LastActivityStrategy lastActivityStrategy;
 
-    public LastActivityManager(final Connection connection) {
+    private LastActivityManager(final Connection connection) {
         super(connection);
         lastActivityStrategy = new DefaultLastActivityStrategy(connection);
 

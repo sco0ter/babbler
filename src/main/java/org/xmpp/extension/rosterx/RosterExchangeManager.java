@@ -41,7 +41,7 @@ import java.util.concurrent.TimeoutException;
  * @author Christian Schudt
  */
 public class RosterExchangeManager extends ExtensionManager {
-    public RosterExchangeManager(Connection connection) {
+    private RosterExchangeManager(Connection connection) {
         super(connection);
     }
 

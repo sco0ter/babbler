@@ -70,7 +70,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private final Map<String, ItemNode> itemNodeMap = new ConcurrentHashMap<>();
 
-    public ServiceDiscoveryManager(final Connection connection) {
+    private ServiceDiscoveryManager(final Connection connection) {
         super(connection);
         connection.addIQListener(new IQListener() {
             @Override

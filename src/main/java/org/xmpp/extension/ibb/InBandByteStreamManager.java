@@ -54,7 +54,7 @@ public class InBandByteStreamManager extends ExtensionManager {
 
     private Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
-    public InBandByteStreamManager(final Connection connection) {
+    private InBandByteStreamManager(final Connection connection) {
         super(connection);
 
         connection.addIQListener(new IQListener() {

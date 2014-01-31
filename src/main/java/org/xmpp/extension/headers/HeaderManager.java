@@ -54,7 +54,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    protected HeaderManager(Connection connection) {
+    private HeaderManager(Connection connection) {
         super(connection);
         this.supportedHeaders = new CopyOnWriteArraySet<>();
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);

@@ -53,7 +53,7 @@ public final class FileTransferManager extends ExtensionManager {
 
     private final Set<FileTransferListener> fileTransferListeners = new CopyOnWriteArraySet<>();
 
-    protected FileTransferManager(final Connection connection) {
+    private FileTransferManager(final Connection connection) {
         super(connection);
 
         connection.addIQListener(new IQListener() {

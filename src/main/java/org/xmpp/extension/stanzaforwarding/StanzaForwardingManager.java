@@ -61,7 +61,7 @@ public final class StanzaForwardingManager extends ExtensionManager {
      *
      * @param connection The underlying connection.
      */
-    public StanzaForwardingManager(final Connection connection) {
+    private StanzaForwardingManager(final Connection connection) {
         super(connection);
         setEnabled(false);
     }

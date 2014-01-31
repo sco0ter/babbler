@@ -29,9 +29,9 @@ import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
-import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.extension.servicediscovery.items.Item;
-import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
+import org.xmpp.extension.servicediscovery.items.ItemNode;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 
@@ -56,8 +56,8 @@ public final class OfflineMessageManager extends ExtensionManager {
 
     public int requestNumberOfMessages() throws TimeoutException, StanzaException {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        InfoDiscovery infoDiscovery = serviceDiscoveryManager.discoverInformation(null, NODE);
-        DataForm dataForm = infoDiscovery.getExtensions().get(0);
+        InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(null, NODE);
+        DataForm dataForm = infoDiscovery.getExtensions().iterator().next();
         if (dataForm != null) {
             for (DataForm.Field field : dataForm.getFields()) {
                 if ("number_of_messages".equals(field.getVar())) {
@@ -72,8 +72,8 @@ public final class OfflineMessageManager extends ExtensionManager {
     public List<OfflineMessageHeader> requestOfflineMessageHeaders() throws TimeoutException {
         List<OfflineMessageHeader> result = new ArrayList<>();
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        ItemDiscovery itemDiscovery = serviceDiscoveryManager.discoverItems(null, NODE);
-        for (Item item : itemDiscovery.getItems()) {
+        ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, NODE);
+        for (Item item : itemNode.getItems()) {
             result.add(new OfflineMessageHeader(Jid.fromEscapedString(item.getName()), item.getName()));
         }
         return result;

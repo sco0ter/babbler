@@ -35,7 +35,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
-public final class ItemDiscovery {
+public final class ItemDiscovery implements ItemNode {
 
     @XmlAttribute(name = "node")
     private String node;
@@ -59,19 +59,31 @@ public final class ItemDiscovery {
     }
 
     /**
-     * Gets the items.
+     * Creates an item discovery element with a node attribute.
      *
-     * @return The items.
+     * @param items The items.
      */
+    public ItemDiscovery(List<Item> items) {
+        this.items = items;
+    }
+
+    /**
+     * Creates an item discovery element with a node attribute.
+     *
+     * @param node  The node.
+     * @param items The items.
+     */
+    public ItemDiscovery(String node, List<Item> items) {
+        this.node = node;
+        this.items = items;
+    }
+
+    @Override
     public List<Item> getItems() {
         return items;
     }
 
-    /**
-     * Gets the node.
-     *
-     * @return The node.
-     */
+    @Override
     public String getNode() {
         return node;
     }

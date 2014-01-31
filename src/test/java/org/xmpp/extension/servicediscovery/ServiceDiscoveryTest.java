@@ -31,7 +31,9 @@ import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
+import org.xmpp.extension.servicediscovery.items.ItemNode;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 
@@ -111,31 +113,31 @@ public class ServiceDiscoveryTest extends BaseTest {
                 "</iq>\n";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
-        ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
-        Assert.assertNotNull(itemDiscovery);
-        Assert.assertEquals(itemDiscovery.getItems().size(), 3);
-        Assert.assertEquals(itemDiscovery.getItems().get(0).getJid(), Jid.fromString("catalog.shakespeare.lit"));
-        Assert.assertEquals(itemDiscovery.getItems().get(0).getNode(), "books");
-        Assert.assertEquals(itemDiscovery.getItems().get(0).getName(), "Books by and about Shakespeare");
-        Assert.assertEquals(itemDiscovery.getItems().get(1).getJid(), Jid.fromString("catalog.shakespeare.lit"));
-        Assert.assertEquals(itemDiscovery.getItems().get(1).getNode(), "clothing");
-        Assert.assertEquals(itemDiscovery.getItems().get(1).getName(), "Wear your literary taste with pride");
-        Assert.assertEquals(itemDiscovery.getItems().get(2).getJid(), Jid.fromString("catalog.shakespeare.lit"));
-        Assert.assertEquals(itemDiscovery.getItems().get(2).getNode(), "music");
-        Assert.assertEquals(itemDiscovery.getItems().get(2).getName(), "Music from the time of Shakespeare");
+        ItemNode itemNode = iq.getExtension(ItemDiscovery.class);
+        Assert.assertNotNull(itemNode);
+        Assert.assertEquals(itemNode.getItems().size(), 3);
+        Assert.assertEquals(itemNode.getItems().get(0).getJid(), Jid.fromString("catalog.shakespeare.lit"));
+        Assert.assertEquals(itemNode.getItems().get(0).getNode(), "books");
+        Assert.assertEquals(itemNode.getItems().get(0).getName(), "Books by and about Shakespeare");
+        Assert.assertEquals(itemNode.getItems().get(1).getJid(), Jid.fromString("catalog.shakespeare.lit"));
+        Assert.assertEquals(itemNode.getItems().get(1).getNode(), "clothing");
+        Assert.assertEquals(itemNode.getItems().get(1).getName(), "Wear your literary taste with pride");
+        Assert.assertEquals(itemNode.getItems().get(2).getJid(), Jid.fromString("catalog.shakespeare.lit"));
+        Assert.assertEquals(itemNode.getItems().get(2).getNode(), "music");
+        Assert.assertEquals(itemNode.getItems().get(2).getName(), "Music from the time of Shakespeare");
     }
 
     @Test
     public void testFeatureEquals() {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.getFeatures().add(new Feature("http://jabber.org/protocol/muc"));
+        serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(new Feature("http://jabber.org/protocol/muc")));
     }
 
     @Test
     public void testItemsEquals() {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.getIdentities().add(new Identity("conference", "text", "name1", "en"));
+        serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));
         Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(new Identity("conference", "text", "name2", "en")));
     }
 
@@ -145,7 +147,7 @@ public class ServiceDiscoveryTest extends BaseTest {
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
-        InfoDiscovery result = serviceDiscoveryManager.discoverInformation(JULIET);
+        InfoNode result = serviceDiscoveryManager.discoverInformation(JULIET);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getFeatures().size() > 1);
         //  Every entity MUST have at least one identity
@@ -205,7 +207,7 @@ public class ServiceDiscoveryTest extends BaseTest {
                 "</iq>\n";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
-        InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
+        InfoNode infoDiscovery = iq.getExtension(InfoDiscovery.class);
         Assert.assertNotNull(infoDiscovery);
         Assert.assertEquals(infoDiscovery.getExtensions().size(), 1);
         Assert.assertEquals(infoDiscovery.getExtensions().get(0).getType(), DataForm.Type.RESULT);

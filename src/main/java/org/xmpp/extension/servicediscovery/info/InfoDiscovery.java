@@ -39,7 +39,7 @@ import java.util.Set;
  */
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class InfoDiscovery {
+public final class InfoDiscovery implements InfoNode {
 
     @XmlAttribute
     private String node;
@@ -73,10 +73,13 @@ public final class InfoDiscovery {
      *
      * @param identities The identities
      * @param features   The features.
+     * @param extensions The extensions.
      */
-    public InfoDiscovery(Set<Identity> identities, Set<Feature> features) {
+    public InfoDiscovery(Set<Identity> identities, Set<Feature> features, List<DataForm> extensions) {
+        this.node = node;
         this.identities = identities;
         this.features = features;
+        this.extensions = extensions;
     }
 
     /**
@@ -85,45 +88,31 @@ public final class InfoDiscovery {
      * @param node       The node.
      * @param identities The identities
      * @param features   The features.
+     * @param extensions The extensions.
      */
-    public InfoDiscovery(String node, Set<Identity> identities, Set<Feature> features) {
+    public InfoDiscovery(String node, Set<Identity> identities, Set<Feature> features, List<DataForm> extensions) {
         this.node = node;
         this.identities = identities;
         this.features = features;
+        this.extensions = extensions;
     }
 
-    /**
-     * Gets the identities.
-     *
-     * @return The identities.
-     */
+    @Override
     public Set<Identity> getIdentities() {
         return identities;
     }
 
-    /**
-     * Gets the features.
-     *
-     * @return The features.
-     */
+    @Override
     public Set<Feature> getFeatures() {
         return features;
     }
 
-    /**
-     * Gets the node.
-     *
-     * @return The node.
-     */
+    @Override
     public String getNode() {
         return node;
     }
 
-    /**
-     * Gets the service discovery extensions as described in <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
-     *
-     * @return The service discovery extensions.
-     */
+    @Override
     public List<DataForm> getExtensions() {
         return extensions;
     }

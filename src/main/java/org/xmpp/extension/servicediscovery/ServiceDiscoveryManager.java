@@ -27,16 +27,19 @@ package org.xmpp.extension.servicediscovery;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.info.InfoNode;
+import org.xmpp.extension.servicediscovery.items.Item;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.extension.servicediscovery.items.ItemNode;
 import org.xmpp.stanza.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeoutException;
 
@@ -54,7 +57,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends ExtensionManager {
+public final class ServiceDiscoveryManager extends ExtensionManager implements InfoNode, ItemNode {
 
     private static final String FEATURE_INFO = "http://jabber.org/protocol/disco#info";
 
@@ -65,6 +68,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     private final Set<Identity> identities = new CopyOnWriteArraySet<>();
 
     private final Set<Feature> features = new CopyOnWriteArraySet<>();
+
+    private final List<DataForm> extensions = new CopyOnWriteArrayList<>();
+
+    private final List<Item> items = new CopyOnWriteArrayList<>();
 
     private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
 
@@ -91,13 +98,13 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
                                     ids.add(defaultIdentity);
                                 }
                                 IQ result = iq.createResult();
-                                result.setExtension(new InfoDiscovery(ids, features));
+                                result.setExtension(new InfoDiscovery(ids, features, extensions));
                                 connection.send(result);
                             } else {
                                 InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
                                 if (infoNode != null) {
                                     IQ result = iq.createResult();
-                                    result.setExtension(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures()));
+                                    result.setExtension(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
                                     connection.send(result);
                                 } else {
                                     connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ItemNotFound())));
@@ -106,6 +113,29 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
                         } else {
                             sendServiceUnavailable(iq);
+                        }
+                    } else {
+                        ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
+                        if (itemDiscovery != null) {
+                            if (isEnabled()) {
+                                if (itemDiscovery.getNode() == null) {
+                                    IQ result = iq.createResult();
+                                    result.setExtension(new ItemDiscovery(items));
+                                    connection.send(result);
+                                } else {
+                                    ItemNode itemNode = itemNodeMap.get(itemDiscovery.getNode());
+                                    if (itemNode != null) {
+                                        IQ result = iq.createResult();
+                                        result.setExtension(new ItemDiscovery(itemNode.getNode(), items));
+                                        connection.send(result);
+                                    } else {
+                                        connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ItemNotFound())));
+                                    }
+                                }
+
+                            } else {
+                                sendServiceUnavailable(iq);
+                            }
                         }
                     }
                 }
@@ -119,23 +149,66 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
         return Arrays.asList(FEATURE_INFO, FEATURE_ITEMS);
     }
 
-    /**
-     * Gets the features. Features should not be added or removed directly. Instead enable or disable the respective extension manager, which will then add or remove the feature.
-     * That way, supported features are consistent with enabled extension managers and service discovery won't reveal features, that are in fact not supported.
-     *
-     * @return The features.
-     */
+    @Override
+    public String getNode() {
+        return null;
+    }
+
+    @Override
+    public List<Item> getItems() {
+        return items;
+    }
+
+    @Override
     public Set<Feature> getFeatures() {
         return Collections.unmodifiableSet(features);
     }
 
-    /**
-     * Gets the identities.
-     *
-     * @return The identities.
-     */
+    @Override
     public Set<Identity> getIdentities() {
         return Collections.unmodifiableSet(identities);
+    }
+
+    @Override
+    public List<DataForm> getExtensions() {
+        return extensions;
+    }
+
+    /**
+     * Adds a feature. Features should not be added or removed directly. Instead enable or disable the respective extension manager, which will then add or remove the feature.
+     * That way, supported features are consistent with enabled extension managers and service discovery won't reveal features, that are in fact not supported.
+     *
+     * @param feature The features.
+     */
+    public void addFeature(Feature feature) {
+        features.add(feature);
+    }
+
+    /**
+     * Removes a feature.
+     *
+     * @param feature The feature.
+     */
+    public void removeFeature(Feature feature) {
+        features.remove(feature);
+    }
+
+    /**
+     * Adds an identity.
+     *
+     * @param identity The identity.
+     */
+    public void addIdentity(Identity identity) {
+        identities.add(identity);
+    }
+
+    /**
+     * Removes an identity.
+     *
+     * @param identity The identity.
+     */
+    public void removeIdentity(Identity identity) {
+        identities.remove(identity);
     }
 
     /**
@@ -154,7 +227,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws StanzaException  If the entity returned an error.
      * @throws TimeoutException If the operation timed out.
      */
-    public InfoDiscovery discoverInformation(Jid jid) throws TimeoutException, StanzaException {
+    public InfoNode discoverInformation(Jid jid) throws TimeoutException, StanzaException {
         return discoverInformation(jid, null);
     }
 
@@ -172,7 +245,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws TimeoutException If the operation timed out.
      * @see #discoverInformation(org.xmpp.Jid)
      */
-    public InfoDiscovery discoverInformation(Jid jid, String node) throws TimeoutException, StanzaException {
+    public InfoNode discoverInformation(Jid jid, String node) throws TimeoutException, StanzaException {
         IQ iq = new IQ(jid, IQ.Type.GET, new InfoDiscovery(node));
         IQ result = connection.query(iq);
         if (result.getType() == IQ.Type.RESULT) {
@@ -189,7 +262,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @return The discovered items.
      * @throws TimeoutException If the operation timed out.
      */
-    public ItemDiscovery discoverItems(Jid jid) throws TimeoutException {
+    public ItemNode discoverItems(Jid jid) throws TimeoutException {
         return discoverItems(jid, null);
     }
 
@@ -201,7 +274,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @return The discovered items.
      * @throws TimeoutException If the operation timed out.
      */
-    public ItemDiscovery discoverItems(Jid jid, String node) throws TimeoutException {
+    public ItemNode discoverItems(Jid jid, String node) throws TimeoutException {
         IQ iq = new IQ(IQ.Type.GET, new ItemDiscovery(node));
         iq.setTo(jid);
         IQ result = connection.query(iq);

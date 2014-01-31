@@ -67,7 +67,7 @@ import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
-import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
@@ -435,7 +435,7 @@ public class JavaFXApp extends Application {
                                     ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
                                     try {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
-                                        InfoDiscovery serviceDiscovery = serviceDiscoveryManager.discoverInformation(null);
+                                        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
                                         int i = 0;
                                     } catch (TimeoutException e) {
                                         e.printStackTrace();

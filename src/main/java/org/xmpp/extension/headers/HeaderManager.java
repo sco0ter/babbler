@@ -27,10 +27,10 @@ package org.xmpp.extension.headers;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
-import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.stanza.StanzaException;
 
@@ -93,9 +93,9 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
      * @throws TimeoutException If the operation timed out.
      */
     public List<String> discoverSupportedHeaders(Jid jid) throws StanzaException, TimeoutException {
-        InfoDiscovery infoDiscovery = serviceDiscoveryManager.discoverInformation(jid, FEATURE);
+        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(jid, FEATURE);
         List<String> result = new ArrayList<>();
-        for (Feature feature : infoDiscovery.getFeatures()) {
+        for (Feature feature : infoNode.getFeatures()) {
             String var = feature.getVar();
             result.add(var.substring(var.indexOf("#") + 1));
         }
@@ -124,6 +124,11 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
 
     @Override
     public Set<Identity> getIdentities() {
+        return null;
+    }
+
+    @Override
+    public List<DataForm> getExtensions() {
         return null;
     }
 }

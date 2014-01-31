@@ -27,6 +27,8 @@ package org.xmpp.extension.servicediscovery.items;
 import java.util.List;
 
 /**
+ * A generic service discovery item node.
+ *
  * @author Christian Schudt
  */
 public interface ItemNode {

@@ -31,9 +31,12 @@ import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.extension.servicediscovery.info.InfoNode;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -129,7 +132,7 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
      * Generation example from <a href="http://xmpp.org/extensions/xep-0115.html#ver-gen-simple">5.2 Simple Generation Example</a>
      */
     @Test
-    public void testVerificationString() {
+    public void testVerificationString() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
         identities.add(new Identity("client", "pc", "Exodus 0.9.1"));
 
@@ -141,10 +144,10 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
 
         EntityCapabilitiesManager entityCapabilitiesManager = connection.getExtensionManager(EntityCapabilitiesManager.class);
 
-        InfoDiscovery infoDiscovery = new InfoDiscovery();
-        infoDiscovery.getFeatures().addAll(features);
-        infoDiscovery.getIdentities().addAll(identities);
-        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
+        InfoNode infoNode = new InfoDiscovery();
+        infoNode.getFeatures().addAll(features);
+        infoNode.getIdentities().addAll(identities);
+        String verificationString = entityCapabilitiesManager.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "QgayPKawpkPSDYmwT/WM94uAlu0=");
     }
 
@@ -152,7 +155,7 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
      * Generation example from <a href="http://xmpp.org/extensions/xep-0115.html#ver-gen-complex">5.3 Complex Generation Example</a>
      */
     @Test
-    public void testVerificationStringComplex() {
+    public void testVerificationStringComplex() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
         identities.add(new Identity("client", "pc", "Psi 0.11", "en"));
         identities.add(new Identity("client", "pc", "Ψ 0.11", "el"));
@@ -178,12 +181,12 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         infoDiscovery.getFeatures().addAll(features);
         infoDiscovery.getIdentities().addAll(identities);
         infoDiscovery.getExtensions().add(dataForm);
-        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
+        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "q07IKJEyjvHSyhy//CH0CxmKi8w=");
     }
 
     @Test
-    public void testVerificationStringWithExtendedForm() {
+    public void testVerificationStringWithExtendedForm() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
         identities.add(new Identity("client", "pc", "Exodus 0.9.1"));
 
@@ -213,7 +216,7 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         infoDiscovery.getExtensions().add(dataForm2);
         infoDiscovery.getExtensions().add(dataForm3);
 
-        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery);
+        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "EwaG/3/PLTavYdlrevpQmoqM3nw=");
     }
 }

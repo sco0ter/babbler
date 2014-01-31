@@ -73,9 +73,9 @@ public abstract class ExtensionManager {
             if (getFeatureNamespaces() != null) {
                 for (String namespace : getFeatureNamespaces()) {
                     if (enabled) {
-                        serviceDiscoveryManager.getFeatures().add(new Feature(namespace));
+                        serviceDiscoveryManager.addFeature(new Feature(namespace));
                     } else {
-                        serviceDiscoveryManager.getFeatures().remove(new Feature(namespace));
+                        serviceDiscoveryManager.removeFeature(new Feature(namespace));
                     }
                 }
             }

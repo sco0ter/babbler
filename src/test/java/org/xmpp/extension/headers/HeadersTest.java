@@ -32,7 +32,7 @@ import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
-import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
+import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Stanza;
 import org.xmpp.stanza.StanzaException;
@@ -81,14 +81,14 @@ public class HeadersTest extends BaseTest {
         headerManager.getSupportedHeaders().add("Keywords");
 
         ServiceDiscoveryManager serviceDiscoveryManager = connection2.getExtensionManager(ServiceDiscoveryManager.class);
-        InfoDiscovery infoDiscovery = null;
+        InfoNode infoNode = null;
         try {
-            infoDiscovery = serviceDiscoveryManager.discoverInformation(JULIET);
+            infoNode = serviceDiscoveryManager.discoverInformation(JULIET);
         } catch (StanzaException e) {
             Assert.fail();
         }
         // By default headers are not support, unless they are enabled.
-        Assert.assertFalse(infoDiscovery.getFeatures().contains(new Feature("http://jabber.org/protocol/shim")));
+        Assert.assertFalse(infoNode.getFeatures().contains(new Feature("http://jabber.org/protocol/shim")));
 
         try {
             serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim");
@@ -112,18 +112,18 @@ public class HeadersTest extends BaseTest {
         headerManager.setEnabled(true);
 
         ServiceDiscoveryManager serviceDiscoveryManager = connection2.getExtensionManager(ServiceDiscoveryManager.class);
-        InfoDiscovery infoDiscovery = null;
+        InfoNode infoNode = null;
         try {
-            infoDiscovery = serviceDiscoveryManager.discoverInformation(JULIET);
+            infoNode = serviceDiscoveryManager.discoverInformation(JULIET);
         } catch (StanzaException e) {
             Assert.fail();
         }
-        Assert.assertTrue(infoDiscovery.getFeatures().contains(new Feature("http://jabber.org/protocol/shim")));
+        Assert.assertTrue(infoNode.getFeatures().contains(new Feature("http://jabber.org/protocol/shim")));
 
         try {
-            InfoDiscovery infoDiscovery1 = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim");
-            Assert.assertTrue(infoDiscovery1.getFeatures().contains(new Feature("http://jabber.org/protocol/shim#In-Reply-To")));
-            Assert.assertTrue(infoDiscovery1.getFeatures().contains(new Feature("http://jabber.org/protocol/shim#Keywords")));
+            InfoNode infoNode1 = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim");
+            Assert.assertTrue(infoNode1.getFeatures().contains(new Feature("http://jabber.org/protocol/shim#In-Reply-To")));
+            Assert.assertTrue(infoNode1.getFeatures().contains(new Feature("http://jabber.org/protocol/shim#Keywords")));
         } catch (StanzaException e) {
             Assert.fail();
         }

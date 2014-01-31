@@ -24,9 +24,14 @@
 
 package org.xmpp.extension.servicediscovery.info;
 
+import org.xmpp.extension.dataforms.DataForm;
+
+import java.util.List;
 import java.util.Set;
 
 /**
+ * A generic service discovery info node.
+ *
  * @author Christian Schudt
  */
 public interface InfoNode {
@@ -37,7 +42,6 @@ public interface InfoNode {
      * @return The node.
      */
     String getNode();
-
 
     /**
      * Gets the features.
@@ -52,4 +56,11 @@ public interface InfoNode {
      * @return The identities.
      */
     Set<Identity> getIdentities();
+
+    /**
+     * Gets the service discovery extensions as described in <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     *
+     * @return The service discovery extensions.
+     */
+    List<DataForm> getExtensions();
 }

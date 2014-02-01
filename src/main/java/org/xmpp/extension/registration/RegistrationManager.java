@@ -29,8 +29,6 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -39,11 +37,6 @@ import java.util.concurrent.TimeoutException;
 public final class RegistrationManager extends ExtensionManager {
     private RegistrationManager(Connection connection) {
         super(connection);
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList();
     }
 
     public Registration requestRegistrationFields() throws TimeoutException, StanzaException {

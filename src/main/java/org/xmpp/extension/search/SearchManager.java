@@ -29,8 +29,6 @@ import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -82,10 +80,5 @@ public final class SearchManager extends ExtensionManager {
     public Search search(Search search, Jid service) throws TimeoutException {
         IQ result = connection.query(new IQ(service, IQ.Type.SET, search));
         return result.getExtension(Search.class);
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList();
     }
 }

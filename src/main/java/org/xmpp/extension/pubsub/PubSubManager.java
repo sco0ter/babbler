@@ -29,7 +29,6 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.stanza.IQ;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -96,11 +95,6 @@ public final class PubSubManager extends ExtensionManager {
     public List<Item> getItems(String node) throws TimeoutException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Items(node)));
 
-        return null;
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
         return null;
     }
 }

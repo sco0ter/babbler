@@ -31,7 +31,6 @@ import org.xmpp.stanza.StanzaException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -87,10 +86,5 @@ public final class PrivateDataManager extends ExtensionManager {
      */
     public void storeData(Object privateData) throws TimeoutException {
         connection.query(new IQ(IQ.Type.SET, new PrivateData(privateData)));
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return null;
     }
 }

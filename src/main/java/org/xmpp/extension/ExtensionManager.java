@@ -30,6 +30,7 @@ import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Stanza;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -41,10 +42,14 @@ public abstract class ExtensionManager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
+    private final Collection<String> features;
+
     private volatile boolean enabled;
 
-    protected ExtensionManager(Connection connection) {
+    protected ExtensionManager(Connection connection, String... features) {
         this.connection = connection;
+        this.features = Arrays.asList(features);
+
         if (this instanceof ServiceDiscoveryManager) {
             serviceDiscoveryManager = (ServiceDiscoveryManager) this;
         } else {
@@ -70,26 +75,18 @@ public abstract class ExtensionManager {
      */
     public void setEnabled(boolean enabled) {
         if (serviceDiscoveryManager != null) {
-            if (getFeatureNamespaces() != null) {
-                for (String namespace : getFeatureNamespaces()) {
-                    if (enabled) {
-                        serviceDiscoveryManager.addFeature(new Feature(namespace));
-                    } else {
-                        serviceDiscoveryManager.removeFeature(new Feature(namespace));
-                    }
+            for (String namespace : features) {
+                if (enabled) {
+                    serviceDiscoveryManager.addFeature(new Feature(namespace));
+                } else {
+                    serviceDiscoveryManager.removeFeature(new Feature(namespace));
                 }
             }
         }
         this.enabled = enabled;
     }
 
-    protected abstract Collection<String> getFeatureNamespaces();
-
     protected void sendServiceUnavailable(IQ iq) {
         connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable())));
-    }
-
-    public Connection getConnection() {
-        return connection;
     }
 }

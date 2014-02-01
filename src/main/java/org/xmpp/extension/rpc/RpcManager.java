@@ -32,8 +32,6 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -49,14 +47,13 @@ import java.util.logging.Logger;
  * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
 public final class RpcManager extends ExtensionManager {
-    private static final String FEATURE = "jabber:iq:rpc";
 
     private static final Logger logger = Logger.getLogger(RpcManager.class.getName());
 
     private RpcHandler rpcHandler;
 
     private RpcManager(final Connection connection) {
-        super(connection);
+        super(connection, "jabber:iq:rpc");
         // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
         connection.addConnectionListener(new ConnectionListener() {
             @Override
@@ -148,10 +145,5 @@ public final class RpcManager extends ExtensionManager {
      */
     public synchronized void setRpcHandler(RpcHandler rpcHandler) {
         this.rpcHandler = rpcHandler;
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 }

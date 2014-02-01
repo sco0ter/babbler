@@ -39,7 +39,6 @@ import org.xmpp.stanza.PresenceListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -218,11 +217,6 @@ public final class AvatarManager extends ExtensionManager {
             }
         }
         return avatar;
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return null;
     }
 
     /**

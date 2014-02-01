@@ -32,7 +32,6 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Presence;
 
-import java.util.Collection;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -59,11 +58,6 @@ public final class VCardManager extends ExtensionManager {
                 }
             }
         });
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return null;
     }
 
     /**

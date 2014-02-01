@@ -9,7 +9,7 @@ It supports most of the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 
 # Supported extensions
-*(Only listing historical and standard tracks extensions with status 'Draft' or 'Final')*
+*(Only listing historical and standard tracks extensions with status 'Draft' or 'Final' that are applicable to XMPP clients)*
 
 * ![alt supported][supported]           [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)
 * ![alt supported][supported]           [XEP-0009: Jabber-RPC](http://xmpp.org/extensions/xep-0009.html)
@@ -36,7 +36,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt not supported][not supported]   [XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)
 * ![alt in development][in development] [XEP-0077: In-Band Registration](http://xmpp.org/extensions/xep-0077.html)
 * ![alt not supported][not supported]   [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
-* ![alt in development][in development] [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html)
+* ![alt supported][supported]           [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html)
 * ![alt not supported][not supported]   [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
 * ![alt in development][in development] [XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)
 * ![alt supported][supported]           [XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)
@@ -45,9 +45,8 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt supported][supported]           [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
 * ![alt supported][supported]           [XEP-0107: User Mood](http://xmpp.org/extensions/xep-0107.html)
 * ![alt not supported][not supported]   [XEP-0108: User Activity](http://xmpp.org/extensions/xep-0108.html)
-* ![alt not supported][not supported]   [XEP-0114: Jabber Component Protocol](http://xmpp.org/extensions/xep-0114.html)
 * ![alt in development][in development] [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
-* ![alt in development][in development] [XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)
+* ![alt supported][supported]           [XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)
 * ![alt not supported][not supported]   [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
 * ![alt supported][supported]           [XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)
 * ![alt supported][supported]           [XEP-0131: Stanza Headers and Internet Metadata](http://xmpp.org/extensions/xep-0131.html)
@@ -79,7 +78,6 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt not supported][not supported]   [XEP-0220: Server Dialback](http://xmpp.org/extensions/xep-0220.html)
 * ![alt supported][supported]           [XEP-0221: Data Forms Media Element](http://xmpp.org/extensions/xep-0221.html)
 * ![alt supported][supported]           [XEP-0224: Attention](http://xmpp.org/extensions/xep-0224.html)
-* ![alt not supported][not supported]   [XEP-0227: Portable Import/Export Format for XMPP-IM Servers](http://xmpp.org/extensions/xep-0227.html)
 * ![alt not supported][not supported]   [XEP-0229: Stream Compression with LZW](http://xmpp.org/extensions/xep-0229.html)
 * ![alt not supported][not supported]   [XEP-0231: Bits of Binary](http://xmpp.org/extensions/xep-0231.html)
 * ![alt not supported][not supported]   [XEP-0249: Direct MUC Invitations](http://xmpp.org/extensions/xep-0249.html)
@@ -90,7 +88,6 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt not supported][not supported]   [XEP-0262: Use of ZRTP in Jingle RTP Sessions](http://xmpp.org/extensions/xep-0262.html)
 * ![alt not supported][not supported]   [XEP-0266: Codecs for Jingle Audio](http://xmpp.org/extensions/xep-0266.html)
 * ![alt not supported][not supported]   [XEP-0270: XMPP Compliance Suites 2010](http://xmpp.org/extensions/xep-0270.html)
-* ![alt not supported][not supported]   [XEP-0288: Bidirectional Server-to-Server Connections](http://xmpp.org/extensions/xep-0288.html)
 * ![alt supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 * ![alt not supported][not supported]   [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![alt supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)

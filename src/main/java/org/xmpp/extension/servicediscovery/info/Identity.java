@@ -44,10 +44,10 @@ public final class Identity implements Comparable<Identity> {
     private String category;
 
     @XmlAttribute
-    private String name;
+    private String type;
 
     @XmlAttribute
-    private String type;
+    private String name;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private String lang;

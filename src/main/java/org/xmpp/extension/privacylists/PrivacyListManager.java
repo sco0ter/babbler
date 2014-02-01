@@ -33,8 +33,6 @@ import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -240,10 +238,5 @@ public final class PrivacyListManager extends ExtensionManager {
         if (result.getError() != null) {
             throw new StanzaException(result.getError());
         }
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList();
     }
 }

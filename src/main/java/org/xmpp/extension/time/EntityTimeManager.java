@@ -31,8 +31,6 @@ import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeoutException;
@@ -47,10 +45,8 @@ import java.util.concurrent.TimeoutException;
  */
 public final class EntityTimeManager extends ExtensionManager {
 
-    private static final String FEATURE = "urn:xmpp:time";
-
     private EntityTimeManager(final Connection connection) {
-        super(connection);
+        super(connection, "urn:xmpp:time");
         connection.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
@@ -82,10 +78,5 @@ public final class EntityTimeManager extends ExtensionManager {
             return result.getExtension(EntityTime.class);
         }
         return null;
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 }

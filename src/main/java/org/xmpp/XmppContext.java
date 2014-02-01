@@ -37,6 +37,8 @@ import org.xmpp.extension.compression.Compression;
 import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.dataforms.media.Media;
 import org.xmpp.extension.delayeddelivery.DelayedDelivery;
+import org.xmpp.extension.entitycapabilities.EntityCapabilities;
+import org.xmpp.extension.entitycapabilities.EntityCapabilitiesManager;
 import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
 import org.xmpp.extension.headers.HeaderManager;
 import org.xmpp.extension.headers.Headers;
@@ -211,6 +213,10 @@ public abstract class XmppContext {
 
             // XEP-0107: User Mood
             registerExtension(Mood.class);
+
+            // XEP-0115: Entity Capabilities
+            registerExtension(EntityCapabilities.class);
+            registerManager(EntityCapabilitiesManager.class);
 
             // XEP-0118: User Tune
             registerExtension(Tune.class);

@@ -34,7 +34,10 @@ import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.stanza.StanzaException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeoutException;
 
@@ -55,7 +58,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     private HeaderManager(Connection connection) {
-        super(connection);
+        super(connection, FEATURE);
         this.supportedHeaders = new CopyOnWriteArraySet<>();
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         setEnabled(false);
@@ -72,11 +75,6 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
      */
     public Set<String> getSupportedHeaders() {
         return supportedHeaders;
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 
     @Override

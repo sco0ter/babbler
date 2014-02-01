@@ -32,8 +32,6 @@ import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -58,10 +56,5 @@ public class RosterExchangeManager extends ExtensionManager {
         } else {
             connection.send(new Message(jid, Message.Type.NORMAL));
         }
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList();
     }
 }

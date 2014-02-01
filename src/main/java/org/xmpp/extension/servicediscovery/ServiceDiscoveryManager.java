@@ -25,6 +25,8 @@
 package org.xmpp.extension.servicediscovery;
 
 import org.xmpp.Connection;
+import org.xmpp.ConnectionEvent;
+import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.dataforms.DataForm;
@@ -37,6 +39,8 @@ import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
 import org.xmpp.extension.servicediscovery.items.ItemNode;
 import org.xmpp.stanza.*;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -59,10 +63,6 @@ import java.util.concurrent.TimeoutException;
  */
 public final class ServiceDiscoveryManager extends ExtensionManager implements InfoNode, ItemNode {
 
-    private static final String FEATURE_INFO = "http://jabber.org/protocol/disco#info";
-
-    private static final String FEATURE_ITEMS = "http://jabber.org/protocol/disco#items";
-
     private static Identity defaultIdentity = new Identity("client", "pc");
 
     private final Set<Identity> identities = new CopyOnWriteArraySet<>();
@@ -77,8 +77,22 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
 
     private final Map<String, ItemNode> itemNodeMap = new ConcurrentHashMap<>();
 
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
     private ServiceDiscoveryManager(final Connection connection) {
-        super(connection);
+        super(connection, "http://jabber.org/protocol/disco#info", "http://jabber.org/protocol/disco#items");
+
+        connection.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == Connection.Status.CLOSED) {
+                    for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
+                        pcs.removePropertyChangeListener(propertyChangeListener);
+                    }
+                }
+            }
+        });
+
         connection.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
@@ -144,71 +158,190 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
         setEnabled(true);
     }
 
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE_INFO, FEATURE_ITEMS);
+    /**
+     * Adds a property change listener, which listens for changes in the {@linkplain #getIdentities() identities}, {@linkplain #getFeatures() features}, {@linkplain #getExtensions() extensions} and {@linkplain #getItems() items} collections.
+     *
+     * @param listener The listener.
+     * @see #removePropertyChangeListener(java.beans.PropertyChangeListener)
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
     }
 
+    /**
+     * Removes a property change listener.
+     *
+     * @param listener The listener.
+     * @see #addPropertyChangeListener(java.beans.PropertyChangeListener)
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
+    }
+
+    /**
+     * Since this is the "root" node, it returns null.
+     *
+     * @return null
+     */
     @Override
     public String getNode() {
         return null;
     }
 
+    /**
+     * Gets an unmodifiable list of items.
+     *
+     * @return The items.
+     * @see #addItem(org.xmpp.extension.servicediscovery.items.Item)
+     * @see #removeItem(org.xmpp.extension.servicediscovery.items.Item)
+     */
     @Override
     public List<Item> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
-    @Override
-    public Set<Feature> getFeatures() {
-        return Collections.unmodifiableSet(features);
-    }
-
+    /**
+     * Gets an unmodifiable set of identities.
+     *
+     * @return The identities.
+     * @see #addIdentity(org.xmpp.extension.servicediscovery.info.Identity)
+     * @see #removeIdentity(org.xmpp.extension.servicediscovery.info.Identity)
+     */
     @Override
     public Set<Identity> getIdentities() {
         return Collections.unmodifiableSet(identities);
     }
 
+    /**
+     * Gets an unmodifiable set of features.
+     *
+     * @return The features.
+     * @see #addFeature(org.xmpp.extension.servicediscovery.info.Feature)
+     * @see #removeFeature(org.xmpp.extension.servicediscovery.info.Feature)
+     */
+    @Override
+    public Set<Feature> getFeatures() {
+        return Collections.unmodifiableSet(features);
+    }
+
+    /**
+     * Gets an unmodifiable list of extensions.
+     *
+     * @return The extensions.
+     * @see #addExtension(org.xmpp.extension.dataforms.DataForm)
+     * @see #removeExtension(org.xmpp.extension.dataforms.DataForm)
+     * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     */
     @Override
     public List<DataForm> getExtensions() {
-        return extensions;
+        return Collections.unmodifiableList(extensions);
     }
 
     /**
-     * Adds a feature. Features should not be added or removed directly. Instead enable or disable the respective extension manager, which will then add or remove the feature.
-     * That way, supported features are consistent with enabled extension managers and service discovery won't reveal features, that are in fact not supported.
+     * Adds an item.
      *
-     * @param feature The features.
+     * @param item The item.
+     * @see #removeItem(org.xmpp.extension.servicediscovery.items.Item)
+     * @see #getItems() ()
      */
-    public void addFeature(Feature feature) {
-        features.add(feature);
+    public void addItem(Item item) {
+        List<Item> oldList = Collections.unmodifiableList(new ArrayList<>(items));
+        items.add(item);
+        this.pcs.firePropertyChange("items", oldList, getItems());
     }
 
     /**
-     * Removes a feature.
+     * Removes an item.
      *
-     * @param feature The feature.
+     * @param item The item.
+     * @see #addItem(org.xmpp.extension.servicediscovery.items.Item)
+     * @see #getItems()
      */
-    public void removeFeature(Feature feature) {
-        features.remove(feature);
+    public void removeItem(Item item) {
+        List<Item> oldList = Collections.unmodifiableList(new ArrayList<>(items));
+        items.remove(item);
+        this.pcs.firePropertyChange("items", oldList, getItems());
     }
 
     /**
      * Adds an identity.
      *
      * @param identity The identity.
+     * @see #removeIdentity(org.xmpp.extension.servicediscovery.info.Identity)
+     * @see #getIdentities()
      */
     public void addIdentity(Identity identity) {
+        Set<Identity> oldList = Collections.unmodifiableSet(new HashSet<>(identities));
         identities.add(identity);
+        this.pcs.firePropertyChange("identities", oldList, getIdentities());
     }
 
     /**
      * Removes an identity.
      *
      * @param identity The identity.
+     * @see #addIdentity(org.xmpp.extension.servicediscovery.info.Identity)
+     * @see #getIdentities()
      */
     public void removeIdentity(Identity identity) {
+        Set<Identity> oldList = Collections.unmodifiableSet(new HashSet<>(identities));
         identities.remove(identity);
+        this.pcs.firePropertyChange("identities", oldList, getIdentities());
+    }
+
+    /**
+     * Adds a feature. Features should not be added or removed directly. Instead enable or disable the respective extension manager, which will then add or remove the feature.
+     * That way, supported features are consistent with enabled extension managers and service discovery won't reveal features, that are in fact not supported.
+     *
+     * @param feature The feature.
+     * @see #removeFeature(org.xmpp.extension.servicediscovery.info.Feature)
+     * @see #getFeatures()
+     */
+    public void addFeature(Feature feature) {
+        Set<Feature> oldList = Collections.unmodifiableSet(new HashSet<>(features));
+        features.add(feature);
+        this.pcs.firePropertyChange("features", oldList, getFeatures());
+    }
+
+    /**
+     * Removes a feature.
+     *
+     * @param feature The feature.
+     * @see #addFeature(org.xmpp.extension.servicediscovery.info.Feature)
+     * @see #getFeatures()
+     */
+    public void removeFeature(Feature feature) {
+        Set<Feature> oldList = Collections.unmodifiableSet(new HashSet<>(features));
+        features.remove(feature);
+        this.pcs.firePropertyChange("features", oldList, getFeatures());
+    }
+
+    /**
+     * Adds an extension.
+     *
+     * @param extension The extension.
+     * @see #removeExtension(org.xmpp.extension.dataforms.DataForm)
+     * @see #getExtensions()
+     * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     */
+    public void addExtension(DataForm extension) {
+        List<DataForm> oldList = Collections.unmodifiableList(new ArrayList<>(extensions));
+        extensions.add(extension);
+        this.pcs.firePropertyChange("extensions", oldList, getExtensions());
+    }
+
+    /**
+     * Removes an extension.
+     *
+     * @param extension The extension.
+     * @see #addExtension(org.xmpp.extension.dataforms.DataForm)
+     * @see #getExtensions()
+     * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     */
+    public void removeExtension(DataForm extension) {
+        List<DataForm> oldList = Collections.unmodifiableList(new ArrayList<>(extensions));
+        extensions.remove(extension);
+        this.pcs.firePropertyChange("extensions", oldList, getExtensions());
     }
 
     /**

@@ -28,9 +28,6 @@ import org.xmpp.Connection;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.Message;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
  * This manager allows to correct last sent messages as specified by <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>.
  * <p>
@@ -53,10 +50,8 @@ import java.util.Collection;
  */
 public final class MessageCorrectionManager extends ExtensionManager {
 
-    private static final String FEATURE = "urn:xmpp:message-correct:0";
-
     private MessageCorrectionManager(Connection connection) {
-        super(connection);
+        super(connection, "urn:xmpp:message-correct:0");
     }
 
     /**
@@ -75,10 +70,5 @@ public final class MessageCorrectionManager extends ExtensionManager {
 
         message.getExtensions().add(new Replace(id));
         connection.send(message);
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 }

@@ -31,8 +31,6 @@ import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -46,12 +44,10 @@ import java.util.concurrent.TimeoutException;
  */
 public final class SoftwareVersionManager extends ExtensionManager {
 
-    private static final String FEATURE = "jabber:iq:version";
-
     private SoftwareVersion softwareVersion;
 
     private SoftwareVersionManager(final Connection connection) {
-        super(connection);
+        super(connection, "jabber:iq:version");
         connection.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
@@ -109,10 +105,5 @@ public final class SoftwareVersionManager extends ExtensionManager {
      */
     public synchronized void setSoftwareVersion(SoftwareVersion softwareVersion) {
         this.softwareVersion = softwareVersion;
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 }

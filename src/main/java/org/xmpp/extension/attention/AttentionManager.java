@@ -29,9 +29,6 @@ import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.Message;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
  * This manager allows to capture another user's attention.
  * <blockquote>
@@ -64,10 +61,8 @@ import java.util.Collection;
  */
 public final class AttentionManager extends ExtensionManager {
 
-    private static final String FEATURE = "urn:xmpp:attention:0";
-
     private AttentionManager(Connection connection) {
-        super(connection);
+        super(connection, "urn:xmpp:attention:0");
     }
 
     /**
@@ -79,10 +74,5 @@ public final class AttentionManager extends ExtensionManager {
         Message message = new Message(jid, Message.Type.HEADLINE);
         message.getExtensions().add(new Attention());
         connection.send(message);
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 }

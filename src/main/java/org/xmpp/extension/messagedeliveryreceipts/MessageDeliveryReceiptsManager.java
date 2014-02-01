@@ -33,7 +33,9 @@ import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -64,8 +66,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
-    private static final String FEATURE = "urn:xmpp:receipts";
-
     final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
     private final List<MessageFilter> messageFilters = new CopyOnWriteArrayList<>();
@@ -76,7 +76,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      * @param connection The underlying connection.
      */
     private MessageDeliveryReceiptsManager(final Connection connection) {
-        super(connection);
+        super(connection, "urn:xmpp:receipts");
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
         messageFilters.add(new MessageFilter() {
@@ -143,11 +143,6 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                 }
             }
         });
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 
     /**

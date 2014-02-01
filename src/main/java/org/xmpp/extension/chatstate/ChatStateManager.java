@@ -34,7 +34,9 @@ import org.xmpp.stanza.Message;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -43,8 +45,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class ChatStateManager extends ExtensionManager {
 
-    private static final String FEATURE = "http://jabber.org/protocol/chatstates";
-
     private Set<ChatStateListener> chatStateListeners = new CopyOnWriteArraySet<>();
 
     private Map<ChatSession, ChatState> chatSessionMap = new ConcurrentHashMap<>();
@@ -52,7 +52,7 @@ public final class ChatStateManager extends ExtensionManager {
     private Map<Jid, Boolean> contactSupportsChatStateNotifications = new HashMap<>();
 
     private ChatStateManager(final Connection connection) {
-        super(connection);
+        super(connection, "http://jabber.org/protocol/chatstates");
         connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
             @Override
             public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
@@ -97,11 +97,6 @@ public final class ChatStateManager extends ExtensionManager {
                 });
             }
         });
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 
     private void notifyChatStateListeners(ChatSession chatSession, ChatState chatState, boolean local) {

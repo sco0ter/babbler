@@ -36,7 +36,6 @@ import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -97,10 +96,5 @@ public final class OfflineMessageManager extends ExtensionManager {
 
     public void removeAllOfflineMessages() throws TimeoutException {
         connection.query(new IQ(IQ.Type.GET, new OfflineMessage(false, true)));
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

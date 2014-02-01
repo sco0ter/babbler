@@ -41,7 +41,7 @@ public final class Jid {
 
     private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\([0-9a-fA-F]{2})");
 
-    private static final Pattern JID = Pattern.compile("((?<local>.{0,1023}?)@)?(?<domain>(?:(?!\\d|-)[a-zA-Z0-9\\-]{1,63}(?<!-)\\.?)+(?:[a-zA-Z]{2,}))(/(?<resource>.{0,1023}))?");
+    private static final Pattern JID = Pattern.compile("((.{0,1023}?)@)?((?:(?!\\d|-)[a-zA-Z0-9\\-]{1,63}(?<!-)\\.?)+(?:[a-zA-Z]{2,}))(/(.{0,1023}))?");
 
     private final String escapedLocal;
 
@@ -123,8 +123,8 @@ public final class Jid {
 
         Matcher matcher = JID.matcher(jid);
         if (matcher.find()) {
-            String local = matcher.group("local");
-            return new Jid(unescape && local != null ? unescape(local) : local, matcher.group("domain"), matcher.group("resource"));
+            String local = matcher.group(2);
+            return new Jid(unescape && local != null ? unescape(local) : local, matcher.group(3), matcher.group(5));
         } else {
             throw new IllegalArgumentException("Could not parse JID.");
         }

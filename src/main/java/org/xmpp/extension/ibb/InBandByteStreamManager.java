@@ -33,8 +33,6 @@ import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.Stanza;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +44,6 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 public class InBandByteStreamManager extends ExtensionManager {
-    private static final String FEATURE = "http://jabber.org/protocol/ibb";
 
     private static final Logger logger = Logger.getLogger(InBandByteStreamManager.class.getName());
 
@@ -55,7 +52,7 @@ public class InBandByteStreamManager extends ExtensionManager {
     private Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
     private InBandByteStreamManager(final Connection connection) {
-        super(connection);
+        super(connection, "http://jabber.org/protocol/ibb");
 
         connection.addIQListener(new IQListener() {
             @Override
@@ -165,10 +162,5 @@ public class InBandByteStreamManager extends ExtensionManager {
      */
     public void removeIbbListener(IbbListener ibbListener) {
         ibbListeners.remove(ibbListener);
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 }

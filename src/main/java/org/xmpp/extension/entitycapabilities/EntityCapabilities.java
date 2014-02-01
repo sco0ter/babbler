@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <c/>} element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "c")
@@ -49,6 +51,9 @@ public final class EntityCapabilities extends Feature {
      */
     @XmlAttribute
     private String ver;
+
+    private EntityCapabilities() {
+    }
 
     public EntityCapabilities(String node, String hash, String ver) {
         this.node = node;

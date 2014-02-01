@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.headers.HeaderManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
@@ -218,5 +219,12 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
 
         String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "EwaG/3/PLTavYdlrevpQmoqM3nw=");
+    }
+
+    @Test
+    public void testCapabilitiesUpdate() {
+        HeaderManager headerManager = connection.getExtensionManager(HeaderManager.class);
+        headerManager.setEnabled(true);
+
     }
 }

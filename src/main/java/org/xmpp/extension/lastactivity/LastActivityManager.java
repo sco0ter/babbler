@@ -31,8 +31,6 @@ import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.*;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.TimeoutException;
 
@@ -67,12 +65,10 @@ import java.util.concurrent.TimeoutException;
  */
 public final class LastActivityManager extends ExtensionManager {
 
-    private static final String FEATURE = "jabber:iq:last";
-
     private volatile LastActivityStrategy lastActivityStrategy;
 
     private LastActivityManager(final Connection connection) {
-        super(connection);
+        super(connection, "jabber:iq:last");
         lastActivityStrategy = new DefaultLastActivityStrategy(connection);
 
         connection.addConnectionListener(new ConnectionListener() {
@@ -120,11 +116,6 @@ public final class LastActivityManager extends ExtensionManager {
             }
         });
         setEnabled(true);
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return Arrays.asList(FEATURE);
     }
 
     private long getSecondsSince(Date date) {

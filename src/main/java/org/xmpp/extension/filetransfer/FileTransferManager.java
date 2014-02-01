@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
@@ -142,10 +141,5 @@ public final class FileTransferManager extends ExtensionManager {
         IQ iq = new IQ(jid, IQ.Type.SET, streamInitiation);
 
         connection.send(iq);
-    }
-
-    @Override
-    protected Collection<String> getFeatureNamespaces() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

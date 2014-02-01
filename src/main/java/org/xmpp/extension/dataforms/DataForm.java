@@ -186,6 +186,23 @@ public final class DataForm implements Comparable<DataForm> {
         return items;
     }
 
+    /**
+     * Finds a field by its name ('ver' attribute).
+     *
+     * @param name The name.
+     * @return The field or null if the field could be found.
+     */
+    public Field findField(String name) {
+        if (name != null) {
+            for (Field field : fields) {
+                if (name.equals(field.getVar())) {
+                    return field;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public int compareTo(DataForm o) {
         String ft = getFormType(this);

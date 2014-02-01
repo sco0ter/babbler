@@ -56,6 +56,7 @@ import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.bosh.BoshConnection;
+import org.xmpp.extension.headers.HeaderManager;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.lastactivity.LastActivityStrategy;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
@@ -215,7 +216,7 @@ public class JavaFXApp extends Application {
                                 logger.info(e.getStatus().toString());
                             }
                         });
-
+                        connection.getExtensionManager(HeaderManager.class).setEnabled(true);
                         connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
                             @Override
                             public void chatSessionCreated(final ChatSessionEvent chatSessionEvent) {

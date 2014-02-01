@@ -35,6 +35,7 @@ import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.extension.servicediscovery.info.Identity;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.info.InfoNode;
+import org.xmpp.im.PresenceManager;
 import org.xmpp.stanza.Presence;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
@@ -45,10 +46,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
@@ -61,8 +59,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(EntityCapabilitiesManager.class.getName());
 
-    // It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client;
-    private static final String NODE = "http://babbler-xmpp.blogspot.de/";
+    private static final String DEFAULT_NODE = "http://babbler-xmpp.blogspot.de/";
 
     private static final String HASH_ALGORITHM = "sha-1";
 
@@ -76,6 +73,8 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private String currentVerificationString;
 
+    private String node;
+
     private EntityCapabilitiesManager(final Connection connection) {
         super(connection, "http://jabber.org/protocol/caps");
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
@@ -83,12 +82,25 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             @Override
             public void propertyChange(PropertyChangeEvent e) {
                 synchronized (EntityCapabilitiesManager.this) {
+                    // If we haven't established a presence session yet, don't care about changes in service discovery.
+                    // If we change features during a presence session, update the verification string and resent presence.
+
+                    // http://xmpp.org/extensions/xep-0115.html#advertise:
+                    // "If the supported features change during a generating entity's presence session (e.g., a user installs an updated version of a client plugin), the application MUST recompute the verification string and SHOULD send a new presence broadcast."
                     if (capsSent) {
                         try {
-                            updateVerificationString(HASH_ALGORITHM);
+                            recomputeVerificationString(HASH_ALGORITHM);
                         } catch (NoSuchAlgorithmException e1) {
                             logger.log(Level.WARNING, e1.getMessage(), e1);
                         }
+                        // Whenever the verification string has changed, publish the info node.
+                        publishCapsNode();
+
+                        // Resend presence. This manager will add the caps extension later.
+                        PresenceManager presenceManager = connection.getPresenceManager();
+                        Presence lastPresence = presenceManager.getLastSentPresence();
+                        lastPresence.getExtensions().clear();
+                        connection.send(lastPresence);
                     }
                 }
             }
@@ -100,6 +112,8 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 if (e.getStatus() == Connection.Status.CLOSED) {
                     jidInfos.clear();
                     cache.clear();
+                    capsSent = false;
+                    currentVerificationString = null;
                 }
             }
         });
@@ -115,9 +129,10 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                             try {
                                 synchronized (EntityCapabilitiesManager.this) {
                                     if (currentVerificationString == null) {
-                                        updateVerificationString(HASH_ALGORITHM);
+                                        recomputeVerificationString(HASH_ALGORITHM);
+                                        publishCapsNode();
                                     }
-                                    presence.getExtensions().add(new EntityCapabilities(NODE, HASH_ALGORITHM, currentVerificationString));
+                                    presence.getExtensions().add(new EntityCapabilities(getNode(), HASH_ALGORITHM, currentVerificationString));
                                     capsSent = true;
                                 }
                             } catch (NoSuchAlgorithmException e1) {
@@ -143,15 +158,34 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                                         try {
                                             // 3.1 Send a service discovery information request to the generating entity.
                                             // 3.2 Receive a service discovery information response from the generating entity.
-                                            InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(presence.getFrom(), entityCapabilities.getNode());
+                                            InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(presence.getFrom(), entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString());
                                             // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
                                             // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
                                             // => not possible due to java.util.Set semantics and equals method.
+                                            // If the response had duplicates, just check the hash.
 
                                             // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
-                                            // => TODO
-                                            // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
-                                            // => TODO
+                                            List<String> ftValues = new ArrayList<>();
+                                            for (DataForm dataForm : infoDiscovery.getExtensions()) {
+                                                DataForm.Field formType = dataForm.findField("FORM_TYPE");
+                                                // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
+                                                if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
+                                                    List<String> values = new ArrayList<>();
+                                                    for (String value : formType.getValues()) {
+                                                        if (values.contains(value)) {
+                                                            // ill-formed
+                                                            return;
+                                                        }
+                                                        values.add(value);
+                                                    }
+                                                    String value = formType.getValues().get(0);
+                                                    if (ftValues.contains(value)) {
+                                                        // ill-formed
+                                                        return;
+                                                    }
+                                                    ftValues.add(value);
+                                                }
+                                            }
 
                                             // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
                                             String verificationString = getVerificationString(infoDiscovery, messageDigest);
@@ -189,7 +223,36 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
         setEnabled(true);
     }
 
-    private void updateVerificationString(String hashAlgorithm) throws NoSuchAlgorithmException {
+    private void publishCapsNode() {
+        final Set<Identity> identities = new HashSet<>(serviceDiscoveryManager.getIdentities());
+        final Set<Feature> features = new HashSet<>(serviceDiscoveryManager.getFeatures());
+        final List<DataForm> extensions = new ArrayList<>(serviceDiscoveryManager.getExtensions());
+        final String node = getNode();
+
+        serviceDiscoveryManager.addInfoNode(new InfoNode() {
+            @Override
+            public String getNode() {
+                return node + "#" + currentVerificationString;
+            }
+
+            @Override
+            public Set<Identity> getIdentities() {
+                return identities;
+            }
+
+            @Override
+            public Set<Feature> getFeatures() {
+                return features;
+            }
+
+            @Override
+            public List<DataForm> getExtensions() {
+                return extensions;
+            }
+        });
+    }
+
+    private void recomputeVerificationString(String hashAlgorithm) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance(hashAlgorithm);
         InfoDiscovery infoDiscovery = new InfoDiscovery();
         infoDiscovery.getFeatures().addAll(serviceDiscoveryManager.getFeatures());
@@ -249,11 +312,15 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
         for (DataForm dataForm : dataForms) {
 
             // 7.2. Sort the fields by the value of the "var" attribute.
+            // This makes sure, that FORM_TYPE fields are always on zero position.
             Collections.sort(dataForm.getFields());
 
             if (!dataForm.getFields().isEmpty()) {
 
-                if (!"FORM_TYPE".equals(dataForm.getFields().get(0).getVar())) {
+                // Also make sure, that we don't send an ill-formed verification string.
+                // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
+                if (!"FORM_TYPE".equals(dataForm.getFields().get(0).getVar()) || dataForm.getFields().get(0).getType() != DataForm.Field.Type.HIDDEN) {
+                    // => Don't include this form in the verification string.
                     continue;
                 }
 
@@ -286,10 +353,34 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
         return DatatypeConverter.printBase64Binary(messageDigest.digest(plainString.getBytes()));
     }
 
-    private static class Verification {
-        private String hashAlgorithm;
+    /**
+     * Gets the node. If no node was set, a default node is returned.
+     *
+     * @return The node.
+     * @see #setNode(String)
+     */
+    public synchronized String getNode() {
+        return node != null ? node : DEFAULT_NODE;
+    }
 
-        private String verificationString;
+    /**
+     * Sets the node.
+     * <blockquote>
+     * <p><cite><a href="http://xmpp.org/extensions/xep-0115.html#protocol">4. Protocol</a></cite></p>
+     * <p>It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client;</p>
+     * </blockquote>
+     *
+     * @param node The node.
+     * @see #getNode()
+     */
+    public synchronized void setNode(String node) {
+        this.node = node;
+    }
+
+    private static final class Verification {
+        private final String hashAlgorithm;
+
+        private final String verificationString;
 
         private Verification(String hashAlgorithm, String verificationString) {
             this.hashAlgorithm = hashAlgorithm;

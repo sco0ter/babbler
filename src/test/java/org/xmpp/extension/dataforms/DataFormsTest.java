@@ -172,5 +172,7 @@ public class DataFormsTest extends BaseTest {
         Assert.assertEquals(dataForm.getFields().get(11).getType(), DataForm.Field.Type.JID_MULTI);
         Assert.assertEquals(dataForm.getFields().get(11).getVar(), "invitelist");
         Assert.assertEquals(dataForm.getFields().get(11).getLabel(), "People to invite");
+
+        Assert.assertNotNull(dataForm.findField("FORM_TYPE"));
     }
 }

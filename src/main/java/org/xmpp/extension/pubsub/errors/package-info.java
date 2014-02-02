@@ -26,14 +26,9 @@
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a> (#errors).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = "http://jabber.org/protocol/pubsub#errors", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.pubsub.errors;
-
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

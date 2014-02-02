@@ -143,12 +143,10 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         features.add(new Feature("http://jabber.org/protocol/muc"));
         features.add(new Feature("http://jabber.org/protocol/caps"));
 
-        EntityCapabilitiesManager entityCapabilitiesManager = connection.getExtensionManager(EntityCapabilitiesManager.class);
-
         InfoNode infoNode = new InfoDiscovery();
         infoNode.getFeatures().addAll(features);
         infoNode.getIdentities().addAll(identities);
-        String verificationString = entityCapabilitiesManager.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
+        String verificationString = EntityCapabilitiesManager.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "QgayPKawpkPSDYmwT/WM94uAlu0=");
     }
 
@@ -175,14 +173,11 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         dataForm.getFields().add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, "software", "Psi"));
         dataForm.getFields().add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, "software_version", "0.11"));
 
-
-        EntityCapabilitiesManager entityCapabilitiesManager = connection.getExtensionManager(EntityCapabilitiesManager.class);
-
         InfoDiscovery infoDiscovery = new InfoDiscovery();
         infoDiscovery.getFeatures().addAll(features);
         infoDiscovery.getIdentities().addAll(identities);
         infoDiscovery.getExtensions().add(dataForm);
-        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
+        String verificationString = EntityCapabilitiesManager.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "q07IKJEyjvHSyhy//CH0CxmKi8w=");
     }
 
@@ -208,8 +203,6 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         dataForm3.getFields().add(new DataForm.Field(DataForm.Field.Type.HIDDEN, "FORM_TYPE"));
         dataForm3.getFields().add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, "aaa"));
 
-        EntityCapabilitiesManager entityCapabilitiesManager = connection.getExtensionManager(EntityCapabilitiesManager.class);
-
         InfoDiscovery infoDiscovery = new InfoDiscovery();
         infoDiscovery.getFeatures().addAll(features);
         infoDiscovery.getIdentities().addAll(identities);
@@ -217,7 +210,7 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         infoDiscovery.getExtensions().add(dataForm2);
         infoDiscovery.getExtensions().add(dataForm3);
 
-        String verificationString = entityCapabilitiesManager.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
+        String verificationString = EntityCapabilitiesManager.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "EwaG/3/PLTavYdlrevpQmoqM3nw=");
     }
 

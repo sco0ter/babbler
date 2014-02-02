@@ -244,7 +244,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #removeItem(org.xmpp.extension.servicediscovery.items.Item)
      * @see #getItems() ()
      */
-    public void addItem(Item item) {
+    public synchronized void addItem(Item item) {
         List<Item> oldList = Collections.unmodifiableList(new ArrayList<>(items));
         items.add(item);
         this.pcs.firePropertyChange("items", oldList, getItems());
@@ -257,7 +257,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #addItem(org.xmpp.extension.servicediscovery.items.Item)
      * @see #getItems()
      */
-    public void removeItem(Item item) {
+    public synchronized void removeItem(Item item) {
         List<Item> oldList = Collections.unmodifiableList(new ArrayList<>(items));
         items.remove(item);
         this.pcs.firePropertyChange("items", oldList, getItems());
@@ -270,7 +270,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #removeIdentity(org.xmpp.extension.servicediscovery.info.Identity)
      * @see #getIdentities()
      */
-    public void addIdentity(Identity identity) {
+    public synchronized void addIdentity(Identity identity) {
         Set<Identity> oldList = Collections.unmodifiableSet(new HashSet<>(identities));
         identities.add(identity);
         this.pcs.firePropertyChange("identities", oldList, getIdentities());
@@ -283,7 +283,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #addIdentity(org.xmpp.extension.servicediscovery.info.Identity)
      * @see #getIdentities()
      */
-    public void removeIdentity(Identity identity) {
+    public synchronized void removeIdentity(Identity identity) {
         Set<Identity> oldList = Collections.unmodifiableSet(new HashSet<>(identities));
         identities.remove(identity);
         this.pcs.firePropertyChange("identities", oldList, getIdentities());
@@ -297,7 +297,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #removeFeature(org.xmpp.extension.servicediscovery.info.Feature)
      * @see #getFeatures()
      */
-    public void addFeature(Feature feature) {
+    public synchronized void addFeature(Feature feature) {
         Set<Feature> oldList = Collections.unmodifiableSet(new HashSet<>(features));
         features.add(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
@@ -310,7 +310,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #addFeature(org.xmpp.extension.servicediscovery.info.Feature)
      * @see #getFeatures()
      */
-    public void removeFeature(Feature feature) {
+    public synchronized void removeFeature(Feature feature) {
         Set<Feature> oldList = Collections.unmodifiableSet(new HashSet<>(features));
         features.remove(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
@@ -324,7 +324,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #getExtensions()
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
-    public void addExtension(DataForm extension) {
+    public synchronized void addExtension(DataForm extension) {
         List<DataForm> oldList = Collections.unmodifiableList(new ArrayList<>(extensions));
         extensions.add(extension);
         this.pcs.firePropertyChange("extensions", oldList, getExtensions());
@@ -338,7 +338,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #getExtensions()
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
-    public void removeExtension(DataForm extension) {
+    public synchronized void removeExtension(DataForm extension) {
         List<DataForm> oldList = Collections.unmodifiableList(new ArrayList<>(extensions));
         extensions.remove(extension);
         this.pcs.firePropertyChange("extensions", oldList, getExtensions());

@@ -32,6 +32,7 @@ import org.xmpp.TestConnection;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
+import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.stanza.*;
 
 import javax.xml.bind.JAXBException;
@@ -97,10 +98,12 @@ public class LastActivityTest extends BaseTest {
 
     @Test
     public void testLastActivityInAwayPresence() {
-        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        final TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        connection1.getExtensionManager(VCardManager.class).setEnabled(false);
         connection1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
+                connection1.removePresenceListener(this);
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });
@@ -111,6 +114,7 @@ public class LastActivityTest extends BaseTest {
     @Test
     public void testLastActivityInXAPresence() {
         TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        connection1.getExtensionManager(VCardManager.class).setEnabled(false);
         connection1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {

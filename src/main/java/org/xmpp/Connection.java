@@ -696,14 +696,6 @@ public abstract class Connection implements Closeable {
             });
         } else if (element instanceof Features) {
             featuresManager.processFeatures((Features) element);
-            //            if (featuresManager.getFeatures().containsKey(Bind.class)) {
-            //                lock.lock();
-            //                try {
-            //                    bindReceived.signal();
-            //                } finally {
-            //                    lock.unlock();
-            //                }
-            //            }
         } else if (element instanceof StreamError) {
             throw new StreamException((StreamError) element);
         } else {

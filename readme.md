@@ -45,7 +45,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt supported][supported]           [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
 * ![alt supported][supported]           [XEP-0107: User Mood](http://xmpp.org/extensions/xep-0107.html)
 * ![alt not supported][not supported]   [XEP-0108: User Activity](http://xmpp.org/extensions/xep-0108.html)
-* ![alt in development][in development] [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
+* ![alt supported][supported]           [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
 * ![alt supported][supported]           [XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)
 * ![alt not supported][not supported]   [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
 * ![alt supported][supported]           [XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)

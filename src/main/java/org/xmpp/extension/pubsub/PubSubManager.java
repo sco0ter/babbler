@@ -27,6 +27,7 @@ package org.xmpp.extension.pubsub;
 import org.xmpp.Connection;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.stanza.IQ;
 
 import java.util.List;
@@ -37,8 +38,11 @@ import java.util.concurrent.TimeoutException;
  */
 public final class PubSubManager extends ExtensionManager {
 
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
+
     private PubSubManager(Connection connection) {
         super(connection);
+        serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
     }
 
     public void publishItem(String node, Object object) {

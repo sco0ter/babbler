@@ -26,6 +26,7 @@ package org.xmpp.extension.pubsub;
 
 import org.xmpp.Jid;
 import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.pubsub.errors.*;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "pubsub")
+@XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class, ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class, SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class, InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class, ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class})
 public final class PubSub {
 
     @XmlElement
@@ -111,6 +113,9 @@ public final class PubSub {
 
         @XmlElementRef
         private DataForm dataForm;
+
+        private Options() {
+        }
 
         public Options(String node) {
             this.node = node;

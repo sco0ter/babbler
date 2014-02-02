@@ -65,10 +65,12 @@ import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveryReceiptsManager
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
+import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.InfoNode;
+import org.xmpp.extension.servicediscovery.items.ItemNode;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
@@ -484,14 +486,26 @@ public class JavaFXApp extends Application {
                                     try {
                                         List<Annotation> annotations = privateDataManager.getData(Annotation.class);
                                         int i = 0;
-                                    } catch (TimeoutException e) {
+                                    } catch (TimeoutException | StanzaException e) {
                                         e.printStackTrace();
-                                    } catch (StanzaException e) {
+                                    }
+                                }
+                            });
+                            MenuItem pubSubItem = new MenuItem("PubSub");
+                            pubSubItem.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
+                                    ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+                                    try {
+                                        ItemNode infoNode = serviceDiscoveryManager.discoverItems(null);
+                                        int i = 0;
+                                    } catch (TimeoutException e) {
                                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }
                                 }
                             });
-                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem, storeAnnotationsItems, getAnnotationsItems);
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem, storeAnnotationsItems, getAnnotationsItems, pubSubItem);
                             setContextMenu(contextMenu);
                         }
                     }

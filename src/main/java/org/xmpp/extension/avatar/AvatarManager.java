@@ -35,6 +35,7 @@ import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.stanza.Presence;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
+import org.xmpp.stanza.StanzaException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -95,7 +96,7 @@ public final class AvatarManager extends ExtensionManager {
                                 try {
                                     // Get the avatar for this user.
                                     avatar = getAvatar(contact);
-                                } catch (TimeoutException e1) {
+                                } catch (TimeoutException | StanzaException e1) {
                                     logger.log(Level.WARNING, e1.getMessage(), e1);
                                 }
                             }
@@ -137,7 +138,7 @@ public final class AvatarManager extends ExtensionManager {
                                         }
                                         presence.getExtensions().clear();
                                         connection.send(presence);
-                                    } catch (TimeoutException e1) {
+                                    } catch (TimeoutException | StanzaException e1) {
                                         logger.log(Level.WARNING, e1.getMessage(), e1);
                                     }
                                 }
@@ -154,7 +155,7 @@ public final class AvatarManager extends ExtensionManager {
                                     currentHash = getHash(vCard.getPhoto().getValue());
                                 }
                                 presence.getExtensions().add(new AvatarUpdate(currentHash));
-                            } catch (TimeoutException e1) {
+                            } catch (TimeoutException | StanzaException e1) {
                                 logger.log(Level.WARNING, e1.getMessage(), e1);
                             }
                         }
@@ -184,7 +185,7 @@ public final class AvatarManager extends ExtensionManager {
      * @return The user's avatar or null, if it has no avatar.
      * @throws TimeoutException If the operation timed out.
      */
-    public Avatar getAvatar(Jid user) throws TimeoutException {
+    public Avatar getAvatar(Jid user) throws TimeoutException, StanzaException {
         if (user == null) {
             throw new IllegalArgumentException("user must not be null.");
         }
@@ -202,6 +203,7 @@ public final class AvatarManager extends ExtensionManager {
 
                 // Load the vCard for that user
                 VCard vCard = vCardManager.getVCard(user);
+
                 if (vCard != null) {
                     // And check if it has a photo.
                     VCard.Image image = vCard.getPhoto();

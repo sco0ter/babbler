@@ -31,6 +31,7 @@ import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Presence;
+import org.xmpp.stanza.StanzaException;
 
 import java.util.concurrent.TimeoutException;
 
@@ -61,12 +62,28 @@ public final class VCardManager extends ExtensionManager {
     }
 
     /**
+     * Gets the vCard of the current user.
+     *
+     * @return The vCard.
+     * @throws TimeoutException If the server did not answer in time.
+     */
+    public VCard getVCard() throws TimeoutException, StanzaException {
+        if (myVCard != null) {
+            return myVCard;
+        }
+        IQ result = connection.query(new IQ(IQ.Type.GET, new VCard()));
+        myVCard = result.getExtension(VCard.class);
+
+        return myVCard;
+    }
+
+    /**
      * Saves or updates a vCard.
      *
      * @param vCard The vCard.
      * @throws TimeoutException If the server did not answer in time.
      */
-    public void setVCard(VCard vCard) throws TimeoutException {
+    public void setVCard(VCard vCard) throws TimeoutException, StanzaException {
         if (vCard == null) {
             throw new IllegalArgumentException("vCard must not be null.");
         }
@@ -85,40 +102,17 @@ public final class VCardManager extends ExtensionManager {
     }
 
     /**
-     * Gets the vCard of the current user.
-     *
-     * @return The vCard.
-     * @throws TimeoutException If the server did not answer in time.
-     */
-    public VCard getVCard() throws TimeoutException {
-        if (myVCard != null) {
-            return myVCard;
-        }
-        IQ result = connection.query(new IQ(IQ.Type.GET, new VCard()));
-        if (result != null && result.getType() == IQ.Type.RESULT) {
-            myVCard = result.getExtension(VCard.class);
-        } else {
-            // Make sure, that if a vCard has been loaded, a non-null vCard object is returned.
-            myVCard = new VCard();
-        }
-        return myVCard;
-    }
-
-    /**
      * Gets the vCard of another user.
      *
      * @param jid The user's JID.
      * @return The vCard of the other user or null, if it does not exist.
      * @throws TimeoutException If the server did not answer in time.
      */
-    public VCard getVCard(Jid jid) throws TimeoutException {
+    public VCard getVCard(Jid jid) throws TimeoutException, StanzaException {
         if (jid == null) {
             throw new IllegalArgumentException("jid must not be null.");
         }
         IQ result = connection.query(new IQ(jid.toBareJid(), IQ.Type.GET, new VCard()));
-        if (result != null && result.getType() == IQ.Type.RESULT) {
-            return result.getExtension(VCard.class);
-        }
-        return null;
+        return result.getExtension(VCard.class);
     }
 }

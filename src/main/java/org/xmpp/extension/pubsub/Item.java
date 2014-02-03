@@ -33,9 +33,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "item")
 public final class Item {
+
     @XmlAnyElement
     private Object object;
 
     @XmlAttribute(name = "id")
     private String id;
+
+    private Item() {
+
+    }
+
+    public Item(Object object) {
+        this.object = object;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

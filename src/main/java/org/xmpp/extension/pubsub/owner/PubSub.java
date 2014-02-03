@@ -53,6 +53,10 @@ public final class PubSub {
     @XmlElement(name = "subscriptions")
     private Subscriptions subscriptions;
 
+    public PubSub(Delete delete) {
+        this.delete = delete;
+    }
+
     public static final class Affiliations {
         @XmlElementRef(name = "affiliations")
         private List<Affiliation> affiliations;
@@ -105,6 +109,13 @@ public final class PubSub {
         @XmlElementRef(name = "redirect")
         private Redirect redirect;
 
+        private Delete() {
+
+        }
+
+        public Delete(String node) {
+            this.node = node;
+        }
     }
 
     public static final class Purge {

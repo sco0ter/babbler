@@ -30,6 +30,7 @@ import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -176,7 +177,7 @@ public class VCardTest extends BaseTest {
     }
 
     @Test
-    public void testVCardAvatarUpdate() throws TimeoutException, IOException {
+    public void testVCardAvatarUpdate() throws TimeoutException, IOException, StanzaException {
         VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
         VCard vCard = new VCard();
         InputStream inputStream = getClass().getResourceAsStream("supported.png");

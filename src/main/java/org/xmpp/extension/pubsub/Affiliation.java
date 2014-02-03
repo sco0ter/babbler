@@ -26,6 +26,7 @@ package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
@@ -38,6 +39,7 @@ public final class Affiliation {
     @XmlAttribute(name = "affiliation")
     private Type affiliation;
 
+    @XmlType(name = "affiliation-type")
     public enum Type {
         @XmlEnumValue("member")
         MEMBER,

@@ -24,10 +24,7 @@
 
 package org.xmpp;
 
-import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.IQEvent;
-import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.*;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -77,7 +74,7 @@ public class TestConnection extends Connection {
     }
 
     @Override
-    public IQ query(final IQ iq) throws TimeoutException {
+    public IQ query(final IQ iq) throws TimeoutException, StanzaException {
         final IQ[] result = new IQ[1];
 
         final IQListener iqListener = new IQListener() {
@@ -93,7 +90,11 @@ public class TestConnection extends Connection {
         send(iq);
 
         removeIQListener(iqListener);
-        return result[0];
+        IQ response = result[0];
+        if (response.getType() == IQ.Type.ERROR) {
+            throw new StanzaException(response.getError());
+        }
+        return response;
     }
 
     @Override

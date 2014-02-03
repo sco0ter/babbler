@@ -30,6 +30,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.StanzaException;
 
 import java.util.concurrent.TimeoutException;
 
@@ -76,13 +77,12 @@ public final class PingManager extends ExtensionManager {
      *
      * @param jid The JID to ping.
      * @return True, if the entity responded with a result; or false if it does not support the ping protocol.
-     * @throws TimeoutException If the ping timed out, i.e. no response has been received in time.
      */
-    public boolean ping(Jid jid) throws TimeoutException {
+    public boolean ping(Jid jid) {
         try {
-            IQ result = connection.query(new IQ(jid, IQ.Type.GET, new Ping()));
-            return result.getError() == null;
-        } catch (TimeoutException e) {
+            connection.query(new IQ(jid, IQ.Type.GET, new Ping()));
+            return true;
+        } catch (TimeoutException | StanzaException e) {
             return false;
         }
     }

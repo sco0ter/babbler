@@ -28,6 +28,7 @@ import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import java.util.concurrent.TimeoutException;
 
@@ -63,7 +64,7 @@ public final class SearchManager extends ExtensionManager {
      * @return The possible search fields and instructions or null, if search is not supported. Search fields are supported if they are not null.
      * @throws TimeoutException If the service does not respond in time.
      */
-    public Search discoverSearchFields(Jid service) throws TimeoutException {
+    public Search discoverSearchFields(Jid service) throws TimeoutException, StanzaException {
         IQ result = connection.query(new IQ(service, IQ.Type.GET, new Search()));
         return result.getExtension(Search.class);
     }
@@ -77,7 +78,7 @@ public final class SearchManager extends ExtensionManager {
      * @return The search result (see {@link Search#getItems()}) or null if search is not supported.
      * @throws TimeoutException If the service does not respond in time.
      */
-    public Search search(Search search, Jid service) throws TimeoutException {
+    public Search search(Search search, Jid service) throws TimeoutException, StanzaException {
         IQ result = connection.query(new IQ(service, IQ.Type.SET, search));
         return result.getExtension(Search.class);
     }

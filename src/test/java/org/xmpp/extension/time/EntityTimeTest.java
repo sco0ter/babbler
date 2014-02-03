@@ -33,6 +33,7 @@ import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -102,7 +103,7 @@ public class EntityTimeTest extends BaseTest {
     }
 
     @Test
-    public void testEntityTimeManager() throws IOException, TimeoutException {
+    public void testEntityTimeManager() throws IOException, TimeoutException, StanzaException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);
@@ -114,14 +115,18 @@ public class EntityTimeTest extends BaseTest {
     }
 
     @Test
-    public void testEntityTimeIfDisabled() throws IOException, TimeoutException {
+    public void testEntityTimeIfDisabled() throws TimeoutException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         TestConnection connection2 = new TestConnection(JULIET, mockServer);
         connection2.getExtensionManager(EntityTimeManager.class).setEnabled(false);
         EntityTimeManager entityTimeManager = connection1.getExtensionManager(EntityTimeManager.class);
-        EntityTime entityTime = entityTimeManager.getEntityTime(JULIET);
-        Assert.assertNull(entityTime);
+        try {
+            entityTimeManager.getEntityTime(JULIET);
+        } catch (StanzaException e) {
+            return;
+        }
+        Assert.fail();
     }
 
     @Test

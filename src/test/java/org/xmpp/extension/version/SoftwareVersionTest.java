@@ -33,6 +33,7 @@ import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -90,7 +91,7 @@ public class SoftwareVersionTest extends BaseTest {
     }
 
     @Test
-    public void testSoftwareVersionManager() throws IOException, TimeoutException {
+    public void testSoftwareVersionManager() throws TimeoutException, StanzaException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);
@@ -104,14 +105,18 @@ public class SoftwareVersionTest extends BaseTest {
     }
 
     @Test
-    public void testSoftwareVersionManagerIfDisabled() throws IOException, TimeoutException {
+    public void testSoftwareVersionManagerIfDisabled() throws TimeoutException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         TestConnection connection2 = new TestConnection(JULIET, mockServer);
         connection2.getExtensionManager(SoftwareVersionManager.class).setEnabled(false);
         SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
-        SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(JULIET);
-        Assert.assertNull(softwareVersion);
+        try {
+            softwareVersionManager.getSoftwareVersion(JULIET);
+        } catch (StanzaException e) {
+            return;
+        }
+        Assert.fail();
     }
 
     @Test

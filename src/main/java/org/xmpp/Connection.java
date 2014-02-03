@@ -446,7 +446,7 @@ public abstract class Connection implements Closeable {
      * @return The result {@code <iq/>} stanza. If an error occurred, the stanza contains an {@linkplain org.xmpp.stanza.IQ#getError() error}.
      * @throws TimeoutException If no response was received in time.
      */
-    public IQ query(final IQ iq) throws TimeoutException {
+    public IQ query(final IQ iq) throws TimeoutException, StanzaException {
         if (!(iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET)) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
@@ -484,7 +484,11 @@ public abstract class Connection implements Closeable {
             removeIQListener(iqListener);
         }
 
-        return result[0];
+        IQ response = result[0];
+        if (response.getType() == IQ.Type.ERROR) {
+            throw new StanzaException(response.getError());
+        }
+        return response;
     }
 
     /**
@@ -632,13 +636,13 @@ public abstract class Connection implements Closeable {
         }
         // Bind the resource
         IQ iq = new IQ(IQ.Type.SET, new Bind(this.resource));
-        IQ result = query(iq);
-        if (result == null) {
-            throw new TimeoutException("Timeout reached during resource binding.");
+        IQ result;
+        try {
+            result = query(iq);
+        } catch (StanzaException e) {
+            throw new LoginException("Error during resource binding: " + e.getError().toString());
         }
-        if (result.getError() != null) {
-            throw new LoginException("Resource binding failed with condition: " + result.getError().getCondition().getClass().getName());
-        }
+
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
 
@@ -646,7 +650,11 @@ public abstract class Connection implements Closeable {
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
         if (featuresManager.getFeatures().containsKey(Session.class)) {
-            query(new IQ(IQ.Type.SET, new Session()));
+            try {
+                query(new IQ(IQ.Type.SET, new Session()));
+            } catch (StanzaException e) {
+                throw new LoginException("Error during session establishment: " + e.getError().toString());
+            }
         }
     }
 

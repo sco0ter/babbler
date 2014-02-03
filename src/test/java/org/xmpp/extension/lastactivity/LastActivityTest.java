@@ -40,6 +40,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -76,7 +77,7 @@ public class LastActivityTest extends BaseTest {
     }
 
     @Test
-    public void testGetLastActivity() {
+    public void testGetLastActivity() throws StanzaException, TimeoutException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);
@@ -86,14 +87,18 @@ public class LastActivityTest extends BaseTest {
     }
 
     @Test
-    public void testGetLastActivityIfDisabled() {
+    public void testGetLastActivityIfDisabled() throws TimeoutException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         TestConnection connection2 = new TestConnection(JULIET, mockServer);
         connection2.getExtensionManager(LastActivityManager.class).setEnabled(false);
         LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
-        LastActivity lastActivity = lastActivityManager.getLastActivity(JULIET);
-        Assert.assertNull(lastActivity);
+        try {
+            lastActivityManager.getLastActivity(JULIET);
+        } catch (StanzaException e) {
+            return;
+        }
+        Assert.fail();
     }
 
     @Test

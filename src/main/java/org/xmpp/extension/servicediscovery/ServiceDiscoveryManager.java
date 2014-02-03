@@ -395,7 +395,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @return The discovered items.
      * @throws TimeoutException If the operation timed out.
      */
-    public ItemNode discoverItems(Jid jid) throws TimeoutException {
+    public ItemNode discoverItems(Jid jid) throws TimeoutException, StanzaException {
         return discoverItems(jid, null);
     }
 
@@ -407,7 +407,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @return The discovered items.
      * @throws TimeoutException If the operation timed out.
      */
-    public ItemNode discoverItems(Jid jid, String node) throws TimeoutException {
+    public ItemNode discoverItems(Jid jid, String node) throws TimeoutException, StanzaException {
         IQ iq = new IQ(IQ.Type.GET, new ItemDiscovery(node));
         iq.setTo(jid);
         IQ result = connection.query(iq);

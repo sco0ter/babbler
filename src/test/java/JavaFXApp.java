@@ -384,7 +384,13 @@ public class JavaFXApp extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
-                                    lastActivityManager.getLastActivity(item.contact.get().getJid());
+                                    try {
+                                        lastActivityManager.getLastActivity(item.contact.get().getJid());
+                                    } catch (StanzaException e) {
+                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                    } catch (TimeoutException e) {
+                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                    }
                                 }
                             });
                             MenuItem pingMenuItem = new MenuItem("Ping");
@@ -412,7 +418,7 @@ public class JavaFXApp extends Application {
                                         for (Search.Item item : result.getItems()) {
                                             System.out.println(item.getJid());
                                         }
-                                    } catch (TimeoutException e) {
+                                    } catch (TimeoutException | StanzaException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -426,7 +432,7 @@ public class JavaFXApp extends Application {
                                         SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(item.contact.get().getJid());
                                         if (softwareVersion != null)
                                             System.out.println(softwareVersion.getName());
-                                    } catch (TimeoutException e) {
+                                    } catch (TimeoutException | StanzaException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -440,10 +446,8 @@ public class JavaFXApp extends Application {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
                                         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
                                         int i = 0;
-                                    } catch (TimeoutException e) {
+                                    } catch (TimeoutException | StanzaException e) {
                                         e.printStackTrace();
-                                    } catch (StanzaException e) {
-                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }
 
                                 }
@@ -457,7 +461,7 @@ public class JavaFXApp extends Application {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
                                         VCard vCard = vCardManager.getVCard(jid);
                                         int i = 0;
-                                    } catch (TimeoutException e) {
+                                    } catch (TimeoutException | StanzaException e) {
                                         e.printStackTrace();
                                     }
 
@@ -472,7 +476,7 @@ public class JavaFXApp extends Application {
                                         List<Annotation.Note> notes = new ArrayList<>();
                                         notes.add(new Annotation.Note("Hallo", item.contact.get().getJid()));
                                         privateDataManager.storeData(new Annotation(notes));
-                                    } catch (TimeoutException e) {
+                                    } catch (TimeoutException | StanzaException e) {
                                         e.printStackTrace();
                                     }
 
@@ -500,8 +504,8 @@ public class JavaFXApp extends Application {
                                     try {
                                         ItemNode infoNode = serviceDiscoveryManager.discoverItems(null);
                                         int i = 0;
-                                    } catch (TimeoutException e) {
-                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                    } catch (TimeoutException | StanzaException e) {
+                                        e.printStackTrace();
                                     }
                                 }
                             });

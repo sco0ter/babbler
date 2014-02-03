@@ -24,6 +24,7 @@
 
 package org.xmpp;
 
+import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Stanza;
 
 import java.util.HashMap;
@@ -49,6 +50,8 @@ public class MockServer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if (stanza instanceof IQ) {
+            connections.get(stanza.getFrom()).send(((IQ) stanza).createResult());
         }
     }
 }

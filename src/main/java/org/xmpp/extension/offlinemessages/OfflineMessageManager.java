@@ -68,7 +68,7 @@ public final class OfflineMessageManager extends ExtensionManager {
         return 0;
     }
 
-    public List<OfflineMessageHeader> requestOfflineMessageHeaders() throws TimeoutException {
+    public List<OfflineMessageHeader> requestOfflineMessageHeaders() throws TimeoutException, StanzaException {
         List<OfflineMessageHeader> result = new ArrayList<>();
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, NODE);
@@ -82,7 +82,7 @@ public final class OfflineMessageManager extends ExtensionManager {
         IQ result = new IQ(IQ.Type.GET);
     }
 
-    public void removeOfflineMessages(String... ids) throws TimeoutException {
+    public void removeOfflineMessages(String... ids) throws TimeoutException, StanzaException {
         OfflineMessage offlineMessage = new OfflineMessage();
         for (String id : ids) {
             offlineMessage.getItems().add(new OfflineMessage.Item(id, OfflineMessage.Item.Action.REMOVE));
@@ -90,11 +90,11 @@ public final class OfflineMessageManager extends ExtensionManager {
         connection.query(new IQ(IQ.Type.SET, offlineMessage));
     }
 
-    public void getAllOfflineMessages() throws TimeoutException {
+    public void getAllOfflineMessages() throws TimeoutException, StanzaException {
         connection.query(new IQ(IQ.Type.GET, new OfflineMessage(true, false)));
     }
 
-    public void removeAllOfflineMessages() throws TimeoutException {
+    public void removeAllOfflineMessages() throws TimeoutException, StanzaException {
         connection.query(new IQ(IQ.Type.GET, new OfflineMessage(false, true)));
     }
 }

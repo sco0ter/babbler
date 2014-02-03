@@ -58,7 +58,7 @@ public final class RegistrationManager extends ExtensionManager {
         }
     }
 
-    public void removeAccount() throws TimeoutException {
+    public void removeAccount() throws TimeoutException, StanzaException {
         IQ result = connection.query(new IQ(IQ.Type.SET, new Registration()));
     }
 

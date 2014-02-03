@@ -30,6 +30,7 @@ import org.xmpp.*;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.Feature;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -187,7 +188,7 @@ public class IbbTest extends BaseTest {
                     inputStream.close();
                     os.close();
 
-                } catch (TimeoutException | IOException e) {
+                } catch (TimeoutException | IOException | StanzaException e) {
                     e.printStackTrace();
                 }
             }

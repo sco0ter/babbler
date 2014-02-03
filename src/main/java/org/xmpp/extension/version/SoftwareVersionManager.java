@@ -30,6 +30,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.StanzaException;
 
 import java.util.concurrent.TimeoutException;
 
@@ -76,15 +77,11 @@ public final class SoftwareVersionManager extends ExtensionManager {
      * @return The software version or null, if this protocol is not supported.
      * @throws TimeoutException If the request timed out.
      */
-    public SoftwareVersion getSoftwareVersion(Jid jid) throws TimeoutException {
+    public SoftwareVersion getSoftwareVersion(Jid jid) throws TimeoutException, StanzaException {
         IQ iq = new IQ(IQ.Type.GET, new SoftwareVersion());
         iq.setTo(jid);
         IQ result = connection.query(iq);
-
-        if (result.getError() == null) {
-            return result.getExtension(SoftwareVersion.class);
-        }
-        return null;
+        return result.getExtension(SoftwareVersion.class);
     }
 
     /**

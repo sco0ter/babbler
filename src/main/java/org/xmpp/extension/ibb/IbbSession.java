@@ -81,7 +81,7 @@ public final class IbbSession {
         }
     }
 
-    public void open() throws TimeoutException {
+    public void open() throws TimeoutException, StanzaException {
         IQ iq = new IQ(IQ.Type.SET, new Open(blockSize, sessionId));
         iq.setTo(jid);
         connection.query(iq);

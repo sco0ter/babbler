@@ -31,6 +31,7 @@ import org.xmpp.im.Roster;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
+import org.xmpp.stanza.StanzaException;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -43,7 +44,7 @@ public class RosterExchangeManager extends ExtensionManager {
         super(connection);
     }
 
-    public void suggestContactAddition(Jid jid, List<Roster.Contact> contacts) throws TimeoutException {
+    public void suggestContactAddition(Jid jid, List<Roster.Contact> contacts) throws TimeoutException, StanzaException {
         RosterExchange rosterExchange = new RosterExchange();
         for (Roster.Contact contact : contacts) {
             RosterExchange.Item rosterItem = new RosterExchange.Item(contact.getJid(), contact.getName(), contact.getGroups(), RosterExchange.Item.Action.ADD);

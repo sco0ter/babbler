@@ -132,17 +132,8 @@ public final class LastActivityManager extends ExtensionManager {
      * @param jid The JID for which the last activity is requested.
      * @return The last activity of the requested JID or null if the feature is not implemented or a time out has occurred.
      */
-    public LastActivity getLastActivity(Jid jid) {
-        IQ result;
-        try {
-            result = connection.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
-        } catch (TimeoutException e) {
-            return null;
-        }
-        // If there's an error, e.g. service-unavailable, return null.
-        if (result.getError() != null) {
-            return null;
-        }
+    public LastActivity getLastActivity(Jid jid) throws StanzaException, TimeoutException {
+        IQ result = connection.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
         return result.getExtension(LastActivity.class);
     }
 

@@ -30,6 +30,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.StanzaException;
 
 import java.util.Date;
 import java.util.TimeZone;
@@ -72,11 +73,8 @@ public final class EntityTimeManager extends ExtensionManager {
      * @return The entity time or null if this protocol is not supported by the entity.
      * @throws TimeoutException If the operation timed out.
      */
-    public EntityTime getEntityTime(Jid jid) throws TimeoutException {
+    public EntityTime getEntityTime(Jid jid) throws TimeoutException, StanzaException {
         IQ result = connection.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
-        if (result.getType() == IQ.Type.RESULT) {
-            return result.getExtension(EntityTime.class);
-        }
-        return null;
+        return result.getExtension(EntityTime.class);
     }
 }

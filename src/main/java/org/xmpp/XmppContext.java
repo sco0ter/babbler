@@ -26,6 +26,7 @@ package org.xmpp;
 
 import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.activity.Activity;
 import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.avatar.AvatarManager;
@@ -213,6 +214,9 @@ public abstract class XmppContext {
 
             // XEP-0107: User Mood
             registerExtension(Mood.class);
+
+            // XEP-0108: User Activity
+            registerExtension(Activity.class);
 
             // XEP-0115: Entity Capabilities
             registerExtension(EntityCapabilities.class);

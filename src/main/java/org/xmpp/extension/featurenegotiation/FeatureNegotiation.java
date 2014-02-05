@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0020.html">XEP-0020: Feature Negotiation</a>
+ * The implementation of <a href="http://xmpp.org/extensions/xep-0020.html">XEP-0020: Feature Negotiation</a>.
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0020.html#intro">1. Introduction</a></cite></p>
  * <p>The protocol defined herein enables Jabber entities to negotiate options for specific features. These features could be negotiated between any two endpoints on the Jabber network, such as two clients, a client and a component, two components, a client and a server, or two servers. The protocol is generic enough that it can be used whenever options need to be negotiated between two Jabber entities. For examples, Stream Initiation (XEP-0095) [2], SI File Transfer (XEP-0096) [3] or Stanza Session Negotiation (XEP-0155) [4].</p>

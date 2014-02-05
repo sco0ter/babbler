@@ -157,7 +157,7 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
     public void testVerificationStringComplex() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
         identities.add(new Identity("client", "pc", "Psi 0.11", "en"));
-        identities.add(new Identity("client", "pc", "Ψ 0.11", "el"));
+        identities.add(new Identity("client", "pc", "P 0.11", "el"));
 
         List<Feature> features = new ArrayList<>();
         features.add(new Feature("http://jabber.org/protocol/caps"));
@@ -178,7 +178,7 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         infoDiscovery.getIdentities().addAll(identities);
         infoDiscovery.getExtensions().add(dataForm);
         String verificationString = EntityCapabilitiesManager.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
-        Assert.assertEquals(verificationString, "q07IKJEyjvHSyhy//CH0CxmKi8w=");
+        Assert.assertEquals(verificationString, "dsMdhhH+tbCICmoptvSp3x+DafI=");
     }
 
     @Test

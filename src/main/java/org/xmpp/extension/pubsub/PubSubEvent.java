@@ -22,18 +22,31 @@
  * THE SOFTWARE.
  */
 
+package org.xmpp.extension.pubsub;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>.
- * <p>
- * It defines an XMPP protocol extension for generic publish-subscribe functionality. The protocol enables XMPP entities to create nodes (topics) at a pubsub service and publish information at those nodes; an event notification (with or without payload) is then broadcasted to all entities that have subscribed to the node. Pubsub therefore adheres to the classic Observer design pattern and can serve as the foundation for a wide variety of applications, including news feeds, content syndication, rich presence, geolocation, workflow systems, network management systems, and any other application that requires event notifications.
- * </p>
+ * @author Christian Schudt
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/pubsub", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.pubsub;
+@XmlRootElement(name = "event", namespace = "http://jabber.org/protocol/pubsub#event")
+public final class PubSubEvent {
 
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+    @XmlElement(name = "items")
+    private Items items;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+    @XmlElement(name = "retract")
+    private Retract retract;
+
+    @XmlElement(name = "purge")
+    private Purge purge;
+
+    Purge getPurge() {
+        return purge;
+    }
+
+    Items getItems() {
+        return items;
+    }
+}

@@ -1,4 +1,6 @@
 # Supported XEPs
+---
+
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final' that are applicable to XMPP clients)*
 
 * ![alt supported][supported]           [XEP-0004: Data Forms](http://xmpp.org/extensions/xep-0004.html)

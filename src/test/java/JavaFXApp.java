@@ -56,7 +56,10 @@ import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.bosh.BoshConnection;
+import org.xmpp.extension.entitycapabilities.EntityCapabilities;
+import org.xmpp.extension.entitycapabilities.EntityCapabilitiesManager;
 import org.xmpp.extension.headers.HeaderManager;
+import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.lastactivity.LastActivityStrategy;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
@@ -71,6 +74,8 @@ import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.extension.servicediscovery.items.ItemNode;
+import org.xmpp.extension.time.EntityTimeManager;
+import org.xmpp.extension.tune.Tune;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
@@ -509,7 +514,19 @@ public class JavaFXApp extends Application {
                                     }
                                 }
                             });
-                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem, storeAnnotationsItems, getAnnotationsItems, pubSubItem);
+                            MenuItem pepItem = new MenuItem("PEP");
+                            pepItem.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
+                                    try {
+                                        pubSubManager.publish("http://jabber.org/protocol/tune", new Tune("AC/DC"));
+                                    } catch (TimeoutException | StanzaException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem, storeAnnotationsItems, getAnnotationsItems, pubSubItem, pepItem);
                             setContextMenu(contextMenu);
                         }
                     }
@@ -529,7 +546,20 @@ public class JavaFXApp extends Application {
                         }
                     }
                 });
+                LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+                try {
+                    LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
+                } catch (StanzaException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (TimeoutException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
 
+                try (Connection connection1 = new TcpConnection("hostname", 5222)) {
+                    connection1.connect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 return listCell;
             }
         });

@@ -27,6 +27,7 @@ package org.xmpp.extension.pubsub;
 import org.xmpp.Jid;
 import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.pubsub.errors.*;
+import org.xmpp.extension.pubsub.event.Event;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -36,7 +37,13 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "pubsub")
-@XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class, ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class, SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class, InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class, ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class})
+@XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class, ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class, SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class, InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class, ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class,
+        org.xmpp.extension.pubsub.owner.PubSub.class,
+        PubSub.class,
+        PubSubEvent.class,
+        Purge.class
+
+})
 public final class PubSub {
 
     @XmlElement(name = "create")
@@ -290,7 +297,7 @@ public final class PubSub {
         @XmlAttribute(name = "node")
         private String node;
 
-        @XmlElementRef
+        @XmlElement
         private Item item;
 
         private Publish() {
@@ -307,6 +314,7 @@ public final class PubSub {
         }
     }
 
+    @XmlType(name = "test")
     public static final class Retract {
         @XmlAttribute(name = "node")
         private String node;
@@ -314,7 +322,7 @@ public final class PubSub {
         @XmlAttribute(name = "notify")
         private Boolean notify;
 
-        @XmlElementRef
+        @XmlElement
         private Item item;
 
         private Retract() {
@@ -328,6 +336,7 @@ public final class PubSub {
         }
     }
 
+    @XmlType(name = "items", namespace = "http://jabber.org/protocol/pubsub")
     @XmlRootElement(name = "items")
     public static final class Items {
 

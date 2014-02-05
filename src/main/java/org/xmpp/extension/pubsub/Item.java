@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "item")
 public final class Item {
 
     @XmlAnyElement

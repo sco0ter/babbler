@@ -34,6 +34,7 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
+@XmlRootElement(name = "pubsub")
 public final class PubSub {
     @XmlElement(name = "affiliations")
     private Affiliations affiliations;
@@ -53,12 +54,15 @@ public final class PubSub {
     @XmlElement(name = "subscriptions")
     private Subscriptions subscriptions;
 
+    private PubSub() {
+    }
+
     public PubSub(Delete delete) {
         this.delete = delete;
     }
 
     public static final class Affiliations {
-        @XmlElementRef(name = "affiliations")
+        @XmlElement(name = "affiliations")
         private List<Affiliation> affiliations;
 
         @XmlAttribute(name = "node")
@@ -73,6 +77,7 @@ public final class PubSub {
         private Jid jid;
 
         @XmlEnum
+        @XmlType(name = "affiliation-type")
         public enum Type {
             @XmlEnumValue("member")
             MEMBER,
@@ -106,7 +111,7 @@ public final class PubSub {
         @XmlAttribute(name = "node")
         private String node;
 
-        @XmlElementRef(name = "redirect")
+        @XmlElement(name = "redirect")
         private Redirect redirect;
 
         private Delete() {
@@ -146,6 +151,7 @@ public final class PubSub {
         private Type type;
 
         @XmlEnum
+        @XmlType(name = "subscription-type")
         public enum Type {
             @XmlEnumValue("none")
             NONE,

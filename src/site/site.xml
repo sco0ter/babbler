@@ -1,39 +1,44 @@
 <project name="Babbler - a XMPP client library">
-  <!--<bannerLeft>
-    <name>Nodeclipse</name>
-    <href>http://www.nodeclipse.org/</href>
-    <src>header3.png</src>
-  </bannerLeft>-->
-  <skin>
-    <groupId>org.apache.maven.skins</groupId>
-    <artifactId>maven-fluido-skin</artifactId>
-    <version>1.3.1</version>
-  </skin>
-  <!-- http://maven.apache.org/skins/maven-fluido-skin/ -->
-<!-- from example https://github.com/apache/maven-surefire/blob/master/src/site/site.xml
-see it in action http://maven.apache.org/surefire/maven-failsafe-plugin/ -->
-  <custom>
-    <fluidoSkin>
-      <topBarEnabled>false</topBarEnabled>
-      <sideBarEnabled>true</sideBarEnabled>
-    </fluidoSkin>
-  </custom>
-  <poweredBy>
-    
-  </poweredBy>
- <body>
-    <!-- http://maven.apache.org/doxia/doxia-sitetools/doxia-decoration-model/decoration.html 
-    <item collapse=.. ref=.. name=.. href="README" img=.. position=.. alt=.. border=.. width=.. height=.. target=.. title=.. >
-    -->
-    <menu name="User guide">
-      <item href="README.html" name="README" />
-	  <item href="basics.html" name="Basics" />
-	  <item href="xeps.html" name="Supported XEPs" />
-    </menu>
-	<menu ref="r"/>
-    <links>
-        <item name="Apache" href="http://www.apache.org"/>
-        <item name="Maven" href="http://maven.apache.org"/>
-    </links>
-  </body>
+    <bannerRight>
+        <name>Babbler - a XMPP client library</name>
+        <src>xmpp.png</src>
+    </bannerRight>
+    <publishDate position="left"/>
+    <version position="left"/>
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.3.1</version>
+    </skin>
+    <!-- http://maven.apache.org/skins/maven-fluido-skin/ -->
+    <!-- from example https://github.com/apache/maven-surefire/blob/master/src/site/site.xml
+    see it in action http://maven.apache.org/surefire/maven-failsafe-plugin/ -->
+    <custom>
+        <fluidoSkin>
+            <topBarEnabled>false</topBarEnabled>
+            <sideBarEnabled>true</sideBarEnabled>
+        </fluidoSkin>
+    </custom>
+    <poweredBy>
+
+    </poweredBy>
+    <body>
+        <!-- http://maven.apache.org/doxia/doxia-sitetools/doxia-decoration-model/decoration.html
+        <item collapse=.. ref=.. name=.. href="README" img=.. position=.. alt=.. border=.. width=.. height=.. target=.. title=.. >
+        -->
+        <menu name="Project Information">
+            <item href="xeps.html" name="Supported XEPs"/>
+            <item href="license.html" name="License"/>
+        </menu>
+        <menu name="User Guide">
+            <item href="basics.html" name="Getting started"/>
+            <item href="extensions.html" name="Using extensions"/>
+        </menu>
+        <menu name="API Documentation">
+            <item name="JavaDoc" href="apidocs/index.html"/>
+        </menu>
+        <links>
+            <item name="Source Code" href="https://bitbucket.org/sco0ter/babbler/src"/>
+        </links>
+    </body>
 </project>

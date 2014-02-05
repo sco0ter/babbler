@@ -35,7 +35,6 @@ import java.net.URI;
  */
 @XmlRootElement(name = "tune")
 public final class Tune {
-
     @XmlElement(name = "artist")
     private String artist;
 
@@ -56,6 +55,13 @@ public final class Tune {
 
     @XmlElement(name = "uri")
     private URI uri;
+
+    public Tune() {
+    }
+
+    public Tune(String artist) {
+        this.artist = artist;
+    }
 
     /**
      * Gets the artist or performer of the song or piece.

@@ -46,10 +46,6 @@ public final class PubSubManager extends ExtensionManager {
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
     }
 
-    public void publishItem(String node, Object object) {
-        PubSub.Publish publish = new PubSub.Publish(node, null);
-    }
-
     public List<Subscription> getSubscriptions(String node) throws TimeoutException, StanzaException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Subscriptions(node)));
         PubSub.Subscriptions subscriptions = result.getExtension(PubSub.Subscriptions.class);
@@ -191,7 +187,10 @@ public final class PubSubManager extends ExtensionManager {
     public String publish(String node, Object item) throws TimeoutException, StanzaException {
         IQ result = connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Publish(node, new Item(item)))));
         PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getPublish().getItem().getId();
+        if (pubSub != null && pubSub.getPublish() != null && pubSub.getPublish().getItem() != null) {
+            return pubSub.getPublish().getItem().getId();
+        }
+        return null;
     }
 
     /**

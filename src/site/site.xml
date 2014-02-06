@@ -20,7 +20,7 @@
         </fluidoSkin>
     </custom>
     <poweredBy>
-
+        <logo name="" href="" img=""/>
     </poweredBy>
     <body>
         <!-- http://maven.apache.org/doxia/doxia-sitetools/doxia-decoration-model/decoration.html

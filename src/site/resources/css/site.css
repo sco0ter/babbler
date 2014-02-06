@@ -1,0 +1,9 @@
+pre.prettyprint {
+    padding: 10px;
+}
+
+a.externalLink[href^="http"] {
+    background: none;
+    background-image: none;
+    padding-right: 0;
+}

@@ -151,6 +151,7 @@ public abstract class XmppContext {
     }
 
     private static class DefaultXmppContext extends XmppContext {
+
         private DefaultXmppContext() {
 
             // XEP-0004: Data Forms

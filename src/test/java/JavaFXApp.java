@@ -50,16 +50,14 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.Product;
 import org.xmpp.*;
 import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.bosh.BoshConnection;
-import org.xmpp.extension.entitycapabilities.EntityCapabilities;
-import org.xmpp.extension.entitycapabilities.EntityCapabilitiesManager;
 import org.xmpp.extension.headers.HeaderManager;
-import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.lastactivity.LastActivityStrategy;
 import org.xmpp.extension.messagedeliveryreceipts.MessageDeliveredEvent;
@@ -74,7 +72,6 @@ import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.extension.servicediscovery.items.ItemNode;
-import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.tune.Tune;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
@@ -191,6 +188,9 @@ public class JavaFXApp extends Application {
                     public void run() {
 
                         if (!useBosh.isSelected()) {
+
+                            XmppContext.getDefault().registerExtension(Product.class);
+
                             connection = new TcpConnection(txtDomain.getText(), txtServer.getText(), Integer.parseInt(txtPort.getText()));
                         } else {
                             connection = new BoshConnection(txtDomain.getText(), txtServer.getText(), Integer.parseInt(txtPort.getText()));
@@ -251,7 +251,12 @@ public class JavaFXApp extends Application {
                                 });
                             }
                         });
+                        connection.addMessageListener(new MessageListener() {
+                            @Override
+                            public void handle(MessageEvent e) {
 
+                            }
+                        });
                         connection.getRosterManager().addRosterListener(new RosterListener() {
                             @Override
                             public void rosterChanged(final RosterEvent e) {
@@ -546,32 +551,23 @@ public class JavaFXApp extends Application {
                         }
                     }
                 });
-                LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
-                try {
-                    LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
-                } catch (StanzaException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (TimeoutException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
 
-                try (Connection connection1 = new TcpConnection("hostname", 5222)) {
-                    connection1.connect();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
                 return listCell;
             }
         });
+        connection.getRosterManager().addContact(new Roster.Contact(Jid.fromString("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
 
-
-        listView.setItems(contactItems);
+                listView.setItems(contactItems);
 
         Button btnClose = new Button("Close");
         btnClose.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 try {
+                    Message message = new Message(Jid.fromString("romeo@example.net"));
+                    message.getExtensions().add(new Product("1", "5.99 €", "New product", "A very cool product!!"));
+                    connection.send(message);
                     connection.close();
                     contactItems.clear();
                 } catch (IOException e) {

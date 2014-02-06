@@ -22,6 +22,8 @@ If you want to establish a BOSH connection, use the following class instead:
 Connection connection = new BoshConnection("hostname", 5280);
 ```
 
+This connection instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+
 ## Preparing the connection
 
 Before connecting to a server, you should configure your connection.
@@ -116,7 +118,7 @@ Closing a connection is simply done with:
 connection.close();
 ```
 
-Note, that ```org.xmpp.Connection``` implements ```java.io.Closeable```, which means you can also use the try-with-resources statement, which automatically close the connection:
+Note, that ```org.xmpp.Connection``` implements ```java.io.Closeable```, which means you can also use the try-with-resources statement, which automatically closes the connection:
 
 ```java
 try (Connection connection = new TcpConnection("hostname", 5222)) {

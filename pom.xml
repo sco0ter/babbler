@@ -55,7 +55,7 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <report>index</report>
+                            <!--<report>index</report>-->
                             <!--<report>project-team</report>-->
                             <!--<report>modules</report>-->
                             <!--<report>dependency-info</report>-->
@@ -63,12 +63,12 @@
                             <!--<report>plugins</report>-->
                             <!--<report>cim</report>-->
                             <!--<report>issue-tracking</report>-->
-                            <report>scm</report>
+                            <!--<report>scm</report>-->
                             <!--<report>dependency-convergence</report>-->
                             <!--<report>license</report>-->
                             <!--<report>plugin-management</report>-->
                             <!--<report>distribution-management</report>-->
-                            <report>summary</report>
+                            <!--<report>summary</report>-->
                             <!--<report>mailing-list</report>-->
                             <!--<report>dependencies</report>-->
                         </reports>

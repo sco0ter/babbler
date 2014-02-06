@@ -27,12 +27,15 @@
         <item collapse=.. ref=.. name=.. href="README" img=.. position=.. alt=.. border=.. width=.. height=.. target=.. title=.. >
         -->
         <menu name="Project Information">
+            <item href="index.html" name="About"/>
             <item href="xeps.html" name="Supported XEPs"/>
             <item href="license.html" name="License"/>
         </menu>
         <menu name="User Guide">
             <item href="basics.html" name="Getting started"/>
+            <item href="im.html" name="Contacts, Presence and Messaging"/>
             <item href="extensions.html" name="Using extensions"/>
+            <item href="ownextensions.html" name="Writing custom extensions"/>
         </menu>
         <menu name="API Documentation">
             <item name="JavaDoc" href="apidocs/index.html"/>

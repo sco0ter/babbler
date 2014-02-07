@@ -206,17 +206,21 @@ public final class Presence extends Stanza implements Comparable<Presence> {
     /**
      * Sets the default status element.
      *
-     * @param body The status text.
+     * @param text The status text.
      * @see #getStatus() ()
      */
-    public void setStatus(String body) {
-        for (Status s : status) {
-            if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
-                s.setText(body);
-                return;
+    public void setStatus(String text) {
+        if (text != null) {
+            for (Status s : status) {
+                if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
+                    s.setText(text);
+                    return;
+                }
             }
+            this.status.add(new Status(text));
+        } else {
+            this.status.clear();
         }
-        this.status.add(new Status(body));
     }
 
     /**

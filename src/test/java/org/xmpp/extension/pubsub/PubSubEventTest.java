@@ -27,12 +27,15 @@ package org.xmpp.extension.pubsub;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
+import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.stanza.Message;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
+import java.net.URI;
 
 /**
  * @author Christian Schudt
@@ -79,6 +82,88 @@ public class PubSubEventTest extends BaseTest {
     }
 
     @Test
+    public void unmarshalPubSubEventConfiguration() throws XMLStreamException, JAXBException {
+        String xml = "<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>\n" +
+                "  <event xmlns='http://jabber.org/protocol/pubsub#event'>\n" +
+                "    <configuration node='princely_musings'/>\n" +
+                "  </event>\n" +
+                "</message>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(message);
+        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
+        Assert.assertNotNull(pubSubEvent);
+        Assert.assertNotNull(pubSubEvent.getConfiguration());
+        Assert.assertEquals(pubSubEvent.getConfiguration().getNode(), "princely_musings");
+    }
+
+    @Test
+    public void unmarshalPubSubEventConfigurationForm() throws XMLStreamException, JAXBException {
+        String xml = "<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>\n" +
+                "  <event xmlns='http://jabber.org/protocol/pubsub#event'>\n" +
+                "    <configuration node='princely_musings'>\n" +
+                "      <x xmlns='jabber:x:data' type='result'>\n" +
+                "        <field var='FORM_TYPE' type='hidden'>\n" +
+                "          <value>http://jabber.org/protocol/pubsub#node_config</value>\n" +
+                "        </field>\n" +
+                "        <field var='pubsub#title'><value>Princely Musings (Atom)</value></field>\n" +
+                "        <field var='pubsub#deliver_notifications'><value>1</value></field>\n" +
+                "        <field var='pubsub#deliver_payloads'><value>1</value></field>\n" +
+                "        <field var='pubsub#notify_config'><value>0</value></field>\n" +
+                "        <field var='pubsub#notify_delete'><value>0</value></field>\n" +
+                "        <field var='pubsub#notify_retract'><value>0</value></field>\n" +
+                "        <field var='pubsub#notify_sub'><value>0</value></field>\n" +
+                "        <field var='pubsub#persist_items'><value>1</value></field>\n" +
+                "        <field var='pubsub#max_items'><value>10</value></field>\n" +
+                "        <field var='pubsub#item_expire'><value>604800</value></field>\n" +
+                "        <field var='pubsub#subscribe'><value>1</value></field>\n" +
+                "        <field var='pubsub#access_model'><value>open</value></field>\n" +
+                "        <field var='pubsub#publish_model'><value>publishers</value></field>\n" +
+                "        <field var='pubsub#purge_offline'><value>0</value></field>\n" +
+                "        <field var='pubsub#max_payload_size'><value>9216</value></field>\n" +
+                "        <field var='pubsub#send_last_published_item'><value>never</value></field>\n" +
+                "        <field var='pubsub#presence_based_delivery'><value>0</value></field>\n" +
+                "        <field var='pubsub#notification_type'><value>headline</value></field>\n" +
+                "        <field var='pubsub#type'><value>http://www.w3.org/2005/Atom</value></field>\n" +
+                "        <field var='pubsub#body_xslt'>\n" +
+                "          <value>http://jabxslt.jabberstudio.org/atom_body.xslt</value>\n" +
+                "        </field>\n" +
+                "      </x>\n" +
+                "    </configuration>\n" +
+                "  </event>\n" +
+                "</message>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(message);
+        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
+        Assert.assertNotNull(pubSubEvent);
+        Assert.assertNotNull(pubSubEvent.getConfiguration());
+        Assert.assertEquals(pubSubEvent.getConfiguration().getNode(), "princely_musings");
+        Assert.assertNotNull(pubSubEvent.getConfiguration().getDataForm());
+    }
+
+    @Test
+    public void unmarshalPubSubEventDelete() throws XMLStreamException, JAXBException {
+        String xml = "<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>\n" +
+                "  <event xmlns='http://jabber.org/protocol/pubsub#event'>\n" +
+                "    <delete node='princely_musings'>\n" +
+                "      <redirect uri='xmpp:hamlet@denmark.lit?;node=blog'/>\n" +
+                "    </delete>\n" +
+                "  </event>\n" +
+                "</message>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(message);
+        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
+        Assert.assertNotNull(pubSubEvent);
+        Assert.assertNotNull(pubSubEvent.getDelete());
+        Assert.assertEquals(pubSubEvent.getDelete().getNode(), "princely_musings");
+        Assert.assertNotNull(pubSubEvent.getDelete().getRedirect());
+        Assert.assertEquals(pubSubEvent.getDelete().getRedirect().getUri(), URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
+    }
+
+
+    @Test
     public void unmarshalPubSubEventPurge() throws XMLStreamException, JAXBException {
         String xml = "<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>\n" +
                 "  <event xmlns='http://jabber.org/protocol/pubsub#event'>\n" +
@@ -91,6 +176,38 @@ public class PubSubEventTest extends BaseTest {
         PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
         Assert.assertNotNull(pubSubEvent);
         Assert.assertNotNull(pubSubEvent.getPurge());
-        Assert.assertNotNull(pubSubEvent.getPurge().getNode(), "princely_musings");
+        Assert.assertEquals(pubSubEvent.getPurge().getNode(), "princely_musings");
+    }
+
+    @Test
+    public void unmarshalPubSubEventSubscription() throws XMLStreamException, JAXBException {
+        String xml = "<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit/barracks'>\n" +
+                "  <event xmlns='http://jabber.org/protocol/pubsub#event'>\n" +
+                "    <subscription\n" +
+                "        expiry='2006-02-28T23:59:00Z'\n" +
+                "        jid='francisco@denmark.lit'\n" +
+                "        node='princely_musings'\n" +
+                "        subid='ba49252aaa4f5d320c24d3766f0bdcade78c78d3'\n" +
+                "        subscription='subscribed'/>\n" +
+                "  </event>\n" +
+                "</message>\n";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(message);
+        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
+        Assert.assertNotNull(pubSubEvent);
+        Assert.assertNotNull(pubSubEvent.getSubscription());
+        Assert.assertNotNull(pubSubEvent.getSubscription().getExpiry());
+        Assert.assertEquals(pubSubEvent.getSubscription().getNode(), "princely_musings");
+        Assert.assertEquals(pubSubEvent.getSubscription().getJid(), Jid.fromString("francisco@denmark.lit"));
+        Assert.assertEquals(pubSubEvent.getSubscription().getType(), Subscription.SubscriptionType.SUBSCRIBED);
+        Assert.assertEquals(pubSubEvent.getSubscription().getSubid(), "ba49252aaa4f5d320c24d3766f0bdcade78c78d3");
+    }
+
+    @Test
+    public void marshalPubSubOwnerDelete() throws JAXBException, XMLStreamException, IOException {
+        PubSubEvent pubSubOwner = new PubSubEvent(new Delete("test"));
+        String xml = marshall(pubSubOwner);
+        Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><delete node=\"test\"></delete></event>");
     }
 }

@@ -53,8 +53,8 @@ public final class PubSubManager extends ExtensionManager {
     }
 
     public List<Affiliation> getAffiliations(String node) throws TimeoutException, StanzaException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Affiliations(node)));
-        PubSub.Affiliations affiliations = result.getExtension(PubSub.Affiliations.class);
+        IQ result = connection.query(new IQ(IQ.Type.GET, new Affiliations(node)));
+        Affiliations affiliations = result.getExtension(Affiliations.class);
         return affiliations.getAffiliations();
     }
 
@@ -135,7 +135,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      */
     public DataForm requestDefaultSubscriptionConfigurationOptions(String node) throws TimeoutException, StanzaException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new PubSub.Default(node))));
+        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Default(node))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getOptions().getDataForm();
     }
@@ -226,25 +226,25 @@ public final class PubSubManager extends ExtensionManager {
         if (node == null) {
             throw new IllegalArgumentException("node must not be null");
         }
-        PubSub.Configure configure = null;
+        Configure configure = null;
         if (dataForm != null) {
-            configure = new PubSub.Configure(dataForm);
+            configure = new Configure(dataForm);
         }
         connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Create(node), configure)));
     }
 
     public DataForm getConfigurationForm(String node) throws TimeoutException, StanzaException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new PubSub.Configure(node))));
+        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Configure(node))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getConfigure().getDataForm();
     }
 
     public void submitConfigurationForm(String node, DataForm dataForm) throws TimeoutException, StanzaException {
-        connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Configure(node, dataForm))));
+        connection.query(new IQ(IQ.Type.SET, new PubSub(new Configure(node, dataForm))));
     }
 
     public void deleteNode(String node) throws TimeoutException, StanzaException {
-        connection.query(new IQ(IQ.Type.SET, new org.xmpp.extension.pubsub.owner.PubSub(new org.xmpp.extension.pubsub.owner.PubSub.Delete(node))));
+        connection.query(new IQ(IQ.Type.SET, new PubSubOwner(new Delete(node))));
     }
 
 }

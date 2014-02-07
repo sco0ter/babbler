@@ -33,14 +33,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "event", namespace = "http://jabber.org/protocol/pubsub#event")
 public final class PubSubEvent {
 
-    @XmlElement(name = "items")
+    @XmlElement(name = "items", namespace = "http://jabber.org/protocol/pubsub#event")
     private Items items;
 
-    @XmlElement(name = "retract")
+    @XmlElement(name = "retract", namespace = "http://jabber.org/protocol/pubsub#event")
     private Retract retract;
 
-    @XmlElement(name = "purge")
+    @XmlElement(name = "purge", namespace = "http://jabber.org/protocol/pubsub#event")
     private Purge purge;
+
+    @XmlElement(name = "configuration", namespace = "http://jabber.org/protocol/pubsub#event")
+    private Configuration configuration;
+
+    @XmlElement(name = "delete", namespace = "http://jabber.org/protocol/pubsub#event")
+    private Delete delete;
+
+    @XmlElement(name = "subscription", namespace = "http://jabber.org/protocol/pubsub#event")
+    private Subscription subscription;
+
+    private PubSubEvent() {
+    }
+
+    PubSubEvent(Delete delete) {
+        this.delete = delete;
+    }
 
     Purge getPurge() {
         return purge;
@@ -48,5 +64,17 @@ public final class PubSubEvent {
 
     Items getItems() {
         return items;
+    }
+
+    Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public Delete getDelete() {
+        return delete;
+    }
+
+    public Subscription getSubscription() {
+        return subscription;
     }
 }

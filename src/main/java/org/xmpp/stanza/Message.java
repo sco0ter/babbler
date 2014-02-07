@@ -143,13 +143,17 @@ public final class Message extends Stanza {
      * @see #getBody()
      */
     public void setBody(String body) {
-        for (Body b : this.body) {
-            if (b.getLanguage() == null || b.getLanguage().isEmpty()) {
-                b.setText(body);
-                return;
+        if (body != null) {
+            for (Body b : this.body) {
+                if (b.getLanguage() == null || b.getLanguage().isEmpty()) {
+                    b.setText(body);
+                    return;
+                }
             }
+            this.body.add(new Body(body));
+        } else {
+            this.body.clear();
         }
-        this.body.add(new Body(body));
     }
 
     /**
@@ -198,13 +202,17 @@ public final class Message extends Stanza {
      * @see #getSubject()
      */
     public void setSubject(String subject) {
-        for (Subject s : this.subject) {
-            if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
-                s.setText(subject);
-                return;
+        if (subject != null) {
+            for (Subject s : this.subject) {
+                if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
+                    s.setText(subject);
+                    return;
+                }
             }
+            this.subject.add(new Subject(subject));
+        } else {
+            this.subject.clear();
         }
-        this.subject.add(new Subject(subject));
     }
 
     /**

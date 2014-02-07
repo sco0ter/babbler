@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Date;
 
 /**
  * @author Christian Schudt
@@ -47,6 +48,9 @@ public class Subscription {
     @XmlAttribute(name = "subscription")
     private SubscriptionType type;
 
+    @XmlAttribute(name = "expiry")
+    private Date expiry;
+
     @XmlElement(name = "subscribe-options")
     private Options options;
 
@@ -56,6 +60,22 @@ public class Subscription {
 
     public SubscriptionType getType() {
         return type;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public Jid getJid() {
+        return jid;
+    }
+
+    public String getSubid() {
+        return subid;
+    }
+
+    public Date getExpiry() {
+        return expiry;
     }
 
     public enum SubscriptionType {

@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.pubsub;
 
+import org.xmpp.Jid;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
@@ -38,6 +40,17 @@ public final class Affiliation {
 
     @XmlAttribute(name = "affiliation")
     private Type affiliation;
+
+    @XmlAttribute(name = "jid")
+    private Jid jid;
+
+    public Jid getJid() {
+        return jid;
+    }
+
+    public Type getType() {
+        return affiliation;
+    }
 
     @XmlType(name = "affiliation-type")
     public enum Type {

@@ -27,7 +27,6 @@ package org.xmpp.extension.pubsub;
 import org.xmpp.Jid;
 import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.pubsub.errors.*;
-import org.xmpp.extension.pubsub.event.Event;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -38,11 +37,9 @@ import java.util.List;
  */
 @XmlRootElement(name = "pubsub")
 @XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class, ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class, SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class, InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class, ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class,
-        org.xmpp.extension.pubsub.owner.PubSub.class,
         PubSub.class,
         PubSubEvent.class,
-        Purge.class
-
+        PubSubOwner.class
 })
 public final class PubSub {
 
@@ -156,34 +153,6 @@ public final class PubSub {
         }
     }
 
-    public static final class Configure {
-        @XmlAttribute(name = "node")
-        private String node;
-
-        @XmlElementRef
-        private DataForm dataForm;
-
-        private Configure() {
-
-        }
-
-        public Configure(String node) {
-            this.node = node;
-        }
-
-        public Configure(String node, DataForm dataForm) {
-            this.node = node;
-            this.dataForm = dataForm;
-        }
-
-        public Configure(DataForm dataForm) {
-            this.dataForm = dataForm;
-        }
-
-        public DataForm getDataForm() {
-            return dataForm;
-        }
-    }
 
     public static final class Subscribe {
 
@@ -247,49 +216,6 @@ public final class PubSub {
 
         public DataForm getDataForm() {
             return dataForm;
-        }
-    }
-
-    public static final class Affiliations {
-        @XmlAttribute(name = "node")
-        private String node;
-
-        @XmlElement(name = "affiliation")
-        private List<Affiliation> affiliations;
-
-        public Affiliations() {
-
-        }
-
-        public Affiliations(String node) {
-            this.node = node;
-        }
-
-        public List<Affiliation> getAffiliations() {
-            return affiliations;
-        }
-    }
-
-    public static final class Default {
-        @XmlAttribute(name = "node")
-        private String node;
-
-        @XmlAttribute(name = "type")
-        private Type type;
-
-        private Default() {
-
-        }
-
-        public Default(String node) {
-            this.node = node;
-        }
-
-        public enum Type {
-            @XmlEnumValue("collection")
-            COLLECTION,
-            @XmlEnumValue("leaf")
-            LEAF
         }
     }
 

@@ -30,7 +30,12 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/pubsub", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.pubsub;
+@XmlSchema(namespace = "http://jabber.org/protocol/pubsub", elementFormDefault = XmlNsForm.QUALIFIED,
+        xmlns = {
+                @XmlNs(prefix = "", namespaceURI = "http://jabber.org/protocol/pubsub#event"),
+                @XmlNs(prefix = "", namespaceURI = "http://jabber.org/protocol/pubsub#owner")
+        }
+) package org.xmpp.extension.pubsub;
 
 import org.xmpp.Jid;
 import org.xmpp.util.JidAdapter;

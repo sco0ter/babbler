@@ -9,14 +9,21 @@ import java.util.List;
  * @author Christian Schudt
  */
 public final class Subscriptions {
-
     @XmlElements({
-               @XmlElement(name = "subscription", namespace = "http://jabber.org/protocol/pubsub#event"),
-               @XmlElement(name = "subscription", namespace = "http://jabber.org/protocol/pubsub#owner")})
+            @XmlElement(name = "subscription"),
+            @XmlElement(name = "subscription", namespace = PubSub.EVENT_NAMESPACE),
+            @XmlElement(name = "subscription", namespace = PubSub.OWNER_NAMESPACE)})
     private List<Subscription> subscriptions;
 
     @XmlAttribute(name = "node")
     private String node;
+
+    private Subscriptions() {
+    }
+
+    public Subscriptions(String node) {
+        this.node = node;
+    }
 
     public String getNode() {
         return node;

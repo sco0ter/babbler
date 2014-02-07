@@ -25,17 +25,35 @@
 package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author Christian Schudt
  */
 final class Retract {
+    @XmlAttribute(name = "node")
+    private String node;
+
+    @XmlAttribute(name = "notify")
+    private Boolean notify;
+
+    @XmlElement
+    private Item item;
 
     @XmlAttribute
     private String id;
 
+    private Retract() {
+
+    }
+
+    public Retract(String node, Item item, Boolean notify) {
+        this.node = node;
+        this.item = item;
+        this.notify = notify;
+    }
+
     String getId() {
         return id;
     }
-
 }

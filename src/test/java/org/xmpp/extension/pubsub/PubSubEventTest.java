@@ -55,7 +55,7 @@ public class PubSubEventTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(message);
-        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
+        Event pubSubEvent = message.getExtension(Event.class);
         Assert.assertNotNull(pubSubEvent);
         Assert.assertNotNull(pubSubEvent.getItems());
         Assert.assertEquals(pubSubEvent.getItems().getNode(), "princely_musings");
@@ -74,11 +74,11 @@ public class PubSubEventTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(message);
-        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
-        Assert.assertNotNull(pubSubEvent);
-        Assert.assertNotNull(pubSubEvent.getItems());
-        Assert.assertNotNull(pubSubEvent.getItems().getRetract());
-        Assert.assertEquals(pubSubEvent.getItems().getRetract().getId(), "ae890ac52d0df67ed7cfdf51b644e901");
+        Event event = message.getExtension(Event.class);
+        Assert.assertNotNull(event);
+        Assert.assertNotNull(event.getItems());
+        Assert.assertNotNull(event.getItems().getRetract());
+        Assert.assertEquals(event.getItems().getRetract().getId(), "ae890ac52d0df67ed7cfdf51b644e901");
     }
 
     @Test
@@ -91,10 +91,10 @@ public class PubSubEventTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(message);
-        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
-        Assert.assertNotNull(pubSubEvent);
-        Assert.assertNotNull(pubSubEvent.getConfiguration());
-        Assert.assertEquals(pubSubEvent.getConfiguration().getNode(), "princely_musings");
+        Event event = message.getExtension(Event.class);
+        Assert.assertNotNull(event);
+        Assert.assertNotNull(event.getConfiguration());
+        Assert.assertEquals(event.getConfiguration().getNode(), "princely_musings");
     }
 
     @Test
@@ -135,11 +135,11 @@ public class PubSubEventTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(message);
-        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
-        Assert.assertNotNull(pubSubEvent);
-        Assert.assertNotNull(pubSubEvent.getConfiguration());
-        Assert.assertEquals(pubSubEvent.getConfiguration().getNode(), "princely_musings");
-        Assert.assertNotNull(pubSubEvent.getConfiguration().getDataForm());
+        Event event = message.getExtension(Event.class);
+        Assert.assertNotNull(event);
+        Assert.assertNotNull(event.getConfiguration());
+        Assert.assertEquals(event.getConfiguration().getNode(), "princely_musings");
+        Assert.assertNotNull(event.getConfiguration().getDataForm());
     }
 
     @Test
@@ -154,12 +154,12 @@ public class PubSubEventTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(message);
-        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
-        Assert.assertNotNull(pubSubEvent);
-        Assert.assertNotNull(pubSubEvent.getDelete());
-        Assert.assertEquals(pubSubEvent.getDelete().getNode(), "princely_musings");
-        Assert.assertNotNull(pubSubEvent.getDelete().getRedirect());
-        Assert.assertEquals(pubSubEvent.getDelete().getRedirect().getUri(), URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
+        Event event = message.getExtension(Event.class);
+        Assert.assertNotNull(event);
+        Assert.assertNotNull(event.getDelete());
+        Assert.assertEquals(event.getDelete().getNode(), "princely_musings");
+        Assert.assertNotNull(event.getDelete().getRedirect());
+        Assert.assertEquals(event.getDelete().getRedirect().getUri(), URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
     }
 
 
@@ -173,10 +173,10 @@ public class PubSubEventTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(message);
-        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
-        Assert.assertNotNull(pubSubEvent);
-        Assert.assertNotNull(pubSubEvent.getPurge());
-        Assert.assertEquals(pubSubEvent.getPurge().getNode(), "princely_musings");
+        Event event = message.getExtension(Event.class);
+        Assert.assertNotNull(event);
+        Assert.assertNotNull(event.getPurge());
+        Assert.assertEquals(event.getPurge().getNode(), "princely_musings");
     }
 
     @Test
@@ -194,19 +194,19 @@ public class PubSubEventTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(message);
-        PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
-        Assert.assertNotNull(pubSubEvent);
-        Assert.assertNotNull(pubSubEvent.getSubscription());
-        Assert.assertNotNull(pubSubEvent.getSubscription().getExpiry());
-        Assert.assertEquals(pubSubEvent.getSubscription().getNode(), "princely_musings");
-        Assert.assertEquals(pubSubEvent.getSubscription().getJid(), Jid.fromString("francisco@denmark.lit"));
-        Assert.assertEquals(pubSubEvent.getSubscription().getType(), Subscription.SubscriptionType.SUBSCRIBED);
-        Assert.assertEquals(pubSubEvent.getSubscription().getSubid(), "ba49252aaa4f5d320c24d3766f0bdcade78c78d3");
+        Event event = message.getExtension(Event.class);
+        Assert.assertNotNull(event);
+        Assert.assertNotNull(event.getSubscription());
+        Assert.assertNotNull(event.getSubscription().getExpiry());
+        Assert.assertEquals(event.getSubscription().getNode(), "princely_musings");
+        Assert.assertEquals(event.getSubscription().getJid(), Jid.fromString("francisco@denmark.lit"));
+        Assert.assertEquals(event.getSubscription().getType(), Subscription.SubscriptionType.SUBSCRIBED);
+        Assert.assertEquals(event.getSubscription().getSubid(), "ba49252aaa4f5d320c24d3766f0bdcade78c78d3");
     }
 
     @Test
     public void marshalPubSubOwnerDelete() throws JAXBException, XMLStreamException, IOException {
-        PubSubEvent pubSubOwner = new PubSubEvent(new Delete("test"));
+        Event pubSubOwner = new Event(new Delete("test"));
         String xml = marshall(pubSubOwner);
         Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><delete node=\"test\"></delete></event>");
     }

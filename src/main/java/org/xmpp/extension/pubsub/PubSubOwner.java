@@ -24,34 +24,32 @@
 
 package org.xmpp.extension.pubsub;
 
-import org.xmpp.Jid;
-import org.xmpp.extension.dataforms.DataForm;
-
-import javax.xml.bind.annotation.*;
-import java.net.URI;
-import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "pubsub", namespace = "http://jabber.org/protocol/pubsub#owner")
+@XmlRootElement(name = "pubsub", namespace = PubSub.OWNER_NAMESPACE)
+@XmlType(namespace = PubSub.OWNER_NAMESPACE)
 public final class PubSubOwner {
-    @XmlElement(name = "affiliations", namespace = "http://jabber.org/protocol/pubsub#owner")
+    @XmlElement(name = "affiliations", namespace = PubSub.OWNER_NAMESPACE)
     private Affiliations affiliations;
 
-    @XmlElement(name = "configure", namespace = "http://jabber.org/protocol/pubsub#owner")
+    @XmlElement(name = "configure", namespace = PubSub.OWNER_NAMESPACE)
     private Configure configure;
 
-    @XmlElement(name = "default", namespace = "http://jabber.org/protocol/pubsub#owner")
+    @XmlElement(name = "default", namespace = PubSub.OWNER_NAMESPACE)
     private Default aDefault;
 
-    @XmlElement(name = "delete", namespace = "http://jabber.org/protocol/pubsub#owner")
+    @XmlElement(name = "delete", namespace = PubSub.OWNER_NAMESPACE)
     private Delete delete;
 
-    @XmlElement(name = "purge", namespace = "http://jabber.org/protocol/pubsub#owner")
+    @XmlElement(name = "purge", namespace = PubSub.OWNER_NAMESPACE)
     private Purge purge;
 
-    @XmlElement(name = "subscriptions", namespace = "http://jabber.org/protocol/pubsub#owner")
+    @XmlElement(name = "subscriptions", namespace = PubSub.OWNER_NAMESPACE)
     private Subscriptions subscriptions;
 
     private PubSubOwner() {
@@ -80,7 +78,6 @@ public final class PubSubOwner {
     public Subscriptions getSubscriptions() {
         return subscriptions;
     }
-
 
     public Affiliations getAffiliations() {
         return affiliations;

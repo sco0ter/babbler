@@ -29,7 +29,6 @@ import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.pubsub.errors.*;
 
 import javax.xml.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,11 +36,14 @@ import java.util.List;
  */
 @XmlRootElement(name = "pubsub")
 @XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class, ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class, SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class, InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class, ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class,
-        PubSub.class,
-        PubSubEvent.class,
+        Event.class,
         PubSubOwner.class
 })
 public final class PubSub {
+
+    static final String OWNER_NAMESPACE = "http://jabber.org/protocol/pubsub#owner";
+
+    static final String EVENT_NAMESPACE = "http://jabber.org/protocol/pubsub#event";
 
     @XmlElement(name = "create")
     private Create create;
@@ -74,7 +76,7 @@ public final class PubSub {
     private Subscription subscription;
 
     @XmlElement(name = "subscriptions")
-    private Subscription subscriptions;
+    private Subscriptions subscriptions;
 
     @XmlElement(name = "unsubscribe")
     private Unsubscribe unsubscribe;
@@ -121,6 +123,18 @@ public final class PubSub {
         this.configure = configure;
     }
 
+    public PubSub(Subscriptions subscriptions) {
+        this.subscriptions = subscriptions;
+    }
+
+    public PubSub(Affiliations affiliations) {
+        this.affiliations = affiliations;
+    }
+
+    public PubSub(Subscribe subscribe) {
+        this.subscribe = subscribe;
+    }
+
     public Subscription getSubscription() {
         return subscription;
     }
@@ -141,6 +155,14 @@ public final class PubSub {
         return configure;
     }
 
+    public Subscriptions getSubscriptions() {
+        return subscriptions;
+    }
+
+    public Affiliations getAffiliations() {
+        return affiliations;
+    }
+
     public static final class Create {
         @XmlAttribute(name = "node")
         private String node;
@@ -152,7 +174,6 @@ public final class PubSub {
             this.node = node;
         }
     }
-
 
     public static final class Subscribe {
 
@@ -240,79 +261,5 @@ public final class PubSub {
         }
     }
 
-    @XmlType(name = "test")
-    public static final class Retract {
-        @XmlAttribute(name = "node")
-        private String node;
-
-        @XmlAttribute(name = "notify")
-        private Boolean notify;
-
-        @XmlElement
-        private Item item;
-
-        private Retract() {
-
-        }
-
-        public Retract(String node, Item item, Boolean notify) {
-            this.node = node;
-            this.item = item;
-            this.notify = notify;
-        }
-    }
-
-    @XmlType(name = "items", namespace = "http://jabber.org/protocol/pubsub")
-    @XmlRootElement(name = "items")
-    public static final class Items {
-
-        private List<Item> items = new ArrayList<>();
-
-        @XmlAttribute(name = "max_items")
-        private Long maxItems;
-
-        @XmlAttribute(name = "node")
-        private String node;
-
-        @XmlAttribute(name = "subid")
-        private String subid;
-
-        private Items() {
-        }
-
-        public Items(String node, Long maxItems) {
-            this.node = node;
-            this.maxItems = maxItems;
-        }
-
-        public Items(String node, Item item) {
-            this.node = node;
-            this.items.add(item);
-        }
-
-        public List<Item> getItems() {
-            return items;
-        }
-    }
-
-    public static final class Subscriptions {
-
-        @XmlAttribute(name = "node")
-        private String node;
-
-        @XmlAttribute(name = "subscription")
-        private List<Subscription> subscriptions;
-
-        public Subscriptions() {
-        }
-
-        public Subscriptions(String node) {
-
-        }
-
-        public List<Subscription> getSubscriptions() {
-            return subscriptions;
-        }
-    }
 
 }

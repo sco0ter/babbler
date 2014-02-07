@@ -3,6 +3,7 @@ package org.xmpp.extension.pubsub;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -14,9 +15,10 @@ final class Affiliations {
     private String node;
 
     @XmlElements({
-            @XmlElement(name = "affiliation", namespace = "http://jabber.org/protocol/pubsub#event"),
-            @XmlElement(name = "affiliation", namespace = "http://jabber.org/protocol/pubsub#owner")})
-    private List<Affiliation> affiliations = new CopyOnWriteArrayList<>();
+            @XmlElement(name = "affiliation"),
+            @XmlElement(name = "affiliation", namespace = PubSub.EVENT_NAMESPACE),
+            @XmlElement(name = "affiliation", namespace = PubSub.OWNER_NAMESPACE)})
+    private List<Affiliation> affiliations = new ArrayList<>();
 
     public Affiliations() {
 

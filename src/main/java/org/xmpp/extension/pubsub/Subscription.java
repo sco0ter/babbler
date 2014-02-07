@@ -94,5 +94,9 @@ public class Subscription {
 
         @XmlElement(name = "required")
         private String required;
+
+        public boolean isRequired() {
+            return required != null;
+        }
     }
 }

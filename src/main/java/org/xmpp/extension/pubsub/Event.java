@@ -26,35 +26,37 @@ package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "event", namespace = "http://jabber.org/protocol/pubsub#event")
-public final class PubSubEvent {
+@XmlRootElement(name = "event", namespace = PubSub.EVENT_NAMESPACE)
+@XmlType(namespace = PubSub.EVENT_NAMESPACE)
+public final class Event {
 
-    @XmlElement(name = "items", namespace = "http://jabber.org/protocol/pubsub#event")
+    @XmlElement(name = "items", namespace = PubSub.EVENT_NAMESPACE)
     private Items items;
 
-    @XmlElement(name = "retract", namespace = "http://jabber.org/protocol/pubsub#event")
+    @XmlElement(name = "retract", namespace = PubSub.EVENT_NAMESPACE)
     private Retract retract;
 
-    @XmlElement(name = "purge", namespace = "http://jabber.org/protocol/pubsub#event")
+    @XmlElement(name = "purge", namespace = PubSub.EVENT_NAMESPACE)
     private Purge purge;
 
-    @XmlElement(name = "configuration", namespace = "http://jabber.org/protocol/pubsub#event")
+    @XmlElement(name = "configuration", namespace = PubSub.EVENT_NAMESPACE)
     private Configuration configuration;
 
-    @XmlElement(name = "delete", namespace = "http://jabber.org/protocol/pubsub#event")
+    @XmlElement(name = "delete", namespace = PubSub.EVENT_NAMESPACE)
     private Delete delete;
 
-    @XmlElement(name = "subscription", namespace = "http://jabber.org/protocol/pubsub#event")
+    @XmlElement(name = "subscription", namespace = PubSub.EVENT_NAMESPACE)
     private Subscription subscription;
 
-    private PubSubEvent() {
+    private Event() {
     }
 
-    PubSubEvent(Delete delete) {
+    Event(Delete delete) {
         this.delete = delete;
     }
 

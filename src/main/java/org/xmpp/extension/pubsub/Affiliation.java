@@ -52,6 +52,10 @@ public final class Affiliation {
         return affiliation;
     }
 
+    public String getNode() {
+        return node;
+    }
+
     @XmlType(name = "affiliation-type")
     public enum Type {
         @XmlEnumValue("member")

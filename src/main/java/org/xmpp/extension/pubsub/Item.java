@@ -26,7 +26,7 @@ package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
@@ -41,6 +41,10 @@ public final class Item {
 
     private Item() {
 
+    }
+
+    public Item(String id) {
+        this.id = id;
     }
 
     public Item(Object object) {

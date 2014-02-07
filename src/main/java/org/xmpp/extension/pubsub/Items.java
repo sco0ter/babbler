@@ -26,35 +26,42 @@ package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlElements;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-@XmlType(name = "items1", namespace = "http://jabber.org/protocol/pubsub#event")
 final class Items {
 
-    @XmlElement(name = "item")
+    @XmlElements({
+            @XmlElement(name = "item", namespace = PubSub.EVENT_NAMESPACE),
+            @XmlElement(name = "item")})
     private List<Item> items = new ArrayList<>();
-
-    @XmlAttribute(name = "max_items")
-    private Long maxItems;
 
     @XmlAttribute(name = "node")
     private String node;
 
+    @XmlAttribute(name = "max_items")
+    private Long maxItems;
+
     @XmlAttribute(name = "subid")
     private String subid;
 
-    @XmlElement(name = "retract")
+    @XmlElements({
+            @XmlElement(name = "retract"),
+            @XmlElement(name = "retract", namespace = PubSub.EVENT_NAMESPACE)})
     private Retract retract;
 
     private Items() {
     }
 
-    public Items(String node, Long maxItems) {
+    public Items(String node) {
+        this.node = node;
+    }
+
+    public Items(String node, long maxItems) {
         this.node = node;
         this.maxItems = maxItems;
     }

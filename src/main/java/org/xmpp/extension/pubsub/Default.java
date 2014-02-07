@@ -19,7 +19,7 @@ final class Default {
     @XmlElementRef
     private DataForm dataForm;
 
-    private Default() {
+    public Default() {
 
     }
 

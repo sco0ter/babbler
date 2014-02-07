@@ -47,8 +47,8 @@ public final class PubSubManager extends ExtensionManager {
     }
 
     public List<Subscription> getSubscriptions(String node) throws TimeoutException, StanzaException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Subscriptions(node)));
-        PubSub.Subscriptions subscriptions = result.getExtension(PubSub.Subscriptions.class);
+        IQ result = connection.query(new IQ(IQ.Type.GET, new Subscriptions(node)));
+        Subscriptions subscriptions = result.getExtension(Subscriptions.class);
         return subscriptions.getSubscriptions();
     }
 
@@ -159,7 +159,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
     public List<Item> getItems(String node, Long maxItems) throws TimeoutException, StanzaException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new PubSub.Items(node, maxItems))));
+        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Items(node, maxItems))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getItems().getItems();
     }
@@ -172,7 +172,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
     public Item getItem(String node, String id) throws TimeoutException, StanzaException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new PubSub.Items(node, new Item(id)))));
+        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Items(node, new Item(id)))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getItems().getItems().get(0);
     }
@@ -201,7 +201,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
      */
     public void deleteItem(String node, String id, boolean notify) throws TimeoutException, StanzaException {
-        connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Retract(node, new Item(id), notify))));
+        connection.query(new IQ(IQ.Type.SET, new PubSub(new Retract(node, new Item(id), notify))));
     }
 
     /**

@@ -15,6 +15,8 @@ The roster manager also provides other methods, e.g. for deleting and updating a
 
 ## Roster pushes
 
+You can listen for roster pushes with:
+
 ```java
 connection.getRosterManager().addRosterListener(new RosterListener() {
     @Override

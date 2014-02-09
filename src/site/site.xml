@@ -42,6 +42,7 @@
         </menu>
         <links>
             <item name="Source Code" href="https://bitbucket.org/sco0ter/babbler/src"/>
+            <item name="Binaries" href="https://bitbucket.org/sco0ter/babbler/downloads"/>
         </links>
     </body>
 </project>

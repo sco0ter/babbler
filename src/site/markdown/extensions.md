@@ -19,9 +19,9 @@ EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities
 
 Most extensions need some kind of logic or have to implement business rules defined in the respective XEP.
 
-Thus extensions need to have a manager, which handles an extension's business rules.
+Thus extensions need to have a manager, which handles their business rules.
 
-Nearly all extensions have one thing in common: They can be either enabled or disabled, e.g. you can either enable or disable
+While reading through the specifications, you quickly notice that nearly all extensions have one thing in common: They can be either enabled or disabled, e.g. you can either enable or disable
 support for [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html) or [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html).
 
 By enabling an extension, support for it will be automatically advertised by [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html).

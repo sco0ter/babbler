@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.ibb;
+package org.xmpp.extension.stream.ibb;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -107,14 +107,14 @@ public class IbbTest extends BaseTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestConnection connection1 = new TestConnection();
-        InBandByteStreamManager inBandByteStreamManager = connection1.getExtensionManager(InBandByteStreamManager.class);
+        InBandBytestreamManager inBandBytestreamManager = connection1.getExtensionManager(InBandBytestreamManager.class);
         // By default, the manager should be enabled.
-        Assert.assertTrue(inBandByteStreamManager.isEnabled());
+        Assert.assertTrue(inBandBytestreamManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("http://jabber.org/protocol/ibb");
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
-        inBandByteStreamManager.setEnabled(false);
-        Assert.assertFalse(inBandByteStreamManager.isEnabled());
+        inBandBytestreamManager.setEnabled(false);
+        Assert.assertFalse(inBandBytestreamManager.isEnabled());
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
     }
 
@@ -128,8 +128,8 @@ public class IbbTest extends BaseTest {
         new Thread() {
             @Override
             public void run() {
-                InBandByteStreamManager inBandByteStreamManager2 = connection2.getExtensionManager(InBandByteStreamManager.class);
-                inBandByteStreamManager2.addIbbListener(new IbbListener() {
+                InBandBytestreamManager inBandBytestreamManager2 = connection2.getExtensionManager(InBandBytestreamManager.class);
+                inBandBytestreamManager2.addIbbListener(new IbbListener() {
                     @Override
                     public void streamRequested(final IbbEvent e) {
                         final IbbSession ibbSession = e.accept();
@@ -170,8 +170,8 @@ public class IbbTest extends BaseTest {
                         }.start();
                     }
                 });
-                InBandByteStreamManager inBandByteStreamManager1 = connection1.getExtensionManager(InBandByteStreamManager.class);
-                IbbSession ibbSession = inBandByteStreamManager1.createInBandByteStream(JULIET, 4096);
+                InBandBytestreamManager inBandBytestreamManager1 = connection1.getExtensionManager(InBandBytestreamManager.class);
+                IbbSession ibbSession = inBandBytestreamManager1.createInBandByteStream(JULIET, 4096);
 
                 try {
                     ibbSession.open();

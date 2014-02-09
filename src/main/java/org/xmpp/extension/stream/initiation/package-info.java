@@ -22,12 +22,18 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>.
+ * <p>
+ * It defines an XMPP protocol extension for initiating a data stream between any two XMPP entities. The protocol includes the ability to include metadata about the stream and provides a pluggable framework so that various profiles of stream initiation can be defined for particular use cases (such as file transfer).
+ * </p>
  */
-public class FileTransferTest {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "http://jabber.org/protocol/si", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.stream.initiation;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;
 
 
-}

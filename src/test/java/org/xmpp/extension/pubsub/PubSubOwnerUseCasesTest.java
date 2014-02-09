@@ -40,7 +40,116 @@ import java.net.URI;
 /**
  * @author Christian Schudt
  */
-public class PubSubOwnerTest extends BaseTest {
+public class PubSubOwnerUseCasesTest extends BaseTest {
+
+    @Test
+    public void marshalCreate() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = new PubSub(new PubSub.Create("princely_musings"), null);
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><create node=\"princely_musings\"></create></pubsub>");
+    }
+
+    @Test
+    public void marshalCreateInstantNode() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = new PubSub(new PubSub.Create(null), null);
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><create></create></pubsub>");
+    }
+
+    @Test
+    public void marshalConfigure() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = new PubSub(new Configure("princely_musings"));
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><configure node=\"princely_musings\"></configure></pubsub>");
+    }
+
+    @Test
+    public void marshalDefault() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = new PubSub(new Default());
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><default></default></pubsub>");
+    }
+
+    @Test
+    public void marshalDeleteNode() throws JAXBException, XMLStreamException, IOException {
+        PubSubOwner pubSub = new PubSubOwner(new Delete("princely_musings"));
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"></delete></pubsub>");
+    }
+
+    @Test
+    public void marshalDeleteNodeWithRedirect() throws JAXBException, XMLStreamException, IOException {
+        PubSubOwner pubSub = new PubSubOwner(new Delete("princely_musings", new Redirect(URI.create("xmpp:hamlet@denmark.lit?;node=blog"))));
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"><redirect uri=\"xmpp:hamlet@denmark.lit?;node=blog\"></redirect></delete></pubsub>");
+    }
+
+    @Test
+    public void marshalPurgeNodes() throws JAXBException, XMLStreamException, IOException {
+        PubSubOwner pubSub = new PubSubOwner(new Purge("princely_musings"));
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><purge node=\"princely_musings\"></purge></pubsub>");
+    }
+
+    @Test
+    public void marshalPubSubOwnerSubscriptions() throws JAXBException, XMLStreamException, IOException {
+        PubSubOwner pubSub = new PubSubOwner(new Subscriptions("princely_musings"));
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
+    }
+
+    @Test
+    public void unmarshalPubSubOwnerSubscriptions() throws XMLStreamException, JAXBException {
+        String xml = "<iq type='result'\n" +
+                "    from='pubsub.shakespeare.lit'\n" +
+                "    to='hamlet@denmark.lit/elsinore'\n" +
+                "    id='subman1'>\n" +
+                "  <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>\n" +
+                "    <subscriptions node='princely_musings'>\n" +
+                "      <subscription jid='hamlet@denmark.lit' subscription='subscribed'/>\n" +
+                "      <subscription jid='polonius@denmark.lit' subscription='unconfigured'/>\n" +
+                "      <subscription jid='bernardo@denmark.lit' subscription='subscribed' subid='123-abc'/>\n" +
+                "      <subscription jid='bernardo@denmark.lit' subscription='subscribed' subid='004-yyy'/>\n" +
+                "    </subscriptions>\n" +
+                "  </pubsub>\n" +
+                "</iq>\n";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
+        PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
+        Assert.assertNotNull(pubSubOwner);
+        Assert.assertNotNull(pubSubOwner.getSubscriptions());
+        Assert.assertEquals(pubSubOwner.getSubscriptions().getNode(), "princely_musings");
+        Assert.assertEquals(pubSubOwner.getSubscriptions().getSubscriptions().size(), 4);
+    }
+
+    @Test
+    public void unmarshalPubSubPublishSuccess() throws XMLStreamException, JAXBException {
+        String xml = "<iq type='result'\n" +
+                "    from='pubsub.shakespeare.lit'\n" +
+                "    to='hamlet@denmark.lit/blogbot'\n" +
+                "    id='publish1'>\n" +
+                "  <pubsub xmlns='http://jabber.org/protocol/pubsub'>\n" +
+                "    <publish node='princely_musings'>\n" +
+                "      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>\n" +
+                "    </publish>\n" +
+                "  </pubsub>\n" +
+                "</iq>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
+        PubSub pubSub = iq.getExtension(PubSub.class);
+        Assert.assertNotNull(pubSub);
+        Assert.assertNotNull(pubSub.getPublish());
+        Assert.assertEquals(pubSub.getPublish().getNode(), "princely_musings");
+        Assert.assertNotNull(pubSub.getPublish().getItem());
+    }
+
+    @Test
+    public void marshalDeleteItem() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = new PubSub(new Retract("princely_musings", new Item("ae890ac52d0df67ed7cfdf51b644e901"), false));
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract node=\"princely_musings\" notify=\"false\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
+    }
+
 
     @Test
     public void unmarshalPubSubOwnerConfigure() throws XMLStreamException, JAXBException {
@@ -323,29 +432,7 @@ public class PubSubOwnerTest extends BaseTest {
         Assert.assertEquals(pubSubOwner.getPurge().getNode(), "princely_musings");
     }
 
-    @Test
-    public void unmarshalPubSubOwnerSubscription() throws XMLStreamException, JAXBException {
-        String xml = "<iq type='result'\n" +
-                "    from='pubsub.shakespeare.lit'\n" +
-                "    to='hamlet@denmark.lit/elsinore'\n" +
-                "    id='subman1'>\n" +
-                "  <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>\n" +
-                "    <subscriptions node='princely_musings'>\n" +
-                "      <subscription jid='hamlet@denmark.lit' subscription='subscribed'/>\n" +
-                "      <subscription jid='polonius@denmark.lit' subscription='unconfigured'/>\n" +
-                "      <subscription jid='bernardo@denmark.lit' subscription='subscribed' subid='123-abc'/>\n" +
-                "      <subscription jid='bernardo@denmark.lit' subscription='subscribed' subid='004-yyy'/>\n" +
-                "    </subscriptions>\n" +
-                "  </pubsub>\n" +
-                "</iq>\n";
-        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
-        PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
-        Assert.assertNotNull(pubSubOwner);
-        Assert.assertNotNull(pubSubOwner.getSubscriptions());
-        Assert.assertEquals(pubSubOwner.getSubscriptions().getNode(), "princely_musings");
-        Assert.assertEquals(pubSubOwner.getSubscriptions().getSubscriptions().size(), 4);
-    }
+
 
     @Test
     public void unmarshalPubSubOwnerAffiliations() throws XMLStreamException, JAXBException {

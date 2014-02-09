@@ -436,6 +436,10 @@ public abstract class Connection implements Closeable {
         }
     }
 
+    public IQ query(IQ iq) throws TimeoutException, StanzaException {
+        return this.query(iq, 20000);
+    }
+
     /**
      * Sends an {@code <iq/>} stanza and waits for the response. The response should be either of type 'result' or 'error'.
      * <p>
@@ -446,7 +450,7 @@ public abstract class Connection implements Closeable {
      * @return The result {@code <iq/>} stanza. If an error occurred, the stanza contains an {@linkplain org.xmpp.stanza.IQ#getError() error}.
      * @throws TimeoutException If no response was received in time.
      */
-    public IQ query(final IQ iq) throws TimeoutException, StanzaException {
+    public IQ query(final IQ iq, long timeout) throws TimeoutException, StanzaException {
         if (!(iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET)) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
@@ -474,7 +478,7 @@ public abstract class Connection implements Closeable {
         try {
             addIQListener(iqListener);
             send(iq);
-            if (!resultReceived.await(20, TimeUnit.SECONDS)) {
+            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
                 throw new TimeoutException("Timeout reached, while waiting on a IQ response.");
             }
         } catch (InterruptedException e) {

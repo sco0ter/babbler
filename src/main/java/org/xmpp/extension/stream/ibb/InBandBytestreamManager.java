@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.ibb;
+package org.xmpp.extension.stream.ibb;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
@@ -43,16 +43,18 @@ import java.util.logging.Logger;
 /**
  * @author Christian Schudt
  */
-public class InBandByteStreamManager extends ExtensionManager {
+public class InBandBytestreamManager extends ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(InBandByteStreamManager.class.getName());
+    public static final String NAMESPACE = "http://jabber.org/protocol/ibb";
+
+    private static final Logger logger = Logger.getLogger(InBandBytestreamManager.class.getName());
 
     final Set<IbbListener> ibbListeners = new CopyOnWriteArraySet<>();
 
     private Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
-    private InBandByteStreamManager(final Connection connection) {
-        super(connection, "http://jabber.org/protocol/ibb");
+    private InBandBytestreamManager(final Connection connection) {
+        super(connection, NAMESPACE);
 
         connection.addIQListener(new IQListener() {
             @Override
@@ -86,7 +88,7 @@ public class InBandByteStreamManager extends ExtensionManager {
                                 // Notify the listeners.
                                 for (IbbListener ibbListener : ibbListeners) {
                                     try {
-                                        ibbListener.streamRequested(new IbbEvent(InBandByteStreamManager.this, connection, iq, iq.getExtension(Open.class)));
+                                        ibbListener.streamRequested(new IbbEvent(InBandBytestreamManager.this, connection, iq, iq.getExtension(Open.class)));
                                     } catch (Exception exc) {
                                         logger.log(Level.WARNING, exc.getMessage(), exc);
                                     }
@@ -138,7 +140,7 @@ public class InBandByteStreamManager extends ExtensionManager {
         return ibbSession;
     }
 
-    IbbSession createInBandByteStream(Jid jid, int blockSize, String sessionId) {
+    public IbbSession createInBandByteStream(Jid jid, int blockSize, String sessionId) {
         IbbSession ibbSession = new IbbSession(connection, jid, blockSize, sessionId);
         ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;

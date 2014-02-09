@@ -259,6 +259,10 @@ public final class PubSub {
         public Item getItem() {
             return item;
         }
+
+        public String getNode() {
+            return node;
+        }
     }
 
 

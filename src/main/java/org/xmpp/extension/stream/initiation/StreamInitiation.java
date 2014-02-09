@@ -22,19 +22,17 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.si;
+package org.xmpp.extension.stream.initiation;
 
 import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "si")
+@XmlSeeAlso({BadProfile.class, NoValidStreams.class})
 public final class StreamInitiation {
 
     @XmlAttribute(name = "id")
@@ -55,8 +53,16 @@ public final class StreamInitiation {
     private StreamInitiation() {
     }
 
-    public StreamInitiation(String profile, String mimeType, Object profileElement, FeatureNegotiation featureNegotiation) {
+    public StreamInitiation(FeatureNegotiation featureNegotiation) {
+        this.featureNegotiation = featureNegotiation;
+    }
 
+    public StreamInitiation(String id, String profile, String mimeType, Object profileElement, FeatureNegotiation featureNegotiation) {
+        this.id = id;
+        this.profile = profile;
+        this.mimeType = mimeType;
+        this.profileElement = profileElement;
+        this.featureNegotiation = featureNegotiation;
     }
 
     public String getId() {
@@ -73,5 +79,9 @@ public final class StreamInitiation {
 
     public Object getProfileElement() {
         return profileElement;
+    }
+
+    public FeatureNegotiation getFeatureNegotiation() {
+        return featureNegotiation;
     }
 }

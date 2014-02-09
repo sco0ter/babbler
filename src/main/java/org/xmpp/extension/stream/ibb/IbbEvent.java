@@ -22,13 +22,37 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>.
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/si/profile/file-transfer", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.filetransfer;
+package org.xmpp.extension.stream.ibb;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import org.xmpp.Connection;
+import org.xmpp.stanza.IQ;
+
+import java.util.EventObject;
+
+/**
+ * @author Christian Schudt
+ */
+public final class IbbEvent extends EventObject {
+
+    private final Connection connection;
+
+    private final IQ iq;
+
+    private final Open open;
+
+    public IbbEvent(Object source, Connection connection, IQ iq, Open open) {
+        super(source);
+        this.connection = connection;
+        this.iq = iq;
+        this.open = open;
+    }
+
+    public IbbSession accept() {
+        connection.send(iq.createResult());
+        return connection.getExtensionManager(InBandBytestreamManager.class).createInBandByteStream(iq.getFrom(), open.getBlockSize(), open.getSessionId());
+    }
+
+    public void reject() {
+
+    }
+}

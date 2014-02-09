@@ -22,25 +22,27 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
+package org.xmpp.extension.stream.filetransfer;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.dataforms.DataForm;
 import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
-import org.xmpp.extension.si.StreamInitiation;
-import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.IQEvent;
-import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.Stanza;
+import org.xmpp.extension.stream.ibb.IbbSession;
+import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
+import org.xmpp.extension.stream.initiation.BadProfile;
+import org.xmpp.extension.stream.initiation.StreamInitiation;
+import org.xmpp.stanza.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,12 +50,13 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 public final class FileTransferManager extends ExtensionManager {
+
     private static final Logger logger = Logger.getLogger(FileTransferManager.class.getName());
 
     private final Set<FileTransferListener> fileTransferListeners = new CopyOnWriteArraySet<>();
 
     private FileTransferManager(final Connection connection) {
-        super(connection);
+        super(connection, "http://jabber.org/protocol/si", "http://jabber.org/protocol/si/profile/file-transfer");
 
         connection.addIQListener(new IQListener() {
             @Override
@@ -64,11 +67,16 @@ public final class FileTransferManager extends ExtensionManager {
                     if (streamInitiation != null && streamInitiation.getProfile() != null && streamInitiation.getProfile().equals(FileTransfer.PROFILE)) {
                         Object profileElement = streamInitiation.getProfileElement();
                         if (profileElement instanceof FileTransfer) {
-                            FileTransfer fileTransfer = (FileTransfer) profileElement;
-                            notifyIncomingFileTransferRequest();
-
+                            if (fileTransferListeners.isEmpty()) {
+                                sendServiceUnavailable(iq);
+                            } else {
+                                FileTransfer fileTransfer = (FileTransfer) profileElement;
+                                notifyIncomingFileTransferRequest(iq, fileTransfer);
+                            }
                         } else {
-                            IQ result = iq.createError(new Stanza.Error(new Stanza.Error.BadRequest()));
+                            Stanza.Error error = new Stanza.Error(Stanza.Error.Type.MODIFY, new Stanza.Error.BadRequest());
+                            error.setExtension(new BadProfile());
+                            IQ result = iq.createError(error);
                             connection.send(result);
                         }
                     }
@@ -77,10 +85,11 @@ public final class FileTransferManager extends ExtensionManager {
         });
     }
 
-    private void notifyIncomingFileTransferRequest() {
+    private void notifyIncomingFileTransferRequest(IQ iq, FileTransfer fileTransfer) {
+        FileTransferRequestEvent fileTransferRequestEvent = new FileTransferRequestEvent(this, connection, iq, fileTransfer);
         for (FileTransferListener fileTransferListener : fileTransferListeners) {
             try {
-                fileTransferListener.fileTransferRequest(new FileTransferRequestEvent(this));
+                fileTransferListener.fileTransferRequest(fileTransferRequestEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -107,7 +116,7 @@ public final class FileTransferManager extends ExtensionManager {
         fileTransferListeners.remove(fileTransferListener);
     }
 
-    public void sendFile(File file, Jid jid) {
+    public void sendFile(File file, Jid jid, long timeout) throws TimeoutException, StanzaException {
 
         if (file == null) {
             throw new IllegalArgumentException("file must not be null.");
@@ -124,22 +133,28 @@ public final class FileTransferManager extends ExtensionManager {
 
         DataForm dataForm = new DataForm(DataForm.Type.FORM);
         DataForm.Field field = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, "stream-method");
-        field.getOptions().add(new DataForm.Option("http://jabber.org/protocol/ibb"));
+        field.getOptions().add(new DataForm.Option(InBandBytestreamManager.NAMESPACE));
         dataForm.getFields().add(field);
 
         FeatureNegotiation featureNegotiation = new FeatureNegotiation(dataForm);
 
         String mimeType;
 
+        String id = UUID.randomUUID().toString();
+
         try {
             mimeType = Files.probeContentType(file.toPath());
         } catch (IOException e) {
             mimeType = null;
         }
-        StreamInitiation streamInitiation = new StreamInitiation(FileTransfer.PROFILE, mimeType, fileTransfer, featureNegotiation);
+        StreamInitiation streamInitiation = new StreamInitiation(id, FileTransfer.PROFILE, mimeType, fileTransfer, featureNegotiation);
 
         IQ iq = new IQ(jid, IQ.Type.SET, streamInitiation);
 
-        connection.send(iq);
+        IQ result = connection.query(iq, timeout);
+
+        InBandBytestreamManager ibbManager = connection.getExtensionManager(InBandBytestreamManager.class);
+        IbbSession ibbSession = ibbManager.createInBandByteStream(jid, 4096);
+        ibbSession.open();
     }
 }

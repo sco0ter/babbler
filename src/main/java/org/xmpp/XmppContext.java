@@ -43,9 +43,9 @@ import org.xmpp.extension.entitycapabilities.EntityCapabilitiesManager;
 import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
 import org.xmpp.extension.headers.HeaderManager;
 import org.xmpp.extension.headers.Headers;
-import org.xmpp.extension.ibb.Close;
-import org.xmpp.extension.ibb.InBandByteStreamManager;
-import org.xmpp.extension.ibb.Open;
+import org.xmpp.extension.stream.ibb.Close;
+import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
+import org.xmpp.extension.stream.ibb.Open;
 import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.location.GeoLocation;
@@ -74,6 +74,7 @@ import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
+import org.xmpp.extension.stream.initiation.StreamInitiation;
 import org.xmpp.extension.stanzaforwarding.Forwarded;
 import org.xmpp.extension.stanzaforwarding.StanzaForwardingManager;
 import org.xmpp.extension.time.EntityTime;
@@ -177,8 +178,8 @@ public abstract class XmppContext {
             registerExtension(InfoDiscovery.class, ItemDiscovery.class);
 
             // XEP-0047: In-Band Bytestreams
-            registerExtension(org.xmpp.extension.ibb.Data.class, Open.class, Close.class);
-            registerManager(InBandByteStreamManager.class);
+            registerExtension(org.xmpp.extension.stream.ibb.Data.class, Open.class, Close.class);
+            registerManager(InBandBytestreamManager.class);
 
             // XEP-0048: BookmarkStorage
             registerExtension(BookmarkStorage.class);
@@ -212,6 +213,9 @@ public abstract class XmppContext {
             // XEP-0092: Software Version
             registerExtension(SoftwareVersion.class);
             registerManager(SoftwareVersionManager.class);
+
+            // XEP-0095: Stream Initiation
+            registerExtension(StreamInitiation.class);
 
             // XEP-0107: User Mood
             registerExtension(Mood.class);

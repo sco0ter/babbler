@@ -22,76 +22,71 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
+package org.xmpp.extension.stream.ibb;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Date;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "file")
-public final class FileTransfer {
+@XmlRootElement
+public final class Data {
 
-    static final String PROFILE = "http://jabber.org/protocol/si/profile/file-transfer";
+    @XmlAttribute
+    private String sid;
 
-    @XmlAttribute(name = "size")
-    private long size;
+    @XmlAttribute
+    private Integer seq;
 
-    @XmlAttribute(name = "name")
-    private String name;
+    @XmlValue
+    private byte[] bytes;
 
-    @XmlAttribute(name = "date")
-    private Date date;
+    /**
+     * Private constructor for unmarshalling.
+     */
+    private Data() {
 
-    @XmlAttribute(name = "hash")
-    private String hash;
-
-    @XmlElement(name = "desc")
-    private String description;
-
-    @XmlElement(name = "range")
-    private Range range;
-
-    private FileTransfer() {
     }
 
-    public FileTransfer(String name, long size) {
-        this.name = name;
-        this.size = size;
+    /**
+     * Creates a new data element.
+     *
+     * @param bytes The bytes.
+     * @param sid   The session id.
+     * @param seq   The sequence number.
+     */
+    public Data(byte[] bytes, String sid, int seq) {
+        this.bytes = bytes;
+        this.sid = sid;
+        this.seq = seq;
     }
 
-    public long getSize() {
-        return size;
+    /**
+     * Gets the sequence number.
+     *
+     * @return The sequence number.
+     */
+    public int getSequence() {
+        return seq;
     }
 
-    public String getName() {
-        return name;
+    /**
+     * Gets the session id.
+     *
+     * @return The session id.
+     */
+    public String getSessionId() {
+        return sid;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Range getRange() {
-        return range;
-    }
-
-    public static class Range {
-        @XmlAttribute
-        private long offset;
-
-        @XmlAttribute
-        private long length;
+    /**
+     * Gets the bytes.
+     *
+     * @return The bytes.
+     */
+    public byte[] getBytes() {
+        return bytes;
     }
 }

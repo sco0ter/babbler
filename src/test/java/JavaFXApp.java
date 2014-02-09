@@ -78,6 +78,7 @@ import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
+import org.xmpp.sasl.Abort;
 import org.xmpp.stanza.*;
 
 import javax.imageio.ImageIO;
@@ -556,9 +557,8 @@ public class JavaFXApp extends Application {
                 return listCell;
             }
         });
-        connection.getRosterManager().addContact(new Roster.Contact(Jid.fromString("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
 
-                listView.setItems(contactItems);
+        listView.setItems(contactItems);
 
         Button btnClose = new Button("Close");
         btnClose.setOnAction(new EventHandler<ActionEvent>() {
@@ -566,13 +566,20 @@ public class JavaFXApp extends Application {
             public void handle(ActionEvent actionEvent) {
                 try {
                     Message message = new Message(Jid.fromString("romeo@example.net"));
-                    message.getExtensions().add(new Product("1", "5.99 €", "New product", "A very cool product!!"));
+                    message.setBody("test");
                     connection.send(message);
                     connection.close();
                     contactItems.clear();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        });
+        Button btn = new Button("Misc");
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                connection.send(new Abort());
             }
         });
         Button btnExit = new Button("Exit");
@@ -582,7 +589,7 @@ public class JavaFXApp extends Application {
                 System.exit(0);
             }
         });
-        vBox.getChildren().addAll(txtDomain, txtServer, txtPort, txtUser, txtPassword, useBosh, btnConnect, comboBox, listView, btnClose, btnExit);
+        vBox.getChildren().addAll(txtDomain, txtServer, txtPort, txtUser, txtPassword, useBosh, btnConnect, comboBox, listView, btnClose, btnExit, btn);
 
         Scene scene = new Scene(vBox);
         stage.setScene(scene);

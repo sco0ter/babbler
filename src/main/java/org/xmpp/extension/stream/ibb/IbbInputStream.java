@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.ibb;
+package org.xmpp.extension.stream.ibb;
 
 import java.io.IOException;
 import java.io.InputStream;

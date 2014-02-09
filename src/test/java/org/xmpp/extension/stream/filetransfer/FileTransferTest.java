@@ -22,14 +22,12 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.ibb;
-
-import java.util.EventListener;
+package org.xmpp.extension.stream.filetransfer;
 
 /**
  * @author Christian Schudt
  */
-public interface IbbListener extends EventListener {
+public class FileTransferTest {
 
-    void streamRequested(IbbEvent e);
+
 }

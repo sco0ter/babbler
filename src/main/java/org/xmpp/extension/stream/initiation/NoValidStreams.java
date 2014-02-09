@@ -22,13 +22,18 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>.
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/ibb", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.ibb;
+package org.xmpp.extension.stream.initiation;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlRootElement;
+
+/**
+ * The implementation of the {@code <si:no-valid-streams/>} error condition.
+ * <p>
+ * None of the available streams are acceptable.
+ * </p>
+ *
+ * @author Christian Schudt
+ */
+@XmlRootElement(name = "no-valid-streams")
+public final class NoValidStreams {
+}

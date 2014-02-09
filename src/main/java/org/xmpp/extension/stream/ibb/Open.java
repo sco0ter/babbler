@@ -22,15 +22,53 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
+package org.xmpp.extension.stream.ibb;
 
-import java.util.EventListener;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Christian Schudt
  */
-public interface FileTransferListener extends EventListener {
+@XmlRootElement
+public final class Open {
+    @XmlAttribute(name = "block-size")
+    private Integer blockSize;
 
-    void fileTransferRequest(FileTransferRequestEvent e);
+    @XmlAttribute
+    private String sid;
 
+    @XmlAttribute
+    private StanzaType stanza;
+
+    public Open() {
+
+    }
+
+    public Open(int blockSize, String sid) {
+        this.blockSize = blockSize;
+        this.sid = sid;
+    }
+
+    public Integer getBlockSize() {
+        return blockSize;
+    }
+
+    public String getSessionId() {
+        return sid;
+    }
+
+    public StanzaType getStanzaType() {
+        return stanza;
+    }
+
+    @XmlEnum
+    public enum StanzaType {
+        @XmlEnumValue("iq")
+        IQ,
+        @XmlEnumValue("message")
+        MESSAGE
+    }
 }

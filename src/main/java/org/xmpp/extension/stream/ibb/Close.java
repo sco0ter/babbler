@@ -22,71 +22,29 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.ibb;
+package org.xmpp.extension.stream.ibb;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement
-public final class Data {
+public final class Close {
 
-    @XmlAttribute
+    @XmlAttribute(name = "sid")
     private String sid;
 
-    @XmlAttribute
-    private Integer seq;
-
-    @XmlValue
-    private byte[] bytes;
-
-    /**
-     * Private constructor for unmarshalling.
-     */
-    private Data() {
+    private Close() {
 
     }
 
-    /**
-     * Creates a new data element.
-     *
-     * @param bytes The bytes.
-     * @param sid   The session id.
-     * @param seq   The sequence number.
-     */
-    public Data(byte[] bytes, String sid, int seq) {
-        this.bytes = bytes;
+    public Close(String sid) {
         this.sid = sid;
-        this.seq = seq;
     }
 
-    /**
-     * Gets the sequence number.
-     *
-     * @return The sequence number.
-     */
-    public int getSequence() {
-        return seq;
-    }
-
-    /**
-     * Gets the session id.
-     *
-     * @return The session id.
-     */
     public String getSessionId() {
         return sid;
-    }
-
-    /**
-     * Gets the bytes.
-     *
-     * @return The bytes.
-     */
-    public byte[] getBytes() {
-        return bytes;
     }
 }

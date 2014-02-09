@@ -24,6 +24,11 @@ final class Delete {
         this.node = node;
     }
 
+    public Delete(String node, Redirect redirect) {
+        this.node = node;
+        this.redirect = redirect;
+    }
+
     public String getNode() {
         return node;
     }

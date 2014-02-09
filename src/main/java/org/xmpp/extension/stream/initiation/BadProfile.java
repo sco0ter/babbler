@@ -22,23 +22,18 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
+package org.xmpp.extension.stream.initiation;
 
-import java.util.EventObject;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <si:bad-profile/>} error condition.
+ * <p>
+ * The profile is not understood or invalid. The profile MAY supply a profile-specific error condition.
+ * </p>
+ *
  * @author Christian Schudt
  */
-public class FileTransferRequestEvent extends EventObject {
-    private FileTransfer fileTransfer;
-
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source The object on which the Event initially occurred.
-     * @throws IllegalArgumentException if source is null.
-     */
-    public FileTransferRequestEvent(Object source) {
-        super(source);
-    }
+@XmlRootElement(name = "bad-profile")
+public final class BadProfile {
 }

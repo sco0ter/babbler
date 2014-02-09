@@ -22,25 +22,15 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.stream.filetransfer;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.EventListener;
 
 /**
  * @author Christian Schudt
  */
-final class Purge {
-    @XmlAttribute
-    private String node;
+public interface FileTransferListener extends EventListener {
 
-    private Purge() {
-    }
+    void fileTransferRequest(FileTransferRequestEvent e);
 
-    public Purge(String node) {
-        this.node = node;
-    }
-
-    String getNode() {
-        return node;
-    }
 }

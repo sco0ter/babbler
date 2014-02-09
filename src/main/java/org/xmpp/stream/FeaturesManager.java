@@ -167,9 +167,6 @@ public final class FeaturesManager {
                         // If no restart is required, negotiate the next feature.
                         negotiateNextFeature();
                     }
-                } else if (status == FeatureNegotiator.Status.FAILURE) {
-                    // Ignore the failure and negotiate the next feature.
-                    negotiateNextFeature();
                 }
             }
         }

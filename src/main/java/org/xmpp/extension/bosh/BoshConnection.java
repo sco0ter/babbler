@@ -420,7 +420,7 @@ public final class BoshConnection extends Connection {
     }
 
     /**
-     * Closes the session as described in <a href="http://xmpp.org/extensions/xep-0124.html#terminate">13. Terminating the HTTP Session</a>
+     * Closes the session as described in <a href="http://xmpp.org/extensions/xep-0124.html#terminate">Terminating the HTTP Session</a>.
      * <p>
      * This method can be called from different threads:
      * </p>

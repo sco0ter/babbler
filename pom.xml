@@ -86,27 +86,21 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-                <!--<executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>javadoc</goal>
-                        </goals>
-                        <configuration>
-                            <destDir>apidocs</destDir>
-                            <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
-                            <includeDependencySources>false</includeDependencySources>
-                            <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
-                            <nodeprecated>true</nodeprecated>
-                            <nodeprecatedlist>true</nodeprecatedlist>
-                            <doctitle>${project.name} ${project.version}</doctitle>
-                            <windowtitle>${project.name} ${project.version}</windowtitle>
-                            <javadocDirectory>src/main/javadoc</javadocDirectory>
-                            <docfilessubdirs>true</docfilessubdirs>
-                            <show>public</show>
-                        </configuration>
-                    </execution>
-                </executions>-->
+                <configuration>
+                    <destDir>apidocs</destDir>
+                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+                    <includeDependencySources>false</includeDependencySources>
+                    <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
+                    <nodeprecated>true</nodeprecated>
+                    <nodeprecatedlist>true</nodeprecatedlist>
+                    <author>false</author>
+                    <notimestamp>true</notimestamp>
+                    <doctitle>${project.name} ${project.version}</doctitle>
+                    <windowtitle>${project.name} ${project.version}</windowtitle>
+                    <javadocDirectory>src/main/javadoc</javadocDirectory>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <show>public</show>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>

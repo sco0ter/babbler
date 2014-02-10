@@ -35,7 +35,7 @@
             <item href="basics.html" name="Getting started"/>
             <item href="im.html" name="Contacts, Presence and Messaging"/>
             <item href="extensions.html" name="Using extensions"/>
-            <item href="ownextensions.html" name="Writing custom extensions"/>
+            <item href="customextensions.html" name="Writing custom extensions"/>
         </menu>
         <menu name="API Documentation">
             <item name="JavaDoc" href="apidocs/index.html"/>

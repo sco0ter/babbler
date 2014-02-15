@@ -29,6 +29,8 @@ import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
 import javax.xml.bind.annotation.*;
 
 /**
+ * The implementation of the {@code <si/>} element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "si")
@@ -65,22 +67,47 @@ public final class StreamInitiation {
         this.featureNegotiation = featureNegotiation;
     }
 
+    /**
+     * The "id" attribute is an opaque identifier. This attribute MUST be present on type='set', and MUST be a valid string.
+     *
+     * @return The id.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * The "mime-type" attribute identifies the MIME-type for the data across the stream.
+     *
+     * @return The MIME type.
+     */
     public String getMimeType() {
         return mimeType;
     }
 
+    /**
+     * The "profile" attribute defines the SI profile in use. This value MUST be present during negotiation, and is the namespace of the profile to use.
+     *
+     * @return The profile.
+     */
     public String getProfile() {
         return profile;
     }
 
+    /**
+     * Gets the profile element, e.g. {@link org.xmpp.extension.stream.filetransfer.FileTransfer}.
+     *
+     * @return The profile element.
+     */
     public Object getProfileElement() {
         return profileElement;
     }
 
+    /**
+     * Gets the feature negotiation element.
+     *
+     * @return The feature negotiation.
+     */
     public FeatureNegotiation getFeatureNegotiation() {
         return featureNegotiation;
     }

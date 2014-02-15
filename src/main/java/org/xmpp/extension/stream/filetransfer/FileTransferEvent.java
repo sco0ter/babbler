@@ -37,7 +37,7 @@ import java.util.EventObject;
 /**
  * @author Christian Schudt
  */
-public final class FileTransferRequestEvent extends EventObject {
+public final class FileTransferEvent extends EventObject {
 
     private final FileTransfer fileTransfer;
 
@@ -51,7 +51,7 @@ public final class FileTransferRequestEvent extends EventObject {
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    FileTransferRequestEvent(Object source, Connection connection, IQ iq, FileTransfer fileTransfer) {
+    FileTransferEvent(Object source, Connection connection, IQ iq, FileTransfer fileTransfer) {
         super(source);
         this.connection = connection;
         this.iq = iq;
@@ -62,6 +62,9 @@ public final class FileTransferRequestEvent extends EventObject {
         return fileTransfer;
     }
 
+    /**
+     * Accepts the incoming file transfer request.
+     */
     public void accept() {
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
         DataForm.Field field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, "stream-method");
@@ -74,6 +77,9 @@ public final class FileTransferRequestEvent extends EventObject {
         connection.send(result);
     }
 
+    /**
+     * Rejects the incoming file transfer request.
+     */
     public void reject() {
         connection.send(iq.createError(new Stanza.Error(new Stanza.Error.Forbidden())));
     }

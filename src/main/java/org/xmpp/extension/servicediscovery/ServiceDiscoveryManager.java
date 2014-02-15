@@ -103,16 +103,8 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                         if (isEnabled()) {
 
                             if (infoDiscovery.getNode() == null) {
-                                Set<Identity> ids;
-                                //  Every entity MUST have at least one identity
-                                if (!identities.isEmpty()) {
-                                    ids = new HashSet<>(identities);
-                                } else {
-                                    ids = new HashSet<>();
-                                    ids.add(defaultIdentity);
-                                }
                                 IQ result = iq.createResult();
-                                result.setExtension(new InfoDiscovery(ids, features, extensions));
+                                result.setExtension(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
                                 connection.send(result);
                             } else {
                                 InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
@@ -208,8 +200,16 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #removeIdentity(org.xmpp.extension.servicediscovery.info.Identity)
      */
     @Override
-    public Set<Identity> getIdentities() {
-        return Collections.unmodifiableSet(identities);
+    public synchronized Set<Identity> getIdentities() {
+        Set<Identity> ids;
+        //  Every entity MUST have at least one identity
+        if (!identities.isEmpty()) {
+            ids = new HashSet<>(identities);
+        } else {
+            ids = new HashSet<>();
+            ids.add(defaultIdentity);
+        }
+        return Collections.unmodifiableSet(ids);
     }
 
     /**

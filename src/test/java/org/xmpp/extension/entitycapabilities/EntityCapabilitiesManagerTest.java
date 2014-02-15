@@ -220,4 +220,28 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
         headerManager.setEnabled(true);
 
     }
+
+    @Test
+    public void testVerificationString3() throws NoSuchAlgorithmException {
+        List<Identity> identities = new ArrayList<>();
+        identities.add(new Identity("client", "pc"));
+
+        List<Feature> features = new ArrayList<>();
+        features.add(new Feature("http://jabber.org/protocol/disco#info"));
+        features.add(new Feature("http://jabber.org/protocol/disco#items"));
+        features.add(new Feature("urn:xmpp:ping"));
+        features.add(new Feature("jabber:iq:last"));
+        features.add(new Feature("jabber:iq:version"));
+        features.add(new Feature("http://jabber.org/protocol/ibb"));
+        features.add(new Feature("vcard-temp"));
+        features.add(new Feature("urn:xmpp:time"));
+        features.add(new Feature("http://jabber.org/protocol/shim"));
+        features.add(new Feature("http://jabber.org/protocol/caps"));
+
+        InfoNode infoNode = new InfoDiscovery();
+        infoNode.getFeatures().addAll(features);
+        infoNode.getIdentities().addAll(identities);
+        String verificationString = EntityCapabilitiesManager.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
+        Assert.assertEquals(verificationString, "40K55pBx86cs2cR44flP35MpLCk=");
+    }
 }

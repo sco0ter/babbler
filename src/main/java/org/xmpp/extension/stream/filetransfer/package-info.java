@@ -24,9 +24,12 @@
 
 /**
  * Contains classes for <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>.
+ * <p>
+ * It defines a profile of the XMPP stream initiation extension for transferring files between two entities. The protocol provides a modular framework that enables the exchange of information about the file to be transferred as well as the negotiation of parameters such as the transport to be used.
+ * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/si/profile/file-transfer", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.stream.filetransfer;
+@XmlSchema(namespace = FileTransferManager.PROFILE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.stream.filetransfer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

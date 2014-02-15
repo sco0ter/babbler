@@ -30,12 +30,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
+ * The implementation of the file transfer profile, i.e. the {@code <file/>} element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "file")
 public final class FileTransfer {
-
-    static final String PROFILE = "http://jabber.org/protocol/si/profile/file-transfer";
 
     @XmlAttribute(name = "size")
     private long size;
@@ -63,35 +63,107 @@ public final class FileTransfer {
         this.size = size;
     }
 
+    public FileTransfer(String name, long size, Date lastModified, String hash, String description, Range range) {
+        this.name = name;
+        this.size = size;
+        this.date = lastModified;
+        this.hash = hash;
+        this.description = description;
+        this.range = range;
+    }
+
+    /**
+     * Gets the size, in bytes, of the data to be sent.
+     *
+     * @return The size.
+     */
     public long getSize() {
         return size;
     }
 
+    /**
+     * Gets the name of the file that the Sender wishes to send.
+     *
+     * @return The file name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the last modification time of the file.
+     *
+     * @return The date.
+     */
     public Date getDate() {
         return date;
     }
 
+    /**
+     * Gets the MD5 sum of the file contents.
+     *
+     * @return The MD5 sum.
+     */
     public String getHash() {
         return hash;
     }
 
+    /**
+     * Gets a sender-generated description of the file.
+     *
+     * @return The description.
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Gets the range.
+     *
+     * @return The range.
+     */
     public Range getRange() {
         return range;
     }
 
-    public static class Range {
+    /**
+     * Allows to do ranged transfers.
+     */
+    public static final class Range {
         @XmlAttribute
         private long offset;
 
         @XmlAttribute
         private long length;
+
+        private Range() {
+        }
+
+        /**
+         * @param offset Specifies the position, in bytes, to start transferring the file data from. This defaults to zero (0) if not specified.
+         * @param length Specifies the number of bytes to retrieve starting at offset. This defaults to the length of the file from offset to the end.
+         */
+        public Range(long offset, long length) {
+            this.offset = offset;
+            this.length = length;
+        }
+
+        /**
+         * Gets the position, in bytes, to start transferring the file data from. This defaults to zero (0) if not specified.
+         *
+         * @return The offset.
+         */
+        public long getOffset() {
+            return offset;
+        }
+
+        /**
+         * Gets the number of bytes to retrieve starting at offset. This defaults to the length of the file from offset to the end.
+         *
+         * @return The length.
+         */
+        public long getLength() {
+            return length;
+        }
     }
 }

@@ -43,9 +43,6 @@ import org.xmpp.extension.entitycapabilities.EntityCapabilitiesManager;
 import org.xmpp.extension.featurenegotiation.FeatureNegotiation;
 import org.xmpp.extension.headers.HeaderManager;
 import org.xmpp.extension.headers.Headers;
-import org.xmpp.extension.stream.ibb.Close;
-import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
-import org.xmpp.extension.stream.ibb.Open;
 import org.xmpp.extension.lastactivity.LastActivity;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.location.GeoLocation;
@@ -74,9 +71,14 @@ import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.info.InfoDiscovery;
 import org.xmpp.extension.servicediscovery.items.ItemDiscovery;
-import org.xmpp.extension.stream.initiation.StreamInitiation;
 import org.xmpp.extension.stanzaforwarding.Forwarded;
 import org.xmpp.extension.stanzaforwarding.StanzaForwardingManager;
+import org.xmpp.extension.stream.filetransfer.FileTransfer;
+import org.xmpp.extension.stream.filetransfer.FileTransferManager;
+import org.xmpp.extension.stream.ibb.Close;
+import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
+import org.xmpp.extension.stream.ibb.Open;
+import org.xmpp.extension.stream.initiation.StreamInitiation;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.tune.Tune;
@@ -216,6 +218,10 @@ public abstract class XmppContext {
 
             // XEP-0095: Stream Initiation
             registerExtension(StreamInitiation.class);
+
+            // XEP-0096: SI File Transfer
+            registerExtension(FileTransfer.class);
+            registerManager(FileTransferManager.class);
 
             // XEP-0107: User Mood
             registerExtension(Mood.class);

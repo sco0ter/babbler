@@ -300,7 +300,7 @@ public final class DataForm implements Comparable<DataForm> {
         public Field(Type type, String var, String... values) {
             this.type = type;
             this.var = var;
-            this.values = Arrays.asList(values);
+            this.values = new ArrayList<>(Arrays.asList(values));
         }
 
         /**

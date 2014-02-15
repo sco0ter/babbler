@@ -48,6 +48,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.Product;
@@ -57,6 +58,7 @@ import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.bosh.BoshConnection;
+import org.xmpp.extension.entitycapabilities.EntityCapabilitiesManager;
 import org.xmpp.extension.headers.HeaderManager;
 import org.xmpp.extension.lastactivity.LastActivityManager;
 import org.xmpp.extension.lastactivity.LastActivityStrategy;
@@ -72,13 +74,17 @@ import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
 import org.xmpp.extension.servicediscovery.info.InfoNode;
 import org.xmpp.extension.servicediscovery.items.ItemNode;
+import org.xmpp.extension.stream.filetransfer.FileTransferEvent;
+import org.xmpp.extension.stream.filetransfer.FileTransferListener;
+import org.xmpp.extension.stream.filetransfer.FileTransferManager;
+import org.xmpp.extension.time.EntityTime;
+import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.tune.Tune;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
-import org.xmpp.sasl.Abort;
 import org.xmpp.stanza.*;
 
 import javax.imageio.ImageIO;
@@ -88,6 +94,7 @@ import javax.net.ssl.X509TrustManager;
 import javax.security.auth.login.LoginException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -110,7 +117,7 @@ public class JavaFXApp extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(final Stage stage) throws Exception {
         stage.setTitle("New");
         VBox vBox = new VBox(10);
         vBox.setPadding(new Insets(20, 20, 20, 20));
@@ -287,19 +294,31 @@ public class JavaFXApp extends Application {
                             @Override
                             public void handle(final PresenceEvent e) {
                                 if (e.isIncoming()) {
-                                    Platform.runLater(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Presence presence = e.getPresence();
-                                            Roster.Contact contact = connection.getRosterManager().getContact(presence.getFrom());
-                                            if (contact != null) {
-                                                ContactItem contactItem1 = contactMap.get(contact);
-                                                contactItem1.presence.set(presence);
-                                                FXCollections.sort(contactItems);
+                                    if (e.getPresence().isAvailable()) {
+                                        Platform.runLater(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Presence presence = e.getPresence();
+                                                Roster.Contact contact = connection.getRosterManager().getContact(presence.getFrom());
+                                                if (contact != null) {
+                                                    ContactItem contactItem1 = contactMap.get(contact);
+                                                    contactItem1.presence.set(presence);
+                                                    FXCollections.sort(contactItems);
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    } else if (e.getPresence().getType() == Presence.Type.SUBSCRIBE) {
+                                        connection.getPresenceManager().denySubscription(e.getPresence().getFrom());
+                                    }
                                 }
+                            }
+                        });
+
+                        FileTransferManager fileTransferManager = connection.getExtensionManager(FileTransferManager.class);
+                        fileTransferManager.addFileTransferListener(new FileTransferListener() {
+                            @Override
+                            public void fileTransferRequest(FileTransferEvent e) {
+                                e.accept();
                             }
                         });
 
@@ -331,12 +350,15 @@ public class JavaFXApp extends Application {
                             }
                         });
 
+                        connection.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
+
                         SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
                         try {
                             connection.connect();
                             connection.login(txtUser.getText(), txtPassword.getText(), "test");
                             connection.send(new Presence());
+                            connection.getRosterManager().requestRoster();
                         } catch (TimeoutException | LoginException | IOException e) {
                             e.printStackTrace();
                         }
@@ -532,7 +554,37 @@ public class JavaFXApp extends Application {
                                     }
                                 }
                             });
-                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem, storeAnnotationsItems, getAnnotationsItems, pubSubItem, pepItem);
+                            MenuItem sendFile = new MenuItem("Send file");
+                            sendFile.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    FileTransferManager fileTransferManager = connection.getExtensionManager(FileTransferManager.class);
+                                    FileChooser fileChooser = new FileChooser();
+                                    File file = fileChooser.showOpenDialog(stage);
+
+                                    try {
+                                        fileTransferManager.sendFile(file, connection.getPresenceManager().getPresence(item.contact.get().getJid()).getFrom(), 10000);
+                                    } catch (TimeoutException | StanzaException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+
+                            MenuItem timeItem = new MenuItem("Get time");
+                            timeItem.setOnAction(new EventHandler<ActionEvent>() {
+                                @Override
+                                public void handle(ActionEvent actionEvent) {
+                                    EntityTimeManager entityTimeManager = connection.getExtensionManager(EntityTimeManager.class);
+
+                                    try {
+                                        EntityTime entityTime = entityTimeManager.getEntityTime(null);
+                                    } catch (TimeoutException | StanzaException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+
+                            contextMenu.getItems().addAll(lastActivityMenuItem, pingMenuItem, searchMenuItem, softwareVersionItem, serviceDiscoveryMenuItem, vCardItem, storeAnnotationsItems, getAnnotationsItems, pubSubItem, pepItem, sendFile, timeItem);
                             setContextMenu(contextMenu);
                         }
                     }
@@ -579,7 +631,9 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                connection.send(new Abort());
+                PresenceManager presenceManager = connection.getPresenceManager();
+                presenceManager.requestSubscription(Jid.fromString("222@christian-schudts-macbook-pro.fritz.box"), null);
+
             }
         });
         Button btnExit = new Button("Exit");
@@ -654,7 +708,7 @@ public class JavaFXApp extends Application {
                             BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(contactItem.avatar.get()));
                             return SwingFXUtils.toFXImage(bufferedImage, null);
                         } catch (IOException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            e.printStackTrace();
                         }
                     }
                     return null;

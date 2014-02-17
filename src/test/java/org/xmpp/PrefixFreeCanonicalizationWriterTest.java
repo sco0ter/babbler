@@ -102,7 +102,7 @@ public class PrefixFreeCanonicalizationWriterTest {
         JAXBContext jaxbContext = JAXBContext.newInstance(Auth.class, Response.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-        Auth auth = new Auth("PLAIN");
+        Auth auth = new Auth("PLAIN", new byte[0]);
         Response response = new Response(new byte[0]);
         marshaller.marshal(auth, prefixFreeWriter);
         marshaller.marshal(response, prefixFreeWriter);

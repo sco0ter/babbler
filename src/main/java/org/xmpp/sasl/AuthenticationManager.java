@@ -235,6 +235,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
         if (saslClient.hasInitialResponse()) {
             initialResponse = saslClient.evaluateChallenge(new byte[0]);
         }
+
         connection.send(new Auth(saslClient.getMechanismName(), initialResponse));
 
         // Wait until the authentication succeeded or failed, but max. 10 seconds.

@@ -241,18 +241,20 @@ public final class BoshConnection extends Connection {
      * @param httpCode The HTTP response code.
      */
     private static void handleCode(int httpCode) throws BoshException {
-        switch (httpCode) {
-            case HttpURLConnection.HTTP_BAD_REQUEST:
-                // Superseded by bad-request
-                throw new BoshException(Body.Condition.BAD_REQEST);
-            case HttpURLConnection.HTTP_FORBIDDEN:
-                // Superseded by policy-violation
-                throw new BoshException(Body.Condition.POLICY_VIOLATION);
-            case HttpURLConnection.HTTP_NOT_FOUND:
-                // Superseded by item-not-found
-                throw new BoshException(Body.Condition.ITEM_NOT_FOUND);
-            default:
-                throw new BoshException(Body.Condition.UNDEFINED_CONDITION, httpCode);
+        if (httpCode != HttpURLConnection.HTTP_OK) {
+            switch (httpCode) {
+                case HttpURLConnection.HTTP_BAD_REQUEST:
+                    // Superseded by bad-request
+                    throw new BoshException(Body.Condition.BAD_REQEST);
+                case HttpURLConnection.HTTP_FORBIDDEN:
+                    // Superseded by policy-violation
+                    throw new BoshException(Body.Condition.POLICY_VIOLATION);
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    // Superseded by item-not-found
+                    throw new BoshException(Body.Condition.ITEM_NOT_FOUND);
+                default:
+                    throw new BoshException(Body.Condition.UNDEFINED_CONDITION, httpCode);
+            }
         }
     }
 
@@ -360,8 +362,8 @@ public final class BoshConnection extends Connection {
                 usingAcknowledgments = true;
             }
 
-            if (body.getTo() != null) {
-                xmppServiceDomain = body.getTo();
+            if (body.getFrom() != null) {
+                xmppServiceDomain = body.getFrom().getDomain();
             }
         }
 
@@ -522,7 +524,7 @@ public final class BoshConnection extends Connection {
                                 }
 
                                 httpConnection = (HttpURLConnection) url.openConnection(proxy);
-                                httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+                                //httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
                                 // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.

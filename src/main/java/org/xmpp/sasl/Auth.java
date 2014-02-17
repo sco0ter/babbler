@@ -53,13 +53,12 @@ public final class Auth {
     private Auth() {
     }
 
-    public Auth(String mechanism) {
-        this.mechanism = mechanism;
-        this.initialResponse = new byte[0];
-    }
-
+    /**
+     * @param mechanism       The SASL mechanism.
+     * @param initialResponse The initial response.
+     */
     public Auth(String mechanism, byte[] initialResponse) {
-        this(mechanism);
+        this.mechanism = mechanism;
         this.initialResponse = initialResponse;
     }
 }

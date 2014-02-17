@@ -617,9 +617,6 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 try {
-                    Message message = new Message(Jid.fromString("romeo@example.net"));
-                    message.setBody("test");
-                    connection.send(message);
                     connection.close();
                     contactItems.clear();
                 } catch (Exception e) {
@@ -633,6 +630,9 @@ public class JavaFXApp extends Application {
             public void handle(ActionEvent actionEvent) {
                 PresenceManager presenceManager = connection.getPresenceManager();
                 presenceManager.requestSubscription(Jid.fromString("222@christian-schudts-macbook-pro.fritz.box"), null);
+                Message message = new Message(null, Message.Type.CHAT);
+                message.setBody("Test");
+                connection.send(message);
 
             }
         });

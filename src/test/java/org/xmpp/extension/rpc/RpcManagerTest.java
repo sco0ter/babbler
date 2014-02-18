@@ -30,8 +30,8 @@ import org.xmpp.BaseTest;
 import org.xmpp.Connection;
 import org.xmpp.MockServer;
 import org.xmpp.TestConnection;
-import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
+import org.xmpp.extension.disco.ServiceDiscoveryManager;
+import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.Stanza;
 import org.xmpp.stanza.StanzaException;
 

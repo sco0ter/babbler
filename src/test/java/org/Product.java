@@ -43,7 +43,7 @@ public class Product {
     private String description;
 
     private Product() {
-       // Private no-args default constructor for JAXB.
+        // Private no-args default constructor for JAXB.
     }
 
     public Product(String id, String price, String name, String description) {

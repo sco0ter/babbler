@@ -62,9 +62,11 @@ public final class PubSubOwner {
     public PubSubOwner(Purge purge) {
         this.purge = purge;
     }
+
     public PubSubOwner(Subscriptions subscriptions) {
         this.subscriptions = subscriptions;
     }
+
     public Configure getConfigure() {
         return configure;
     }

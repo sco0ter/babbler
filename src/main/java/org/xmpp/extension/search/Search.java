@@ -25,7 +25,7 @@
 package org.xmpp.extension.search;
 
 import org.xmpp.Jid;
-import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.data.DataForm;
 import org.xmpp.util.JidAdapter;
 
 import javax.xml.bind.annotation.*;

@@ -27,8 +27,8 @@ package org.xmpp.extension.stream.ibb;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.*;
-import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
-import org.xmpp.extension.servicediscovery.info.Feature;
+import org.xmpp.extension.disco.ServiceDiscoveryManager;
+import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 

@@ -26,7 +26,6 @@ package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt

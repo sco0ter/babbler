@@ -27,7 +27,7 @@ package org.xmpp;
 import org.w3c.dom.Element;
 import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.compression.CompressionManager;
+import org.xmpp.extension.compress.CompressionManager;
 import org.xmpp.im.ChatManager;
 import org.xmpp.im.PresenceManager;
 import org.xmpp.im.RosterManager;

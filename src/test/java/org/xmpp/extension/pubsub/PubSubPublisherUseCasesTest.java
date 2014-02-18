@@ -27,7 +27,6 @@ package org.xmpp.extension.pubsub;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
-import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.stanza.IQ;
 

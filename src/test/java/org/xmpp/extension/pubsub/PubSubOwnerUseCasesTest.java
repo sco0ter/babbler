@@ -433,7 +433,6 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
     }
 
 
-
     @Test
     public void unmarshalPubSubOwnerAffiliations() throws XMLStreamException, JAXBException {
         String xml = "<iq type='result'\n" +

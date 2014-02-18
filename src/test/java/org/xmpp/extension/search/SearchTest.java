@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.data.DataForm;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;

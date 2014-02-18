@@ -25,11 +25,10 @@
 package org.xmpp.extension.pubsub;
 
 import org.xmpp.Jid;
-import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.pubsub.errors.*;
 
 import javax.xml.bind.annotation.*;
-import java.util.List;
 
 /**
  * @author Christian Schudt

@@ -27,7 +27,7 @@ package org.xmpp.stream;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.bind.Bind;
-import org.xmpp.extension.compression.Compression;
+import org.xmpp.extension.compress.Compression;
 import org.xmpp.im.session.Session;
 import org.xmpp.sasl.Mechanisms;
 import org.xmpp.tls.StartTls;

@@ -35,7 +35,6 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.UUID;
 
 /**
  * @author Christian Schudt
@@ -57,13 +56,13 @@ public class ScramSha1SaslClientTest {
 
     @Test
     public void test2() throws SaslException {
-        SaslClient sasl = Sasl.createSaslClient(new String[]{"DIGEST-MD5"}, "frerf", "xmpp", "test", null, new CallbackHandler() {
-            @Override
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                int i = 0;
-            }
-        });
-        sasl.evaluateChallenge(new byte[0]);
+//        SaslClient sasl = Sasl.createSaslClient(new String[]{"DIGEST-MD5"}, "frerf", "xmpp", "test", null, new CallbackHandler() {
+//            @Override
+//            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+//                int i = 0;
+//            }
+//        });
+//        sasl.evaluateChallenge(new byte[0]);
     }
 
     @Test
@@ -74,10 +73,10 @@ public class ScramSha1SaslClientTest {
             public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
                 for (Callback callback : callbacks) {
                     if (callback instanceof NameCallback) {
-                        ((NameCallback)callback).setName("user");
+                        ((NameCallback) callback).setName("user");
                     }
                     if (callback instanceof PasswordCallback) {
-                        ((PasswordCallback)callback).setPassword("pencil".toCharArray());
+                        ((PasswordCallback) callback).setPassword("pencil".toCharArray());
                     }
                 }
             }

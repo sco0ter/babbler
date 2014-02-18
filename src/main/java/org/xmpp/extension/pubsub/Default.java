@@ -24,7 +24,7 @@
 
 package org.xmpp.extension.pubsub;
 
-import org.xmpp.extension.dataforms.DataForm;
+import org.xmpp.extension.data.DataForm;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;

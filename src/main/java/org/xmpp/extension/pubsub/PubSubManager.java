@@ -26,8 +26,8 @@ package org.xmpp.extension.pubsub;
 
 import org.xmpp.Connection;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.dataforms.DataForm;
-import org.xmpp.extension.servicediscovery.ServiceDiscoveryManager;
+import org.xmpp.extension.data.DataForm;
+import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 

@@ -26,7 +26,7 @@ package org.xmpp;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.extension.bosh.Body;
+import org.xmpp.extension.httpbind.Body;
 import org.xmpp.im.Roster;
 import org.xmpp.sasl.Auth;
 import org.xmpp.sasl.Response;

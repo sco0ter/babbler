@@ -87,6 +87,7 @@ import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
+import org.xmpp.im.rosterver.RosterVersioning;
 import org.xmpp.im.session.Session;
 import org.xmpp.sasl.Mechanisms;
 import org.xmpp.stanza.IQ;
@@ -94,6 +95,7 @@ import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
 import org.xmpp.stream.Features;
 import org.xmpp.stream.StreamError;
+import org.xmpp.im.preapproval.SubscriptionPreApproval;
 import org.xmpp.tls.StartTls;
 
 import java.util.*;
@@ -114,7 +116,7 @@ public abstract class XmppContext {
     private final Set<Class<? extends ExtensionManager>> managers = new HashSet<>();
 
     protected XmppContext() {
-        core.addAll(Arrays.asList(Features.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class));
+        core.addAll(Arrays.asList(Features.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class));
     }
 
     public static XmppContext getDefault() {

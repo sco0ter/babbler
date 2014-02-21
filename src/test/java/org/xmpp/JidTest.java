@@ -103,15 +103,6 @@ public class JidTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testJidLongerThan1023() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 1024; i++) {
-            sb.append("d");
-        }
-        Jid.fromString(sb.toString());
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testJidNull() {
         Jid.fromString(null);
     }
@@ -198,8 +189,26 @@ public class JidTest {
     public void testComplexJid() {
         Jid jid = Jid.fromString("d'art@a/gnan@musketeers.lit/another/@Jid@test.de");
 
-        Assert.assertEquals(jid.getLocal(), "d'art@a/gnan");
-        Assert.assertEquals(jid.getDomain(), "musketeers.lit");
-        Assert.assertEquals(jid.getResource(), "another/@Jid@test.de");
+        Assert.assertEquals(jid.getLocal(), "d'art");
+        Assert.assertEquals(jid.getDomain(), "a");
+        Assert.assertEquals(jid.getResource(), "gnan@musketeers.lit/another/@Jid@test.de");
+    }
+
+    /**
+     * The domainpart for every XMPP service MUST be a fully qualified domain name (FQDN; see [DNS]), IPv4 address, IPv6 address, or unqualified hostname (i.e., a text label that is resolvable on a local network).
+     */
+    @Test
+    public void testHostname() {
+        Jid jid = Jid.fromString("typical-hostname33.whatever.co.uk");
+        Assert.assertEquals(jid.getDomain(), "typical-hostname33.whatever.co.uk");
+
+        Jid jid2 = Jid.fromString("conference.server123");
+        Assert.assertEquals(jid2.getDomain(), "conference.server123");
+    }
+
+    @Test
+    public void testIpAddress() {
+        Jid jid = Jid.fromString("127.0.0.1");
+        Assert.assertEquals(jid.getDomain(), "127.0.0.1");
     }
 }

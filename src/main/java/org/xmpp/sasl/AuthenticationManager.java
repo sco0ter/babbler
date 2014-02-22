@@ -56,7 +56,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
         // http://download.java.net/jdk8/docs/technotes/guides/security/sasl/sasl-refguide.html
 
         // Add the "ANONYMOUS" SASL mechanism.
-        Security.addProvider(new AnonymousSaslProvider());
+        Security.addProvider(new SaslProvider());
     }
 
     private final Connection connection;
@@ -126,7 +126,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
         this.preferredMechanisms = new LinkedHashSet<>();
 
         // Add default preferred SASL mechanisms.
-        preferredMechanisms.add("SCRAM-SHA-1"); // TODO: implement SaslClient for this.
+        preferredMechanisms.add("SCRAM-SHA-1");
         preferredMechanisms.add("DIGEST-MD5");
         preferredMechanisms.add("GSSAPI");
         preferredMechanisms.add("CRAM-MD5");

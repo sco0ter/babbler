@@ -29,10 +29,11 @@ import java.security.Provider;
 /**
  * @author Christian Schudt
  */
-final class AnonymousSaslProvider extends Provider {
+final class SaslProvider extends Provider {
 
-    public AnonymousSaslProvider() {
-        super("Anonymous", 1.0, "Provides additional XMPP specific SASL mechanisms.");
+    public SaslProvider() {
+        super("XMPP Sasl Provider", 1.0, "Provides additional SASL mechanisms, which are required for XMPP.");
         put("SaslClientFactory.ANONYMOUS", XmppSaslClientFactory.class.getName());
+        put("SaslClientFactory.SCRAM-SHA-1", XmppSaslClientFactory.class.getName());
     }
 }

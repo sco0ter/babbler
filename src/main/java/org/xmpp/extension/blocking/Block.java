@@ -22,16 +22,24 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
- * <p>
- * It defines an XMPP protocol extension for representing non-address-related headers in an XML format that is appropriate for use in XMPP. While the protocol provides a flexible mechanism for representing many kinds of standard Internet metadata, a registry of values is defined to structure the possible range of headers, and the initial registration includes headers from email, HTTP, MIME, and SIP.
- * </p>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/shim", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.shim;
+package org.xmpp.extension.blocking;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
+
+/**
+ * @author Christian Schudt
+ */
+@XmlRootElement(name = "block")
+final class Block {
+    @XmlElement(name = "item")
+    private List<Item> items;
+
+    public Block(List<Item> items) {
+        this.items = items;
+    }
+
+    private Block() {
+    }
+}

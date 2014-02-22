@@ -31,6 +31,8 @@ import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.avatar.vcard.AvatarUpdate;
+import org.xmpp.extension.blocking.BlockList;
+import org.xmpp.extension.blocking.BlockingManager;
 import org.xmpp.extension.bob.Data;
 import org.xmpp.extension.caps.EntityCapabilities;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
@@ -264,6 +266,10 @@ public abstract class XmppContext {
             // XEP-0184: Message Delivery Receipts
             registerManager(MessageDeliveryReceiptsManager.class);
             registerExtension(Received.class, Request.class);
+
+            // XEP-0191: Blocking Command
+            registerExtension(BlockList.class);
+            registerManager(BlockingManager.class);
 
             // XEP-0199: XMPP Ping
             registerExtension(Ping.class);

@@ -118,7 +118,6 @@ public final class PubSubManager extends ExtensionManager {
 
     /**
      * @param node
-     * @return
      * @throws TimeoutException
      * @throws StanzaException
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
@@ -195,7 +194,6 @@ public final class PubSubManager extends ExtensionManager {
 
     /**
      * @param node
-     * @return
      * @throws TimeoutException
      * @throws StanzaException
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>

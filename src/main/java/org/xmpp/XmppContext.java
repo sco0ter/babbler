@@ -27,6 +27,7 @@ package org.xmpp;
 import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.activity.Activity;
+import org.xmpp.extension.address.Addresses;
 import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.avatar.AvatarManager;
@@ -183,6 +184,9 @@ public abstract class XmppContext {
 
             // XEP-0030: Service Discovery
             registerExtension(InfoDiscovery.class, ItemDiscovery.class);
+
+            // XEP-0033: Extended Stanza Addressing
+            registerExtension(Addresses.class);
 
             // XEP-0047: In-Band Bytestreams
             registerExtension(org.xmpp.extension.stream.ibb.Data.class, Open.class, Close.class);

@@ -27,9 +27,7 @@ package org.xmpp.sasl;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import javax.security.auth.Subject;
 import javax.security.auth.callback.*;
-import javax.security.auth.login.LoginContext;
 import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;

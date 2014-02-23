@@ -22,29 +22,16 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.blocking;
-
-import org.xmpp.extension.blocking.errors.Blocked;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.List;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>.
+ * <p>
+ * It defines an XMPP protocol extension that enables an entity to page through and otherwise manage the receipt of large result sets. The protocol can be used in the context of any XMPP protocol that might send large result sets (such as service discovery, multi-user chat, and publish-subscribe). While the requesting entity in such an interaction can explicitly request the use of result set management, an indication that result set management is in use can also be proactively included by the responding entity when returning a limited result set in response to a query.
+ * </p>
  */
-@XmlRootElement(name = "blocklist")
-@XmlSeeAlso({Block.class, Unblock.class, Blocked.class})
-public final class BlockList {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "http://jabber.org/protocol/rsm", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rsm;
 
-    @XmlElement(name = "item")
-    private List<Item> items;
-
-    public BlockList() {
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

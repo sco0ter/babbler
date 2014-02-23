@@ -26,15 +26,10 @@ package org.xmpp.extension.blocking;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.*;
-import org.xmpp.extension.attention.Attention;
-import org.xmpp.extension.attention.AttentionManager;
-import org.xmpp.extension.disco.ServiceDiscoveryManager;
-import org.xmpp.extension.disco.info.Feature;
+import org.xmpp.BaseTest;
+import org.xmpp.Jid;
+import org.xmpp.UnmarshalHelper;
 import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.Message;
-import org.xmpp.stanza.MessageEvent;
-import org.xmpp.stanza.MessageListener;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;

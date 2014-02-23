@@ -26,6 +26,7 @@ package org.xmpp.extension.search;
 
 import org.xmpp.Jid;
 import org.xmpp.extension.data.DataForm;
+import org.xmpp.extension.rsm.ResultSet;
 import org.xmpp.util.JidAdapter;
 
 import javax.xml.bind.annotation.*;
@@ -62,6 +63,9 @@ public final class Search {
     @XmlElementRef
     private DataForm form;
 
+    @XmlElementRef
+    private ResultSet resultSet;
+
     /**
      * Creates an empty search request.
      */
@@ -81,6 +85,23 @@ public final class Search {
         this.last = last;
         this.nick = nick;
         this.email = email;
+    }
+
+    /**
+     * Creates a search request, consisting of multiple search parameters.
+     *
+     * @param first     The first name.
+     * @param last      The last name.
+     * @param nick      The nick name.
+     * @param email     The email.
+     * @param resultSet The result set information.
+     */
+    public Search(String first, String last, String nick, String email, ResultSet resultSet) {
+        this.first = first;
+        this.last = last;
+        this.nick = nick;
+        this.email = email;
+        this.resultSet = resultSet;
     }
 
     /**
@@ -192,6 +213,26 @@ public final class Search {
      */
     public DataForm getAdditionalInformation() {
         return form;
+    }
+
+    /**
+     * Gets the result set information.
+     *
+     * @return The result set.
+     * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
+     */
+    public ResultSet getResultSet() {
+        return resultSet;
+    }
+
+    /**
+     * Sets the result set information.
+     *
+     * @param resultSet The result set.
+     * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
+     */
+    public void setResultSet(ResultSet resultSet) {
+        this.resultSet = resultSet;
     }
 
     /**

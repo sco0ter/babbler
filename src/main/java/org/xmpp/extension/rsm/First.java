@@ -22,29 +22,21 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.blocking;
+package org.xmpp.extension.rsm;
 
-import org.xmpp.extension.blocking.errors.Blocked;
-
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.List;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "blocklist")
-@XmlSeeAlso({Block.class, Unblock.class, Blocked.class})
-public final class BlockList {
+@XmlRootElement(name = "first")
+final class First {
 
-    @XmlElement(name = "item")
-    private List<Item> items;
+    @XmlAttribute(name = "index")
+    Integer index;
 
-    public BlockList() {
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
+    @XmlValue
+    String value;
 }

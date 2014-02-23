@@ -71,6 +71,7 @@ import org.xmpp.extension.register.Register;
 import org.xmpp.extension.register.Registration;
 import org.xmpp.extension.rosterx.RosterExchange;
 import org.xmpp.extension.rpc.Rpc;
+import org.xmpp.extension.rsm.ResultSet;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.shim.HeaderManager;
@@ -89,6 +90,7 @@ import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.Roster;
+import org.xmpp.im.preapproval.SubscriptionPreApproval;
 import org.xmpp.im.rosterver.RosterVersioning;
 import org.xmpp.im.session.Session;
 import org.xmpp.sasl.Mechanisms;
@@ -97,7 +99,6 @@ import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
 import org.xmpp.stream.Features;
 import org.xmpp.stream.StreamError;
-import org.xmpp.im.preapproval.SubscriptionPreApproval;
 import org.xmpp.tls.StartTls;
 
 import java.util.*;
@@ -201,6 +202,9 @@ public abstract class XmppContext {
             // XEP-0055: Jabber Search
             registerExtension(Search.class);
             registerManager(SearchManager.class);
+
+            // XEP-0059: Result Set Management
+            registerExtension(ResultSet.class);
 
             registerExtension(PubSub.class);
 

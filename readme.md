@@ -6,7 +6,7 @@ You can find some more information [here](http://babbler-xmpp.blogspot.de/).
 
 [HERE'S THE PROJECT SITE WITH DOCUMENTATION.](http://sco0ter.bitbucket.org/babbler/)
 
-It supports most of the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html)), short of a few minor things like SCRAM-SHA-1 authentication.
+It supports most of the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html)).
 
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 
@@ -58,6 +58,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt not supported][not supported]   [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
 * ![alt in development][in development] [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 * ![alt supported][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
+* ![alt supported][supported]           [XEP-0152: Reachability Addresses](http://xmpp.org/extensions/xep-0152.html)
 * ![alt supported][supported]           [XEP-0153: vCard-Based Avatars](http://xmpp.org/extensions/xep-0153.html)
 * ![alt not supported][not supported]   [XEP-0155: Stanza Session Negotiation](http://xmpp.org/extensions/xep-0155.html)
 * ![alt supported][supported]           [XEP-0156: Discovering Alternative XMPP Connection Methods](http://xmpp.org/extensions/xep-0156.html)

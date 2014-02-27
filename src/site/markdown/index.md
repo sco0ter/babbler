@@ -7,7 +7,7 @@
 
 It aims to provide good (JavaDoc) documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by ca. 500 tests).
 
-It supports most of the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html)), short of a few minor things like SCRAM-SHA-1 authentication.
+It supports most of the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html)).
 
 **Note:** Since this project is quite young, it is still in beta status and in development. The API might change. Comments on the API are highly appreciated (write a message on my [BitBucket account](https://bitbucket.org/sco0ter) or comment on my [Blog](http://babbler-xmpp.blogspot.de/)).
 

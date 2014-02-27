@@ -41,7 +41,7 @@ public final class Jid {
 
     private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\([0-9a-fA-F]{2})");
 
-    private static final Pattern JID = Pattern.compile("((.{0,1023}?)@)?((?:(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+)(/(.{0,1023}))?");
+    private static final Pattern JID = Pattern.compile("^((.{0,1023}?)@)?((?:(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+)(/(.{0,1023}))?$");
 
     private final String escapedLocal;
 

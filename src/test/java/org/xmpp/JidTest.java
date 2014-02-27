@@ -211,4 +211,13 @@ public class JidTest {
         Jid jid = Jid.fromString("127.0.0.1");
         Assert.assertEquals(jid.getDomain(), "127.0.0.1");
     }
+
+    @Test
+    public void testDoubleAt() {
+        // Facebook uses something like this:
+        Jid jid = Jid.fromString("name@mail.de@chat.facebook.com/LPfS9dVP");
+        Assert.assertEquals(jid.getLocal(), "name@mail.de");
+        Assert.assertEquals(jid.getDomain(), "chat.facebook.com");
+        Assert.assertEquals(jid.getResource(), "LPfS9dVP");
+    }
 }

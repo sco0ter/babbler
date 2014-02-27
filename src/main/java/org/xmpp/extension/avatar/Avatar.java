@@ -38,10 +38,9 @@ public final class Avatar {
      * @param type      The image type.
      * @param imageData The image data.
      */
-    Avatar(String type, byte[] imageData) {
+    public Avatar(String type, byte[] imageData) {
         this.type = type;
         this.imageData = imageData;
-
     }
 
     /**

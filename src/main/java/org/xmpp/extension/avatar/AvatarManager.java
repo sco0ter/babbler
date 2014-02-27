@@ -129,7 +129,7 @@ public final class AvatarManager extends ExtensionManager {
                                 @Override
                                 public void run() {
                                     try {
-                                        getAvatar(me);
+                                        getAvatar(null);
                                         // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
                                         // As soon as the vCard has been loaded, broadcast presence, in order to update the avatar.
                                         Presence presence = connection.getPresenceManager().getLastSentPresence();
@@ -186,11 +186,12 @@ public final class AvatarManager extends ExtensionManager {
      * @throws TimeoutException If the operation timed out.
      */
     public Avatar getAvatar(Jid user) throws TimeoutException, StanzaException {
-        if (user == null) {
-            throw new IllegalArgumentException("user must not be null.");
-        }
         Avatar avatar = new Avatar(null, null);
-        user = user.toBareJid();
+        if (user != null) {
+            user = user.toBareJid();
+        } else {
+            user = connection.getConnectedResource().toBareJid();
+        }
         synchronized (avatars) {
             // Let's see, if there's a stored image already.
             byte[] hash = userAvatars.get(user);
@@ -202,7 +203,12 @@ public final class AvatarManager extends ExtensionManager {
                 hash = new byte[0];
 
                 // Load the vCard for that user
-                VCard vCard = vCardManager.getVCard(user);
+                VCard vCard;
+                if (user.equals(connection.getConnectedResource().toBareJid())) {
+                    vCard = vCardManager.getVCard();
+                } else {
+                    vCard = vCardManager.getVCard(user);
+                }
 
                 if (vCard != null) {
                     // And check if it has a photo.

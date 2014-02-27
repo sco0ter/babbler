@@ -30,6 +30,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
+ * The implementation of the {@code <activity/>} element.
+ * <blockquote>
+ * <p><cite><a href="http://xmpp.org/extensions/xep-0108.html#activities">3. Activity Values</a></cite></p>
+ * <p>Each activity has a REQUIRED general category and an OPTIONAL specific instance. One can understand each specifier as '[user] is [activity]' (e.g., 'Juliet is partying'), where the relevant value is the most specific activity provided (e.g., specifically "partying" rather than generally "relaxing").</p>
+ * </blockquote>
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "activity")
@@ -55,8 +61,16 @@ public final class Activity {
     @XmlElement(name = "text")
     private String text;
 
-    public Activity() {
+    private Activity() {
+    }
 
+    public Activity(Category category, String text) {
+        this.category = category;
+        this.text = text;
+    }
+
+    public Activity(Category category) {
+        this(category, null);
     }
 
     public String getText() {

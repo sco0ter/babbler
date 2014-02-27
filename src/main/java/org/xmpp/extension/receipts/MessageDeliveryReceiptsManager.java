@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.
@@ -65,6 +67,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * </pre>
  */
 public final class MessageDeliveryReceiptsManager extends ExtensionManager {
+
+    private static final Logger logger = Logger.getLogger(MessageDeliveryReceiptsManager.class.getName());
 
     final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
@@ -123,7 +127,11 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
                             // Notify the listeners about the reception.
                             for (MessageDeliveredListener messageDeliveredListener : messageDeliveredListeners) {
-                                messageDeliveredListener.messageDelivered(new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), deliveryDate));
+                                try {
+                                    messageDeliveredListener.messageDelivered(new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), deliveryDate));
+                                } catch (Exception ex) {
+                                    logger.log(Level.WARNING, ex.getMessage(), ex);
+                                }
                             }
                         }
                     } else {

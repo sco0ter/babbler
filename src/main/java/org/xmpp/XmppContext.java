@@ -65,6 +65,8 @@ import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.privatedata.bookmarks.BookmarkStorage;
 import org.xmpp.extension.privatedata.rosterdelimiter.RosterDelimiter;
 import org.xmpp.extension.pubsub.PubSub;
+import org.xmpp.extension.reach.Reachability;
+import org.xmpp.extension.reach.ReachabilityManager;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.receipts.Received;
 import org.xmpp.extension.receipts.Request;
@@ -263,6 +265,10 @@ public abstract class XmppContext {
 
             // XEP-0145: Annotations
             registerExtension(Annotation.class);
+
+            // XEP-0152: Reachability Addresses
+            registerExtension(Reachability.class);
+            registerManager(ReachabilityManager.class);
 
             // XEP-0153: vCard-Based Avatars
             registerExtension(AvatarUpdate.class);

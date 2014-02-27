@@ -628,11 +628,15 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                PresenceManager presenceManager = connection.getPresenceManager();
-                presenceManager.requestSubscription(Jid.fromString("222@christian-schudts-macbook-pro.fritz.box"), null);
-                Message message = new Message(null, Message.Type.CHAT);
-                message.setBody("Test");
-                connection.send(message);
+
+                LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+                try {
+                    lastActivityManager.getLastActivity(null);
+                } catch (StanzaException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (TimeoutException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
 
             }
         });

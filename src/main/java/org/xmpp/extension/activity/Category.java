@@ -27,6 +27,8 @@ package org.xmpp.extension.activity;
 import javax.xml.bind.annotation.XmlElementRef;
 
 /**
+ * An abstract class for general activities.
+ *
  * @author Christian Schudt
  */
 public abstract class Category {
@@ -34,10 +36,10 @@ public abstract class Category {
     @XmlElementRef
     private SpecificActivity specificActivity;
 
-    public Category() {
+    private Category() {
     }
 
-    public Category(SpecificActivity specificActivity) {
+    private Category(SpecificActivity specificActivity) {
         this.specificActivity = specificActivity;
     }
 
@@ -45,6 +47,9 @@ public abstract class Category {
         return specificActivity;
     }
 
+    /**
+     * The "doing_chores" activity.
+     */
     public static final class DoingChores extends Category {
         public DoingChores() {
         }
@@ -54,6 +59,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "drinking" activity.
+     */
     public static final class Drinking extends Category {
         public Drinking() {
         }
@@ -63,6 +71,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "eating" activity.
+     */
     public static final class Eating extends Category {
         public Eating() {
         }
@@ -72,6 +83,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "exercising" activity.
+     */
     public static final class Exercising extends Category {
         public Exercising() {
         }
@@ -81,6 +95,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "grooming" activity.
+     */
     public static final class Grooming extends Category {
         public Grooming() {
         }
@@ -90,6 +107,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "having_appointment" activity.
+     */
     public static final class HavingAppointment extends Category {
         public HavingAppointment() {
         }
@@ -99,6 +119,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "inactive" activity.
+     */
     public static final class Inactive extends Category {
         public Inactive() {
         }
@@ -108,6 +131,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "relaxing" activity.
+     */
     public static final class Relaxing extends Category {
         public Relaxing() {
         }
@@ -117,6 +143,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "talking" activity.
+     */
     public static final class Talking extends Category {
         public Talking() {
         }
@@ -126,6 +155,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "traveling" activity.
+     */
     public static final class Traveling extends Category {
         public Traveling() {
         }
@@ -135,6 +167,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "doing_chores" activity.
+     */
     public static final class Undefined extends Category {
         public Undefined() {
         }
@@ -144,6 +179,9 @@ public abstract class Category {
         }
     }
 
+    /**
+     * The "working" activity.
+     */
     public static final class Working extends Category {
         public Working() {
         }

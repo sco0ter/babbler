@@ -32,6 +32,7 @@ import org.xmpp.UnmarshalHelper;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
 
 /**
  * @author Christian Schudt
@@ -68,5 +69,17 @@ public class ActivityTest extends BaseTest {
         Assert.assertTrue(activity.getCategory() instanceof Category.Inactive);
         Assert.assertTrue(activity.getCategory().getSpecificActivity() instanceof SpecificActivity.Sleeping);
         Assert.assertNull(activity.getCategory().getSpecificActivity().getSpecificActivity());
+    }
+
+    @Test
+    public void marshalDoingChores() throws JAXBException, XMLStreamException, IOException {
+        String xml = marshall(new Activity(new Category.DoingChores()));
+        Assert.assertEquals(xml, "<activity xmlns=\"http://jabber.org/protocol/activity\"><doing_chores></doing_chores></activity>");
+    }
+
+    @Test
+    public void marshalDoingChoresWithText() throws JAXBException, XMLStreamException, IOException {
+        String xml = marshall(new Activity(new Category.DoingChores(), "test"));
+        Assert.assertEquals(xml, "<activity xmlns=\"http://jabber.org/protocol/activity\"><doing_chores></doing_chores><text>test</text></activity>");
     }
 }

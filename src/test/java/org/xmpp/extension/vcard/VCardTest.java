@@ -29,8 +29,8 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.XmppException;
 import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -42,7 +42,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -177,7 +176,7 @@ public class VCardTest extends BaseTest {
     }
 
     @Test
-    public void testVCardAvatarUpdate() throws TimeoutException, IOException, StanzaException {
+    public void testVCardAvatarUpdate() throws XmppException, IOException {
         VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
         VCard vCard = new VCard();
         InputStream inputStream = getClass().getResourceAsStream("supported.png");

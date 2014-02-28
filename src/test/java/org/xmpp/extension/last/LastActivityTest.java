@@ -26,10 +26,7 @@ package org.xmpp.extension.last;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
-import org.xmpp.UnmarshalHelper;
+import org.xmpp.*;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.vcard.VCardManager;
@@ -40,7 +37,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.Date;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -77,7 +73,7 @@ public class LastActivityTest extends BaseTest {
     }
 
     @Test
-    public void testGetLastActivity() throws StanzaException, TimeoutException {
+    public void testGetLastActivity() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);
@@ -87,7 +83,7 @@ public class LastActivityTest extends BaseTest {
     }
 
     @Test
-    public void testGetLastActivityIfDisabled() throws TimeoutException {
+    public void testGetLastActivityIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         TestConnection connection2 = new TestConnection(JULIET, mockServer);

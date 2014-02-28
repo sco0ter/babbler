@@ -436,7 +436,7 @@ public abstract class Connection implements Closeable {
         }
     }
 
-    public IQ query(IQ iq) throws TimeoutException, StanzaException {
+    public IQ query(IQ iq) throws XmppException {
         return this.query(iq, 20000);
     }
 
@@ -450,7 +450,7 @@ public abstract class Connection implements Closeable {
      * @return The result {@code <iq/>} stanza. If an error occurred, the stanza contains an {@linkplain org.xmpp.stanza.IQ#getError() error}.
      * @throws TimeoutException If no response was received in time.
      */
-    public IQ query(final IQ iq, long timeout) throws TimeoutException, StanzaException {
+    public IQ query(final IQ iq, long timeout) throws XmppException {
         if (!(iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET)) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
@@ -479,7 +479,7 @@ public abstract class Connection implements Closeable {
             addIQListener(iqListener);
             send(iq);
             if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
-                throw new TimeoutException("Timeout reached, while waiting on a IQ response.");
+                throw new NoResponseException("Timeout reached, while waiting on an IQ response.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -502,7 +502,7 @@ public abstract class Connection implements Closeable {
      * @throws LoginException   If an exception occurred while logging in.
      * @throws TimeoutException If a timeout occurred, while either connecting or logging in.
      */
-    public final synchronized void reconnect() throws IOException, LoginException, TimeoutException {
+    public final synchronized void reconnect() throws IOException, LoginException {
         connect();
         getAuthenticationManager().reAuthenticate();
         bindResource(resource);
@@ -511,10 +511,9 @@ public abstract class Connection implements Closeable {
     /**
      * Connects to the XMPP server.
      *
-     * @throws IOException      If anything went wrong, e.g. the host was not found.
-     * @throws TimeoutException If a timeout occurred while connecting.
+     * @throws IOException If anything went wrong, e.g. the host was not found.
      */
-    public synchronized void connect() throws IOException, TimeoutException {
+    public synchronized void connect() throws IOException {
         if (status == Status.CONNECTED) {
             throw new IllegalStateException("Already connected.");
         }
@@ -622,7 +621,7 @@ public abstract class Connection implements Closeable {
      * @throws LoginException   If the resource binding failed as described in <a href="http://xmpp.org/rfcs/rfc6120.html#bind-servergen-error">7.6.2.  Error Cases</a>
      * @throws TimeoutException If a timeout occurred.
      */
-    private void bindResource(String resource) throws LoginException, TimeoutException {
+    private void bindResource(String resource) throws LoginException {
         this.resource = resource;
 
         // Then wait until the bind feature is received, if it hasn't yet.
@@ -630,7 +629,7 @@ public abstract class Connection implements Closeable {
             lock.lock();
             try {
                 if (!streamNegotiatedUntilResourceBinding.await(5, TimeUnit.SECONDS)) {
-                    throw new TimeoutException("Timeout reached during resource binding.");
+                    throw new LoginException("Timeout reached during resource binding.");
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -644,7 +643,13 @@ public abstract class Connection implements Closeable {
         try {
             result = query(iq);
         } catch (StanzaException e) {
-            throw new LoginException("Error during resource binding: " + e.getError().toString());
+            LoginException loginException = new LoginException("Error during resource binding: " + e.getError().toString());
+            loginException.initCause(e);
+            throw loginException;
+        } catch (XmppException e) {
+            LoginException loginException = new LoginException(e.getMessage());
+            loginException.initCause(e);
+            throw loginException;
         }
 
         Bind bindResult = result.getExtension(Bind.class);
@@ -657,7 +662,13 @@ public abstract class Connection implements Closeable {
             try {
                 query(new IQ(IQ.Type.SET, new Session()));
             } catch (StanzaException e) {
-                throw new LoginException("Error during session establishment: " + e.getError().toString());
+                LoginException loginException = new LoginException("Error during session establishment: " + e.getError().toString());
+                loginException.initCause(e);
+                throw loginException;
+            } catch (XmppException e) {
+                LoginException loginException = new LoginException(e.getMessage());
+                loginException.initCause(e);
+                throw loginException;
             }
         }
     }

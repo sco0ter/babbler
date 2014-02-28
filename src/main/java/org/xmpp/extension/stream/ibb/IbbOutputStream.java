@@ -24,12 +24,11 @@
 
 package org.xmpp.extension.stream.ibb;
 
-import org.xmpp.stanza.StanzaException;
+import org.xmpp.XmppException;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -65,7 +64,7 @@ final class IbbOutputStream extends OutputStream {
         }
         try {
             ibbSession.send(Arrays.copyOf(buffer, n));
-        } catch (TimeoutException | StanzaException e) {
+        } catch (XmppException e) {
             throw new IOException(e);
         } finally {
             n = 0;

@@ -26,6 +26,8 @@ package org.xmpp.extension.shim;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -39,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Manages support for <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
@@ -87,10 +88,10 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
      *
      * @param jid The JID.
      * @return The list of supported headers.
-     * @throws StanzaException  If entity returns an error.
-     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public List<String> discoverSupportedHeaders(Jid jid) throws StanzaException, TimeoutException {
+    public List<String> discoverSupportedHeaders(Jid jid) throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(jid, FEATURE);
         List<String> result = new ArrayList<>();
         for (Feature feature : infoNode.getFeatures()) {

@@ -35,13 +35,10 @@ import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemDiscovery;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -142,7 +139,7 @@ public class ServiceDiscoveryTest extends BaseTest {
     }
 
     @Test
-    public void testInfoDiscovery() throws IOException, TimeoutException, StanzaException {
+    public void testInfoDiscovery() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);

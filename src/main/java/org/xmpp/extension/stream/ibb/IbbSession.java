@@ -26,6 +26,7 @@ package org.xmpp.extension.stream.ibb;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.XmppException;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 
@@ -33,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -81,7 +81,7 @@ public final class IbbSession {
         }
     }
 
-    public void open() throws TimeoutException, StanzaException {
+    public void open() throws XmppException {
         IQ iq = new IQ(IQ.Type.SET, new Open(blockSize, sessionId));
         iq.setTo(jid);
         connection.query(iq);
@@ -95,7 +95,7 @@ public final class IbbSession {
         return inputStream;
     }
 
-    synchronized void send(byte[] bytes) throws TimeoutException, StanzaException {
+    synchronized void send(byte[] bytes) throws XmppException {
         IQ response = connection.query(new IQ(jid, IQ.Type.SET, new Data(bytes, sessionId, outgoingSequence)));
         if (response != null && response.getType() == IQ.Type.ERROR) {
             throw new StanzaException(response.getError());

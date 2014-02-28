@@ -26,6 +26,7 @@ package org.xmpp.extension.stream.si.filetransfer;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.featureneg.FeatureNegotiation;
@@ -33,7 +34,10 @@ import org.xmpp.extension.stream.ibb.IbbSession;
 import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
 import org.xmpp.extension.stream.si.BadProfile;
 import org.xmpp.extension.stream.si.StreamInitiation;
-import org.xmpp.stanza.*;
+import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.IQEvent;
+import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.Stanza;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -41,7 +45,6 @@ import java.nio.file.NoSuchFileException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,9 +53,9 @@ import java.util.logging.Logger;
  */
 public final class FileTransferManager extends ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(FileTransferManager.class.getName());
-
     static final String PROFILE = "http://jabber.org/protocol/si/profile/file-transfer";
+
+    private static final Logger logger = Logger.getLogger(FileTransferManager.class.getName());
 
     private final Set<FileTransferListener> fileTransferListeners = new CopyOnWriteArraySet<>();
 
@@ -117,7 +120,7 @@ public final class FileTransferManager extends ExtensionManager {
         fileTransferListeners.remove(fileTransferListener);
     }
 
-    public void sendFile(File file, Jid jid, long timeout) throws TimeoutException, StanzaException {
+    public void sendFile(File file, Jid jid, long timeout) throws XmppException {
 
         if (file == null) {
             throw new IllegalArgumentException("file must not be null.");

@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.caps;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
-import org.xmpp.Jid;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -48,7 +45,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -212,7 +208,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
                                                 // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
 
-                                            } catch (TimeoutException | StanzaException e1) {
+                                            } catch (XmppException e1) {
                                                 logger.log(Level.WARNING, e1.getMessage(), e1);
                                             }
                                         } catch (NoSuchAlgorithmException e1) {
@@ -223,7 +219,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                                                 InfoNode infoNode = serviceDiscoveryManager.discoverInformation(presence.getFrom(), entityCapabilities.getNode());
                                                 // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
                                                 jidInfos.put(presence.getFrom(), infoNode);
-                                            } catch (TimeoutException | StanzaException e2) {
+                                            } catch (XmppException e2) {
                                                 logger.log(Level.WARNING, e2.getMessage(), e2);
                                             }
                                         }
@@ -397,10 +393,10 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
      *
      * @param jid The JID, which should usually be a full JID.
      * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public synchronized InfoNode getCapabilities(Jid jid) throws TimeoutException, StanzaException {
+    public synchronized InfoNode getCapabilities(Jid jid) throws XmppException {
         InfoNode infoNode = jidInfos.get(jid);
         if (infoNode == null) {
             infoNode = serviceDiscoveryManager.discoverInformation(jid);

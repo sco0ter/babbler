@@ -25,6 +25,8 @@
 package org.xmpp.extension.pubsub;
 
 import org.xmpp.Connection;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -32,7 +34,6 @@ import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -46,13 +47,25 @@ public final class PubSubManager extends ExtensionManager {
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
     }
 
-    public List<Subscription> getSubscriptions(String node) throws TimeoutException, StanzaException {
+    /**
+     * @param node
+     * @return
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public List<Subscription> getSubscriptions(String node) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new Subscriptions(node)));
         Subscriptions subscriptions = result.getExtension(Subscriptions.class);
         return subscriptions.getSubscriptions();
     }
 
-    public List<Affiliation> getAffiliations(String node) throws TimeoutException, StanzaException {
+    /**
+     * @param node
+     * @return
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public List<Affiliation> getAffiliations(String node) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new Affiliations(node)));
         Affiliations affiliations = result.getExtension(Affiliations.class);
         return affiliations.getAffiliations();
@@ -63,10 +76,11 @@ public final class PubSubManager extends ExtensionManager {
      *
      * @param node The node to subscribe to.
      * @return The subscription.
-     * @throws TimeoutException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe">6.1 Subscribe to a Node</a>
      */
-    public Subscription subscribe(String node) throws TimeoutException, StanzaException {
+    public Subscription subscribe(String node) throws XmppException {
         return subscribe(node, null);
     }
 
@@ -75,10 +89,11 @@ public final class PubSubManager extends ExtensionManager {
      *
      * @param node The node to subscribe to.
      * @return The subscription.
-     * @throws TimeoutException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
      */
-    public Subscription subscribe(String node, DataForm dataForm) throws TimeoutException, StanzaException {
+    public Subscription subscribe(String node, DataForm dataForm) throws XmppException {
         if (node == null) {
             throw new IllegalArgumentException("node must not be null");
         }
@@ -95,22 +110,22 @@ public final class PubSubManager extends ExtensionManager {
      * Unsubscribes from a node.
      *
      * @param node The node to unsubscribe from.
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
-    public void unsubscribe(String node) throws TimeoutException, StanzaException {
+    public void unsubscribe(String node) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Unsubscribe(node, connection.getConnectedResource().toBareJid()))));
     }
 
     /**
      * @param node
      * @return
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
      */
-    public DataForm requestSubscriptionOptions(String node) throws TimeoutException, StanzaException {
+    public DataForm requestSubscriptionOptions(String node) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Options(node, connection.getConnectedResource().toBareJid())));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getOptions().getDataForm();
@@ -118,22 +133,22 @@ public final class PubSubManager extends ExtensionManager {
 
     /**
      * @param node
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
-    public void submitSubscriptionOptions(String node, DataForm dataForm) throws TimeoutException, StanzaException {
+    public void submitSubscriptionOptions(String node, DataForm dataForm) throws XmppException {
         connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Options(node, connection.getConnectedResource().toBareJid()))));
     }
 
     /**
      * @param node
      * @return
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      */
-    public DataForm requestDefaultSubscriptionConfigurationOptions(String node) throws TimeoutException, StanzaException {
+    public DataForm requestDefaultSubscriptionConfigurationOptions(String node) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Default(node))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getOptions().getDataForm();
@@ -142,22 +157,22 @@ public final class PubSubManager extends ExtensionManager {
     /**
      * @param node
      * @return
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
      */
-    public List<Item> getItems(String node) throws TimeoutException, StanzaException {
+    public List<Item> getItems(String node) throws XmppException {
         return getItems(node, null);
     }
 
     /**
      * @param node
      * @return
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
-    public List<Item> getItems(String node, Long maxItems) throws TimeoutException, StanzaException {
+    public List<Item> getItems(String node, Long maxItems) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Items(node, maxItems))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getItems().getItems();
@@ -166,11 +181,11 @@ public final class PubSubManager extends ExtensionManager {
     /**
      * @param id
      * @return
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
-    public Item getItem(String node, String id) throws TimeoutException, StanzaException {
+    public Item getItem(String node, String id) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Items(node, new Item(id)))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getItems().getItems().get(0);
@@ -179,11 +194,11 @@ public final class PubSubManager extends ExtensionManager {
     /**
      * @param node
      * @return
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
-    public String publish(String node, Object item) throws TimeoutException, StanzaException {
+    public String publish(String node, Object item) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Publish(node, new Item(item)))));
         PubSub pubSub = result.getExtension(PubSub.class);
         if (pubSub != null && pubSub.getPublish() != null && pubSub.getPublish().getItem() != null) {
@@ -194,11 +209,11 @@ public final class PubSubManager extends ExtensionManager {
 
     /**
      * @param node
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
      */
-    public void deleteItem(String node, String id, boolean notify) throws TimeoutException, StanzaException {
+    public void deleteItem(String node, String id, boolean notify) throws XmppException {
         connection.query(new IQ(IQ.Type.SET, new PubSub(new Retract(node, new Item(id), notify))));
     }
 
@@ -206,10 +221,11 @@ public final class PubSubManager extends ExtensionManager {
      * Creates a node.
      *
      * @param node The node to subscribe to.
-     * @throws TimeoutException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
      */
-    public void create(String node) throws TimeoutException, StanzaException {
+    public void create(String node) throws XmppException {
         create(node, null);
     }
 
@@ -217,10 +233,11 @@ public final class PubSubManager extends ExtensionManager {
      * Creates and configures a node.
      *
      * @param node The node to subscribe to.
-     * @throws TimeoutException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
      */
-    public void create(String node, DataForm dataForm) throws TimeoutException, StanzaException {
+    public void create(String node, DataForm dataForm) throws XmppException {
         if (node == null) {
             throw new IllegalArgumentException("node must not be null");
         }
@@ -231,17 +248,17 @@ public final class PubSubManager extends ExtensionManager {
         connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Create(node), configure)));
     }
 
-    public DataForm getConfigurationForm(String node) throws TimeoutException, StanzaException {
+    public DataForm getConfigurationForm(String node) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Configure(node))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getConfigure().getDataForm();
     }
 
-    public void submitConfigurationForm(String node, DataForm dataForm) throws TimeoutException, StanzaException {
+    public void submitConfigurationForm(String node, DataForm dataForm) throws XmppException {
         connection.query(new IQ(IQ.Type.SET, new PubSub(new Configure(node, dataForm))));
     }
 
-    public void deleteNode(String node) throws TimeoutException, StanzaException {
+    public void deleteNode(String node) throws XmppException {
         connection.query(new IQ(IQ.Type.SET, new PubSubOwner(new Delete(node))));
     }
 

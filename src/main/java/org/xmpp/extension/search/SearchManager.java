@@ -26,11 +26,11 @@ package org.xmpp.extension.search;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * The search manager allows to perform search requests on a server or service component according to <a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>.
@@ -62,9 +62,10 @@ public final class SearchManager extends ExtensionManager {
      *
      * @param service The service address.
      * @return The possible search fields and instructions or null, if search is not supported. Search fields are supported if they are not null.
-     * @throws TimeoutException If the service does not respond in time.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public Search discoverSearchFields(Jid service) throws TimeoutException, StanzaException {
+    public Search discoverSearchFields(Jid service) throws XmppException {
         IQ result = connection.query(new IQ(service, IQ.Type.GET, new Search()));
         return result.getExtension(Search.class);
     }
@@ -76,9 +77,10 @@ public final class SearchManager extends ExtensionManager {
      * @param search  The search parameters.
      * @param service The service, which will perform the search, usually a server or server component.
      * @return The search result (see {@link Search#getItems()}) or null if search is not supported.
-     * @throws TimeoutException If the service does not respond in time.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public Search search(Search search, Jid service) throws TimeoutException, StanzaException {
+    public Search search(Search search, Jid service) throws XmppException {
         IQ result = connection.query(new IQ(service, IQ.Type.SET, search));
         return result.getExtension(Search.class);
     }

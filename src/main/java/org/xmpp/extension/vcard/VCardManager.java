@@ -24,16 +24,11 @@
 
 package org.xmpp.extension.vcard;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
-import org.xmpp.Jid;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Presence;
 import org.xmpp.stanza.StanzaException;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * This manager allows to retrieve or save one owns vCard or retrieve another user's vCard.
@@ -65,9 +60,10 @@ public final class VCardManager extends ExtensionManager {
      * Gets the vCard of the current user.
      *
      * @return The vCard.
-     * @throws TimeoutException If the server did not answer in time.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public VCard getVCard() throws TimeoutException, StanzaException {
+    public VCard getVCard() throws XmppException {
         if (myVCard != null) {
             return myVCard;
         }
@@ -81,9 +77,10 @@ public final class VCardManager extends ExtensionManager {
      * Saves or updates a vCard.
      *
      * @param vCard The vCard.
-     * @throws TimeoutException If the server did not answer in time.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public void setVCard(VCard vCard) throws TimeoutException, StanzaException {
+    public void setVCard(VCard vCard) throws XmppException {
         if (vCard == null) {
             throw new IllegalArgumentException("vCard must not be null.");
         }
@@ -106,9 +103,10 @@ public final class VCardManager extends ExtensionManager {
      *
      * @param jid The user's JID.
      * @return The vCard of the other user or null, if it does not exist.
-     * @throws TimeoutException If the server did not answer in time.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public VCard getVCard(Jid jid) throws TimeoutException, StanzaException {
+    public VCard getVCard(Jid jid) throws XmppException {
         if (jid == null) {
             throw new IllegalArgumentException("jid must not be null.");
         }

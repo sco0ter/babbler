@@ -26,12 +26,8 @@ package org.xmpp.extension.privatedata;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.Connection;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.*;
 import org.xmpp.extension.privatedata.annotations.Annotation;
-import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -52,7 +48,7 @@ public class PrivateDataTest extends BaseTest {
     }
 
     @Test
-    public void testManager() throws IOException, TimeoutException, StanzaException {
+    public void testManager() throws XmppException, IOException, TimeoutException {
         MockServer mockServer = new MockServer();
 
         Connection connection = new TestConnection(null, mockServer);

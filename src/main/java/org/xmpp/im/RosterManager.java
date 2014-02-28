@@ -24,16 +24,12 @@
 
 package org.xmpp.im;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
-import org.xmpp.Jid;
+import org.xmpp.*;
 import org.xmpp.stanza.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -189,10 +185,10 @@ public final class RosterManager {
      * @param contact             The contact.
      * @param requestSubscription If true, the contact is also sent a subscription request.
      * @param status              The optional status text, which is sent together with a subscription request. May be null.
-     * @throws TimeoutException If a timeout occurred.
-     * @throws StanzaException  If the server could not add the contact and returned a stanza error.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public void addContact(Roster.Contact contact, boolean requestSubscription, String status) throws TimeoutException, StanzaException {
+    public void addContact(Roster.Contact contact, boolean requestSubscription, String status) throws XmppException {
         if (contact == null) {
             throw new IllegalArgumentException("contact must not be null.");
         }
@@ -215,10 +211,10 @@ public final class RosterManager {
      * Updates a contact in the roster.
      *
      * @param contact The contact to update.
-     * @throws TimeoutException If a timeout occurred.
-     * @throws StanzaException  If the server could not add the contact and returned a stanza error.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public void updateContact(Roster.Contact contact) throws TimeoutException, StanzaException {
+    public void updateContact(Roster.Contact contact) throws XmppException {
         addContact(contact, false, null);
     }
 

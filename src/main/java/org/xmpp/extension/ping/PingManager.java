@@ -26,13 +26,13 @@ package org.xmpp.extension.ping;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * This class implements the application-level ping mechanism as specified in <a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
@@ -76,24 +76,20 @@ public final class PingManager extends ExtensionManager {
      * Pings the given XMPP entity.
      *
      * @param jid The JID to ping.
-     * @return True, if the entity responded with a result; or false if it does not support the ping protocol.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public boolean ping(Jid jid) {
-        try {
-            connection.query(new IQ(jid, IQ.Type.GET, new Ping()));
-            return true;
-        } catch (TimeoutException | StanzaException e) {
-            return false;
-        }
+    public void ping(Jid jid) throws XmppException {
+        connection.query(new IQ(jid, IQ.Type.GET, new Ping()));
     }
 
     /**
      * Pings the connected server.
      *
-     * @return True, if the server responded with a result; or false if it does not support the ping protocol.
-     * @throws TimeoutException If the ping timed out, i.e. no response has been received in time.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public boolean pingServer() throws TimeoutException {
-        return ping(null);
+    public void pingServer() throws XmppException {
+        ping(null);
     }
 }

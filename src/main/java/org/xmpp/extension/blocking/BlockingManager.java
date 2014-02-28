@@ -26,6 +26,8 @@ package org.xmpp.extension.blocking;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
@@ -34,7 +36,6 @@ import org.xmpp.stanza.StanzaException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * This manager allows to block communications with contacts.
@@ -74,11 +75,11 @@ public final class BlockingManager extends ExtensionManager {
      * Retrieves the block list.
      *
      * @return The block list.
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#blocklist">3.2 User Retrieves Block List</a>
      */
-    public BlockList getBlockList() throws TimeoutException, StanzaException {
+    public BlockList getBlockList() throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new BlockList()));
         return result.getExtension(BlockList.class);
     }
@@ -87,11 +88,11 @@ public final class BlockingManager extends ExtensionManager {
      * Blocks communications with contacts.
      *
      * @param jids The contacts.
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
      */
-    public void blockContact(Jid... jids) throws TimeoutException, StanzaException {
+    public void blockContact(Jid... jids) throws XmppException {
         if (jids.length == 0) {
             throw new IllegalArgumentException("At least one JID must be set.");
         }
@@ -106,11 +107,11 @@ public final class BlockingManager extends ExtensionManager {
      * Unblocks communications with contacts.
      *
      * @param jids The contacts.
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblock">3.4 User Unblocks Contact</a>
      */
-    public void unblock(Jid... jids) throws TimeoutException, StanzaException {
+    public void unblock(Jid... jids) throws XmppException {
         List<Item> items = new ArrayList<>();
         for (Jid jid : jids) {
             items.add(new Item(jid));

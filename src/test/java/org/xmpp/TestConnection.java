@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Proxy;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -74,7 +73,7 @@ public class TestConnection extends Connection {
     }
 
     @Override
-    public IQ query(final IQ iq) throws TimeoutException, StanzaException {
+    public IQ query(final IQ iq) throws XmppException {
         final IQ[] result = new IQ[1];
 
         final IQListener iqListener = new IQListener() {

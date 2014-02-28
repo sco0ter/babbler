@@ -26,15 +26,14 @@ package org.xmpp.extension.rosterx;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.im.Roster;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
-import org.xmpp.stanza.StanzaException;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -44,7 +43,7 @@ public class RosterExchangeManager extends ExtensionManager {
         super(connection);
     }
 
-    public void suggestContactAddition(Jid jid, List<Roster.Contact> contacts) throws TimeoutException, StanzaException {
+    public void suggestContactAddition(Jid jid, List<Roster.Contact> contacts) throws XmppException {
         RosterExchange rosterExchange = new RosterExchange();
         for (Roster.Contact contact : contacts) {
             RosterExchange.Item rosterItem = new RosterExchange.Item(contact.getJid(), contact.getName(), contact.getGroups(), RosterExchange.Item.Action.ADD);

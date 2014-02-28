@@ -30,7 +30,6 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -53,7 +52,7 @@ final class ReconnectionManager {
                             try {
                                 connection.reconnect();
                                 scheduledExecutorService.shutdown();
-                            } catch (IOException | TimeoutException | LoginException e1) {
+                            } catch (IOException | LoginException e1) {
                                 e1.printStackTrace();
                             }
                         }

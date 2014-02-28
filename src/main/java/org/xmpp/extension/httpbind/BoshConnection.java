@@ -291,7 +291,7 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public synchronized void connect() throws IOException, TimeoutException {
+    public synchronized void connect() throws IOException {
         super.connect();
         // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
         if (url == null) {
@@ -338,7 +338,11 @@ public final class BoshConnection extends Connection {
         sendNewRequest(body, false);
 
         // Wait for the response and wait until all features have been negotiated.
-        waitUntilSaslNegotiationStarted();
+        try {
+            waitUntilSaslNegotiationStarted();
+        } catch (TimeoutException e) {
+            throw new IOException(e);
+        }
         updateStatus(Status.CONNECTED);
     }
 

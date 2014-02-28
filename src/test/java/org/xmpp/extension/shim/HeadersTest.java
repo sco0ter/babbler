@@ -26,10 +26,7 @@ package org.xmpp.extension.shim;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
-import org.xmpp.UnmarshalHelper;
+import org.xmpp.*;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoNode;
@@ -41,7 +38,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -70,7 +66,7 @@ public class HeadersTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryIfHeadersAreDisabled() throws TimeoutException {
+    public void testServiceDiscoveryIfHeadersAreDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(JULIET, mockServer);
         TestConnection connection2 = new TestConnection(ROMEO, mockServer);
@@ -100,7 +96,7 @@ public class HeadersTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryIfHeadersAreEnabled() throws TimeoutException {
+    public void testServiceDiscoveryIfHeadersAreEnabled() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(JULIET, mockServer);
         TestConnection connection2 = new TestConnection(ROMEO, mockServer);
@@ -130,7 +126,7 @@ public class HeadersTest extends BaseTest {
     }
 
     @Test
-    public void testDiscoverSupportedHeaders() throws TimeoutException, StanzaException {
+    public void testDiscoverSupportedHeaders() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(JULIET, mockServer);
         TestConnection connection2 = new TestConnection(ROMEO, mockServer);

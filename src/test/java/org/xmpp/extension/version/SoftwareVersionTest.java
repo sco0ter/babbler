@@ -26,10 +26,7 @@ package org.xmpp.extension.version;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
-import org.xmpp.UnmarshalHelper;
+import org.xmpp.*;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.IQ;
@@ -39,7 +36,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -91,7 +87,7 @@ public class SoftwareVersionTest extends BaseTest {
     }
 
     @Test
-    public void testSoftwareVersionManager() throws TimeoutException, StanzaException {
+    public void testSoftwareVersionManager() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);
@@ -105,7 +101,7 @@ public class SoftwareVersionTest extends BaseTest {
     }
 
     @Test
-    public void testSoftwareVersionManagerIfDisabled() throws TimeoutException {
+    public void testSoftwareVersionManagerIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         TestConnection connection2 = new TestConnection(JULIET, mockServer);

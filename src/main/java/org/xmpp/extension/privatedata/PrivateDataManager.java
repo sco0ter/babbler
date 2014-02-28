@@ -25,6 +25,8 @@
 package org.xmpp.extension.privatedata;
 
 import org.xmpp.Connection;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
@@ -32,7 +34,6 @@ import org.xmpp.stanza.StanzaException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * This class implements <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
@@ -54,11 +55,11 @@ public final class PrivateDataManager extends ExtensionManager {
      * @param type The class of the private data. Note that this class needs a no-arg default constructor.
      * @param <T>  The type of private data.
      * @return The list of stored items of the given type.
-     * @throws TimeoutException If the data could not be retrieved in time.
-     * @throws StanzaException  If the server returned an error, e.g. if the used namespace is reserved.
+     * @throws StanzaException     If the server returned an error, e.g. if the used namespace is reserved.
+     * @throws NoResponseException If the entity did not respond.
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> getData(Class<T> type) throws TimeoutException, StanzaException {
+    public <T> List<T> getData(Class<T> type) throws XmppException {
         try {
             Constructor<T> constructor = type.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -82,9 +83,10 @@ public final class PrivateDataManager extends ExtensionManager {
      * Stores private data.
      *
      * @param privateData The private data. The class of this object must be annotated with JAXB annotations and must known to the XMPP context in order to marshal und unmarshal it.
-     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public void storeData(Object privateData) throws TimeoutException, StanzaException {
+    public void storeData(Object privateData) throws XmppException {
         connection.query(new IQ(IQ.Type.SET, new PrivateData(privateData)));
     }
 }

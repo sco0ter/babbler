@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.reach;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
-import org.xmpp.Jid;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.*;
 
@@ -38,7 +35,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -183,10 +179,10 @@ public final class ReachabilityManager extends ExtensionManager {
      * Requests the reachability addresses of a contact.
      *
      * @return The reachability addresses.
-     * @throws TimeoutException
-     * @throws StanzaException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public List<Address> requestReachabilityAddresses(Jid contact) throws TimeoutException, StanzaException {
+    public List<Address> requestReachabilityAddresses(Jid contact) throws XmppException {
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get".
         IQ result = connection.query(new IQ(contact, IQ.Type.GET, new Reachability()));
         Reachability reachability = result.getExtension(Reachability.class);

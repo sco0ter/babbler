@@ -22,36 +22,22 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.stanza;
-
-import org.xmpp.XmppException;
+package org.xmpp;
 
 /**
- * A stanza exception represents a {@linkplain Stanza.Error stanza error}.
- * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
- *
  * @author Christian Schudt
  */
-public final class StanzaException extends XmppException {
+public class XmppException extends Exception {
 
-    private final Stanza.Error error;
-
-    /**
-     * Constructs a stanza exception.
-     *
-     * @param error The underlying stanza error.
-     */
-    public StanzaException(Stanza.Error error) {
-        super(error.getText());
-        this.error = error;
+    public XmppException() {
+        super();
     }
 
-    /**
-     * Gets the stanza error.
-     *
-     * @return The stanza error.
-     */
-    public Stanza.Error getError() {
-        return error;
+    public XmppException(String message) {
+        super(message);
+    }
+
+    public XmppException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

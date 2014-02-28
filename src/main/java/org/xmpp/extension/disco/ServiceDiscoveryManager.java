@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.disco;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
-import org.xmpp.Jid;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.info.Feature;
@@ -45,7 +42,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Manages <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
@@ -357,10 +353,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      *
      * @param jid The entity's JID.
      * @return The service discovery result.
-     * @throws StanzaException  If the entity returned an error.
-     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public InfoNode discoverInformation(Jid jid) throws TimeoutException, StanzaException {
+    public InfoNode discoverInformation(Jid jid) throws XmppException {
         return discoverInformation(jid, null);
     }
 
@@ -374,11 +370,11 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @param jid  The entity's JID.
      * @param node The node.
      * @return The info discovery result or null, if info discovery is not supported.
-     * @throws StanzaException  If the entity returned an error.
-     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see #discoverInformation(org.xmpp.Jid)
      */
-    public InfoNode discoverInformation(Jid jid, String node) throws TimeoutException, StanzaException {
+    public InfoNode discoverInformation(Jid jid, String node) throws XmppException {
         IQ iq = new IQ(jid, IQ.Type.GET, new InfoDiscovery(node));
         IQ result = connection.query(iq);
         if (result.getType() == IQ.Type.RESULT) {
@@ -393,9 +389,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      *
      * @param jid The JID.
      * @return The discovered items.
-     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public ItemNode discoverItems(Jid jid) throws TimeoutException, StanzaException {
+    public ItemNode discoverItems(Jid jid) throws XmppException {
         return discoverItems(jid, null);
     }
 
@@ -405,9 +402,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @param jid  The JID.
      * @param node The node.
      * @return The discovered items.
-     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public ItemNode discoverItems(Jid jid, String node) throws TimeoutException, StanzaException {
+    public ItemNode discoverItems(Jid jid, String node) throws XmppException {
         IQ iq = new IQ(IQ.Type.GET, new ItemDiscovery(node));
         iq.setTo(jid);
         IQ result = connection.query(iq);

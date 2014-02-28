@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.avatar;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
-import org.xmpp.Jid;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.extension.vcard.VCard;
@@ -44,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,7 +92,7 @@ public final class AvatarManager extends ExtensionManager {
                                 try {
                                     // Get the avatar for this user.
                                     avatar = getAvatar(contact);
-                                } catch (TimeoutException | StanzaException e1) {
+                                } catch (XmppException e1) {
                                     logger.log(Level.WARNING, e1.getMessage(), e1);
                                 }
                             }
@@ -138,7 +134,7 @@ public final class AvatarManager extends ExtensionManager {
                                         }
                                         presence.getExtensions().clear();
                                         connection.send(presence);
-                                    } catch (TimeoutException | StanzaException e1) {
+                                    } catch (XmppException e1) {
                                         logger.log(Level.WARNING, e1.getMessage(), e1);
                                     }
                                 }
@@ -155,7 +151,7 @@ public final class AvatarManager extends ExtensionManager {
                                     currentHash = getHash(vCard.getPhoto().getValue());
                                 }
                                 presence.getExtensions().add(new AvatarUpdate(currentHash));
-                            } catch (TimeoutException | StanzaException e1) {
+                            } catch (XmppException e1) {
                                 logger.log(Level.WARNING, e1.getMessage(), e1);
                             }
                         }
@@ -183,9 +179,10 @@ public final class AvatarManager extends ExtensionManager {
      *
      * @param user The user.
      * @return The user's avatar or null, if it has no avatar.
-     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public Avatar getAvatar(Jid user) throws TimeoutException, StanzaException {
+    public Avatar getAvatar(Jid user) throws XmppException {
         Avatar avatar = new Avatar(null, null);
         if (user != null) {
             user = user.toBareJid();

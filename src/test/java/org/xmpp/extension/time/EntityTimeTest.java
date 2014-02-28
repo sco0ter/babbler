@@ -26,10 +26,7 @@ package org.xmpp.extension.time;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
-import org.xmpp.UnmarshalHelper;
+import org.xmpp.*;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.IQ;
@@ -42,7 +39,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -103,7 +99,7 @@ public class EntityTimeTest extends BaseTest {
     }
 
     @Test
-    public void testEntityTimeManager() throws IOException, TimeoutException, StanzaException {
+    public void testEntityTimeManager() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);
@@ -115,7 +111,7 @@ public class EntityTimeTest extends BaseTest {
     }
 
     @Test
-    public void testEntityTimeIfDisabled() throws TimeoutException {
+    public void testEntityTimeIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         TestConnection connection2 = new TestConnection(JULIET, mockServer);

@@ -26,19 +26,15 @@ package org.xmpp.extension.ping;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
-import org.xmpp.UnmarshalHelper;
+import org.xmpp.*;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -57,24 +53,22 @@ public class PingTest extends BaseTest {
     }
 
     @Test
-    public void testPing() throws IOException, TimeoutException {
+    public void testPing() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         new TestConnection(JULIET, mockServer);
         PingManager pingManager = connection1.getExtensionManager(PingManager.class);
-        boolean pingResult = pingManager.ping(JULIET);
-        Assert.assertTrue(pingResult);
+        pingManager.ping(JULIET);
     }
 
-    @Test
-    public void testPingIfDisabled() throws IOException, TimeoutException {
+    @Test(expectedExceptions = StanzaException.class)
+    public void testPingIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
         TestConnection connection1 = new TestConnection(ROMEO, mockServer);
         TestConnection connection2 = new TestConnection(JULIET, mockServer);
         connection2.getExtensionManager(PingManager.class).setEnabled(false);
         PingManager pingManager = connection1.getExtensionManager(PingManager.class);
-        boolean pingResult = pingManager.ping(JULIET);
-        Assert.assertFalse(pingResult);
+        pingManager.ping(JULIET);
     }
 
     @Test

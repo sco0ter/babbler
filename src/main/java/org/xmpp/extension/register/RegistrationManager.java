@@ -25,11 +25,11 @@
 package org.xmpp.extension.register;
 
 import org.xmpp.Connection;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -39,16 +39,22 @@ public final class RegistrationManager extends ExtensionManager {
         super(connection);
     }
 
-    public Registration requestRegistrationFields() throws TimeoutException, StanzaException {
+    /**
+     * @return The registration form.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public Registration requestRegistrationFields() throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new Registration()));
-        if (result.getType() == IQ.Type.ERROR) {
-            throw new StanzaException(result.getError());
-        } else {
-            return result.getExtension(Registration.class);
-        }
+        return result.getExtension(Registration.class);
     }
 
-    public void register(Registration registration) throws TimeoutException, StanzaException {
+    /**
+     * @param registration The registration.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public void register(Registration registration) throws XmppException {
         if (registration == null) {
             throw new IllegalArgumentException("registration must not be null.");
         }
@@ -58,15 +64,24 @@ public final class RegistrationManager extends ExtensionManager {
         }
     }
 
-    public void removeAccount() throws TimeoutException, StanzaException {
-        IQ result = connection.query(new IQ(IQ.Type.SET, new Registration()));
+    /**
+     * Removes the account.
+     *
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public void removeAccount() throws XmppException {
+        connection.query(new IQ(IQ.Type.SET, new Registration()));
     }
 
-    public void changePassword(String username, String password) throws TimeoutException, StanzaException {
-        IQ result = connection.query(new IQ(IQ.Type.SET, new Registration(username, password)));
-        if (result.getType() == IQ.Type.ERROR) {
-            throw new StanzaException(result.getError());
-        }
+    /**
+     * Changes the password.
+     *
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public void changePassword(String username, String password) throws XmppException {
+        connection.query(new IQ(IQ.Type.SET, new Registration(username, password)));
     }
 
 

@@ -26,13 +26,13 @@ package org.xmpp.extension.version;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
-
-import java.util.concurrent.TimeoutException;
 
 /**
  * This manager implements <a href="http://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
@@ -75,9 +75,10 @@ public final class SoftwareVersionManager extends ExtensionManager {
      *
      * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to get the server's software version.
      * @return The software version or null, if this protocol is not supported.
-     * @throws TimeoutException If the request timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public SoftwareVersion getSoftwareVersion(Jid jid) throws TimeoutException, StanzaException {
+    public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {
         IQ iq = new IQ(IQ.Type.GET, new SoftwareVersion());
         iq.setTo(jid);
         IQ result = connection.query(iq);

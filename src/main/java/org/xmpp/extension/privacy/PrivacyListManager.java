@@ -24,9 +24,7 @@
 
 package org.xmpp.extension.privacy;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
@@ -36,7 +34,6 @@ import org.xmpp.stanza.StanzaException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeoutException;
 
 /**
  * This class manages privacy lists, which allow users to block communications from other users as described in <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
@@ -119,11 +116,11 @@ public final class PrivacyListManager extends ExtensionManager {
      * Gets the privacy lists.
      *
      * @return The privacy lists.
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  If the request returned with an error.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
-    public Privacy getPrivacyLists() throws TimeoutException, StanzaException {
+    public Privacy getPrivacyLists() throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new Privacy()));
         if (result.getError() != null) {
             throw new StanzaException(result.getError());
@@ -136,11 +133,11 @@ public final class PrivacyListManager extends ExtensionManager {
      *
      * @param name The privacy list name.
      * @return The privacy list.
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  If the privacy list was not found.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
-    public PrivacyList getPrivacyList(String name) throws TimeoutException, StanzaException {
+    public PrivacyList getPrivacyList(String name) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new Privacy(new PrivacyList(name))));
 
         if (result.getError() != null) {
@@ -158,11 +155,11 @@ public final class PrivacyListManager extends ExtensionManager {
      * Changes the active list currently being applied.
      *
      * @param name The active list name.
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  If the user attempts to set an active list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user.
+     * @throws StanzaException     If the user attempts to set an active list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
-    public void setActiveList(String name) throws TimeoutException, StanzaException {
+    public void setActiveList(String name) throws XmppException {
         Privacy privacy = new Privacy();
         privacy.setActiveName(name);
         setPrivacy(privacy);
@@ -171,11 +168,11 @@ public final class PrivacyListManager extends ExtensionManager {
     /**
      * Declines the use of any active list.
      *
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  If the request returned with an error.
+     * @throws StanzaException     If the request returned with an error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
-    public void declineActiveList() throws TimeoutException, StanzaException {
+    public void declineActiveList() throws XmppException {
         setActiveList("");
     }
 
@@ -183,14 +180,14 @@ public final class PrivacyListManager extends ExtensionManager {
      * Change the default list (which applies to the user as a whole, not only the sending resource).
      *
      * @param name The list name.
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  <ul>
-     *                          <li>If the user attempts to change which list is the default list but the default list is in use by at least one connected resource other than the sending resource, the server MUST return a {@code <conflict/>} stanza error to the sending resource</li>
-     *                          <li>If the user attempts to set a default list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user</li>
-     *                          </ul>
+     * @throws StanzaException     <ul>
+     *                             <li>If the user attempts to change which list is the default list but the default list is in use by at least one connected resource other than the sending resource, the server MUST return a {@code <conflict/>} stanza error to the sending resource</li>
+     *                             <li>If the user attempts to set a default list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user</li>
+     *                             </ul>
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
-    public void setDefaultList(String name) throws TimeoutException, StanzaException {
+    public void setDefaultList(String name) throws XmppException {
         Privacy privacy = new Privacy();
         privacy.setDefaultName(name);
         setPrivacy(privacy);
@@ -199,11 +196,11 @@ public final class PrivacyListManager extends ExtensionManager {
     /**
      * Declines the use of any default list.
      *
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  If one connected resource attempts to decline the use of a default list for the user as a whole but the default list currently applies to at least one other connected resource, the server MUST return a {@code <conflict/>} error to the sending resource.
+     * @throws StanzaException     If one connected resource attempts to decline the use of a default list for the user as a whole but the default list currently applies to at least one other connected resource, the server MUST return a {@code <conflict/>} error to the sending resource.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
-    public void declineDefaultList() throws TimeoutException, StanzaException {
+    public void declineDefaultList() throws XmppException {
         setDefaultList("");
     }
 
@@ -211,11 +208,11 @@ public final class PrivacyListManager extends ExtensionManager {
      * Creates or edits a privacy list.
      *
      * @param privacyList The privacy list.
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  If the request returned with an error.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-edit">2.6 Editing a Privacy List</a>
      */
-    public void updateList(PrivacyList privacyList) throws TimeoutException, StanzaException {
+    public void updateList(PrivacyList privacyList) throws XmppException {
         Privacy privacy = new Privacy(privacyList);
         setPrivacy(privacy);
     }
@@ -224,16 +221,16 @@ public final class PrivacyListManager extends ExtensionManager {
      * Removes a privacy list.
      *
      * @param name The privacy list.
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  If the request returned with an error.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-remove">2.8 Removing a Privacy List</a>
      */
-    public void removePrivacyList(String name) throws TimeoutException, StanzaException {
+    public void removePrivacyList(String name) throws XmppException {
         Privacy privacy = new Privacy(new PrivacyList(name));
         setPrivacy(privacy);
     }
 
-    private void setPrivacy(Privacy privacy) throws TimeoutException, StanzaException {
+    private void setPrivacy(Privacy privacy) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.SET, privacy));
         if (result.getError() != null) {
             throw new StanzaException(result.getError());

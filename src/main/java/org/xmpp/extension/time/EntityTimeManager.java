@@ -26,6 +26,8 @@ package org.xmpp.extension.time;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
@@ -34,7 +36,6 @@ import org.xmpp.stanza.StanzaException;
 
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.concurrent.TimeoutException;
 
 /**
  * This manager implements <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>.
@@ -71,9 +72,10 @@ public final class EntityTimeManager extends ExtensionManager {
      *
      * @param jid The entity's JID.
      * @return The entity time or null if this protocol is not supported by the entity.
-     * @throws TimeoutException If the operation timed out.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public EntityTime getEntityTime(Jid jid) throws TimeoutException, StanzaException {
+    public EntityTime getEntityTime(Jid jid) throws XmppException {
         IQ result = connection.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
         return result.getExtension(EntityTime.class);
     }

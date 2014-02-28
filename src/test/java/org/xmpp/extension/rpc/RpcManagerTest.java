@@ -26,17 +26,13 @@ package org.xmpp.extension.rpc;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.Connection;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.*;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.Stanza;
 import org.xmpp.stanza.StanzaException;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -57,7 +53,7 @@ public class RpcManagerTest extends BaseTest {
     }
 
     @Test
-    public void testCall() throws StanzaException, TimeoutException, RpcException {
+    public void testCall() throws XmppException, RpcException {
         MockServer mockServer = new MockServer();
 
         Connection connection1 = new TestConnection(ROMEO, mockServer);
@@ -81,7 +77,7 @@ public class RpcManagerTest extends BaseTest {
 
 
     @Test
-    public void testRpcException() throws StanzaException, TimeoutException {
+    public void testRpcException() throws XmppException {
         MockServer mockServer = new MockServer();
 
         Connection connection1 = new TestConnection(ROMEO, mockServer);
@@ -110,7 +106,7 @@ public class RpcManagerTest extends BaseTest {
     }
 
     @Test
-    public void testStanzaException() throws RpcException, TimeoutException {
+    public void testStanzaException() throws XmppException, RpcException {
         MockServer mockServer = new MockServer();
 
         Connection connection1 = new TestConnection(ROMEO, mockServer);

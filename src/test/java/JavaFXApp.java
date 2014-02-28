@@ -387,12 +387,7 @@ public class JavaFXApp extends Application {
                                     @Override
                                     protected Avatar call() throws Exception {
                                         AvatarManager avatarManager = connection.getExtensionManager(AvatarManager.class);
-                                        try {
-                                            return avatarManager.getAvatar(user);
-                                        } catch (TimeoutException e) {
-                                            e.printStackTrace();
-                                        }
-                                        return null;
+                                        return avatarManager.getAvatar(user);
                                     }
                                 };
                                 task.stateProperty().addListener(new ChangeListener<Worker.State>() {
@@ -419,9 +414,7 @@ public class JavaFXApp extends Application {
                                     LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
                                     try {
                                         lastActivityManager.getLastActivity(item.contact.get().getJid());
-                                    } catch (StanzaException e) {
-                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                    } catch (TimeoutException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }
                                 }
@@ -433,7 +426,7 @@ public class JavaFXApp extends Application {
                                     PingManager pingManager = connection.getExtensionManager(PingManager.class);
                                     try {
                                         pingManager.pingServer();
-                                    } catch (TimeoutException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -451,7 +444,7 @@ public class JavaFXApp extends Application {
                                         for (Search.Item item : result.getItems()) {
                                             System.out.println(item.getJid());
                                         }
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -465,7 +458,7 @@ public class JavaFXApp extends Application {
                                         SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(item.contact.get().getJid());
                                         if (softwareVersion != null)
                                             System.out.println(softwareVersion.getName());
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -479,7 +472,7 @@ public class JavaFXApp extends Application {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
                                         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
                                         int i = 0;
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
 
@@ -494,7 +487,7 @@ public class JavaFXApp extends Application {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
                                         VCard vCard = vCardManager.getVCard(jid);
                                         int i = 0;
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
 
@@ -509,7 +502,7 @@ public class JavaFXApp extends Application {
                                         List<Annotation.Note> notes = new ArrayList<>();
                                         notes.add(new Annotation.Note("Hallo", item.contact.get().getJid()));
                                         privateDataManager.storeData(new Annotation(notes));
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
 
@@ -523,7 +516,7 @@ public class JavaFXApp extends Application {
                                     try {
                                         List<Annotation> annotations = privateDataManager.getData(Annotation.class);
                                         int i = 0;
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -537,7 +530,7 @@ public class JavaFXApp extends Application {
                                     try {
                                         ItemNode infoNode = serviceDiscoveryManager.discoverItems(null);
                                         int i = 0;
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -549,7 +542,7 @@ public class JavaFXApp extends Application {
                                     PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
                                     try {
                                         pubSubManager.publish("http://jabber.org/protocol/tune", new Tune("AC/DC"));
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -564,7 +557,7 @@ public class JavaFXApp extends Application {
 
                                     try {
                                         fileTransferManager.sendFile(file, connection.getPresenceManager().getPresence(item.contact.get().getJid()).getFrom(), 10000);
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -578,7 +571,7 @@ public class JavaFXApp extends Application {
 
                                     try {
                                         EntityTime entityTime = entityTimeManager.getEntityTime(null);
-                                    } catch (TimeoutException | StanzaException e) {
+                                    } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -632,9 +625,7 @@ public class JavaFXApp extends Application {
                 LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
                 try {
                     lastActivityManager.getLastActivity(null);
-                } catch (StanzaException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (TimeoutException e) {
+                } catch (XmppException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
 

@@ -26,6 +26,7 @@ package org.xmpp.extension.offline;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -33,11 +34,9 @@ import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.StanzaException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -53,7 +52,7 @@ public final class OfflineMessageManager extends ExtensionManager {
 
     }
 
-    public int requestNumberOfMessages() throws TimeoutException, StanzaException {
+    public int requestNumberOfMessages() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(null, NODE);
         DataForm dataForm = infoDiscovery.getExtensions().iterator().next();
@@ -68,7 +67,7 @@ public final class OfflineMessageManager extends ExtensionManager {
         return 0;
     }
 
-    public List<OfflineMessageHeader> requestOfflineMessageHeaders() throws TimeoutException, StanzaException {
+    public List<OfflineMessageHeader> requestOfflineMessageHeaders() throws XmppException {
         List<OfflineMessageHeader> result = new ArrayList<>();
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, NODE);
@@ -82,7 +81,7 @@ public final class OfflineMessageManager extends ExtensionManager {
         IQ result = new IQ(IQ.Type.GET);
     }
 
-    public void removeOfflineMessages(String... ids) throws TimeoutException, StanzaException {
+    public void removeOfflineMessages(String... ids) throws XmppException {
         OfflineMessage offlineMessage = new OfflineMessage();
         for (String id : ids) {
             offlineMessage.getItems().add(new OfflineMessage.Item(id, OfflineMessage.Item.Action.REMOVE));
@@ -90,11 +89,11 @@ public final class OfflineMessageManager extends ExtensionManager {
         connection.query(new IQ(IQ.Type.SET, offlineMessage));
     }
 
-    public void getAllOfflineMessages() throws TimeoutException, StanzaException {
+    public void getAllOfflineMessages() throws XmppException {
         connection.query(new IQ(IQ.Type.GET, new OfflineMessage(true, false)));
     }
 
-    public void removeAllOfflineMessages() throws TimeoutException, StanzaException {
+    public void removeAllOfflineMessages() throws XmppException {
         connection.query(new IQ(IQ.Type.GET, new OfflineMessage(false, true)));
     }
 }

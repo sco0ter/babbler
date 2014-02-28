@@ -149,7 +149,7 @@ public final class TcpConnection extends Connection {
      * @throws TimeoutException If the connection timed out.
      */
     @Override
-    public synchronized void connect() throws IOException, TimeoutException {
+    public synchronized void connect() throws IOException {
         super.connect();
         int port = getPort() == 0 ? 5222 : getPort();
 
@@ -187,7 +187,11 @@ public final class TcpConnection extends Connection {
         xmppStreamReader.startReading(inputStream);
 
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
-        waitUntilSaslNegotiationStarted();
+        try {
+            waitUntilSaslNegotiationStarted();
+        } catch (TimeoutException e) {
+            throw new IOException(e);
+        }
 
         if (!isSecure && getSecurityManager().isEnabled()) {
             throw new IllegalStateException("Connection could not be secured.");

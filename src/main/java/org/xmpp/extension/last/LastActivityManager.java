@@ -24,15 +24,11 @@
 
 package org.xmpp.extension.last;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
-import org.xmpp.Jid;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.*;
 
 import java.util.Date;
-import java.util.concurrent.TimeoutException;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
@@ -131,8 +127,10 @@ public final class LastActivityManager extends ExtensionManager {
      *
      * @param jid The JID for which the last activity is requested.
      * @return The last activity of the requested JID or null if the feature is not implemented or a time out has occurred.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public LastActivity getLastActivity(Jid jid) throws StanzaException, TimeoutException {
+    public LastActivity getLastActivity(Jid jid) throws XmppException {
         IQ result = connection.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
         return result.getExtension(LastActivity.class);
     }

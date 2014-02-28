@@ -24,16 +24,12 @@
 
 package org.xmpp.extension.rpc;
 
-import org.xmpp.Connection;
-import org.xmpp.ConnectionEvent;
-import org.xmpp.ConnectionListener;
-import org.xmpp.Jid;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -113,11 +109,11 @@ public final class RpcManager extends ExtensionManager {
      * @param methodName The method name.
      * @param parameters The parameters.
      * @return The result.
-     * @throws TimeoutException If the operation timed out.
-     * @throws StanzaException  If the RPC returned with an XMPP stanza error.
-     * @throws RpcException     If the RPC returned with an application-level error ({@code <fault/>} element).
+     * @throws NoResponseException If the entity did not respond.
+     * @throws StanzaException     If the RPC returned with an XMPP stanza error.
+     * @throws RpcException        If the RPC returned with an application-level error ({@code <fault/>} element).
      */
-    public Value call(Jid jid, String methodName, Value... parameters) throws TimeoutException, StanzaException, RpcException {
+    public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {
         IQ result = connection.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
         if (result != null) {
             if (result.getType() == IQ.Type.RESULT) {

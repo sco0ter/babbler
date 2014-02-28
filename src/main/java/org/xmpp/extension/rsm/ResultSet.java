@@ -130,6 +130,8 @@ public final class ResultSet {
     /**
      * Gets a result set, which starts at a particular index.
      *
+     * @param itemCount The item count per page.
+     * @param index     The index to start from.
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
      */

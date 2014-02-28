@@ -145,8 +145,7 @@ public final class TcpConnection extends Connection {
      * If a proxy has been specified, the connection is established through this proxy.<br>
      * </p>
      *
-     * @throws IOException      If the underlying socket threw an exception.
-     * @throws TimeoutException If the connection timed out.
+     * @throws IOException If the underlying socket threw an exception.
      */
     @Override
     public synchronized void connect() throws IOException {

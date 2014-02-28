@@ -178,6 +178,7 @@ public final class ReachabilityManager extends ExtensionManager {
     /**
      * Requests the reachability addresses of a contact.
      *
+     * @param contact The contact.
      * @return The reachability addresses.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.

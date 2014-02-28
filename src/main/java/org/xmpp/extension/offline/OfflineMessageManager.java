@@ -26,62 +26,115 @@ package org.xmpp.extension.offline;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
+import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.stanza.IQ;
+import org.xmpp.stanza.StanzaException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This manager covers the use cases of <a href="http://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.
+ * <p>
+ * Offline Message Retrieval must be used before sending initial presence, in order to tell the server, that it must not flood the client with offline messages later.
+ * </p>
+ * Enabling or disabling this manager has no effect.
+ *
  * @author Christian Schudt
  */
 public final class OfflineMessageManager extends ExtensionManager {
+
     private static final String NODE = "http://jabber.org/protocol/offline";
 
-    protected OfflineMessageManager(Connection connection) {
+    private OfflineMessageManager(Connection connection) {
         super(connection);
     }
 
-    public void discoverServerSupport() {
-
+    /**
+     * Discovers support for flexible offline message retrieval.
+     *
+     * @return True, if the server supports flexible offline message retrieval; otherwise false.
+     * @throws StanzaException     If the server returned a stanza error.
+     * @throws NoResponseException If the server did not respond.
+     */
+    public boolean isSupported() throws XmppException {
+        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
+        return infoNode.getFeatures().contains(new Feature(NODE));
     }
 
+    /**
+     * Gets the number of offline messages.
+     *
+     * @return The number of offline messages.
+     * @throws StanzaException     If the server returned a stanza error.
+     * @throws NoResponseException If the server did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-number">2.2 Requesting Number of Messages</a>
+     */
     public int requestNumberOfMessages() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(null, NODE);
-        DataForm dataForm = infoDiscovery.getExtensions().iterator().next();
-        if (dataForm != null) {
-            for (DataForm.Field field : dataForm.getFields()) {
-                if ("number_of_messages".equals(field.getVar())) {
-                    String numberOfMessages = field.getValues().get(0);
-                    return Integer.parseInt(numberOfMessages);
+        if (!infoDiscovery.getExtensions().isEmpty()) {
+            DataForm dataForm = infoDiscovery.getExtensions().get(0);
+            if (dataForm != null) {
+                for (DataForm.Field field : dataForm.getFields()) {
+                    if ("number_of_messages".equals(field.getVar())) {
+                        String numberOfMessages = field.getValues().get(0);
+                        return Integer.parseInt(numberOfMessages);
+                    }
                 }
             }
         }
         return 0;
     }
 
-    public List<OfflineMessageHeader> requestOfflineMessageHeaders() throws XmppException {
+    /**
+     * Gets the offline message headers.
+     *
+     * @return The list of message headers.
+     * @throws StanzaException     If the server returned a stanza error.
+     * @throws NoResponseException If the server did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>
+     */
+    public List<OfflineMessageHeader> requestMessageHeaders() throws XmppException {
         List<OfflineMessageHeader> result = new ArrayList<>();
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, NODE);
         for (Item item : itemNode.getItems()) {
-            result.add(new OfflineMessageHeader(Jid.fromEscapedString(item.getName()), item.getName()));
+            result.add(new OfflineMessageHeader(Jid.fromEscapedString(item.getName()), item.getNode()));
         }
         return result;
     }
 
-    public void requestOfflineMessage(String node) {
-        IQ result = new IQ(IQ.Type.GET);
+    /**
+     * Requests a specific offline message. The message will be sent in a normal way and contains the {@link OfflineMessage} extension, which can be used to match the id {@link org.xmpp.extension.offline.OfflineMessage#getId()}.
+     *
+     * @param id The offline message id, which corresponds to {@link org.xmpp.extension.offline.OfflineMessageHeader#getId()}
+     * @throws StanzaException     If the server returned a stanza error.
+     * @throws NoResponseException If the server did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-specific">2.4 Retrieving Specific Messages</a>
+     */
+    public void requestMessage(String id) throws XmppException {
+        connection.query(new IQ(IQ.Type.GET, new OfflineMessage(new OfflineMessage.Item(id, OfflineMessage.Item.Action.VIEW))));
     }
 
-    public void removeOfflineMessages(String... ids) throws XmppException {
+    /**
+     * Removes specific offline messages.
+     *
+     * @param ids The offline message ids, which correspond to {@link org.xmpp.extension.offline.OfflineMessageHeader#getId()}
+     * @throws StanzaException     If the server returned a stanza error.
+     * @throws NoResponseException If the server did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-specific">2.5 Removing Specific Messages</a>
+     */
+    public void removeMessages(String... ids) throws XmppException {
         OfflineMessage offlineMessage = new OfflineMessage();
         for (String id : ids) {
             offlineMessage.getItems().add(new OfflineMessage.Item(id, OfflineMessage.Item.Action.REMOVE));
@@ -89,11 +142,25 @@ public final class OfflineMessageManager extends ExtensionManager {
         connection.query(new IQ(IQ.Type.SET, offlineMessage));
     }
 
-    public void getAllOfflineMessages() throws XmppException {
+    /**
+     * Requests all offline messages.
+     *
+     * @throws StanzaException     If the server returned a stanza error.
+     * @throws NoResponseException If the server did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-all">2.6 Retrieving All Messages</a>
+     */
+    public void requestAllMessages() throws XmppException {
         connection.query(new IQ(IQ.Type.GET, new OfflineMessage(true, false)));
     }
 
-    public void removeAllOfflineMessages() throws XmppException {
-        connection.query(new IQ(IQ.Type.GET, new OfflineMessage(false, true)));
+    /**
+     * Removes all offline messages.
+     *
+     * @throws StanzaException     If the server returned a stanza error.
+     * @throws NoResponseException If the server did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-all">2.7 Removing All Messages</a>
+     */
+    public void removeAllMessages() throws XmppException {
+        connection.query(new IQ(IQ.Type.SET, new OfflineMessage(false, true)));
     }
 }

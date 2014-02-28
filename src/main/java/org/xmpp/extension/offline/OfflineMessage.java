@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <offline/>} element.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "offline")
@@ -43,24 +45,42 @@ public final class OfflineMessage {
     @XmlElement(name = "purge")
     private String purge;
 
-    public OfflineMessage() {
+    OfflineMessage() {
     }
 
-    public OfflineMessage(boolean fetch, boolean purge) {
+    OfflineMessage(Item item) {
+        items.add(item);
+    }
+
+    OfflineMessage(boolean fetch, boolean purge) {
         this.fetch = fetch ? "" : null;
         this.purge = purge ? "" : null;
     }
 
-    public List<Item> getItems() {
+    /**
+     * Gets the offline message id.
+     *
+     * @return The offline message id.
+     */
+    public String getId() {
+        if (items != null && !items.isEmpty()) {
+            return items.get(0).getId();
+        }
+        return null;
+    }
+
+    /**
+     * Gets the items.
+     *
+     * @return The items.
+     */
+    List<Item> getItems() {
         return items;
     }
 
-    public static final class Item {
+    static final class Item {
         @XmlAttribute(name = "node")
         private String id;
-
-        //@XmlAttribute(name = "jid")
-        //private Jid jid;
 
         @XmlAttribute(name = "action")
         private Action action;
@@ -68,13 +88,22 @@ public final class OfflineMessage {
         private Item() {
         }
 
-        public Item(String id, Action action) {
+        Item(String id, Action action) {
             this.id = id;
             this.action = action;
         }
 
+        /**
+         * Gets the offline message id.
+         *
+         * @return The id.
+         */
+        public String getId() {
+            return id;
+        }
+
         @XmlEnum
-        public enum Action {
+        enum Action {
             @XmlEnumValue("remove")
             REMOVE,
             @XmlEnumValue("view")

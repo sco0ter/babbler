@@ -27,7 +27,10 @@ package org.xmpp.extension.offline;
 import org.xmpp.Jid;
 
 /**
+ * The offline message header.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>
  */
 public final class OfflineMessageHeader {
 
@@ -38,5 +41,23 @@ public final class OfflineMessageHeader {
     OfflineMessageHeader(Jid sender, String id) {
         this.sender = sender;
         this.id = id;
+    }
+
+    /**
+     * Gets the sender of the offline message.
+     *
+     * @return The sender.
+     */
+    public Jid getSender() {
+        return sender;
+    }
+
+    /**
+     * Gets the id of the offline message, which can be used to {@linkplain OfflineMessageManager#requestMessage(String)} retrieve} or {@linkplain OfflineMessageManager#removeMessages(String...) remove} the message.
+     *
+     * @return The id.
+     */
+    public String getId() {
+        return id;
     }
 }

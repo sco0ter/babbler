@@ -436,19 +436,31 @@ public abstract class Connection implements Closeable {
         }
     }
 
-    public IQ query(IQ iq) throws XmppException {
-        return this.query(iq, 20000);
-    }
-
     /**
-     * Sends an {@code <iq/>} stanza and waits for the response. The response should be either of type 'result' or 'error'.
+     * Sends an {@code <iq/>} stanza and waits for the response.
      * <p>
      * This method blocks until a result was received or a timeout occurred.
      * </p>
      *
      * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain org.xmpp.stanza.IQ.Type#GET get} or {@linkplain org.xmpp.stanza.IQ.Type#SET set}.
-     * @return The result {@code <iq/>} stanza. If an error occurred, the stanza contains an {@linkplain org.xmpp.stanza.IQ#getError() error}.
-     * @throws TimeoutException If no response was received in time.
+     * @return The result {@code <iq/>} stanza.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public IQ query(IQ iq) throws XmppException {
+        return this.query(iq, 20000);
+    }
+
+    /**
+     * Sends an {@code <iq/>} stanza and waits for the response.
+     * <p>
+     * This method blocks until a result was received or a timeout occurred.
+     * </p>
+     *
+     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain org.xmpp.stanza.IQ.Type#GET get} or {@linkplain org.xmpp.stanza.IQ.Type#SET set}.
+     * @return The result {@code <iq/>} stanza.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public IQ query(final IQ iq, long timeout) throws XmppException {
         if (!(iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET)) {
@@ -498,9 +510,8 @@ public abstract class Connection implements Closeable {
     /**
      * Reconnects to the XMPP server and automatically logs in by using the last known information (e.g. user name, password and bound resource).
      *
-     * @throws IOException      If an exception occurred while connecting.
-     * @throws LoginException   If an exception occurred while logging in.
-     * @throws TimeoutException If a timeout occurred, while either connecting or logging in.
+     * @throws IOException    If an exception occurred while connecting.
+     * @throws LoginException If an exception occurred while logging in.
      */
     public final synchronized void reconnect() throws IOException, LoginException {
         connect();
@@ -821,18 +832,18 @@ public abstract class Connection implements Closeable {
      *
      * @param outputStream The output stream to write to.
      * @return The XML writer.
-     * @throws XMLStreamException
+     * @throws XMLStreamException If the writer could not be created.
      */
     protected XMLStreamWriter createXMLStreamWriter(OutputStream outputStream) throws XMLStreamException {
         return new PrefixFreeCanonicalizationWriter(xmlOutputFactory.createXMLStreamWriter(outputStream));
     }
 
     /**
-     * Creates the read to read the stream.
+     * Creates the reader to read the stream.
      *
      * @param inputStream The input stream.
      * @return The XML reader.
-     * @throws XMLStreamException
+     * @throws XMLStreamException If the reader could not be created.
      */
     protected XMLEventReader createXMLEventReader(InputStream inputStream) throws XMLStreamException {
         return xmlInputFactory.createXMLEventReader(inputStream);

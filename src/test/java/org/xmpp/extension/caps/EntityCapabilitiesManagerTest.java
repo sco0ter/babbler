@@ -131,6 +131,8 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
 
     /**
      * Generation example from <a href="http://xmpp.org/extensions/xep-0115.html#ver-gen-simple">5.2 Simple Generation Example</a>
+     *
+     * @throws NoSuchAlgorithmException If SHA-1 algorithm could not be found.
      */
     @Test
     public void testVerificationString() throws NoSuchAlgorithmException {
@@ -152,6 +154,8 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
 
     /**
      * Generation example from <a href="http://xmpp.org/extensions/xep-0115.html#ver-gen-complex">5.3 Complex Generation Example</a>
+     *
+     * @throws NoSuchAlgorithmException If SHA-1 algorithm could not be found.
      */
     @Test
     public void testVerificationStringComplex() throws NoSuchAlgorithmException {

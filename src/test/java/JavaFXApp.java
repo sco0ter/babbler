@@ -359,7 +359,11 @@ public class JavaFXApp extends Application {
                             connection.login(txtUser.getText(), txtPassword.getText(), "test");
                             connection.send(new Presence());
                             connection.getRosterManager().requestRoster();
-                        } catch (TimeoutException | LoginException | IOException e) {
+                        } catch (LoginException e) {
+                            e.printStackTrace();
+                        } catch (TimeoutException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }

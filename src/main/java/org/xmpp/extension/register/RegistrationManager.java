@@ -77,6 +77,8 @@ public final class RegistrationManager extends ExtensionManager {
     /**
      * Changes the password.
      *
+     * @param username The user name.
+     * @param password The password.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */

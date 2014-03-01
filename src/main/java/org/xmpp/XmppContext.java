@@ -70,8 +70,8 @@ import org.xmpp.extension.reach.ReachabilityManager;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.receipts.Received;
 import org.xmpp.extension.receipts.Request;
-import org.xmpp.extension.register.Register;
 import org.xmpp.extension.register.Registration;
+import org.xmpp.extension.register.feature.RegisterFeature;
 import org.xmpp.extension.rosterx.RosterExchange;
 import org.xmpp.extension.rpc.Rpc;
 import org.xmpp.extension.rsm.ResultSet;
@@ -215,7 +215,7 @@ public abstract class XmppContext {
             registerExtension(PubSub.class);
 
             // XEP-0077: In-Band Registration
-            registerExtension(Register.class, Registration.class);
+            registerExtension(RegisterFeature.class, Registration.class);
 
             // XEP-0080: User Location
             registerExtension(GeoLocation.class);

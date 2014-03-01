@@ -36,7 +36,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt not supported][not supported]   [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * ![alt not supported][not supported]   [XEP-0071: XHTML-IM](http://xmpp.org/extensions/xep-0071.html)
 * ![alt not supported][not supported]   [XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)
-* ![alt in development][in development] [XEP-0077: In-Band Registration](http://xmpp.org/extensions/xep-0077.html)
+* ![alt supported][supported]           [XEP-0077: In-Band Registration](http://xmpp.org/extensions/xep-0077.html)
 * ![alt not supported][not supported]   [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
 * ![alt supported][supported]           [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html)
 * ![alt not supported][not supported]   [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)

@@ -122,9 +122,6 @@ public final class PrivacyListManager extends ExtensionManager {
      */
     public Privacy getPrivacyLists() throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new Privacy()));
-        if (result.getError() != null) {
-            throw new StanzaException(result.getError());
-        }
         return result.getExtension(Privacy.class);
     }
 
@@ -139,11 +136,6 @@ public final class PrivacyListManager extends ExtensionManager {
      */
     public PrivacyList getPrivacyList(String name) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new Privacy(new PrivacyList(name))));
-
-        if (result.getError() != null) {
-            throw new StanzaException(result.getError());
-        }
-
         Privacy privacy = result.getExtension(Privacy.class);
         if (privacy != null) {
             return privacy.getPrivacyLists().get(0);
@@ -231,9 +223,6 @@ public final class PrivacyListManager extends ExtensionManager {
     }
 
     private void setPrivacy(Privacy privacy) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.SET, privacy));
-        if (result.getError() != null) {
-            throw new StanzaException(result.getError());
-        }
+        connection.query(new IQ(IQ.Type.SET, privacy));
     }
 }

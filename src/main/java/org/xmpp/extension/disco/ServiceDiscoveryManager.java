@@ -377,11 +377,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
     public InfoNode discoverInformation(Jid jid, String node) throws XmppException {
         IQ iq = new IQ(jid, IQ.Type.GET, new InfoDiscovery(node));
         IQ result = connection.query(iq);
-        if (result.getType() == IQ.Type.RESULT) {
-            return result.getExtension(InfoDiscovery.class);
-        } else {
-            throw new StanzaException(result.getError());
-        }
+        return result.getExtension(InfoDiscovery.class);
     }
 
     /**

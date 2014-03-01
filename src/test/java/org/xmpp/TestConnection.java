@@ -91,7 +91,7 @@ public class TestConnection extends Connection {
         removeIQListener(iqListener);
         IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
-            throw new StanzaException(response.getError());
+            throw new StanzaException(response);
         }
         return response;
     }

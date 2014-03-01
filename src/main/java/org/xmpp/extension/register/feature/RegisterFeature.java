@@ -22,36 +22,22 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.stanza;
+package org.xmpp.extension.register.feature;
 
-import org.xmpp.XmppException;
+import org.xmpp.stream.Feature;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * A stanza exception represents a {@linkplain Stanza.Error stanza error}.
- * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
- *
  * @author Christian Schudt
  */
-public final class StanzaException extends XmppException {
-
-    private final Stanza stanza;
-
-    /**
-     * Constructs a stanza exception.
-     *
-     * @param stanza The underlying stanza.
-     */
-    public StanzaException(Stanza stanza) {
-        super(stanza.getError().getText());
-        this.stanza = stanza;
+@XmlRootElement(name = "register")
+public final class RegisterFeature extends Feature {
+    private RegisterFeature() {
     }
 
-    /**
-     * Gets the stanza, which includes the error.
-     *
-     * @return The stanza.
-     */
-    public Stanza getStanza() {
-        return stanza;
+    @Override
+    public int getPriority() {
+        return 0;
     }
 }

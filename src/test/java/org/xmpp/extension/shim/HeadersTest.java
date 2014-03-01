@@ -89,7 +89,7 @@ public class HeadersTest extends BaseTest {
         try {
             serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim");
         } catch (StanzaException e) {
-            Assert.assertTrue(e.getError().getCondition() instanceof Stanza.Error.ItemNotFound);
+            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Stanza.Error.ItemNotFound);
             return;
         }
         Assert.fail();

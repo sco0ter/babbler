@@ -194,14 +194,7 @@ public final class RosterManager {
         }
         Roster roster = new Roster();
         roster.getContacts().add(contact);
-        IQ result = connection.query(new IQ(IQ.Type.SET, roster));
-        if (result != null && result.getType() == IQ.Type.ERROR) {
-            Stanza.Error error = result.getError();
-            if (error != null) {
-                throw new StanzaException(error);
-            }
-        }
-
+        connection.query(new IQ(IQ.Type.SET, roster));
         if (requestSubscription) {
             connection.getPresenceManager().requestSubscription(contact.getJid(), status);
         }

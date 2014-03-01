@@ -117,6 +117,7 @@ public final class GeoLocation {
      * Gets the horizontal GPS error in meters.
      *
      * @return The accuracy.
+     * @see #setAccuracy(Double)
      */
     public Double getAccuracy() {
         return accuracy;
@@ -126,6 +127,7 @@ public final class GeoLocation {
      * Sets the horizontal GPS error in meters.
      *
      * @param accuracy The accuracy.
+     * @see #getAccuracy()
      */
     public void setAccuracy(Double accuracy) {
         this.accuracy = accuracy;

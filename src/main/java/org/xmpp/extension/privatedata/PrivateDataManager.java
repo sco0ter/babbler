@@ -65,18 +65,13 @@ public final class PrivateDataManager extends ExtensionManager {
             constructor.setAccessible(true);
             T instance = constructor.newInstance();
             IQ result = connection.query(new IQ(IQ.Type.GET, new PrivateData(instance)));
-            if (result.getType() == IQ.Type.RESULT) {
-                PrivateData privateData = result.getExtension(PrivateData.class);
-                return (List<T>) privateData.getItems();
-            } else if (result.getType() == IQ.Type.ERROR) {
-                throw new StanzaException(result.getError());
-            }
+            PrivateData privateData = result.getExtension(PrivateData.class);
+            return (List<T>) privateData.getItems();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException("Cannot instantiate class.", e);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("Could not find no-args default constructor.", e);
         }
-        return null;
     }
 
     /**

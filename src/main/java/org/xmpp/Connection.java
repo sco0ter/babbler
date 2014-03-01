@@ -502,7 +502,7 @@ public abstract class Connection implements Closeable {
 
         IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
-            throw new StanzaException(response.getError());
+            throw new StanzaException(response);
         }
         return response;
     }
@@ -654,7 +654,7 @@ public abstract class Connection implements Closeable {
         try {
             result = query(iq);
         } catch (StanzaException e) {
-            LoginException loginException = new LoginException("Error during resource binding: " + e.getError().toString());
+            LoginException loginException = new LoginException("Error during resource binding: " + e.getStanza().toString());
             loginException.initCause(e);
             throw loginException;
         } catch (XmppException e) {
@@ -673,7 +673,7 @@ public abstract class Connection implements Closeable {
             try {
                 query(new IQ(IQ.Type.SET, new Session()));
             } catch (StanzaException e) {
-                LoginException loginException = new LoginException("Error during session establishment: " + e.getError().toString());
+                LoginException loginException = new LoginException("Error during session establishment: " + e.getStanza().toString());
                 loginException.initCause(e);
                 throw loginException;
             } catch (XmppException e) {

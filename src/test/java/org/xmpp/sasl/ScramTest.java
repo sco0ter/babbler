@@ -175,7 +175,7 @@ public class ScramTest {
         byte[] response = saslClient.evaluateChallenge(challenge);
 
         byte[] serverFinalMessage = scramServer.evaluateResponse(response);
-        System.out.println(new String(serverFinalMessage));
+        Assert.assertTrue(new String(serverFinalMessage).startsWith("v="));
     }
 
     @Test(expectedExceptions = SaslException.class)

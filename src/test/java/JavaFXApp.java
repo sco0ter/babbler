@@ -71,6 +71,8 @@ import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
+import org.xmpp.extension.register.Registration;
+import org.xmpp.extension.register.RegistrationManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.shim.HeaderManager;
@@ -91,7 +93,6 @@ import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.security.auth.login.LoginException;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -100,7 +101,6 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
 
 /**
@@ -357,13 +357,13 @@ public class JavaFXApp extends Application {
                         try {
                             connection.connect();
                             connection.login(txtUser.getText(), txtPassword.getText(), "test");
-                            connection.send(new Presence());
+                            RegistrationManager registrationManager = connection.getExtensionManager(RegistrationManager.class);
+                            Registration registration = registrationManager.getRegistration();
+                            boolean isSupported = registrationManager.isRegistrationSupported();
+                            //connection.send(new Presence());
                             connection.getRosterManager().requestRoster();
-                        } catch (LoginException e) {
-                            e.printStackTrace();
-                        } catch (TimeoutException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
+
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }

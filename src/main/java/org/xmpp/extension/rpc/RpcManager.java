@@ -82,7 +82,7 @@ public final class RpcManager extends ExtensionManager {
                                         result.setExtension(new Rpc(value));
                                         connection.send(result);
                                     } catch (StanzaException e1) {
-                                        connection.send(iq.createError(e1.getError()));
+                                        connection.send(iq.createError(e1.getStanza().getError()));
                                     } catch (RpcException e1) {
                                         IQ result = iq.createResult();
                                         result.setExtension(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
@@ -116,19 +116,15 @@ public final class RpcManager extends ExtensionManager {
     public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {
         IQ result = connection.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
         if (result != null) {
-            if (result.getType() == IQ.Type.RESULT) {
-                Rpc rpc = result.getExtension(Rpc.class);
-                if (rpc != null) {
-                    Rpc.MethodResponse methodResponse = rpc.getMethodResponse();
-                    if (methodResponse != null) {
-                        if (methodResponse.getFault() != null) {
-                            throw new RpcException(methodResponse.getFault().getFaultCode(), methodResponse.getFault().getFaultString());
-                        }
-                        return methodResponse.getResponse();
+            Rpc rpc = result.getExtension(Rpc.class);
+            if (rpc != null) {
+                Rpc.MethodResponse methodResponse = rpc.getMethodResponse();
+                if (methodResponse != null) {
+                    if (methodResponse.getFault() != null) {
+                        throw new RpcException(methodResponse.getFault().getFaultCode(), methodResponse.getFault().getFaultString());
                     }
+                    return methodResponse.getResponse();
                 }
-            } else if (result.getType() == IQ.Type.ERROR) {
-                throw new StanzaException(result.getError());
             }
         }
         return null;

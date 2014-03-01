@@ -22,22 +22,10 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.register;
-
-import org.xmpp.stream.Feature;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a> (feature).
  */
-@XmlRootElement(name = "register", namespace = "http://jabber.org/features/iq-register")
-public final class Register extends Feature {
-    private Register() {
-    }
+@XmlSchema(namespace = "http://jabber.org/features/iq-register", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.register.feature;
 
-    @Override
-    public int getPriority() {
-        return 0;
-    }
-}
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

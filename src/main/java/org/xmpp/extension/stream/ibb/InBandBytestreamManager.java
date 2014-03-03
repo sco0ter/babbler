@@ -30,7 +30,9 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.StanzaError;
+import org.xmpp.stanza.errors.ItemNotFound;
+import org.xmpp.stanza.errors.UnexpectedRequest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -72,7 +74,7 @@ public class InBandBytestreamManager extends ExtensionManager {
                                         connection.send(iq.createResult());
                                     } else {
                                         // 2. Because the sequence number has already been used, the recipient returns an <unexpected-request/> error with a type of 'cancel'.
-                                        connection.send(iq.createError(new Stanza.Error(Stanza.Error.Type.CANCEL, new Stanza.Error.UnexpectedRequest())));
+                                        connection.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new UnexpectedRequest())));
                                     }
                                 }
                             } else {
@@ -129,7 +131,7 @@ public class InBandBytestreamManager extends ExtensionManager {
         IbbSession ibbSession = ibbSessionMap.get(sessionId);
         if (ibbSession == null) {
             // 1. Because the session ID is unknown, the recipient returns an <item-not-found/> error with a type of 'cancel'.
-            connection.send(iq.createError(new Stanza.Error(Stanza.Error.Type.CANCEL, new Stanza.Error.ItemNotFound())));
+            connection.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new ItemNotFound())));
         }
         return ibbSession;
     }

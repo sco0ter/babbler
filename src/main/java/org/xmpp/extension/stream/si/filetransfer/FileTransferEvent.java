@@ -30,7 +30,8 @@ import org.xmpp.extension.featureneg.FeatureNegotiation;
 import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
 import org.xmpp.extension.stream.si.StreamInitiation;
 import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.StanzaError;
+import org.xmpp.stanza.errors.Forbidden;
 
 import java.util.EventObject;
 
@@ -81,6 +82,6 @@ public final class FileTransferEvent extends EventObject {
      * Rejects the incoming file transfer request.
      */
     public void reject() {
-        connection.send(iq.createError(new Stanza.Error(new Stanza.Error.Forbidden())));
+        connection.send(iq.createError(new StanzaError(new Forbidden())));
     }
 }

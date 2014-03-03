@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.stream.errors.*;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -47,7 +48,7 @@ public class StreamErrorTest extends BaseTest {
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         StreamError streamError = (StreamError) unmarshaller.unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.BadFormat);
+        Assert.assertTrue(streamError.getCondition() instanceof BadFormat);
     }
 
     @Test
@@ -59,7 +60,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.BadNamespacePrefix);
+        Assert.assertTrue(streamError.getCondition() instanceof BadNamespacePrefix);
     }
 
     @Test
@@ -71,7 +72,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.Conflict);
+        Assert.assertTrue(streamError.getCondition() instanceof Conflict);
     }
 
     @Test
@@ -83,7 +84,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.ConnectionTimeout);
+        Assert.assertTrue(streamError.getCondition() instanceof ConnectionTimeout);
     }
 
     @Test
@@ -95,7 +96,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.HostGone);
+        Assert.assertTrue(streamError.getCondition() instanceof HostGone);
     }
 
     @Test
@@ -107,7 +108,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.HostUnknown);
+        Assert.assertTrue(streamError.getCondition() instanceof HostUnknown);
     }
 
     @Test
@@ -119,7 +120,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.ImproperAddressing);
+        Assert.assertTrue(streamError.getCondition() instanceof ImproperAddressing);
     }
 
     @Test
@@ -131,7 +132,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.InternalServerError);
+        Assert.assertTrue(streamError.getCondition() instanceof InternalServerError);
     }
 
     @Test
@@ -143,7 +144,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.InvalidFrom);
+        Assert.assertTrue(streamError.getCondition() instanceof InvalidFrom);
     }
 
     @Test
@@ -155,7 +156,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.InvalidNamespace);
+        Assert.assertTrue(streamError.getCondition() instanceof InvalidNamespace);
     }
 
     @Test
@@ -167,7 +168,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.InvalidXml);
+        Assert.assertTrue(streamError.getCondition() instanceof InvalidXml);
     }
 
     @Test
@@ -179,7 +180,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.NotAuthorized);
+        Assert.assertTrue(streamError.getCondition() instanceof NotAuthorized);
     }
 
     @Test
@@ -191,7 +192,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.NotWellFormed);
+        Assert.assertTrue(streamError.getCondition() instanceof NotWellFormed);
     }
 
     @Test
@@ -203,7 +204,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.PolicyViolation);
+        Assert.assertTrue(streamError.getCondition() instanceof PolicyViolation);
     }
 
     @Test
@@ -215,7 +216,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.RemoteConnectionFailed);
+        Assert.assertTrue(streamError.getCondition() instanceof RemoteConnectionFailed);
     }
 
     @Test
@@ -227,7 +228,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.Reset);
+        Assert.assertTrue(streamError.getCondition() instanceof Reset);
     }
 
     @Test
@@ -239,7 +240,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.ResourceConstraint);
+        Assert.assertTrue(streamError.getCondition() instanceof ResourceConstraint);
     }
 
     @Test
@@ -251,7 +252,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.RestrictedXml);
+        Assert.assertTrue(streamError.getCondition() instanceof RestrictedXml);
     }
 
     @Test
@@ -263,8 +264,8 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.SeeOtherHost);
-        Assert.assertEquals(((StreamError.SeeOtherHost) streamError.getCondition()).getOtherHost(), "[2001:41D0:1:A49b::1]:9222");
+        Assert.assertTrue(streamError.getCondition() instanceof SeeOtherHost);
+        Assert.assertEquals(((SeeOtherHost) streamError.getCondition()).getOtherHost(), "[2001:41D0:1:A49b::1]:9222");
     }
 
     @Test
@@ -276,7 +277,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.SystemShutdown);
+        Assert.assertTrue(streamError.getCondition() instanceof SystemShutdown);
     }
 
     @Test
@@ -288,7 +289,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.UndefinedCondition);
+        Assert.assertTrue(streamError.getCondition() instanceof UndefinedCondition);
     }
 
     @Test
@@ -300,7 +301,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.UnsupportedEncoding);
+        Assert.assertTrue(streamError.getCondition() instanceof UnsupportedEncoding);
     }
 
     @Test
@@ -312,7 +313,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.UnsupportedFeature);
+        Assert.assertTrue(streamError.getCondition() instanceof UnsupportedFeature);
     }
 
     @Test
@@ -324,7 +325,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.UnsupportedStanzaType);
+        Assert.assertTrue(streamError.getCondition() instanceof UnsupportedStanzaType);
     }
 
     @Test
@@ -336,7 +337,7 @@ public class StreamErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.UnsupportedVersion);
+        Assert.assertTrue(streamError.getCondition() instanceof UnsupportedVersion);
     }
 
     @Test
@@ -352,6 +353,6 @@ public class StreamErrorTest extends BaseTest {
         StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertEquals(streamError.getText(), "OPTIONAL descriptive text");
         Assert.assertEquals(streamError.getLanguage(), "en");
-        Assert.assertTrue(streamError.getCondition() instanceof StreamError.HostUnknown);
+        Assert.assertTrue(streamError.getCondition() instanceof HostUnknown);
     }
 }

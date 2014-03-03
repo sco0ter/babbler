@@ -35,6 +35,7 @@ import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemDiscovery;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.errors.ItemNotFound;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -109,7 +110,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                                     result.setExtension(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
                                     connection.send(result);
                                 } else {
-                                    connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ItemNotFound())));
+                                    connection.send(iq.createError(new StanzaError(new ItemNotFound())));
                                 }
                             }
 
@@ -131,7 +132,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                                         result.setExtension(new ItemDiscovery(itemNode.getNode(), items));
                                         connection.send(result);
                                     } else {
-                                        connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ItemNotFound())));
+                                        connection.send(iq.createError(new StanzaError(new ItemNotFound())));
                                     }
                                 }
 

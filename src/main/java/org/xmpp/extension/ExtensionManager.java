@@ -28,7 +28,8 @@ import org.xmpp.Connection;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.StanzaError;
+import org.xmpp.stanza.errors.ServiceUnavailable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,6 +88,6 @@ public abstract class ExtensionManager {
     }
 
     protected void sendServiceUnavailable(IQ iq) {
-        connection.send(iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable())));
+        connection.send(iq.createError(new StanzaError(new ServiceUnavailable())));
     }
 }

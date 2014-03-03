@@ -232,13 +232,6 @@ public final class Presence extends Stanza implements Comparable<Presence> {
         return extensions;
     }
 
-    /**
-     * Gets an extension by type.
-     *
-     * @param type The class.
-     * @param <T>  The type.
-     * @return The extension or null.
-     */
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getExtension(Class<T> type) {
@@ -251,7 +244,7 @@ public final class Presence extends Stanza implements Comparable<Presence> {
     }
 
     @Override
-    public Presence createError(Error error) {
+    public Presence createError(StanzaError error) {
         Presence presence = new Presence(Type.ERROR);
         createError(presence, error);
         return presence;

@@ -27,6 +27,7 @@ package org.xmpp.extension.rpc;
 import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.errors.InternalServerError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,7 @@ public final class RpcManager extends ExtensionManager {
                                         connection.send(result);
                                     } catch (Exception e1) {
                                         logger.log(Level.WARNING, e1.getMessage(), e1);
-                                        connection.send(iq.createError(new Stanza.Error(new Stanza.Error.InternalServerError())));
+                                        connection.send(iq.createError(new StanzaError(new InternalServerError())));
                                     }
                                 }
                             }

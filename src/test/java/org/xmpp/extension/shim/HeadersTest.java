@@ -31,8 +31,8 @@ import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.stanza.Message;
-import org.xmpp.stanza.Stanza;
 import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.errors.ItemNotFound;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -89,7 +89,7 @@ public class HeadersTest extends BaseTest {
         try {
             serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim");
         } catch (StanzaException e) {
-            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Stanza.Error.ItemNotFound);
+            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof ItemNotFound);
             return;
         }
         Assert.fail();

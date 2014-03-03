@@ -29,6 +29,8 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.stanza.errors.ServiceUnavailable;
+import org.xmpp.stanza.errors.UndefinedCondition;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -101,7 +103,7 @@ public class IQTest extends BaseTest {
         iq.setId("id");
         iq.setTo(new Jid("to", "domain"));
         iq.setFrom(new Jid("from", "domain"));
-        iq.setError(new Stanza.Error(Stanza.Error.Type.MODIFY, new Stanza.Error.ServiceUnavailable()));
+        iq.setError(new StanzaError(StanzaError.Type.MODIFY, new ServiceUnavailable()));
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"><error type=\"modify\"><service-unavailable xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></service-unavailable></error></iq>");
     }
@@ -112,7 +114,7 @@ public class IQTest extends BaseTest {
         iq.setId("id");
         iq.setTo(new Jid("to", "domain"));
         iq.setFrom(new Jid("from", "domain"));
-        IQ error = iq.createError(new Stanza.Error(new Stanza.Error.UndefinedCondition()));
+        IQ error = iq.createError(new StanzaError(new UndefinedCondition()));
         Assert.assertEquals(error.getType(), IQ.Type.ERROR);
         Assert.assertEquals(error.getId(), iq.getId());
         Assert.assertEquals(error.getTo(), iq.getFrom());

@@ -37,7 +37,8 @@ import org.xmpp.extension.stream.si.StreamInitiation;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.StanzaError;
+import org.xmpp.stanza.errors.BadRequest;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -78,7 +79,7 @@ public final class FileTransferManager extends ExtensionManager {
                                 notifyIncomingFileTransferRequest(iq, fileTransfer);
                             }
                         } else {
-                            Stanza.Error error = new Stanza.Error(Stanza.Error.Type.MODIFY, new Stanza.Error.BadRequest());
+                            StanzaError error = new StanzaError(StanzaError.Type.MODIFY, new BadRequest());
                             error.setExtension(new BadProfile());
                             IQ result = iq.createError(error);
                             connection.send(result);

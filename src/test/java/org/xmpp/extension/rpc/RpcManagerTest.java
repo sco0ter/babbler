@@ -30,8 +30,9 @@ import org.xmpp.*;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.errors.Forbidden;
 
 import java.util.List;
 
@@ -119,7 +120,7 @@ public class RpcManagerTest extends BaseTest {
             public Value process(String methodName, List<Value> parameters) throws StanzaException, RpcException {
                 if (methodName.equals("fault")) {
                     IQ iq = new IQ(IQ.Type.ERROR);
-                    iq.setError(new Stanza.Error(new Stanza.Error.Forbidden()));
+                    iq.setError(new StanzaError(new Forbidden()));
                     throw new StanzaException(iq);
                 }
                 return null;
@@ -129,7 +130,7 @@ public class RpcManagerTest extends BaseTest {
         try {
             connection2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
         } catch (StanzaException e) {
-            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Stanza.Error.Forbidden);
+            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Forbidden);
             return;
         }
         Assert.fail("StanzaException expected.");

@@ -59,6 +59,7 @@ public final class Message extends Stanza {
     @XmlElement
     private Thread thread;
 
+    @SuppressWarnings("unused")
     private Message() {
     }
 
@@ -300,7 +301,7 @@ public final class Message extends Stanza {
     }
 
     @Override
-    public Message createError(Error error) {
+    public Message createError(StanzaError error) {
         Message message = new Message(getFrom(), Type.ERROR);
         createError(message, error);
         return message;
@@ -315,13 +316,6 @@ public final class Message extends Stanza {
         return extensions;
     }
 
-    /**
-     * Gets an extension by type.
-     *
-     * @param type The class.
-     * @param <T>  The type.
-     * @return The extension or null.
-     */
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getExtension(Class<T> type) {

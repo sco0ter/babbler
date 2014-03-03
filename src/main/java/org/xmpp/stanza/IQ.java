@@ -156,12 +156,6 @@ public final class IQ extends Stanza {
         return type;
     }
 
-    /**
-     * Gets the extension.
-     *
-     * @param <T> The type of the extension.
-     * @return The extension.
-     */
     @SuppressWarnings("unchecked")
     @Override
     public final <T> T getExtension(Class<T> type) {
@@ -193,7 +187,7 @@ public final class IQ extends Stanza {
     }
 
     @Override
-    public final IQ createError(Error error) {
+    public final IQ createError(StanzaError error) {
         IQ responseIQ = new IQ(id, Type.ERROR);
         createError(responseIQ, error);
         return responseIQ;

@@ -35,6 +35,7 @@ import org.xmpp.im.session.Session;
 import org.xmpp.sasl.AuthenticationManager;
 import org.xmpp.sasl.Mechanisms;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.errors.ServiceUnavailable;
 import org.xmpp.stream.*;
 import org.xmpp.tls.SecurityManager;
 
@@ -720,7 +721,7 @@ public abstract class Connection implements Closeable {
                             // If it can't unmarshall it, it means that no listener will handle it and we should return an error.
                             if (iq.getExtension(Element.class) != null) {
                                 // return <service-unavailble/> if the <iq/> is not understood.
-                                IQ error = iq.createError(new Stanza.Error(new Stanza.Error.ServiceUnavailable()));
+                                IQ error = iq.createError(new StanzaError(new ServiceUnavailable()));
                                 send(error);
                             }
                         }

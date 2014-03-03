@@ -29,7 +29,8 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.stanza.IQ;
-import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.StanzaError;
+import org.xmpp.stanza.errors.BadRequest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -64,7 +65,7 @@ public class StreamInitiationTest extends BaseTest {
     @Test
     public void marshalBadProfile() throws JAXBException, XMLStreamException, IOException {
         IQ result = new IQ("1", IQ.Type.ERROR);
-        result.setError(new Stanza.Error(new Stanza.Error.BadRequest()));
+        result.setError(new StanzaError(new BadRequest()));
         result.getError().setExtension(new BadProfile());
         String xml = marshall(result);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"error\"><error type=\"modify\"><bad-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></bad-request><bad-profile xmlns=\"http://jabber.org/protocol/si\"></bad-profile></error></iq>");
@@ -74,7 +75,7 @@ public class StreamInitiationTest extends BaseTest {
     @Test
     public void marshalNoValidStreams() throws JAXBException, XMLStreamException, IOException {
         IQ result = new IQ("1", IQ.Type.ERROR);
-        result.setError(new Stanza.Error(new Stanza.Error.BadRequest()));
+        result.setError(new StanzaError(new BadRequest()));
         result.getError().setExtension(new NoValidStreams());
         String xml = marshall(result);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"error\"><error type=\"modify\"><bad-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></bad-request><no-valid-streams xmlns=\"http://jabber.org/protocol/si\"></no-valid-streams></error></iq>");

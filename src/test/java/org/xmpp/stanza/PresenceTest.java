@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.stanza.errors.RemoteServerNotFound;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
@@ -74,7 +75,7 @@ public class PresenceTest extends BaseTest {
         Assert.assertEquals(presence.getFrom().toString(), "juliet@example.com");
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
-        Assert.assertNotNull(presence.getError().getCondition() instanceof Stanza.Error.RemoteServerNotFound);
+        Assert.assertNotNull(presence.getError().getCondition() instanceof RemoteServerNotFound);
     }
 
     @Test

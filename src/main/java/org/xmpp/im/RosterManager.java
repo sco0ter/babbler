@@ -26,6 +26,7 @@ package org.xmpp.im;
 
 import org.xmpp.*;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.errors.UnexpectedRequest;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,7 +64,7 @@ public final class RosterManager {
                             connection.send(iq.createResult());
                             updateRoster(roster);
                         } else if (iq.getType() == IQ.Type.GET) {
-                            connection.send(iq.createError(new Stanza.Error(new Stanza.Error.UnexpectedRequest())));
+                            connection.send(iq.createError(new StanzaError(new UnexpectedRequest())));
                         } else if (iq.getType() == IQ.Type.RESULT) {
                             updateRoster(roster);
                         }

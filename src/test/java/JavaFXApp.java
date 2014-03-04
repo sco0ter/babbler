@@ -225,6 +225,7 @@ public class JavaFXApp extends Application {
                         } catch (Exception e) {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
+
                         connection.addConnectionListener(new ConnectionListener() {
                             @Override
                             public void statusChanged(ConnectionEvent e) {

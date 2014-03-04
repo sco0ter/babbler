@@ -38,7 +38,7 @@ import org.xmpp.extension.bob.Data;
 import org.xmpp.extension.caps.EntityCapabilities;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.chatstates.*;
-import org.xmpp.extension.compress.Compression;
+import org.xmpp.extension.compress.Compress;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.data.media.Media;
 import org.xmpp.extension.delay.DelayedDelivery;
@@ -258,7 +258,7 @@ public abstract class XmppContext {
             registerManager(HeaderManager.class);
 
             // XEP-0138: Stream Compression
-            registerExtension(Compression.class);
+            registerExtension(Compress.class);
 
             // XEP-0144: Roster Item Exchange
             registerExtension(RosterExchange.class);

@@ -56,6 +56,6 @@ public final class XmppSaslClientFactory implements SaslClientFactory {
 
     @Override
     public String[] getMechanismNames(Map<String, ?> props) {
-        return new String[]{"ANONYMOUS"};
+        return new String[]{"ANONYMOUS", "SCRAM-SHA-1"};
     }
 }

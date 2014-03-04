@@ -28,8 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.extension.httpbind.Body;
 import org.xmpp.im.Roster;
-import org.xmpp.sasl.Auth;
-import org.xmpp.sasl.Response;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBContext;
@@ -88,25 +86,5 @@ public class PrefixFreeCanonicalizationWriterTest {
         body.setRid(1L);
 
         marshaller.marshal(body, prefixFreeWriter);
-    }
-
-    @Test
-    public void testSameElementTwice() throws XMLStreamException, JAXBException {
-
-        Writer writer = new StringWriter();
-
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
-
-        PrefixFreeCanonicalizationWriter prefixFreeWriter = new PrefixFreeCanonicalizationWriter(xmlStreamWriter);
-
-        JAXBContext jaxbContext = JAXBContext.newInstance(Auth.class, Response.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-        Auth auth = new Auth("PLAIN", new byte[0]);
-        Response response = new Response(new byte[0]);
-        marshaller.marshal(auth, prefixFreeWriter);
-        marshaller.marshal(response, prefixFreeWriter);
-
-        Assert.assertEquals(writer.toString(), "<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth><response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"></response>");
     }
 }

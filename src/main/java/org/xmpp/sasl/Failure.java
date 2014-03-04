@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.*;
  */
 @XmlRootElement
 @XmlSeeAlso({Failure.Aborted.class, Failure.AccountDisabled.class, Failure.CredentialsExpired.class, Failure.EncryptionRequired.class, Failure.IncorrectEncoding.class, Failure.InvalidAuthzid.class, Failure.InvalidMechanism.class, Failure.MalformedRequest.class, Failure.MechanismTooWeak.class, Failure.NotAuthorized.class, Failure.TemporaryAuthFailure.class})
-public final class Failure {
+final class Failure {
 
     @XmlElementRef
     private Condition condition;
@@ -57,7 +57,7 @@ public final class Failure {
      *
      * @return The error condition.
      */
-    public Condition getCondition() {
+    Condition getCondition() {
         return condition;
     }
 
@@ -66,7 +66,7 @@ public final class Failure {
      *
      * @return The text.
      */
-    public String getText() {
+    String getText() {
         if (text != null) {
             return text.text;
         }
@@ -78,7 +78,7 @@ public final class Failure {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    String getLanguage() {
         if (text != null) {
             return text.language;
         }
@@ -93,7 +93,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "aborted")
-    public static final class Aborted extends Condition {
+    static final class Aborted extends Condition {
         private Aborted() {
         }
     }
@@ -106,7 +106,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "account-disabled")
-    public static final class AccountDisabled extends Condition {
+    static final class AccountDisabled extends Condition {
         private AccountDisabled() {
         }
     }
@@ -119,7 +119,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "credentials-expired")
-    public static final class CredentialsExpired extends Condition {
+    static final class CredentialsExpired extends Condition {
         private CredentialsExpired() {
         }
     }
@@ -132,7 +132,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "encryption-required")
-    public static final class EncryptionRequired extends Condition {
+    static final class EncryptionRequired extends Condition {
         private EncryptionRequired() {
         }
     }
@@ -145,7 +145,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "incorrect-encoding")
-    public static final class IncorrectEncoding extends Condition {
+    static final class IncorrectEncoding extends Condition {
         private IncorrectEncoding() {
         }
     }
@@ -158,7 +158,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "invalid-authzid")
-    public static final class InvalidAuthzid extends Condition {
+    static final class InvalidAuthzid extends Condition {
         private InvalidAuthzid() {
         }
     }
@@ -171,7 +171,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "invalid-mechanism")
-    public static final class InvalidMechanism extends Condition {
+    static final class InvalidMechanism extends Condition {
         private InvalidMechanism() {
         }
     }
@@ -184,7 +184,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "malformed-request")
-    public static class MalformedRequest extends Condition {
+    static class MalformedRequest extends Condition {
         private MalformedRequest() {
         }
     }
@@ -197,7 +197,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "mechanism-too-weak")
-    public static final class MechanismTooWeak extends Condition {
+    static final class MechanismTooWeak extends Condition {
         private MechanismTooWeak() {
         }
     }
@@ -210,7 +210,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "not-authorized")
-    public static final class NotAuthorized extends Condition {
+    static final class NotAuthorized extends Condition {
         private NotAuthorized() {
         }
     }
@@ -223,7 +223,7 @@ public final class Failure {
      * </blockquote>
      */
     @XmlRootElement(name = "temporary-auth-failure")
-    public static final class TemporaryAuthFailure extends Condition {
+    static final class TemporaryAuthFailure extends Condition {
         private TemporaryAuthFailure() {
         }
     }
@@ -231,7 +231,7 @@ public final class Failure {
     /**
      * A general class for a SASL failure condition.
      */
-    public abstract static class Condition {
+    abstract static class Condition {
     }
 
     /**

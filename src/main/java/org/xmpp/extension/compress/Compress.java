@@ -24,14 +24,18 @@
 
 package org.xmpp.extension.compress;
 
+import org.xmpp.extension.compress.feature.Compression;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "compress")
-final class Compress {
+@XmlSeeAlso({Compression.class, Compressed.class, Failure.class})
+public final class Compress {
 
     @XmlElement
     private Method method;

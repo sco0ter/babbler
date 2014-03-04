@@ -40,11 +40,11 @@ final class Failure {
     private Failure() {
     }
 
-    public Condition getCondition() {
+    Condition getCondition() {
         return condition;
     }
 
-    public static abstract class Condition {
+    static abstract class Condition {
         private final String name;
 
         protected Condition(String name) {
@@ -57,21 +57,21 @@ final class Failure {
     }
 
     @XmlRootElement(name = "setup-failed")
-    public static final class SetupFailed extends Condition {
+    static final class SetupFailed extends Condition {
         private SetupFailed() {
             super("setup-failed");
         }
     }
 
     @XmlRootElement(name = "processing-failed")
-    public static final class ProcessingFailed extends Condition {
+    static final class ProcessingFailed extends Condition {
         private ProcessingFailed() {
             super("processing-failed");
         }
     }
 
     @XmlRootElement(name = "unsupported-method")
-    public static final class UnsupportedMethod extends Condition {
+    static final class UnsupportedMethod extends Condition {
         private UnsupportedMethod() {
             super("unsupported-method");
         }

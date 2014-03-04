@@ -27,7 +27,7 @@ package org.xmpp.stanza;
 import org.xmpp.XmppException;
 
 /**
- * A stanza exception represents a {@linkplain Stanza.Error stanza error}.
+ * A stanza exception represents a {@linkplain StanzaError stanza error}.
  * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
  *
  * @author Christian Schudt

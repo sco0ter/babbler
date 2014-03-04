@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Christian Schudt
  */
 @XmlRootElement
-public final class Success {
+final class Success {
 
     @XmlValue
     private byte[] additionalData;

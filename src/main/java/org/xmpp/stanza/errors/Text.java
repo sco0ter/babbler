@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
- * The <text/> element.
+ * The {@code <text/>} element.
  */
 @XmlRootElement(name = "text")
 public final class Text {

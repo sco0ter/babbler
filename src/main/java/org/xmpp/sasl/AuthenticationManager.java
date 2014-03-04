@@ -350,11 +350,13 @@ public final class AuthenticationManager extends FeatureNegotiator {
     /**
      * Creates the SASL client which is used during the authentication process.
      *
+     * @param mechanisms      The SASL mechanisms.
      * @param authorizationId The authorization identity.
      * @param user            The user.
      * @param password        The password.
      * @param callbackHandler The optional callback handler. May be null.
-     * @throws SaslException
+     * @return The SASL client.
+     * @throws SaslException If no SASL client could be created.
      */
     private SaslClient createSaslClient(String[] mechanisms, String authorizationId, final String user, final String password, CallbackHandler callbackHandler) throws SaslException {
 
@@ -385,7 +387,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
      * Sends a response to a challenge.
      *
      * @param challenge The challenge.
-     * @throws SaslException
+     * @throws SaslException If the challenge could not be evaluated.
      * @see Challenge
      * @see Response
      */

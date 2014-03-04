@@ -458,7 +458,8 @@ public abstract class Connection implements Closeable {
      * This method blocks until a result was received or a timeout occurred.
      * </p>
      *
-     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain org.xmpp.stanza.IQ.Type#GET get} or {@linkplain org.xmpp.stanza.IQ.Type#SET set}.
+     * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain org.xmpp.stanza.IQ.Type#GET get} or {@linkplain org.xmpp.stanza.IQ.Type#SET set}.
+     * @param timeout The timeout.
      * @return The result {@code <iq/>} stanza.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
@@ -631,7 +632,6 @@ public abstract class Connection implements Closeable {
      *
      * @param resource The resource to bind. If the resource is null and random resource is bound by the server.
      * @throws LoginException   If the resource binding failed as described in <a href="http://xmpp.org/rfcs/rfc6120.html#bind-servergen-error">7.6.2.  Error Cases</a>
-     * @throws TimeoutException If a timeout occurred.
      */
     private void bindResource(String resource) throws LoginException {
         this.resource = resource;

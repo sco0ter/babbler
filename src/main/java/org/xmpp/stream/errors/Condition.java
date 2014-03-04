@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlValue;
 public abstract class Condition {
 
     @XmlValue
-    protected String value;
+    String value;
 
-    protected Condition() {
+    Condition() {
     }
 }

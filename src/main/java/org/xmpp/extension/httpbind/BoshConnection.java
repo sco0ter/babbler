@@ -239,6 +239,7 @@ public final class BoshConnection extends Connection {
      * </blockquote>
      *
      * @param httpCode The HTTP response code.
+     * @throws BoshException If the HTTP code was not 200.
      */
     private static void handleCode(int httpCode) throws BoshException {
         if (httpCode != HttpURLConnection.HTTP_OK) {
@@ -263,7 +264,7 @@ public final class BoshConnection extends Connection {
      *
      * @param xmppServiceDomain The fully qualified domain name.
      * @return The BOSH URL, if it could be found or null.
-     * @throws javax.naming.NamingException
+     * @throws javax.naming.NamingException If the context threw an exception.
      */
     private static String findBoshUrl(String xmppServiceDomain) throws NamingException {
 
@@ -355,7 +356,7 @@ public final class BoshConnection extends Connection {
      *
      * @param body The body.
      * @param rid  The request id, which was used for the request. If the body contains no 'ack' attribute, it means it's the response to the request with that 'rid'.
-     * @throws Exception
+     * @throws Exception If any exception occurred during handling the inner XMPP elements.
      */
     private void unpackBody(Body body, long rid) throws Exception {
         // It's the session creation response.
@@ -490,7 +491,8 @@ public final class BoshConnection extends Connection {
      * If there are currently more requests than allowed by the server, the waiting elements will be send as soon one of the requests return.
      * </p>
      *
-     * @param body The wrapper body element.
+     * @param body        The wrapper body element.
+     * @param addElements True, if waiting elements should be added to the body; false if an empty body shall be sent.
      */
     private void sendNewRequest(final Body body, final boolean addElements) {
 

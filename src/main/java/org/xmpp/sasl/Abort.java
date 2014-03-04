@@ -37,5 +37,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement
-public final class Abort {
+final class Abort {
 }

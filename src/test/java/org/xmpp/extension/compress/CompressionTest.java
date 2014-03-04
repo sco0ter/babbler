@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.compress.feature.Compression;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;

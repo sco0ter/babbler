@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @see Challenge
  */
 @XmlRootElement
-public final class Response {
+final class Response {
 
     @XmlValue
     private byte[] value;

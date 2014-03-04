@@ -22,13 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.compress;
+package org.xmpp.extension.compress.feature;
 
+import org.xmpp.extension.compress.Method;
 import org.xmpp.stream.Feature;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,11 +37,10 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "compression", namespace = "http://jabber.org/features/compress")
-@XmlSeeAlso({Compress.class, Compressed.class, Failure.class})
+@XmlRootElement(name = "compression")
 public final class Compression extends Feature {
 
-    @XmlElement(name = "method", namespace = "http://jabber.org/features/compress")
+    @XmlElement(name = "method")
     private List<Method> methods = new ArrayList<>();
 
     /**

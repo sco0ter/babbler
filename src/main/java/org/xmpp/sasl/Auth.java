@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Christian Schudt
  */
 @XmlRootElement
-public final class Auth {
+final class Auth {
 
     @XmlValue
     private byte[] initialResponse;

@@ -261,7 +261,8 @@ public final class TcpConnection extends Connection {
      * See also <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      *
      * @param xmppServiceDomain The fully qualified domain name.
-     * @throws NamingException
+     * @throws NamingException If the initial context could not be built.
+     * @throws IOException     If no connection could be established to a resolved host.
      */
     void connectWithXmppServiceDomain(String xmppServiceDomain) throws NamingException, IOException {
 

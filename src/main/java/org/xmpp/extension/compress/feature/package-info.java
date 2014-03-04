@@ -22,20 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.stanza.errors;
-
-import javax.xml.bind.annotation.XmlValue;
-
 /**
- * An abstract implementation of a defined stanza error condition.
- *
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions">8.3.3.  Defined Conditions</a>
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a> (feature).
  */
-public abstract class Condition {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "http://jabber.org/features/compress", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.compress.feature;
 
-    @XmlValue
-    String value;
-
-    Condition() {
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

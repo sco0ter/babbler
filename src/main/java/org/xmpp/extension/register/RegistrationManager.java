@@ -50,6 +50,8 @@ public final class RegistrationManager extends ExtensionManager {
      * Determines, if in-band registration is supported by the server.
      *
      * @return True if registration is supported by the server; otherwise false.
+     * @throws StanzaException     If the server returned a stanza error. Common errors are {@link org.xmpp.stanza.errors.Conflict} (username is already in use) or {@link org.xmpp.stanza.errors.NotAcceptable} (some required information not provided).
+     * @throws NoResponseException If the server did not respond.
      */
     public boolean isRegistrationSupported() throws XmppException {
         // server returns a stream header to the client and MAY announce support for in-band registration by including the relevant stream feature.
@@ -86,7 +88,7 @@ public final class RegistrationManager extends ExtensionManager {
      * Registers a new account. Call this method before authenticating.
      *
      * @param registration The registration.
-     * @throws StanzaException     If the server returned a stanza error. Common errors are {@link org.xmpp.stanza.Stanza.Error.Conflict} (username is already in use) or {@link org.xmpp.stanza.Stanza.Error.NotAcceptable} (some required information not provided).
+     * @throws StanzaException     If the server returned a stanza error. Common errors are {@link org.xmpp.stanza.errors.Conflict} (username is already in use) or {@link org.xmpp.stanza.errors.NotAcceptable} (some required information not provided).
      * @throws NoResponseException If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      */

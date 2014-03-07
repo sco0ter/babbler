@@ -64,19 +64,40 @@ public final class Activity {
     private Activity() {
     }
 
+    /**
+     * Creates an activity with a category and text.
+     *
+     * @param category The category.
+     * @param text     The text.
+     */
     public Activity(Category category, String text) {
         this.category = category;
         this.text = text;
     }
 
+    /**
+     * Creates an activity with a category.
+     *
+     * @param category The category.
+     */
     public Activity(Category category) {
         this(category, null);
     }
 
+    /**
+     * Gets the text of the activity.
+     *
+     * @return The text.
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     * Gets the category.
+     *
+     * @return The category.
+     */
     public Category getCategory() {
         return category;
     }

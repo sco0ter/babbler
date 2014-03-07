@@ -54,6 +54,9 @@ import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.messagecorrect.MessageCorrectionManager;
 import org.xmpp.extension.messagecorrect.Replace;
 import org.xmpp.extension.mood.Mood;
+import org.xmpp.extension.muc.Muc;
+import org.xmpp.extension.muc.admin.MucAdmin;
+import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.nick.Nickname;
 import org.xmpp.extension.offline.OfflineMessage;
 import org.xmpp.extension.ping.Ping;
@@ -189,6 +192,10 @@ public abstract class XmppContext {
 
             // XEP-0033: Extended Stanza Addressing
             registerExtension(Addresses.class);
+
+            // XEP-0045: Multi-User Chat
+            registerExtension(Muc.class);
+            registerExtension(MucUser.class, MucAdmin.class);
 
             // XEP-0047: In-Band Bytestreams
             registerExtension(org.xmpp.extension.stream.ibb.Data.class, Open.class, Close.class);

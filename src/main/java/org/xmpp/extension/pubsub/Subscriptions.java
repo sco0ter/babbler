@@ -33,10 +33,8 @@ import java.util.List;
  * @author Christian Schudt
  */
 public final class Subscriptions {
-    @XmlElements({
-            @XmlElement(name = "subscription"),
-            @XmlElement(name = "subscription", namespace = PubSub.EVENT_NAMESPACE),
-            @XmlElement(name = "subscription", namespace = PubSub.OWNER_NAMESPACE)})
+
+    @XmlElement(name = "subscription")
     private List<Subscription> subscriptions;
 
     @XmlAttribute(name = "node")

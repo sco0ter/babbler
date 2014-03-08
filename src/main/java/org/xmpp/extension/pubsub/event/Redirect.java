@@ -22,18 +22,26 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.stream.bytestreams;
+package org.xmpp.extension.pubsub.event;
 
-import org.xmpp.Jid;
+import javax.xml.bind.annotation.XmlAttribute;
+import java.net.URI;
 
 /**
  * @author Christian Schudt
  */
-public class StreamHost {
+public final class Redirect {
+    @XmlAttribute(name = "uri")
+    private URI uri;
 
-    private Jid jid;
+    private Redirect() {
+    }
 
-    private String host;
+    public Redirect(URI uri) {
+        this.uri = uri;
+    }
 
-    private String port;
+    public URI getUri() {
+        return uri;
+    }
 }

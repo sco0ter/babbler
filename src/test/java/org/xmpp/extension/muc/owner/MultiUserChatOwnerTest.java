@@ -22,16 +22,19 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.muc.admin;
+package org.xmpp.extension.muc.owner;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.muc.Affiliation;
+import org.xmpp.extension.muc.Destroy;
 import org.xmpp.extension.muc.MucElementFactory;
 import org.xmpp.extension.muc.Role;
+import org.xmpp.extension.muc.admin.MucAdmin;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -42,7 +45,7 @@ import java.io.IOException;
 /**
  * @author Christian Schudt
  */
-public class MultiUserChatAdminTest extends BaseTest {
+public class MultiUserChatOwnerTest extends BaseTest {
 
     @Test
     public void testKickOccupant() throws JAXBException, XMLStreamException, IOException {
@@ -132,51 +135,42 @@ public class MultiUserChatAdminTest extends BaseTest {
     }
 
     @Test
-    public void marshalBanUser() throws JAXBException, XMLStreamException, IOException {
-        MucAdmin mucAdmin = new MucAdmin(MucElementFactory.createItem(Affiliation.OUTCAST, Jid.fromString("earlofcambridge@shakespeare.lit")));
-        String xml = marshall(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\" jid=\"earlofcambridge@shakespeare.lit\"></item></query>");
+    public void marshalCreateInstantRoom() throws JAXBException, XMLStreamException, IOException {
+        MucOwner mucOwner = new MucOwner(new DataForm(DataForm.Type.SUBMIT));
+        String xml = marshall(mucOwner);
+        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><x xmlns=\"jabber:x:data\" type=\"submit\"></x></query>");
     }
 
     @Test
-    public void marshalRequestBanlist() throws JAXBException, XMLStreamException, IOException {
-        MucAdmin mucAdmin = new MucAdmin(MucElementFactory.createItem(Affiliation.OUTCAST));
-        String xml = marshall(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\"></item></query>");
+    public void marshalRequestConfigurationForm() throws JAXBException, XMLStreamException, IOException {
+        MucOwner mucOwner = new MucOwner();
+        String xml = marshall(mucOwner);
+        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"></query>");
     }
 
     @Test
-    public void marshalModifiedBanlist() throws JAXBException, XMLStreamException, IOException {
-        MucAdmin mucAdmin = new MucAdmin(MucElementFactory.createItem(Affiliation.OUTCAST, Jid.fromString("lordscroop@shakespeare.lit"), "Treason"), MucElementFactory.createItem(Affiliation.OUTCAST, Jid.fromString("sirthomasgrey@shakespeare.lit"), "Treason"));
-        String xml = marshall(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\" jid=\"lordscroop@shakespeare.lit\"><reason>Treason</reason></item><item affiliation=\"outcast\" jid=\"sirthomasgrey@shakespeare.lit\"><reason>Treason</reason></item></query>");
+    public void unmarshalConfigurationForm() throws JAXBException, XMLStreamException, IOException {
+        String xml = "<iq from='coven@chat.shakespeare.lit'\n" +
+                "    id='config1'\n" +
+                "    to='crone1@shakespeare.lit/desktop'\n" +
+                "    type='result'>\n" +
+                "  <query xmlns='http://jabber.org/protocol/muc#owner'>\n" +
+                "    <x xmlns='jabber:x:data' type='form'>\n" +
+                "      <title>Configuration for \"coven\" Room</title>\n" +
+                "    </x>\n" +
+                "  </query>\n" +
+                "</iq>\n";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
+        MucOwner mucOwner = iq.getExtension(MucOwner.class);
+        Assert.assertNotNull(mucOwner);
+        Assert.assertNotNull(mucOwner.getConfigurationForm());
     }
 
     @Test
-    public void marshalGrantMembership() throws JAXBException, XMLStreamException, IOException {
-        MucAdmin mucAdmin = new MucAdmin(MucElementFactory.createItem(Affiliation.MEMBER, Jid.fromString("hag66@shakespeare.lit"), "A worthy witch indeed!"));
-        String xml = marshall(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"member\" jid=\"hag66@shakespeare.lit\"><reason>A worthy witch indeed!</reason></item></query>");
-    }
-
-    @Test
-    public void marshalGrantModerator() throws JAXBException, XMLStreamException, IOException {
-        MucAdmin mucAdmin = new MucAdmin(MucElementFactory.createItem(Role.MODERATOR, "thirdwitch", "A worthy witch indeed!"));
-        String xml = marshall(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"moderator\"><reason>A worthy witch indeed!</reason></item></query>");
-    }
-
-    @Test
-    public void marshalRevokeModerator() throws JAXBException, XMLStreamException, IOException {
-        MucAdmin mucAdmin = new MucAdmin(MucElementFactory.createItem(Role.PARTICIPANT, "thirdwitch", "Not so worthy after all!"));
-        String xml = marshall(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"><reason>Not so worthy after all!</reason></item></query>");
-    }
-
-    @Test
-    public void marshalModifyModeratorList() throws JAXBException, XMLStreamException, IOException {
-        MucAdmin mucAdmin = new MucAdmin(MucElementFactory.createItem(Role.PARTICIPANT, "thirdwitch"), MucElementFactory.createItem(Role.MODERATOR, "Hecate"));
-        String xml = marshall(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"></item><item nick=\"Hecate\" role=\"moderator\"></item></query>");
+    public void marshalDestroyRoom() throws JAXBException, XMLStreamException, IOException {
+        MucOwner mucOwner = new MucOwner(MucElementFactory.createDestroy(Jid.fromString("coven@chat.shakespeare.lit"), "Macbeth doth come."));
+        String xml = marshall(mucOwner);
+        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></query>");
     }
 }

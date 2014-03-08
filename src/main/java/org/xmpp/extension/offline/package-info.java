@@ -28,7 +28,10 @@
  * It defines an XMPP protocol extension for flexible, POP3-like handling of offline messages. The protocol enables a connecting client to retrieve its offline messages on login in a controlled fashion, without receiving a flood of messages. Messages can also be left on the server for later retrieval.
  * </p>
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/protocol/offline", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.offline;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

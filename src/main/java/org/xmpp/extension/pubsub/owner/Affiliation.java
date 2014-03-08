@@ -22,18 +22,37 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#admin).
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/muc#admin", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.admin;
+package org.xmpp.extension.pubsub.owner;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+
+/**
+ * @author Christian Schudt
+ */
+public final class Affiliation {
+
+    @XmlAttribute(name = "node")
+    private String node;
+
+    @XmlAttribute(name = "affiliation")
+    private org.xmpp.extension.pubsub.Affiliation.Type affiliation;
+
+    @XmlAttribute(name = "jid")
+    private Jid jid;
+
+    public Jid getJid() {
+        return jid;
+    }
+
+    public org.xmpp.extension.pubsub.Affiliation.Type getType() {
+        return affiliation;
+    }
+
+    public String getNode() {
+        return node;
+    }
+}

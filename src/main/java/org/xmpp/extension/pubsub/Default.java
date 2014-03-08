@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 /**
  * @author Christian Schudt
  */
-final class Default {
+public final class Default {
     @XmlAttribute(name = "node")
     private String node;
 

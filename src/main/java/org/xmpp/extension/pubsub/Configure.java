@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 /**
  * @author Christian Schudt
  */
-final class Configure {
+public final class Configure {
     @XmlAttribute(name = "node")
     private String node;
 

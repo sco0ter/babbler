@@ -22,45 +22,64 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.tls;
+package org.xmpp.extension.pubsub.event;
 
-import org.xmpp.stream.Feature;
+import org.xmpp.extension.pubsub.Item;
+import org.xmpp.extension.pubsub.PubSub;
+import org.xmpp.extension.pubsub.Retract;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlElements;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Represents the STARTTLS feature and initiates the TLS negotiation process.
- * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#tls-process-initiate-command">5.4.2.1.  STARTTLS Command</a></cite></p>
- * <p>In order to begin the STARTTLS negotiation, the initiating entity issues the STARTTLS command (i.e., a {@code <starttls/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-tls' namespace) to instruct the receiving entity that it wishes to begin a STARTTLS negotiation to secure the stream.</p>
- * </blockquote>
- *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "starttls")
-@XmlSeeAlso({Proceed.class, Failure.class})
-public final class StartTls extends Feature {
+final class Items {
 
-    @XmlElement
-    protected String required;
+    @XmlElement(name = "item")
+    private List<Item> items = new ArrayList<>();
 
-    @Override
-    public boolean isMandatory() {
-        return required != null;
+    @XmlAttribute(name = "node")
+    private String node;
+
+    @XmlAttribute(name = "max_items")
+    private Long maxItems;
+
+    @XmlAttribute(name = "subid")
+    private String subid;
+
+    @XmlElement(name = "retract")
+    private Retract retract;
+
+    private Items() {
     }
 
-    @Override
-    public int getPriority() {
-        return 0;
+    public Items(String node) {
+        this.node = node;
     }
 
-    public void setMandatory(boolean mandatory) {
-        if (mandatory) {
-            required = "";
-        } else {
-            required = null;
-        }
+    public Items(String node, long maxItems) {
+        this.node = node;
+        this.maxItems = maxItems;
+    }
+
+    public Items(String node, Item item) {
+        this.node = node;
+        this.items.add(item);
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    Retract getRetract() {
+        return retract;
     }
 }

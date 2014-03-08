@@ -52,12 +52,15 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.Product;
+import org.jivesoftware.smackx.pubsub.EventElement;
+import org.jivesoftware.smackx.pubsub.ItemPublishEvent;
 import org.xmpp.*;
 import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
+import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
@@ -68,6 +71,7 @@ import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.pubsub.PubSubManager;
+import org.xmpp.extension.pubsub.event.Event;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -358,10 +362,11 @@ public class JavaFXApp extends Application {
                         try {
                             connection.connect();
                             connection.login(txtUser.getText(), txtPassword.getText(), "test");
+                            //connection.loginAnonymously();
                             RegistrationManager registrationManager = connection.getExtensionManager(RegistrationManager.class);
                             Registration registration = registrationManager.getRegistration();
                             boolean isSupported = registrationManager.isRegistrationSupported();
-                            //connection.send(new Presence());
+                            connection.send(new Presence());
                             connection.getRosterManager().requestRoster();
 
                         } catch (Exception e) {
@@ -627,9 +632,13 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+                PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
+
                 try {
-                    lastActivityManager.getLastActivity(null);
+                    //pubSubManager.publish("test", new Tune("Artist"));
+                    pubSubManager.getItems("test");
+
+
                 } catch (XmppException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }

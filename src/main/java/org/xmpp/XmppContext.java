@@ -56,6 +56,7 @@ import org.xmpp.extension.messagecorrect.Replace;
 import org.xmpp.extension.mood.Mood;
 import org.xmpp.extension.muc.Muc;
 import org.xmpp.extension.muc.admin.MucAdmin;
+import org.xmpp.extension.muc.owner.MucOwner;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.nick.Nickname;
 import org.xmpp.extension.offline.OfflineMessage;
@@ -195,7 +196,7 @@ public abstract class XmppContext {
 
             // XEP-0045: Multi-User Chat
             registerExtension(Muc.class);
-            registerExtension(MucUser.class, MucAdmin.class);
+            registerExtension(MucUser.class, MucAdmin.class, MucOwner.class);
 
             // XEP-0047: In-Band Bytestreams
             registerExtension(org.xmpp.extension.stream.ibb.Data.class, Open.class, Close.class);

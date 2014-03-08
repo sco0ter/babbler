@@ -30,7 +30,7 @@ import java.net.URI;
 /**
  * @author Christian Schudt
  */
-final class Redirect {
+public final class Redirect {
     @XmlAttribute(name = "uri")
     private URI uri;
 

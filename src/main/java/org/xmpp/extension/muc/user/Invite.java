@@ -30,12 +30,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * The implementation of the {@code <decline/>} element.
+ * The implementation of the {@code <invite/>} element.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite-mediated">7.8.2 Mediated Invitation</a>
  */
-public final class Decline {
+public final class Invite {
 
     @XmlElement(name = "reason")
     private String reason;
@@ -46,31 +46,47 @@ public final class Decline {
     @XmlAttribute(name = "to")
     private Jid to;
 
-    private Decline() {
+    @XmlElement(name = "continue")
+    private Continue aContinue;
+
+    private Invite() {
     }
 
     /**
-     * Creates a 'decline' element with a reason.
+     * Creates an invite element with a reason.
      *
-     * @param to     The inviter, who will receive the declination.
+     * @param to     The invitee, who will receive the invitation.
      * @param reason The reason.
      */
-    public Decline(Jid to, String reason) {
+    public Invite(Jid to, String reason) {
         this.to = to;
         this.reason = reason;
     }
 
     /**
-     * Creates a 'decline' element.
+     * Creates an 'invite' element.
      *
-     * @param to The inviter, who will receive the declination.
+     * @param to The invitee, who will receive the invitation.
      */
-    public Decline(Jid to) {
+    public Invite(Jid to) {
         this(to, null);
     }
 
     /**
-     * Gets the reason for the declination.
+     * Creates an 'invite' element with a reason and a 'continue' element.
+     *
+     * @param to        The invitee, who will receive the invitation.
+     * @param reason    The reason.
+     * @param aContinue The 'continue' element.
+     */
+    public Invite(Jid to, String reason, Continue aContinue) {
+        this.to = to;
+        this.reason = reason;
+        this.aContinue = aContinue;
+    }
+
+    /**
+     * Gets the reason for the invitation.
      *
      * @return The reason.
      */
@@ -79,20 +95,29 @@ public final class Decline {
     }
 
     /**
-     * Gets the invitee, who declined the invitation.
+     * Gets the inviter.
      *
-     * @return The invitee.
+     * @return The inviter.
      */
     public Jid getFrom() {
         return from;
     }
 
     /**
-     * Gets the inviter, who sent the invitation.
+     * Gets the invitee.
      *
-     * @return The inviter.
+     * @return The invitee.
      */
     public Jid getTo() {
         return to;
+    }
+
+    /**
+     * Gets the continue element, containing the message thread from a previous one-to-one chat session.
+     *
+     * @return The continue element.
+     */
+    public Continue getContinue() {
+        return aContinue;
     }
 }

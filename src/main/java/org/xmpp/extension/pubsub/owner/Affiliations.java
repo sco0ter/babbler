@@ -22,18 +22,37 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.stream.bytestreams;
+package org.xmpp.extension.pubsub.owner;
 
-import org.xmpp.Jid;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-public class StreamHost {
+public final class Affiliations {
+    @XmlAttribute(name = "node")
+    private String node;
 
-    private Jid jid;
+    @XmlElement(name = "affiliation")
+    private List<Affiliation> affiliations = new ArrayList<>();
 
-    private String host;
+    public Affiliations() {
 
-    private String port;
+    }
+
+    public Affiliations(String node) {
+        this.node = node;
+    }
+
+    public List<Affiliation> getAffiliations() {
+        return affiliations;
+    }
+
+    public String getNode() {
+        return node;
+    }
 }

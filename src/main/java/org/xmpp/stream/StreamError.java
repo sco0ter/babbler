@@ -24,7 +24,6 @@
 
 package org.xmpp.stream;
 
-import org.xmpp.XmppException;
 import org.xmpp.stream.errors.*;
 
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -40,7 +39,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  */
 @XmlRootElement(name = "error")
 @XmlSeeAlso({BadFormat.class, BadNamespacePrefix.class, Conflict.class, ConnectionTimeout.class, HostGone.class, HostUnknown.class, ImproperAddressing.class, InternalServerError.class, InvalidFrom.class, InvalidNamespace.class, InvalidXml.class, NotAuthorized.class, NotWellFormed.class, PolicyViolation.class, RemoteConnectionFailed.class, Reset.class, ResourceConstraint.class, RestrictedXml.class, SeeOtherHost.class, SystemShutdown.class, UndefinedCondition.class, UnsupportedEncoding.class, UnsupportedFeature.class, UnsupportedStanzaType.class, UnsupportedVersion.class})
-public final class StreamError extends XmppException {
+public final class StreamError {
 
     @XmlElementRef
     private Condition condition;

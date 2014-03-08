@@ -33,14 +33,11 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-final class Affiliations {
+public final class Affiliations {
     @XmlAttribute(name = "node")
     private String node;
 
-    @XmlElements({
-            @XmlElement(name = "affiliation"),
-            @XmlElement(name = "affiliation", namespace = PubSub.EVENT_NAMESPACE),
-            @XmlElement(name = "affiliation", namespace = PubSub.OWNER_NAMESPACE)})
+    @XmlElement(name = "affiliation")
     private List<Affiliation> affiliations = new ArrayList<>();
 
     public Affiliations() {

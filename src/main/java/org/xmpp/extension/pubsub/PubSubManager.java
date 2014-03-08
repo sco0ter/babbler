@@ -30,6 +30,7 @@ import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
+import org.xmpp.extension.pubsub.owner.PubSubOwner;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.StanzaException;
 
@@ -126,7 +127,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
      */
     public DataForm requestSubscriptionOptions(String node) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub.Options(node, connection.getConnectedResource().toBareJid())));
+        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new PubSub.Options(node, connection.getConnectedResource().toBareJid()))));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getOptions().getDataForm();
     }

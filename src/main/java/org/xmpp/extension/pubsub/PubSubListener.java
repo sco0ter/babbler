@@ -22,18 +22,12 @@
  * THE SOFTWARE.
  */
 
+package org.xmpp.extension.pubsub;
+
+import java.util.EventListener;
+
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#admin).
+ * @author Christian Schudt
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/muc#admin", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.admin;
-
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+public class PubSubListener implements EventListener {
+}

@@ -22,18 +22,36 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#admin).
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/muc#admin", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.admin;
+package org.xmpp.extension.muc;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+/**
+ * The {@code <destroy/>} element, which is used in both #owner and #user namespace and indicates a room destruction.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
+ */
+public interface Destroy {
+
+    /**
+     * The optional address of an alternate venue.
+     *
+     * @return The JID.
+     */
+    Jid getJid();
+
+    /**
+     * The reason for the destruction.
+     *
+     * @return The reason.
+     */
+    String getReason();
+
+    /**
+     * The password for the alternate room.
+     *
+     * @return The password.
+     */
+    String getPassword();
+}

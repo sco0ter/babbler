@@ -22,13 +22,14 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.pubsub.event;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.pubsub.Subscription;
 import org.xmpp.stanza.Message;
 
 import javax.xml.bind.JAXBException;
@@ -57,9 +58,9 @@ public class PubSubEventTest extends BaseTest {
         Assert.assertNotNull(message);
         Event pubSubEvent = message.getExtension(Event.class);
         Assert.assertNotNull(pubSubEvent);
-        Assert.assertNotNull(pubSubEvent.getItems());
-        Assert.assertEquals(pubSubEvent.getItems().getNode(), "princely_musings");
-        Assert.assertEquals(pubSubEvent.getItems().getItems().size(), 1);
+        Assert.assertNotNull(pubSubEvent.getItemsElement());
+        Assert.assertEquals(pubSubEvent.getItemsElement().getNode(), "princely_musings");
+        Assert.assertEquals(pubSubEvent.getItemsElement().getItems().size(), 1);
     }
 
     @Test
@@ -76,9 +77,9 @@ public class PubSubEventTest extends BaseTest {
         Assert.assertNotNull(message);
         Event event = message.getExtension(Event.class);
         Assert.assertNotNull(event);
-        Assert.assertNotNull(event.getItems());
-        Assert.assertNotNull(event.getItems().getRetract());
-        Assert.assertEquals(event.getItems().getRetract().getId(), "ae890ac52d0df67ed7cfdf51b644e901");
+        Assert.assertNotNull(event.getItemsElement());
+        Assert.assertNotNull(event.getItemsElement().getRetract());
+        Assert.assertEquals(event.getItemsElement().getRetract().getId(), "ae890ac52d0df67ed7cfdf51b644e901");
     }
 
     @Test
@@ -161,7 +162,6 @@ public class PubSubEventTest extends BaseTest {
         Assert.assertNotNull(event.getDelete().getRedirect());
         Assert.assertEquals(event.getDelete().getRedirect().getUri(), URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
     }
-
 
     @Test
     public void unmarshalPubSubEventPurge() throws XMLStreamException, JAXBException {

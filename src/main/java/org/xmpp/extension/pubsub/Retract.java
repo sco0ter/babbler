@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 /**
  * @author Christian Schudt
  */
-final class Retract {
+public final class Retract {
     @XmlAttribute(name = "node")
     private String node;
 
@@ -53,7 +53,7 @@ final class Retract {
         this.notify = notify;
     }
 
-    String getId() {
+    public String getId() {
         return id;
     }
 }

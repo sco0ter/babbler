@@ -23,11 +23,11 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#admin).
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#owner).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/muc#admin", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.admin;
+@XmlSchema(namespace = "http://jabber.org/protocol/muc#owner", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.owner;
 
 import org.xmpp.Jid;
 import org.xmpp.util.JidAdapter;

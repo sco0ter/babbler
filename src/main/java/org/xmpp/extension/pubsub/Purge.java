@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 /**
  * @author Christian Schudt
  */
-final class Purge {
+public final class Purge {
     @XmlAttribute
     private String node;
 
@@ -40,7 +40,7 @@ final class Purge {
         this.node = node;
     }
 
-    String getNode() {
+    public String getNode() {
         return node;
     }
 }

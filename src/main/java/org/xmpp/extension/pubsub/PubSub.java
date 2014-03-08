@@ -27,6 +27,8 @@ package org.xmpp.extension.pubsub;
 import org.xmpp.Jid;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.pubsub.errors.*;
+import org.xmpp.extension.pubsub.event.Event;
+import org.xmpp.extension.pubsub.owner.PubSubOwner;
 
 import javax.xml.bind.annotation.*;
 
@@ -39,10 +41,6 @@ import javax.xml.bind.annotation.*;
         PubSubOwner.class
 })
 public final class PubSub {
-
-    static final String OWNER_NAMESPACE = "http://jabber.org/protocol/pubsub#owner";
-
-    static final String EVENT_NAMESPACE = "http://jabber.org/protocol/pubsub#event";
 
     @XmlElement(name = "create")
     private Create create;

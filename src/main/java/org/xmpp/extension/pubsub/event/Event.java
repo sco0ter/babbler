@@ -22,18 +22,62 @@
  * THE SOFTWARE.
  */
 
+package org.xmpp.extension.pubsub.event;
+
+import org.xmpp.extension.pubsub.*;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
+
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#admin).
+ * @author Christian Schudt
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/muc#admin", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.admin;
+@XmlRootElement(name = "event")
+public final class Event {
 
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+    @XmlElement(name = "items")
+    private Items items;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+    @XmlElement(name = "retract")
+    private Retract retract;
+
+    @XmlElement(name = "purge")
+    private Purge purge;
+
+    @XmlElement(name = "configuration")
+    private Configuration configuration;
+
+    @XmlElement(name = "delete")
+    private Delete delete;
+
+    @XmlElement(name = "subscription")
+    private Subscription subscription;
+
+    private Event() {
+    }
+
+    Event(Delete delete) {
+        this.delete = delete;
+    }
+
+    Purge getPurge() {
+        return purge;
+    }
+
+    Items getItemsElement() {
+        return items;
+    }
+
+    public Configuration getConfiguration() {
+        return configuration;
+    }
+
+    public Delete getDelete() {
+        return delete;
+    }
+
+    public Subscription getSubscription() {
+        return subscription;
+    }
+}

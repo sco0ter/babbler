@@ -22,18 +22,39 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.stream.bytestreams;
+package org.xmpp.extension.pubsub.event;
 
-import org.xmpp.Jid;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author Christian Schudt
  */
-public class StreamHost {
+public final class Delete {
+    @XmlAttribute(name = "node")
+    private String node;
 
-    private Jid jid;
+    @XmlElement(name = "redirect")
+    private Redirect redirect;
 
-    private String host;
+    private Delete() {
 
-    private String port;
+    }
+
+    public Delete(String node) {
+        this.node = node;
+    }
+
+    public Delete(String node, Redirect redirect) {
+        this.node = node;
+        this.redirect = redirect;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public Redirect getRedirect() {
+        return redirect;
+    }
 }

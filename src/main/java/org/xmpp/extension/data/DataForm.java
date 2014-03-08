@@ -58,7 +58,7 @@ public final class DataForm implements Comparable<DataForm> {
 
     @XmlElementWrapper(name = "reported")
     @XmlElement(name = "field")
-    private List<Field> reportedFields = new ArrayList<>();
+    private List<Field> reportedFields;
 
     private DataForm() {
     }

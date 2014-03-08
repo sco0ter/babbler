@@ -22,18 +22,55 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#admin).
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/muc#admin", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.admin;
+package org.xmpp.extension.muc;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+/**
+ * The {@code <item/>} element, which is used in both #admin and #user namespace to manage members and indicate users in a chat room.
+ *
+ * @author Christian Schudt
+ */
+public interface Item {
+    /**
+     * Gets the nick name.
+     *
+     * @return The nick name.
+     */
+    String getNick();
+
+    /**
+     * Gets the role.
+     *
+     * @return The role.
+     */
+    Role getRole();
+
+    /**
+     * Gets the JID.
+     *
+     * @return The JID.
+     */
+    Jid getJid();
+
+    /**
+     * Gets the affiliation.
+     *
+     * @return The affiliation.
+     */
+    Affiliation getAffiliation();
+
+    /**
+     * Gets the reason for a kick or ban.
+     *
+     * @return The reason.
+     */
+    String getReason();
+
+    /**
+     * Gets the actor for a kick or ban.
+     *
+     * @return The actor.
+     */
+    Actor getActor();
+}

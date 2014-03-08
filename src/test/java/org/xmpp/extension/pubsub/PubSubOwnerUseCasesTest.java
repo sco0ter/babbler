@@ -29,6 +29,8 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.pubsub.owner.PubSubOwner;
+import org.xmpp.extension.pubsub.owner.Subscriptions;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -149,7 +151,6 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract node=\"princely_musings\" notify=\"false\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
     }
-
 
     @Test
     public void unmarshalPubSubOwnerConfigure() throws XMLStreamException, JAXBException {
@@ -431,7 +432,6 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         Assert.assertNotNull(pubSubOwner.getPurge());
         Assert.assertEquals(pubSubOwner.getPurge().getNode(), "princely_musings");
     }
-
 
     @Test
     public void unmarshalPubSubOwnerAffiliations() throws XMLStreamException, JAXBException {

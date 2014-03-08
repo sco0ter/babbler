@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package org.xmpp.extension.muc.user;
 
 import org.testng.Assert;
@@ -6,6 +30,7 @@ import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.muc.Affiliation;
+import org.xmpp.extension.muc.MucElementFactory;
 import org.xmpp.extension.muc.Role;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
@@ -101,8 +126,8 @@ public class MultiUserChatUserTest extends BaseTest {
         Assert.assertNotNull(mucUser);
         Assert.assertNotNull(mucUser.getItem());
         Assert.assertEquals(mucUser.getStatusCodes().size(), 2);
-        Assert.assertEquals(mucUser.getStatusCodes().get(0).getCode(), (Integer) 110);
-        Assert.assertEquals(mucUser.getStatusCodes().get(1).getCode(), (Integer) 210);
+        Assert.assertEquals(mucUser.getStatusCodes().get(0).getCode(), 110);
+        Assert.assertEquals(mucUser.getStatusCodes().get(1).getCode(), 210);
     }
 
     @Test
@@ -143,9 +168,9 @@ public class MultiUserChatUserTest extends BaseTest {
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         MucUser mucUser = message.getExtension(MucUser.class);
         Assert.assertNotNull(mucUser);
-        Assert.assertNotNull(mucUser.getInvitations());
-        Assert.assertEquals(mucUser.getInvitations().get(0).getTo(), Jid.fromString("hecate@shakespeare.lit"));
-        Assert.assertEquals(mucUser.getInvitations().get(0).getReason(), "Hey Hecate, this is the place for all good witches!");
+        Assert.assertNotNull(mucUser.getInvites());
+        Assert.assertEquals(mucUser.getInvites().get(0).getTo(), Jid.fromString("hecate@shakespeare.lit"));
+        Assert.assertEquals(mucUser.getInvites().get(0).getReason(), "Hey Hecate, this is the place for all good witches!");
     }
 
     @Test
@@ -190,11 +215,63 @@ public class MultiUserChatUserTest extends BaseTest {
         Message message = (Message) unmarshaller.unmarshal(xmlEventReader);
         MucUser mucUser = message.getExtension(MucUser.class);
         Assert.assertNotNull(mucUser);
-        Assert.assertNotNull(mucUser.getInvitations());
-        Assert.assertEquals(mucUser.getInvitations().size(), 2);
-        Assert.assertEquals(mucUser.getInvitations().get(0).getTo(), Jid.fromString("wiccarocks@shakespeare.lit/laptop"));
-        Assert.assertEquals(mucUser.getInvitations().get(0).getContinue().getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
-        Assert.assertEquals(mucUser.getInvitations().get(1).getTo(), Jid.fromString("hag66@shakespeare.lit"));
-        Assert.assertEquals(mucUser.getInvitations().get(1).getContinue().getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
+        Assert.assertNotNull(mucUser.getInvites());
+        Assert.assertEquals(mucUser.getInvites().size(), 2);
+        Assert.assertEquals(mucUser.getInvites().get(0).getTo(), Jid.fromString("wiccarocks@shakespeare.lit/laptop"));
+        Assert.assertEquals(mucUser.getInvites().get(0).getContinue().getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
+        Assert.assertEquals(mucUser.getInvites().get(1).getTo(), Jid.fromString("hag66@shakespeare.lit"));
+        Assert.assertEquals(mucUser.getInvites().get(1).getContinue().getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
+    }
+
+    @Test
+    public void unmarshalKicked() throws XMLStreamException, JAXBException {
+        String xml = "<presence\n" +
+                "    from='harfleur@chat.shakespeare.lit/pistol'\n" +
+                "    to='pistol@shakespeare.lit/harfleur'\n" +
+                "    type='unavailable'>\n" +
+                "  <x xmlns='http://jabber.org/protocol/muc#user'>\n" +
+                "    <item affiliation='none' role='none'>\n" +
+                "      <actor nick='Fluellen'/>\n" +
+                "      <reason>Avaunt, you cullion!</reason>\n" +
+                "    </item>\n" +
+                "    <status code='307'/>\n" +
+                "  </x>\n" +
+                "</presence>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Presence presence = (Presence) unmarshaller.unmarshal(xmlEventReader);
+        MucUser mucUser = presence.getExtension(MucUser.class);
+        Assert.assertNotNull(mucUser);
+        Assert.assertNotNull(mucUser.getItem());
+        Assert.assertNotNull(mucUser.getItem().getActor());
+        Assert.assertEquals(mucUser.getItem().getActor().getNick(), "Fluellen");
+    }
+
+    @Test
+    public void unmarshalDestroyed() throws XMLStreamException, JAXBException {
+        String xml = "<presence\n" +
+                "    from='heath@chat.shakespeare.lit/firstwitch'\n" +
+                "    to='crone1@shakespeare.lit/desktop'\n" +
+                "    type='unavailable'>\n" +
+                "  <x xmlns='http://jabber.org/protocol/muc#user'>\n" +
+                "    <item affiliation='none' role='none'/>\n" +
+                "    <destroy jid='coven@chat.shakespeare.lit'>\n" +
+                "      <reason>Macbeth doth come.</reason>\n" +
+                "    </destroy>\n" +
+                "  </x>\n" +
+                "</presence>\n";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Presence presence = (Presence) unmarshaller.unmarshal(xmlEventReader);
+        MucUser mucUser = presence.getExtension(MucUser.class);
+        Assert.assertNotNull(mucUser);
+        Assert.assertNotNull(mucUser.getDestroy());
+        Assert.assertEquals(mucUser.getDestroy().getJid(), Jid.fromString("coven@chat.shakespeare.lit"));
+        Assert.assertEquals(mucUser.getDestroy().getReason(), "Macbeth doth come.");
+    }
+
+    @Test
+    public void marshalDestroyRoom() throws JAXBException, XMLStreamException, IOException {
+        MucUser mucOwner = new MucUser(MucElementFactory.createDestroy(Jid.fromString("coven@chat.shakespeare.lit"), "Macbeth doth come."));
+        String xml = marshall(mucOwner);
+        Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></x>");
     }
 }

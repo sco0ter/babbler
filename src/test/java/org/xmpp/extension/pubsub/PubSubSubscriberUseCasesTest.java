@@ -320,4 +320,11 @@ public class PubSubSubscriberUseCasesTest extends BaseTest {
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><items node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></items></pubsub>");
     }
+
+    @Test
+    public void marshalRequestOptions() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = new PubSub(new PubSub.Options("princely_musings", Jid.fromString("francisco@denmark.lit")));
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><options node=\"princely_musings\" jid=\"francisco@denmark.lit\"></options></pubsub>");
+    }
 }

@@ -22,59 +22,81 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.pubsub.owner;
+
+import org.xmpp.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
+import java.util.Date;
 
 /**
  * @author Christian Schudt
  */
-final class Items {
-
-    @XmlElement(name = "item")
-    private List<Item> items = new ArrayList<>();
-
+public class Subscription {
     @XmlAttribute(name = "node")
     private String node;
 
-    @XmlAttribute(name = "max_items")
-    private Long maxItems;
+    @XmlAttribute(name = "jid")
+    private Jid jid;
 
     @XmlAttribute(name = "subid")
     private String subid;
 
-    @XmlElement(name = "retract")
-    private Retract retract;
+    @XmlAttribute(name = "subscription")
+    private SubscriptionType type;
 
-    private Items() {
+    @XmlAttribute(name = "expiry")
+    private Date expiry;
+
+    @XmlElement(name = "subscribe-options")
+    private Options options;
+
+    public Options getOptions() {
+        return options;
     }
 
-    public Items(String node) {
-        this.node = node;
-    }
-
-    public Items(String node, Long maxItems) {
-        this.node = node;
-        this.maxItems = maxItems;
-    }
-
-    public Items(String node, Item item) {
-        this.node = node;
-        this.items.add(item);
-    }
-
-    public List<Item> getItems() {
-        return items;
+    public SubscriptionType getType() {
+        return type;
     }
 
     public String getNode() {
         return node;
     }
 
-    Retract getRetract() {
-        return retract;
+    public Jid getJid() {
+        return jid;
+    }
+
+    public String getSubid() {
+        return subid;
+    }
+
+    public Date getExpiry() {
+        return expiry;
+    }
+
+    public enum SubscriptionType {
+        @XmlEnumValue("none")
+        NONE,
+        @XmlEnumValue("pending")
+        PENDING,
+        @XmlEnumValue("subscribed")
+        SUBSCRIBED,
+        @XmlEnumValue("unconfigured")
+        UNCONFIGURED,
+    }
+
+    @XmlType(name = "subscription-options")
+    public static final class Options {
+
+        @XmlElement(name = "required")
+        private String required;
+
+        public boolean isRequired() {
+            return required != null;
+        }
     }
 }

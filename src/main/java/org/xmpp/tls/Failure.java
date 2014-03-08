@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement
-public final class Failure {
+final class Failure {
     private Failure() {
     }
 }

@@ -31,12 +31,11 @@ import javax.xml.bind.annotation.XmlElements;
 /**
  * @author Christian Schudt
  */
-final class Delete {
+public final class Delete {
     @XmlAttribute(name = "node")
     private String node;
 
     @XmlElements({
-            @XmlElement(name = "redirect", namespace = "http://jabber.org/protocol/pubsub#event"),
             @XmlElement(name = "redirect", namespace = "http://jabber.org/protocol/pubsub#owner")})
     private Redirect redirect;
 

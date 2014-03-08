@@ -24,59 +24,34 @@
 
 package org.xmpp.extension.pubsub;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import java.util.EventObject;
+import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "event", namespace = PubSub.EVENT_NAMESPACE)
-@XmlType(namespace = PubSub.EVENT_NAMESPACE)
-public final class Event {
+public class PubSubEvent extends EventObject {
 
-    @XmlElement(name = "items", namespace = PubSub.EVENT_NAMESPACE)
-    private Items items;
+    private String node;
 
-    @XmlElement(name = "retract", namespace = PubSub.EVENT_NAMESPACE)
-    private Retract retract;
+    private List<Item> items;
 
-    @XmlElement(name = "purge", namespace = PubSub.EVENT_NAMESPACE)
-    private Purge purge;
-
-    @XmlElement(name = "configuration", namespace = PubSub.EVENT_NAMESPACE)
-    private Configuration configuration;
-
-    @XmlElement(name = "delete", namespace = PubSub.EVENT_NAMESPACE)
-    private Delete delete;
-
-    @XmlElement(name = "subscription", namespace = PubSub.EVENT_NAMESPACE)
-    private Subscription subscription;
-
-    private Event() {
+    /**
+     * Constructs a prototypical Event.
+     *
+     * @param source The object on which the Event initially occurred.
+     * @throws IllegalArgumentException if source is null.
+     */
+    public PubSubEvent(Object source) {
+        super(source);
     }
 
-    Event(Delete delete) {
-        this.delete = delete;
+    public String getNode() {
+        return node;
     }
 
-    Purge getPurge() {
-        return purge;
-    }
-
-    Items getItems() {
+    public List<Item> getItems() {
         return items;
     }
 
-    Configuration getConfiguration() {
-        return configuration;
-    }
-
-    public Delete getDelete() {
-        return delete;
-    }
-
-    public Subscription getSubscription() {
-        return subscription;
-    }
 }

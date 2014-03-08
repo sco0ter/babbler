@@ -24,12 +24,14 @@
 
 package org.xmpp.stream;
 
+import org.xmpp.XmppException;
+
 /**
  * An exception which represents a {@linkplain StreamError stream error}.
  *
  * @author Christian Schudt
  */
-public final class StreamException extends Exception {
+public final class StreamException extends XmppException {
 
     private final StreamError error;
 

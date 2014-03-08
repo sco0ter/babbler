@@ -22,34 +22,37 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.pubsub.owner;
+
+import org.xmpp.extension.pubsub.Configure;
+import org.xmpp.extension.pubsub.Default;
+import org.xmpp.extension.pubsub.Delete;
+import org.xmpp.extension.pubsub.Purge;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "pubsub", namespace = PubSub.OWNER_NAMESPACE)
-@XmlType(namespace = PubSub.OWNER_NAMESPACE)
+@XmlRootElement(name = "pubsub")
 public final class PubSubOwner {
-    @XmlElement(name = "affiliations", namespace = PubSub.OWNER_NAMESPACE)
+    @XmlElement(name = "affiliations")
     private Affiliations affiliations;
 
-    @XmlElement(name = "configure", namespace = PubSub.OWNER_NAMESPACE)
+    @XmlElement(name = "configure")
     private Configure configure;
 
-    @XmlElement(name = "default", namespace = PubSub.OWNER_NAMESPACE)
+    @XmlElement(name = "default")
     private Default aDefault;
 
-    @XmlElement(name = "delete", namespace = PubSub.OWNER_NAMESPACE)
+    @XmlElement(name = "delete")
     private Delete delete;
 
-    @XmlElement(name = "purge", namespace = PubSub.OWNER_NAMESPACE)
+    @XmlElement(name = "purge")
     private Purge purge;
 
-    @XmlElement(name = "subscriptions", namespace = PubSub.OWNER_NAMESPACE)
+    @XmlElement(name = "subscriptions")
     private Subscriptions subscriptions;
 
     private PubSubOwner() {

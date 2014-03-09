@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.pubsub.owner;
 
 import org.xmpp.extension.data.DataForm;
 
@@ -32,16 +32,25 @@ import javax.xml.bind.annotation.XmlElementRef;
 /**
  * @author Christian Schudt
  */
-public final class Configuration {
-
-    @XmlAttribute(name = "node")
-    private String node;
+final class Configure extends PubSubOwnerChildElement {
 
     @XmlElementRef
     private DataForm dataForm;
 
-    public String getNode() {
-        return node;
+    private Configure() {
+    }
+
+    public Configure(String node) {
+        super(node);
+    }
+
+    public Configure(String node, DataForm dataForm) {
+        super(node);
+        this.dataForm = dataForm;
+    }
+
+    public Configure(DataForm dataForm) {
+        this.dataForm = dataForm;
     }
 
     public DataForm getDataForm() {

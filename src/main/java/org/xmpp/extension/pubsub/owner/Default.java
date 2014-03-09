@@ -22,41 +22,24 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.pubsub.owner;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
+import org.xmpp.extension.data.DataForm;
+
+import javax.xml.bind.annotation.XmlElementRef;
 
 /**
  * @author Christian Schudt
  */
-public final class Delete {
-    @XmlAttribute(name = "node")
-    private String node;
+final class Default extends PubSubOwnerChildElement {
 
-    @XmlElements({
-            @XmlElement(name = "redirect", namespace = "http://jabber.org/protocol/pubsub#owner")})
-    private Redirect redirect;
+    @XmlElementRef
+    private DataForm dataForm;
 
-    private Delete() {
-
+    public Default() {
     }
 
-    public Delete(String node) {
-        this.node = node;
-    }
-
-    public Delete(String node, Redirect redirect) {
-        this.node = node;
-        this.redirect = redirect;
-    }
-
-    public String getNode() {
-        return node;
-    }
-
-    public Redirect getRedirect() {
-        return redirect;
+    public DataForm getDataForm() {
+        return dataForm;
     }
 }

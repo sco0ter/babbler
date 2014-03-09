@@ -22,33 +22,26 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub.owner;
-
-
-import org.xmpp.extension.pubsub.AffiliationNode;
+package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URI;
 
 /**
  * @author Christian Schudt
  */
-final class Affiliations extends PubSubOwnerChildElement {
+public final class RedirectElement {
+    @XmlAttribute(name = "uri")
+    private URI uri;
 
-    @XmlElement(name = "affiliation")
-    private List<AffiliationNodeOwner> affiliations = new ArrayList<>();
-
-    public Affiliations() {
-        super(null);
+    private RedirectElement() {
     }
 
-    public Affiliations(String node) {
-        super(node);
+    public RedirectElement(URI uri) {
+        this.uri = uri;
     }
 
-    public List<? extends AffiliationNode> getAffiliations() {
-        return affiliations;
+    public URI getUri() {
+        return uri;
     }
 }

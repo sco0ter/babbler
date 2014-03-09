@@ -22,54 +22,40 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub.event;
+package org.xmpp.extension.pubsub;
 
-import org.xmpp.extension.pubsub.Item;
+import org.xmpp.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
  */
-final class Items extends PubSubEventChildElement {
+final class AffiliationInfo implements AffiliationNode {
 
-    @XmlElement(name = "item")
-    private List<ItemElement> items = new ArrayList<>();
+    @XmlAttribute(name = "node")
+    private String node;
 
-    @XmlAttribute(name = "max_items")
-    private Long maxItems;
+    @XmlAttribute(name = "affiliation")
+    private Affiliation affiliation;
 
-    @XmlAttribute(name = "subid")
-    private String subid;
+    @XmlAttribute(name = "jid")
+    private Jid jid;
 
-    @XmlElement(name = "retract")
-    private Retract retract;
-
-    private Items() {
+    @Override
+    public Jid getJid() {
+        return jid;
     }
 
-    public Items(String node) {
-        super(node);
+    @Override
+    public Affiliation getAffiliation() {
+        return affiliation;
     }
 
-    public Items(String node, long maxItems) {
-        super(node);
-        this.maxItems = maxItems;
-    }
-
-    public Items(String node, ItemElement item) {
-        super(node);
-        this.items.add(item);
-    }
-
-    public List<? extends Item> getItems() {
-        return items;
-    }
-
-    Retract getRetract() {
-        return retract;
+    @Override
+    public String getNode() {
+        return node;
     }
 }

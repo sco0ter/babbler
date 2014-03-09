@@ -25,78 +25,34 @@
 package org.xmpp.extension.pubsub.owner;
 
 import org.xmpp.Jid;
+import org.xmpp.extension.pubsub.Affiliation;
+import org.xmpp.extension.pubsub.AffiliationNode;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
-import java.util.Date;
 
 /**
  * @author Christian Schudt
  */
-public class Subscription {
+final class AffiliationNodeOwner implements AffiliationNode {
+
     @XmlAttribute(name = "node")
     private String node;
 
+    @XmlAttribute(name = "affiliation")
+    private Affiliation affiliation;
+
     @XmlAttribute(name = "jid")
     private Jid jid;
-
-    @XmlAttribute(name = "subid")
-    private String subid;
-
-    @XmlAttribute(name = "subscription")
-    private SubscriptionType type;
-
-    @XmlAttribute(name = "expiry")
-    private Date expiry;
-
-    @XmlElement(name = "subscribe-options")
-    private Options options;
-
-    public Options getOptions() {
-        return options;
-    }
-
-    public SubscriptionType getType() {
-        return type;
-    }
-
-    public String getNode() {
-        return node;
-    }
 
     public Jid getJid() {
         return jid;
     }
 
-    public String getSubid() {
-        return subid;
+    public Affiliation getAffiliation() {
+        return affiliation;
     }
 
-    public Date getExpiry() {
-        return expiry;
-    }
-
-    public enum SubscriptionType {
-        @XmlEnumValue("none")
-        NONE,
-        @XmlEnumValue("pending")
-        PENDING,
-        @XmlEnumValue("subscribed")
-        SUBSCRIBED,
-        @XmlEnumValue("unconfigured")
-        UNCONFIGURED,
-    }
-
-    @XmlType(name = "subscription-options")
-    public static final class Options {
-
-        @XmlElement(name = "required")
-        private String required;
-
-        public boolean isRequired() {
-            return required != null;
-        }
+    public String getNode() {
+        return node;
     }
 }

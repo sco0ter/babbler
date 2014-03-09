@@ -77,6 +77,20 @@ public class PubSubEntityUseCasesTest extends BaseTest {
     }
 
     @Test
+    public void marshalSubscriptionsRequest() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = PubSub.forSubscriptionsRequest();
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions></subscriptions></pubsub>");
+    }
+
+    @Test
+    public void marshalSubscriptionsRequestWithNode() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = PubSub.forSubscriptionsRequest("princely_musings");
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
+    }
+
+    @Test
     public void unmarshalPubSubSubscriptions() throws XMLStreamException, JAXBException {
         String xml = "<iq type='result'\n" +
                 "    from='pubsub.shakespeare.lit'\n" +
@@ -97,27 +111,45 @@ public class PubSubEntityUseCasesTest extends BaseTest {
         PubSub pubSub = iq.getExtension(PubSub.class);
         Assert.assertNotNull(pubSub);
         Assert.assertNotNull(pubSub.getSubscriptions());
-        Assert.assertEquals(pubSub.getSubscriptions().getSubscriptions().size(), 5);
-        Assert.assertEquals(pubSub.getSubscriptions().getSubscriptions().get(0).getNode(), "node1");
-        Assert.assertEquals(pubSub.getSubscriptions().getSubscriptions().get(0).getJid(), Jid.fromString("francisco@denmark.lit"));
-        Assert.assertEquals(pubSub.getSubscriptions().getSubscriptions().get(0).getType(), Subscription.SubscriptionType.SUBSCRIBED);
+        Assert.assertEquals(pubSub.getSubscriptions().size(), 5);
+        Assert.assertEquals(pubSub.getSubscriptions().get(0).getNode(), "node1");
+        Assert.assertEquals(pubSub.getSubscriptions().get(0).getJid(), Jid.fromString("francisco@denmark.lit"));
+        Assert.assertEquals(pubSub.getSubscriptions().get(0).getSubscriptionStatus(), SubscriptionStatus.SUBSCRIBED);
 
-        Assert.assertEquals(pubSub.getSubscriptions().getSubscriptions().get(2).getType(), Subscription.SubscriptionType.UNCONFIGURED);
-        Assert.assertEquals(pubSub.getSubscriptions().getSubscriptions().get(3).getSubid(), "123-abc");
+        Assert.assertEquals(pubSub.getSubscriptions().get(2).getSubscriptionStatus(), SubscriptionStatus.UNCONFIGURED);
+        Assert.assertEquals(pubSub.getSubscriptions().get(3).getSubId(), "123-abc");
     }
 
     @Test
-    public void marshalSubscriptions() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new Subscriptions("princely_musings"));
-        String xml = marshall(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
+    public void unmarshalPubSubNoSubscriptions() throws XMLStreamException, JAXBException {
+        String xml = "<iq type='result'\n" +
+                "    from='pubsub.shakespeare.lit'\n" +
+                "    to='francisco@denmark.lit/barracks'\n" +
+                "    id='subscriptions1'>\n" +
+                "  <pubsub xmlns='http://jabber.org/protocol/pubsub'>\n" +
+                "    <subscriptions/>\n" +
+                "  </pubsub>\n" +
+                "</iq>\n";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
+        PubSub pubSub = iq.getExtension(PubSub.class);
+        Assert.assertNotNull(pubSub);
+        Assert.assertNotNull(pubSub.getSubscriptions());
+        Assert.assertEquals(pubSub.getSubscriptions().size(), 0);
     }
 
     @Test
     public void marshalAffiliations() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new Affiliations());
+        PubSub pubSub = PubSub.forAffiliationsRequest();
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations></affiliations></pubsub>");
+    }
+
+    @Test
+    public void marshalAffiliationsWithNode() throws JAXBException, XMLStreamException, IOException {
+        PubSub pubSub = PubSub.forAffiliationsRequest("node6");
+        String xml = marshall(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations node=\"node6\"></affiliations></pubsub>");
     }
 
     @Test
@@ -140,12 +172,12 @@ public class PubSubEntityUseCasesTest extends BaseTest {
         PubSub pubSub = iq.getExtension(PubSub.class);
         Assert.assertNotNull(pubSub);
         Assert.assertNotNull(pubSub.getAffiliations());
-        Assert.assertEquals(pubSub.getAffiliations().getAffiliations().size(), 4);
-        Assert.assertEquals(pubSub.getAffiliations().getAffiliations().get(0).getNode(), "node1");
-        Assert.assertEquals(pubSub.getAffiliations().getAffiliations().get(0).getType(), Affiliation.Type.OWNER);
+        Assert.assertEquals(pubSub.getAffiliations().size(), 4);
+        Assert.assertEquals(pubSub.getAffiliations().get(0).getNode(), "node1");
+        Assert.assertEquals(pubSub.getAffiliations().get(0).getAffiliation(), Affiliation.OWNER);
 
-        Assert.assertEquals(pubSub.getAffiliations().getAffiliations().get(1).getType(), Affiliation.Type.PUBLISHER);
-        Assert.assertEquals(pubSub.getAffiliations().getAffiliations().get(2).getType(), Affiliation.Type.OUTCAST);
+        Assert.assertEquals(pubSub.getAffiliations().get(1).getAffiliation(), Affiliation.PUBLISHER);
+        Assert.assertEquals(pubSub.getAffiliations().get(2).getAffiliation(), Affiliation.OUTCAST);
     }
 
     @Test
@@ -163,13 +195,8 @@ public class PubSubEntityUseCasesTest extends BaseTest {
         PubSub pubSub = iq.getExtension(PubSub.class);
         Assert.assertNotNull(pubSub);
         Assert.assertNotNull(pubSub.getAffiliations());
-        Assert.assertTrue(pubSub.getAffiliations().getAffiliations().isEmpty());
+        Assert.assertTrue(pubSub.getAffiliations().isEmpty());
     }
 
-    @Test
-    public void marshalAffiliationsNode() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new Affiliations("node6"));
-        String xml = marshall(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations node=\"node6\"></affiliations></pubsub>");
-    }
+
 }

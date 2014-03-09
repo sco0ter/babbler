@@ -33,9 +33,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 /**
  * @author Christian Schudt
  */
-public final class Default {
-    @XmlAttribute(name = "node")
-    private String node;
+public final class Default extends PubSubChildElement {
 
     @XmlAttribute(name = "type")
     private Type type;
@@ -48,7 +46,7 @@ public final class Default {
     }
 
     public Default(String node) {
-        this.node = node;
+        super(node);
     }
 
     public DataForm getDataForm() {

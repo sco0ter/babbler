@@ -25,23 +25,38 @@
 package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import java.net.URI;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 
 /**
  * @author Christian Schudt
  */
-public final class Redirect {
-    @XmlAttribute(name = "uri")
-    private URI uri;
+public final class DeleteElement {
+    @XmlAttribute(name = "node")
+    private String node;
 
-    private Redirect() {
+    @XmlElements({
+            @XmlElement(name = "redirect", namespace = "http://jabber.org/protocol/pubsub#owner")})
+    private RedirectElement redirect;
+
+    private DeleteElement() {
+
     }
 
-    public Redirect(URI uri) {
-        this.uri = uri;
+    public DeleteElement(String node) {
+        this.node = node;
     }
 
-    public URI getUri() {
-        return uri;
+    public DeleteElement(String node, RedirectElement redirect) {
+        this.node = node;
+        this.redirect = redirect;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public RedirectElement getRedirect() {
+        return redirect;
     }
 }

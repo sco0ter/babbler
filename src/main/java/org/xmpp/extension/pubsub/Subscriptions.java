@@ -26,32 +26,25 @@ package org.xmpp.extension.pubsub;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-public final class Subscriptions {
+public final class Subscriptions extends PubSubChildElement {
 
     @XmlElement(name = "subscription")
-    private List<Subscription> subscriptions;
-
-    @XmlAttribute(name = "node")
-    private String node;
+    private List<SubscriptionInfo> subscriptions = new ArrayList<>();
 
     private Subscriptions() {
     }
 
     public Subscriptions(String node) {
-        this.node = node;
+        super(node);
     }
 
-    public String getNode() {
-        return node;
-    }
-
-    public List<Subscription> getSubscriptions() {
+    public List<SubscriptionInfo> getSubscriptions() {
         return subscriptions;
     }
 }

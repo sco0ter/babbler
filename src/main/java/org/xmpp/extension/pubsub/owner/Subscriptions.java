@@ -24,33 +24,25 @@
 
 package org.xmpp.extension.pubsub.owner;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-public final class Subscriptions {
+final class Subscriptions extends PubSubOwnerChildElement {
 
     @XmlElement(name = "subscription")
-    private List<Subscription> subscriptions;
-
-    @XmlAttribute(name = "node")
-    private String node;
+    private List<SubscriptionOwner> subscriptions;
 
     private Subscriptions() {
     }
 
     public Subscriptions(String node) {
-        this.node = node;
+        super(node);
     }
 
-    public String getNode() {
-        return node;
-    }
-
-    public List<Subscription> getSubscriptions() {
+    public List<SubscriptionOwner> getSubscriptions() {
         return subscriptions;
     }
 }

@@ -24,10 +24,14 @@
 
 package org.xmpp.extension.pubsub.event;
 
-import org.xmpp.extension.pubsub.*;
+import org.xmpp.extension.data.DataForm;
+import org.xmpp.extension.pubsub.Item;
+import org.xmpp.extension.pubsub.Subscription;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 import java.util.List;
 
 /**
@@ -36,48 +40,67 @@ import java.util.List;
 @XmlRootElement(name = "event")
 public final class Event {
 
-    @XmlElement(name = "items")
-    private Items items;
-
-    @XmlElement(name = "retract")
-    private Retract retract;
-
-    @XmlElement(name = "purge")
-    private Purge purge;
-
-    @XmlElement(name = "configuration")
-    private Configuration configuration;
-
-    @XmlElement(name = "delete")
-    private Delete delete;
-
-    @XmlElement(name = "subscription")
-    private Subscription subscription;
+    @XmlElements({
+            @XmlElement(name = "configuration", type = Configuration.class),
+            @XmlElement(name = "delete", type = Delete.class),
+            @XmlElement(name = "items", type = Items.class),
+            @XmlElement(name = "purge", type = Purge.class),
+            @XmlElement(name = "subscription", type = SubscriptionInfo.class)
+    })
+    private PubSubEventChildElement type;
 
     private Event() {
     }
 
-    Event(Delete delete) {
-        this.delete = delete;
+    private Event(PubSubEventChildElement type) {
+        this.type = type;
     }
 
-    Purge getPurge() {
-        return purge;
+    public static Event forDelete(String node) {
+        return new Event(new Delete(node));
     }
 
-    Items getItemsElement() {
-        return items;
+    public String getNode() {
+        return type != null ? type.getNode() : null;
     }
 
-    public Configuration getConfiguration() {
-        return configuration;
+    public boolean isConfigure() {
+        return type instanceof Configuration;
     }
 
-    public Delete getDelete() {
-        return delete;
+    public boolean isDelete() {
+        return type instanceof Delete;
+    }
+
+    public boolean isPurge() {
+        return type instanceof Purge;
     }
 
     public Subscription getSubscription() {
-        return subscription;
+        if (type instanceof SubscriptionInfo) {
+            return ((SubscriptionInfo) type);
+        }
+        return null;
+    }
+
+    public List<? extends Item> getItems() {
+        if (type instanceof Items) {
+            return ((Items) type).getItems();
+        }
+        return null;
+    }
+
+    public DataForm getConfigurationForm() {
+        if (type instanceof Configuration) {
+            return ((Configuration) type).getConfigurationForm();
+        }
+        return null;
+    }
+
+    public URI getRedirectUri() {
+        if (type instanceof Delete && ((Delete) type).getRedirect() != null) {
+            return ((Delete) type).getRedirect().getUri();
+        }
+        return null;
     }
 }

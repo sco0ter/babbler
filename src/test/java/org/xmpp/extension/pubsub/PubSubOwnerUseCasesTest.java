@@ -30,7 +30,6 @@ import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.pubsub.owner.PubSubOwner;
-import org.xmpp.extension.pubsub.owner.Subscriptions;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -67,35 +66,35 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
 
     @Test
     public void marshalDefault() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new Default());
+        PubSub pubSub = PubSub.forRequestDefault();
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><default></default></pubsub>");
     }
 
     @Test
     public void marshalDeleteNode() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSub = new PubSubOwner(new Delete("princely_musings"));
+        PubSubOwner pubSub = PubSubOwner.forDelete("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"></delete></pubsub>");
     }
 
     @Test
     public void marshalDeleteNodeWithRedirect() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSub = new PubSubOwner(new Delete("princely_musings", new Redirect(URI.create("xmpp:hamlet@denmark.lit?;node=blog"))));
+        PubSubOwner pubSub = PubSubOwner.forDelete("princely_musings", URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"><redirect uri=\"xmpp:hamlet@denmark.lit?;node=blog\"></redirect></delete></pubsub>");
     }
 
     @Test
     public void marshalPurgeNodes() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSub = new PubSubOwner(new Purge("princely_musings"));
+        PubSubOwner pubSub = PubSubOwner.forPurge("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><purge node=\"princely_musings\"></purge></pubsub>");
     }
 
     @Test
     public void marshalPubSubOwnerSubscriptions() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSub = new PubSubOwner(new Subscriptions("princely_musings"));
+        PubSubOwner pubSub = PubSubOwner.forSubscriptions("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
     }
@@ -119,9 +118,9 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
         Assert.assertNotNull(pubSubOwner);
-        Assert.assertNotNull(pubSubOwner.getSubscriptions());
-        Assert.assertEquals(pubSubOwner.getSubscriptions().getNode(), "princely_musings");
-        Assert.assertEquals(pubSubOwner.getSubscriptions().getSubscriptions().size(), 4);
+        Assert.assertTrue(pubSubOwner.isSubscriptions());
+        Assert.assertEquals(pubSubOwner.getNode(), "princely_musings");
+        Assert.assertEquals(pubSubOwner.getSubscriptions().size(), 4);
     }
 
     @Test
@@ -147,9 +146,9 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
 
     @Test
     public void marshalDeleteItem() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new Retract("princely_musings", new Item("ae890ac52d0df67ed7cfdf51b644e901"), false));
+        PubSub pubSub = new PubSub(new RetractElement("princely_musings", new ItemElement("ae890ac52d0df67ed7cfdf51b644e901"), false));
         String xml = marshall(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract node=\"princely_musings\" notify=\"false\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract notify=\"false\" node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
     }
 
     @Test
@@ -270,9 +269,9 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
         Assert.assertNotNull(pubSubOwner);
-        Assert.assertNotNull(pubSubOwner.getConfigure());
-        Assert.assertNotNull(pubSubOwner.getConfigure().getDataForm());
-        Assert.assertEquals(pubSubOwner.getConfigure().getNode(), "princely_musings");
+        Assert.assertTrue(pubSubOwner.isConfigure());
+        Assert.assertNotNull(pubSubOwner.getConfiguration());
+        Assert.assertEquals(pubSubOwner.getNode(), "princely_musings");
     }
 
     @Test
@@ -389,8 +388,8 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
         Assert.assertNotNull(pubSubOwner);
-        Assert.assertNotNull(pubSubOwner.getDefault());
-        Assert.assertNotNull(pubSubOwner.getDefault().getDataForm());
+        Assert.assertTrue(pubSubOwner.isDefault());
+        Assert.assertNotNull(pubSubOwner.getDefaultConfiguration());
 
     }
 
@@ -410,9 +409,9 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
         Assert.assertNotNull(pubSubOwner);
-        Assert.assertNotNull(pubSubOwner.getDelete());
-        Assert.assertEquals(pubSubOwner.getDelete().getNode(), "princely_musings");
-        Assert.assertEquals(pubSubOwner.getDelete().getRedirect().getUri(), URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
+        Assert.assertTrue(pubSubOwner.isDelete());
+        Assert.assertEquals(pubSubOwner.getNode(), "princely_musings");
+        Assert.assertEquals(pubSubOwner.getRedirectUri(), URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
     }
 
     @Test
@@ -429,8 +428,8 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
         Assert.assertNotNull(pubSubOwner);
-        Assert.assertNotNull(pubSubOwner.getPurge());
-        Assert.assertEquals(pubSubOwner.getPurge().getNode(), "princely_musings");
+        Assert.assertTrue(pubSubOwner.isPurge());
+        Assert.assertEquals(pubSubOwner.getNode(), "princely_musings");
     }
 
     @Test
@@ -451,18 +450,18 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
         Assert.assertNotNull(pubSubOwner);
         Assert.assertNotNull(pubSubOwner.getAffiliations());
-        Assert.assertEquals(pubSubOwner.getAffiliations().getNode(), "princely_musings");
-        Assert.assertEquals(pubSubOwner.getAffiliations().getAffiliations().size(), 2);
-        Assert.assertEquals(pubSubOwner.getAffiliations().getAffiliations().get(0).getJid(), Jid.fromString("hamlet@denmark.lit"));
-        Assert.assertEquals(pubSubOwner.getAffiliations().getAffiliations().get(0).getType(), Affiliation.Type.OWNER);
+        Assert.assertEquals(pubSubOwner.getNode(), "princely_musings");
+        Assert.assertEquals(pubSubOwner.getAffiliations().size(), 2);
+        Assert.assertEquals(pubSubOwner.getAffiliations().get(0).getJid(), Jid.fromString("hamlet@denmark.lit"));
+        Assert.assertEquals(pubSubOwner.getAffiliations().get(0).getAffiliation(), Affiliation.OWNER);
 
-        Assert.assertEquals(pubSubOwner.getAffiliations().getAffiliations().get(1).getJid(), Jid.fromString("polonius@denmark.lit"));
-        Assert.assertEquals(pubSubOwner.getAffiliations().getAffiliations().get(1).getType(), Affiliation.Type.OUTCAST);
+        Assert.assertEquals(pubSubOwner.getAffiliations().get(1).getJid(), Jid.fromString("polonius@denmark.lit"));
+        Assert.assertEquals(pubSubOwner.getAffiliations().get(1).getAffiliation(), Affiliation.OUTCAST);
     }
 
     @Test
     public void marshalPubSubOwnerDelete() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSubOwner = new PubSubOwner(new Delete("test"));
+        PubSubOwner pubSubOwner = PubSubOwner.forDelete("test");
         String xml = marshall(pubSubOwner);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"test\"></delete></pubsub>");
     }

@@ -32,49 +32,42 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-final class Items {
+final class Items extends PubSubChildElement {
 
     @XmlElement(name = "item")
-    private List<Item> items = new ArrayList<>();
-
-    @XmlAttribute(name = "node")
-    private String node;
+    private List<ItemElement> items = new ArrayList<>();
 
     @XmlAttribute(name = "max_items")
-    private Long maxItems;
+    private Integer maxItems;
 
     @XmlAttribute(name = "subid")
     private String subid;
 
     @XmlElement(name = "retract")
-    private Retract retract;
+    private RetractElement retract;
 
     private Items() {
     }
 
     public Items(String node) {
-        this.node = node;
+        super(node);
     }
 
-    public Items(String node, Long maxItems) {
-        this.node = node;
+    public Items(String node, int maxItems) {
+        super(node);
         this.maxItems = maxItems;
     }
 
-    public Items(String node, Item item) {
-        this.node = node;
+    public Items(String node, ItemElement item) {
+        super(node);
         this.items.add(item);
     }
 
-    public List<Item> getItems() {
+    public List<ItemElement> getItems() {
         return items;
     }
 
-    public String getNode() {
-        return node;
-    }
-
-    Retract getRetract() {
+    RetractElement getRetract() {
         return retract;
     }
 }

@@ -22,54 +22,81 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub.event;
+package org.xmpp.extension.pubsub;
 
-import org.xmpp.extension.pubsub.Item;
+import org.xmpp.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlType;
+import java.util.Date;
 
 /**
  * @author Christian Schudt
  */
-final class Items extends PubSubEventChildElement {
+public class SubscriptionInfo extends PubSubChildElement implements Subscription {
 
-    @XmlElement(name = "item")
-    private List<ItemElement> items = new ArrayList<>();
-
-    @XmlAttribute(name = "max_items")
-    private Long maxItems;
+    @XmlAttribute(name = "jid")
+    private Jid jid;
 
     @XmlAttribute(name = "subid")
     private String subid;
 
-    @XmlElement(name = "retract")
-    private Retract retract;
+    @XmlAttribute(name = "subscription")
+    private SubscriptionStatus type;
 
-    private Items() {
+    @XmlAttribute(name = "expiry")
+    private Date expiry;
+
+    @XmlElement(name = "subscribe-options")
+    private Options options;
+
+    public Options getOptions() {
+        return options;
     }
 
-    public Items(String node) {
-        super(node);
+    public SubscriptionStatus getType() {
+        return type;
     }
 
-    public Items(String node, long maxItems) {
-        super(node);
-        this.maxItems = maxItems;
+    @Override
+    public String getSubId() {
+        return subid;
     }
 
-    public Items(String node, ItemElement item) {
-        super(node);
-        this.items.add(item);
+    @Override
+    public SubscriptionStatus getSubscriptionStatus() {
+        return type;
     }
 
-    public List<? extends Item> getItems() {
-        return items;
+    @Override
+    public Jid getJid() {
+        return jid;
     }
 
-    Retract getRetract() {
-        return retract;
+    @Override
+    public Date getExpiry() {
+        return expiry;
+    }
+
+    @Override
+    public boolean isConfigurationRequired() {
+        return options != null && options.isRequired();
+    }
+
+    @Override
+    public boolean isConfigurationSupported() {
+        return options != null;
+    }
+
+    @XmlType(name = "subscription-options")
+    public static final class Options {
+
+        @XmlElement(name = "required")
+        private String required;
+
+        public boolean isRequired() {
+            return required != null;
+        }
     }
 }

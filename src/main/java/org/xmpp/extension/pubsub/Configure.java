@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 /**
  * @author Christian Schudt
  */
-public final class Configure {
+final class Configure {
     @XmlAttribute(name = "node")
     private String node;
 
@@ -40,7 +40,6 @@ public final class Configure {
     private DataForm dataForm;
 
     private Configure() {
-
     }
 
     public Configure(String node) {
@@ -56,7 +55,7 @@ public final class Configure {
         this.dataForm = dataForm;
     }
 
-    public DataForm getDataForm() {
+    public DataForm getConfigurationForm() {
         return dataForm;
     }
 

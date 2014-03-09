@@ -22,37 +22,40 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub.owner;
+package org.xmpp.extension.pubsub.event;
 
-import org.xmpp.Jid;
+import org.xmpp.extension.pubsub.ItemElement;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author Christian Schudt
  */
-public final class Affiliation {
-
+final class Retract {
     @XmlAttribute(name = "node")
     private String node;
 
-    @XmlAttribute(name = "affiliation")
-    private org.xmpp.extension.pubsub.Affiliation.Type affiliation;
+    @XmlAttribute(name = "notify")
+    private Boolean notify;
 
-    @XmlAttribute(name = "jid")
-    private Jid jid;
+    @XmlElement
+    private ItemElement item;
 
-    public Jid getJid() {
-        return jid;
+    @XmlAttribute
+    private String id;
+
+    private Retract() {
+
     }
 
-    public org.xmpp.extension.pubsub.Affiliation.Type getType() {
-        return affiliation;
+    public Retract(String node, ItemElement item, Boolean notify) {
+        this.node = node;
+        this.item = item;
+        this.notify = notify;
     }
 
-    public String getNode() {
-        return node;
+    public String getId() {
+        return id;
     }
 }

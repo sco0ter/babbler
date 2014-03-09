@@ -22,25 +22,17 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
-
-import javax.xml.bind.annotation.XmlAttribute;
+package org.xmpp.extension.pubsub.event;
 
 /**
  * @author Christian Schudt
  */
-public final class Purge {
-    @XmlAttribute
-    private String node;
+final class Purge extends PubSubEventChildElement {
 
     private Purge() {
     }
 
     public Purge(String node) {
-        this.node = node;
-    }
-
-    public String getNode() {
-        return node;
+        super(node);
     }
 }

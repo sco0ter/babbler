@@ -22,7 +22,9 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.pubsub.event;
+
+import org.xmpp.extension.pubsub.Item;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -30,7 +32,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 /**
  * @author Christian Schudt
  */
-public final class Item {
+final class ItemElement implements Item {
 
     @XmlAnyElement
     private Object object;
@@ -38,19 +40,40 @@ public final class Item {
     @XmlAttribute(name = "id")
     private String id;
 
-    private Item() {
+    @XmlAttribute(name = "node")
+    private String node;
 
+    @XmlAttribute(name = "publisher")
+    private String publisher;
+
+    private ItemElement() {
     }
 
-    public Item(String id) {
+    public ItemElement(String id) {
         this.id = id;
     }
 
-    public Item(Object object) {
+    public ItemElement(Object object) {
         this.object = object;
     }
 
+    @Override
+    public Object getPayload() {
+        return object;
+    }
+
+    @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getNode() {
+        return node;
+    }
+
+    @Override
+    public String getPublisher() {
+        return publisher;
     }
 }

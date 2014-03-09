@@ -31,6 +31,7 @@ import org.xmpp.extension.pubsub.event.Event;
 import org.xmpp.extension.pubsub.owner.PubSubOwner;
 
 import javax.xml.bind.annotation.*;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -54,8 +55,17 @@ public final class PubSub {
     @XmlElement(name = "options")
     private Options options;
 
-    @XmlElement(name = "affiliations")
-    private Affiliations affiliations;
+    @XmlElements({
+            @XmlElement(name = "affiliations", type = AffiliationsElement.class),
+            @XmlElement(name = "default", type = Default.class),
+            @XmlElement(name = "items", type = Items.class),
+            @XmlElement(name = "publish", type = Publish.class),
+            @XmlElement(name = "retract", type = RetractElement.class),
+            @XmlElement(name = "subscription", type = SubscriptionInfo.class),
+            @XmlElement(name = "subscriptions", type = Subscriptions.class),
+            @XmlElement(name = "unsubscribe", type = Unsubscribe.class),
+    })
+    private PubSubChildElement type;
 
     @XmlElement(name = "default")
     private Default aDefault;
@@ -67,10 +77,10 @@ public final class PubSub {
     private Publish publish;
 
     @XmlElement(name = "retract")
-    private Retract retract;
+    private RetractElement retract;
 
     @XmlElement(name = "subscription")
-    private Subscription subscription;
+    private SubscriptionInfo subscription;
 
     @XmlElement(name = "subscriptions")
     private Subscriptions subscriptions;
@@ -92,27 +102,27 @@ public final class PubSub {
         this.options = options;
     }
 
-    public PubSub(Options options) {
+    private PubSub(Options options) {
         this.options = options;
     }
 
-    public PubSub(Unsubscribe unsubscribe) {
+    private PubSub(Unsubscribe unsubscribe) {
         this.unsubscribe = unsubscribe;
     }
 
-    public PubSub(Default aDefault) {
+    private PubSub(Default aDefault) {
         this.aDefault = aDefault;
     }
 
-    public PubSub(Items items) {
+    private PubSub(Items items) {
         this.items = items;
     }
 
-    public PubSub(Publish publish) {
+    private PubSub(Publish publish) {
         this.publish = publish;
     }
 
-    public PubSub(Retract retract) {
+    public PubSub(RetractElement retract) {
         this.retract = retract;
     }
 
@@ -120,20 +130,75 @@ public final class PubSub {
         this.configure = configure;
     }
 
-    public PubSub(Subscriptions subscriptions) {
+    private PubSub(Subscriptions subscriptions) {
         this.subscriptions = subscriptions;
     }
 
-    public PubSub(Affiliations affiliations) {
-        this.affiliations = affiliations;
+    private PubSub(AffiliationsElement affiliations) {
+        this.type = affiliations;
     }
 
-    public PubSub(Subscribe subscribe) {
+    private PubSub(Subscribe subscribe) {
         this.subscribe = subscribe;
     }
 
+    public static PubSub forSubscriptionsRequest() {
+        return forSubscriptionsRequest(null);
+    }
+
+    public static PubSub forSubscriptionsRequest(String node) {
+        return new PubSub(new Subscriptions(node));
+    }
+
+    public static PubSub forAffiliationsRequest() {
+        return forAffiliationsRequest(null);
+    }
+
+    public static PubSub forAffiliationsRequest(String node) {
+        return new PubSub(new AffiliationsElement(node));
+    }
+
+    public static PubSub forSubscribe(String node, Jid jid) {
+        return new PubSub(new Subscribe(node, jid));
+    }
+
+    public static PubSub forSubscriptionOptions(String node, Jid jid) {
+        return new PubSub(new Options(node, jid));
+    }
+
+    public static PubSub forUnsubscribe(String node, Jid jid) {
+        return new PubSub(new Unsubscribe(node, jid));
+    }
+
+    public static PubSub forRequestDefault() {
+        return forRequestDefault(null);
+    }
+
+    public static PubSub forRequestDefault(String node) {
+        return new PubSub(new Default(node));
+    }
+
+    public static PubSub forRequestItems(String node) {
+        return new PubSub(new Items(node));
+    }
+
+    public static PubSub forRequestItems(String node, int max) {
+        return new PubSub(new Items(node, max));
+    }
+
+    public static PubSub forRequestItem(String node, String id) {
+        return new PubSub(new Items(node, new ItemElement(id)));
+    }
+
+    public static PubSub forPublish(String node, String id, Object item) {
+        return new PubSub(new Publish(node, new ItemElement(id, item)));
+    }
+
     public Subscription getSubscription() {
-        return subscription;
+        if (type instanceof SubscriptionInfo) {
+            return (SubscriptionInfo) type;
+        }
+        return null;
     }
 
     public Options getOptions() {
@@ -141,23 +206,38 @@ public final class PubSub {
     }
 
     public Items getItems() {
-        return items;
+        if (type instanceof Items) {
+            return (Items) type;
+        }
+        return null;
     }
 
     public Publish getPublish() {
-        return publish;
+        if (type instanceof Publish) {
+            return (Publish) type;
+        }
+        return null;
     }
 
-    public Configure getConfigure() {
-        return configure;
+    public DataForm getConfigurationForm() {
+        if (configure != null) {
+            return configure.getConfigurationForm();
+        }
+        return null;
     }
 
-    public Subscriptions getSubscriptions() {
-        return subscriptions;
+    public List<? extends Subscription> getSubscriptions() {
+        if (type instanceof Subscriptions) {
+            return ((Subscriptions) type).getSubscriptions();
+        }
+        return null;
     }
 
-    public Affiliations getAffiliations() {
-        return affiliations;
+    public List<? extends AffiliationNode> getAffiliations() {
+        if (type instanceof AffiliationsElement) {
+            return ((AffiliationsElement) type).getAffiliations();
+        }
+        return null;
     }
 
     public static final class Create {
@@ -172,10 +252,7 @@ public final class PubSub {
         }
     }
 
-    public static final class Subscribe {
-
-        @XmlAttribute(name = "node")
-        private String node;
+    public static final class Subscribe extends PubSubChildElement {
 
         @XmlAttribute(name = "jid")
         private Jid jid;
@@ -186,12 +263,12 @@ public final class PubSub {
         }
 
         public Subscribe(String node, Jid jid) {
-            this.node = node;
+            super(node);
             this.jid = jid;
         }
     }
 
-    public static final class Unsubscribe {
+    public static final class Unsubscribe extends PubSubChildElement {
 
         @XmlAttribute(name = "node")
         private String node;
@@ -199,13 +276,11 @@ public final class PubSub {
         @XmlAttribute(name = "jid")
         private Jid jid;
 
-
         private Unsubscribe() {
-
         }
 
         public Unsubscribe(String node, Jid jid) {
-            this.node = node;
+            super(node);
             this.jid = jid;
         }
     }
@@ -236,31 +311,4 @@ public final class PubSub {
             return dataForm;
         }
     }
-
-    public static final class Publish {
-        @XmlAttribute(name = "node")
-        private String node;
-
-        @XmlElement
-        private Item item;
-
-        private Publish() {
-
-        }
-
-        public Publish(String node, Item item) {
-            this.node = node;
-            this.item = item;
-        }
-
-        public Item getItem() {
-            return item;
-        }
-
-        public String getNode() {
-            return node;
-        }
-    }
-
-
 }

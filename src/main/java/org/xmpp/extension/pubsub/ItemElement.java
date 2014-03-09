@@ -24,51 +24,38 @@
 
 package org.xmpp.extension.pubsub;
 
-import org.xmpp.Jid;
-
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Christian Schudt
  */
-public final class Affiliation {
+public final class ItemElement {
 
-    @XmlAttribute(name = "node")
-    private String node;
+    @XmlAnyElement
+    private Object object;
 
-    @XmlAttribute(name = "affiliation")
-    private Type affiliation;
+    @XmlAttribute(name = "id")
+    private String id;
 
-    @XmlAttribute(name = "jid")
-    private Jid jid;
-
-    public Jid getJid() {
-        return jid;
+    private ItemElement() {
     }
 
-    public Type getType() {
-        return affiliation;
+    public ItemElement(String id) {
+        this.id = id;
     }
 
-    public String getNode() {
-        return node;
+    public ItemElement(String id, Object object) {
+        this.id = id;
+        this.object = object;
     }
 
-    @XmlType(name = "affiliation-type")
-    public enum Type {
-        @XmlEnumValue("member")
-        MEMBER,
-        @XmlEnumValue("none")
-        NONE,
-        @XmlEnumValue("outcast")
-        OUTCAST,
-        @XmlEnumValue("owner")
-        OWNER,
-        @XmlEnumValue("publisher")
-        PUBLISHER,
-        @XmlEnumValue("publish-only")
-        PUBLISH_ONLY
+    public String getId() {
+        return id;
+    }
+
+    public Object getObject() {
+        return object;
     }
 }

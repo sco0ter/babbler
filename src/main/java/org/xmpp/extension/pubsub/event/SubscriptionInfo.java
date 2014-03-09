@@ -22,22 +22,22 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.pubsub.event;
 
 import org.xmpp.Jid;
+import org.xmpp.extension.pubsub.Subscription;
+import org.xmpp.extension.pubsub.SubscriptionStatus;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
 
 /**
  * @author Christian Schudt
  */
-public class Subscription {
-    @XmlAttribute(name = "node")
-    private String node;
+final class SubscriptionInfo extends PubSubEventChildElement implements Subscription {
+
+    @XmlAttribute(name = "expiry")
+    private Date expiry;
 
     @XmlAttribute(name = "jid")
     private Jid jid;
@@ -46,57 +46,35 @@ public class Subscription {
     private String subid;
 
     @XmlAttribute(name = "subscription")
-    private SubscriptionType type;
+    private SubscriptionStatus subscriptionStatus;
 
-    @XmlAttribute(name = "expiry")
-    private Date expiry;
-
-    @XmlElement(name = "subscribe-options")
-    private Options options;
-
-    public Options getOptions() {
-        return options;
-    }
-
-    public SubscriptionType getType() {
-        return type;
-    }
-
-    public String getNode() {
-        return node;
-    }
-
+    @Override
     public Jid getJid() {
         return jid;
     }
 
-    public String getSubid() {
+    @Override
+    public String getSubId() {
         return subid;
     }
 
+    @Override
+    public SubscriptionStatus getSubscriptionStatus() {
+        return subscriptionStatus;
+    }
+
+    @Override
     public Date getExpiry() {
         return expiry;
     }
 
-    public enum SubscriptionType {
-        @XmlEnumValue("none")
-        NONE,
-        @XmlEnumValue("pending")
-        PENDING,
-        @XmlEnumValue("subscribed")
-        SUBSCRIBED,
-        @XmlEnumValue("unconfigured")
-        UNCONFIGURED,
+    @Override
+    public boolean isConfigurationRequired() {
+        return false;
     }
 
-    @XmlType(name = "subscription-options")
-    public static final class Options {
-
-        @XmlElement(name = "required")
-        private String required;
-
-        public boolean isRequired() {
-            return required != null;
-        }
+    @Override
+    public boolean isConfigurationSupported() {
+        return false;
     }
 }

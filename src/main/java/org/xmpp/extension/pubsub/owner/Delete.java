@@ -22,26 +22,52 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub.event;
+package org.xmpp.extension.pubsub.owner;
+
+import org.xmpp.extension.pubsub.RedirectElement;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import java.net.URI;
 
 /**
  * @author Christian Schudt
  */
-public final class Redirect {
-    @XmlAttribute(name = "uri")
-    private URI uri;
+final class Delete extends PubSubOwnerChildElement {
 
-    private Redirect() {
+    @XmlElement(name = "redirect")
+    private Redirect redirect;
+
+    private Delete() {
     }
 
-    public Redirect(URI uri) {
-        this.uri = uri;
+    public Delete(String node) {
+        super(node);
     }
 
-    public URI getUri() {
-        return uri;
+    public Delete(String node, Redirect redirect) {
+        super(node);
+        this.redirect = redirect;
+    }
+
+    public Redirect getRedirect() {
+        return redirect;
+    }
+
+    final static class Redirect {
+        @XmlAttribute(name = "uri")
+        private URI uri;
+
+        private Redirect() {
+        }
+
+        public Redirect(URI uri) {
+            this.uri = uri;
+        }
+
+        public URI getUri() {
+            return uri;
+        }
     }
 }

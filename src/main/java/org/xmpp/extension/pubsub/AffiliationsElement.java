@@ -22,37 +22,29 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub.event;
+package org.xmpp.extension.pubsub;
 
-import org.xmpp.extension.pubsub.Subscription;
-
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-public final class Subscriptions {
+final class AffiliationsElement extends PubSubChildElement {
 
-    @XmlElement(name = "subscription")
-    private List<Subscription> subscriptions;
+    @XmlElement(name = "affiliation")
+    private List<AffiliationInfo> affiliations = new ArrayList<>();
 
-    @XmlAttribute(name = "node")
-    private String node;
+    public AffiliationsElement() {
 
-    private Subscriptions() {
     }
 
-    public Subscriptions(String node) {
-        this.node = node;
+    public AffiliationsElement(String node) {
+        super(node);
     }
 
-    public String getNode() {
-        return node;
-    }
-
-    public List<Subscription> getSubscriptions() {
-        return subscriptions;
+    public List<? extends AffiliationNode> getAffiliations() {
+        return affiliations;
     }
 }

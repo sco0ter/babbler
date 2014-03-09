@@ -26,35 +26,45 @@ package org.xmpp.extension.pubsub.event;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.net.URI;
 
 /**
  * @author Christian Schudt
  */
-public final class Delete {
-    @XmlAttribute(name = "node")
-    private String node;
+final class Delete extends PubSubEventChildElement {
 
     @XmlElement(name = "redirect")
     private Redirect redirect;
 
     private Delete() {
-
     }
 
     public Delete(String node) {
-        this.node = node;
+        super(node);
     }
 
     public Delete(String node, Redirect redirect) {
-        this.node = node;
+        super(node);
         this.redirect = redirect;
-    }
-
-    public String getNode() {
-        return node;
     }
 
     public Redirect getRedirect() {
         return redirect;
+    }
+
+    final static class Redirect {
+        @XmlAttribute(name = "uri")
+        private URI uri;
+
+        private Redirect() {
+        }
+
+        public Redirect(URI uri) {
+            this.uri = uri;
+        }
+
+        public URI getUri() {
+            return uri;
+        }
     }
 }

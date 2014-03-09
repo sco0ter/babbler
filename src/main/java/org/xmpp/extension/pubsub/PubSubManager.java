@@ -54,7 +54,7 @@ public final class PubSubManager extends ExtensionManager {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public List<Subscription> getSubscriptions(String node) throws XmppException {
+    public List<SubscriptionInfo> getSubscriptions(String node) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new Subscriptions(node)));
         Subscriptions subscriptions = result.getExtension(Subscriptions.class);
         return subscriptions.getSubscriptions();
@@ -66,9 +66,9 @@ public final class PubSubManager extends ExtensionManager {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public List<Affiliation> getAffiliations(String node) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new Affiliations(node)));
-        Affiliations affiliations = result.getExtension(Affiliations.class);
+    public List<? extends AffiliationNode> getAffiliations(String node) throws XmppException {
+        IQ result = connection.query(new IQ(IQ.Type.GET, new AffiliationsElement(node)));
+        AffiliationsElement affiliations = result.getExtension(AffiliationsElement.class);
         return affiliations.getAffiliations();
     }
 
@@ -116,7 +116,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
     public void unsubscribe(String node) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Unsubscribe(node, connection.getConnectedResource().toBareJid()))));
+        IQ result = connection.query(new IQ(IQ.Type.SET, PubSub.forUnsubscribe(node, connection.getConnectedResource().toBareJid())));
     }
 
     /**
@@ -127,7 +127,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
      */
     public DataForm requestSubscriptionOptions(String node) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new PubSub.Options(node, connection.getConnectedResource().toBareJid()))));
+        IQ result = connection.query(new IQ(IQ.Type.GET, PubSub.forSubscriptionOptions(node, connection.getConnectedResource().toBareJid())));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getOptions().getDataForm();
     }
@@ -139,7 +139,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
     public void submitSubscriptionOptions(String node, DataForm dataForm) throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Options(node, connection.getConnectedResource().toBareJid()))));
+        connection.query(new IQ(IQ.Type.SET, PubSub.forSubscriptionOptions(node, connection.getConnectedResource().toBareJid())));
     }
 
     /**
@@ -150,7 +150,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      */
     public DataForm requestDefaultSubscriptionConfigurationOptions(String node) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Default(node))));
+        IQ result = connection.query(new IQ(IQ.Type.GET, PubSub.forRequestDefault(node)));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getOptions().getDataForm();
     }
@@ -162,8 +162,10 @@ public final class PubSubManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
      */
-    public List<Item> getItems(String node) throws XmppException {
-        return getItems(node, null);
+    public List<ItemElement> getItems(String node) throws XmppException {
+        IQ result = connection.query(new IQ(IQ.Type.GET, PubSub.forRequestItems(node)));
+        PubSub pubSub = result.getExtension(PubSub.class);
+        return pubSub.getItems().getItems();
     }
 
     /**
@@ -173,8 +175,8 @@ public final class PubSubManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
-    public List<Item> getItems(String node, Long maxItems) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Items(node, maxItems))));
+    public List<ItemElement> getItems(String node, Integer maxItems) throws XmppException {
+        IQ result = connection.query(new IQ(IQ.Type.GET, PubSub.forRequestItems(node, maxItems)));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getItems().getItems();
     }
@@ -186,10 +188,11 @@ public final class PubSubManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
-    public Item getItem(String node, String id) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Items(node, new Item(id)))));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getItems().getItems().get(0);
+    public ItemElement getItem(String node, String id) throws XmppException {
+        //        IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Items(node, new ItemElement(id)))));
+        //        PubSub pubSub = result.getExtension(PubSub.class);
+        //        return pubSub.getItems().getItems().get(0);
+        return null;
     }
 
     /**
@@ -200,7 +203,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
     public String publish(String node, Object item) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.SET, new PubSub(new PubSub.Publish(node, new Item(item)))));
+        IQ result = connection.query(new IQ(IQ.Type.SET, PubSub.forPublish(node, null, item)));
         PubSub pubSub = result.getExtension(PubSub.class);
         if (pubSub != null && pubSub.getPublish() != null && pubSub.getPublish().getItem() != null) {
             return pubSub.getPublish().getItem().getId();
@@ -215,7 +218,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
      */
     public void deleteItem(String node, String id, boolean notify) throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new PubSub(new Retract(node, new Item(id), notify))));
+        connection.query(new IQ(IQ.Type.SET, new PubSub(new RetractElement(node, new ItemElement(id), notify))));
     }
 
     /**
@@ -252,7 +255,7 @@ public final class PubSubManager extends ExtensionManager {
     public DataForm getConfigurationForm(String node) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.GET, new PubSub(new Configure(node))));
         PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getConfigure().getDataForm();
+        return pubSub.getConfigurationForm();
     }
 
     public void submitConfigurationForm(String node, DataForm dataForm) throws XmppException {
@@ -260,7 +263,7 @@ public final class PubSubManager extends ExtensionManager {
     }
 
     public void deleteNode(String node) throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new PubSubOwner(new Delete(node))));
+        connection.query(new IQ(IQ.Type.SET, PubSubOwner.forDelete(node)));
     }
 
 }

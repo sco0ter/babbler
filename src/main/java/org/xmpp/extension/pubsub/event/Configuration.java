@@ -22,37 +22,22 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub;
+package org.xmpp.extension.pubsub.event;
+
+import org.xmpp.extension.data.DataForm;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import java.util.ArrayList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlElementRef;
 
 /**
  * @author Christian Schudt
  */
-public final class Affiliations {
-    @XmlAttribute(name = "node")
-    private String node;
+final class Configuration extends PubSubEventChildElement {
 
-    @XmlElement(name = "affiliation")
-    private List<Affiliation> affiliations = new ArrayList<>();
+    @XmlElementRef
+    private DataForm dataForm;
 
-    public Affiliations() {
-
-    }
-
-    public Affiliations(String node) {
-        this.node = node;
-    }
-
-    public List<Affiliation> getAffiliations() {
-        return affiliations;
-    }
-
-    public String getNode() {
-        return node;
+    public DataForm getConfigurationForm() {
+        return dataForm;
     }
 }

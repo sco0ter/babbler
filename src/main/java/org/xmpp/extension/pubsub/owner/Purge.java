@@ -22,54 +22,17 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.pubsub.event;
-
-import org.xmpp.extension.pubsub.Item;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.ArrayList;
-import java.util.List;
+package org.xmpp.extension.pubsub.owner;
 
 /**
  * @author Christian Schudt
  */
-final class Items extends PubSubEventChildElement {
+final class Purge extends PubSubOwnerChildElement {
 
-    @XmlElement(name = "item")
-    private List<ItemElement> items = new ArrayList<>();
-
-    @XmlAttribute(name = "max_items")
-    private Long maxItems;
-
-    @XmlAttribute(name = "subid")
-    private String subid;
-
-    @XmlElement(name = "retract")
-    private Retract retract;
-
-    private Items() {
+    private Purge() {
     }
 
-    public Items(String node) {
+    public Purge(String node) {
         super(node);
-    }
-
-    public Items(String node, long maxItems) {
-        super(node);
-        this.maxItems = maxItems;
-    }
-
-    public Items(String node, ItemElement item) {
-        super(node);
-        this.items.add(item);
-    }
-
-    public List<? extends Item> getItems() {
-        return items;
-    }
-
-    Retract getRetract() {
-        return retract;
     }
 }

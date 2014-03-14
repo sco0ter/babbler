@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/offline", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.offline;
+@XmlSchema(namespace = OfflineMessage.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.offline;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

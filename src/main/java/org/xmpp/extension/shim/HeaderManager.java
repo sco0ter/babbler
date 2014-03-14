@@ -52,14 +52,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class HeaderManager extends ExtensionManager implements InfoNode {
 
-    private static final String FEATURE = "http://jabber.org/protocol/shim";
-
     private final Set<String> supportedHeaders;
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     private HeaderManager(Connection connection) {
-        super(connection, FEATURE);
+        super(connection, Headers.NAMESPACE);
         this.supportedHeaders = new CopyOnWriteArraySet<>();
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         setEnabled(false);
@@ -80,7 +78,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
 
     @Override
     public String getNode() {
-        return FEATURE;
+        return Headers.NAMESPACE;
     }
 
     /**
@@ -92,7 +90,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
      * @throws NoResponseException If the entity did not respond.
      */
     public List<String> discoverSupportedHeaders(Jid jid) throws XmppException {
-        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(jid, FEATURE);
+        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(jid, Headers.NAMESPACE);
         List<String> result = new ArrayList<>();
         for (Feature feature : infoNode.getFeatures()) {
             String var = feature.getVar();
@@ -105,7 +103,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         if (!enabled) {
-            serviceDiscoveryManager.removeInfoNode(FEATURE);
+            serviceDiscoveryManager.removeInfoNode(Headers.NAMESPACE);
         } else {
             serviceDiscoveryManager.addInfoNode(this);
         }
@@ -116,7 +114,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
         Set<Feature> features = new HashSet<>();
         // http://xmpp.org/extensions/xep-0131.html#disco-header
         for (String supportedHeader : supportedHeaders) {
-            features.add(new Feature(FEATURE + "#" + supportedHeader));
+            features.add(new Feature(Headers.NAMESPACE + "#" + supportedHeader));
         }
         return features;
     }

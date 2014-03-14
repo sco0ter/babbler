@@ -52,15 +52,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.Product;
-import org.jivesoftware.smackx.pubsub.EventElement;
-import org.jivesoftware.smackx.pubsub.ItemPublishEvent;
 import org.xmpp.*;
 import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
-import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
@@ -71,7 +68,6 @@ import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.pubsub.PubSubManager;
-import org.xmpp.extension.pubsub.event.Event;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -92,11 +88,18 @@ import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.errors.ServiceUnavailable;
+import org.xmpp.stream.StreamException;
+import org.xmpp.stream.errors.SystemShutdown;
+import sun.plugin2.main.client.DisconnectedExecutionContext;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.security.auth.Subject;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.spi.LoginModule;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -230,12 +233,6 @@ public class JavaFXApp extends Application {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
 
-                        connection.addConnectionListener(new ConnectionListener() {
-                            @Override
-                            public void statusChanged(ConnectionEvent e) {
-                                logger.info(e.getStatus().toString());
-                            }
-                        });
                         connection.getExtensionManager(HeaderManager.class).setEnabled(true);
                         connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
                             @Override
@@ -580,9 +577,16 @@ public class JavaFXApp extends Application {
                                     EntityTimeManager entityTimeManager = connection.getExtensionManager(EntityTimeManager.class);
 
                                     try {
-                                        EntityTime entityTime = entityTimeManager.getEntityTime(null);
+                                        EntityTime entityTime = entityTimeManager.getEntityTime(Jid.fromString("juliet@example.net/balcony"));
                                     } catch (XmppException e) {
-                                        e.printStackTrace();
+                                        if (e instanceof NoResponseException) {
+                                            // The entity did not respond
+                                        } else if (e instanceof StanzaException) {
+                                            StanzaError stanzaError = ((StanzaException) e).getStanza().getError();
+                                            if (stanzaError.getCondition() instanceof ServiceUnavailable) {
+                                                // The entity returned a <service-unavailable/> stanza error.
+                                            }
+                                        }
                                     }
                                 }
                             });
@@ -592,6 +596,8 @@ public class JavaFXApp extends Application {
                         }
                     }
                 };
+
+
                 listCell.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
@@ -632,17 +638,12 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
-
+                EntityTimeManager entityTimeManager = connection.getExtensionManager(EntityTimeManager.class);
                 try {
-                    //pubSubManager.publish("test", new Tune("Artist"));
-                    pubSubManager.getItems("test");
-
-
+                    entityTimeManager.getEntityTime(Jid.fromString("222@localhost/test"));
                 } catch (XmppException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-
             }
         });
         Button btnExit = new Button("Exit");

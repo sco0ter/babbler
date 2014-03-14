@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:message-correct:0", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.messagecorrect;
+@XmlSchema(namespace = Replace.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.messagecorrect;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

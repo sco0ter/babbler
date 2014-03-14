@@ -430,7 +430,7 @@ public abstract class Connection implements Closeable {
     private void notifyConnectionListeners(Status status) {
         for (ConnectionListener connectionListener : connectionListeners) {
             try {
-                connectionListener.statusChanged(new ConnectionEvent(this, status));
+                connectionListener.statusChanged(new ConnectionEvent(this, status, exception));
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -631,7 +631,7 @@ public abstract class Connection implements Closeable {
      * Binds a resource to the connection.
      *
      * @param resource The resource to bind. If the resource is null and random resource is bound by the server.
-     * @throws LoginException   If the resource binding failed as described in <a href="http://xmpp.org/rfcs/rfc6120.html#bind-servergen-error">7.6.2.  Error Cases</a>
+     * @throws LoginException If the resource binding failed as described in <a href="http://xmpp.org/rfcs/rfc6120.html#bind-servergen-error">7.6.2.  Error Cases</a>
      */
     private void bindResource(String resource) throws LoginException {
         this.resource = resource;
@@ -731,8 +731,8 @@ public abstract class Connection implements Closeable {
             });
         } else if (element instanceof Features) {
             featuresManager.processFeatures((Features) element);
-        } else if (element instanceof StreamError) {
-            throw new StreamException((StreamError) element);
+        } else if (element instanceof StreamException) {
+            throw (StreamException) element;
         } else {
             // Let's see, if the element is known to any feature negotiator.
             return featuresManager.processElement(element);
@@ -780,7 +780,7 @@ public abstract class Connection implements Closeable {
      * This method will close the stream.
      * </p>
      *
-     * @param e The exception. If an unrecoverable XMPP stream error occurred, the exception is a {@link org.xmpp.stream.StreamError}.
+     * @param e The exception. If an unrecoverable XMPP stream error occurred, the exception is a {@link org.xmpp.stream.StreamException}.
      */
     protected final void notifyException(Exception e) {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.

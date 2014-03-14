@@ -52,7 +52,7 @@ import java.util.List;
  */
 public final class OfflineMessageManager extends ExtensionManager {
 
-    private static final String NODE = "http://jabber.org/protocol/offline";
+
 
     private OfflineMessageManager(Connection connection) {
         super(connection);
@@ -68,7 +68,7 @@ public final class OfflineMessageManager extends ExtensionManager {
     public boolean isSupported() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
-        return infoNode.getFeatures().contains(new Feature(NODE));
+        return infoNode.getFeatures().contains(new Feature(OfflineMessage.NAMESPACE));
     }
 
     /**
@@ -81,7 +81,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      */
     public int requestNumberOfMessages() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(null, NODE);
+        InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(null, OfflineMessage.NAMESPACE);
         if (!infoDiscovery.getExtensions().isEmpty()) {
             DataForm dataForm = infoDiscovery.getExtensions().get(0);
             if (dataForm != null) {
@@ -107,7 +107,7 @@ public final class OfflineMessageManager extends ExtensionManager {
     public List<OfflineMessageHeader> requestMessageHeaders() throws XmppException {
         List<OfflineMessageHeader> result = new ArrayList<>();
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, NODE);
+        ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, OfflineMessage.NAMESPACE);
         for (Item item : itemNode.getItems()) {
             result.add(new OfflineMessageHeader(Jid.fromEscapedString(item.getName()), item.getNode()));
         }

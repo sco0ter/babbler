@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/caps", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.caps;
+@XmlSchema(namespace = EntityCapabilities.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.caps;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

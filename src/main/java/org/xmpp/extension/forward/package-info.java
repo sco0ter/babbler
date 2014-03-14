@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:forward:0", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.forward;
+@XmlSchema(namespace = Forwarded.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.forward;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

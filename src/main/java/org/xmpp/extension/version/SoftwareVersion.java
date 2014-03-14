@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "query")
 public final class SoftwareVersion {
 
+    static final String NAMESPACE = "jabber:iq:version";
+
     @XmlElement
     private String name;
 

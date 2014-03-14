@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "jabber:iq:last", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.last;
+@XmlSchema(namespace = LastActivity.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.last;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

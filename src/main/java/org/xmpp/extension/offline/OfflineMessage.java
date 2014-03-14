@@ -36,6 +36,8 @@ import java.util.List;
 @XmlRootElement(name = "offline")
 public final class OfflineMessage {
 
+    static final String NAMESPACE = "http://jabber.org/protocol/offline";
+
     @XmlElement(name = "item")
     private List<Item> items = new ArrayList<>();
 

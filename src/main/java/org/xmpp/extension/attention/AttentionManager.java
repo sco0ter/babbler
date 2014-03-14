@@ -62,7 +62,7 @@ import org.xmpp.stanza.Message;
 public final class AttentionManager extends ExtensionManager {
 
     private AttentionManager(Connection connection) {
-        super(connection, "urn:xmpp:attention:0");
+        super(connection, Attention.NAMESPACE);
     }
 
     /**

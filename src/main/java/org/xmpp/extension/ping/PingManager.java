@@ -53,7 +53,7 @@ public final class PingManager extends ExtensionManager {
      * @param connection The underlying connection.
      */
     private PingManager(final Connection connection) {
-        super(connection, "urn:xmpp:ping");
+        super(connection, Ping.NAMESPACE);
         connection.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {

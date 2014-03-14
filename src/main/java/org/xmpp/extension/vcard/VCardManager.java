@@ -43,7 +43,7 @@ public final class VCardManager extends ExtensionManager {
     private volatile VCard myVCard;
 
     private VCardManager(final Connection connection) {
-        super(connection, "vcard-temp");
+        super(connection, VCard.NAMESPACE);
         setEnabled(true);
 
         connection.addConnectionListener(new ConnectionListener() {

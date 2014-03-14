@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.activity;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.*;
 
 /**
  * The implementation of the {@code <activity/>} element.
@@ -39,29 +36,39 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "activity")
-@XmlSeeAlso({Category.class})
+@XmlSeeAlso({Activity.AbstractCategory.class})
 public final class Activity {
 
     @XmlElements({
-            @XmlElement(name = "doing_chores", type = Category.DoingChores.class),
-            @XmlElement(name = "drinking", type = Category.Drinking.class),
-            @XmlElement(name = "eating", type = Category.Eating.class),
-            @XmlElement(name = "exercising", type = Category.Exercising.class),
-            @XmlElement(name = "grooming", type = Category.Grooming.class),
-            @XmlElement(name = "having_appointment", type = Category.HavingAppointment.class),
-            @XmlElement(name = "inactive", type = Category.Inactive.class),
-            @XmlElement(name = "relaxing", type = Category.Relaxing.class),
-            @XmlElement(name = "talking", type = Category.Talking.class),
-            @XmlElement(name = "traveling", type = Category.Traveling.class),
-            @XmlElement(name = "undefined", type = Category.Undefined.class),
-            @XmlElement(name = "working", type = Category.Working.class)
+            @XmlElement(name = "doing_chores", type = AbstractCategory.DoingChores.class),
+            @XmlElement(name = "drinking", type = AbstractCategory.Drinking.class),
+            @XmlElement(name = "eating", type = AbstractCategory.Eating.class),
+            @XmlElement(name = "exercising", type = AbstractCategory.Exercising.class),
+            @XmlElement(name = "grooming", type = AbstractCategory.Grooming.class),
+            @XmlElement(name = "having_appointment", type = AbstractCategory.HavingAppointment.class),
+            @XmlElement(name = "inactive", type = AbstractCategory.Inactive.class),
+            @XmlElement(name = "relaxing", type = AbstractCategory.Relaxing.class),
+            @XmlElement(name = "talking", type = AbstractCategory.Talking.class),
+            @XmlElement(name = "traveling", type = AbstractCategory.Traveling.class),
+            @XmlElement(name = "undefined", type = AbstractCategory.Undefined.class),
+            @XmlElement(name = "working", type = AbstractCategory.Working.class)
     })
-    private Category category;
+    private AbstractCategory category;
 
     @XmlElement(name = "text")
     private String text;
 
     private Activity() {
+    }
+
+
+    /**
+     * Creates an activity with a category.
+     *
+     * @param category The category.
+     */
+    public Activity(Category category) {
+        this(category, null, null);
     }
 
     /**
@@ -71,17 +78,36 @@ public final class Activity {
      * @param text     The text.
      */
     public Activity(Category category, String text) {
-        this.category = category;
-        this.text = text;
+        this(category, null, text);
     }
 
     /**
-     * Creates an activity with a category.
+     * Creates an activity with a category and a specific activity.
      *
-     * @param category The category.
+     * @param category         The category.
+     * @param specificActivity The specific activity.
      */
-    public Activity(Category category) {
-        this(category, null);
+    public Activity(Category category, SpecificActivity specificActivity) {
+        this(category, specificActivity, null);
+    }
+
+    /**
+     * Creates an activity with a category, a specific activity and a text.
+     *
+     * @param category         The category.
+     * @param specificActivity The specific activity.
+     * @param text             The text.
+     */
+    public Activity(Category category, SpecificActivity specificActivity, String text) {
+        try {
+            this.category = category.categoryClass.newInstance();
+            this.category.specificActivity = specificActivity;
+            this.text = text;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -99,6 +125,192 @@ public final class Activity {
      * @return The category.
      */
     public Category getCategory() {
-        return category;
+        return category != null ? category.category : null;
+    }
+
+    /**
+     * Gets the specific activity.
+     *
+     * @return The activity.
+     */
+    public SpecificActivity getSpecificActivity() {
+        return category != null ? category.specificActivity : null;
+    }
+
+    /**
+     * An abstract class for general activities.
+     */
+    static abstract class AbstractCategory {
+
+        @XmlTransient
+        private Category category;
+
+        @XmlElementRef
+        private SpecificActivity specificActivity;
+
+        private AbstractCategory(Category category) {
+            this.category = category;
+        }
+
+        private AbstractCategory(Category category, SpecificActivity specificActivity) {
+            this.category = category;
+            this.specificActivity = specificActivity;
+        }
+
+        /**
+         * The "doing_chores" activity.
+         */
+        static final class DoingChores extends AbstractCategory {
+            DoingChores() {
+                super(Category.DOING_CHORES);
+            }
+
+            DoingChores(SpecificActivity specificActivity) {
+                super(Category.DOING_CHORES, specificActivity);
+            }
+        }
+
+        /**
+         * The "drinking" activity.
+         */
+        static final class Drinking extends AbstractCategory {
+            Drinking() {
+                super(Category.DRINKING);
+            }
+
+            Drinking(SpecificActivity specificActivity) {
+                super(Category.DRINKING, specificActivity);
+            }
+        }
+
+        /**
+         * The "eating" activity.
+         */
+        static final class Eating extends AbstractCategory {
+            Eating() {
+                super(Category.EATING);
+            }
+
+            Eating(SpecificActivity specificActivity) {
+                super(Category.EATING, specificActivity);
+            }
+        }
+
+        /**
+         * The "exercising" activity.
+         */
+        static final class Exercising extends AbstractCategory {
+            Exercising() {
+                super(Category.EXERCISING);
+            }
+
+            Exercising(SpecificActivity specificActivity) {
+                super(Category.EXERCISING, specificActivity);
+            }
+        }
+
+        /**
+         * The "grooming" activity.
+         */
+        static final class Grooming extends AbstractCategory {
+            Grooming() {
+                super(Category.GROOMING);
+            }
+
+            Grooming(SpecificActivity specificActivity) {
+                super(Category.GROOMING, specificActivity);
+            }
+        }
+
+        /**
+         * The "having_appointment" activity.
+         */
+        static final class HavingAppointment extends AbstractCategory {
+            HavingAppointment() {
+                super(Category.HAVING_APPOINTMENT);
+            }
+
+            HavingAppointment(SpecificActivity specificActivity) {
+                super(Category.HAVING_APPOINTMENT, specificActivity);
+            }
+        }
+
+        /**
+         * The "inactive" activity.
+         */
+        static final class Inactive extends AbstractCategory {
+            Inactive() {
+                super(Category.INACTIVE);
+            }
+
+            Inactive(SpecificActivity specificActivity) {
+                super(Category.INACTIVE, specificActivity);
+            }
+        }
+
+        /**
+         * The "relaxing" activity.
+         */
+        static final class Relaxing extends AbstractCategory {
+            Relaxing() {
+                super(Category.RELAXING);
+            }
+
+            Relaxing(SpecificActivity specificActivity) {
+                super(Category.RELAXING, specificActivity);
+            }
+        }
+
+        /**
+         * The "talking" activity.
+         */
+        static final class Talking extends AbstractCategory {
+            Talking() {
+                super(Category.TALKING);
+            }
+
+            Talking(SpecificActivity specificActivity) {
+                super(Category.TALKING, specificActivity);
+            }
+        }
+
+        /**
+         * The "traveling" activity.
+         */
+        static final class Traveling extends AbstractCategory {
+            Traveling() {
+                super(Category.TRAVELING);
+            }
+
+            Traveling(SpecificActivity specificActivity) {
+                super(Category.TRAVELING, specificActivity);
+            }
+        }
+
+        /**
+         * The "doing_chores" activity.
+         */
+        static final class Undefined extends AbstractCategory {
+            Undefined() {
+                super(Category.UNDEFINED);
+            }
+
+            Undefined(SpecificActivity specificActivity) {
+                super(Category.UNDEFINED, specificActivity);
+            }
+        }
+
+        /**
+         * The "working" activity.
+         */
+        static final class Working extends AbstractCategory {
+            Working() {
+                super(Category.WORKING);
+            }
+
+            Working(SpecificActivity specificActivity) {
+                super(Category.WORKING, specificActivity);
+            }
+        }
     }
 }

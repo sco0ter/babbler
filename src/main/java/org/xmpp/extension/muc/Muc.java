@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "x")
 public final class Muc {
 
+    static final String NAMESPACE = "http://jabber.org/protocol/muc";
+
     @XmlElement(name = "password")
     private String password;
 

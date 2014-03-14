@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:receipts", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.receipts;
+@XmlSchema(namespace = Request.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.receipts;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

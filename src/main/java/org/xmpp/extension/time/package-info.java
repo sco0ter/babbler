@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:time", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.time;
+@XmlSchema(namespace = EntityTime.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.time;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -48,7 +48,7 @@ import java.util.TimeZone;
 public final class EntityTimeManager extends ExtensionManager {
 
     private EntityTimeManager(final Connection connection) {
-        super(connection, "urn:xmpp:time");
+        super(connection, EntityTime.NAMESPACE);
         connection.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {

@@ -175,18 +175,6 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smack</artifactId>
-            <version>3.2.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smackx</artifactId>
-            <version>3.2.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>6.8.1</version>

@@ -30,7 +30,7 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Boolean.class, value = BooleanAdapter.class)
-@XmlSchema(namespace = "vcard-temp", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.vcard;
+@XmlSchema(namespace = VCard.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.vcard;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

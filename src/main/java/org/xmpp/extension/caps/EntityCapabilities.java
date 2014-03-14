@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "c")
 public final class EntityCapabilities extends Feature {
 
+    static final String NAMESPACE = "http://jabber.org/protocol/caps";
+
     /**
      * The hashing algorithm used to generate the verification string.
      */

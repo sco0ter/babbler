@@ -1,193 +1,64 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Christian Schudt
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 package org.xmpp.extension.activity;
 
-import javax.xml.bind.annotation.XmlElementRef;
-
 /**
- * An abstract class for general activities.
+ * Represents the category or general activity.
  *
  * @author Christian Schudt
  */
-public abstract class Category {
-
-    @XmlElementRef
-    private SpecificActivity specificActivity;
-
-    private Category() {
-    }
-
-    private Category(SpecificActivity specificActivity) {
-        this.specificActivity = specificActivity;
-    }
-
-    public SpecificActivity getSpecificActivity() {
-        return specificActivity;
-    }
+public enum Category {
 
     /**
-     * The "doing_chores" activity.
+     * Doing chores.
      */
-    public static final class DoingChores extends Category {
-        public DoingChores() {
-        }
-
-        public DoingChores(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    DOING_CHORES(Activity.AbstractCategory.DoingChores.class),
     /**
-     * The "drinking" activity.
+     * Drinking.
      */
-    public static final class Drinking extends Category {
-        public Drinking() {
-        }
-
-        public Drinking(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    DRINKING(Activity.AbstractCategory.Drinking.class),
     /**
-     * The "eating" activity.
+     * Eating.
      */
-    public static final class Eating extends Category {
-        public Eating() {
-        }
-
-        public Eating(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    EATING(Activity.AbstractCategory.Eating.class),
     /**
-     * The "exercising" activity.
+     * Exercising.
      */
-    public static final class Exercising extends Category {
-        public Exercising() {
-        }
-
-        public Exercising(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    EXERCISING(Activity.AbstractCategory.Exercising.class),
     /**
-     * The "grooming" activity.
+     * Grooming.
      */
-    public static final class Grooming extends Category {
-        public Grooming() {
-        }
-
-        public Grooming(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    GROOMING(Activity.AbstractCategory.Grooming.class),
     /**
-     * The "having_appointment" activity.
+     * Having appointment.
      */
-    public static final class HavingAppointment extends Category {
-        public HavingAppointment() {
-        }
-
-        public HavingAppointment(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    HAVING_APPOINTMENT(Activity.AbstractCategory.HavingAppointment.class),
     /**
-     * The "inactive" activity.
+     * Inactive.
      */
-    public static final class Inactive extends Category {
-        public Inactive() {
-        }
-
-        public Inactive(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    INACTIVE(Activity.AbstractCategory.Inactive.class),
     /**
-     * The "relaxing" activity.
+     * Relaxing.
      */
-    public static final class Relaxing extends Category {
-        public Relaxing() {
-        }
-
-        public Relaxing(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    RELAXING(Activity.AbstractCategory.Relaxing.class),
     /**
-     * The "talking" activity.
+     * Talking.
      */
-    public static final class Talking extends Category {
-        public Talking() {
-        }
-
-        public Talking(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    TALKING(Activity.AbstractCategory.Talking.class),
     /**
-     * The "traveling" activity.
+     * Traveling.
      */
-    public static final class Traveling extends Category {
-        public Traveling() {
-        }
-
-        public Traveling(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    TRAVELING(Activity.AbstractCategory.Traveling.class),
     /**
-     * The "doing_chores" activity.
+     * Undefined.
      */
-    public static final class Undefined extends Category {
-        public Undefined() {
-        }
-
-        public Undefined(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
-    }
-
+    UNDEFINED(Activity.AbstractCategory.Undefined.class),
     /**
-     * The "working" activity.
+     * Working.
      */
-    public static final class Working extends Category {
-        public Working() {
-        }
+    WORKING(Activity.AbstractCategory.Working.class);
 
-        public Working(SpecificActivity specificActivity) {
-            super(specificActivity);
-        }
+    Class<? extends Activity.AbstractCategory> categoryClass;
+
+    private Category(Class<? extends Activity.AbstractCategory> categoryClass) {
+        this.categoryClass = categoryClass;
     }
 }

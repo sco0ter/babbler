@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public final class Replace {
 
+    static final String NAMESPACE = "urn:xmpp:message-correct:0";
+
     @XmlAttribute
     private String id;
 

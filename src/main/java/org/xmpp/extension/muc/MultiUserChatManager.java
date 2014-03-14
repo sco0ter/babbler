@@ -47,12 +47,10 @@ import java.util.Set;
  */
 public final class MultiUserChatManager extends ExtensionManager {
 
-    private static final String FEATURE = "http://jabber.org/protocol/muc";
-
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     protected MultiUserChatManager(Connection connection) {
-        super(connection, "http://jabber.org/protocol/muc");
+        super(connection, Muc.NAMESPACE);
         connection.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
@@ -68,7 +66,7 @@ public final class MultiUserChatManager extends ExtensionManager {
 
         for (Item item : itemDiscovery.getItems()) {
             InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(item.getJid());
-            if (infoDiscovery.getFeatures().contains(new Feature(FEATURE))) {
+            if (infoDiscovery.getFeatures().contains(new Feature(Muc.NAMESPACE))) {
                 identities.addAll(infoDiscovery.getIdentities());
             }
         }

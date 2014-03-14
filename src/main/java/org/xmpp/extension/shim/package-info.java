@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/shim", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.shim;
+@XmlSchema(namespace = Headers.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.shim;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -40,7 +40,7 @@ import java.io.IOException;
 public class ActivityTest extends BaseTest {
 
     @Test
-    public void unmarshalActivity() throws XMLStreamException, JAXBException {
+    public void unmarshalActivityWithText() throws XMLStreamException, JAXBException {
         String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
                 "  <relaxing>\n" +
                 "    <partying/>\n" +
@@ -51,7 +51,8 @@ public class ActivityTest extends BaseTest {
         Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(activity);
         Assert.assertEquals(activity.getText(), "My nurse's birthday!");
-        Assert.assertTrue(activity.getCategory() instanceof Category.Relaxing);
+        Assert.assertEquals(activity.getCategory(), Category.RELAXING);
+        Assert.assertTrue(activity.getSpecificActivity() instanceof SpecificActivity.Partying);
     }
 
     @Test
@@ -66,20 +67,150 @@ public class ActivityTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertNotNull(activity);
-        Assert.assertTrue(activity.getCategory() instanceof Category.Inactive);
-        Assert.assertTrue(activity.getCategory().getSpecificActivity() instanceof SpecificActivity.Sleeping);
-        Assert.assertNull(activity.getCategory().getSpecificActivity().getSpecificActivity());
+        Assert.assertEquals(activity.getCategory(), Category.INACTIVE);
+        Assert.assertTrue(activity.getSpecificActivity() instanceof SpecificActivity.Sleeping);
+        Assert.assertNull(activity.getSpecificActivity().getSpecificActivity());
     }
 
     @Test
     public void marshalDoingChores() throws JAXBException, XMLStreamException, IOException {
-        String xml = marshall(new Activity(new Category.DoingChores()));
+        String xml = marshall(new Activity(Category.DOING_CHORES));
         Assert.assertEquals(xml, "<activity xmlns=\"http://jabber.org/protocol/activity\"><doing_chores></doing_chores></activity>");
     }
 
     @Test
-    public void marshalDoingChoresWithText() throws JAXBException, XMLStreamException, IOException {
-        String xml = marshall(new Activity(new Category.DoingChores(), "test"));
+    public void marshalActivityWithText() throws JAXBException, XMLStreamException, IOException {
+        String xml = marshall(new Activity(Category.DOING_CHORES, "test"));
         Assert.assertEquals(xml, "<activity xmlns=\"http://jabber.org/protocol/activity\"><doing_chores></doing_chores><text>test</text></activity>");
+    }
+
+    @Test
+    public void unmarshalDrinking() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <drinking>\n" +
+                "    <partying/>\n" +
+                "  </drinking>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.DRINKING);
+    }
+
+    @Test
+    public void unmarshalEating() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <eating>\n" +
+                "    <partying/>\n" +
+                "  </eating>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.EATING);
+    }
+
+    @Test
+    public void unmarshalGrooming() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <grooming>\n" +
+                "    <partying/>\n" +
+                "  </grooming>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.GROOMING);
+    }
+
+    @Test
+    public void unmarshalHavingAppointment() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <having_appointment>\n" +
+                "    <partying/>\n" +
+                "  </having_appointment>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.HAVING_APPOINTMENT);
+    }
+
+    @Test
+    public void unmarshalInactive() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <inactive>\n" +
+                "    <partying/>\n" +
+                "  </inactive>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.INACTIVE);
+    }
+
+    @Test
+    public void unmarshalRelaxing() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <relaxing>\n" +
+                "    <partying/>\n" +
+                "  </relaxing>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.RELAXING);
+    }
+
+    @Test
+    public void unmarshalTalking() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <talking>\n" +
+                "    <partying/>\n" +
+                "  </talking>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.TALKING);
+    }
+
+    @Test
+    public void unmarshalTraveling() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <traveling>\n" +
+                "    <partying/>\n" +
+                "  </traveling>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.TRAVELING);
+    }
+
+    @Test
+    public void unmarshalUndefined() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <undefined>\n" +
+                "    <partying/>\n" +
+                "  </undefined>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.UNDEFINED);
+    }
+
+    @Test
+    public void unmarshalWorking() throws XMLStreamException, JAXBException {
+        String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +
+                "  <working>\n" +
+                "    <partying/>\n" +
+                "  </working>\n" +
+                "</activity>";
+        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
+        Activity activity = (Activity) unmarshaller.unmarshal(xmlEventReader);
+        Assert.assertNotNull(activity);
+        Assert.assertEquals(activity.getCategory(), Category.WORKING);
     }
 }

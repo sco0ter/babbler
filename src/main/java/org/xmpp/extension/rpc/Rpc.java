@@ -43,6 +43,8 @@ import java.util.Map;
 @XmlRootElement(name = "query")
 public final class Rpc {
 
+    static final String NAMESPACE = "jabber:iq:rpc";
+
     @XmlElement(name = "methodCall")
     private MethodCall methodCall;
 

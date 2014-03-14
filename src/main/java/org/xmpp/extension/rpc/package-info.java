@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "jabber:iq:rpc", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rpc;
+@XmlSchema(namespace = Rpc.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rpc;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

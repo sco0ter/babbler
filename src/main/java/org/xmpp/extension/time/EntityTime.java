@@ -42,6 +42,8 @@ import java.util.TimeZone;
 @XmlRootElement(name = "time")
 public final class EntityTime {
 
+    static final String NAMESPACE = "urn:xmpp:time";
+
     /**
      * Creates a empty entity time element for requesting entity time.
      */

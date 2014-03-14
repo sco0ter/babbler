@@ -51,7 +51,7 @@ import org.xmpp.stanza.Message;
 public final class MessageCorrectionManager extends ExtensionManager {
 
     private MessageCorrectionManager(Connection connection) {
-        super(connection, "urn:xmpp:message-correct:0");
+        super(connection, Replace.NAMESPACE);
     }
 
     /**

@@ -35,6 +35,8 @@ import java.util.List;
 @XmlRootElement(name = "headers")
 public final class Headers {
 
+    static final String NAMESPACE = "http://jabber.org/protocol/shim";
+
     @XmlElement(name = "header")
     private List<Header> headers = new ArrayList<>();
 

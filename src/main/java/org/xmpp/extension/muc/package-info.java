@@ -30,7 +30,7 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/muc", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc;
+@XmlSchema(namespace = Muc.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc;
 
 import org.xmpp.Jid;
 import org.xmpp.util.JidAdapter;

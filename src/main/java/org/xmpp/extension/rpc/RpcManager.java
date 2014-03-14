@@ -50,7 +50,7 @@ public final class RpcManager extends ExtensionManager {
     private RpcHandler rpcHandler;
 
     private RpcManager(final Connection connection) {
-        super(connection, "jabber:iq:rpc");
+        super(connection, Rpc.NAMESPACE);
         // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
         connection.addConnectionListener(new ConnectionListener() {
             @Override

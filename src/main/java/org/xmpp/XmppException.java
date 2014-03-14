@@ -27,7 +27,7 @@ package org.xmpp;
 /**
  * @author Christian Schudt
  */
-public class XmppException extends Exception {
+public abstract class XmppException extends Exception {
 
     public XmppException() {
         super();

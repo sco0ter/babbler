@@ -64,7 +64,7 @@ public final class LastActivityManager extends ExtensionManager {
     private volatile LastActivityStrategy lastActivityStrategy;
 
     private LastActivityManager(final Connection connection) {
-        super(connection, "jabber:iq:last");
+        super(connection, LastActivity.NAMESPACE);
         lastActivityStrategy = new DefaultLastActivityStrategy(connection);
 
         connection.addConnectionListener(new ConnectionListener() {

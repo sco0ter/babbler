@@ -48,7 +48,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
     private SoftwareVersion softwareVersion;
 
     private SoftwareVersionManager(final Connection connection) {
-        super(connection, "jabber:iq:version");
+        super(connection, SoftwareVersion.NAMESPACE);
         connection.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {

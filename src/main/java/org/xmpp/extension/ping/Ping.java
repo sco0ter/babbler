@@ -33,4 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public final class Ping {
+
+    static final String NAMESPACE = "urn:xmpp:ping";
 }

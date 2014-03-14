@@ -28,7 +28,7 @@
  * It defines an XMPP protocol extension for sending application-level pings over XML streams. Such pings can be sent from a client to a server, from one server to another, or end-to-end.
  * </p>
  */
-@XmlSchema(namespace = "urn:xmpp:ping", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.ping;
+@XmlSchema(namespace = Ping.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.ping;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

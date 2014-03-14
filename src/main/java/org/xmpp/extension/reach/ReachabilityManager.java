@@ -58,7 +58,7 @@ public final class ReachabilityManager extends ExtensionManager {
     private final List<Address> addresses = new CopyOnWriteArrayList<>();
 
     private ReachabilityManager(final Connection connection) {
-        super(connection, "urn:xmpp:reach:0");
+        super(connection, Reachability.NAMESPACE);
         connection.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
@@ -132,13 +132,15 @@ public final class ReachabilityManager extends ExtensionManager {
 
     private boolean checkStanzaForReachabilityAndNotify(Stanza stanza) {
         Reachability reachability = stanza.getExtension(Reachability.class);
-        Jid contact = stanza.getFrom().toBareJid();
-        if (reachability != null) {
-            synchronized (reachabilities) {
-                List<Address> oldReachabilityAddresses = reachabilities.get(contact);
-                if (oldReachabilityAddresses == null || !oldReachabilityAddresses.equals(reachability.getAddresses())) {
-                    reachabilities.put(contact, reachability.getAddresses());
-                    notifyReachabilityListeners(contact, reachability.getAddresses());
+        if (stanza.getFrom() != null) {
+            Jid contact = stanza.getFrom().toBareJid();
+            if (reachability != null) {
+                synchronized (reachabilities) {
+                    List<Address> oldReachabilityAddresses = reachabilities.get(contact);
+                    if (oldReachabilityAddresses == null || !oldReachabilityAddresses.equals(reachability.getAddresses())) {
+                        reachabilities.put(contact, reachability.getAddresses());
+                        notifyReachabilityListeners(contact, reachability.getAddresses());
+                    }
                 }
             }
         }

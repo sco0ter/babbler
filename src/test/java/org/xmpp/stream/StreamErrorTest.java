@@ -47,7 +47,7 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        StreamError streamError = (StreamError) unmarshaller.unmarshal(xmlEventReader);
+        StreamException streamError = (StreamException) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof BadFormat);
     }
 
@@ -58,8 +58,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof BadNamespacePrefix);
     }
 
@@ -70,8 +70,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof Conflict);
     }
 
@@ -82,8 +82,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof ConnectionTimeout);
     }
 
@@ -94,8 +94,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof HostGone);
     }
 
@@ -106,8 +106,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof HostUnknown);
     }
 
@@ -118,8 +118,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof ImproperAddressing);
     }
 
@@ -130,8 +130,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof InternalServerError);
     }
 
@@ -142,8 +142,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof InvalidFrom);
     }
 
@@ -154,8 +154,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof InvalidNamespace);
     }
 
@@ -166,8 +166,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof InvalidXml);
     }
 
@@ -178,8 +178,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof NotAuthorized);
     }
 
@@ -190,8 +190,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof NotWellFormed);
     }
 
@@ -202,8 +202,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof PolicyViolation);
     }
 
@@ -214,8 +214,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof RemoteConnectionFailed);
     }
 
@@ -226,8 +226,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof Reset);
     }
 
@@ -238,8 +238,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof ResourceConstraint);
     }
 
@@ -250,8 +250,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof RestrictedXml);
     }
 
@@ -262,8 +262,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'>[2001:41D0:1:A49b::1]:9222</see-other-host>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof SeeOtherHost);
         Assert.assertEquals(((SeeOtherHost) streamError.getCondition()).getOtherHost(), "[2001:41D0:1:A49b::1]:9222");
     }
@@ -275,8 +275,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof SystemShutdown);
     }
 
@@ -287,8 +287,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof UndefinedCondition);
     }
 
@@ -299,8 +299,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof UnsupportedEncoding);
     }
 
@@ -311,8 +311,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof UnsupportedFeature);
     }
 
@@ -323,8 +323,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof UnsupportedStanzaType);
     }
 
@@ -335,8 +335,8 @@ public class StreamErrorTest extends BaseTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertTrue(streamError.getCondition() instanceof UnsupportedVersion);
     }
 
@@ -349,8 +349,8 @@ public class StreamErrorTest extends BaseTest {
                 "           xml:lang='en'>OPTIONAL descriptive text</text>" +
                 "   </stream:error>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class);
-        StreamError streamError = (StreamError) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamException.class);
+        StreamException streamError = (StreamException) jaxbContext.createUnmarshaller().unmarshal(xmlEventReader);
         Assert.assertEquals(streamError.getText(), "OPTIONAL descriptive text");
         Assert.assertEquals(streamError.getLanguage(), "en");
         Assert.assertTrue(streamError.getCondition() instanceof HostUnknown);

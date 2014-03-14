@@ -28,7 +28,7 @@
  * It defines an XMPP protocol extension for communicating information about how an entity can be reached temporarily using methods other than the entity's normal JID.
  * </p>
  */
-@XmlSchema(namespace = "urn:xmpp:reach:0", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.reach;
+@XmlSchema(namespace = Reachability.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.reach;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

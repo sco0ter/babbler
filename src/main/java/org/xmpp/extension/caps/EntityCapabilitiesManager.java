@@ -81,7 +81,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
     private String node;
 
     private EntityCapabilitiesManager(final Connection connection) {
-        super(connection, "http://jabber.org/protocol/caps");
+        super(connection, EntityCapabilities.NAMESPACE);
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.addPropertyChangeListener(new PropertyChangeListener() {
             @Override

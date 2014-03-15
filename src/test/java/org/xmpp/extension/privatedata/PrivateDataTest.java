@@ -33,7 +33,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -48,7 +47,7 @@ public class PrivateDataTest extends BaseTest {
     }
 
     @Test
-    public void testManager() throws XmppException, IOException, TimeoutException {
+    public void testManager() throws XmppException, IOException {
         MockServer mockServer = new MockServer();
 
         Connection connection = new TestConnection(null, mockServer);

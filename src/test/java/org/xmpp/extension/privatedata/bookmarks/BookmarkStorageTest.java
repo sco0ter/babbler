@@ -59,7 +59,7 @@ public class BookmarkStorageTest extends BaseTest {
         Conference bookmark = (Conference) bookmarkStorage.getBookmarks().get(0);
         Assert.assertEquals(bookmark.getName(), "Council of Oberon");
         Assert.assertTrue(bookmark.isAutojoin());
-        Assert.assertEquals(bookmark.getRoom(), Jid.fromString("council@conference.underhill.org"));
+        Assert.assertEquals(bookmark.getRoom(), Jid.valueOf("council@conference.underhill.org"));
         Assert.assertEquals(bookmark.getNick(), "Puck");
 
         WebPage bookmark2 = (WebPage) bookmarkStorage.getBookmarks().get(1);

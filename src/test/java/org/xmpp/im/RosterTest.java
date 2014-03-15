@@ -163,8 +163,8 @@ public class RosterTest extends BaseTest {
         String xml = "<query xmlns=\"jabber:iq:roster\"><item jid=\"node1@domain\"></item><item jid=\"node2@domain\" name=\"Name\"><group>Group1</group><group>Group2</group></item></query>";
 
         Roster roster = new Roster();
-        roster.getContacts().add(new Roster.Contact(Jid.fromString("node1@domain")));
-        roster.getContacts().add(new Roster.Contact(Jid.fromString("node2@domain"), "Name", "Group1", "Group2"));
+        roster.getContacts().add(new Roster.Contact(Jid.valueOf("node1@domain")));
+        roster.getContacts().add(new Roster.Contact(Jid.valueOf("node2@domain"), "Name", "Group1", "Group2"));
 
         String rosterXml = marshall(roster);
         Assert.assertEquals(rosterXml, xml);
@@ -173,14 +173,14 @@ public class RosterTest extends BaseTest {
     @Test
     public void testContactEquality() throws XMLStreamException, JAXBException {
 
-        Roster.Contact contact1 = new Roster.Contact(Jid.fromString("node1@domain"), "name");
+        Roster.Contact contact1 = new Roster.Contact(Jid.valueOf("node1@domain"), "name");
         contact1.setSubscription(Roster.Contact.Subscription.FROM);
         contact1.ask = true;
         contact1.approved = true;
         contact1.getGroups().add("group2");
         contact1.getGroups().add("group1");
 
-        Roster.Contact contact2 = new Roster.Contact(Jid.fromString("node1@domain"), "name");
+        Roster.Contact contact2 = new Roster.Contact(Jid.valueOf("node1@domain"), "name");
         contact2.setSubscription(Roster.Contact.Subscription.FROM);
         contact2.getGroups().add("group1");
         contact2.getGroups().add("group2");

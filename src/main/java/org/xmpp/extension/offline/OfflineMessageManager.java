@@ -53,7 +53,6 @@ import java.util.List;
 public final class OfflineMessageManager extends ExtensionManager {
 
 
-
     private OfflineMessageManager(Connection connection) {
         super(connection);
     }
@@ -109,7 +108,7 @@ public final class OfflineMessageManager extends ExtensionManager {
         ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, OfflineMessage.NAMESPACE);
         for (Item item : itemNode.getItems()) {
-            result.add(new OfflineMessageHeader(Jid.fromEscapedString(item.getName()), item.getNode()));
+            result.add(new OfflineMessageHeader(Jid.valueOf(item.getName()), item.getNode()));
         }
         return result;
     }

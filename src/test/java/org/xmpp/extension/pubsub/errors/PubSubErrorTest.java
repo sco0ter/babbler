@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.pubsub.PubSubFeature;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -54,7 +55,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.RETRIEVE_SUBSCRIPTIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.RETRIEVE_SUBSCRIPTIONS);
     }
 
     @Test
@@ -72,7 +73,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.RETRIEVE_AFFILIATIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.RETRIEVE_AFFILIATIONS);
     }
 
     @Test
@@ -186,7 +187,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.SUBSCRIBE);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.SUBSCRIBE);
     }
 
     @Test
@@ -304,7 +305,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.SUBSCRIPTION_OPTIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.SUBSCRIPTION_OPTIONS);
     }
 
     @Test
@@ -338,7 +339,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.RETRIEVE_DEFAULT_SUB);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.RETRIEVE_DEFAULT_SUB);
     }
 
     @Test
@@ -356,7 +357,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.PUBLISH);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.PUBLISH);
     }
 
     @Test
@@ -470,7 +471,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.DELETE_ITEMS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.DELETE_ITEMS);
     }
 
     @Test
@@ -488,7 +489,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.CREATE_NODES);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.CREATE_NODES);
     }
 
     @Test
@@ -506,7 +507,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.CONFIG_NODE);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.CONFIG_NODE);
     }
 
     @Test
@@ -524,7 +525,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.RETRIEVE_DEFAULT);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.RETRIEVE_DEFAULT);
     }
 
     @Test
@@ -542,7 +543,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.PURGE_NODES);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.PURGE_NODES);
     }
 
     @Test
@@ -560,7 +561,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.GET_PENDING);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.GET_PENDING);
     }
 
     @Test
@@ -577,7 +578,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.MANAGE_SUBSCRIPTIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.MANAGE_SUBSCRIPTIONS);
     }
 
     @Test
@@ -594,7 +595,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.MODIFY_AFFILIATIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.MODIFY_AFFILIATIONS);
     }
 
     @Test
@@ -611,7 +612,7 @@ public class PubSubErrorTest extends BaseTest {
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), Unsupported.Feature.MEMBER_AFFILIATION);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.MEMBER_AFFILIATION);
     }
 
     @Test

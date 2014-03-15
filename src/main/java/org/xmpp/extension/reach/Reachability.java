@@ -35,7 +35,7 @@ import java.util.List;
 @XmlRootElement(name = "reach")
 public final class Reachability {
 
-    static final String NAMESPACE =  "urn:xmpp:reach:0";
+    static final String NAMESPACE = "urn:xmpp:reach:0";
 
     @XmlElement(name = "addr")
     private List<Address> addresses = new ArrayList<>();

@@ -37,7 +37,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -203,7 +202,7 @@ public class MessageDeliveryReceiptsTest extends BaseTest {
     }
 
     @Test
-    public void testListeners() throws IOException, TimeoutException {
+    public void testListeners() throws IOException {
         TestConnection connection1 = new TestConnection();
         connection1.connect();
 

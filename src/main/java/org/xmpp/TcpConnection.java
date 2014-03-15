@@ -41,7 +41,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -188,7 +187,7 @@ public final class TcpConnection extends Connection {
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
         try {
             waitUntilSaslNegotiationStarted();
-        } catch (TimeoutException e) {
+        } catch (NoResponseException e) {
             throw new IOException(e);
         }
 

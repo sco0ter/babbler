@@ -40,9 +40,9 @@ public interface ItemNode {
     String getNode();
 
     /**
-     * Gets the features.
+     * Gets the items.
      *
-     * @return The features.
+     * @return The items.
      */
     List<Item> getItems();
 }

@@ -44,7 +44,7 @@ public class PrivacyListTest extends BaseTest {
     @Test
     public void marshalPrivacyListsRequest() throws XMLStreamException, JAXBException, IOException {
         IQ iq = new IQ(IQ.Type.GET, new Privacy());
-        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setFrom(Jid.valueOf("romeo@example.net/orchard"));
         iq.setId("getlist1");
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"></query></iq>");
@@ -76,7 +76,7 @@ public class PrivacyListTest extends BaseTest {
     @Test
     public void marshalPrivacyListRequest() throws XMLStreamException, JAXBException, IOException {
         IQ iq = new IQ(IQ.Type.GET, new Privacy(new PrivacyList("public")));
-        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setFrom(Jid.valueOf("romeo@example.net/orchard"));
         iq.setId("getlist1");
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><list name=\"public\"></list></query></iq>");
@@ -199,7 +199,7 @@ public class PrivacyListTest extends BaseTest {
         Privacy privacy = new Privacy();
         privacy.setActiveName("special");
         IQ iq = new IQ(IQ.Type.GET, privacy);
-        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setFrom(Jid.valueOf("romeo@example.net/orchard"));
         iq.setId("getlist1");
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><active name=\"special\"></active></query></iq>");
@@ -210,7 +210,7 @@ public class PrivacyListTest extends BaseTest {
         Privacy privacy = new Privacy();
         privacy.setActiveName("");
         IQ iq = new IQ(IQ.Type.GET, privacy);
-        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setFrom(Jid.valueOf("romeo@example.net/orchard"));
         iq.setId("getlist1");
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><active></active></query></iq>");
@@ -221,7 +221,7 @@ public class PrivacyListTest extends BaseTest {
         Privacy privacy = new Privacy();
         privacy.setDefaultName("special");
         IQ iq = new IQ(IQ.Type.GET, privacy);
-        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setFrom(Jid.valueOf("romeo@example.net/orchard"));
         iq.setId("getlist1");
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><default name=\"special\"></default></query></iq>");
@@ -232,7 +232,7 @@ public class PrivacyListTest extends BaseTest {
         Privacy privacy = new Privacy();
         privacy.setDefaultName("");
         IQ iq = new IQ(IQ.Type.GET, privacy);
-        iq.setFrom(Jid.fromString("romeo@example.net/orchard"));
+        iq.setFrom(Jid.valueOf("romeo@example.net/orchard"));
         iq.setId("getlist1");
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><default></default></query></iq>");

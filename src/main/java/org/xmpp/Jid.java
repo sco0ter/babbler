@@ -103,11 +103,7 @@ public final class Jid {
      * @param jid The jid.
      * @return The JID.
      */
-    public static Jid fromString(String jid) {
-        return parseJid(jid, false);
-    }
-
-    public static Jid fromEscapedString(String jid) {
+    public static Jid valueOf(String jid) {
         return parseJid(jid, true);
     }
 

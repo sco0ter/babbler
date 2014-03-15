@@ -35,7 +35,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -118,7 +117,7 @@ public class IbbTest extends BaseTest {
     }
 
     //@Test
-    public void testInBandBytestreamManager() throws TimeoutException, IOException {
+    public void testInBandBytestreamManager() throws IOException {
         MockServer mockServer = new MockServer();
         final Lock lock = new ReentrantLock();
         final Connection connection1 = new TestConnection(ROMEO, mockServer);

@@ -43,8 +43,8 @@ public class AddressTest extends BaseTest {
     @Test
     public void marshalAddresses() throws JAXBException, XMLStreamException, IOException {
         List<Address> addressList = new ArrayList<>();
-        addressList.add(new Address(Address.Type.TO, Jid.fromString("hildjj@jabber.org/Work"), "description", "node"));
-        addressList.add(new Address(Address.Type.CC, Jid.fromString("jer@jabber.org/Home")));
+        addressList.add(new Address(Address.Type.TO, Jid.valueOf("hildjj@jabber.org/Work"), "description", "node"));
+        addressList.add(new Address(Address.Type.CC, Jid.valueOf("jer@jabber.org/Home")));
         Addresses addresses = new Addresses(addressList);
 
         String xml = marshall(addresses);

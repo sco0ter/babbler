@@ -58,6 +58,7 @@ import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
+import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
@@ -68,6 +69,7 @@ import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.pubsub.PubSubManager;
+import org.xmpp.extension.pubsub.PubSubService;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -81,7 +83,6 @@ import org.xmpp.extension.stream.si.filetransfer.FileTransferListener;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferManager;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
-import org.xmpp.extension.tune.Tune;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.extension.version.SoftwareVersion;
@@ -89,17 +90,11 @@ import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
 import org.xmpp.stanza.errors.ServiceUnavailable;
-import org.xmpp.stream.StreamException;
-import org.xmpp.stream.errors.SystemShutdown;
-import sun.plugin2.main.client.DisconnectedExecutionContext;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.spi.LoginModule;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -548,9 +543,12 @@ public class JavaFXApp extends Application {
                                 public void handle(ActionEvent actionEvent) {
                                     PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
                                     try {
-                                        pubSubManager.publish("http://jabber.org/protocol/tune", new Tune("AC/DC"));
+                                        //PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.fritz.box"));
+                                        PubSubService pubSubService = pubSubManager.createPersonalEventingService();
+                                        DataForm dataForm = pubSubService.getDefaultNodeConfiguration();
+                                        int i = 0;
                                     } catch (XmppException e) {
-                                        e.printStackTrace();
+                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }
                                 }
                             });
@@ -577,7 +575,7 @@ public class JavaFXApp extends Application {
                                     EntityTimeManager entityTimeManager = connection.getExtensionManager(EntityTimeManager.class);
 
                                     try {
-                                        EntityTime entityTime = entityTimeManager.getEntityTime(Jid.fromString("juliet@example.net/balcony"));
+                                        EntityTime entityTime = entityTimeManager.getEntityTime(Jid.valueOf("juliet@example.net/balcony"));
                                     } catch (XmppException e) {
                                         if (e instanceof NoResponseException) {
                                             // The entity did not respond
@@ -640,7 +638,7 @@ public class JavaFXApp extends Application {
 
                 EntityTimeManager entityTimeManager = connection.getExtensionManager(EntityTimeManager.class);
                 try {
-                    entityTimeManager.getEntityTime(Jid.fromString("222@localhost/test"));
+                    entityTimeManager.getEntityTime(Jid.valueOf("222@localhost/test"));
                 } catch (XmppException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }

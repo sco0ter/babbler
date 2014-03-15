@@ -29,12 +29,15 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
+import org.xmpp.extension.disco.info.Feature;
+import org.xmpp.extension.disco.info.InfoDiscovery;
 import org.xmpp.stanza.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
@@ -113,10 +116,10 @@ public class PubSubEntityUseCasesTest extends BaseTest {
         Assert.assertNotNull(pubSub.getSubscriptions());
         Assert.assertEquals(pubSub.getSubscriptions().size(), 5);
         Assert.assertEquals(pubSub.getSubscriptions().get(0).getNode(), "node1");
-        Assert.assertEquals(pubSub.getSubscriptions().get(0).getJid(), Jid.fromString("francisco@denmark.lit"));
-        Assert.assertEquals(pubSub.getSubscriptions().get(0).getSubscriptionStatus(), SubscriptionStatus.SUBSCRIBED);
+        Assert.assertEquals(pubSub.getSubscriptions().get(0).getJid(), Jid.valueOf("francisco@denmark.lit"));
+        Assert.assertEquals(pubSub.getSubscriptions().get(0).getSubscriptionState(), SubscriptionState.SUBSCRIBED);
 
-        Assert.assertEquals(pubSub.getSubscriptions().get(2).getSubscriptionStatus(), SubscriptionStatus.UNCONFIGURED);
+        Assert.assertEquals(pubSub.getSubscriptions().get(2).getSubscriptionState(), SubscriptionState.UNCONFIGURED);
         Assert.assertEquals(pubSub.getSubscriptions().get(3).getSubId(), "123-abc");
     }
 
@@ -198,5 +201,18 @@ public class PubSubEntityUseCasesTest extends BaseTest {
         Assert.assertTrue(pubSub.getAffiliations().isEmpty());
     }
 
+    @Test
+    public void testFeatures() {
+        InfoDiscovery infoDiscovery = new InfoDiscovery();
+        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#collections"));
+        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#config-node"));
+        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/disco#info"));
+        PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
+        Set<PubSubFeature> pubSubFeatures = pubSubManager.createPubSubService(null).getFeatures(infoDiscovery);
+
+        Assert.assertEquals(pubSubFeatures.size(), 2);
+        Assert.assertTrue(pubSubFeatures.contains(PubSubFeature.COLLECTIONS));
+        Assert.assertTrue(pubSubFeatures.contains(PubSubFeature.CONFIG_NODE));
+    }
 
 }

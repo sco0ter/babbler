@@ -55,15 +55,15 @@ public class BlockingTest extends BaseTest {
         IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
         BlockList blockList = iq.getExtension(BlockList.class);
         Assert.assertEquals(blockList.getItems().size(), 2);
-        Assert.assertEquals(blockList.getItems().get(0).getJid(), Jid.fromString("romeo@montague.net"));
-        Assert.assertEquals(blockList.getItems().get(1).getJid(), Jid.fromString("iago@shakespeare.lit"));
+        Assert.assertEquals(blockList.getItems().get(0).getJid(), Jid.valueOf("romeo@montague.net"));
+        Assert.assertEquals(blockList.getItems().get(1).getJid(), Jid.valueOf("iago@shakespeare.lit"));
         Assert.assertNotNull(blockList);
     }
 
     @Test
     public void marshalBlock() throws JAXBException, XMLStreamException, IOException {
         List<Item> items = new ArrayList<>();
-        items.add(new Item(Jid.fromString("romeo@montague.net")));
+        items.add(new Item(Jid.valueOf("romeo@montague.net")));
         IQ iq = new IQ("1", IQ.Type.SET, new Block(items));
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"set\"><block xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></block></iq>");
@@ -72,7 +72,7 @@ public class BlockingTest extends BaseTest {
     @Test
     public void marshalUnblock() throws JAXBException, XMLStreamException, IOException {
         List<Item> items = new ArrayList<>();
-        items.add(new Item(Jid.fromString("romeo@montague.net")));
+        items.add(new Item(Jid.valueOf("romeo@montague.net")));
         IQ iq = new IQ("1", IQ.Type.SET, new Unblock(items));
         String xml = marshall(iq);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"set\"><unblock xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></unblock></iq>");

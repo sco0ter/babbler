@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.extension.pubsub.SubscriptionStatus;
+import org.xmpp.extension.pubsub.SubscriptionState;
 import org.xmpp.stanza.Message;
 
 import javax.xml.bind.JAXBException;
@@ -199,8 +199,8 @@ public class PubSubEventTest extends BaseTest {
         Assert.assertNotNull(event.getSubscription());
         Assert.assertNotNull(event.getSubscription().getExpiry());
         Assert.assertEquals(event.getSubscription().getNode(), "princely_musings");
-        Assert.assertEquals(event.getSubscription().getJid(), Jid.fromString("francisco@denmark.lit"));
-        Assert.assertEquals(event.getSubscription().getSubscriptionStatus(), SubscriptionStatus.SUBSCRIBED);
+        Assert.assertEquals(event.getSubscription().getJid(), Jid.valueOf("francisco@denmark.lit"));
+        Assert.assertEquals(event.getSubscription().getSubscriptionState(), SubscriptionState.SUBSCRIBED);
         Assert.assertEquals(event.getSubscription().getSubId(), "ba49252aaa4f5d320c24d3766f0bdcade78c78d3");
     }
 

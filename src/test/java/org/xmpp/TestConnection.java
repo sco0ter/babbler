@@ -43,7 +43,7 @@ public class TestConnection extends Connection {
     private MockServer mockServer;
 
     public TestConnection() {
-        this(Jid.fromString("test@domain/resource"), new MockServer());
+        this(Jid.valueOf("test@domain/resource"), new MockServer());
     }
 
     public TestConnection(Jid jid, MockServer mockServer) {

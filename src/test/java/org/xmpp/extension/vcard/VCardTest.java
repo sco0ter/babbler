@@ -144,7 +144,7 @@ public class VCardTest extends BaseTest {
         Assert.assertTrue(vCard.getEmails().get(0).isPreferred());
         Assert.assertTrue(vCard.getEmails().get(0).isInternet());
         Assert.assertEquals(vCard.getEmails().get(0).getEmail(), "stpeter@jabber.org");
-        Assert.assertEquals(vCard.getJid(), Jid.fromString("stpeter@jabber.org"));
+        Assert.assertEquals(vCard.getJid(), Jid.valueOf("stpeter@jabber.org"));
         Assert.assertEquals(vCard.getCategories().size(), 1);
         Assert.assertEquals(vCard.getCategories().get(0), "test");
 

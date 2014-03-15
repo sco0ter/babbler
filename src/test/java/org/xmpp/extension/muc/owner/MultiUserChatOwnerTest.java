@@ -31,7 +31,6 @@ import org.xmpp.Jid;
 import org.xmpp.UnmarshalHelper;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.muc.Affiliation;
-import org.xmpp.extension.muc.Destroy;
 import org.xmpp.extension.muc.MucElementFactory;
 import org.xmpp.extension.muc.Role;
 import org.xmpp.extension.muc.admin.MucAdmin;
@@ -129,7 +128,7 @@ public class MultiUserChatOwnerTest extends BaseTest {
         MucAdmin mucAdmin = iq.getExtension(MucAdmin.class);
         Assert.assertNotNull(mucAdmin);
         Assert.assertNotNull(mucAdmin.getItems());
-        Assert.assertEquals(mucAdmin.getItems().get(0).getJid(), Jid.fromString("earlofcambridge@shakespeare.lit"));
+        Assert.assertEquals(mucAdmin.getItems().get(0).getJid(), Jid.valueOf("earlofcambridge@shakespeare.lit"));
         Assert.assertEquals(mucAdmin.getItems().get(0).getAffiliation(), Affiliation.OUTCAST);
         Assert.assertEquals(mucAdmin.getItems().get(0).getReason(), "Treason");
     }
@@ -169,7 +168,7 @@ public class MultiUserChatOwnerTest extends BaseTest {
 
     @Test
     public void marshalDestroyRoom() throws JAXBException, XMLStreamException, IOException {
-        MucOwner mucOwner = new MucOwner(MucElementFactory.createDestroy(Jid.fromString("coven@chat.shakespeare.lit"), "Macbeth doth come."));
+        MucOwner mucOwner = new MucOwner(MucElementFactory.createDestroy(Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come."));
         String xml = marshall(mucOwner);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></query>");
     }

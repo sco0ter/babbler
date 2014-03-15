@@ -152,35 +152,35 @@ public class MessageTest extends BaseTest {
 
     @Test
     public void marshalChatMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.CHAT);
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.CHAT);
         String xml = marshall(message);
         Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"chat\"></message>");
     }
 
     @Test
     public void marshalGroupChatMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.GROUPCHAT);
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.GROUPCHAT);
         String xml = marshall(message);
         Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"groupchat\"></message>");
     }
 
     @Test
     public void marshalNormalMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.NORMAL);
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.NORMAL);
         String xml = marshall(message);
         Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"normal\"></message>");
     }
 
     @Test
     public void marshalHeadlineMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.HEADLINE);
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.HEADLINE);
         String xml = marshall(message);
         Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"headline\"></message>");
     }
 
     @Test
     public void marshalErrorMessage() throws JAXBException, XMLStreamException, IOException {
-        Message message = new Message(Jid.fromString("juliet@example.com"), Message.Type.ERROR);
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.ERROR);
         String xml = marshall(message);
         Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"error\"></message>");
     }

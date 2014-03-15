@@ -113,13 +113,13 @@ public class ServiceDiscoveryTest extends BaseTest {
         ItemNode itemNode = iq.getExtension(ItemDiscovery.class);
         Assert.assertNotNull(itemNode);
         Assert.assertEquals(itemNode.getItems().size(), 3);
-        Assert.assertEquals(itemNode.getItems().get(0).getJid(), Jid.fromString("catalog.shakespeare.lit"));
+        Assert.assertEquals(itemNode.getItems().get(0).getJid(), Jid.valueOf("catalog.shakespeare.lit"));
         Assert.assertEquals(itemNode.getItems().get(0).getNode(), "books");
         Assert.assertEquals(itemNode.getItems().get(0).getName(), "Books by and about Shakespeare");
-        Assert.assertEquals(itemNode.getItems().get(1).getJid(), Jid.fromString("catalog.shakespeare.lit"));
+        Assert.assertEquals(itemNode.getItems().get(1).getJid(), Jid.valueOf("catalog.shakespeare.lit"));
         Assert.assertEquals(itemNode.getItems().get(1).getNode(), "clothing");
         Assert.assertEquals(itemNode.getItems().get(1).getName(), "Wear your literary taste with pride");
-        Assert.assertEquals(itemNode.getItems().get(2).getJid(), Jid.fromString("catalog.shakespeare.lit"));
+        Assert.assertEquals(itemNode.getItems().get(2).getJid(), Jid.valueOf("catalog.shakespeare.lit"));
         Assert.assertEquals(itemNode.getItems().get(2).getNode(), "music");
         Assert.assertEquals(itemNode.getItems().get(2).getName(), "Music from the time of Shakespeare");
     }

@@ -24,14 +24,17 @@
 
 package org.xmpp.extension.pubsub.owner;
 
+import org.xmpp.Jid;
 import org.xmpp.extension.data.DataForm;
+import org.xmpp.extension.pubsub.Affiliation;
 import org.xmpp.extension.pubsub.AffiliationNode;
 import org.xmpp.extension.pubsub.Subscription;
+import org.xmpp.extension.pubsub.SubscriptionState;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -148,5 +151,243 @@ public final class PubSubOwner {
             return ((Subscriptions) type).getSubscriptions();
         }
         return null;
+    }
+
+    private static final class Affiliations extends PubSubOwnerChildElement {
+
+        @XmlElement(name = "affiliation")
+        private List<AffiliationNodeOwner> affiliations = new ArrayList<>();
+
+        private Affiliations() {
+            super(null);
+        }
+
+        private Affiliations(String node) {
+            super(node);
+        }
+
+        private List<? extends AffiliationNode> getAffiliations() {
+            return affiliations;
+        }
+
+        private static final class AffiliationNodeOwner implements AffiliationNode {
+
+            @XmlAttribute(name = "node")
+            private String node;
+
+            @XmlAttribute(name = "affiliation")
+            private Affiliation affiliation;
+
+            @XmlAttribute(name = "jid")
+            private Jid jid;
+
+            @Override
+            public Jid getJid() {
+                return jid;
+            }
+
+            @Override
+            public Affiliation getAffiliation() {
+                return affiliation;
+            }
+
+            @Override
+            public String getNode() {
+                return node;
+            }
+        }
+    }
+
+    private static final class Configure extends PubSubOwnerChildElement {
+
+        @XmlElementRef
+        private DataForm dataForm;
+
+        private Configure() {
+        }
+
+        private Configure(String node) {
+            super(node);
+        }
+
+        private Configure(String node, DataForm dataForm) {
+            super(node);
+            this.dataForm = dataForm;
+        }
+
+        private Configure(DataForm dataForm) {
+            this.dataForm = dataForm;
+        }
+
+        private DataForm getDataForm() {
+            return dataForm;
+        }
+    }
+
+    /**
+     * @author Christian Schudt
+     */
+    private static final class Default extends PubSubOwnerChildElement {
+
+        @XmlElementRef
+        private DataForm dataForm;
+
+        private Default() {
+        }
+
+        private DataForm getDataForm() {
+            return dataForm;
+        }
+    }
+
+    private static final class Delete extends PubSubOwnerChildElement {
+
+        @XmlElement(name = "redirect")
+        private Redirect redirect;
+
+        private Delete() {
+        }
+
+        private Delete(String node) {
+            super(node);
+        }
+
+        private Delete(String node, Redirect redirect) {
+            super(node);
+            this.redirect = redirect;
+        }
+
+        private Redirect getRedirect() {
+            return redirect;
+        }
+
+        private final static class Redirect {
+            @XmlAttribute(name = "uri")
+            private URI uri;
+
+            private Redirect() {
+            }
+
+            private Redirect(URI uri) {
+                this.uri = uri;
+            }
+
+            private URI getUri() {
+                return uri;
+            }
+        }
+    }
+
+    private static final class Purge extends PubSubOwnerChildElement {
+
+        private Purge() {
+        }
+
+        private Purge(String node) {
+            super(node);
+        }
+    }
+
+    private static final class Subscriptions extends PubSubOwnerChildElement {
+
+        @XmlElement(name = "subscription")
+        private List<SubscriptionOwner> subscriptions;
+
+        private Subscriptions() {
+        }
+
+        private Subscriptions(String node) {
+            super(node);
+        }
+
+        private List<SubscriptionOwner> getSubscriptions() {
+            return subscriptions;
+        }
+
+        private static final class SubscriptionOwner implements Subscription {
+            @XmlAttribute(name = "node")
+            private String node;
+
+            @XmlAttribute(name = "jid")
+            private Jid jid;
+
+            @XmlAttribute(name = "subid")
+            private String subid;
+
+            @XmlAttribute(name = "subscription")
+            private SubscriptionState status;
+
+            @XmlAttribute(name = "expiry")
+            private Date expiry;
+
+            @XmlElement(name = "subscribe-options")
+            private Options options;
+
+            public Options getOptions() {
+                return options;
+            }
+
+            @Override
+            public SubscriptionState getSubscriptionState() {
+                return status;
+            }
+
+            @Override
+            public String getNode() {
+                return node;
+            }
+
+            @Override
+            public Jid getJid() {
+                return jid;
+            }
+
+            @Override
+            public String getSubId() {
+                return subid;
+            }
+
+            public Date getExpiry() {
+                return expiry;
+            }
+
+            @Override
+            public boolean isConfigurationRequired() {
+                return options != null && options.isRequired();
+            }
+
+            @Override
+            public boolean isConfigurationSupported() {
+                return options != null;
+            }
+
+            @XmlType(name = "subscription-options")
+            private static final class Options {
+
+                @XmlElement(name = "required")
+                private String required;
+
+                private boolean isRequired() {
+                    return required != null;
+                }
+            }
+        }
+    }
+
+    private static abstract class PubSubOwnerChildElement {
+
+        @XmlAttribute(name = "node")
+        private String node;
+
+        private PubSubOwnerChildElement() {
+        }
+
+        private PubSubOwnerChildElement(String node) {
+            this.node = node;
+        }
+
+        private String getNode() {
+            return node;
+        }
     }
 }

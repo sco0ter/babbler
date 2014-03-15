@@ -25,6 +25,7 @@
 package org.xmpp.extension.httpbind;
 
 import org.xmpp.Connection;
+import org.xmpp.NoResponseException;
 import org.xmpp.XmppContext;
 import org.xmpp.util.BranchedInputStream;
 import org.xmpp.util.BranchedOutputStream;
@@ -341,7 +342,7 @@ public final class BoshConnection extends Connection {
         // Wait for the response and wait until all features have been negotiated.
         try {
             waitUntilSaslNegotiationStarted();
-        } catch (TimeoutException e) {
+        } catch (NoResponseException e) {
             throw new IOException(e);
         }
         updateStatus(Status.CONNECTED);

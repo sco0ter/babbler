@@ -27,6 +27,7 @@ package org.xmpp.extension.disco.items;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,7 +42,7 @@ public final class ItemDiscovery implements ItemNode {
     private String node;
 
     @XmlElement(name = "item")
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
 
     /**
      * Creates an empty element, used for item discovery requests.

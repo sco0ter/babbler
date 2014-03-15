@@ -573,9 +573,8 @@ public abstract class Connection implements Closeable {
      * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
      * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
-     * @throws TimeoutException           If the authentication or resource binding process took more than 5 seconds each.
      */
-    public synchronized final void login(String user, String password) throws TimeoutException, LoginException {
+    public synchronized final void login(String user, String password) throws LoginException {
         login(user, password, null);
     }
 
@@ -589,9 +588,8 @@ public abstract class Connection implements Closeable {
      * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
      * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
-     * @throws TimeoutException           If the authentication or resource binding process timed out.
      */
-    public synchronized final void login(String user, String password, String resource) throws LoginException, TimeoutException {
+    public synchronized final void login(String user, String password, String resource) throws LoginException {
         if (user == null) {
             throw new IllegalArgumentException("user must not be null.");
         }
@@ -618,11 +616,10 @@ public abstract class Connection implements Closeable {
     /**
      * Logs in anonymously and binds a resource.
      *
-     * @throws LoginException   If the anonymous login failed.
-     * @throws TimeoutException If the authentication or resource binding process timed out.
+     * @throws LoginException If the anonymous login failed.
      * @see org.xmpp.sasl.AuthenticationManager#authenticateAnonymously()
      */
-    public synchronized final void loginAnonymously() throws LoginException, TimeoutException {
+    public synchronized final void loginAnonymously() throws LoginException {
         authenticationManager.authenticateAnonymously();
         bindResource(null);
     }
@@ -743,15 +740,14 @@ public abstract class Connection implements Closeable {
     /**
      * Waits until SASL negotiation has started and then releases the lock. This method must be invoked at the end of the {@link #connect()} method.
      *
-     * @throws TimeoutException If the stream negotiation timed out, i.e. the {@link #connect()} method.
-     * @throws IOException      If any exception occurred during stream negotiation.
+     * @throws IOException If any exception occurred during stream negotiation.
      */
-    protected final void waitUntilSaslNegotiationStarted() throws TimeoutException, IOException {
+    protected final void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
         // Wait for the response and wait until all features have been negotiated.
         lock.lock();
         try {
             if (!streamNegotiatedUntilSasl.await(10000, TimeUnit.SECONDS)) {
-                throw new TimeoutException("Timeout reached while connecting.");
+                throw new NoResponseException("Timeout reached while connecting.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

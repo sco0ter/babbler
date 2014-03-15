@@ -58,50 +58,50 @@ public class RosterManagerTest extends BaseTest {
                     Assert.assertEquals(e.getAddedContacts().size(), 0);
                     Assert.assertEquals(e.getUpdatedContacts().size(), 0);
                     Assert.assertEquals(e.getRemovedContacts().size(), 1);
-                    Assert.assertEquals(e.getRemovedContacts().get(0).getJid(), Jid.fromString("contact2@domain"));
+                    Assert.assertEquals(e.getRemovedContacts().get(0).getJid(), Jid.valueOf("contact2@domain"));
                 } else if (rosterPushCount[0] == 3) {
                     Assert.assertEquals(e.getAddedContacts().size(), 1);
                     Assert.assertEquals(e.getUpdatedContacts().size(), 1);
                     Assert.assertEquals(e.getRemovedContacts().size(), 0);
-                    Assert.assertEquals(e.getAddedContacts().get(0).getJid(), Jid.fromString("contact5@domain"));
-                    Assert.assertEquals(e.getUpdatedContacts().get(0).getJid(), Jid.fromString("contact1@domain"));
+                    Assert.assertEquals(e.getAddedContacts().get(0).getJid(), Jid.valueOf("contact5@domain"));
+                    Assert.assertEquals(e.getUpdatedContacts().get(0).getJid(), Jid.valueOf("contact1@domain"));
                     Assert.assertEquals(e.getUpdatedContacts().get(0).getName(), "Name");
                 }
             }
         });
 
         Roster roster1 = new Roster();
-        roster1.getContacts().add(new Roster.Contact(Jid.fromString("contact1@domain")));
-        roster1.getContacts().add(new Roster.Contact(Jid.fromString("contact2@domain")));
-        roster1.getContacts().add(new Roster.Contact(Jid.fromString("contact3@domain")));
+        roster1.getContacts().add(new Roster.Contact(Jid.valueOf("contact1@domain")));
+        roster1.getContacts().add(new Roster.Contact(Jid.valueOf("contact2@domain")));
+        roster1.getContacts().add(new Roster.Contact(Jid.valueOf("contact3@domain")));
         rosterManager.updateRoster(roster1);
         rosterPushCount[0]++;
 
         Roster roster2 = new Roster();
-        roster2.getContacts().add(new Roster.Contact(Jid.fromString("contact1@domain")));
-        roster2.getContacts().add(new Roster.Contact(Jid.fromString("contact2@domain")));
-        roster2.getContacts().add(new Roster.Contact(Jid.fromString("contact3@domain")));
-        roster2.getContacts().add(new Roster.Contact(Jid.fromString("contact4@domain")));
+        roster2.getContacts().add(new Roster.Contact(Jid.valueOf("contact1@domain")));
+        roster2.getContacts().add(new Roster.Contact(Jid.valueOf("contact2@domain")));
+        roster2.getContacts().add(new Roster.Contact(Jid.valueOf("contact3@domain")));
+        roster2.getContacts().add(new Roster.Contact(Jid.valueOf("contact4@domain")));
         rosterManager.updateRoster(roster2);
 
         rosterPushCount[0]++;
         Roster roster3 = new Roster();
-        roster3.getContacts().add(new Roster.Contact(Jid.fromString("contact1@domain")));
-        Roster.Contact contact = new Roster.Contact(Jid.fromString("contact2@domain"));
+        roster3.getContacts().add(new Roster.Contact(Jid.valueOf("contact1@domain")));
+        Roster.Contact contact = new Roster.Contact(Jid.valueOf("contact2@domain"));
         contact.setSubscription(Roster.Contact.Subscription.REMOVE);
         roster3.getContacts().add(contact);
-        roster3.getContacts().add(new Roster.Contact(Jid.fromString("contact3@domain")));
-        roster3.getContacts().add(new Roster.Contact(Jid.fromString("contact4@domain")));
+        roster3.getContacts().add(new Roster.Contact(Jid.valueOf("contact3@domain")));
+        roster3.getContacts().add(new Roster.Contact(Jid.valueOf("contact4@domain")));
         rosterManager.updateRoster(roster3);
 
         rosterPushCount[0]++;
         Roster roster4 = new Roster();
-        Roster.Contact contact2 = new Roster.Contact(Jid.fromString("contact1@domain"));
+        Roster.Contact contact2 = new Roster.Contact(Jid.valueOf("contact1@domain"));
         contact2.setName("Name");
         roster4.getContacts().add(contact2);
-        roster4.getContacts().add(new Roster.Contact(Jid.fromString("contact3@domain")));
-        roster4.getContacts().add(new Roster.Contact(Jid.fromString("contact4@domain")));
-        roster4.getContacts().add(new Roster.Contact(Jid.fromString("contact5@domain")));
+        roster4.getContacts().add(new Roster.Contact(Jid.valueOf("contact3@domain")));
+        roster4.getContacts().add(new Roster.Contact(Jid.valueOf("contact4@domain")));
+        roster4.getContacts().add(new Roster.Contact(Jid.valueOf("contact5@domain")));
         rosterManager.updateRoster(roster4);
     }
 }

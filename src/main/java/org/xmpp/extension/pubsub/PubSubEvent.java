@@ -34,7 +34,7 @@ public class PubSubEvent extends EventObject {
 
     private String node;
 
-    private List<ItemElement> items;
+    private List<Item> items;
 
     /**
      * Constructs a prototypical Event.
@@ -50,7 +50,7 @@ public class PubSubEvent extends EventObject {
         return node;
     }
 
-    public List<ItemElement> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 

@@ -45,21 +45,21 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
 
     @Test
     public void marshalCreate() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new PubSub.Create("princely_musings"), null);
+        PubSub pubSub = PubSub.forCreate("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><create node=\"princely_musings\"></create></pubsub>");
     }
 
     @Test
     public void marshalCreateInstantNode() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new PubSub.Create(null), null);
+        PubSub pubSub = PubSub.forCreate(null);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><create></create></pubsub>");
     }
 
     @Test
     public void marshalConfigure() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new Configure("princely_musings"));
+        PubSub pubSub = PubSub.forConfiguration("princely_musings", null);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><configure node=\"princely_musings\"></configure></pubsub>");
     }
@@ -146,7 +146,7 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
 
     @Test
     public void marshalDeleteItem() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = new PubSub(new RetractElement("princely_musings", new ItemElement("ae890ac52d0df67ed7cfdf51b644e901"), false));
+        PubSub pubSub = PubSub.forRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract notify=\"false\" node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
     }
@@ -452,10 +452,10 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         Assert.assertNotNull(pubSubOwner.getAffiliations());
         Assert.assertEquals(pubSubOwner.getNode(), "princely_musings");
         Assert.assertEquals(pubSubOwner.getAffiliations().size(), 2);
-        Assert.assertEquals(pubSubOwner.getAffiliations().get(0).getJid(), Jid.fromString("hamlet@denmark.lit"));
+        Assert.assertEquals(pubSubOwner.getAffiliations().get(0).getJid(), Jid.valueOf("hamlet@denmark.lit"));
         Assert.assertEquals(pubSubOwner.getAffiliations().get(0).getAffiliation(), Affiliation.OWNER);
 
-        Assert.assertEquals(pubSubOwner.getAffiliations().get(1).getJid(), Jid.fromString("polonius@denmark.lit"));
+        Assert.assertEquals(pubSubOwner.getAffiliations().get(1).getJid(), Jid.valueOf("polonius@denmark.lit"));
         Assert.assertEquals(pubSubOwner.getAffiliations().get(1).getAffiliation(), Affiliation.OUTCAST);
     }
 

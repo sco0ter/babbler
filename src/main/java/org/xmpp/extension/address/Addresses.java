@@ -35,9 +35,9 @@ import java.util.List;
  * </p>
  * <h2>Sample</h2>
  * <pre><code>
- * Address address = new Address(Address.Type.CC, Jid.fromString("juliet@example.net"));
+ * Address address = new Address(Address.Type.CC, Jid.valueOf("juliet@example.net"));
  * Addresses addresses = new Addresses(Arrays.asList(address));
- * Message message = new Message(Jid.fromString("romeo@example.net"));
+ * Message message = new Message(Jid.valueOf("romeo@example.net"));
  * message.getExtensions().add(addresses);
  * </code></pre>
  *

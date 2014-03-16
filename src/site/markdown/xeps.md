@@ -9,7 +9,6 @@
 * ![alt supported][supported]           [XEP-0013: Flexible Offline Message Retrieval](http://xmpp.org/extensions/xep-0013.html)
 * ![alt supported][supported]           [XEP-0016: Privacy Lists](http://xmpp.org/extensions/xep-0016.html)
 * ![alt supported][supported]           [XEP-0020: Feature Negotiation](http://xmpp.org/extensions/xep-0020.html)
-* ![alt not supported][not supported]   [XEP-0027: Current Jabber OpenPGP Usage](http://xmpp.org/extensions/xep-0027.html)
 * ![alt supported][supported]           [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
 * ![alt supported][supported]           [XEP-0033: Extended Stanza Addressing](http://xmpp.org/extensions/xep-0033.html)
 * ![alt not supported][not supported]   [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)

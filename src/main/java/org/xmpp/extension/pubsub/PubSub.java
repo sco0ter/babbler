@@ -202,7 +202,7 @@ public final class PubSub {
 
     public List<Item> getItems() {
         if (type instanceof Items) {
-            return new ArrayList<>(((Items) type).getItems());
+            return Collections.unmodifiableList(new ArrayList<>(((Items) type).getItems()));
         }
         return null;
     }

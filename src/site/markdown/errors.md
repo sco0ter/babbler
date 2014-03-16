@@ -48,7 +48,7 @@ Here's an example:
 
 ```java
 try {
-    EntityTime entityTime = entityTimeManager.getEntityTime(Jid.fromString("juliet@example.net/balcony"));
+    EntityTime entityTime = entityTimeManager.getEntityTime(Jid.valueOf("juliet@example.net/balcony"));
 } catch (XmppException e) {
     if (e instanceof NoResponseException) {
         // The entity did not respond

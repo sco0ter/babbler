@@ -113,6 +113,14 @@ public final class GeoLocation {
     @XmlElement(name = "uri")
     private URI uri;
 
+    public GeoLocation() {
+    }
+
+    public GeoLocation(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     /**
      * Gets the horizontal GPS error in meters.
      *

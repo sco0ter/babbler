@@ -69,6 +69,7 @@ import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.privatedata.bookmarks.BookmarkStorage;
 import org.xmpp.extension.privatedata.rosterdelimiter.RosterDelimiter;
 import org.xmpp.extension.pubsub.PubSub;
+import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.reach.Reachability;
 import org.xmpp.extension.reach.ReachabilityManager;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -220,7 +221,9 @@ public abstract class XmppContext {
             // XEP-0059: Result Set Management
             registerExtension(ResultSet.class);
 
+            // XEP-0060: Publish-Subscribe
             registerExtension(PubSub.class);
+            registerManager(PubSubManager.class);
 
             // XEP-0077: In-Band Registration
             registerExtension(RegisterFeature.class, Registration.class);

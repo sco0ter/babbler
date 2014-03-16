@@ -437,7 +437,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
      */
     public String createNode() throws XmppException {
-        return create(null, null);
+        return createNode(null, null);
     }
 
     /**
@@ -450,7 +450,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
      */
     public String createNode(String node) throws XmppException {
-        return create(node, null);
+        return createNode(node, null);
     }
 
     /**
@@ -461,7 +461,7 @@ public final class PubSubService {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
      */
-    public String create(String node, DataForm dataForm) throws XmppException {
+    public String createNode(String node, DataForm dataForm) throws XmppException {
         IQ result = connection.query(new IQ(IQ.Type.SET, PubSub.forCreate(node, dataForm)));
         if (node != null) {
             return node;

@@ -6,7 +6,7 @@ For XMPP core aspects like roster and presence management, there\'s a correspond
 ## Adding contacts to your roster
 
 ```java
-connection.getRosterManager().addContact(new Roster.Contact(Jid.fromString("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
+connection.getRosterManager().addContact(new Roster.Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
 ```
 
 This will create a contact on your roster and subsequently sends a presence subscription request to the user.

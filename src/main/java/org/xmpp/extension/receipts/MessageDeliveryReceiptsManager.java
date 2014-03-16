@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  * <pre>
  * <code>
  * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection.getExtensionManager(MessageDeliveryReceiptsManager.class);
- * messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
+ * messageDeliveryReceiptsManager.addPubSubListener(new MessageDeliveredListener() {
  *    {@literal @}Override
  *    public void messageDelivered(MessageDeliveredEvent e) {
  *       System.out.println("Message delivered: " + e.getMessageId());

@@ -107,7 +107,7 @@ connection.send(new Presence());
 Sending a message works like this:
 
 ```java
-connection.send(new Message(Jid.fromString("juliet@example.net"), Message.Type.CHAT));
+connection.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
 ```
 
 ## Closing the connection

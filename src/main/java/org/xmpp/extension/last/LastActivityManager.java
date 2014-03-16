@@ -53,7 +53,7 @@ import java.util.Date;
  * <pre>
  * <code>
  * LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
- * LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.fromString("juliet@example.com/balcony"));
+ * LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@example.com/balcony"));
  * </code>
  * </pre>
  *

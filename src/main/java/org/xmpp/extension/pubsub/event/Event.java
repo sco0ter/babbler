@@ -33,6 +33,7 @@ import org.xmpp.extension.pubsub.SubscriptionState;
 import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -85,9 +86,9 @@ public final class Event {
         return null;
     }
 
-    public List<? extends Item> getItems() {
+    public List<Item> getItems() {
         if (type instanceof Items) {
-            return ((Items) type).getItems();
+            return Collections.unmodifiableList(new ArrayList<>(((Items) type).getItems()));
         }
         return null;
     }
@@ -105,7 +106,6 @@ public final class Event {
         }
         return null;
     }
-
 
     private static final class Configuration extends PubSubEventChildElement {
 
@@ -195,7 +195,6 @@ public final class Event {
         }
     }
 
-
     private static final class Purge extends PubSubEventChildElement {
 
         private Purge() {
@@ -280,7 +279,7 @@ public final class Event {
 
     private static final class ItemElement implements Item {
 
-        @XmlAnyElement
+        @XmlAnyElement(lax = true)
         private Object object;
 
         @XmlAttribute(name = "id")

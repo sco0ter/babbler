@@ -34,21 +34,42 @@ import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemNode;
+import org.xmpp.extension.pubsub.event.Event;
+import org.xmpp.stanza.Message;
+import org.xmpp.stanza.MessageEvent;
+import org.xmpp.stanza.MessageListener;
 import org.xmpp.stanza.StanzaException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @author Christian Schudt
  */
 public final class PubSubManager extends ExtensionManager {
 
+    final Set<PubSubListener> pubSubListeners = new CopyOnWriteArraySet<>();
+
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     private PubSubManager(Connection connection) {
         super(connection);
         serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+
+        connection.addMessageListener(new MessageListener() {
+            @Override
+            public void handle(MessageEvent e) {
+                if (e.isIncoming()) {
+                    Message message = e.getMessage();
+                    Event event = message.getExtension(Event.class);
+                    if (event != null) {
+                       int i = 0;
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -84,5 +105,25 @@ public final class PubSubManager extends ExtensionManager {
      */
     public PubSubService createPersonalEventingService() {
         return new PubSubService(connection.getConnectedResource().toBareJid(), connection, serviceDiscoveryManager);
+    }
+
+    /**
+     * Adds a pubsub listener, which allows to listen for pubsub notifications.
+     *
+     * @param pubSubListener The listener.
+     * @see #removePubSubListener(PubSubListener)
+     */
+    public void addPubSubListener(PubSubListener pubSubListener) {
+        pubSubListeners.add(pubSubListener);
+    }
+
+    /**
+     * Removes a previously added pubsub listener.
+     *
+     * @param pubSubListener The listener.
+     * @see #addPubSubListener(PubSubListener)
+     */
+    public void removePubSubListener(PubSubListener pubSubListener) {
+        pubSubListeners.remove(pubSubListener);
     }
 }

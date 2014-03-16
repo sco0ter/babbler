@@ -62,6 +62,7 @@ import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
+import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
@@ -70,6 +71,7 @@ import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.pubsub.PubSubService;
+import org.xmpp.extension.pubsub.Subscription;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -542,13 +544,16 @@ public class JavaFXApp extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
+
                                     try {
                                         //PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.fritz.box"));
                                         PubSubService pubSubService = pubSubManager.createPersonalEventingService();
-                                        DataForm dataForm = pubSubService.getDefaultNodeConfiguration();
+                                        GeoLocation geoLocation = new GeoLocation(45.44, 12.33);
+                                        geoLocation.setArea(UUID.randomUUID().toString());
+                                        pubSubService.publish("http://jabber.org/protocol/geoloc", geoLocation);
                                         int i = 0;
                                     } catch (XmppException e) {
-                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                        e.printStackTrace();
                                     }
                                 }
                             });

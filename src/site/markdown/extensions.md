@@ -65,5 +65,5 @@ Managers usually also allow to interact with other entities, e.g. retrieving the
 
 ```
 LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
-LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.fromString("juliet@example.net"));
+LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@example.net"));
 ```

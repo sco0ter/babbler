@@ -64,7 +64,7 @@ XmppContext.getDefault().registerExtension(Product.class);
 You can then simply send a message with that extension:
 
 ```java
-Message message = new Message(Jid.fromString("romeo@example.net"));
+Message message = new Message(Jid.valueOf("romeo@example.net"));
 message.getExtensions().add(new Product("1", "5.99 €", "New product", "A very cool product!!"));
 connection.send(message);
 ```

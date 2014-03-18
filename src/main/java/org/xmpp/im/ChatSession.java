@@ -64,7 +64,7 @@ public final class ChatSession {
             throw new IllegalArgumentException("connection must not be null.");
         }
         // The user's client SHOULD address the initial message in a chat session to the bare JID <contact@domainpart> of the contact (rather than attempting to guess an appropriate full JID <contact@domainpart/resourcepart> based on the <show/>, <status/>, or <priority/> value of any presence notifications it might have received from the contact).
-        this.chatPartner = chatPartner.toBareJid();
+        this.chatPartner = chatPartner.asBareJid();
         this.thread = thread;
         this.connection = connection;
     }

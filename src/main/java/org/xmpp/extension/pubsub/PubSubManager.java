@@ -104,7 +104,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
      */
     public PubSubService createPersonalEventingService() {
-        return new PubSubService(connection.getConnectedResource().toBareJid(), connection, serviceDiscoveryManager);
+        return new PubSubService(connection.getConnectedResource().asBareJid(), connection, serviceDiscoveryManager);
     }
 
     /**

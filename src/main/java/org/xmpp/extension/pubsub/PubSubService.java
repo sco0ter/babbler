@@ -265,7 +265,7 @@ public final class PubSubService {
         if (node == null) {
             throw new IllegalArgumentException("node must not be null");
         }
-        IQ result = connection.query(new IQ(IQ.Type.SET, PubSub.withSubscribe(node, connection.getConnectedResource().toBareJid(), dataForm)));
+        IQ result = connection.query(new IQ(IQ.Type.SET, PubSub.withSubscribe(node, connection.getConnectedResource().asBareJid(), dataForm)));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getSubscription();
     }
@@ -279,7 +279,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
     public void unsubscribe(String node) throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, PubSub.withUnsubscribe(node, connection.getConnectedResource().toBareJid())));
+        connection.query(new IQ(IQ.Type.SET, PubSub.withUnsubscribe(node, connection.getConnectedResource().asBareJid())));
     }
 
     /**
@@ -292,7 +292,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
      */
     private DataForm getSubscriptionOptions(String node) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, PubSub.withOptions(node, connection.getConnectedResource().toBareJid())));
+        IQ result = connection.query(new IQ(IQ.Type.GET, PubSub.withOptions(node, connection.getConnectedResource().asBareJid())));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getOptions().getDataForm();
     }
@@ -307,7 +307,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
     private void submitSubscriptionOptions(String node, DataForm dataForm) throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, PubSub.withOptions(node, connection.getConnectedResource().toBareJid())));
+        connection.query(new IQ(IQ.Type.SET, PubSub.withOptions(node, connection.getConnectedResource().asBareJid())));
     }
 
     /**

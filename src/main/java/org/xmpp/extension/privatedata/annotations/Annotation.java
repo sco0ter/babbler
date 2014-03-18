@@ -93,7 +93,7 @@ public final class Annotation {
                 throw new IllegalArgumentException("jid must not be null.");
             }
             this.value = note;
-            this.jid = jid.toBareJid();
+            this.jid = jid.asBareJid();
             this.creationDate = creationDate;
             this.modificationDate = modificationDate;
         }

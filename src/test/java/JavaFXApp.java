@@ -248,7 +248,7 @@ public class JavaFXApp extends Application {
                                         Platform.runLater(new Runnable() {
                                             @Override
                                             public void run() {
-                                                Jid chatPartner = chatSession.getChatPartner().toBareJid();
+                                                Jid chatPartner = chatSession.getChatPartner().asBareJid();
                                                 ChatWindow chatWindow = windows.get(chatPartner);
                                                 if (chatWindow == null) {
                                                     chatWindow = new ChatWindow(chatPartner, connection);
@@ -642,7 +642,7 @@ public class JavaFXApp extends Application {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         if (mouseEvent.getClickCount() == 2 && listCell.getItem() != null) {
-                            Jid chatPartner = listCell.getItem().contact.get().getJid().toBareJid();
+                            Jid chatPartner = listCell.getItem().contact.get().getJid().asBareJid();
                             ChatWindow chatWindow = windows.get(chatPartner);
                             if (chatWindow == null) {
                                 chatWindow = new ChatWindow(chatPartner, connection);

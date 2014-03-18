@@ -92,7 +92,7 @@ public final class RosterManager {
         if (jid == null) {
             throw new IllegalArgumentException("jid must not be null");
         }
-        return contactMap.get(jid.toBareJid());
+        return contactMap.get(jid.asBareJid());
     }
 
     void updateRoster(Roster roster) {

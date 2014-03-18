@@ -87,7 +87,7 @@ public final class AvatarManager extends ExtensionManager {
                             // Check, if we already know this avatar.
                             Avatar avatar = avatars.get(avatarUpdate.getHash());
                             // If the hash is unknown.
-                            Jid contact = presence.getFrom().toBareJid();
+                            Jid contact = presence.getFrom().asBareJid();
                             if (avatar == null) {
                                 try {
                                     // Get the avatar for this user.
@@ -117,7 +117,7 @@ public final class AvatarManager extends ExtensionManager {
                         // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
 
                         // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element, i.e.:
-                        final Jid me = connection.getConnectedResource().toBareJid();
+                        final Jid me = connection.getConnectedResource().asBareJid();
                         byte[] myHash = userAvatars.get(me);
                         if (myHash == null) {
                             // Load my own avatar in order to advertise an image.
@@ -185,9 +185,9 @@ public final class AvatarManager extends ExtensionManager {
     public Avatar getAvatar(Jid user) throws XmppException {
         Avatar avatar = new Avatar(null, null);
         if (user != null) {
-            user = user.toBareJid();
+            user = user.asBareJid();
         } else {
-            user = connection.getConnectedResource().toBareJid();
+            user = connection.getConnectedResource().asBareJid();
         }
         synchronized (avatars) {
             // Let's see, if there's a stored image already.
@@ -201,7 +201,7 @@ public final class AvatarManager extends ExtensionManager {
 
                 // Load the vCard for that user
                 VCard vCard;
-                if (user.equals(connection.getConnectedResource().toBareJid())) {
+                if (user.equals(connection.getConnectedResource().asBareJid())) {
                     vCard = vCardManager.getVCard();
                 } else {
                     vCard = vCardManager.getVCard(user);

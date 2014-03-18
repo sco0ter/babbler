@@ -66,11 +66,11 @@ public final class PresenceManager {
                 Presence presence = e.getPresence();
                 if (e.isIncoming()) {
 
-                    if (!presenceMap.containsKey(presence.getFrom().toBareJid())) {
+                    if (!presenceMap.containsKey(presence.getFrom().asBareJid())) {
                         // Store the user (bare JID) in the map, associated with different resources.
-                        presenceMap.put(presence.getFrom().toBareJid(), new ConcurrentHashMap<String, Presence>());
+                        presenceMap.put(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());
                     }
-                    Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().toBareJid());
+                    Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
                     // Update the contact's resource with the presence.
                     presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
                 } else {
@@ -130,7 +130,7 @@ public final class PresenceManager {
                 }
             }
         } else {
-            Map<String, Presence> presencesPerResource = presenceMap.get(jid.toBareJid());
+            Map<String, Presence> presencesPerResource = presenceMap.get(jid.asBareJid());
             if (presencesPerResource != null) {
                 Presence presence = presencesPerResource.get(jid.getResource());
                 if (presence != null) {
@@ -157,7 +157,7 @@ public final class PresenceManager {
     public String requestSubscription(Jid jid, String status) {
         Presence presence = new Presence(Presence.Type.SUBSCRIBE);
         // the value of the 'to' attribute MUST be a bare JID
-        presence.setTo(jid.toBareJid());
+        presence.setTo(jid.asBareJid());
         presence.setId(UUID.randomUUID().toString());
         presence.setStatus(status);
         connection.send(presence);

@@ -100,7 +100,7 @@ public final class ChatManager {
                     // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
                     // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).
                     String threadId = message.getThread() != null ? message.getThread() : UUID.randomUUID().toString();
-                    Jid contact = chatPartner.toBareJid();
+                    Jid contact = chatPartner.asBareJid();
                     synchronized (chatSessions) {
                         // If there are no chat sessions with that contact yet, put the contact into the map.
                         if (!chatSessions.containsKey(contact)) {
@@ -129,7 +129,7 @@ public final class ChatManager {
                     // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
                     Presence presence = e.getPresence();
                     synchronized (chatSessions) {
-                        Jid contact = presence.getFrom().toBareJid();
+                        Jid contact = presence.getFrom().asBareJid();
                         if (chatSessions.containsKey(contact)) {
                             for (ChatSession chatSession : chatSessions.get(contact).values()) {
                                 chatSession.chatPartner = contact;
@@ -205,7 +205,7 @@ public final class ChatManager {
         if (chatSession == null) {
             throw new IllegalArgumentException("chatSession must not be null.");
         }
-        Jid user = chatSession.getChatPartner().toBareJid();
+        Jid user = chatSession.getChatPartner().asBareJid();
         synchronized (chatSessions) {
             if (chatSessions.containsKey(user)) {
                 Map<String, ChatSession> chatSessionMap = chatSessions.get(user);

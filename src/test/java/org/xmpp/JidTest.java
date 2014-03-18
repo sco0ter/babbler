@@ -83,7 +83,7 @@ public class JidTest {
     @Test
     public void testBareJid() {
         Jid jid = Jid.valueOf("node@domain/resource");
-        Assert.assertEquals("node@domain", jid.toBareJid().toString());
+        Assert.assertEquals("node@domain", jid.asBareJid().toString());
     }
 
     @Test
@@ -219,5 +219,12 @@ public class JidTest {
         Assert.assertEquals(jid.getLocal(), "name@mail.de");
         Assert.assertEquals(jid.getDomain(), "chat.facebook.com");
         Assert.assertEquals(jid.getResource(), "LPfS9dVP");
+    }
+
+    @Test
+    public void testWithResource() {
+        Jid jid = Jid.valueOf("test@domain");
+        Jid withReource = jid.withResource("resource");
+        Assert.assertEquals(withReource, Jid.valueOf("test@domain/resource"));
     }
 }

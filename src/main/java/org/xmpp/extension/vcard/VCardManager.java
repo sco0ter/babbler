@@ -110,7 +110,7 @@ public final class VCardManager extends ExtensionManager {
         if (jid == null) {
             throw new IllegalArgumentException("jid must not be null.");
         }
-        IQ result = connection.query(new IQ(jid.toBareJid(), IQ.Type.GET, new VCard()));
+        IQ result = connection.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
         return result.getExtension(VCard.class);
     }
 }

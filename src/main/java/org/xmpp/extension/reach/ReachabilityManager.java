@@ -75,7 +75,7 @@ public final class ReachabilityManager extends ExtensionManager {
                 Presence presence = e.getPresence();
                 if (e.isIncoming()) {
                     boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
-                    Jid contact = presence.getFrom().toBareJid();
+                    Jid contact = presence.getFrom().asBareJid();
                     if (!hasReachability && reachabilities.remove(contact) != null) {
                         // If no reachability was found in presence, check, if the contact has previously sent any reachability via presence.
                         notifyReachabilityListeners(contact, new ArrayList<Address>());
@@ -133,7 +133,7 @@ public final class ReachabilityManager extends ExtensionManager {
     private boolean checkStanzaForReachabilityAndNotify(Stanza stanza) {
         Reachability reachability = stanza.getExtension(Reachability.class);
         if (stanza.getFrom() != null) {
-            Jid contact = stanza.getFrom().toBareJid();
+            Jid contact = stanza.getFrom().asBareJid();
             if (reachability != null) {
                 synchronized (reachabilities) {
                     List<Address> oldReachabilityAddresses = reachabilities.get(contact);

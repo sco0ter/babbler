@@ -209,12 +209,22 @@ public final class Jid {
      *
      * @return The bare JID.
      */
-    public Jid toBareJid() {
+    public Jid asBareJid() {
         if (local != null) {
             return new Jid(local, domain);
         } else {
             return new Jid(domain);
         }
+    }
+
+    /**
+     * Returns a new full JID with a resource and the same local and domain part of the current JID.
+     *
+     * @param resource The resource.
+     * @return The full JID with a resource.
+     */
+    public Jid withResource(String resource) {
+        return new Jid(local, domain, resource);
     }
 
     /**

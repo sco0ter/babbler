@@ -31,7 +31,7 @@ import java.util.EventObject;
 /**
  * @author Christian Schudt
  */
-public final class ChatStateEvent extends EventObject {
+final class ChatStateEvent extends EventObject {
 
     private final ChatSession chatSession;
 

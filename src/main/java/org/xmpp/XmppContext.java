@@ -48,6 +48,7 @@ import org.xmpp.extension.featureneg.FeatureNegotiation;
 import org.xmpp.extension.forward.Forwarded;
 import org.xmpp.extension.forward.StanzaForwardingManager;
 import org.xmpp.extension.geoloc.GeoLocation;
+import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.Body;
 import org.xmpp.extension.last.LastActivity;
 import org.xmpp.extension.last.LastActivityManager;
@@ -56,6 +57,7 @@ import org.xmpp.extension.messagecorrect.Replace;
 import org.xmpp.extension.mood.Mood;
 import org.xmpp.extension.muc.Muc;
 import org.xmpp.extension.muc.admin.MucAdmin;
+import org.xmpp.extension.muc.conference.DirectInvitation;
 import org.xmpp.extension.muc.owner.MucOwner;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.nick.Nickname;
@@ -230,6 +232,7 @@ public abstract class XmppContext {
 
             // XEP-0080: User Location
             registerExtension(GeoLocation.class);
+            registerManager(GeoLocationManager.class);
 
             // XEP-0083: Nested Roster Groups
             registerExtension(RosterDelimiter.class);
@@ -316,6 +319,9 @@ public abstract class XmppContext {
 
             // XEP-0231: Bits of Binary
             registerExtension(Data.class);
+
+            // XEP-0249: Direct MUC Invitations
+            registerExtension(DirectInvitation.class);
 
             // XEP-0297: Stanza Forwarding
             registerExtension(Forwarded.class);

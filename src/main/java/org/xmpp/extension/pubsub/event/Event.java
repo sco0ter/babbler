@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <event/>} element in the 'http://jabber.org/protocol/pubsub#event'.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "event")
@@ -59,26 +61,47 @@ public final class Event {
         this.type = type;
     }
 
-    public static Event forDelete(String node) {
-        return new Event(new Delete(node));
-    }
-
+    /**
+     * Gets the 'node' attribute of the child element.
+     *
+     * @return The node.
+     */
     public String getNode() {
         return type != null ? type.getNode() : null;
     }
 
-    public boolean isConfigure() {
+    /**
+     * Indicates, whether the event is a configuration change event.
+     *
+     * @return True, if the configuration has changed.
+     */
+    public boolean isConfiguration() {
         return type instanceof Configuration;
     }
 
+    /**
+     * Indicates, whether the event is a delete event.
+     *
+     * @return True, if a node has been deleted.
+     */
     public boolean isDelete() {
         return type instanceof Delete;
     }
 
+    /**
+     * Indicates, whether the event is purge event.
+     *
+     * @return True, if a node has been purged.
+     */
     public boolean isPurge() {
         return type instanceof Purge;
     }
 
+    /**
+     * Gets the subscription approval.
+     *
+     * @return The subscription approval or null, if the event did not include a subscription.
+     */
     public Subscription getSubscription() {
         if (type instanceof SubscriptionInfo) {
             return ((SubscriptionInfo) type);
@@ -86,6 +109,11 @@ public final class Event {
         return null;
     }
 
+    /**
+     * Gets the items of the event.
+     *
+     * @return The items of the event or null, if the event did not include any items.
+     */
     public List<Item> getItems() {
         if (type instanceof Items) {
             return Collections.unmodifiableList(new ArrayList<>(((Items) type).getItems()));
@@ -93,6 +121,12 @@ public final class Event {
         return null;
     }
 
+    /**
+     * Gets the configuration form.
+     *
+     * @return The configuration form or null, if the configuration form isn't included.
+     * @see #isConfiguration()
+     */
     public DataForm getConfigurationForm() {
         if (type instanceof Configuration) {
             return ((Configuration) type).getConfigurationForm();
@@ -100,6 +134,12 @@ public final class Event {
         return null;
     }
 
+    /**
+     * Gets the redirect URI in case the event is a delete event.
+     *
+     * @return The redirect URI or null, if a redirect URI isn't included.
+     * @see #isDelete()
+     */
     public URI getRedirectUri() {
         if (type instanceof Delete && ((Delete) type).getRedirect() != null) {
             return ((Delete) type).getRedirect().getUri();

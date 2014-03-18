@@ -27,6 +27,8 @@ package org.xmpp.extension.chatstates;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <composing/>} chat state.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement

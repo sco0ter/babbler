@@ -37,6 +37,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <pubsub/>} element in the 'http://jabber.org/protocol/pubsub' namespace.
+ * <p>
+ * Child elements are created with a bunch of static factory methods.
+ * </p>
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "pubsub")
@@ -80,7 +85,7 @@ public final class PubSub {
         this.configure = configure;
     }
 
-    public PubSub(Subscribe subscribe, Options options) {
+    private PubSub(Subscribe subscribe, Options options) {
         this.subscribe = subscribe;
         this.options = options;
     }
@@ -101,51 +106,314 @@ public final class PubSub {
         this.subscribe = subscribe;
     }
 
-    public static PubSub forSubscriptionsRequest() {
-        return forSubscriptionsRequest(null);
+    /**
+     * Creates a pubsub element with an {@code <affiliations/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <affiliations/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
+     */
+    public static PubSub withAffiliations() {
+        return withAffiliations(null);
     }
 
-    public static PubSub forSubscriptionsRequest(String node) {
-        return new PubSub(new Subscriptions(node));
-    }
-
-    public static PubSub forAffiliationsRequest() {
-        return forAffiliationsRequest(null);
-    }
-
-    public static PubSub forAffiliationsRequest(String node) {
+    /**
+     * Creates a pubsub element with an {@code <affiliations/>} child element and a 'node' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     * <affiliations node='node6'/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
+     */
+    public static PubSub withAffiliations(String node) {
         return new PubSub(new AffiliationsElement(node));
     }
 
-    public static PubSub forSubscribe(String node, Jid jid) {
+    /**
+     * Creates a pubsub element with an {@code <configure/>} child element and a 'node' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <configure node='princely_musings'>
+     *         <x xmlns='jabber:x:data' type='submit'>
+     *             <field var='FORM_TYPE' type='hidden'>
+     *                  <value>http://jabber.org/protocol/pubsub#node_config</value>
+     *             </field>
+     *             <field var='pubsub#tempsub'><value>true</value></field>
+     *         </x>
+     *     </configure>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node              The node.
+     * @param configurationForm The configuration form.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
+     */
+    public static PubSub withConfigure(String node, DataForm configurationForm) {
+        return new PubSub(new Configure(node, configurationForm));
+    }
+
+    /**
+     * Creates a pubsub element with an {@code <create/>} child element and a 'node' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <create node='princely_musings'/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
+     */
+    public static PubSub withCreate(String node) {
+        return new PubSub(new Create(node), null);
+    }
+
+    /**
+     * Creates a pubsub element with an {@code <create/>} and {@code <configure/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <create node='princely_musings'/>
+     *     <configure>
+     *         <x xmlns='jabber:x:data' type='submit'>
+     *         </x>
+     *     </configure>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node              The node.
+     * @param configurationForm The configuration form.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
+     */
+    public static PubSub withCreate(String node, DataForm configurationForm) {
+        return new PubSub(new Create(node), new Configure(configurationForm));
+    }
+
+    /**
+     * Creates a pubsub element with a {@code <subscriptions/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <subscriptions/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
+     */
+    public static PubSub withSubscriptions() {
+        return withSubscriptions(null);
+    }
+
+    /**
+     * Creates a pubsub element with a {@code <subscriptions/>} child element with a 'node' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <subscriptions node='princely_musings'/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
+     */
+    public static PubSub withSubscriptions(String node) {
+        return new PubSub(new Subscriptions(node));
+    }
+
+    /**
+     * Creates a pubsub element with a {@code <subscribe/>} child element with a 'node' and 'jid' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <subscribe node='princely_musings' jid='francisco@denmark.lit'/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @param jid  The JID.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe">6.1 Subscribe to a Node</a>
+     */
+    public static PubSub withSubscribe(String node, Jid jid) {
         return new PubSub(new Subscribe(node, jid));
     }
 
-    public static PubSub forSubscribe(String node, Jid jid, DataForm dataForm) {
+    /**
+     * Creates a pubsub element with a {@code <subscribe/>} and {@code <options/>} child element with a 'node' and 'jid' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <subscribe node='princely_musings' jid='francisco@denmark.lit'/>
+     *     <options>
+     *         <x xmlns='jabber:x:data' type='submit'>
+     *         </x>
+     *     </options>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node     The node.
+     * @param jid      The JID.
+     * @param dataForm The dataForm.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
+     */
+    public static PubSub withSubscribe(String node, Jid jid, DataForm dataForm) {
         return new PubSub(new Subscribe(node, jid), new Options(dataForm));
     }
 
-    public static PubSub forSubscriptionOptions(String node, Jid jid) {
+    /**
+     * Creates a pubsub element with an {@code <options/>} child element with a 'node' and 'jid' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <options>
+     *         <x xmlns='jabber:x:data' type='submit'>
+     *         </x>
+     *     </options>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @param jid  The JID.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
+     */
+    public static PubSub withOptions(String node, Jid jid) {
         return new PubSub(new Options(node, jid));
     }
 
-    public static PubSub forUnsubscribe(String node, Jid jid) {
+    /**
+     * Creates a pubsub element with an {@code <unsubscribe/>} child element with a 'node' and 'jid' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <unsubscribe node='princely_musings' jid='francisco@denmark.lit'/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @param jid  The JID.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
+     */
+    public static PubSub withUnsubscribe(String node, Jid jid) {
         return new PubSub(new Unsubscribe(node, jid));
     }
 
-    public static PubSub forRequestDefault() {
-        return forRequestDefault(null);
+    /**
+     * Creates a pubsub element with a {@code <default/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <default/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
+     */
+    public static PubSub withDefault() {
+        return withDefault(null);
     }
 
-    public static PubSub forRequestDefault(String node) {
+    /**
+     * Creates a pubsub element with a {@code <default/>} child element with a 'node' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <default node='princely_musings'/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
+     */
+    public static PubSub withDefault(String node) {
         return new PubSub(new Default(node));
     }
 
-    public static PubSub forRequestItems(String node) {
+    /**
+     * Creates a pubsub element with an {@code <items/>} child element with a 'node' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <items node='princely_musings'/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
+     */
+    public static PubSub withItems(String node) {
         return new PubSub(new Items(node));
     }
 
-    public static PubSub forRequestItems(String node, String... ids) {
+    /**
+     * Creates a pubsub element with an {@code <items/>} child element, containing multiple item elements with an 'id' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <items node='princely_musings'>
+     *         <item id='368866411b877c30064a5f62b917cffe'/>
+     *         <item id='4e30f35051b7b8b42abe083742187228'/>
+     *     </items>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @param ids  The ids.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning Notifications Only</a>
+     */
+    public static PubSub withItems(String node, String... ids) {
         List<ItemElement> items = new ArrayList<>();
         for (String id : ids) {
             items.add(new ItemElement(id));
@@ -153,128 +421,155 @@ public final class PubSub {
         return new PubSub(new Items(node, items));
     }
 
-    public static PubSub forRequestItems(String node, int max) {
-        return new PubSub(new Items(node, max));
+    /**
+     * Creates a pubsub element with an {@code <items/>} child element with a 'node' and a 'max_items' attribute.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <items node='princely_musings' max_items='2'/>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node     The node.
+     * @param maxItems The max items.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
+     */
+    public static PubSub withItems(String node, int maxItems) {
+        return new PubSub(new Items(node, maxItems));
     }
 
-    public static PubSub forPublish(String node, String id, Object item) {
+    /**
+     * Creates a pubsub element with a {@code <publish/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <publish node='princely_musings'>
+     *         <item id='bnd81g37d61f49fgn581'>
+     *             <entry xmlns='http://www.w3.org/2005/Atom'>
+     *     ...
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node The node.
+     * @param id   The id.
+     * @param item The item to publish.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
+     */
+    public static PubSub withPublish(String node, String id, Object item) {
         return new PubSub(new Publish(node, new ItemElement(id, item)));
     }
 
-    public static PubSub forRetract(String node, String id, boolean notify) {
+    /**
+     * Creates a pubsub element with a {@code <retract/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
+     *     <retract node='princely_musings' notify='true'>
+     *         <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
+     *     </retract>
+     * </pubsub>
+     * }
+     * </pre>
+     *
+     * @param node   The node.
+     * @param id     The id.
+     * @param notify The notify attribute.
+     * @return The pubsub instance.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
+     */
+    public static PubSub withRetract(String node, String id, boolean notify) {
         return new PubSub(new Retract(node, new ItemElement(id), notify));
     }
 
-    public static PubSub forRequestSubscriptions() {
-        return new PubSub(new Subscriptions());
-    }
-
-    public static PubSub forRequestSubscriptions(String node) {
-        return new PubSub(new Subscriptions(node));
-    }
-
-    public static PubSub forCreate(String node) {
-        return new PubSub(new Create(node), null);
-    }
-
-    public static PubSub forCreate(String node, DataForm configurationForm) {
-        return new PubSub(new Create(node), new Configure(configurationForm));
-    }
-
-    public static PubSub forConfiguration() {
-        return new PubSub(new Configure());
-    }
-
-    public static PubSub forConfiguration(String node, DataForm configurationForm) {
-        return new PubSub(new Configure(node, configurationForm));
-    }
-
-    public Subscription getSubscription() {
+    Subscription getSubscription() {
         if (type instanceof SubscriptionInfo) {
             return (SubscriptionInfo) type;
         }
         return null;
     }
 
-    public Options getOptions() {
+    Options getOptions() {
         return options;
     }
 
-    public List<Item> getItems() {
+    List<Item> getItems() {
         if (type instanceof Items) {
             return Collections.unmodifiableList(new ArrayList<>(((Items) type).getItems()));
         }
         return null;
     }
 
-    public Publish getPublish() {
+    Publish getPublish() {
         if (type instanceof Publish) {
             return (Publish) type;
         }
         return null;
     }
 
-    public DataForm getConfigurationForm() {
+    DataForm getConfigurationForm() {
         if (configure != null) {
             return configure.getConfigurationForm();
         }
         return null;
     }
 
-    public List<Subscription> getSubscriptions() {
+    List<Subscription> getSubscriptions() {
         if (type instanceof Subscriptions) {
             return Collections.unmodifiableList(new ArrayList<>(((Subscriptions) type).getSubscriptions()));
         }
         return null;
     }
 
-    public List<AffiliationNode> getAffiliations() {
+    List<AffiliationNode> getAffiliations() {
         if (type instanceof AffiliationsElement) {
             return Collections.unmodifiableList(new ArrayList<>(((AffiliationsElement) type).getAffiliations()));
         }
         return null;
     }
 
-    public String getNode() {
+    String getNode() {
         if (type != null) {
             return type.getNode();
         } else if (create != null) {
-            return create.node;
+            return create.getNode();
         } else if (subscribe != null) {
             return subscribe.getNode();
         }
         return null;
     }
 
-    public static final class Create {
-        @XmlAttribute(name = "node")
-        private String node;
+    private static final class Create extends PubSubChildElement {
 
         private Create() {
         }
 
-        public Create(String node) {
-            this.node = node;
+        private Create(String node) {
+            super(node);
         }
     }
 
-    public static final class Subscribe extends PubSubChildElement {
+    private static final class Subscribe extends PubSubChildElement {
 
         @XmlAttribute(name = "jid")
         private Jid jid;
 
-
         private Subscribe() {
-
         }
 
-        public Subscribe(String node, Jid jid) {
+        private Subscribe(String node, Jid jid) {
             super(node);
             this.jid = jid;
         }
     }
 
-    public static final class Options {
+    static final class Options {
         @XmlAttribute(name = "node")
         private String node;
 
@@ -287,16 +582,16 @@ public final class PubSub {
         private Options() {
         }
 
-        public Options(String node, Jid jid) {
+        private Options(String node, Jid jid) {
             this.node = node;
             this.jid = jid;
         }
 
-        public Options(DataForm dataForm) {
+        private Options(DataForm dataForm) {
             this.dataForm = dataForm;
         }
 
-        public DataForm getDataForm() {
+        DataForm getDataForm() {
             return dataForm;
         }
     }
@@ -366,7 +661,7 @@ public final class PubSub {
             return dataForm;
         }
 
-        public enum Type {
+        private enum Type {
             @XmlEnumValue("collection")
             COLLECTION,
             @XmlEnumValue("leaf")
@@ -408,10 +703,6 @@ public final class PubSub {
         private List<? extends Item> getItems() {
             return items;
         }
-
-        private Retract getRetract() {
-            return retract;
-        }
     }
 
     static final class Publish extends PubSubChildElement {
@@ -427,7 +718,7 @@ public final class PubSub {
             this.item = item;
         }
 
-        public ItemElement getItem() {
+        Item getItem() {
             return item;
         }
     }
@@ -475,14 +766,6 @@ public final class PubSub {
         @XmlElement(name = "subscribe-options")
         private Options options;
 
-        public Options getOptions() {
-            return options;
-        }
-
-        public SubscriptionState getType() {
-            return type;
-        }
-
         @Override
         public String getSubId() {
             return subid;
@@ -514,12 +797,12 @@ public final class PubSub {
         }
 
         @XmlType(name = "subscription-options")
-        public static final class Options {
+        private static final class Options {
 
             @XmlElement(name = "required")
             private String required;
 
-            public boolean isRequired() {
+            private boolean isRequired() {
                 return required != null;
             }
         }
@@ -533,11 +816,11 @@ public final class PubSub {
         private Subscriptions() {
         }
 
-        public Subscriptions(String node) {
+        private Subscriptions(String node) {
             super(node);
         }
 
-        public List<? extends Subscription> getSubscriptions() {
+        private List<? extends Subscription> getSubscriptions() {
             return subscriptions;
         }
     }
@@ -569,25 +852,17 @@ public final class PubSub {
         private Configure() {
         }
 
-        public Configure(String node) {
-            this.node = node;
-        }
-
-        public Configure(String node, DataForm dataForm) {
+        private Configure(String node, DataForm dataForm) {
             this.node = node;
             this.dataForm = dataForm;
         }
 
-        public Configure(DataForm dataForm) {
+        private Configure(DataForm dataForm) {
             this.dataForm = dataForm;
         }
 
-        public DataForm getConfigurationForm() {
+        private DataForm getConfigurationForm() {
             return dataForm;
-        }
-
-        public String getNode() {
-            return node;
         }
     }
 
@@ -630,10 +905,6 @@ public final class PubSub {
         public String getPublisher() {
             return null;
         }
-
-        public Object getObject() {
-            return object;
-        }
     }
 
     private static abstract class PubSubChildElement {
@@ -641,10 +912,10 @@ public final class PubSub {
         @XmlAttribute(name = "node")
         private String node;
 
-        PubSubChildElement() {
+        private PubSubChildElement() {
         }
 
-        PubSubChildElement(String node) {
+        private PubSubChildElement(String node) {
             this.node = node;
         }
 

@@ -22,30 +22,52 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.chatstates;
+package org.xmpp.extension.geoloc;
+
+import org.xmpp.Jid;
+
+import java.util.EventObject;
 
 /**
+ * This event notifies listeners, when a geo location has been updated.
+ *
  * @author Christian Schudt
+ * @see org.xmpp.extension.receipts.MessageDeliveredListener
  */
-enum ChatState {
+public final class GeoLocationEvent extends EventObject {
+    private final GeoLocation geoLocation;
+
+    private final Jid publisher;
+
     /**
-     * User is actively participating in the chat session.
+     * Constructs a message delivered event.
+     *
+     * @param source      The object on which the event initially occurred.
+     * @param geoLocation The geo location.
+     * @param publisher   The publisher.
+     * @throws IllegalArgumentException if source is null.
      */
-    ACTIVE,
+    GeoLocationEvent(Object source, GeoLocation geoLocation, Jid publisher) {
+        super(source);
+        this.geoLocation = geoLocation;
+        this.publisher = publisher;
+    }
+
     /**
-     * User has not been actively participating in the chat session.
+     * Gets the geo location.
+     *
+     * @return The geo location.
      */
-    INACTIVE,
+    public GeoLocation getGeoLocation() {
+        return geoLocation;
+    }
+
     /**
-     * User has effectively ended their participation in the chat session.
+     * Gets the publisher, who published his or her new geo location.
+     *
+     * @return The publisher.
      */
-    GONE,
-    /**
-     * User is composing a message.
-     */
-    COMPOSING,
-    /**
-     * User had been composing but now has stopped.
-     */
-    PAUSED
+    public Jid getPublisher() {
+        return publisher;
+    }
 }

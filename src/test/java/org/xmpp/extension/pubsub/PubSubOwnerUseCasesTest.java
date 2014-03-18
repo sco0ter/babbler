@@ -45,56 +45,56 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
 
     @Test
     public void marshalCreate() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forCreate("princely_musings");
+        PubSub pubSub = PubSub.withCreate("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><create node=\"princely_musings\"></create></pubsub>");
     }
 
     @Test
     public void marshalCreateInstantNode() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forCreate(null);
+        PubSub pubSub = PubSub.withCreate(null);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><create></create></pubsub>");
     }
 
     @Test
     public void marshalConfigure() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forConfiguration("princely_musings", null);
+        PubSub pubSub = PubSub.withConfigure("princely_musings", null);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><configure node=\"princely_musings\"></configure></pubsub>");
     }
 
     @Test
     public void marshalDefault() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forRequestDefault();
+        PubSub pubSub = PubSub.withDefault();
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><default></default></pubsub>");
     }
 
     @Test
     public void marshalDeleteNode() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSub = PubSubOwner.forDelete("princely_musings");
+        PubSubOwner pubSub = PubSubOwner.withDelete("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"></delete></pubsub>");
     }
 
     @Test
     public void marshalDeleteNodeWithRedirect() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSub = PubSubOwner.forDelete("princely_musings", URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
+        PubSubOwner pubSub = PubSubOwner.withDelete("princely_musings", URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"><redirect uri=\"xmpp:hamlet@denmark.lit?;node=blog\"></redirect></delete></pubsub>");
     }
 
     @Test
     public void marshalPurgeNodes() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSub = PubSubOwner.forPurge("princely_musings");
+        PubSubOwner pubSub = PubSubOwner.withPurge("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><purge node=\"princely_musings\"></purge></pubsub>");
     }
 
     @Test
     public void marshalPubSubOwnerSubscriptions() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSub = PubSubOwner.forSubscriptions("princely_musings");
+        PubSubOwner pubSub = PubSubOwner.withSubscriptions("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
     }
@@ -146,7 +146,7 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
 
     @Test
     public void marshalDeleteItem() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
+        PubSub pubSub = PubSub.withRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract notify=\"false\" node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
     }
@@ -270,7 +270,7 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
         Assert.assertNotNull(pubSubOwner);
         Assert.assertTrue(pubSubOwner.isConfigure());
-        Assert.assertNotNull(pubSubOwner.getConfiguration());
+        Assert.assertNotNull(pubSubOwner.getConfigurationForm());
         Assert.assertEquals(pubSubOwner.getNode(), "princely_musings");
     }
 
@@ -389,7 +389,7 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
         PubSubOwner pubSubOwner = iq.getExtension(PubSubOwner.class);
         Assert.assertNotNull(pubSubOwner);
         Assert.assertTrue(pubSubOwner.isDefault());
-        Assert.assertNotNull(pubSubOwner.getDefaultConfiguration());
+        Assert.assertNotNull(pubSubOwner.getConfigurationForm());
 
     }
 
@@ -461,7 +461,7 @@ public class PubSubOwnerUseCasesTest extends BaseTest {
 
     @Test
     public void marshalPubSubOwnerDelete() throws JAXBException, XMLStreamException, IOException {
-        PubSubOwner pubSubOwner = PubSubOwner.forDelete("test");
+        PubSubOwner pubSubOwner = PubSubOwner.withDelete("test");
         String xml = marshall(pubSubOwner);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"test\"></delete></pubsub>");
     }

@@ -58,11 +58,14 @@ import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
-import org.xmpp.extension.data.DataForm;
+import org.xmpp.extension.chatstates.Composing;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.extension.geoloc.GeoLocation;
+import org.xmpp.extension.geoloc.GeoLocationEvent;
+import org.xmpp.extension.geoloc.GeoLocationListener;
+import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
@@ -71,7 +74,7 @@ import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.pubsub.PubSubService;
-import org.xmpp.extension.pubsub.Subscription;
+import org.xmpp.extension.pubsub.errors.PresenceSubscriptionRequired;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -190,6 +193,9 @@ public class JavaFXApp extends Application {
         logger.setLevel(Level.FINE);
 
         //LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME).setLevel(Level.OFF);
+        Message message = new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT);
+        message.getExtensions().add(new Composing());
+
 
         Button btnConnect = new Button("Login");
         btnConnect.setOnAction(new EventHandler<ActionEvent>() {
@@ -350,6 +356,14 @@ public class JavaFXApp extends Application {
                         });
 
                         connection.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
+
+                        GeoLocationManager geoLocationManager = connection.getExtensionManager(GeoLocationManager.class);
+                        geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
+                            @Override
+                            public void geoLocationUpdated(GeoLocationEvent e) {
+                                int i = 0;
+                            }
+                        });
 
                         SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
@@ -543,18 +557,41 @@ public class JavaFXApp extends Application {
                             pepItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
+                                    //                                    PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
+                                    //
+                                    //                                    try {
+                                    //                                        //PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.fritz.box"));
+                                    //                                        PubSubService pubSubService = pubSubManager.createPersonalEventingService();
+                                    //                                        GeoLocation geoLocation = new GeoLocation(45.44, 12.33);
+                                    //                                        geoLocation.setArea(UUID.randomUUID().toString());
+                                    //                                        pubSubService.publish("http://jabber.org/protocol/geoloc", geoLocation);
+                                    //                                        int i = 0;
+                                    //                                    } catch (XmppException e) {
+                                    //                                        e.printStackTrace();
+                                    //                                    }
+
                                     PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
 
                                     try {
-                                        //PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.fritz.box"));
-                                        PubSubService pubSubService = pubSubManager.createPersonalEventingService();
-                                        GeoLocation geoLocation = new GeoLocation(45.44, 12.33);
-                                        geoLocation.setArea(UUID.randomUUID().toString());
-                                        pubSubService.publish("http://jabber.org/protocol/geoloc", geoLocation);
-                                        int i = 0;
+                                        PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.fritz.box"));
+                                        pubSubService.subscribe("princely_musings");
                                     } catch (XmppException e) {
-                                        e.printStackTrace();
+                                        if (e instanceof StanzaException) {
+                                            StanzaException stanzaException = (StanzaException) e;
+                                            Object extension = stanzaException.getStanza().getError().getExtension();
+                                            if (extension instanceof PresenceSubscriptionRequired) {
+                                                // PubSub error <presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/> occurred.
+                                            }
+                                        }
                                     }
+
+                                    try {
+                                        GeoLocationManager geoLocationManager = connection.getExtensionManager(GeoLocationManager.class);
+                                        geoLocationManager.publish(new GeoLocation(45.44, 12.33));
+                                    } catch (XmppException e) {
+                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                    }
+
                                 }
                             });
                             MenuItem sendFile = new MenuItem("Send file");

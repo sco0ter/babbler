@@ -27,7 +27,7 @@ package org.xmpp.extension.chatstates;
 /**
  * @author Christian Schudt
  */
-public interface ChatStateListener {
+interface ChatStateListener {
 
     void chatStateUpdated(ChatStateEvent e);
 }

@@ -22,30 +22,22 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.chatstates;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>.
+ * <p>
+ * It defines a method for inviting a contact to a multi-user chat room directly, instead of sending the invitation through the chat room.
+ * </p>
  */
-enum ChatState {
-    /**
-     * User is actively participating in the chat session.
-     */
-    ACTIVE,
-    /**
-     * User has not been actively participating in the chat session.
-     */
-    INACTIVE,
-    /**
-     * User has effectively ended their participation in the chat session.
-     */
-    GONE,
-    /**
-     * User is composing a message.
-     */
-    COMPOSING,
-    /**
-     * User had been composing but now has stopped.
-     */
-    PAUSED
-}
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
+@XmlSchema(namespace = "jabber:x:conference", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.conference;
+
+import org.xmpp.Jid;
+import org.xmpp.extension.muc.Muc;
+import org.xmpp.util.JidAdapter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

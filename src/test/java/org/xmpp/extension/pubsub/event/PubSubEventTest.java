@@ -35,7 +35,6 @@ import org.xmpp.stanza.Message;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -94,7 +93,7 @@ public class PubSubEventTest extends BaseTest {
         Assert.assertNotNull(message);
         Event event = message.getExtension(Event.class);
         Assert.assertNotNull(event);
-        Assert.assertTrue(event.isConfigure());
+        Assert.assertTrue(event.isConfiguration());
         Assert.assertEquals(event.getNode(), "princely_musings");
     }
 
@@ -138,7 +137,7 @@ public class PubSubEventTest extends BaseTest {
         Assert.assertNotNull(message);
         Event event = message.getExtension(Event.class);
         Assert.assertNotNull(event);
-        Assert.assertTrue(event.isConfigure());
+        Assert.assertTrue(event.isConfiguration());
         Assert.assertEquals(event.getNode(), "princely_musings");
         Assert.assertNotNull(event.getConfigurationForm());
     }
@@ -202,12 +201,5 @@ public class PubSubEventTest extends BaseTest {
         Assert.assertEquals(event.getSubscription().getJid(), Jid.valueOf("francisco@denmark.lit"));
         Assert.assertEquals(event.getSubscription().getSubscriptionState(), SubscriptionState.SUBSCRIBED);
         Assert.assertEquals(event.getSubscription().getSubId(), "ba49252aaa4f5d320c24d3766f0bdcade78c78d3");
-    }
-
-    @Test
-    public void marshalPubSubOwnerDelete() throws JAXBException, XMLStreamException, IOException {
-        Event pubSubOwner = Event.forDelete("test");
-        String xml = marshall(pubSubOwner);
-        Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><delete node=\"test\"></delete></event>");
     }
 }

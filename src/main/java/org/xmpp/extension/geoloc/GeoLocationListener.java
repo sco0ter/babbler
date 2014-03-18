@@ -22,30 +22,15 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.chatstates;
+package org.xmpp.extension.geoloc;
+
+import java.util.EventListener;
 
 /**
  * @author Christian Schudt
  */
-enum ChatState {
-    /**
-     * User is actively participating in the chat session.
-     */
-    ACTIVE,
-    /**
-     * User has not been actively participating in the chat session.
-     */
-    INACTIVE,
-    /**
-     * User has effectively ended their participation in the chat session.
-     */
-    GONE,
-    /**
-     * User is composing a message.
-     */
-    COMPOSING,
-    /**
-     * User had been composing but now has stopped.
-     */
-    PAUSED
+public interface GeoLocationListener extends EventListener {
+
+    void geoLocationUpdated(GeoLocationEvent e);
+
 }

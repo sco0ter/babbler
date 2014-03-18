@@ -103,8 +103,28 @@ pubSubService.publish("http://jabber.org/protocol/geoloc", new GeoLocation(45.44
 By default (i.e. if not otherwise configured) all your contacts now receive an event notification about your new geo location.
 
 
+## Dealing with PubSub errors
 
+[PubSub][PubSub] defines multiple errors for various use cases. Those errors are an extension of stanza errors.
 
+The following shows, how to deal with pubsub specific errors.
+
+```java
+try {
+    PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.yourdomain"));
+    pubSubService.subscribe("princely_musings");
+} catch (XmppException e) {
+    if (e instanceof StanzaException) {
+        StanzaException stanzaException = (StanzaException) e;
+        Object extension = stanzaException.getStanza().getError().getExtension();
+        if (extension instanceof PresenceSubscriptionRequired) {
+            // PubSub error <presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/> occurred.
+        }
+    }
+}
+```
+
+PubSub errors can be found in the org.xmpp.
 
 [GeoLocation]: http://xmpp.org/extensions/xep-0080.html "XEP-0080: User Location"
 [Mood]: http://xmpp.org/extensions/xep-0107.html "XEP-0107: User Mood"

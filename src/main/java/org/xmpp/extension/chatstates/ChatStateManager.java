@@ -41,6 +41,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
+ * This manager merely allows you to enable or disable chat states for service discovery purposes.
+ * <h2>Sending chat states</h2>
+ * <pre><code>
+ * Message message = new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT);
+ * message.getExtensions().add(new Composing());
+ * connection.send(message);
+ * </code></pre>
+ * <h2>Reacting to chat states</h2>
+ * <pre><code>
+ * if (message.getExtension(Paused.class) != null) {
+ *     // "paused" chat state has been sent.
+ * }
+ * </code></pre>
+ *
  * @author Christian Schudt
  */
 public final class ChatStateManager extends ExtensionManager {
@@ -105,45 +119,45 @@ public final class ChatStateManager extends ExtensionManager {
         }
     }
 
-    public void addChatStateListener(ChatStateListener chatStateListener) {
-        chatStateListeners.add(chatStateListener);
-    }
-
-    public void removeChatStateListener(ChatStateListener chatStateListener) {
-        chatStateListeners.remove(chatStateListener);
-    }
-
-    public void sendState(ChatSession chatSession, ChatState chatState) {
-        if (chatSession == null) {
-            throw new IllegalArgumentException("chatSession must not be null");
-        }
-        if (chatState == null) {
-            throw new IllegalArgumentException("chatState must not be null.");
-        }
-        ChatState oldState = chatSessionMap.get(chatSession);
-        if (oldState != chatState) {
-            Object state;
-            switch (chatState) {
-                case COMPOSING:
-                    state = new Composing();
-                    break;
-                case GONE:
-                    state = new Gone();
-                    break;
-                case INACTIVE:
-                    state = new Inactive();
-                    break;
-                case PAUSED:
-                    state = new Paused();
-                    break;
-                default:
-                    state = new Active();
-                    break;
-            }
-            Message message = new Message(chatSession.getChatPartner());
-            message.getExtensions().add(state);
-            chatSession.send(message);
-        }
-        chatSessionMap.put(chatSession, chatState);
-    }
+    //    public void addChatStateListener(ChatStateListener chatStateListener) {
+    //        chatStateListeners.add(chatStateListener);
+    //    }
+    //
+    //    public void removeChatStateListener(ChatStateListener chatStateListener) {
+    //        chatStateListeners.remove(chatStateListener);
+    //    }
+    //
+    //    public void sendState(ChatSession chatSession, ChatState chatState) {
+    //        if (chatSession == null) {
+    //            throw new IllegalArgumentException("chatSession must not be null");
+    //        }
+    //        if (chatState == null) {
+    //            throw new IllegalArgumentException("chatState must not be null.");
+    //        }
+    //        ChatState oldState = chatSessionMap.get(chatSession);
+    //        if (oldState != chatState) {
+    //            Object state;
+    //            switch (chatState) {
+    //                case COMPOSING:
+    //                    state = new Composing();
+    //                    break;
+    //                case GONE:
+    //                    state = new Gone();
+    //                    break;
+    //                case INACTIVE:
+    //                    state = new Inactive();
+    //                    break;
+    //                case PAUSED:
+    //                    state = new Paused();
+    //                    break;
+    //                default:
+    //                    state = new Active();
+    //                    break;
+    //            }
+    //            Message message = new Message(chatSession.getChatPartner());
+    //            message.getExtensions().add(state);
+    //            chatSession.send(message);
+    //        }
+    //        chatSessionMap.put(chatSession, chatState);
+    //    }
 }

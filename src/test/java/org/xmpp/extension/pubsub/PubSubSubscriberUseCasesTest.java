@@ -43,7 +43,7 @@ public class PubSubSubscriberUseCasesTest extends BaseTest {
 
     @Test
     public void marshalSubscriptions() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forSubscribe("princely_musings", Jid.valueOf("francisco@denmark.lit"));
+        PubSub pubSub = PubSub.withSubscribe("princely_musings", Jid.valueOf("francisco@denmark.lit"));
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscribe jid=\"francisco@denmark.lit\" node=\"princely_musings\"></subscribe></pubsub>");
     }
@@ -146,14 +146,14 @@ public class PubSubSubscriberUseCasesTest extends BaseTest {
 
     @Test
     public void marshalUnsubscribe() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forUnsubscribe("node6", Jid.valueOf("francisco@denmark.lit"));
+        PubSub pubSub = PubSub.withUnsubscribe("node6", Jid.valueOf("francisco@denmark.lit"));
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><unsubscribe jid=\"francisco@denmark.lit\" node=\"node6\"></unsubscribe></pubsub>");
     }
 
     @Test
     public void marshalRequestOptions() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forSubscriptionOptions("node6", Jid.valueOf("francisco@denmark.lit"));
+        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"));
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><options node=\"node6\" jid=\"francisco@denmark.lit\"></options></pubsub>");
     }
@@ -161,7 +161,7 @@ public class PubSubSubscriberUseCasesTest extends BaseTest {
     // TODO  Example 68. Subscriber submits completed options form
     @Test
     public void marshalSubmitOptions() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forSubscriptionOptions("node6", Jid.valueOf("francisco@denmark.lit"));
+        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"));
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><options node=\"node6\" jid=\"francisco@denmark.lit\"></options></pubsub>");
     }
@@ -217,21 +217,21 @@ public class PubSubSubscriberUseCasesTest extends BaseTest {
 
     @Test
     public void marshalDefault() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forRequestDefault("node6");
+        PubSub pubSub = PubSub.withDefault("node6");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><default node=\"node6\"></default></pubsub>");
     }
 
     @Test
     public void marshalDefaultAllNodes() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forRequestDefault();
+        PubSub pubSub = PubSub.withDefault();
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><default></default></pubsub>");
     }
 
     @Test
     public void marshalRequestAllItems() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forRequestItems("princely_musings");
+        PubSub pubSub = PubSub.withItems("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><items node=\"princely_musings\"></items></pubsub>");
     }
@@ -319,14 +319,14 @@ public class PubSubSubscriberUseCasesTest extends BaseTest {
 
     @Test
     public void marshalRequestMostRecentItems() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forRequestItems("princely_musings", 2);
+        PubSub pubSub = PubSub.withItems("princely_musings", 2);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><items max_items=\"2\" node=\"princely_musings\"></items></pubsub>");
     }
 
     @Test
     public void marshalRequestParticularItem() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forRequestItems("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901");
+        PubSub pubSub = PubSub.withItems("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><items node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></items></pubsub>");
     }

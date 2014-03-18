@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/geoloc", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.geoloc;
+@XmlSchema(namespace = GeoLocation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.geoloc;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

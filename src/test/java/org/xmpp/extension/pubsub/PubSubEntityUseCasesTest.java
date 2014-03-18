@@ -81,14 +81,14 @@ public class PubSubEntityUseCasesTest extends BaseTest {
 
     @Test
     public void marshalSubscriptionsRequest() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forSubscriptionsRequest();
+        PubSub pubSub = PubSub.withSubscriptions();
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions></subscriptions></pubsub>");
     }
 
     @Test
     public void marshalSubscriptionsRequestWithNode() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forSubscriptionsRequest("princely_musings");
+        PubSub pubSub = PubSub.withSubscriptions("princely_musings");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
     }
@@ -143,14 +143,14 @@ public class PubSubEntityUseCasesTest extends BaseTest {
 
     @Test
     public void marshalAffiliations() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forAffiliationsRequest();
+        PubSub pubSub = PubSub.withAffiliations();
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations></affiliations></pubsub>");
     }
 
     @Test
     public void marshalAffiliationsWithNode() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forAffiliationsRequest("node6");
+        PubSub pubSub = PubSub.withAffiliations("node6");
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations node=\"node6\"></affiliations></pubsub>");
     }

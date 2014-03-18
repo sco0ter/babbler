@@ -42,7 +42,7 @@ public class PubSubPublisherUseCasesTest extends BaseTest {
 
     @Test
     public void marshalPublish() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forPublish("princely_musings", "bnd81g37d61f49fgn581", null);
+        PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish></pubsub>");
     }
@@ -70,7 +70,7 @@ public class PubSubPublisherUseCasesTest extends BaseTest {
 
     @Test
     public void marshalDeleteItem() throws JAXBException, XMLStreamException, IOException {
-        PubSub pubSub = PubSub.forRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
+        PubSub pubSub = PubSub.withRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
         String xml = marshall(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract notify=\"false\" node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
     }

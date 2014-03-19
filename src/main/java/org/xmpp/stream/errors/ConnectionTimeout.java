@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "connection-timeout")
 public final class ConnectionTimeout extends Condition {
-    @Override
-    public String toString() {
-        return "connection-timeout";
-    }
 }

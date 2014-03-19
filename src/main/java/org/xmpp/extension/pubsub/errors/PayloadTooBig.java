@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-bigpayload">7.1.3.4 Payload Too Big</a>
  */
 @XmlRootElement(name = "payload-too-big")
-public final class PayloadTooBig {
+public final class PayloadTooBig extends PubSubError {
     private PayloadTooBig() {
     }
 }

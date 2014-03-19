@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-rostergroup">6.5.9.7 Not in Roster Groupd</a>
  */
 @XmlRootElement(name = "not-in-roster-group")
-public final class NotInRosterGroup {
+public final class NotInRosterGroup extends PubSubError {
     private NotInRosterGroup() {
     }
 }

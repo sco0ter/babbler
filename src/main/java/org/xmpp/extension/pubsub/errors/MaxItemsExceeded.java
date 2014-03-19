@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-batch">12.10 Batch Processing</a>
  */
 @XmlRootElement(name = "max-items-exceeded")
-public final class MaxItemsExceeded {
-    private MaxItemsExceeded() {
+public final class MaxItemsExceeded extends PubSubError {
+    public MaxItemsExceeded() {
     }
 }

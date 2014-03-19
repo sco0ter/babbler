@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-presence">6.5.9.6 Presence Subscription Required</a>
  */
 @XmlRootElement(name = "presence-subscription-required")
-public final class PresenceSubscriptionRequired {
+public final class PresenceSubscriptionRequired extends PubSubError {
     private PresenceSubscriptionRequired() {
     }
 }

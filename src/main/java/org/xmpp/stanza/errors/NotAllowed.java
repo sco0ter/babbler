@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "not-allowed")
 public final class NotAllowed extends Condition {
-
-    @Override
-    public String toString() {
-        return "not-allowed";
-    }
 }

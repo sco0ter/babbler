@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "conflict")
 public final class Conflict extends Condition {
-
-    @Override
-    public String toString() {
-        return "conflict";
-    }
 }

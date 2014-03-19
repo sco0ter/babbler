@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badpayload">7.1.3.5 Bad Payload</a>
  */
 @XmlRootElement(name = "invalid-payload")
-public final class InvalidPayload {
+public final class InvalidPayload extends PubSubError {
     private InvalidPayload() {
     }
 }

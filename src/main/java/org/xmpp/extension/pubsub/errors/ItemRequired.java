@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete-error-itemid">7.2.3.4 Item or ItemID Required</a>
  */
 @XmlRootElement(name = "item-required")
-public final class ItemRequired {
+public final class ItemRequired extends PubSubError {
     private ItemRequired() {
     }
 }

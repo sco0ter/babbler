@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "remote-server-not-found")
 public final class RemoteServerNotFound extends Condition {
-
-    @Override
-    public String toString() {
-        return "remote-server-not-found";
-    }
 }

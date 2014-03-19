@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-batch">12.10 Batch Processing</a>
  */
 @XmlRootElement(name = "max-nodes-exceeded")
-public final class MaxNodesExceeded {
+public final class MaxNodesExceeded extends PubSubError {
     private MaxNodesExceeded() {
     }
 }

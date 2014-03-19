@@ -35,12 +35,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "see-other-host")
 public final class SeeOtherHost extends Condition {
+    /**
+     * Gets the other host.
+     *
+     * @return The other host.
+     */
     public String getOtherHost() {
         return value;
-    }
-
-    @Override
-    public String toString() {
-        return "see-other-host";
     }
 }

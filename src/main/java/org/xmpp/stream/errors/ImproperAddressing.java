@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "improper-addressing")
 public final class ImproperAddressing extends Condition {
-    @Override
-    public String toString() {
-        return "improper-addressing";
-    }
 }

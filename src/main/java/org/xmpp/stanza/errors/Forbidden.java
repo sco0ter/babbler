@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "forbidden")
 public final class Forbidden extends Condition {
-
-    @Override
-    public String toString() {
-        return "forbidden";
-    }
 }

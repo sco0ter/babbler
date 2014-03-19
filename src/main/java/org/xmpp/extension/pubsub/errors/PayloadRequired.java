@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badrequest">7.1.3.6 Request Does Not Match Configuration</a>
  */
 @XmlRootElement(name = "payload-required")
-public final class PayloadRequired {
+public final class PayloadRequired extends PubSubError {
     private PayloadRequired() {
     }
 }

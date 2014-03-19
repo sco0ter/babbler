@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "invalid-xml")
 public final class InvalidXml extends Condition {
-    @Override
-    public String toString() {
-        return "invalid-xml";
-    }
 }

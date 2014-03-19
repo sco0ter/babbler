@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-subid">6.5.9.2 Invalid Subscription ID</a>
  */
 @XmlRootElement(name = "invalid-subid")
-public final class InvalidSubId {
+public final class InvalidSubId extends PubSubError {
     private InvalidSubId() {
     }
 }

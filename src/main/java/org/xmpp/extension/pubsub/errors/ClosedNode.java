@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-whitelist">6.5.9.8 Not on Whitelist</a>
  */
 @XmlRootElement(name = "closed-node")
-public final class ClosedNode {
+public final class ClosedNode extends PubSubError {
     private ClosedNode() {
     }
 }

@@ -147,6 +147,7 @@ final class XmppStreamWriter {
                 public void run() {
                     synchronized (xof) {
                         try {
+                            logger.fine(object.toString());
                             marshaller.marshal(object, prefixFreeCanonicalizationWriter);
                             prefixFreeCanonicalizationWriter.flush();
                             if (logger.isLoggable(Level.FINE)) {

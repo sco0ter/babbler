@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-nomatch">6.1.3.1 JIDs Do Not Match</a>
  */
 @XmlRootElement(name = "invalid-jid")
-public final class InvalidJid {
+public final class InvalidJid extends PubSubError {
     private InvalidJid() {
     }
 }

@@ -34,8 +34,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "system-shutdown")
 public final class SystemShutdown extends Condition {
-    @Override
-    public String toString() {
-        return "system-shutdown";
-    }
 }

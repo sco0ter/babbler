@@ -36,8 +36,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "restricted-xml")
 public final class RestrictedXml extends Condition {
-    @Override
-    public String toString() {
-        return "restricted-xml";
-    }
 }

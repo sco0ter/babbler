@@ -42,7 +42,7 @@ public final class StanzaException extends XmppException {
      * @param stanza The underlying stanza.
      */
     public StanzaException(Stanza stanza) {
-        super(stanza.getError().getText());
+        super(stanza.getError().toString());
         this.stanza = stanza;
     }
 

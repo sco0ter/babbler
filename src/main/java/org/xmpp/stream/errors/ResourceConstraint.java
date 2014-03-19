@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "resource-constraint")
 public final class ResourceConstraint extends Condition {
-    @Override
-    public String toString() {
-        return "resource-constraint";
-    }
 }

@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "service-unavailable")
 public final class ServiceUnavailable extends Condition {
-
-    @Override
-    public String toString() {
-        return "service-unavailable";
-    }
 }

@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "invalid-from")
 public final class InvalidFrom extends Condition {
-    @Override
-    public String toString() {
-        return "invalid-from";
-    }
 }

@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-process-failure">6.3.6.2 Failure</a>
  */
 @XmlRootElement(name = "invalid-options")
-public final class InvalidOptions {
+public final class InvalidOptions extends PubSubError {
     private InvalidOptions() {
     }
 }

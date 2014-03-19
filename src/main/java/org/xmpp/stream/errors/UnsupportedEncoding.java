@@ -36,8 +36,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unsupported-encoding")
 public final class UnsupportedEncoding extends Condition {
-    @Override
-    public String toString() {
-        return "unsupported-encoding";
-    }
 }

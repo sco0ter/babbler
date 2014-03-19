@@ -39,8 +39,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "bad-namespace-prefix")
 public final class BadNamespacePrefix extends Condition {
-    @Override
-    public String toString() {
-        return "bad-namespace-prefix";
-    }
 }

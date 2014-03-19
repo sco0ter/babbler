@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "invalid-namespace")
 public final class InvalidNamespace extends Condition {
-    @Override
-    public String toString() {
-        return "invalid-namespace";
-    }
 }

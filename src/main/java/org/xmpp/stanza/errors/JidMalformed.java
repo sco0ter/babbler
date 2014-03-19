@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "jid-malformed")
 public final class JidMalformed extends Condition {
-
-    @Override
-    public String toString() {
-        return "jid-malformed";
-    }
 }

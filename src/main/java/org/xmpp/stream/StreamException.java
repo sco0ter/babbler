@@ -58,6 +58,27 @@ public final class StreamException extends XmppException {
     private StreamException() {
     }
 
+    public StreamException(Condition condition) {
+        this.condition = condition;
+    }
+
+    @Override
+    public String getMessage() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(condition.toString());
+
+        if (text != null) {
+            sb.append("\n        ");
+            sb.append(text.getText());
+        }
+
+        if (extension != null) {
+            sb.append("\n        ");
+            sb.append(extension.toString());
+        }
+        return sb.toString();
+    }
+
     //    /**
     //     * Creates a stream error with a given condition.
     //     * <blockquote>

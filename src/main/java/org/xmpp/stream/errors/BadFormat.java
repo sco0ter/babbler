@@ -39,8 +39,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "bad-format")
 public final class BadFormat extends Condition {
-    @Override
-    public String toString() {
-        return "bad-format";
-    }
 }

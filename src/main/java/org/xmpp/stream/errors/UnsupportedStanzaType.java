@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unsupported-stanza-type")
 public final class UnsupportedStanzaType extends Condition {
-    @Override
-    public String toString() {
-        return "unsupported-stanza-type";
-    }
 }

@@ -44,9 +44,4 @@ public final class Redirect extends Condition {
     public String getAlternateAddress() {
         return value;
     }
-
-    @Override
-    public String toString() {
-        return "redirect";
-    }
 }

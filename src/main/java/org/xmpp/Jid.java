@@ -208,6 +208,7 @@ public final class Jid {
      * </blockquote>
      *
      * @return The bare JID.
+     * @see #withResource(String)
      */
     public Jid asBareJid() {
         if (local != null) {
@@ -222,6 +223,7 @@ public final class Jid {
      *
      * @param resource The resource.
      * @return The full JID with a resource.
+     * @see #asBareJid()
      */
     public Jid withResource(String resource) {
         return new Jid(local, domain, resource);

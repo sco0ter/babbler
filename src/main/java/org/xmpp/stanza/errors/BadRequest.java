@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "bad-request")
 public final class BadRequest extends Condition {
-
-    @Override
-    public String toString() {
-        return "bad-request";
-    }
 }

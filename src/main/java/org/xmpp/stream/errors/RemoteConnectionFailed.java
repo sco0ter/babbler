@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "remote-connection-failed")
 public final class RemoteConnectionFailed extends Condition {
-    @Override
-    public String toString() {
-        return "remote-connection-failed";
-    }
 }

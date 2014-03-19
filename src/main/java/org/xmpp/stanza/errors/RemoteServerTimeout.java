@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "remote-server-timeout")
 public final class RemoteServerTimeout extends Condition {
-
-    @Override
-    public String toString() {
-        return "remote-server-timeout";
-    }
 }

@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "subscription-required")
 public final class SubscriptionRequired extends Condition {
-
-    @Override
-    public String toString() {
-        return "subscription-required";
-    }
 }

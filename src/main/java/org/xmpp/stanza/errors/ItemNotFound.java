@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "item-not-found")
 public final class ItemNotFound extends Condition {
-
-    @Override
-    public String toString() {
-        return "item-not-found";
-    }
 }

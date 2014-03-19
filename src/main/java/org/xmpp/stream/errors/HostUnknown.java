@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "host-unknown")
 public final class HostUnknown extends Condition {
-    @Override
-    public String toString() {
-        return "host-unknown";
-    }
 }

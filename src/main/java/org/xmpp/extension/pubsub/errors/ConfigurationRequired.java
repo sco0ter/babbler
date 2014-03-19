@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-configure">6.1.5 Configuration Required</a>
  */
 @XmlRootElement(name = "configuration-required")
-public final class ConfigurationRequired {
+public final class ConfigurationRequired extends PubSubError {
     private ConfigurationRequired() {
     }
 }

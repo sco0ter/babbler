@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-error-nodeid">8.2.3.3 NodeID Required</a>
  */
 @XmlRootElement(name = "nodeid-required")
-public final class NodeIdRequired {
+public final class NodeIdRequired extends PubSubError {
     private NodeIdRequired() {
     }
 }

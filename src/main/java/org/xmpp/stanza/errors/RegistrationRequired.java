@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "registration-required")
 public final class RegistrationRequired extends Condition {
-
-    @Override
-    public String toString() {
-        return "registration-required";
-    }
 }

@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "not-authorized")
 public final class NotAuthorized extends Condition {
-    @Override
-    public String toString() {
-        return "not-authorized";
-    }
 }

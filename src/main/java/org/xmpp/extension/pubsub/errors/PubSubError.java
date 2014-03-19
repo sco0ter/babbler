@@ -22,17 +22,15 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.stream.errors;
-
-import javax.xml.bind.annotation.XmlRootElement;
+package org.xmpp.extension.pubsub.errors;
 
 /**
- * The implementation of the {@code <host-gone/>} stream error.
- * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-host-gone">4.9.3.5.  host-gone</a></cite></p>
- * <p>The value of the 'to' attribute provided in the initial stream header corresponds to an FQDN that is no longer serviced by the receiving entity.</p>
- * </blockquote>
+ * @author Christian Schudt
  */
-@XmlRootElement(name = "host-gone")
-public final class HostGone extends Condition {
+abstract class PubSubError {
+
+    @Override
+    public String toString() {
+        return "PubSub error: " + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
+    }
 }

@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unsupported-feature")
 public final class UnsupportedFeature extends Condition {
-    @Override
-    public String toString() {
-        return "unsupported-feature";
-    }
 }

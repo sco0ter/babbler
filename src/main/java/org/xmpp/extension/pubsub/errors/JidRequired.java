@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-error-jid">6.3.4.3 Subscriber JID Required</a>
  */
 @XmlRootElement(name = "jid-required")
-public final class JidRequired {
+public final class JidRequired extends PubSubError {
     private JidRequired() {
     }
 }

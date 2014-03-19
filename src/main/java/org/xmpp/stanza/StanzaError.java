@@ -273,6 +273,26 @@ public final class StanzaError {
         return condition;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(condition.toString());
+        sb.append("  -  (");
+        sb.append(type.toString());
+        sb.append(")");
+
+        if (text != null) {
+            sb.append("\n        ");
+            sb.append(text.getText());
+        }
+
+        if (extension != null) {
+            sb.append("\n        ");
+            sb.append(extension.toString());
+        }
+        return sb.toString();
+    }
+
     /**
      * Represents a {@code <error/>} 'type' attribute.
      * <blockquote>
@@ -295,26 +315,37 @@ public final class StanzaError {
          * Retry after providing credentials.
          */
         @XmlEnumValue(value = "auth")
-        AUTH,
+        AUTH("retry after providing credentials"),
         /**
          * Do not retry (the error cannot be remedied).
          */
         @XmlEnumValue(value = "cancel")
-        CANCEL,
+        CANCEL("do not retry (the error cannot be remedied)"),
         /**
          * Proceed (the condition was only a warning).
          */
         @XmlEnumValue(value = "continue")
-        CONTINUE,
+        CONTINUE("proceed (the condition was only a warning)"),
         /**
          * Retry after changing the data sent.
          */
         @XmlEnumValue(value = "modify")
-        MODIFY,
+        MODIFY("retry after changing the data sent"),
         /**
          * Retry after waiting (the error is temporary).
          */
         @XmlEnumValue(value = "wait")
-        WAIT
+        WAIT("retry after waiting (the error is temporary)");
+
+        private String errorText;
+
+        private Type(String errorText) {
+            this.errorText = errorText;
+        }
+
+        @Override
+        public String toString() {
+            return "type '" + name().toLowerCase() + "': " + errorText;
+        }
     }
 }

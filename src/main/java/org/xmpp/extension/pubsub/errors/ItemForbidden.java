@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badrequest">7.1.3.6 Request Does Not Match Configuration</a>
  */
 @XmlRootElement(name = "item-forbidden")
-public final class ItemForbidden {
+public final class ItemForbidden extends PubSubError {
     private ItemForbidden() {
     }
 }

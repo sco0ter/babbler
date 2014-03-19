@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "reset")
 public final class Reset extends Condition {
-    @Override
-    public String toString() {
-        return "reset";
-    }
 }

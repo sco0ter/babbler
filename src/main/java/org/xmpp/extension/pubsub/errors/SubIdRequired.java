@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-subid">6.5.9.1 Subscription ID Required</a>
  */
 @XmlRootElement(name = "subid-required")
-public final class SubIdRequired {
+public final class SubIdRequired extends PubSubError {
     private SubIdRequired() {
     }
 }

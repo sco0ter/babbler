@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "not-well-formed")
 public final class NotWellFormed extends Condition {
-    @Override
-    public String toString() {
-        return "not-well-formed";
-    }
 }

@@ -44,9 +44,4 @@ public final class Gone extends Condition {
     public String getNewAddress() {
         return value;
     }
-
-    @Override
-    public String toString() {
-        return "gone";
-    }
 }

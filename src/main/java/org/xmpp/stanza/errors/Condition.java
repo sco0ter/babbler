@@ -38,4 +38,9 @@ public abstract class Condition {
 
     Condition() {
     }
+
+    @Override
+    public String toString() {
+        return "<" + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
+    }
 }

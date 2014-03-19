@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-toomany">6.1.3.9 Too Many Subscriptions</a>
  */
 @XmlRootElement(name = "too-many-subscriptions")
-public final class TooManySubscriptions {
+public final class TooManySubscriptions extends PubSubError {
     private TooManySubscriptions() {
     }
 }

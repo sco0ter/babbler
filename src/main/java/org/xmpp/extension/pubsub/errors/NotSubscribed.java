@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-notsubscribed">6.5.9.3 Entity Not Subscribed</a>
  */
 @XmlRootElement(name = "not-subscribed")
-public final class NotSubscribed {
+public final class NotSubscribed extends PubSubError {
     private NotSubscribed() {
     }
 }

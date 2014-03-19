@@ -35,10 +35,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "not-acceptable")
 public final class NotAcceptable extends Condition {
-
-    @Override
-    public String toString() {
-        return "not-acceptable";
-    }
 }
 

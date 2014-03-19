@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unexpected-request")
 public final class UnexpectedRequest extends Condition {
-
-    @Override
-    public String toString() {
-        return "unexpected-request";
-    }
 }

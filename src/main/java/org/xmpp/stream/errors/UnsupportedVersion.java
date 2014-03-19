@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unsupported-version")
 public final class UnsupportedVersion extends Condition {
-    @Override
-    public String toString() {
-        return "unsupported-version";
-    }
 }

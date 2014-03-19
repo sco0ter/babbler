@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "policy-violation")
 public final class PolicyViolation extends Condition {
-
-    @Override
-    public String toString() {
-        return "policy-violation";
-    }
 }

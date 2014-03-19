@@ -35,9 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "feature-not-implemented")
 public final class FeatureNotImplemented extends Condition {
-
-    @Override
-    public String toString() {
-        return "feature-not-implemented";
-    }
 }

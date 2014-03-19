@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "internal-server-error")
 public final class InternalServerError extends Condition {
-    @Override
-    public String toString() {
-        return "internal-server-error";
-    }
 }

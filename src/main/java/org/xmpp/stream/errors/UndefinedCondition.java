@@ -35,8 +35,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "undefined-condition")
 public final class UndefinedCondition extends Condition {
-    @Override
-    public String toString() {
-        return "undefined-condition";
-    }
 }

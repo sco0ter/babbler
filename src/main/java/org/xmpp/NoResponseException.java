@@ -25,6 +25,11 @@
 package org.xmpp;
 
 /**
+ * This exception is thrown, when no response has been received from a XMPP entity.
+ * <p>
+ * Usually it is thrown when querying an entity for information with IQ-get or IQ-set and expecting an IQ-result.
+ * </p>
+ *
  * @author Christian Schudt
  */
 public final class NoResponseException extends XmppException {

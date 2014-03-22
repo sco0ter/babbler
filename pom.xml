@@ -30,7 +30,7 @@
 
     <groupId>org.xmpp</groupId>
     <artifactId>babbler</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
@@ -45,7 +45,6 @@
         <url>https://bitbucket.org/sco0ter/babbler/</url>
     </scm>
     <inceptionYear>2014</inceptionYear>
-    <description>Test</description>
     <reporting>
         <plugins>
             <plugin>

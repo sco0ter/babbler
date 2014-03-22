@@ -83,16 +83,12 @@ public abstract class FeatureNegotiator {
      * @param status  The status of the feature negotiation process.
      * @param element The element, which triggered the feature status change.
      */
-    protected void notifyFeatureNegotiated(Status status, Object element) {
+    protected void notifyFeatureNegotiated(Status status, Object element) throws Exception{
         if (status == null) {
             throw new IllegalArgumentException("status must not be null");
         }
         for (FeatureListener featureListener : featureListeners) {
-            try {
-                featureListener.negotiationStatusChanged(new FeatureEvent(this, status, element));
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
+            featureListener.negotiationStatusChanged(new FeatureEvent(this, status, element));
         }
     }
 

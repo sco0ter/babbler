@@ -29,7 +29,7 @@
 * ![alt not supported][not supported]   [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
 * ![alt supported][supported]           [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html)
 * ![alt not supported][not supported]   [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
-* ![alt in development][in development] [XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)
+* ![alt supported][supported]           [XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)
 * ![alt supported][supported]           [XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)
 * ![alt not supported][not supported]   [XEP-0095: Stream Initiation](http://xmpp.org/extensions/xep-0095.html)
 * ![alt not supported][not supported]   [XEP-0096: SI File Transfer](http://xmpp.org/extensions/xep-0096.html)

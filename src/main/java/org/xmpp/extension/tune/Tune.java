@@ -59,8 +59,9 @@ public final class Tune {
     public Tune() {
     }
 
-    public Tune(String artist) {
+    public Tune(String artist, String title) {
         this.artist = artist;
+        this.title = title;
     }
 
     /**

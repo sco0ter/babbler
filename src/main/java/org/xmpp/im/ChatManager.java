@@ -40,33 +40,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages one-to-one chat sessions. They are described in <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="http://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
+ * This class manages one-to-one chat sessions, which are described in <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="http://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
  * <h3>Creating a new chat session</h3>
  * <pre>
- * <code>ChatSession chatSession = connection.getChatManager().newChatSession(chatPartner);</code>
+ * <code>ChatSession chatSession = connection.getChatManager().createChatSession(chatPartner);</code>
  * </pre>
  * <h3>Listen for new chat sessions</h3>
- * <p>If a contact initiates a new chat session with you, you can listen for created chat sessions.
+ * <p>When a contact initiates a new chat session with you, you can listen for it with the {@link org.xmpp.extension.chatstates.ChatStateListener}.
  * The listener will be called either if you created the session programmatically as shown above, or if it is created by a contact, i.e. because he or she sent you a chat message.
  * </p>
- * <pre>
- * <code>connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
- *   {@literal @}Override
- *    public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
- *       ChatSession chatSession = chatSessionEvent.getChatSession();
- *       chatSession.addMessageListener(new StanzaListener() {
- *         {@literal @}Override
- *          public void handle(Stanza stanza) {
- *             Message message = (Message) stanza;
- *             // deal with the message.
- *          }
- *       });
- *    }
+ * <p>You should add a {@link MessageListener} to the chat session in order to listen for messages.</p>
+ * <pre><code>
+ * connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
+ *     {@literal @}Override
+ *     public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
+ *         ChatSession chatSession = chatSessionEvent.getChatSession();
+ *         chatSession.addMessageListener(new MessageListener() {
+ *             {@literal @}Override
+ *             public void handle(MessageEvent e) {
+ *                 Message message = e.getMessage();
+ *             }
+ *         });
+ *     }
  * });
  * </code>
  * </pre>
- *
- * @author Christian Schudt
  */
 public final class ChatManager {
 
@@ -187,7 +185,7 @@ public final class ChatManager {
      * @param chatPartner The chat partner.
      * @return The chat session.
      */
-    public ChatSession newChatSession(Jid chatPartner) {
+    public ChatSession createChatSession(Jid chatPartner) {
         if (chatPartner == null) {
             throw new IllegalArgumentException("chatPartner must not be null.");
         }

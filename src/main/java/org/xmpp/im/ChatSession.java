@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  * <p>In practice, instant messaging activity between human users tends to occur in the form of a conversational burst that we call a "chat session": the exchange of multiple messages between two parties in relatively rapid succession within a relatively brief period of time.</p>
  * </blockquote>
  * <p>
- * In order to create a new chat session, use the {@linkplain ChatManager#newChatSession(org.xmpp.Jid) chat manager}.
+ * In order to create a new chat session, use the {@linkplain ChatManager#createChatSession(org.xmpp.Jid) chat manager}.
  * </p>
  */
 public final class ChatSession {

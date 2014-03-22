@@ -48,7 +48,7 @@ public final class SecurityManager extends FeatureNegotiator {
         }
         try {
             // Assign the default TLS context.
-            sslContext = SSLContext.getInstance("TLS");
+            sslContext = SSLContext.getDefault();
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

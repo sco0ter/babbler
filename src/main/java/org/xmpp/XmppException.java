@@ -25,7 +25,12 @@
 package org.xmpp;
 
 /**
+ * This is the abstract base class for all kind of XMPP related exceptions.
+ *
  * @author Christian Schudt
+ * @see NoResponseException
+ * @see org.xmpp.stanza.StanzaException
+ * @see org.xmpp.stream.StreamException
  */
 public abstract class XmppException extends Exception {
 

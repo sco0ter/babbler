@@ -5,7 +5,7 @@
 
 [JAXB][JAXB] as underlying technology makes it robust and allows you to write extensions in a simple and clean manner.
 
-It aims to provide good (JavaDoc) documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by ca. 500 tests).
+It aims to provide good (JavaDoc) documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by more than 600 tests).
 
 It supports most of the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html)).
 

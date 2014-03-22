@@ -38,5 +38,5 @@ public interface FeatureListener extends EventListener {
      *
      * @param featureEvent The feature event.
      */
-    void negotiationStatusChanged(FeatureEvent featureEvent);
+    void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception;
 }

@@ -53,7 +53,7 @@ public class Product {
 }
 ```
 
-Then you have to register that class **before** creating the connection. (That is because the connection creates the JAXB context in its constructor, it can't be modified later):
+Then you have to register that class **before** creating the connection. (That is because the connection creates the JAXB context in its constructor, it can\'t be modified later):
 
 ```java
 XmppContext.getDefault().registerExtension(Product.class);

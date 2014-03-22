@@ -198,19 +198,15 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    protected void secureConnection() {
-        try {
-            socket = getSecurityManager().getSSLContext().getSocketFactory().createSocket(
-                    socket,
-                    socket.getInetAddress().getHostAddress(),
-                    socket.getPort(),
-                    true);
-            inputStream = socket.getInputStream();
-            outputStream = socket.getOutputStream();
-            isSecure = true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void secureConnection() throws IOException {
+        socket = getSecurityManager().getSSLContext().getSocketFactory().createSocket(
+                socket,
+                socket.getInetAddress().getHostAddress(),
+                socket.getPort(),
+                true);
+        inputStream = socket.getInputStream();
+        outputStream = socket.getOutputStream();
+        isSecure = true;
     }
 
     @Override

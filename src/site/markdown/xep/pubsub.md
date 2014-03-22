@@ -75,6 +75,26 @@ If you are no longer interested in receiving event notifications, you can unsubs
 pubSubService.unsubscribe("princely_musings");
 ```
 
+### Listening for PubSub events
+
+For now, you have to just deal directly with the messages. This may change in the future.
+
+```java
+connection.addMessageListener(new MessageListener() {
+    @Override
+    public void handle(MessageEvent e) {
+        if (e.isIncoming()) {
+            Message message = e.getMessage();
+            PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
+            if (pubSubEvent != null) {
+                List<Item> items = pubSubEvent.getItems();
+                // get item from items.
+            }
+        }
+    }
+});
+```
+
 ## Working with the Personal Eventing Protocol
 
 The [personal eventing protocol][PEP] (PEP) is a subset of pubsub. For every instant messaging account a pubsub service is automatically created, which is then referred to as Personal Eventing Service. By default your contacts are automatically added as subscribers to every node.
@@ -124,7 +144,7 @@ try {
 }
 ```
 
-PubSub errors can be found in the org.xmpp.
+PubSub errors can be found in the ```org.xmpp.extension.pubsub.errors``` package.
 
 [GeoLocation]: http://xmpp.org/extensions/xep-0080.html "XEP-0080: User Location"
 [Mood]: http://xmpp.org/extensions/xep-0107.html "XEP-0107: User Mood"

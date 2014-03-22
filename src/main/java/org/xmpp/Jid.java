@@ -30,8 +30,29 @@ import java.util.regex.Pattern;
 /**
  * The implementation of the JID as described in <a href="http://xmpp.org/rfcs/rfc6122.html">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
  * <p>
- * <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a> is also supported.
+ * A JID consists of three parts:
+ * <p>
+ * [ localpart "@" ] domainpart [ "/" resourcepart ]
  * </p>
+ * The easiest way to create a JID is to use the {@link #valueOf(String)} method:
+ * <pre><code>
+ * Jid jid = Jid.valueOf("juliet@capulet.lit/balcony");
+ * </code></pre>
+ * You can then get the parts from it via the respective methods:
+ * <pre><code>
+ * String local = jid.getLocal(); // juliet
+ * String domain = jid.getDomain(); // capulet.lit
+ * String resource = jid.getResource(); // balcony
+ * </code></pre>
+ * This class overrides <code>equals()</code> and <code>hashCode()</code>, so that different instances with the same value are equal:
+ * <pre><code>
+ * Jid.valueOf("romeo@capulet.lit/balcony").equals(Jid.valueOf("romeo@capulet.lit/balcony")); // true
+ * </code></pre>
+ * This class also supports <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.
+ * <pre><code>
+ * Jid.valueOf("d\\27artagnan@musketeers.lit")
+ * </code></pre>
+ * is interpreted as <code>d'artagnan@musketeers.lit</code>.
  *
  * @author Christian Schudt
  */
@@ -256,6 +277,7 @@ public final class Jid {
     }
 
     /**
+     * Gets the resource part.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6122.html#addressing-resource">2.4.  Resourcepart</a></cite></p>
      * <p>The resourcepart of a JID is an optional identifier placed after the domainpart and separated from the latter by the '/' character. A resourcepart can modify either a {@code <localpart@domainpart>} address or a mere {@code <domainpart>} address. Typically a resourcepart uniquely identifies a specific connection (e.g., a device or location) or object (e.g., an occupant in a multi-user chat room) belonging to the entity associated with an XMPP localpart at a domain (i.e., {@code <localpart@domainpart/resourcepart>}).</p>

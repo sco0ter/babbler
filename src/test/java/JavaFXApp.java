@@ -72,9 +72,9 @@ import org.xmpp.extension.last.LastActivityStrategy;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
+import org.xmpp.extension.pubsub.Item;
+import org.xmpp.extension.pubsub.PubSubEvent;
 import org.xmpp.extension.pubsub.PubSubManager;
-import org.xmpp.extension.pubsub.PubSubService;
-import org.xmpp.extension.pubsub.errors.PresenceSubscriptionRequired;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -196,6 +196,20 @@ public class JavaFXApp extends Application {
         Message message = new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT);
         message.getExtensions().add(new Composing());
 
+
+        connection.addMessageListener(new MessageListener() {
+            @Override
+            public void handle(MessageEvent e) {
+                if (e.isIncoming()) {
+                    Message message = e.getMessage();
+                    PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
+                    if (pubSubEvent != null) {
+                        List<Item> items = pubSubEvent.getItems();
+                        // get item from items.
+                    }
+                }
+            }
+        });
 
         Button btnConnect = new Button("Login");
         btnConnect.setOnAction(new EventHandler<ActionEvent>() {
@@ -557,33 +571,6 @@ public class JavaFXApp extends Application {
                             pepItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    //                                    PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
-                                    //
-                                    //                                    try {
-                                    //                                        //PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.fritz.box"));
-                                    //                                        PubSubService pubSubService = pubSubManager.createPersonalEventingService();
-                                    //                                        GeoLocation geoLocation = new GeoLocation(45.44, 12.33);
-                                    //                                        geoLocation.setArea(UUID.randomUUID().toString());
-                                    //                                        pubSubService.publish("http://jabber.org/protocol/geoloc", geoLocation);
-                                    //                                        int i = 0;
-                                    //                                    } catch (XmppException e) {
-                                    //                                        e.printStackTrace();
-                                    //                                    }
-
-                                    PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
-
-                                    try {
-                                        PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.fritz.box"));
-                                        pubSubService.subscribe("princely_musings");
-                                    } catch (XmppException e) {
-                                        if (e instanceof StanzaException) {
-                                            StanzaException stanzaException = (StanzaException) e;
-                                            Object extension = stanzaException.getStanza().getError().getExtension();
-                                            if (extension instanceof PresenceSubscriptionRequired) {
-                                                // PubSub error <presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/> occurred.
-                                            }
-                                        }
-                                    }
 
                                     try {
                                         GeoLocationManager geoLocationManager = connection.getExtensionManager(GeoLocationManager.class);
@@ -715,7 +702,7 @@ public class JavaFXApp extends Application {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     if (chatSession == null) {
-                        chatSession = connection.getChatManager().newChatSession(chatPartner);
+                        chatSession = connection.getChatManager().createChatSession(chatPartner);
                     }
                     Message message = new Message(chatSession.getChatPartner(), Message.Type.CHAT, textArea.getText());
                     message.setId(UUID.randomUUID().toString());

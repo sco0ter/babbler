@@ -28,6 +28,7 @@ import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.Identity;
@@ -38,14 +39,19 @@ import org.xmpp.stanza.Presence;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
 public final class MultiUserChatManager extends ExtensionManager {
+    private static final Logger logger = Logger.getLogger(MultiUserChatManager.class.getName());
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -60,17 +66,76 @@ public final class MultiUserChatManager extends ExtensionManager {
         this.serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
     }
 
-    public Set<Identity> getMucServices() throws XmppException {
+    public Set<Item> getMucServices() throws XmppException {
         ItemNode itemDiscovery = serviceDiscoveryManager.discoverItems(null);
-        Set<Identity> identities = new HashSet<>();
+        Set<Item> identities = new HashSet<>();
 
         for (Item item : itemDiscovery.getItems()) {
             InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(item.getJid());
             if (infoDiscovery.getFeatures().contains(new Feature(Muc.NAMESPACE))) {
-                identities.addAll(infoDiscovery.getIdentities());
+                identities.add(item);
             }
         }
         return identities;
+    }
+
+    public ChatService createChatService(Jid chatService) {
+        return new ChatService(chatService, connection);
+    }
+
+    public ChatRoom getRoomInfo(Jid room) throws XmppException {
+        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(room);
+        ChatRoom chatRoom = new ChatRoom();
+        if (infoNode != null) {
+            for (Identity identity : infoNode.getIdentities()) {
+
+            }
+            Set<MucFeature> mucFeatures = new HashSet<>();
+            for (Feature feature : infoNode.getFeatures()) {
+                for (MucFeature mucFeature : MucFeature.values()) {
+                    if (mucFeature.getServiceDiscoveryFeature().equals(feature.getVar())) {
+                        mucFeatures.add(mucFeature);
+                    }
+                }
+            }
+            chatRoom.setFeatures(mucFeatures);
+
+            for (DataForm dataForm : infoNode.getExtensions()) {
+                DataForm.Field formType = dataForm.findField("FORM_TYPE");
+                if (formType != null && !formType.getValues().isEmpty() && formType.getValues().get(0).equals("http://jabber.org/protocol/muc#roominfo")) {
+                    for (DataForm.Field field : dataForm.getFields()) {
+                        try {
+                            if (field.getVar().equals("muc#maxhistoryfetch")) {
+                                chatRoom.setMaxHistory(Integer.parseInt(field.getValues().get(0)));
+                            } else if (field.getVar().equals("muc#roominfo_contactjid")) {
+                                List<Jid> contacts = new ArrayList<>();
+                                for (String value : field.getValues()) {
+                                    contacts.add(Jid.valueOf(value));
+                                }
+                                chatRoom.setContacts(contacts);
+                            } else if (field.getVar().equals("muc#roominfo_description")) {
+                                chatRoom.setDescription(field.getValues().get(0));
+                            } else if (field.getVar().equals("muc#roominfo_lang")) {
+                                chatRoom.setLanguage(field.getValues().get(0));
+                            } else if (field.getVar().equals("muc#roominfo_ldapgroup")) {
+                                chatRoom.setLdapGroup(field.getValues().get(0));
+                            } else if (field.getVar().equals("muc#roominfo_logs")) {
+                                chatRoom.setLogs(new URL(field.getValues().get(0)));
+                            } else if (field.getVar().equals("muc#roominfo_occupants")) {
+                                chatRoom.setCurrentNumberOfOccupants(Integer.parseInt(field.getValues().get(0)));
+                            } else if (field.getVar().equals("muc#roominfo_subject")) {
+                                chatRoom.setSubject(field.getValues().get(0));
+                            } else if (field.getVar().equals("muc#roominfo_subjectmod")) {
+                                chatRoom.setChangeSubjectAllowed(field.getValues().get(0).equals("1"));
+                            }
+                        } catch (Exception e) {
+                            logger.log(Level.WARNING, "Could not process MUC field: " + field.getVar(), e);
+                        }
+                    }
+                }
+            }
+        }
+        return chatRoom;
     }
 
     public List<Item> getPublicRooms(Jid service) throws XmppException {
@@ -83,5 +148,9 @@ public final class MultiUserChatManager extends ExtensionManager {
         presence.setTo(new Jid(room, service, nick));
         presence.getExtensions().add(new Muc());
         connection.send(presence);
+    }
+
+    public void getFeatures(Jid jid) throws XmppException {
+        serviceDiscoveryManager.discoverInformation(jid);
     }
 }

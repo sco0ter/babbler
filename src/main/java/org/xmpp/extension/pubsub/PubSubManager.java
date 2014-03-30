@@ -65,7 +65,7 @@ public final class PubSubManager extends ExtensionManager {
                     Message message = e.getMessage();
                     Event event = message.getExtension(Event.class);
                     if (event != null) {
-                       int i = 0;
+                        int i = 0;
                     }
                 }
             }

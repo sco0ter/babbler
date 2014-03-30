@@ -81,9 +81,11 @@ public final class ReachabilityManager extends ExtensionManager {
                         notifyReachabilityListeners(contact, new ArrayList<Address>());
                     }
                 } else {
-                    synchronized (addresses) {
-                        if (!addresses.isEmpty()) {
-                            presence.getExtensions().add(new Reachability(new ArrayList<>(addresses)));
+                    if (presence.isAvailable() && presence.getTo() == null) {
+                        synchronized (addresses) {
+                            if (!addresses.isEmpty()) {
+                                presence.getExtensions().add(new Reachability(new ArrayList<>(addresses)));
+                            }
                         }
                     }
                 }

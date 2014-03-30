@@ -57,7 +57,6 @@ import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
-import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.chatstates.Composing;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
@@ -69,11 +68,11 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
+import org.xmpp.extension.muc.ChatService;
+import org.xmpp.extension.muc.MultiUserChatManager;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
-import org.xmpp.extension.pubsub.Item;
-import org.xmpp.extension.pubsub.PubSubEvent;
 import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
@@ -196,20 +195,6 @@ public class JavaFXApp extends Application {
         Message message = new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT);
         message.getExtensions().add(new Composing());
 
-
-        connection.addMessageListener(new MessageListener() {
-            @Override
-            public void handle(MessageEvent e) {
-                if (e.isIncoming()) {
-                    Message message = e.getMessage();
-                    PubSubEvent pubSubEvent = message.getExtension(PubSubEvent.class);
-                    if (pubSubEvent != null) {
-                        List<Item> items = pubSubEvent.getItems();
-                        // get item from items.
-                    }
-                }
-            }
-        });
 
         Button btnConnect = new Button("Login");
         btnConnect.setOnAction(new EventHandler<ActionEvent>() {
@@ -369,7 +354,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        connection.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
+                        //connection.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
 
                         GeoLocationManager geoLocationManager = connection.getExtensionManager(GeoLocationManager.class);
                         geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
@@ -664,20 +649,17 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                String s = new String(new int[]{0x1F44D}, 0, 1);
+                connection.send(new Message(null, Message.Type.CHAT, s));
+                MultiUserChatManager multiUserChatManager = connection.getExtensionManager(MultiUserChatManager.class);
 
-                EntityTimeManager entityTimeManager = connection.getExtensionManager(EntityTimeManager.class);
-                try {
-                    entityTimeManager.getEntityTime(Jid.valueOf("222@localhost/test"));
-                } catch (XmppException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
             }
         });
         Button btnExit = new Button("Exit");
         btnExit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                System.exit(0);
+
             }
         });
         vBox.getChildren().addAll(txtDomain, txtServer, txtPort, txtUser, txtPassword, useBosh, btnConnect, comboBox, listView, btnClose, btnExit, btn);

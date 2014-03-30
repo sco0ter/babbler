@@ -80,10 +80,12 @@ public final class LastActivityManager extends ExtensionManager {
             public void handle(PresenceEvent e) {
                 if (!e.isIncoming() && isEnabled()) {
                     Presence presence = e.getPresence();
-                    synchronized (LastActivityManager.this) {
-                        // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                        if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
-                            presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity()), presence.getStatus()));
+                    if (presence.getTo() == null) {
+                        synchronized (LastActivityManager.this) {
+                            // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
+                            if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                                presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity()), presence.getStatus()));
+                            }
                         }
                     }
                 }

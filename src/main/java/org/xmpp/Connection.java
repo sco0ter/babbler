@@ -254,7 +254,7 @@ public abstract class Connection implements Closeable {
 
         securityManager = new SecurityManager(this, new FeatureListener() {
             @Override
-            public void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception{
+            public void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception {
                 if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
                     secureConnection();
                 }

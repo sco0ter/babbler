@@ -23,20 +23,15 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>.
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0301.html">XEP-0301: In-Band Real Time Text</a>.
  * <p>
- * It defines a method for inviting a contact to a multi-user chat room directly, instead of sending the invitation through the chat room.
+ * It is a specification for real-time text transmitted in-band over an XMPP session. Real-time text is text transmitted instantly while it is being typed or created.
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "jabber:x:conference", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.conference;
-
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+@XmlSchema(namespace = RealTimeText.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rtt;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

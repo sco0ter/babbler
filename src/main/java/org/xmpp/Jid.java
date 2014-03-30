@@ -24,6 +24,8 @@
 
 package org.xmpp;
 
+import java.text.Normalizer;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,19 +52,33 @@ import java.util.regex.Pattern;
  * </code></pre>
  * This class also supports <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.
  * <pre><code>
- * Jid.valueOf("d\\27artagnan@musketeers.lit")
+ * Jid.valueOf("d'artagnan@musketeers.lit")
  * </code></pre>
- * is interpreted as <code>d'artagnan@musketeers.lit</code>.
+ * is escaped as <code>d\\27artagnan@musketeers.lit</code>.
  *
  * @author Christian Schudt
  */
 public final class Jid {
 
-    private static final Pattern ESCAPE_PATTERN = Pattern.compile("[ \"&'/:<>@\\\\]");
+    /**
+     * Escapes all disallowed characters and also backslash, when followed by a defined hex code for escaping. See 4. Business Rules.
+     */
+    private static final Pattern ESCAPE_PATTERN = Pattern.compile("[ \"&'/:<>@]|\\\\(?=20|22|26|27|2f|3a|3c|3e|40|5c)");
 
-    private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\([0-9a-fA-F]{2})");
+    private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\(20|22|26|27|2f|3a|3c|3e|40|5c)");
 
-    private static final Pattern JID = Pattern.compile("^((.{0,1023}?)@)?((?:(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+)(/(.{0,1023}))?$");
+    /**
+     * Every character, which is not a letter, number, punctuation, symbol character, marker character or space.
+     */
+    private static final Pattern PROHIBITED_CHARACTERS = Pattern.compile("[^\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\s]");
+
+    private static final String DOMAIN_PART = "((?:(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+)";
+
+    private static final Pattern JID = Pattern.compile("^((.*?)@)?" + DOMAIN_PART + "(/(.*))?$");
+
+    // B.1 Commonly mapped to nothing
+    // Every space, except white-space (\u0020)
+    private static final Pattern MAP_TO_NOTHING = Pattern.compile("([\u00AD\u034F\u1806\u180B\u180C\u180D\u200B\u200C\u200D\u2060\uFE00\uFE01\uFE0F\uFEFF])");
 
     private final String escapedLocal;
 
@@ -78,11 +94,7 @@ public final class Jid {
      * @param domain The domain.
      */
     public Jid(String domain) {
-        validateDomain(domain);
-        this.domain = domain;
-        this.local = null;
-        this.escapedLocal = null;
-        this.resource = null;
+        this(null, domain, null);
     }
 
     /**
@@ -92,12 +104,7 @@ public final class Jid {
      * @param domain The domain part.
      */
     public Jid(String local, String domain) {
-        validateDomain(domain);
-        validateLength(local, "local");
-        this.domain = domain;
-        this.local = local;
-        this.escapedLocal = local != null ? escape(local) : null;
-        this.resource = null;
+        this(local, domain, null);
     }
 
     /**
@@ -108,27 +115,50 @@ public final class Jid {
      * @param resource The resource part.
      */
     public Jid(String local, String domain, String resource) {
+        this(local, domain, resource, false);
+    }
+
+    private Jid(String local, String domain, String resource, boolean doUnescape) {
+        String preparedNode = prepare(local, true);
+        String preparedResource = prepare(resource, false);
+
         validateDomain(domain);
-        validateLength(local, "local");
-        validateLength(resource, "resource");
-        this.local = local;
-        this.escapedLocal = local != null ? escape(local) : null;
-        this.domain = domain;
-        this.resource = resource;
+        validateLength(preparedNode, "local");
+        validateLength(preparedResource, "resource");
+
+        if (doUnescape) {
+            this.local = unescape(preparedNode);
+        } else {
+            this.local = preparedNode;
+        }
+        this.escapedLocal = escape(this.local);
+        this.domain = domain.toLowerCase();
+        this.resource = preparedResource;
+    }
+
+    /**
+     * Creates a JID from a string. The format must be
+     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>.
+     * The input string will be escaped.
+     *
+     * @param jid The JID.
+     * @return The JID.
+     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     */
+    public static Jid valueOf(String jid) {
+        return valueOf(jid, false);
     }
 
     /**
      * Creates a JID from a string. The format must be
      * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
      *
-     * @param jid The jid.
+     * @param jid        The JID.
+     * @param doUnescape If the jid parameter will be unescaped.
      * @return The JID.
+     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    public static Jid valueOf(String jid) {
-        return parseJid(jid, true);
-    }
-
-    private static Jid parseJid(String jid, boolean unescape) {
+    public static Jid valueOf(String jid, boolean doUnescape) {
         if (jid == null) {
             throw new IllegalArgumentException("jid must not be null.");
         }
@@ -139,36 +169,71 @@ public final class Jid {
         }
 
         Matcher matcher = JID.matcher(jid);
-        if (matcher.find()) {
-            String local = matcher.group(2);
-            return new Jid(unescape && local != null ? unescape(local) : local, matcher.group(3), matcher.group(8));
+        if (matcher.matches()) {
+            return new Jid(matcher.group(2), matcher.group(3), matcher.group(8), doUnescape);
         } else {
             throw new IllegalArgumentException("Could not parse JID.");
         }
     }
 
-    private static String escape(String string) {
-        Matcher matcher = ESCAPE_PATTERN.matcher(string);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            String match = matcher.group();
-            matcher.appendReplacement(sb, String.format("\\\\%x", match.getBytes()[0]));
+    /**
+     * Escapes a JID. The characters <code>"&'/:<>@</code> (+ whitespace) are replaced with
+     *
+     * @param jid The JID.
+     * @return The escaped JID.
+     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     */
+    private static String escape(String jid) {
+        if (jid != null) {
+            Matcher matcher = ESCAPE_PATTERN.matcher(jid);
+            StringBuffer sb = new StringBuffer();
+            while (matcher.find()) {
+                String match = matcher.group();
+                matcher.appendReplacement(sb, String.format("\\\\%x", match.getBytes()[0]));
+            }
+            matcher.appendTail(sb);
+            return sb.toString();
         }
-        matcher.appendTail(sb);
-        return sb.toString();
+        return null;
     }
 
-    private static String unescape(String string) {
-        Matcher matcher = UNESCAPE_PATTERN.matcher(string);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            String match = matcher.group(1);
-            int num = Integer.parseInt(match, 16);
-            String value = String.valueOf((char) num);
-            matcher.appendReplacement(sb, value);
+    private static String unescape(String jid) {
+        if (jid != null) {
+            Matcher matcher = UNESCAPE_PATTERN.matcher(jid);
+            StringBuffer sb = new StringBuffer();
+            while (matcher.find()) {
+                String match = matcher.group(1);
+                int num = Integer.parseInt(match, 16);
+                String value = String.valueOf((char) num);
+                if (value.equals("\\")) {
+                    matcher.appendReplacement(sb, "\\\\");
+                } else {
+                    matcher.appendReplacement(sb, value);
+                }
+            }
+            matcher.appendTail(sb);
+            return sb.toString();
         }
-        matcher.appendTail(sb);
-        return sb.toString();
+        return null;
+    }
+
+    static String prepare(String input, boolean caseFold) {
+        if (input != null) {
+            String mappedToNothing = MAP_TO_NOTHING.matcher(input).replaceAll("");
+            String normalized = Normalizer.normalize(mappedToNothing, Normalizer.Form.NFKC);
+            if (caseFold) {
+                normalized = normalized.toUpperCase(Locale.ENGLISH).toLowerCase(Locale.ENGLISH);
+            }
+            // A.7. Notes
+            // Because the additional characters prohibited by Nodeprep are
+            // prohibited after normalization
+            Matcher matcher = PROHIBITED_CHARACTERS.matcher(normalized);
+            if (matcher.find()) {
+                throw new IllegalArgumentException("Local or resource part contains prohibited characters.");
+            }
+            return normalized;
+        }
+        return null;
     }
 
     private void validateDomain(String domain) {
@@ -176,6 +241,7 @@ public final class Jid {
             throw new IllegalArgumentException("domain must not be null.");
         }
         if (domain.contains("@")) {
+            // Prevent misuse of API.
             throw new IllegalArgumentException("domain must not contain a '@' sign");
         }
         validateLength(domain, "domain");

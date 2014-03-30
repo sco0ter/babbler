@@ -82,6 +82,7 @@ import org.xmpp.extension.register.feature.RegisterFeature;
 import org.xmpp.extension.rosterx.RosterExchange;
 import org.xmpp.extension.rpc.Rpc;
 import org.xmpp.extension.rsm.ResultSet;
+import org.xmpp.extension.rtt.RealTimeText;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.shim.HeaderManager;
@@ -326,6 +327,9 @@ public abstract class XmppContext {
             // XEP-0297: Stanza Forwarding
             registerExtension(Forwarded.class);
             registerManager(StanzaForwardingManager.class);
+
+            // XEP-0301: In-Band Real Time Text
+            registerExtension(RealTimeText.class);
 
             // XEP-0308: Last Message Correction
             registerExtension(Replace.class);

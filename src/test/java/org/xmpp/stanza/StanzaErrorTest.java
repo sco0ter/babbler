@@ -29,16 +29,7 @@ import org.testng.annotations.Test;
 import org.w3c.dom.Element;
 import org.xmpp.BaseTest;
 import org.xmpp.UnmarshalHelper;
-import org.xmpp.extension.pubsub.errors.MaxItemsExceeded;
 import org.xmpp.stanza.errors.*;
-import org.xmpp.stanza.errors.Conflict;
-import org.xmpp.stanza.errors.InternalServerError;
-import org.xmpp.stanza.errors.NotAuthorized;
-import org.xmpp.stanza.errors.PolicyViolation;
-import org.xmpp.stanza.errors.ResourceConstraint;
-import org.xmpp.stanza.errors.UndefinedCondition;
-import org.xmpp.stream.StreamException;
-import org.xmpp.stream.errors.*;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;

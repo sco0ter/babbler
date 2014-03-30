@@ -22,21 +22,25 @@
  * THE SOFTWARE.
  */
 
+package org.xmpp.extension.muc;
+
+import java.util.EventObject;
+
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>.
- * <p>
- * It defines a method for inviting a contact to a multi-user chat room directly, instead of sending the invitation through the chat room.
- * </p>
+ * @author Christian Schudt
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "jabber:x:conference", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.conference;
+public final class SubjectChangeEvent extends EventObject {
+    /**
+     * Constructs a prototypical Event.
+     *
+     * @param source The object on which the Event initially occurred.
+     * @throws IllegalArgumentException if source is null.
+     */
+    public SubjectChangeEvent(Object source) {
+        super(source);
+    }
 
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+    private String subject;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+    private String nick;
+}

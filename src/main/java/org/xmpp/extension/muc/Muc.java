@@ -70,11 +70,11 @@ public final class Muc {
     /**
      * Creates an element with a history element and a password for the room.
      *
-     * @param history  The history.
      * @param password The password.
+     * @param history  The history.
      */
-    public Muc(History history, String password) {
-        this.history = history;
+    public Muc(String password, History history) {
         this.password = password;
+        this.history = history;
     }
 }

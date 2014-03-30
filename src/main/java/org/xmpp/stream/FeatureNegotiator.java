@@ -26,7 +26,6 @@ package org.xmpp.stream;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -83,7 +82,7 @@ public abstract class FeatureNegotiator {
      * @param status  The status of the feature negotiation process.
      * @param element The element, which triggered the feature status change.
      */
-    protected void notifyFeatureNegotiated(Status status, Object element) throws Exception{
+    protected void notifyFeatureNegotiated(Status status, Object element) throws Exception {
         if (status == null) {
             throw new IllegalArgumentException("status must not be null");
         }

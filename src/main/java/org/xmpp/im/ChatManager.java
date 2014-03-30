@@ -98,24 +98,26 @@ public final class ChatManager {
                     // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
                     // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).
                     String threadId = message.getThread() != null ? message.getThread() : UUID.randomUUID().toString();
-                    Jid contact = chatPartner.asBareJid();
-                    synchronized (chatSessions) {
-                        // If there are no chat sessions with that contact yet, put the contact into the map.
-                        if (!chatSessions.containsKey(contact)) {
-                            chatSessions.put(contact, new HashMap<String, ChatSession>());
+                    if (chatPartner != null) {
+                        Jid contact = chatPartner.asBareJid();
+                        synchronized (chatSessions) {
+                            // If there are no chat sessions with that contact yet, put the contact into the map.
+                            if (!chatSessions.containsKey(contact)) {
+                                chatSessions.put(contact, new HashMap<String, ChatSession>());
+                            }
+                            Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
+                            if (!chatSessionMap.containsKey(threadId)) {
+                                ChatSession chatSession = new ChatSession(chatPartner, threadId, connection);
+                                chatSessionMap.put(threadId, chatSession);
+                                notifyChatSessionCreated(chatSession, e.isIncoming());
+                            }
+                            ChatSession chatSession = chatSessionMap.get(threadId);
+                            if (e.isIncoming()) {
+                                // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
+                                chatSession.chatPartner = message.getFrom();
+                            }
+                            chatSession.notifyMessageListeners(message, e.isIncoming());
                         }
-                        Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
-                        if (!chatSessionMap.containsKey(threadId)) {
-                            ChatSession chatSession = new ChatSession(chatPartner, threadId, connection);
-                            chatSessionMap.put(threadId, chatSession);
-                            notifyChatSessionCreated(chatSession, e.isIncoming());
-                        }
-                        ChatSession chatSession = chatSessionMap.get(threadId);
-                        if (e.isIncoming()) {
-                            // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
-                            chatSession.chatPartner = message.getFrom();
-                        }
-                        chatSession.notifyMessageListeners(message, e.isIncoming());
                     }
                 }
             }

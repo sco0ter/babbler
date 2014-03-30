@@ -22,21 +22,35 @@
  * THE SOFTWARE.
  */
 
+package org.xmpp.extension.rtt;
+
+import org.xmpp.Connection;
+import org.xmpp.extension.ExtensionManager;
+
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>.
- * <p>
- * It defines a method for inviting a contact to a multi-user chat room directly, instead of sending the invitation through the chat room.
- * </p>
+ * @author Christian Schudt
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "jabber:x:conference", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.muc.conference;
+public final class RealTimeTextManager extends ExtensionManager {
+    protected RealTimeTextManager(Connection connection) {
+        super(connection, RealTimeText.NAMESPACE);
+    }
 
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+    RealTimeText createRealTimeMessage() {
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+        RealTimeText realTimeText = new RealTimeText(RealTimeText.Event.NEW);
+
+        return realTimeText;
+    }
+
+    void processRtt(RealTimeText rtt) {
+        for (RealTimeText.Action action : rtt.getActions()) {
+            if (action instanceof RealTimeText.InsertText) {
+
+            } else if (action instanceof RealTimeText.EraseText) {
+
+            } else if (action instanceof RealTimeText.WaitInterval) {
+
+            }
+        }
+    }
+}

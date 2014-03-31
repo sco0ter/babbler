@@ -113,11 +113,22 @@ public final class Invite {
     }
 
     /**
-     * Gets the continue element, containing the message thread from a previous one-to-one chat session.
+     * Indicates, whether a previous one-to-one chat session is continued.
      *
-     * @return The continue element.
+     * @return True, if a previous one-to-one chat session is continued.
+     * @see #getThread()
      */
-    public Continue getContinue() {
-        return aContinue;
+    public boolean isContinue() {
+        return aContinue != null;
+    }
+
+    /**
+     * Gets the thread of the previous one-to-one chat session.
+     *
+     * @return The thread of the previous one-to-one chat session (if any) or null.
+     * @see #isContinue()
+     */
+    public String getThread() {
+        return aContinue != null ? aContinue.getThread() : null;
     }
 }

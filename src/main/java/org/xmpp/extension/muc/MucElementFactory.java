@@ -40,10 +40,6 @@ public class MucElementFactory {
         return new MucDestroy(jid, reason);
     }
 
-    public static Destroy createDestroy(Jid jid, String reason, String password) {
-        return new MucDestroy(jid, reason, password);
-    }
-
     public static Item createItem(Affiliation affiliation) {
         return new MucItem(affiliation);
     }
@@ -69,7 +65,6 @@ public class MucElementFactory {
     }
 
     static final class MucDestroy implements Destroy {
-        private String password;
 
         private String reason;
 
@@ -83,12 +78,6 @@ public class MucElementFactory {
             this.reason = reason;
         }
 
-        public MucDestroy(Jid jid, String reason, String password) {
-            this.jid = jid;
-            this.reason = reason;
-            this.password = password;
-        }
-
         @Override
         public Jid getJid() {
             return jid;
@@ -97,11 +86,6 @@ public class MucElementFactory {
         @Override
         public String getReason() {
             return reason;
-        }
-
-        @Override
-        public String getPassword() {
-            return password;
         }
     }
 

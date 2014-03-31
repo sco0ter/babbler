@@ -97,7 +97,6 @@ public final class MucOwner {
         private MucOwnerDestroy(Destroy destroy) {
             this.jid = destroy.getJid();
             this.reason = destroy.getReason();
-            this.password = destroy.getPassword();
         }
 
         @Override
@@ -108,11 +107,6 @@ public final class MucOwner {
         @Override
         public String getReason() {
             return reason;
-        }
-
-        @Override
-        public String getPassword() {
-            return password;
         }
     }
 }

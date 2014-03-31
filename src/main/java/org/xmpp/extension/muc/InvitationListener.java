@@ -24,10 +24,20 @@
 
 package org.xmpp.extension.muc;
 
-/**
- * @author Christian Schudt
- */
-public interface SubjectChangeListener {
+import java.util.EventListener;
 
-    void subjectChanged(SubjectChangeEvent e);
+/**
+ * Allows to listen for multi-user chat invitations.
+ *
+ * @author Christian Schudt
+ * @see MultiUserChatManager#addInvitationListener(InvitationListener)
+ */
+public interface InvitationListener extends EventListener {
+
+    /**
+     * Handles the event, when an invitation to a multi-user chat has been received.
+     *
+     * @param e The invitation event.
+     */
+    void invitationReceived(InvitationEvent e);
 }

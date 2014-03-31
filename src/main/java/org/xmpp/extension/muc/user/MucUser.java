@@ -56,6 +56,9 @@ public final class MucUser {
     @XmlElement(name = "destroy")
     private MucUserDestroy destroy;
 
+    @XmlElement(name = "password")
+    private String password;
+
     private MucUser() {
     }
 
@@ -106,6 +109,10 @@ public final class MucUser {
      */
     public Destroy getDestroy() {
         return destroy;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     static class MucUserItem implements Item {
@@ -192,8 +199,6 @@ public final class MucUser {
     }
 
     static final class MucUserDestroy implements Destroy {
-        @XmlElement(name = "password")
-        private String password;
 
         @XmlElement(name = "reason")
         private String reason;
@@ -212,7 +217,6 @@ public final class MucUser {
         private MucUserDestroy(Destroy destroy) {
             this.jid = destroy.getJid();
             this.reason = destroy.getReason();
-            this.password = destroy.getPassword();
         }
 
         @Override
@@ -223,11 +227,6 @@ public final class MucUser {
         @Override
         public String getReason() {
             return reason;
-        }
-
-        @Override
-        public String getPassword() {
-            return password;
         }
     }
 

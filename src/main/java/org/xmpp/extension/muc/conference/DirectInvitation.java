@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <x/>} element, which represents a direct multi-user chat invitation.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "x")

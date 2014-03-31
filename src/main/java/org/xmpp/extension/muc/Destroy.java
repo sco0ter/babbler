@@ -47,11 +47,4 @@ public interface Destroy {
      * @return The reason.
      */
     String getReason();
-
-    /**
-     * The password for the alternate room.
-     *
-     * @return The password.
-     */
-    String getPassword();
 }

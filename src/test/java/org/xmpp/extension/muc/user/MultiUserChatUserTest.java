@@ -162,6 +162,7 @@ public class MultiUserChatUserTest extends BaseTest {
                 "    <invite to='hecate@shakespeare.lit'>\n" +
                 "      <reason>Hey Hecate, this is the place for all good witches!</reason>\n" +
                 "    </invite>\n" +
+                "    <password>cauldronburn</password>\n"+
                 "  </x>\n" +
                 "</message>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
@@ -171,6 +172,7 @@ public class MultiUserChatUserTest extends BaseTest {
         Assert.assertNotNull(mucUser.getInvites());
         Assert.assertEquals(mucUser.getInvites().get(0).getTo(), Jid.valueOf("hecate@shakespeare.lit"));
         Assert.assertEquals(mucUser.getInvites().get(0).getReason(), "Hey Hecate, this is the place for all good witches!");
+        Assert.assertEquals(mucUser.getPassword(), "cauldronburn");
     }
 
     @Test
@@ -218,9 +220,10 @@ public class MultiUserChatUserTest extends BaseTest {
         Assert.assertNotNull(mucUser.getInvites());
         Assert.assertEquals(mucUser.getInvites().size(), 2);
         Assert.assertEquals(mucUser.getInvites().get(0).getTo(), Jid.valueOf("wiccarocks@shakespeare.lit/laptop"));
-        Assert.assertEquals(mucUser.getInvites().get(0).getContinue().getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
+        Assert.assertEquals(mucUser.getInvites().get(0).getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
+        Assert.assertTrue(mucUser.getInvites().get(0).isContinue());
         Assert.assertEquals(mucUser.getInvites().get(1).getTo(), Jid.valueOf("hag66@shakespeare.lit"));
-        Assert.assertEquals(mucUser.getInvites().get(1).getContinue().getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
+        Assert.assertEquals(mucUser.getInvites().get(1).getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
     }
 
     @Test

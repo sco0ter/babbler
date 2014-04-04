@@ -24,43 +24,35 @@
 
 package org.xmpp.extension.muc;
 
-import java.util.EventObject;
+import org.xmpp.Jid;
+import org.xmpp.extension.muc.admin.MucAdmin;
 
 /**
  * @author Christian Schudt
  */
-public final class SubjectChangeEvent extends EventObject {
-    private final String subject;
+public final class AffiliatedUser {
 
-    private final Occupant occupant;
+    private final Affiliation affiliation;
 
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source The object on which the Event initially occurred.
-     * @throws IllegalArgumentException if source is null.
-     */
-    public SubjectChangeEvent(Object source, String subject, Occupant occupant) {
-        super(source);
-        this.subject = subject;
-        this.occupant = occupant;
-    }
+    private final Role role;
 
-    /**
-     * Gets the new subject.
-     *
-     * @return The subject.
-     */
-    public String getSubject() {
-        return subject;
-    }
+    private final Jid jid;
 
-    /**
-     * Gets the occupant, who changed the subject.
-     *
-     * @return The occupant.
-     */
-    public Occupant getOccupant() {
-        return occupant;
+    private final String nick;
+
+    AffiliatedUser(MucAdmin mucAdmin) {
+
+        if (!mucAdmin.getItems().isEmpty()) {
+            Item item = mucAdmin.getItems().get(0);
+            this.nick = item.getNick();
+            this.affiliation = item.getAffiliation();
+            this.role = item.getRole();
+            this.jid = item.getJid();
+        } else {
+            this.nick = null;
+            this.affiliation = null;
+            this.role = null;
+            this.jid = null;
+        }
     }
 }

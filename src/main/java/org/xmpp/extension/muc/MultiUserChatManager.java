@@ -136,7 +136,7 @@ public final class MultiUserChatManager extends ExtensionManager {
     }
 
     public ChatService createChatService(Jid chatService) {
-        return new ChatService(chatService, connection);
+        return new ChatService(chatService, connection, serviceDiscoveryManager);
     }
 
     public ChatRoom getRoomInfo(Jid room) throws XmppException {
@@ -194,10 +194,7 @@ public final class MultiUserChatManager extends ExtensionManager {
         return chatRoom;
     }
 
-    public List<Item> getPublicRooms(Jid service) throws XmppException {
-        ItemNode itemDiscovery = serviceDiscoveryManager.discoverItems(service);
-        return itemDiscovery.getItems();
-    }
+
 
     public void enterRoom(String room, String service, String nick) {
         Presence presence = new Presence();

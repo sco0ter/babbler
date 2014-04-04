@@ -28,8 +28,13 @@ import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.extension.disco.ServiceDiscoveryManager;
+import org.xmpp.extension.disco.items.*;
+import org.xmpp.extension.disco.items.Item;
 import org.xmpp.stanza.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -44,11 +49,14 @@ public class ChatService {
 
     private final Jid serviceAddress;
 
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
+
     private final Lock lock = new ReentrantLock();
 
-    public ChatService(Jid serviceAddress, Connection connection) {
+    public ChatService(Jid serviceAddress, Connection connection, ServiceDiscoveryManager serviceDiscoveryManager) {
         this.connection = connection;
         this.serviceAddress = serviceAddress;
+        this.serviceDiscoveryManager = serviceDiscoveryManager;
 
         connection.addMessageListener(new MessageListener() {
             @Override
@@ -61,6 +69,15 @@ public class ChatService {
                 }
             }
         });
+    }
+
+    public List<ChatRoom> getPublicRooms(Jid service) throws XmppException {
+        List<ChatRoom> chatRooms = new ArrayList<>();
+        ItemNode itemNode = serviceDiscoveryManager.discoverItems(service);
+        for (Item item : itemNode.getItems()) {
+            chatRooms.add(new ChatRoom(item.getName(), item.getJid()));
+        }
+        return chatRooms;
     }
 
     public void joinRoom(String room, String nick) throws XmppException {

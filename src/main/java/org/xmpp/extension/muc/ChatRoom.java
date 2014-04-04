@@ -24,18 +24,33 @@
 
 package org.xmpp.extension.muc;
 
+import org.xmpp.Connection;
 import org.xmpp.Jid;
+import org.xmpp.XmppException;
+import org.xmpp.extension.data.DataForm;
+import org.xmpp.extension.muc.user.MucUser;
+import org.xmpp.extension.muc.user.Status;
+import org.xmpp.stanza.*;
 
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
-public class ChatRoom {
+public final class ChatRoom implements MucRoom {
+
+    private static final Logger logger = Logger.getLogger(ChatRoom.class.getName());
+
+    private final Set<SubjectChangeListener> subjectChangeListeners = new CopyOnWriteArraySet<>();
 
     private String name;
+
+    private Jid jid;
 
     private String description;
 
@@ -56,6 +71,186 @@ public class ChatRoom {
     private boolean changeSubjectAllowed;
 
     private String subject;
+
+    private Connection connection;
+
+    public ChatRoom() {
+    }
+
+    public ChatRoom(String name, final Jid jid) {
+        this.name = name;
+        this.jid = jid;
+
+        connection.addMessageListener(new MessageListener() {
+            @Override
+            public void handle(MessageEvent e) {
+                if (e.isIncoming()) {
+                    Message message = e.getMessage();
+                    if (message.getFrom().asBareJid().equals(jid)) {
+
+                        // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
+                        if (message.getSubject() != null && message.getBody() == null) {
+                            notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), null));
+                        }
+                    }
+                }
+            }
+        });
+
+        connection.addPresenceListener(new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                if (e.isIncoming()) {
+                    Presence presence = e.getPresence();
+                    if (presence.getFrom().asBareJid().equals(jid)) {
+                        MucUser mucUser = presence.getExtension(MucUser.class);
+                        if (mucUser != null) {
+                            Occupant occupant = new Occupant(presence);
+                            if (presence.isAvailable()) {
+                                // enter
+                            } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
+
+                                if (mucUser.getStatusCodes().contains(new Status(303))) {
+                                    // nickname change
+                                } else {
+                                    // exit
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private void notifySubjectChangeListeners(SubjectChangeEvent subjectChangeEvent) {
+        for (SubjectChangeListener subjectChangeListener : subjectChangeListeners) {
+            try {
+                subjectChangeListener.subjectChanged(subjectChangeEvent);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+    }
+
+    @Override
+    public void join(String room, String nick) throws XmppException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void join(String room, String nick, String password) throws XmppException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void join(String room, String nick, History history) throws XmppException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void join(String room, String nick, String password, History history) throws XmppException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * Adds a subject change listener, which allows to listen for subject changes.
+     *
+     * @param subjectChangeListener The listener.
+     * @see #removeSubjectChangeListener(SubjectChangeListener)
+     */
+    public void addSubjectChangeListener(SubjectChangeListener subjectChangeListener) {
+        subjectChangeListeners.add(subjectChangeListener);
+    }
+
+    /**
+     * Removes a previously added subject change listener.
+     *
+     * @param subjectChangeListener The listener.
+     * @see #addSubjectChangeListener(SubjectChangeListener)
+     */
+    public void removeSubjectChangeListener(SubjectChangeListener subjectChangeListener) {
+        subjectChangeListeners.remove(subjectChangeListener);
+    }
+
+    @Override
+    public void changeSubject(String subject) {
+        Message message = new Message(jid, Message.Type.GROUPCHAT);
+        message.setSubject(subject);
+        connection.send(message);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        Message m = new Message(jid, Message.Type.GROUPCHAT);
+        m.setBody(message);
+        connection.send(m);
+    }
+
+    @Override
+    public void sendMessage(Message message) {
+        message.setType(Message.Type.GROUPCHAT);
+        message.setTo(jid);
+        connection.send(message);
+    }
+
+    @Override
+    public void sendPrivateMessage(String message, String nick) {
+        throw new UnsupportedOperationException(); // TODO
+    }
+
+    @Override
+    public void sendPrivateMessage(Message message, String nick) {
+        throw new UnsupportedOperationException(); // TODO
+    }
+
+    @Override
+    public void changeNickname(String newNickname) throws XmppException {
+        Presence presence = new Presence();
+        presence.setTo(jid.withResource(newNickname));
+        connection.send(presence);
+        // TODO: Wait for presence in order to check for error.
+    }
+
+    @Override
+    public void changeAvailabilityStatus(Presence.Show show, String status) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void invite(Jid invitee, String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public DataForm getRegistrationForm() throws XmppException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void submitRegistrationForm() throws XmppException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void requestVoice() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void leave() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void kickOccupant(String nickname, String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void banUser(Jid user, String reason) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 
     public void setFeatures(Set<MucFeature> features) {
         this.features = features;

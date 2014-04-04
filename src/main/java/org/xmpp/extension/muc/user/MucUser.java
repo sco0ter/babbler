@@ -30,6 +30,7 @@ import org.xmpp.extension.muc.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,10 +46,10 @@ public final class MucUser {
     private MucUserItem item;
 
     @XmlElement(name = "status")
-    private List<Status> statusCodes;
+    private List<Status> statusCodes = new ArrayList<>();
 
     @XmlElement(name = "invite")
-    private List<Invite> invites;
+    private List<Invite> invites = new ArrayList<>();
 
     @XmlElement(name = "decline")
     private Decline decline;

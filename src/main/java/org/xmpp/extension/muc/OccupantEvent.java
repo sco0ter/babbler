@@ -29,38 +29,22 @@ import java.util.EventObject;
 /**
  * @author Christian Schudt
  */
-public final class SubjectChangeEvent extends EventObject {
-    private final String subject;
+public class OccupantEvent extends EventObject {
 
-    private final Occupant occupant;
+    private final boolean hasJoined;
+
+    private final boolean hasLeft;
 
     /**
      * Constructs a prototypical Event.
      *
      * @param source The object on which the Event initially occurred.
-     * @throws IllegalArgumentException if source is null.
+     * @throws IllegalArgumentException
+     *          if source is null.
      */
-    public SubjectChangeEvent(Object source, String subject, Occupant occupant) {
+    public OccupantEvent(Object source, Occupant occupant, boolean hasJoined, boolean hasLeft) {
         super(source);
-        this.subject = subject;
-        this.occupant = occupant;
-    }
-
-    /**
-     * Gets the new subject.
-     *
-     * @return The subject.
-     */
-    public String getSubject() {
-        return subject;
-    }
-
-    /**
-     * Gets the occupant, who changed the subject.
-     *
-     * @return The occupant.
-     */
-    public Occupant getOccupant() {
-        return occupant;
+        this.hasJoined = hasJoined;
+        this.hasLeft = hasLeft;
     }
 }

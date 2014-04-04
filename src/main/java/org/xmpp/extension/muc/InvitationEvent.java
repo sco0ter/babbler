@@ -78,8 +78,7 @@ public final class InvitationEvent extends EventObject {
         // Therefore only decline mediated invitations.
         if (mediated) {
             Message message = new Message(room);
-            Decline decline = new Decline(inviter, reason);
-            message.getExtensions().add(decline);
+            message.getExtensions().add(new Decline(inviter, reason));
             connection.send(message);
         }
     }

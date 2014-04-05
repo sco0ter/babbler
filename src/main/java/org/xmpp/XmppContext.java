@@ -87,6 +87,7 @@ import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.shim.HeaderManager;
 import org.xmpp.extension.shim.Headers;
+import org.xmpp.extension.sm.StreamManagement;
 import org.xmpp.extension.stream.ibb.Close;
 import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
 import org.xmpp.extension.stream.ibb.Open;
@@ -299,6 +300,9 @@ public abstract class XmppContext {
             // XEP-0191: Blocking Command
             registerExtension(BlockList.class);
             registerManager(BlockingManager.class);
+
+            // XEP-0198: Stream Management
+            registerExtension(StreamManagement.class);
 
             // XEP-0199: XMPP Ping
             registerExtension(Ping.class);

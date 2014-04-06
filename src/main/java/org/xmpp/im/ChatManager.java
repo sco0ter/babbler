@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * <code>ChatSession chatSession = connection.getChatManager().createChatSession(chatPartner);</code>
  * </pre>
  * <h3>Listen for new chat sessions</h3>
- * <p>When a contact initiates a new chat session with you, you can listen for it with the {@link org.xmpp.extension.chatstates.ChatStateListener}.
+ * <p>When a contact initiates a new chat session with you, you can listen for it with the {@link ChatSessionListener}.
  * The listener will be called either if you created the session programmatically as shown above, or if it is created by a contact, i.e. because he or she sent you a chat message.
  * </p>
  * <p>You should add a {@link MessageListener} to the chat session in order to listen for messages.</p>

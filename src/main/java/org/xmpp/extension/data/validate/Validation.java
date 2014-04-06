@@ -1,0 +1,263 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package org.xmpp.extension.data.validate;
+
+import javax.xml.bind.annotation.*;
+
+/**
+ * The implementation of the validation element, which is used to validate form fields.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
+ */
+@XmlRootElement(name = "validate")
+public final class Validation {
+
+    @XmlAttribute(name = "datatype")
+    private String dataType;
+
+    @XmlElements({@XmlElement(name = "basic", type = ValidationMethod.Basic.class),
+            @XmlElement(name = "open", type = ValidationMethod.Open.class),
+            @XmlElement(name = "range", type = ValidationMethod.Range.class),
+            @XmlElement(name = "regex", type = ValidationMethod.Regex.class)})
+    private ValidationMethod validationMethod;
+
+    @XmlElement(name = "list-range")
+    private ListRange listRange;
+
+    private Validation() {
+    }
+
+    /**
+     * Creates a validation with a data type.
+     *
+     * @param dataType The data type.
+     */
+    public Validation(String dataType) {
+        this.dataType = dataType;
+    }
+
+    /**
+     * Creates a validation with a validation method (and no data type, which is optional).
+     *
+     * @param validationMethod The validation method.
+     */
+    public Validation(ValidationMethod validationMethod) {
+        this.validationMethod = validationMethod;
+    }
+
+    /**
+     * Creates a validation with a data type and validation method.
+     *
+     * @param dataType         The data type.
+     * @param validationMethod The validation method.
+     */
+    public Validation(String dataType, ValidationMethod validationMethod) {
+        this.dataType = dataType;
+        this.validationMethod = validationMethod;
+    }
+
+    /**
+     * Creates a validation with a data type, validation method and list range.
+     *
+     * @param dataType         The data type.
+     * @param validationMethod The validation method.
+     * @param listRange        The list range, used for {@link org.xmpp.extension.data.DataForm.Field.Type#LIST_MULTI} fields.
+     */
+    public Validation(String dataType, ValidationMethod validationMethod, ListRange listRange) {
+        this.dataType = dataType;
+        this.validationMethod = validationMethod;
+        this.listRange = listRange;
+    }
+
+    /**
+     * Gets the validation method.
+     *
+     * @return The validation method.
+     * @see ValidationMethod.Basic
+     * @see ValidationMethod.Open
+     * @see ValidationMethod.Range
+     * @see ValidationMethod.Regex
+     */
+    public ValidationMethod getValidationMethod() {
+        return validationMethod;
+    }
+
+    /**
+     * Gets the data type of the field.
+     *
+     * @return The data type.
+     */
+    public String getDataType() {
+        return dataType;
+    }
+
+    /**
+     * Gets the list range.
+     *
+     * @return The list range.
+     */
+    public ListRange getListRange() {
+        return listRange;
+    }
+
+    /**
+     * The abstract validation method.
+     *
+     * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-validation">3.2 Validation Methods</a>
+     */
+    public static abstract class ValidationMethod {
+        @XmlValue
+        protected String value;
+
+        private ValidationMethod() {
+        }
+
+        /**
+         * Indicates, that the value(s) should simply match the field type and datatype constraints.
+         */
+        public static final class Basic extends ValidationMethod {
+        }
+
+        /**
+         * For {@linkplain org.xmpp.extension.data.DataForm.Field.Type#LIST_SINGLE "list-single"} or {@linkplain org.xmpp.extension.data.DataForm.Field.Type#LIST_MULTI "list-multi"}, to indicate that the user may enter a custom value (matching the datatype constraints) or choose from the predefined values.
+         * <p>
+         * This validation method applies to {@linkplain org.xmpp.extension.data.DataForm.Field.Type#TEXT_MULTI "text-multi"} differently; it hints that each value for a "text-multi" field shall be validated separately. This effectively turns "text-multi" fields into an open-ended "list-multi", with no options and all values automatically selected.
+         * </p>
+         */
+        public static final class Open extends ValidationMethod {
+        }
+
+        /**
+         * Indicates that the value should fall within a certain range.
+         */
+        public static final class Range extends ValidationMethod {
+
+            @XmlAttribute(name = "min")
+            private String min;
+
+            @XmlAttribute(name = "max")
+            private String max;
+
+            private Range() {
+            }
+
+            /**
+             * Creates a range validation.
+             *
+             * @param min The minimum value allowed. The value depends on the datatype in use.
+             * @param max The maximum value allowed. The value depends on the datatype in use.
+             */
+            public Range(String min, String max) {
+                this.min = min;
+                this.max = max;
+            }
+
+            /**
+             * Gets the minimum value allowed.
+             *
+             * @return The minimum.
+             */
+            public String getMin() {
+                return min;
+            }
+
+            /**
+             * Gets the maximum value allowed.
+             *
+             * @return The maximum.
+             */
+            public String getMax() {
+                return max;
+            }
+        }
+
+        /**
+         * Indicates that the value should be restricted to a regular expression.
+         */
+        public static final class Regex extends ValidationMethod {
+            private Regex() {
+            }
+
+            public Regex(String regex) {
+                this.value = regex;
+            }
+
+            /**
+             * Gets the regular expression.
+             *
+             * @return The regular expression.
+             */
+            public String getRegex() {
+                return value;
+            }
+        }
+    }
+
+    /**
+     * For {@linkplain org.xmpp.extension.data.DataForm.Field.Type#LIST_MULTI "list-multi"}, validation can indicate that a minimum and maximum number of options should be selected and/or entered. This selection range MAY be combined with the other methods to provide more flexibility.
+     *
+     * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-ranges">3.3 Selection Ranges in "list-multi"</a>
+     */
+    public static final class ListRange {
+        @XmlAttribute(name = "min")
+        private Integer min;
+
+        @XmlAttribute(name = "max")
+        private Integer max;
+
+        private ListRange() {
+        }
+
+        /**
+         * Creates a list range for multi-text fields.
+         *
+         * @param min The minimum allowable number of selected/entered values.
+         * @param max The maximum allowable number of selected/entered values.
+         */
+        public ListRange(int min, int max) {
+            this.min = min;
+            this.max = max;
+        }
+
+        /**
+         * Gets the minimum allowable number of selected/entered values.
+         *
+         * @return The minimum allowable number of selected/entered values.
+         */
+        public Integer getMin() {
+            return min;
+        }
+
+        /**
+         * Gets the maximum allowable number of selected/entered values.
+         *
+         * @return The maximum allowable number of selected/entered values.
+         */
+        public Integer getMax() {
+            return max;
+        }
+    }
+}

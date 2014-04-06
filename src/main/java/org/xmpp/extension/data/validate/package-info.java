@@ -22,22 +22,16 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.stream;
-
-import java.util.EventListener;
-
 /**
- * A feature listener, which listens for negotiation status changes.
- *
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>.
+ * <p>
+ * It defines a backwards-compatible extension to the XMPP Data Forms protocol that enables applications to specify additional validation guidelines related to a form, such as validation of standard XML datatypes, application-specific datatypes, value ranges, and regular expressions.
+ * </p>
  */
-public interface FeatureListener extends EventListener {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "http://jabber.org/protocol/xdata-validate", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.data.validate;
 
-    /**
-     * Fired whenever the status of a feature negotiation has changed.
-     *
-     * @param featureEvent The feature event.
-     * @throws Exception If any exception occurred during handling of the event.
-     */
-    void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception;
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

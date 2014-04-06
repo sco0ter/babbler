@@ -37,7 +37,9 @@ public final class SubjectChangeEvent extends EventObject {
     /**
      * Constructs a prototypical Event.
      *
-     * @param source The object on which the Event initially occurred.
+     * @param source   The object on which the Event initially occurred.
+     * @param subject  The subject.
+     * @param occupant The occupant who changed the subject.
      * @throws IllegalArgumentException if source is null.
      */
     public SubjectChangeEvent(Object source, String subject, Occupant occupant) {

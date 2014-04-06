@@ -25,6 +25,7 @@
 package org.xmpp.extension.data;
 
 import org.xmpp.extension.data.media.Media;
+import org.xmpp.extension.data.validate.Validation;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -260,6 +261,9 @@ public final class DataForm implements Comparable<DataForm> {
         @XmlElement(name = "required")
         private String required;
 
+        @XmlElementRef
+        private Validation validation;
+
         @XmlElement(name = "value")
         private List<String> values = new ArrayList<>();
 
@@ -455,6 +459,16 @@ public final class DataForm implements Comparable<DataForm> {
             } else {
                 return getVar().compareTo(o.getVar());
             }
+        }
+
+        /**
+         * Gets the validation for this field.
+         *
+         * @return The validation.
+         * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
+         */
+        public Validation getValidation() {
+            return validation;
         }
 
         /**

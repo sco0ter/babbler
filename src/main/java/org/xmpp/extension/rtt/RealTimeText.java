@@ -106,7 +106,7 @@ public final class RealTimeText {
     /**
      * The implementation of the {@code <e/>} element.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_t_insert_text">4.6.3.1 Element <t/> - Insert Text</a></cite></p>
+     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_t_insert_text">4.6.3.1 Element {@code <t/>} - Insert Text</a></cite></p>
      * <p>Supports the transmission of text, including key presses, and text block inserts.</p>
      * </blockquote>
      */
@@ -126,7 +126,7 @@ public final class RealTimeText {
     /**
      * The implementation of the {@code <e/>} element.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_e_erase_text">4.6.3.2 Element <e/> - Erase Text</a></cite></p>
+     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_e_erase_text">4.6.3.2 Element {@code <e/>} - Erase Text</a></cite></p>
      * <p>Supports the behavior of backspace key presses. Text is removed towards beginning of the message. This element is also used for all delete operations, including the backspace key, the delete key, and text block deletes.</p>
      * </blockquote>
      */
@@ -161,7 +161,7 @@ public final class RealTimeText {
     /**
      * The implementation of the {@code <w/>} element.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_w_wait_interval">4.6.3.3 Element <w/> - Wait Interval</a></cite></p>
+     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_w_wait_interval">4.6.3.3 Element {@code <w/>} - Wait Interval</a></cite></p>
      * <p>Allow for the transmission of intervals, between real-time text actions, to recreate the pauses between key presses.</p>
      * </blockquote>
      */

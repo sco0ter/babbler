@@ -37,6 +37,8 @@ import org.xmpp.extension.blocking.BlockingManager;
 import org.xmpp.extension.bob.Data;
 import org.xmpp.extension.caps.EntityCapabilities;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
+import org.xmpp.extension.carbons.MessageCarbons;
+import org.xmpp.extension.carbons.MessageCarbonsManager;
 import org.xmpp.extension.chatstates.*;
 import org.xmpp.extension.compress.Compress;
 import org.xmpp.extension.data.DataForm;
@@ -327,6 +329,10 @@ public abstract class XmppContext {
 
             // XEP-0249: Direct MUC Invitations
             registerExtension(DirectInvitation.class);
+
+            // XEP-0280: Message Carbons
+            registerExtension(MessageCarbons.class);
+            registerManager(MessageCarbonsManager.class);
 
             // XEP-0297: Stanza Forwarding
             registerExtension(Forwarded.class);

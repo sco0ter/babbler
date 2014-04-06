@@ -115,15 +115,19 @@ public final class Jid {
      * @param resource The resource part.
      */
     public Jid(String local, String domain, String resource) {
-        this(local, domain, resource, false);
+        this(local, domain, resource, false, true);
     }
 
-    private Jid(String local, String domain, String resource, boolean doUnescape) {
-        String preparedNode = prepare(local, true);
+    private Jid(String local, String domain, String resource, boolean doUnescape, boolean prepareAndValidate) {
+        String preparedNode;
+        if (prepareAndValidate) {
+            preparedNode = prepare(local, true);
+            validateDomain(domain);
+            validateLength(preparedNode, "local");
+        } else {
+            preparedNode = local;
+        }
         String preparedResource = prepare(resource, false);
-
-        validateDomain(domain);
-        validateLength(preparedNode, "local");
         validateLength(preparedResource, "resource");
 
         if (doUnescape) {
@@ -170,7 +174,7 @@ public final class Jid {
 
         Matcher matcher = JID.matcher(jid);
         if (matcher.matches()) {
-            return new Jid(matcher.group(2), matcher.group(3), matcher.group(8), doUnescape);
+            return new Jid(matcher.group(2), matcher.group(3), matcher.group(8), doUnescape, true);
         } else {
             throw new IllegalArgumentException("Could not parse JID.");
         }
@@ -298,11 +302,7 @@ public final class Jid {
      * @see #withResource(String)
      */
     public Jid asBareJid() {
-        if (local != null) {
-            return new Jid(local, domain);
-        } else {
-            return new Jid(domain);
-        }
+        return new Jid(local, domain, null, false, false);
     }
 
     /**
@@ -313,7 +313,7 @@ public final class Jid {
      * @see #asBareJid()
      */
     public Jid withResource(String resource) {
-        return new Jid(local, domain, resource);
+        return new Jid(local, domain, resource, false, false);
     }
 
     /**

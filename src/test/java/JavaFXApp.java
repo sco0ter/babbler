@@ -57,6 +57,8 @@ import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
+import org.xmpp.extension.carbons.MessageCarbonsManager;
+import org.xmpp.extension.carbons.Private;
 import org.xmpp.extension.chatstates.Composing;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
@@ -68,8 +70,6 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
-import org.xmpp.extension.muc.ChatService;
-import org.xmpp.extension.muc.MultiUserChatManager;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
@@ -368,7 +368,7 @@ public class JavaFXApp extends Application {
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
                         try {
                             connection.connect();
-                            connection.login(txtUser.getText(), txtPassword.getText(), "test");
+                            connection.login(txtUser.getText(), txtPassword.getText());
                             //connection.loginAnonymously();
                             RegistrationManager registrationManager = connection.getExtensionManager(RegistrationManager.class);
                             Registration registration = registrationManager.getRegistration();
@@ -649,9 +649,6 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                String s = new String(new int[]{0x1F44D}, 0, 1);
-                connection.send(new Message(null, Message.Type.CHAT, s));
-                MultiUserChatManager multiUserChatManager = connection.getExtensionManager(MultiUserChatManager.class);
 
             }
         });

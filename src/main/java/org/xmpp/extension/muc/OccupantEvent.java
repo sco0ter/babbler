@@ -39,8 +39,7 @@ public class OccupantEvent extends EventObject {
      * Constructs a prototypical Event.
      *
      * @param source The object on which the Event initially occurred.
-     * @throws IllegalArgumentException
-     *          if source is null.
+     * @throws IllegalArgumentException if source is null.
      */
     public OccupantEvent(Object source, Occupant occupant, boolean hasJoined, boolean hasLeft) {
         super(source);

@@ -57,8 +57,6 @@ import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
-import org.xmpp.extension.carbons.MessageCarbonsManager;
-import org.xmpp.extension.carbons.Private;
 import org.xmpp.extension.chatstates.Composing;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;

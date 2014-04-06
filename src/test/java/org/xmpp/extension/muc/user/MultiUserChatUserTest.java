@@ -162,7 +162,7 @@ public class MultiUserChatUserTest extends BaseTest {
                 "    <invite to='hecate@shakespeare.lit'>\n" +
                 "      <reason>Hey Hecate, this is the place for all good witches!</reason>\n" +
                 "    </invite>\n" +
-                "    <password>cauldronburn</password>\n"+
+                "    <password>cauldronburn</password>\n" +
                 "  </x>\n" +
                 "</message>";
         XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);

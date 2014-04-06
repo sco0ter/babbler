@@ -52,6 +52,7 @@ import org.xmpp.extension.forward.StanzaForwardingManager;
 import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.Body;
+import org.xmpp.extension.json.Json;
 import org.xmpp.extension.last.LastActivity;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.messagecorrect.MessageCorrectionManager;
@@ -344,6 +345,9 @@ public abstract class XmppContext {
             // XEP-0308: Last Message Correction
             registerExtension(Replace.class);
             registerManager(MessageCorrectionManager.class);
+
+            // XEP-0335: JSON Containers
+            registerExtension(Json.class);
         }
     }
 }

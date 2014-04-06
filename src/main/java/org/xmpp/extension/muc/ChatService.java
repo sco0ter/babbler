@@ -29,8 +29,8 @@ import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
-import org.xmpp.extension.disco.items.*;
 import org.xmpp.extension.disco.items.Item;
+import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.stanza.*;
 
 import java.util.ArrayList;

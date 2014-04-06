@@ -195,7 +195,6 @@ public final class MultiUserChatManager extends ExtensionManager {
     }
 
 
-
     public void enterRoom(String room, String service, String nick) {
         Presence presence = new Presence();
         presence.setTo(new Jid(room, service, nick));

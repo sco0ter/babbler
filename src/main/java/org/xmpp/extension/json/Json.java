@@ -22,16 +22,28 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>.
- * <p>
- * In order to keep all IM clients for a user engaged in a conversation, outbound messages are carbon-copied to all interested resources.
- * </p>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = MessageCarbons.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.carbons;
+package org.xmpp.extension.json;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
+/**
+ * @author Christian Schudt
+ */
+@XmlRootElement(name = "json")
+public final class Json {
+
+    @XmlValue
+    private String json;
+
+    private Json() {
+    }
+
+    public Json(String json) {
+        this.json = json;
+    }
+
+    public String getValue() {
+        return json;
+    }
+}

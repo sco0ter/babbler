@@ -23,13 +23,13 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>.
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0335.html">XEP-0335: JSON Containers</a>.
  * <p>
- * In order to keep all IM clients for a user engaged in a conversation, outbound messages are carbon-copied to all interested resources.
+ * It defines an element to be used for encapsulating JSON data in XMPP.
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = MessageCarbons.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.carbons;
+@XmlSchema(namespace = "urn:xmpp:json:0", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.json;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

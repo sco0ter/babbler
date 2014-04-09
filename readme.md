@@ -48,13 +48,13 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt supported][supported]           [XEP-0108: User Activity](http://xmpp.org/extensions/xep-0108.html)
 * ![alt supported][supported]           [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
 * ![alt supported][supported]           [XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)
-* ![alt not supported][not supported]   [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
+* ![alt supported][supported]           [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
 * ![alt supported][supported]           [XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)
 * ![alt supported][supported]           [XEP-0131: Stanza Headers and Internet Metadata](http://xmpp.org/extensions/xep-0131.html)
 * ![alt not supported][not supported]   [XEP-0136: Message Archiving](http://xmpp.org/extensions/xep-0136.html)
 * ![alt not supported][not supported]   [XEP-0137: Publishing Stream Initiation Requests](http://xmpp.org/extensions/xep-0137.html)
 * ![alt supported][supported]           [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)
-* ![alt not supported][not supported]   [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
+* ![alt supported][supported]           [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
 * ![alt in development][in development] [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 * ![alt supported][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
 * ![alt supported][supported]           [XEP-0152: Reachability Addresses](http://xmpp.org/extensions/xep-0152.html)
@@ -93,6 +93,10 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![alt not supported][not supported]   [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![alt supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
 
+Supported experimental XEPs:
+
+* ![alt supported][supported]           [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
+
 Additionally following informational XEP documents are respected:
 
 * ![alt supported][supported]           [XEP-0082: XMPP Date and Time Profiles](http://xmpp.org/extensions/xep-0082.html)
@@ -100,6 +104,8 @@ Additionally following informational XEP documents are respected:
 * ![alt supported][supported]           [XEP-0128: Service Discovery Extensions](http://xmpp.org/extensions/xep-0128.html)
 * ![alt supported][supported]           [XEP-0170: Recommended Order of Stream Feature Negotiation](http://xmpp.org/extensions/xep-0170.html)
 * ![alt supported][supported]           [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
+
+
 
 # License
 
@@ -122,7 +128,7 @@ Connection connection = new TcpConnection("hostname", 5222);
 
 If you want to establish a BOSH connection, use the following class instead:
 ```java
-Connection connection = new BoshConnection("hostname", 5222);
+Connection connection = new BoshConnection("hostname", 5280);
 ```
 
 In either case you get an abstract connection object, you can now work with.

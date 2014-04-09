@@ -24,6 +24,7 @@
 
 package org.xmpp.extension.data;
 
+import org.xmpp.extension.data.layout.Page;
 import org.xmpp.extension.data.media.Media;
 import org.xmpp.extension.data.validate.Validation;
 
@@ -46,10 +47,13 @@ public final class DataForm implements Comparable<DataForm> {
     private Type type;
 
     @XmlElement
-    private List<String> instructions = new ArrayList<>();
+    private String title;
 
     @XmlElement
-    private String title;
+    private List<String> instructions = new ArrayList<>();
+
+    @XmlElementRef
+    private List<Page> pages = new ArrayList<>();
 
     @XmlElement(name = "field")
     private List<Field> fields = new ArrayList<>();
@@ -217,6 +221,10 @@ public final class DataForm implements Comparable<DataForm> {
         } else {
             return ft.compareTo(fto);
         }
+    }
+
+    public List<Page> getPages() {
+        return pages;
     }
 
     /**

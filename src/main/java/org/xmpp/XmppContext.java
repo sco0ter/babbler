@@ -42,6 +42,7 @@ import org.xmpp.extension.carbons.MessageCarbonsManager;
 import org.xmpp.extension.chatstates.*;
 import org.xmpp.extension.compress.Compress;
 import org.xmpp.extension.data.DataForm;
+import org.xmpp.extension.data.layout.Page;
 import org.xmpp.extension.data.media.Media;
 import org.xmpp.extension.data.validate.Validation;
 import org.xmpp.extension.delay.DelayedDelivery;
@@ -282,6 +283,9 @@ public abstract class XmppContext {
 
             // XEP-0138: Stream Compression
             registerExtension(Compress.class);
+
+            // XEP-0141: Data Forms Layout
+            registerExtension(Page.class);
 
             // XEP-0144: Roster Item Exchange
             registerExtension(RosterExchange.class);

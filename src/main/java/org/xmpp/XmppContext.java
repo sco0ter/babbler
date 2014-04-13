@@ -54,6 +54,7 @@ import org.xmpp.extension.forward.StanzaForwardingManager;
 import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.Body;
+import org.xmpp.extension.jingle.Jingle;
 import org.xmpp.extension.json.Json;
 import org.xmpp.extension.last.LastActivity;
 import org.xmpp.extension.last.LastActivityManager;
@@ -300,6 +301,9 @@ public abstract class XmppContext {
             // XEP-0153: vCard-Based Avatars
             registerExtension(AvatarUpdate.class);
             registerManager(AvatarManager.class);
+
+            // XEP-0166: Jingle
+            registerExtension(Jingle.class);
 
             // XEP-0172: User Nickname
             registerExtension(Nickname.class);

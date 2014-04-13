@@ -35,13 +35,13 @@ import org.xmpp.stanza.Presence;
  */
 public interface MucRoom {
 
-    void join(String room, String nick) throws XmppException;
+    void join(String nick) throws XmppException;
 
-    void join(String room, String nick, String password) throws XmppException;
+    void join(String nick, String password) throws XmppException;
 
-    void join(String room, String nick, History history) throws XmppException;
+    void join(String nick, History history) throws XmppException;
 
-    void join(String room, String nick, String password, History history) throws XmppException;
+    void join(String nick, String password, History history) throws XmppException;
 
     void addSubjectChangeListener(SubjectChangeListener subjectChangeListener);
 
@@ -69,9 +69,11 @@ public interface MucRoom {
 
     void requestVoice();
 
-    void leave();
+    void exit();
 
-    void kickOccupant(String nickname, String reason);
+    void exit(String message);
 
-    void banUser(Jid user, String reason);
+    void kickOccupant(String nickname, String reason) throws XmppException;
+
+    void banUser(Jid user, String reason) throws XmppException;
 }

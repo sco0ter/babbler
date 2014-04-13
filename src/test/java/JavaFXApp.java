@@ -52,6 +52,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.Product;
+import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.xmpp.*;
 import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
@@ -68,6 +69,7 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
+import org.xmpp.extension.muc.MultiUserChatManager;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
@@ -367,10 +369,6 @@ public class JavaFXApp extends Application {
                         try {
                             connection.connect();
                             connection.login(txtUser.getText(), txtPassword.getText());
-                            //connection.loginAnonymously();
-                            RegistrationManager registrationManager = connection.getExtensionManager(RegistrationManager.class);
-                            Registration registration = registrationManager.getRegistration();
-                            boolean isSupported = registrationManager.isRegistrationSupported();
                             connection.send(new Presence());
                             connection.getRosterManager().requestRoster();
 

@@ -42,7 +42,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "x")
-public final class DataForm implements Comparable<DataForm> {
+public class DataForm implements Comparable<DataForm> {
     @XmlAttribute
     private Type type;
 
@@ -108,6 +108,10 @@ public final class DataForm implements Comparable<DataForm> {
             }
         }
         return null;
+    }
+
+    public static boolean parseBoolean(String value) {
+        return Boolean.parseBoolean(value) || "1".equals(value);
     }
 
     /**

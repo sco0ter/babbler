@@ -71,9 +71,9 @@ public class ChatService {
         });
     }
 
-    public List<ChatRoom> getPublicRooms(Jid service) throws XmppException {
+    public List<ChatRoom> getPublicRooms() throws XmppException {
         List<ChatRoom> chatRooms = new ArrayList<>();
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(service);
+        ItemNode itemNode = serviceDiscoveryManager.discoverItems(serviceAddress);
         for (Item item : itemNode.getItems()) {
             chatRooms.add(new ChatRoom(item.getName(), item.getJid()));
         }

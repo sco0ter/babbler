@@ -153,7 +153,7 @@ public final class TcpConnection extends Connection {
 
         this.socket = new Socket(proxy);
 
-        if (getHostname() != null) {
+        if (getHostname() != null && !getHostname().isEmpty()) {
             socket.connect(new InetSocketAddress(getHostname(), getPort()));
         } else if (xmppServiceDomain != null) {
             try {

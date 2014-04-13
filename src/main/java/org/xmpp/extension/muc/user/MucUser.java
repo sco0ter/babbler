@@ -63,6 +63,10 @@ public final class MucUser {
     private MucUser() {
     }
 
+    public MucUser(Invite invite) {
+        this.invites.add(invite);
+    }
+
     MucUser(Destroy destroy) {
         this.destroy = new MucUserDestroy(destroy);
     }

@@ -62,6 +62,19 @@ public final class MucAdmin {
         }
     }
 
+    public static MucAdmin withItem(String nick, Role role, String reason) {
+        return new MucAdmin(new MucAdminItem(nick, role, reason));
+    }
+
+    public static MucAdmin withItem(Jid jid, Affiliation affiliation, String reason) {
+        return new MucAdmin(new MucAdminItem(jid, affiliation, reason));
+    }
+
+    public static MucAdmin withItems(List<Item> items) {
+        Item[] itemArray = new Item[items.size()];
+        return new MucAdmin(items.toArray(itemArray));
+    }
+
     /**
      * Gets the items.
      *
@@ -94,32 +107,20 @@ public final class MucAdmin {
         private MucAdminItem() {
         }
 
-        MucAdminItem(Affiliation affiliation) {
-            this(affiliation, null, null);
+        MucAdminItem(Jid jid, Affiliation affiliation, String reason) {
+            this(jid, affiliation, reason, null);
         }
 
-        MucAdminItem(Affiliation affiliation, Jid jid) {
-            this(affiliation, jid, null);
-        }
-
-        MucAdminItem(Affiliation affiliation, Jid jid, String reason) {
-            this(affiliation, jid, reason, null);
-        }
-
-        MucAdminItem(Affiliation affiliation, Jid jid, String reason, String nick) {
-            this.affiliation = affiliation;
+        MucAdminItem(Jid jid, Affiliation affiliation, String reason, String nick) {
             this.jid = jid;
+            this.affiliation = affiliation;
             this.reason = reason;
             this.nick = nick;
         }
 
-        MucAdminItem(Role role, String nick) {
-            this(role, nick, null);
-        }
-
-        MucAdminItem(Role role, String nick, String reason) {
-            this.role = role;
+        MucAdminItem(String nick, Role role, String reason) {
             this.nick = nick;
+            this.role = role;
             this.reason = reason;
         }
 

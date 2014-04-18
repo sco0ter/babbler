@@ -81,6 +81,7 @@ public abstract class FeatureNegotiator {
      *
      * @param status  The status of the feature negotiation process.
      * @param element The element, which triggered the feature status change.
+     * @throws Exception If an exception occurred during feature negotiation.
      */
     protected void notifyFeatureNegotiated(Status status, Object element) throws Exception {
         if (status == null) {

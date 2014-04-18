@@ -370,7 +370,8 @@ public final class ChatRoom implements MucRoom {
      *
      * @param nickname The occupant's nickname.
      * @param reason   The reason.
-     * @throws XmppException
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
      */
     public void grantVoice(String nickname, String reason) throws XmppException {
@@ -382,7 +383,8 @@ public final class ChatRoom implements MucRoom {
      *
      * @param nickname The occupant's nickname.
      * @param reason   The reason.
-     * @throws XmppException
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
      */
     public void revokeVoice(String nickname, String reason) throws XmppException {
@@ -408,7 +410,8 @@ public final class ChatRoom implements MucRoom {
      * Gets the ban list.
      *
      * @return The ban list.
-     * @throws XmppException
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public List<? extends Item> getBanList() throws XmppException {
@@ -423,7 +426,8 @@ public final class ChatRoom implements MucRoom {
 
     /**
      * Grants membership to a user.
-     *
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
      */
     public void grantMembership(Jid user, String reason) throws XmppException {
@@ -449,7 +453,8 @@ public final class ChatRoom implements MucRoom {
      * </p>
      *
      * @return The members.
-     * @throws XmppException
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public List<? extends Item> getMembers() throws XmppException {
@@ -467,7 +472,8 @@ public final class ChatRoom implements MucRoom {
      *
      * @param nick   The nick.
      * @param reason The reason.
-     * @throws XmppException
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
      */
     public void grantModeratorStatus(String nick, String reason) throws XmppException {
@@ -490,7 +496,8 @@ public final class ChatRoom implements MucRoom {
      * Gets the moderators.
      *
      * @return The moderators.
-     * @throws XmppException
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
     public List<? extends Item> getModerators() throws XmppException {

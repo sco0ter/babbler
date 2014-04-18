@@ -22,14 +22,16 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.jingle.transports.iceupd;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
- * @author Christian Schudt
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0176.html">XEP-0176: Jingle ICE-UDP Transport Method</a>.
+ * <p>
+ * It defines a Jingle transport method that results in sending media data using raw datagram associations via the User Datagram Protocol (UDP). This transport method is negotiated via the Interactive Connectivity Establishment (ICE) methodology, which provides robust NAT traversal for media traffic.
+ * </p>
  */
-@XmlRootElement(name = "transport")
-public final class IceUpdTransport {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "urn:xmpp:jingle:transports:ice-udp:1", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.jingle.transports.iceudp;
 
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

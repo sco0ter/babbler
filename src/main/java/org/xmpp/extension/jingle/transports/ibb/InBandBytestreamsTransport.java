@@ -22,21 +22,53 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.jingle.transports.iceupd;
+package org.xmpp.extension.jingle.transports.ibb;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Christian Schudt
  */
-public class RemoteCandidate {
+@XmlRootElement(name = "transport")
+public final class InBandBytestreamsTransport {
 
-    @XmlAttribute(name = "component")
-    private int component;
+    @XmlAttribute(name = "block-size")
+    private Integer blockSize;
 
-    @XmlAttribute(name = "ip")
-    private String ipAddress;
+    @XmlAttribute
+    private String sid;
 
-    @XmlAttribute(name = "port")
-    private int port;
+    @XmlAttribute
+    private StanzaType stanza;
+
+    public InBandBytestreamsTransport() {
+
+    }
+
+    public InBandBytestreamsTransport(int blockSize, String sid) {
+        this.blockSize = blockSize;
+        this.sid = sid;
+    }
+
+    public Integer getBlockSize() {
+        return blockSize;
+    }
+
+    public String getSessionId() {
+        return sid;
+    }
+
+    public StanzaType getStanzaType() {
+        return stanza;
+    }
+
+    public enum StanzaType {
+        @XmlEnumValue("iq")
+        IQ,
+        @XmlEnumValue("message")
+        MESSAGE
+    }
 }

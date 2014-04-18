@@ -55,6 +55,7 @@ import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.Body;
 import org.xmpp.extension.jingle.Jingle;
+import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransport;
 import org.xmpp.extension.json.Json;
 import org.xmpp.extension.last.LastActivity;
 import org.xmpp.extension.last.LastActivityManager;
@@ -307,6 +308,9 @@ public abstract class XmppContext {
 
             // XEP-0172: User Nickname
             registerExtension(Nickname.class);
+
+            // XEP-0176: Jingle ICE-UDP Transport Method
+            registerExtension(IceUdpTransport.class);
 
             // XEP-0184: Message Delivery Receipts
             registerManager(MessageDeliveryReceiptsManager.class);

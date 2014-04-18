@@ -181,7 +181,7 @@ public final class Jid {
     }
 
     /**
-     * Escapes a JID. The characters <code>"&'/:<>@</code> (+ whitespace) are replaced with
+     * Escapes a JID. The characters {@code "&'/:<>@} (+ whitespace) are replaced with their respective escape characters.
      *
      * @param jid The JID.
      * @return The escaped JID.

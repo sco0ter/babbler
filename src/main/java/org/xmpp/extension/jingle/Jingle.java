@@ -25,6 +25,7 @@
 package org.xmpp.extension.jingle;
 
 import org.xmpp.Jid;
+import org.xmpp.extension.jingle.transports.Transport;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public final class Jingle {
     private Reason reason;
 
     @XmlElement(name = "content")
-    private List<Content> content = new ArrayList<>();
+    private List<Content> contents = new ArrayList<>();
 
     public Action getAction() {
         return action;
@@ -74,8 +75,8 @@ public final class Jingle {
         return reason;
     }
 
-    public List<Content> getContent() {
-        return content;
+    public List<Content> getContents() {
+        return contents;
     }
 
     public enum Action {
@@ -167,12 +168,19 @@ public final class Jingle {
         @XmlAttribute(name = "name")
         private String name;
 
+        @XmlElementRef
+        private List<Transport> transports = new ArrayList<>();
+
         public Creator getCreator() {
             return creator;
         }
 
         public String getName() {
             return name;
+        }
+
+        public List<Transport> getTransports() {
+            return transports;
         }
 
         public enum Creator {

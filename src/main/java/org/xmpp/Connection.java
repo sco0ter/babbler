@@ -684,6 +684,8 @@ public abstract class Connection implements Closeable {
 
     /**
      * Secures the connection, i.e. negotiates TLS.
+     *
+     * @throws IOException If an error occurs during TLS negotiation.
      */
     protected void secureConnection() throws IOException {
     }
@@ -740,7 +742,8 @@ public abstract class Connection implements Closeable {
     /**
      * Waits until SASL negotiation has started and then releases the lock. This method must be invoked at the end of the {@link #connect()} method.
      *
-     * @throws IOException If any exception occurred during stream negotiation.
+     * @throws NoResponseException If no response was received from the server.
+     * @throws IOException         If any exception occurred during stream negotiation.
      */
     protected final void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
         // Wait for the response and wait until all features have been negotiated.

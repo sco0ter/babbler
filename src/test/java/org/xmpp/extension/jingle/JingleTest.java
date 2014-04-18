@@ -170,8 +170,8 @@ public class JingleTest extends BaseTest {
         Assert.assertNotNull(jingle);
         Assert.assertEquals(jingle.getAction(), Jingle.Action.SESSION_INITIATE);
         Assert.assertEquals(jingle.getSessionId(), "a73sjjvkla37jfea");
-        Assert.assertEquals(jingle.getContent().size(), 1);
-        Assert.assertEquals(jingle.getContent().get(0).getCreator(), Jingle.Content.Creator.INITIATOR);
-        Assert.assertEquals(jingle.getContent().get(0).getName(), "voice");
+        Assert.assertEquals(jingle.getContents().size(), 1);
+        Assert.assertEquals(jingle.getContents().get(0).getCreator(), Jingle.Content.Creator.INITIATOR);
+        Assert.assertEquals(jingle.getContents().get(0).getName(), "voice");
     }
 }

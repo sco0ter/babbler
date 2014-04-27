@@ -38,11 +38,11 @@ import java.util.List;
  */
 public final class RosterEvent extends EventObject {
 
-    private final List<Roster.Contact> addedContacts;
+    private final List<Contact> addedContacts;
 
-    private final List<Roster.Contact> updatedContacts;
+    private final List<Contact> updatedContacts;
 
-    private final List<Roster.Contact> removedContacts;
+    private final List<Contact> removedContacts;
 
     /**
      * Constructs a prototypical Event.
@@ -53,7 +53,7 @@ public final class RosterEvent extends EventObject {
      * @param source          The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    RosterEvent(Object source, List<Roster.Contact> addedContacts, List<Roster.Contact> updatedContacts, List<Roster.Contact> deletedContacts) {
+    RosterEvent(Object source, List<Contact> addedContacts, List<Contact> updatedContacts, List<Contact> deletedContacts) {
         super(source);
         this.addedContacts = Collections.unmodifiableList(addedContacts);
         this.updatedContacts = Collections.unmodifiableList(updatedContacts);
@@ -65,7 +65,7 @@ public final class RosterEvent extends EventObject {
      *
      * @return The added contacts.
      */
-    public List<Roster.Contact> getAddedContacts() {
+    public List<Contact> getAddedContacts() {
         return addedContacts;
     }
 
@@ -74,7 +74,7 @@ public final class RosterEvent extends EventObject {
      *
      * @return The updated contacts.
      */
-    public List<Roster.Contact> getUpdatedContacts() {
+    public List<Contact> getUpdatedContacts() {
         return updatedContacts;
     }
 
@@ -83,7 +83,7 @@ public final class RosterEvent extends EventObject {
      *
      * @return The removed contacts.
      */
-    public List<Roster.Contact> getRemovedContacts() {
+    public List<Contact> getRemovedContacts() {
         return removedContacts;
     }
 }

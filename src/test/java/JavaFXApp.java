@@ -68,6 +68,8 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
+import org.xmpp.extension.muc.ChatService;
+import org.xmpp.extension.muc.MultiUserChatManager;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
@@ -172,7 +174,7 @@ public class JavaFXApp extends Application {
             }
         });
 
-        final Map<Roster.Contact, ContactItem> contactMap = new HashMap<>();
+        final Map<Contact, ContactItem> contactMap = new HashMap<>();
 
         final ObservableList<ContactItem> contactItems = FXCollections.observableArrayList();
         LogManager.getLogManager().reset();
@@ -271,18 +273,18 @@ public class JavaFXApp extends Application {
                                 Platform.runLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        for (Roster.Contact contact : e.getAddedContacts()) {
+                                        for (Contact contact : e.getAddedContacts()) {
                                             ContactItem contactItem1 = new ContactItem(contact);
                                             contactItems.add(contactItem1);
                                             contactMap.put(contact, contactItem1);
                                         }
 
-                                        for (Roster.Contact contact : e.getUpdatedContacts()) {
+                                        for (Contact contact : e.getUpdatedContacts()) {
                                             ContactItem contactItem1 = contactMap.get(contact);
                                             contactItem1.contact.set(contact);
                                         }
 
-                                        for (Roster.Contact contact : e.getRemovedContacts()) {
+                                        for (Contact contact : e.getRemovedContacts()) {
                                             contactItems.remove(contactMap.remove(contact));
                                         }
                                     }
@@ -299,7 +301,7 @@ public class JavaFXApp extends Application {
                                             @Override
                                             public void run() {
                                                 Presence presence = e.getPresence();
-                                                Roster.Contact contact = connection.getRosterManager().getContact(presence.getFrom());
+                                                Contact contact = connection.getRosterManager().getContact(presence.getFrom());
                                                 if (contact != null) {
                                                     ContactItem contactItem1 = contactMap.get(contact);
                                                     contactItem1.presence.set(presence);
@@ -330,7 +332,7 @@ public class JavaFXApp extends Application {
                                     @Override
                                     public void run() {
 
-                                        Roster.Contact contact = connection.getRosterManager().getContact(e.getContact());
+                                        Contact contact = connection.getRosterManager().getContact(e.getContact());
                                         if (contact != null) {
                                             ContactItem contactItem = contactMap.get(contact);
                                             if (contactItem != null) {
@@ -641,7 +643,15 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                MultiUserChatManager multiUserChatManager = connection.getExtensionManager(MultiUserChatManager.class);
+                ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.christian-schudts-macbook-pro"));
+                try {
+                    //chatService.getPublicRooms();
+                    //multiUserChatManager.getRoomInfo(Jid.valueOf("test@conference.christian-schudts-macbook-pro"));
+                    chatService.joinRoom("test", "nick");
+                } catch (XmppException e) {
+                    e.printStackTrace();
+                }
             }
         });
         Button btnExit = new Button("Exit");
@@ -753,13 +763,13 @@ public class JavaFXApp extends Application {
     }
 
     public static final class ContactItem implements Comparable<ContactItem> {
-        private final ObjectProperty<Roster.Contact> contact;
+        private final ObjectProperty<Contact> contact;
 
         private final ObjectProperty<Presence> presence;
 
         private final ObjectProperty<byte[]> avatar;
 
-        public ContactItem(Roster.Contact contact) {
+        public ContactItem(Contact contact) {
             this.contact = new SimpleObjectProperty<>(contact);
             this.presence = new SimpleObjectProperty<>();
             this.avatar = new SimpleObjectProperty<>();

@@ -27,6 +27,7 @@ package org.xmpp;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.extension.httpbind.Body;
+import org.xmpp.im.Contact;
 import org.xmpp.im.Roster;
 import org.xmpp.stanza.IQ;
 
@@ -59,8 +60,8 @@ public class PrefixFreeCanonicalizationWriterTest {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
         Roster roster = new Roster();
-        List<Roster.Contact> contacts = new ArrayList<>();
-        contacts.add(new Roster.Contact(new Jid("domain")));
+        List<Contact> contacts = new ArrayList<>();
+        contacts.add(new Contact(new Jid("domain")));
         roster.getContacts().addAll(contacts);
         IQ iq = new IQ("1", IQ.Type.GET, roster);
 

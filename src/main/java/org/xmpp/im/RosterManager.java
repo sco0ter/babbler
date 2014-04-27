@@ -26,10 +26,12 @@ package org.xmpp.im;
 
 import org.xmpp.*;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.errors.ServiceUnavailable;
 import org.xmpp.stanza.errors.UnexpectedRequest;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,13 +44,21 @@ import java.util.logging.Logger;
 public final class RosterManager {
     private static final Logger logger = Logger.getLogger(RosterManager.class.getName());
 
-    private final Map<Jid, Roster.Contact> contactMap = new ConcurrentHashMap<>();
+    private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();
 
     private final Set<RosterListener> rosterListeners = new CopyOnWriteArraySet<>();
 
     private final Connection connection;
 
+    private final List<ContactGroup> groups = new CopyOnWriteArrayList<>();
+
+    private final List<Contact> unaffiliatedContacts = new ArrayList<>();
+
+    private final Map<String, ContactGroup> rosterGroupMap = new ConcurrentHashMap<>();
+
     private boolean retrieveRosterOnLogin = true;
+
+    private String groupDelimiter = null;
 
     public RosterManager(final Connection connection) {
         this.connection = connection;
@@ -59,14 +69,21 @@ public final class RosterManager {
                     IQ iq = e.getIQ();
                     Roster roster = iq.getExtension(Roster.class);
                     if (roster != null) {
+                        // 2.1.6.  Roster Push
                         if (iq.getType() == IQ.Type.SET) {
-                            // Gracefully send an empty result.
-                            connection.send(iq.createResult());
-                            updateRoster(roster);
+                            // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
+                            if (iq.getFrom() == null || iq.getFrom().equals(connection.getConnectedResource().asBareJid())) {
+                                // Gracefully send an empty result.
+                                connection.send(iq.createResult());
+                                updateRoster(roster, true);
+                            } else {
+                                // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
+                                connection.send(iq.createError(new StanzaError(new ServiceUnavailable())));
+                            }
                         } else if (iq.getType() == IQ.Type.GET) {
                             connection.send(iq.createError(new StanzaError(new UnexpectedRequest())));
                         } else if (iq.getType() == IQ.Type.RESULT) {
-                            updateRoster(roster);
+                            updateRoster(roster, false);
                         }
                     }
                 }
@@ -88,33 +105,169 @@ public final class RosterManager {
      * @param jid The JID.
      * @return The contact or null.
      */
-    public Roster.Contact getContact(Jid jid) {
+    public Contact getContact(Jid jid) {
         if (jid == null) {
             throw new IllegalArgumentException("jid must not be null");
         }
         return contactMap.get(jid.asBareJid());
     }
 
-    void updateRoster(Roster roster) {
-        List<Roster.Contact> addedContacts = new ArrayList<>();
-        List<Roster.Contact> updatedContacts = new ArrayList<>();
-        List<Roster.Contact> removedContacts = new ArrayList<>();
+    void updateRoster(Roster roster, boolean isRosterPush) {
+        List<Contact> addedContacts = new ArrayList<>();
+        List<Contact> updatedContacts = new ArrayList<>();
+        List<Contact> removedContacts = new ArrayList<>();
         Collections.sort(roster.getContacts());
-        // Loop through the new roster and compare it with the old ones.
-        for (Roster.Contact contact : roster.getContacts()) {
-            Roster.Contact oldContact = contactMap.get(contact.getJid());
-            if (contact.getSubscription() == Roster.Contact.Subscription.REMOVE) {
-                contactMap.remove(contact.getJid());
-                removedContacts.add(contact);
-            } else if (oldContact != null && !oldContact.equals(contact)) {
-                contactMap.put(contact.getJid(), contact);
-                updatedContacts.add(contact);
-            } else if (oldContact == null) {
-                contactMap.put(contact.getJid(), contact);
-                addedContacts.add(contact);
+        synchronized (this) {
+            if (!isRosterPush) {
+                rosterGroupMap.clear();
+                contactMap.clear();
+            }
+
+            // Loop through the new roster and compare it with the old one.
+            for (Contact contact : roster.getContacts()) {
+                Contact oldContact = contactMap.get(contact.getJid());
+                if (contact.getSubscription() == Contact.Subscription.REMOVE) {
+                    contactMap.remove(contact.getJid());
+                    removedContacts.add(contact);
+                } else if (oldContact != null && !oldContact.equals(contact)) {
+                    contactMap.put(contact.getJid(), contact);
+                    updatedContacts.add(contact);
+                } else if (oldContact == null) {
+                    contactMap.put(contact.getJid(), contact);
+                    addedContacts.add(contact);
+                }
+
+                if (contact.getSubscription() != Contact.Subscription.REMOVE) {
+
+                    for (String group : contact.getGroups()) {
+                        String[] nestedGroups;
+                        if (groupDelimiter != null) {
+                            nestedGroups = group.split(groupDelimiter);
+                        } else {
+                            nestedGroups = new String[]{group};
+                        }
+
+                        String currentGroupName = "";
+                        ContactGroup parentGroup = null;
+                        for (int i = 0; i < nestedGroups.length; i++) {
+                            String nestedGroup = nestedGroups[i];
+                            currentGroupName += nestedGroup;
+                            ContactGroup currentGroup = rosterGroupMap.get(currentGroupName);
+                            if (currentGroup == null) {
+                                currentGroup = new ContactGroup(nestedGroup, currentGroupName, parentGroup);
+                                rosterGroupMap.put(currentGroupName, currentGroup);
+                                // Only add top level groups.
+                                if (i == 0) {
+                                    groups.add(currentGroup);
+                                }
+                                if (parentGroup != null) {
+                                    parentGroup.getGroups().add(currentGroup);
+                                }
+                            }
+
+                            parentGroup = currentGroup;
+                            if (i < nestedGroups.length - 1) {
+                                currentGroupName += groupDelimiter;
+                            }
+                        }
+                        if (parentGroup != null && !parentGroup.getContacts().contains(contact)) {
+                            parentGroup.getContacts().add(contact);
+                        }
+                    }
+                }
+
+                // Add the contact to the list of unaffiliated contacts, if it has no groups and it hasn't been removed from the roster.
+                if (contact.getGroups().isEmpty() && contact.getSubscription() != Contact.Subscription.REMOVE) {
+                    for (Contact c : unaffiliatedContacts) {
+                        if (c.getJid().equals(contact.getJid())) {
+                            // Remove any previous contact.
+                            unaffiliatedContacts.remove(c);
+                            break;
+                        }
+                    }
+                    unaffiliatedContacts.add(contact);
+                } else {
+                    // If the contact has groups or has been removed from the roster, remove it from the unaffiliated contacts.
+                    for (Contact c : unaffiliatedContacts) {
+                        if (c.getJid().equals(contact.getJid())) {
+                            unaffiliatedContacts.remove(c);
+                            break;
+                        }
+                    }
+                }
+                removeContactsFromGroups(contact, groups);
             }
         }
         notifyRosterListeners(new RosterEvent(this, addedContacts, updatedContacts, removedContacts));
+    }
+
+    /**
+     * Recursively removes the contact from the groups and subsequently removes all empty groups.
+     *
+     * @param contact       The contact.
+     * @param contactGroups The contact groups.
+     */
+    private void removeContactsFromGroups(Contact contact, Collection<ContactGroup> contactGroups) {
+        List<ContactGroup> emptyGroups = new ArrayList<>();
+        for (ContactGroup group : contactGroups) {
+            // Recursively remove the contact from the nested subgroups.
+            // If the nested group is empty, it can be removed.
+            if (removeRecursively(contact, group)) {
+                emptyGroups.add(group);
+                rosterGroupMap.remove(group.getFullName());
+            }
+        }
+        // Remove all empty sub groups
+        contactGroups.removeAll(emptyGroups);
+    }
+
+    private boolean removeRecursively(final Contact contact, final ContactGroup contactGroup) {
+        // Recursively remove the contacts from nested groups.
+        removeContactsFromGroups(contact, contactGroup.getGroups());
+
+        // Check, if the contact still exists in the group.
+        boolean contactExistsInGroup = false;
+        for (Contact c : contactGroup.getContacts()) {
+            if (c.getJid().equals(contact.getJid())) {
+                for (String groupName : contact.getGroups()) {
+                    if (groupName.equals(contactGroup.getFullName())) {
+                        contactExistsInGroup = true;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        //  If the contact does not exist or was removed, remove it.
+        if (!contactExistsInGroup || contact.getSubscription() == Contact.Subscription.REMOVE) {
+            for (Contact c : contactGroup.getContacts()) {
+                if (c.getJid().equals(contact.getJid())) {
+                    contactGroup.getContacts().remove(c);
+                    break;
+                }
+            }
+        }
+        // Return, if the group is empty, so that the parent group can remove it.
+        return contactGroup.getContacts().isEmpty() && contactGroup.getGroups().isEmpty();
+    }
+
+    /**
+     * Gets the contact groups.
+     *
+     * @return The contact groups.
+     */
+    public synchronized Collection<ContactGroup> getContactGroups() {
+        return Collections.unmodifiableCollection(groups);
+    }
+
+    /**
+     * Gets the contacts, which are not affiliated to any group.
+     *
+     * @return The contacts, which are not affiliated to any group.
+     */
+    public Collection<Contact> getUnaffiliatedContacts() {
+        return Collections.unmodifiableCollection(unaffiliatedContacts);
     }
 
     /**
@@ -189,7 +342,7 @@ public final class RosterManager {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public void addContact(Roster.Contact contact, boolean requestSubscription, String status) throws XmppException {
+    public void addContact(Contact contact, boolean requestSubscription, String status) throws XmppException {
         if (contact == null) {
             throw new IllegalArgumentException("contact must not be null.");
         }
@@ -208,7 +361,7 @@ public final class RosterManager {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public void updateContact(Roster.Contact contact) throws XmppException {
+    public void updateContact(Contact contact) throws XmppException {
         addContact(contact, false, null);
     }
 
@@ -219,9 +372,32 @@ public final class RosterManager {
      */
     public void removeContact(Jid jid) {
         Roster roster = new Roster();
-        Roster.Contact contact = new Roster.Contact(jid);
-        contact.setSubscription(Roster.Contact.Subscription.REMOVE);
+        Contact contact = new Contact(jid);
+        contact.setSubscription(Contact.Subscription.REMOVE);
         roster.getContacts().add(contact);
         connection.send(new IQ(IQ.Type.SET, roster));
+    }
+
+    /**
+     * Gets the group delimiter.
+     *
+     * @return The group delimiter.
+     * @see #setGroupDelimiter(String)
+     */
+    public synchronized String getGroupDelimiter() {
+        return groupDelimiter;
+    }
+
+    /**
+     * Sets the group delimiter.
+     * <p>
+     * If this is set to a non-null value, contact groups are split by the specified delimiter in order to build a nested hierarchy of groups.
+     * </p>
+     *
+     * @param groupDelimiter The group delimiter.
+     * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
+     */
+    public synchronized void setGroupDelimiter(String groupDelimiter) {
+        this.groupDelimiter = groupDelimiter;
     }
 }

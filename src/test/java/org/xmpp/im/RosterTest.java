@@ -90,9 +90,9 @@ public class RosterTest extends BaseTest {
         Assert.assertEquals(roster.getContacts().get(0).getGroups().size(), 1);
         Assert.assertEquals(roster.getContacts().get(0).getGroups().get(0), "Friends");
         Assert.assertEquals(roster.getContacts().get(1).getName(), "Mercutio");
-        Assert.assertEquals(roster.getContacts().get(2).getSubscription(), Roster.Contact.Subscription.BOTH);
-        Assert.assertEquals(roster.getContacts().get(3).getSubscription(), Roster.Contact.Subscription.NONE);
-        Assert.assertEquals(roster.getContacts().get(4).getSubscription(), Roster.Contact.Subscription.TO);
+        Assert.assertEquals(roster.getContacts().get(2).getSubscription(), Contact.Subscription.BOTH);
+        Assert.assertEquals(roster.getContacts().get(3).getSubscription(), Contact.Subscription.NONE);
+        Assert.assertEquals(roster.getContacts().get(4).getSubscription(), Contact.Subscription.TO);
         Assert.assertEquals(roster.getVersion(), "ver11");
     }
 
@@ -112,7 +112,7 @@ public class RosterTest extends BaseTest {
         Assert.assertNotNull(iq);
         Roster roster = iq.getExtension(Roster.class);
         Assert.assertNotNull(roster);
-        Assert.assertEquals(roster.getContacts().get(0).getSubscription(), Roster.Contact.Subscription.REMOVE);
+        Assert.assertEquals(roster.getContacts().get(0).getSubscription(), Contact.Subscription.REMOVE);
         Assert.assertFalse(roster.getContacts().get(0).isPending());
         Assert.assertFalse(roster.getContacts().get(0).isApproved());
     }
@@ -163,8 +163,8 @@ public class RosterTest extends BaseTest {
         String xml = "<query xmlns=\"jabber:iq:roster\"><item jid=\"node1@domain\"></item><item jid=\"node2@domain\" name=\"Name\"><group>Group1</group><group>Group2</group></item></query>";
 
         Roster roster = new Roster();
-        roster.getContacts().add(new Roster.Contact(Jid.valueOf("node1@domain")));
-        roster.getContacts().add(new Roster.Contact(Jid.valueOf("node2@domain"), "Name", "Group1", "Group2"));
+        roster.getContacts().add(new Contact(Jid.valueOf("node1@domain")));
+        roster.getContacts().add(new Contact(Jid.valueOf("node2@domain"), "Name", "Group1", "Group2"));
 
         String rosterXml = marshall(roster);
         Assert.assertEquals(rosterXml, xml);
@@ -173,15 +173,15 @@ public class RosterTest extends BaseTest {
     @Test
     public void testContactEquality() throws XMLStreamException, JAXBException {
 
-        Roster.Contact contact1 = new Roster.Contact(Jid.valueOf("node1@domain"), "name");
-        contact1.setSubscription(Roster.Contact.Subscription.FROM);
+        Contact contact1 = new Contact(Jid.valueOf("node1@domain"), "name");
+        contact1.setSubscription(Contact.Subscription.FROM);
         contact1.ask = true;
         contact1.approved = true;
         contact1.getGroups().add("group2");
         contact1.getGroups().add("group1");
 
-        Roster.Contact contact2 = new Roster.Contact(Jid.valueOf("node1@domain"), "name");
-        contact2.setSubscription(Roster.Contact.Subscription.FROM);
+        Contact contact2 = new Contact(Jid.valueOf("node1@domain"), "name");
+        contact2.setSubscription(Contact.Subscription.FROM);
         contact2.getGroups().add("group1");
         contact2.getGroups().add("group2");
         contact2.ask = true;

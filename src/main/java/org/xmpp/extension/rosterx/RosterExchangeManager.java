@@ -28,7 +28,7 @@ import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.im.Roster;
+import org.xmpp.im.Contact;
 import org.xmpp.stanza.IQ;
 import org.xmpp.stanza.Message;
 import org.xmpp.stanza.Presence;
@@ -43,9 +43,9 @@ public class RosterExchangeManager extends ExtensionManager {
         super(connection);
     }
 
-    public void suggestContactAddition(Jid jid, List<Roster.Contact> contacts) throws XmppException {
+    public void suggestContactAddition(Jid jid, List<Contact> contacts) throws XmppException {
         RosterExchange rosterExchange = new RosterExchange();
-        for (Roster.Contact contact : contacts) {
+        for (Contact contact : contacts) {
             RosterExchange.Item rosterItem = new RosterExchange.Item(contact.getJid(), contact.getName(), contact.getGroups(), RosterExchange.Item.Action.ADD);
             rosterExchange.getItems().add(rosterItem);
         }

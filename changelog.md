@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-## Version 0.0.2-SNAPSHOT
+## Version 0.2.0-SNAPSHOT
 
 * RosterManager now supports (nested) contact groups
 * The 'from' attribute of roster pushes are now checked
@@ -11,7 +11,6 @@
 * Added support for [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
 * Jid class improved (nodeprep, better escaping logic)
 
-
-## Version 0.0.1 (2014-03-22)
+## Version 0.1.0 (2014-03-22)
 
 * Initial version

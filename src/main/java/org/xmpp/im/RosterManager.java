@@ -100,6 +100,15 @@ public final class RosterManager {
     }
 
     /**
+     * Gets the contacts.
+     *
+     * @return The contacts.
+     */
+    public Collection<Contact> getContacts() {
+        return Collections.unmodifiableCollection(contactMap.values());
+    }
+
+    /**
      * Gets a contact by its JID or null, if it does not exist.
      *
      * @param jid The JID.

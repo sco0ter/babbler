@@ -426,6 +426,9 @@ public final class ChatRoom implements MucRoom {
 
     /**
      * Grants membership to a user.
+     *
+     * @param user   The user.
+     * @param reason The reason.
      * @throws StanzaException     If the chat service returned a stanza error.
      * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
@@ -437,6 +440,10 @@ public final class ChatRoom implements MucRoom {
     /**
      * Revokes a user's membership.
      *
+     * @param user   The user.
+     * @param reason The reason.
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
      */
     public void revokeMembership(Jid user, String reason) throws XmppException {
@@ -485,7 +492,8 @@ public final class ChatRoom implements MucRoom {
      *
      * @param nick   The nick.
      * @param reason The reason.
-     * @throws XmppException
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
     public void revokeModeratorStatus(String nick, String reason) throws XmppException {

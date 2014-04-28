@@ -201,25 +201,31 @@ public final class Contact implements Comparable<Contact> {
         }
         Contact other = (Contact) o;
 
-        return (jid == null ? other.jid == null : jid.equals(other.jid))
-                && (name == null ? other.name == null : name.equals(other.name))
-                && (subscription == null ? other.subscription == null : subscription.equals(other.subscription))
-                && (approved == null ? other.approved == null : approved.equals(other.approved))
-                && (ask == null ? other.ask == null : ask.equals(other.ask))
-                && (group == null ? other.group == null : (group.containsAll(other.group) && other.group.containsAll(group)));
-
+        return jid == null ? other.jid == null : jid.equals(other.jid);
     }
 
     @Override
     public int hashCode() {
         int result = 17;
         result = 31 * result + ((jid == null) ? 0 : jid.hashCode());
-        result = 31 * result + ((name == null) ? 0 : name.hashCode());
-        result = 31 * result + ((subscription == null) ? 0 : subscription.hashCode());
-        result = 31 * result + ((approved == null) ? 0 : approved.hashCode());
-        result = 31 * result + ((ask == null) ? 0 : ask.hashCode());
-        result = 31 * result + ((group == null) ? 0 : group.hashCode());
         return result;
+    }
+
+    boolean equalsFull(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Contact)) {
+            return false;
+        }
+        Contact other = (Contact) o;
+
+        return (jid == null ? other.jid == null : jid.equals(other.jid))
+                && (name == null ? other.name == null : name.equals(other.name))
+                && (subscription == null ? other.subscription == null : subscription.equals(other.subscription))
+                && (approved == null ? other.approved == null : approved.equals(other.approved))
+                && (ask == null ? other.ask == null : ask.equals(other.ask))
+                && (group == null ? other.group == null : (group.containsAll(other.group) && other.group.containsAll(group)));
     }
 
     /**
@@ -239,7 +245,7 @@ public final class Contact implements Comparable<Contact> {
             if (name != null) {
 
                 if (o.name != null) {
-                    result = name.compareTo(o.name);
+                    result = name.compareToIgnoreCase(o.name);
                 } else {
                     result = -1;
                 }

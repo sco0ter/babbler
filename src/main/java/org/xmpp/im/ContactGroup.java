@@ -24,8 +24,7 @@
 
 package org.xmpp.im;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a contact group in the user's roster.
@@ -35,7 +34,7 @@ import java.util.List;
  */
 public final class ContactGroup implements Comparable<ContactGroup> {
 
-    private final List<Contact> contacts;
+    private final Set<Contact> contacts;
 
     private final List<ContactGroup> groups;
 
@@ -48,7 +47,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
     ContactGroup(String name, String fullName, ContactGroup parentGroup) {
         this.name = name;
         this.fullName = fullName;
-        this.contacts = new ArrayList<>();
+        this.contacts = new TreeSet<>();
         this.groups = new ArrayList<>();
         this.parentGroup = parentGroup;
     }
@@ -85,7 +84,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
      *
      * @return The contacts.
      */
-    public List<Contact> getContacts() {
+    public Collection<Contact> getContacts() {
         return contacts;
     }
 
@@ -100,7 +99,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
             if (fullName != null) {
 
                 if (o.fullName != null) {
-                    result = fullName.compareTo(o.fullName);
+                    result = fullName.compareToIgnoreCase(o.fullName);
                 } else {
                     result = -1;
                 }
@@ -115,6 +114,26 @@ public final class ContactGroup implements Comparable<ContactGroup> {
         } else {
             return 1;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ContactGroup)) {
+            return false;
+        }
+        ContactGroup other = (ContactGroup) o;
+
+        return fullName == null ? other.fullName == null : fullName.equals(other.fullName);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + ((fullName == null) ? 0 : fullName.hashCode());
+        return result;
     }
 
     @Override

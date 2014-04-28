@@ -33,6 +33,7 @@ import org.xmpp.TestConnection;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -104,8 +105,8 @@ public class RosterManagerTest extends BaseTest {
         Roster roster1 = new Roster();
         roster1.getContacts().add(new Contact(Jid.valueOf("contact1@domain"), "contact1", "Group1"));
         roster1.getContacts().add(new Contact(Jid.valueOf("contact2@domain"), "contact2", "Group2"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3"));
         roster1.getContacts().add(new Contact(Jid.valueOf("contact4@domain"), "contact4", "Group3"));
+        roster1.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3"));
         roster1.getContacts().add(new Contact(Jid.valueOf("contact5@domain"), "contact5", "Group3"));
         rosterManager.updateRoster(roster1, false);
 
@@ -113,13 +114,14 @@ public class RosterManagerTest extends BaseTest {
         Assert.assertEquals(list.size(), 3);
         Assert.assertEquals(list.get(0).getName(), "Group1");
         Assert.assertEquals(list.get(0).getContacts().size(), 1);
-        Assert.assertEquals(list.get(0).getContacts().get(0).getJid(), Jid.valueOf("contact1@domain"));
+        Assert.assertEquals(list.get(0).getContacts().iterator().next().getJid(), Jid.valueOf("contact1@domain"));
         Assert.assertEquals(list.get(1).getName(), "Group2");
-        Assert.assertEquals(list.get(1).getContacts().get(0).getJid(), Jid.valueOf("contact2@domain"));
+        Assert.assertEquals(list.get(1).getContacts().iterator().next().getJid(), Jid.valueOf("contact2@domain"));
         Assert.assertEquals(list.get(2).getName(), "Group3");
-        Assert.assertEquals(list.get(2).getContacts().get(0).getJid(), Jid.valueOf("contact3@domain"));
-        Assert.assertEquals(list.get(2).getContacts().get(1).getJid(), Jid.valueOf("contact4@domain"));
-        Assert.assertEquals(list.get(2).getContacts().get(2).getJid(), Jid.valueOf("contact5@domain"));
+        Iterator<Contact> iterator = list.get(2).getContacts().iterator();
+        Assert.assertEquals(iterator.next().getJid(), Jid.valueOf("contact3@domain"));
+        Assert.assertEquals(iterator.next().getJid(), Jid.valueOf("contact4@domain"));
+        Assert.assertEquals(iterator.next().getJid(), Jid.valueOf("contact5@domain"));
     }
 
     @Test
@@ -134,16 +136,16 @@ public class RosterManagerTest extends BaseTest {
 
         List<ContactGroup> list = new ArrayList<>(rosterManager.getContactGroups());
         Assert.assertEquals(list.size(), 1);
-        Assert.assertEquals(list.get(0).getContacts().get(0).getJid(), Jid.valueOf("contact5@domain"));
+        Assert.assertEquals(list.get(0).getContacts().iterator().next().getJid(), Jid.valueOf("contact5@domain"));
         Assert.assertEquals(list.get(0).getName(), "Group3");
         Assert.assertEquals(list.get(0).getContacts().size(), 1);
         Assert.assertEquals(list.get(0).getGroups().size(), 1);
         Assert.assertEquals(list.get(0).getGroups().get(0).getName(), "SubGroup");
         Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().size(), 1);
         Assert.assertEquals(list.get(0).getGroups().get(0).getContacts().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getContacts().get(0).getJid(), Jid.valueOf("contact3@domain"));
+        Assert.assertEquals(list.get(0).getGroups().get(0).getContacts().iterator().next().getJid(), Jid.valueOf("contact3@domain"));
         Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getName(), "3rdLevel");
         Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getContacts().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getContacts().get(0).getJid(), Jid.valueOf("contact4@domain"));
+        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getContacts().iterator().next().getJid(), Jid.valueOf("contact4@domain"));
     }
 }

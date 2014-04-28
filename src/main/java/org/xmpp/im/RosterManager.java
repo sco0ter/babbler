@@ -31,7 +31,6 @@ import org.xmpp.stanza.errors.UnexpectedRequest;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,11 +49,11 @@ public final class RosterManager {
 
     private final Connection connection;
 
-    private final List<ContactGroup> groups = new CopyOnWriteArrayList<>();
+    private final Set<ContactGroup> groups = new TreeSet<>();
 
-    private final List<Contact> unaffiliatedContacts = new ArrayList<>();
+    private final Set<Contact> unaffiliatedContacts = new TreeSet<>();
 
-    private final Map<String, ContactGroup> rosterGroupMap = new ConcurrentHashMap<>();
+    private final Map<String, ContactGroup> rosterGroupMap = new HashMap<>();
 
     private boolean retrieveRosterOnLogin = true;
 
@@ -138,7 +137,7 @@ public final class RosterManager {
                 if (contact.getSubscription() == Contact.Subscription.REMOVE) {
                     contactMap.remove(contact.getJid());
                     removedContacts.add(contact);
-                } else if (oldContact != null && !oldContact.equals(contact)) {
+                } else if (oldContact != null && !oldContact.equalsFull(contact)) {
                     contactMap.put(contact.getJid(), contact);
                     updatedContacts.add(contact);
                 } else if (oldContact == null) {
@@ -157,52 +156,39 @@ public final class RosterManager {
                         }
 
                         String currentGroupName = "";
-                        ContactGroup parentGroup = null;
+                        ContactGroup currentGroup = null;
                         for (int i = 0; i < nestedGroups.length; i++) {
-                            String nestedGroup = nestedGroups[i];
-                            currentGroupName += nestedGroup;
-                            ContactGroup currentGroup = rosterGroupMap.get(currentGroupName);
-                            if (currentGroup == null) {
-                                currentGroup = new ContactGroup(nestedGroup, currentGroupName, parentGroup);
-                                rosterGroupMap.put(currentGroupName, currentGroup);
+                            String nestedGroupName = nestedGroups[i];
+                            currentGroupName += nestedGroupName;
+                            ContactGroup nestedGroup = rosterGroupMap.get(currentGroupName);
+                            if (nestedGroup == null) {
+                                nestedGroup = new ContactGroup(nestedGroupName, currentGroupName, currentGroup);
+                                rosterGroupMap.put(currentGroupName, nestedGroup);
                                 // Only add top level groups.
                                 if (i == 0) {
-                                    groups.add(currentGroup);
+                                    groups.add(nestedGroup);
                                 }
-                                if (parentGroup != null) {
-                                    parentGroup.getGroups().add(currentGroup);
+                                if (currentGroup != null) {
+                                    currentGroup.getGroups().add(nestedGroup);
                                 }
                             }
 
-                            parentGroup = currentGroup;
+                            currentGroup = nestedGroup;
                             if (i < nestedGroups.length - 1) {
                                 currentGroupName += groupDelimiter;
                             }
                         }
-                        if (parentGroup != null && !parentGroup.getContacts().contains(contact)) {
-                            parentGroup.getContacts().add(contact);
+                        if (currentGroup != null) {
+                            currentGroup.getContacts().remove(contact);
+                            currentGroup.getContacts().add(contact);
                         }
                     }
                 }
 
+                unaffiliatedContacts.remove(contact);
                 // Add the contact to the list of unaffiliated contacts, if it has no groups and it hasn't been removed from the roster.
                 if (contact.getGroups().isEmpty() && contact.getSubscription() != Contact.Subscription.REMOVE) {
-                    for (Contact c : unaffiliatedContacts) {
-                        if (c.getJid().equals(contact.getJid())) {
-                            // Remove any previous contact.
-                            unaffiliatedContacts.remove(c);
-                            break;
-                        }
-                    }
                     unaffiliatedContacts.add(contact);
-                } else {
-                    // If the contact has groups or has been removed from the roster, remove it from the unaffiliated contacts.
-                    for (Contact c : unaffiliatedContacts) {
-                        if (c.getJid().equals(contact.getJid())) {
-                            unaffiliatedContacts.remove(c);
-                            break;
-                        }
-                    }
                 }
                 removeContactsFromGroups(contact, groups);
             }
@@ -250,12 +236,7 @@ public final class RosterManager {
 
         //  If the contact does not exist or was removed, remove it.
         if (!contactExistsInGroup || contact.getSubscription() == Contact.Subscription.REMOVE) {
-            for (Contact c : contactGroup.getContacts()) {
-                if (c.getJid().equals(contact.getJid())) {
-                    contactGroup.getContacts().remove(c);
-                    break;
-                }
-            }
+            contactGroup.getContacts().remove(contact);
         }
         // Return, if the group is empty, so that the parent group can remove it.
         return contactGroup.getContacts().isEmpty() && contactGroup.getGroups().isEmpty();
@@ -275,7 +256,7 @@ public final class RosterManager {
      *
      * @return The contacts, which are not affiliated to any group.
      */
-    public Collection<Contact> getUnaffiliatedContacts() {
+    public synchronized Collection<Contact> getUnaffiliatedContacts() {
         return Collections.unmodifiableCollection(unaffiliatedContacts);
     }
 

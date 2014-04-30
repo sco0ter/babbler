@@ -366,8 +366,8 @@ public class JavaFXApp extends Application {
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
                         try {
                             connection.connect();
-                            connection.login(txtUser.getText(), txtPassword.getText());
-                            connection.send(new Presence());
+                            connection.login(txtUser.getText(), txtPassword.getText(), "test");
+                            //connection.send(new Presence());
                             connection.getRosterManager().requestRoster();
 
                         } catch (Exception e) {
@@ -424,7 +424,7 @@ public class JavaFXApp extends Application {
                                 public void handle(ActionEvent actionEvent) {
                                     LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
                                     try {
-                                        lastActivityManager.getLastActivity(item.contact.get().getJid());
+                                        lastActivityManager.getLastActivity(item.contact.get().getJid().withResource("test"));
                                     } catch (XmppException e) {
                                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }

@@ -243,7 +243,6 @@ public final class Contact implements Comparable<Contact> {
         if (o != null) {
             int result;
             if (name != null) {
-
                 if (o.name != null) {
                     result = name.compareToIgnoreCase(o.name);
                 } else {
@@ -259,7 +258,7 @@ public final class Contact implements Comparable<Contact> {
             if (result == 0) {
                 if (subscription != null) {
                     if (o.subscription != null) {
-                        result = o.subscription.compareTo(o.subscription);
+                        result = subscription.compareTo(o.subscription);
                     } else {
                         result = -1;
                     }
@@ -276,7 +275,7 @@ public final class Contact implements Comparable<Contact> {
             }
             return result;
         } else {
-            return 1;
+            return -1;
         }
     }
 

@@ -27,6 +27,10 @@ package org.xmpp;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Christian Schudt
  */
@@ -474,5 +478,40 @@ public class JidTest {
         }
 
         System.out.println(System.currentTimeMillis() - start);
+    }
+
+    @Test
+    public void testComparable() {
+        List<Jid> jids = new ArrayList<>();
+
+        Jid jid1 = Jid.valueOf("aaa");
+        Jid jid2 = Jid.valueOf("a@aaa");
+        Jid jid3 = Jid.valueOf("b@aaa");
+        Jid jid4 = Jid.valueOf("b@aaa/resource");
+        Jid jid5 = Jid.valueOf("c@aaa");
+        Jid jid6 = Jid.valueOf("a@bbb");
+        Jid jid7 = Jid.valueOf("a@ccc");
+        Jid jid8 = Jid.valueOf("b@ccc");
+
+        jids.add(jid1);
+        jids.add(jid2);
+        jids.add(jid3);
+        jids.add(jid4);
+        jids.add(jid5);
+        jids.add(jid6);
+        jids.add(jid7);
+        jids.add(jid8);
+
+        Collections.shuffle(jids);
+        Collections.sort(jids);
+
+        Assert.assertEquals(jids.get(0), jid1);
+        Assert.assertEquals(jids.get(1), jid2);
+        Assert.assertEquals(jids.get(2), jid3);
+        Assert.assertEquals(jids.get(3), jid4);
+        Assert.assertEquals(jids.get(4), jid5);
+        Assert.assertEquals(jids.get(5), jid6);
+        Assert.assertEquals(jids.get(6), jid7);
+        Assert.assertEquals(jids.get(7), jid8);
     }
 }

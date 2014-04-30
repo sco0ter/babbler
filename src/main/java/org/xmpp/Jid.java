@@ -58,7 +58,7 @@ import java.util.regex.Pattern;
  *
  * @author Christian Schudt
  */
-public final class Jid {
+public final class Jid implements Comparable<Jid> {
 
     /**
      * Escapes all disallowed characters and also backslash, when followed by a defined hex code for escaping. See 4. Business Rules.
@@ -413,5 +413,76 @@ public final class Jid {
         result = 31 * result + ((domain == null) ? 0 : domain.hashCode());
         result = 31 * result + ((resource == null) ? 0 : resource.hashCode());
         return result;
+    }
+
+    /**
+     * Compares this JID with another JID. First domain parts are compared. If these are equal, local parts are compared
+     * and if these are equal, too, resource parts are compared.
+     *
+     * @param o The other JID.
+     * @return The comparison result.
+     */
+    @Override
+    public int compareTo(Jid o) {
+        if (this == o) {
+            return 0;
+        }
+
+        if (o != null) {
+            int result;
+            // First compare domain parts.
+            if (domain != null) {
+                if (o.domain != null) {
+                    result = domain.compareTo(o.domain);
+                } else {
+                    result = -1;
+                }
+            } else {
+                if (o.domain != null) {
+                    result = 1;
+                } else {
+                    result = 0;
+                }
+            }
+            // If the domains are equal, compare local parts.
+            if (result == 0) {
+                if (local != null) {
+                    if (o.local != null) {
+                        result = local.compareTo(o.local);
+                    } else {
+                        // If this local part is not null, but the other is null, move this down (1).
+                        result = 1;
+                    }
+                } else {
+                    // If this local part is null, but the other is not, move this up (-1).
+                    if (o.local != null) {
+                        result = -1;
+                    } else {
+                        result = 0;
+                    }
+                }
+            }
+            // If the local parts are equal, compare resource parts.
+            if (result == 0) {
+                if (resource != null) {
+                    if (o.resource != null) {
+                        result = resource.compareTo(o.resource);
+                    } else {
+                        // If this resource part is not null, but the other is null, move this down (1).
+                        result = 1;
+                    }
+                } else {
+                    // If this resource part is null, but the other is not, move this up (-1).
+                    if (o.resource != null) {
+                        result = -1;
+                    } else {
+                        result = 0;
+                    }
+                }
+            }
+            return result;
+        } else {
+            return -1;
+        }
     }
 }

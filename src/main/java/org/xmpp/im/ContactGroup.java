@@ -97,7 +97,6 @@ public final class ContactGroup implements Comparable<ContactGroup> {
         if (o != null) {
             int result;
             if (fullName != null) {
-
                 if (o.fullName != null) {
                     result = fullName.compareToIgnoreCase(o.fullName);
                 } else {
@@ -112,7 +111,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
             }
             return result;
         } else {
-            return 1;
+            return -1;
         }
     }
 

@@ -36,7 +36,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages the roster.
+ * This class manages the roster (aka contact or buddy list).
+ * <p>
+ * Contacts are often organized in groups, which may contain nested groups by themselves.
+ * This manager takes care for sorting the the contacts in the right group and also creates the group hierarchy for nested groups.
+ * </p>
+ * <p>Nested groups are determined by a delimiter, which must be {@linkplain #setGroupDelimiter(String) set} prior to requesting the roster.</p>
+ * <p>
+ * By adding a {@link RosterListener}, you can listen for roster updates (aka roster pushes) in order to update the view.
+ * </p>
  *
  * @author Christian Schudt
  */
@@ -108,10 +116,10 @@ public final class RosterManager {
     }
 
     /**
-     * Gets a contact by its JID or null, if it does not exist.
+     * Gets a contact by its JID.
      *
      * @param jid The JID.
-     * @return The contact or null.
+     * @return The contact or null, if it does not exist.
      */
     public Contact getContact(Jid jid) {
         if (jid == null) {
@@ -137,7 +145,7 @@ public final class RosterManager {
                 if (contact.getSubscription() == Contact.Subscription.REMOVE) {
                     contactMap.remove(contact.getJid());
                     removedContacts.add(contact);
-                } else if (oldContact != null && !oldContact.equalsFull(contact)) {
+                } else if (oldContact != null && !oldContact.equals(contact)) {
                     contactMap.put(contact.getJid(), contact);
                     updatedContacts.add(contact);
                 } else if (oldContact == null) {
@@ -179,22 +187,12 @@ public final class RosterManager {
                             }
                         }
                         if (currentGroup != null) {
-                            for (Contact c : currentGroup.getContacts()) {
-                                if (c.getJid().equals(contact.getJid())) {
-                                    currentGroup.getContacts().remove(c);
-                                    break;
-                                }
-                            }
+                            removeContactByJid(contact, currentGroup.getContacts());
                             currentGroup.getContacts().add(contact);
                         }
                     }
                 }
-                for (Contact c : unaffiliatedContacts) {
-                    if (c.getJid().equals(contact.getJid())) {
-                        unaffiliatedContacts.remove(c);
-                        break;
-                    }
-                }
+                removeContactByJid(contact, unaffiliatedContacts);
                 // Add the contact to the list of unaffiliated contacts, if it has no groups and it hasn't been removed from the roster.
                 if (contact.getGroups().isEmpty() && contact.getSubscription() != Contact.Subscription.REMOVE) {
                     unaffiliatedContacts.add(contact);
@@ -203,6 +201,15 @@ public final class RosterManager {
             }
         }
         notifyRosterListeners(new RosterEvent(this, addedContacts, updatedContacts, removedContacts));
+    }
+
+    private void removeContactByJid(Contact contact, Collection<Contact> contacts) {
+        for (Contact c : contacts) {
+            if (c.getJid().equals(contact.getJid())) {
+                contacts.remove(c);
+                break;
+            }
+        }
     }
 
     /**
@@ -245,12 +252,7 @@ public final class RosterManager {
 
         //  If the contact does not exist or was removed, remove it.
         if (!contactExistsInGroup || contact.getSubscription() == Contact.Subscription.REMOVE) {
-            for (Contact c : contactGroup.getContacts()) {
-                if (c.getJid().equals(contact.getJid())) {
-                    contactGroup.getContacts().remove(c);
-                    break;
-                }
-            }
+            removeContactByJid(contact, contactGroup.getContacts());
         }
         // Return, if the group is empty, so that the parent group can remove it.
         return contactGroup.getContacts().isEmpty() && contactGroup.getGroups().isEmpty();

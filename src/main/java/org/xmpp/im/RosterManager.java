@@ -179,13 +179,22 @@ public final class RosterManager {
                             }
                         }
                         if (currentGroup != null) {
-                            currentGroup.getContacts().remove(contact);
+                            for (Contact c : currentGroup.getContacts()) {
+                                if (c.getJid().equals(contact.getJid())) {
+                                    currentGroup.getContacts().remove(c);
+                                    break;
+                                }
+                            }
                             currentGroup.getContacts().add(contact);
                         }
                     }
                 }
-
-                unaffiliatedContacts.remove(contact);
+                for (Contact c : unaffiliatedContacts) {
+                    if (c.getJid().equals(contact.getJid())) {
+                        unaffiliatedContacts.remove(c);
+                        break;
+                    }
+                }
                 // Add the contact to the list of unaffiliated contacts, if it has no groups and it hasn't been removed from the roster.
                 if (contact.getGroups().isEmpty() && contact.getSubscription() != Contact.Subscription.REMOVE) {
                     unaffiliatedContacts.add(contact);
@@ -236,7 +245,12 @@ public final class RosterManager {
 
         //  If the contact does not exist or was removed, remove it.
         if (!contactExistsInGroup || contact.getSubscription() == Contact.Subscription.REMOVE) {
-            contactGroup.getContacts().remove(contact);
+            for (Contact c : contactGroup.getContacts()) {
+                if (c.getJid().equals(contact.getJid())) {
+                    contactGroup.getContacts().remove(c);
+                    break;
+                }
+            }
         }
         // Return, if the group is empty, so that the parent group can remove it.
         return contactGroup.getContacts().isEmpty() && contactGroup.getGroups().isEmpty();

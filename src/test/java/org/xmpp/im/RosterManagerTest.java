@@ -140,12 +140,61 @@ public class RosterManagerTest extends BaseTest {
         Assert.assertEquals(list.get(0).getName(), "Group3");
         Assert.assertEquals(list.get(0).getContacts().size(), 1);
         Assert.assertEquals(list.get(0).getGroups().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getName(), "SubGroup");
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getContacts().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getContacts().iterator().next().getJid(), Jid.valueOf("contact3@domain"));
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getName(), "3rdLevel");
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getContacts().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getContacts().iterator().next().getJid(), Jid.valueOf("contact4@domain"));
+
+        ContactGroup contactGroup = list.get(0).getGroups().iterator().next();
+        Assert.assertEquals(contactGroup.getName(), "SubGroup");
+        Assert.assertEquals(contactGroup.getGroups().size(), 1);
+        Assert.assertEquals(contactGroup.getContacts().size(), 1);
+        Assert.assertEquals(contactGroup.getContacts().iterator().next().getJid(), Jid.valueOf("contact3@domain"));
+        ContactGroup nestedGroup = contactGroup.getGroups().iterator().next();
+        Assert.assertEquals(nestedGroup.getName(), "3rdLevel");
+        Assert.assertEquals(nestedGroup.getContacts().size(), 1);
+        Assert.assertEquals(nestedGroup.getContacts().iterator().next().getJid(), Jid.valueOf("contact4@domain"));
+    }
+
+    @Test
+    public void testRosterIntegrity() {
+
+        RosterManager rosterManager = new RosterManager(new TestConnection());
+
+        // Initial roster
+        Roster roster1 = new Roster();
+        roster1.getContacts().add(new Contact(Jid.valueOf("contact1@domain"), "contact1", "group1"));
+        roster1.getContacts().add(new Contact(Jid.valueOf("contact2@domain"), "contact2", "group2"));
+        roster1.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", true, Contact.Subscription.FROM));
+        roster1.getContacts().add(new Contact(Jid.valueOf("contact4@domain"), "contact4", true, Contact.Subscription.FROM, "group2"));
+        rosterManager.updateRoster(roster1, false);
+
+        Assert.assertEquals(rosterManager.getUnaffiliatedContacts().size(), 1);
+        Assert.assertEquals(rosterManager.getUnaffiliatedContacts().iterator().next().getSubscription(), Contact.Subscription.FROM);
+        List<ContactGroup> groups = new ArrayList<>(rosterManager.getContactGroups());
+        Assert.assertEquals(groups.get(0).getContacts().size(), 1);
+        Assert.assertEquals(groups.get(1).getContacts().size(), 2);
+
+        Roster roster2 = new Roster();
+        roster2.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", true, Contact.Subscription.BOTH));
+        rosterManager.updateRoster(roster2, true);
+
+        Assert.assertEquals(rosterManager.getUnaffiliatedContacts().size(), 1);
+        Assert.assertEquals(rosterManager.getUnaffiliatedContacts().iterator().next().getSubscription(), Contact.Subscription.BOTH);
+
+        Assert.assertEquals(rosterManager.getContactGroups().size(), 2);
+
+        Roster roster3 = new Roster();
+        roster3.getContacts().add(new Contact(Jid.valueOf("contact2@domain"), "contact2", true, Contact.Subscription.TO, "group1"));
+        rosterManager.updateRoster(roster3, true);
+
+        groups = new ArrayList<>(rosterManager.getContactGroups());
+        List<Contact> contacts = new ArrayList<>(groups.get(0).getContacts());
+        Assert.assertEquals(groups.get(0).getContacts().size(), 2);
+        Assert.assertEquals(contacts.get(1).getSubscription(), Contact.Subscription.TO);
+        Assert.assertTrue(contacts.get(1).isPending());
+        Assert.assertEquals(groups.get(1).getContacts().size(), 1);
+
+        Roster roster4 = new Roster();
+        Contact contact2 = new Contact(Jid.valueOf("contact3@domain"), "", false, Contact.Subscription.REMOVE);
+        roster4.getContacts().add(contact2);
+        rosterManager.updateRoster(roster4, true);
+        Assert.assertTrue(rosterManager.getUnaffiliatedContacts().isEmpty());
     }
 }

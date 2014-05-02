@@ -36,7 +36,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
 
     private final Set<Contact> contacts;
 
-    private final List<ContactGroup> groups;
+    private final Set<ContactGroup> groups;
 
     private final ContactGroup parentGroup;
 
@@ -48,7 +48,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
         this.name = name;
         this.fullName = fullName;
         this.contacts = new TreeSet<>();
-        this.groups = new ArrayList<>();
+        this.groups = new TreeSet<>();
         this.parentGroup = parentGroup;
     }
 
@@ -75,7 +75,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
      *
      * @return The nested groups.
      */
-    public List<ContactGroup> getGroups() {
+    public Collection<ContactGroup> getGroups() {
         return groups;
     }
 

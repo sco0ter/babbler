@@ -140,13 +140,16 @@ public class RosterManagerTest extends BaseTest {
         Assert.assertEquals(list.get(0).getName(), "Group3");
         Assert.assertEquals(list.get(0).getContacts().size(), 1);
         Assert.assertEquals(list.get(0).getGroups().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getName(), "SubGroup");
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getContacts().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getContacts().iterator().next().getJid(), Jid.valueOf("contact3@domain"));
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getName(), "3rdLevel");
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getContacts().size(), 1);
-        Assert.assertEquals(list.get(0).getGroups().get(0).getGroups().get(0).getContacts().iterator().next().getJid(), Jid.valueOf("contact4@domain"));
+
+        ContactGroup contactGroup = list.get(0).getGroups().iterator().next();
+        Assert.assertEquals(contactGroup.getName(), "SubGroup");
+        Assert.assertEquals(contactGroup.getGroups().size(), 1);
+        Assert.assertEquals(contactGroup.getContacts().size(), 1);
+        Assert.assertEquals(contactGroup.getContacts().iterator().next().getJid(), Jid.valueOf("contact3@domain"));
+        ContactGroup nestedGroup = contactGroup.getGroups().iterator().next();
+        Assert.assertEquals(nestedGroup.getName(), "3rdLevel");
+        Assert.assertEquals(nestedGroup.getContacts().size(), 1);
+        Assert.assertEquals(nestedGroup.getContacts().iterator().next().getJid(), Jid.valueOf("contact4@domain"));
     }
 
     @Test
@@ -182,9 +185,10 @@ public class RosterManagerTest extends BaseTest {
         rosterManager.updateRoster(roster3, true);
 
         groups = new ArrayList<>(rosterManager.getContactGroups());
+        List<Contact> contacts = new ArrayList<>(groups.get(0).getContacts());
         Assert.assertEquals(groups.get(0).getContacts().size(), 2);
-        Assert.assertEquals(groups.get(0).getContacts().get(1).getSubscription(), Contact.Subscription.TO);
-        Assert.assertTrue(groups.get(0).getContacts().get(1).isPending());
+        Assert.assertEquals(contacts.get(1).getSubscription(), Contact.Subscription.TO);
+        Assert.assertTrue(contacts.get(1).isPending());
         Assert.assertEquals(groups.get(1).getContacts().size(), 1);
 
         Roster roster4 = new Roster();

@@ -10,6 +10,8 @@
 * Added support for [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
 * Added support for [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
 * Jid class improved (nodeprep, better escaping logic)
+* JID: Applied "Nodeprep" and "Resourceprep" profile and improved escaping logic.
+* Added JID Escaping feature ("jid\\escaping") to feature list for Service Discovery.
 
 ## Version 0.1.0 (2014-03-22)
 

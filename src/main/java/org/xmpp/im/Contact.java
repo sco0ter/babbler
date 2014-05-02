@@ -105,6 +105,23 @@ public final class Contact implements Comparable<Contact> {
     }
 
     /**
+     * Creates a new contact associated with the given JID, name and groups.
+     *
+     * @param jid          The JID.
+     * @param name         The name.
+     * @param isPending    Indicates, whether the contact's subscription approval is pending.
+     * @param subscription The subscription.
+     * @param groups       The groups for this contact.
+     */
+    public Contact(Jid jid, String name, boolean isPending, Subscription subscription, String... groups) {
+        this.jid = jid;
+        this.name = name;
+        this.ask = isPending;
+        this.subscription = subscription;
+        this.group.addAll(Arrays.asList(groups));
+    }
+
+    /**
      * Gets the JID of the contact.
      *
      * @return The JID.

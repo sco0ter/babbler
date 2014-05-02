@@ -28,6 +28,8 @@ import org.w3c.dom.Element;
 import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.compress.CompressionManager;
+import org.xmpp.extension.disco.ServiceDiscoveryManager;
+import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.im.ChatManager;
 import org.xmpp.im.PresenceManager;
 import org.xmpp.im.RosterManager;
@@ -316,6 +318,8 @@ public abstract class Connection implements Closeable {
         });
         featuresManager.addFeatureNegotiator(compressionManager);
 
+        // Every connection supports XEP-106 JID Escaping.
+        getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
     }
 
     /**

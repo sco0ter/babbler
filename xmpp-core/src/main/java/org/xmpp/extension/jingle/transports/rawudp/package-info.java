@@ -33,7 +33,7 @@
 @XmlSchema(namespace = "urn:xmpp:jingle:transports:raw-udp:1", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.jingle.transports.rawudp;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

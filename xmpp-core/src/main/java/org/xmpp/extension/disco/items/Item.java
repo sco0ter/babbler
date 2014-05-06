@@ -25,7 +25,7 @@
 package org.xmpp.extension.disco.items;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;

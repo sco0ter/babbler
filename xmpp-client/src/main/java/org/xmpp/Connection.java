@@ -842,7 +842,7 @@ public abstract class Connection implements Closeable {
      * @throws XMLStreamException If the writer could not be created.
      */
     protected XMLStreamWriter createXMLStreamWriter(OutputStream outputStream) throws XMLStreamException {
-        return new PrefixFreeCanonicalizationWriter(xmlOutputFactory.createXMLStreamWriter(outputStream));
+        return XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(outputStream), true);
     }
 
     /**

@@ -22,8 +22,30 @@
  * THE SOFTWARE.
  */
 
-/**
- * Contains utility classes which are shared among other classes.
- */
-package org.xmpp.util;
+package org.xmpp;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+/**
+ * @author Christian Schudt
+ */
+public final class XmppUtils {
+
+    private XmppUtils() {
+    }
+
+    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter, boolean clientNamespace) throws XMLStreamException {
+        return new PrefixFreeCanonicalizationWriter(xmlStreamWriter, clientNamespace ? "jabber:client" : "jabber:server");
+    }
+
+    public static InputStream createBranchedInputStream(InputStream inputStream, OutputStream outputStream) {
+        return new BranchedInputStream(inputStream, outputStream);
+    }
+
+    public static OutputStream createBranchedOutputStream(OutputStream out, OutputStream branch) {
+        return new BranchedOutputStream(out, branch);
+    }
+}

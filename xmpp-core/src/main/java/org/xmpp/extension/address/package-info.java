@@ -33,7 +33,7 @@
 @XmlSchema(namespace = "http://jabber.org/protocol/address", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.address;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

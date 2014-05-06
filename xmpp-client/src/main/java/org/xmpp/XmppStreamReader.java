@@ -24,8 +24,6 @@
 
 package org.xmpp;
 
-import org.xmpp.util.BranchedInputStream;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;

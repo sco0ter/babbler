@@ -27,8 +27,7 @@ package org.xmpp.extension.httpbind;
 import org.xmpp.Connection;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppContext;
-import org.xmpp.util.BranchedInputStream;
-import org.xmpp.util.BranchedOutputStream;
+import org.xmpp.XmppUtils;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -44,6 +43,7 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
@@ -542,7 +542,7 @@ public final class BoshConnection extends Connection {
 
                                 XMLStreamWriter xmlStreamWriter = null;
                                 // Branch the stream, so that its output can also be logged.
-                                try (BranchedOutputStream branchedOutputStream = new BranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest)) {
+                                try (OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest)) {
                                     // Create the writer for this connection.
                                     xmlStreamWriter = createXMLStreamWriter(branchedOutputStream);
                                     // Then write the XML to the output stream by marshalling the object to the writer.
@@ -564,7 +564,7 @@ public final class BoshConnection extends Connection {
                                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                                 XMLEventReader xmlEventReader = null;
                                 // Branch the stream so that its input can be logged.
-                                try (InputStream inputStream = new BranchedInputStream(httpConnection.getInputStream(), byteArrayOutputStream)) {
+                                try (InputStream inputStream = XmppUtils.createBranchedInputStream(httpConnection.getInputStream(), byteArrayOutputStream)) {
                                     // Read the response.
                                     xmlEventReader = createXMLEventReader(inputStream);
                                     while (xmlEventReader.hasNext()) {

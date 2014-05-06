@@ -30,7 +30,7 @@
 @XmlSchema(namespace = "jabber:client", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stanza.client;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

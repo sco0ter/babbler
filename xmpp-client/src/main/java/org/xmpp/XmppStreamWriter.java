@@ -24,8 +24,6 @@
 
 package org.xmpp;
 
-import org.xmpp.util.BranchedOutputStream;
-
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;

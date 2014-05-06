@@ -37,7 +37,7 @@
 @XmlSchema(namespace = "http://jabber.org/protocol/httpbind", elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = "urn:xmpp:xbosh")}) package org.xmpp.extension.httpbind;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

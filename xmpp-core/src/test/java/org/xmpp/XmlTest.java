@@ -61,7 +61,7 @@ public abstract class XmlTest {
 
         XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
 
-        PrefixFreeCanonicalizationWriter prefixFreeWriter = new PrefixFreeCanonicalizationWriter(xmlStreamWriter);
+        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
         marshaller.marshal(object, prefixFreeWriter);
         return writer.toString();
     }

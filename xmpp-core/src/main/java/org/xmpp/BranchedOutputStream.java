@@ -22,13 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.util;
+package org.xmpp;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public final class BranchedOutputStream extends FilterOutputStream {
+final class BranchedOutputStream extends FilterOutputStream {
 
     private final OutputStream branch;
 

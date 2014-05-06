@@ -33,7 +33,7 @@
 @XmlSchema(namespace = "urn:xmpp:jingle:1", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.jingle;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

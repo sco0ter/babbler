@@ -26,7 +26,7 @@ package org.xmpp.bind;
 
 import org.xmpp.Jid;
 import org.xmpp.stream.Feature;
-import org.xmpp.util.JidAdapter;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.util;
+package org.xmpp;
 
 import org.xmpp.Jid;
 

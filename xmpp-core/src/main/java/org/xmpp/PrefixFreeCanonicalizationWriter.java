@@ -47,10 +47,11 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
     private final XMLStreamWriter xsw;
 
-    private final ContentNamespaceContext nc = new ContentNamespaceContext();
+    private final ContentNamespaceContext nc;
 
-    public PrefixFreeCanonicalizationWriter(XMLStreamWriter xsw) throws XMLStreamException {
+    public PrefixFreeCanonicalizationWriter(XMLStreamWriter xsw, String contentNamespace) throws XMLStreamException {
         this.xsw = xsw;
+        nc = new ContentNamespaceContext(contentNamespace);
         xsw.setNamespaceContext(nc);
     }
 
@@ -245,13 +246,20 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     /**
      * Manages the current namespace, which is used for an element.
      */
-    private static class ContentNamespaceContext implements NamespaceContext {
+    private class ContentNamespaceContext implements NamespaceContext {
 
         /**
          * This is the default content namespace.
          * See also <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-content">http://xmpp.org/rfcs/rfc6120.html#streams-ns-content</a>
          */
-        private String defaultNS = "jabber:client";
+        private final String contentNamespace;
+
+        private String defaultNS;
+
+        private ContentNamespaceContext(String contentNamespace) {
+            this.defaultNS = contentNamespace;
+            this.contentNamespace = contentNamespace;
+        }
 
         private Set<String> currentNamespaceUris = new HashSet<>();
 
@@ -270,7 +278,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
             if (!namespaces.empty()) {
                 defaultNS = namespaces.peek();
             } else {
-                defaultNS = "jabber:client";
+                defaultNS = contentNamespace;
             }
         }
 

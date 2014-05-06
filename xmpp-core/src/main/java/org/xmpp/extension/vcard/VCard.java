@@ -25,7 +25,7 @@
 package org.xmpp.extension.vcard;
 
 import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.*;

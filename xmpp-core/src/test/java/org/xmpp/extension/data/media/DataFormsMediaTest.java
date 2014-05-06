@@ -26,7 +26,7 @@ package org.xmpp.extension.data.media;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.data.DataForm;
 
 import javax.xml.bind.JAXBException;
@@ -36,7 +36,7 @@ import java.net.URI;
 /**
  * @author Christian Schudt
  */
-public class DataFormsMediaTest extends UnmarshalTest {
+public class DataFormsMediaTest extends XmlTest {
     protected DataFormsMediaTest() throws JAXBException, XMLStreamException {
         super(DataForm.class, Media.class);
     }

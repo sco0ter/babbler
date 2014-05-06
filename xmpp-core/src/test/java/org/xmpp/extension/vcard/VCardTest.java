@@ -27,7 +27,7 @@ package org.xmpp.extension.vcard;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -40,7 +40,7 @@ import java.util.GregorianCalendar;
 /**
  * @author Christian Schudt
  */
-public class VCardTest extends UnmarshalTest {
+public class VCardTest extends XmlTest {
     protected VCardTest() throws JAXBException, XMLStreamException {
         super(IQ.class, VCard.class);
     }
@@ -171,22 +171,4 @@ public class VCardTest extends UnmarshalTest {
         String xml = marshal(vCard);
         Assert.assertEquals("<vCard xmlns=\"vcard-temp\" version=\"3.0\"><BDAY>2004-03-19Z</BDAY></vCard>", xml);
     }
-
-    //    @Test
-    //    public void testVCardAvatarUpdate() throws XmppException, IOException {
-    //        VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
-    //        VCard vCard = new VCard();
-    //        InputStream inputStream = getClass().getResourceAsStream("supported.png");
-    //        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    //        int nRead;
-    //        byte[] data = new byte[16384];
-    //
-    //        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
-    //            byteArrayOutputStream.write(data, 0, nRead);
-    //        }
-    //
-    //        byteArrayOutputStream.flush();
-    //        vCard.setPhoto(new VCard.Image("image/png", byteArrayOutputStream.toByteArray()));
-    //        vCardManager.setVCard(vCard);
-    //    }
 }

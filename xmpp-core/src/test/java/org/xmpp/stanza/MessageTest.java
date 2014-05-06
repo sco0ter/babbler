@@ -26,8 +26,10 @@ package org.xmpp.stanza;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.Jid;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
+import org.xmpp.stanza.errors.Conflict;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -35,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class MessageTest extends UnmarshalTest {
+public class MessageTest extends XmlTest {
 
     protected MessageTest() throws JAXBException, XMLStreamException {
         super(Message.class);
@@ -146,104 +148,106 @@ public class MessageTest extends UnmarshalTest {
         Assert.assertEquals(message.getParentThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
     }
 
-    //    @Test
-    //    public void marshalChatMessage() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.CHAT);
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"chat\"></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalGroupChatMessage() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.GROUPCHAT);
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"groupchat\"></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalNormalMessage() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.NORMAL);
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"normal\"></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalHeadlineMessage() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.HEADLINE);
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"headline\"></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalErrorMessage() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.ERROR);
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"error\"></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalMessage() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
-    //        message.setId("id");
-    //        message.setFrom(new Jid("from", "domain"));
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalMessageThread() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
-    //        message.setId("id");
-    //        message.setFrom(new Jid("from", "domain"));
-    //        message.setThread("thread");
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread>thread</thread></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalMessageParentThread() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
-    //        message.setId("id");
-    //        message.setFrom(new Jid("from", "domain"));
-    //        message.setThread("thread");
-    //        message.setParentThread("parentThread");
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\">thread</thread></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalMessageParentThreadWithoutThread() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
-    //        message.setId("id");
-    //        message.setFrom(new Jid("from", "domain"));
-    //        message.setParentThread("parentThread");
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\"></thread></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalMessageBody() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
-    //        message.setId("id");
-    //        message.setFrom(new Jid("from", "domain"));
-    //        message.getBodies().add(new Message.Body("body", "de"));
-    //        Message.Body body2 = new Message.Body("body2");
-    //        body2.setLanguage("fr");
-    //        message.getBodies().add(body2);
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><body xml:lang=\"de\">body</body><body xml:lang=\"fr\">body2</body></message>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalMessageSubject() throws JAXBException, XMLStreamException, IOException {
-    //        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
-    //        message.setId("id");
-    //        message.setFrom(new Jid("from", "domain"));
-    //        message.getSubjects().add(new Message.Subject("subject1", "de"));
-    //        Message.Subject subject2 = new Message.Subject("subject2");
-    //        subject2.setLanguage("fr");
-    //        message.getSubjects().add(subject2);
-    //        String xml = marshall(message);
-    //        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><subject xml:lang=\"de\">subject1</subject><subject xml:lang=\"fr\">subject2</subject></message>");
-    //    }
+    @Test
+    public void marshalChatMessage() throws JAXBException, XMLStreamException {
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.CHAT);
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"chat\"></message>");
+    }
+
+    @Test
+    public void marshalGroupChatMessage() throws JAXBException, XMLStreamException {
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.GROUPCHAT);
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"groupchat\"></message>");
+    }
+
+    @Test
+    public void marshalNormalMessage() throws JAXBException, XMLStreamException {
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.NORMAL);
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"normal\"></message>");
+    }
+
+    @Test
+    public void marshalHeadlineMessage() throws JAXBException, XMLStreamException {
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.HEADLINE);
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"headline\"></message>");
+    }
+
+    @Test
+    public void marshalErrorMessage() throws JAXBException, XMLStreamException {
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.ERROR);
+        message.setBody("test");
+        message.setError(new StanzaError(new Conflict()));
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"error\"><body>test</body><error type=\"cancel\"><conflict xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></conflict></error></message>");
+    }
+
+    @Test
+    public void marshalMessage() throws JAXBException, XMLStreamException {
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
+        message.setId("id");
+        message.setFrom(new Jid("from", "domain"));
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"></message>");
+    }
+
+    @Test
+    public void marshalMessageThread() throws JAXBException, XMLStreamException {
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
+        message.setId("id");
+        message.setFrom(new Jid("from", "domain"));
+        message.setThread("thread");
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread>thread</thread></message>");
+    }
+
+    @Test
+    public void marshalMessageParentThread() throws JAXBException, XMLStreamException {
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
+        message.setId("id");
+        message.setFrom(new Jid("from", "domain"));
+        message.setThread("thread");
+        message.setParentThread("parentThread");
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\">thread</thread></message>");
+    }
+
+    @Test
+    public void marshalMessageParentThreadWithoutThread() throws JAXBException, XMLStreamException {
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
+        message.setId("id");
+        message.setFrom(new Jid("from", "domain"));
+        message.setParentThread("parentThread");
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\"></thread></message>");
+    }
+
+    @Test
+    public void marshalMessageBody() throws JAXBException, XMLStreamException {
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
+        message.setId("id");
+        message.setFrom(new Jid("from", "domain"));
+        message.getBodies().add(new Message.Body("body", "de"));
+        Message.Body body2 = new Message.Body("body2");
+        body2.setLanguage("fr");
+        message.getBodies().add(body2);
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><body xml:lang=\"de\">body</body><body xml:lang=\"fr\">body2</body></message>");
+    }
+
+    @Test
+    public void marshalMessageSubject() throws JAXBException, XMLStreamException {
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT);
+        message.setId("id");
+        message.setFrom(new Jid("from", "domain"));
+        message.getSubjects().add(new Message.Subject("subject1", "de"));
+        Message.Subject subject2 = new Message.Subject("subject2");
+        subject2.setLanguage("fr");
+        message.getSubjects().add(subject2);
+        String xml = marshal(message);
+        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><subject xml:lang=\"de\">subject1</subject><subject xml:lang=\"fr\">subject2</subject></message>");
+    }
 }

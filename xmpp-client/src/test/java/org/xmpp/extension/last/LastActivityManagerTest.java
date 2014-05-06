@@ -33,7 +33,9 @@ import org.xmpp.XmppException;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.vcard.VCardManager;
-import org.xmpp.stanza.*;
+import org.xmpp.stanza.PresenceEvent;
+import org.xmpp.stanza.PresenceListener;
+import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 

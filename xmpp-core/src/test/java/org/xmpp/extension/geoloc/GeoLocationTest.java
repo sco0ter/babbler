@@ -26,7 +26,7 @@ package org.xmpp.extension.geoloc;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -34,9 +34,9 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class GeoLocationTest extends UnmarshalTest {
+public class GeoLocationTest extends XmlTest {
 
-    public GeoLocationTest() throws JAXBException, XMLStreamException {
+    protected GeoLocationTest() throws JAXBException, XMLStreamException {
         super(GeoLocation.class);
     }
 

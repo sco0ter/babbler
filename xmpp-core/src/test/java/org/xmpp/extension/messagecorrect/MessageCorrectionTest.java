@@ -26,7 +26,7 @@ package org.xmpp.extension.messagecorrect;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class MessageCorrectionTest extends UnmarshalTest {
+public class MessageCorrectionTest extends XmlTest {
     protected MessageCorrectionTest() throws JAXBException, XMLStreamException {
         super(Message.class, Replace.class);
     }

@@ -26,8 +26,6 @@ package org.xmpp.extension.muc;
 
 import org.xmpp.Connection;
 import org.xmpp.Jid;
-import org.xmpp.extension.muc.user.Decline;
-import org.xmpp.stanza.AbstractMessage;
 
 import java.util.EventObject;
 

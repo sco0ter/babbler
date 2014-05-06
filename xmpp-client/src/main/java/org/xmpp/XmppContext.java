@@ -113,9 +113,9 @@ import org.xmpp.im.preapproval.SubscriptionPreApproval;
 import org.xmpp.im.rosterver.RosterVersioning;
 import org.xmpp.im.session.Session;
 import org.xmpp.sasl.Mechanisms;
-import org.xmpp.stanza.AbstractPresence;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.client.Message;
+import org.xmpp.stanza.client.Presence;
 import org.xmpp.stream.Features;
 import org.xmpp.stream.StreamException;
 import org.xmpp.tls.StartTls;
@@ -138,7 +138,7 @@ public abstract class XmppContext {
     private final Set<Class<? extends ExtensionManager>> managers = new HashSet<>();
 
     protected XmppContext() {
-        core.addAll(Arrays.asList(Features.class, StreamException.class, Message.class, AbstractPresence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class));
+        core.addAll(Arrays.asList(Features.class, StreamException.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class));
     }
 
     public static XmppContext getDefault() {

@@ -22,18 +22,36 @@
  * THE SOFTWARE.
  */
 
+package org.xmpp.extension.privatedata;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.xmpp.Connection;
+import org.xmpp.MockServer;
+import org.xmpp.TestConnection;
+import org.xmpp.XmppException;
+import org.xmpp.extension.privatedata.annotations.Annotation;
+
+import java.io.IOException;
+import java.util.List;
+
 /**
- * Contains <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> ({@linkplain org.xmpp.stanza.AbstractMessage}, {@linkplain org.xmpp.stanza.AbstractPresence} and {@linkplain org.xmpp.stanza.AbstractIQ}).
+ * @author Christian Schudt
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "jabber:client", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stanza.client;
+public class PrivateDataTest {
 
-import org.xmpp.Jid;
-import org.xmpp.util.JidAdapter;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+    @Test
+    public void testManager() throws XmppException, IOException {
+        MockServer mockServer = new MockServer();
+
+        Connection connection = new TestConnection(null, mockServer);
+        connection.connect();
+
+        PrivateDataManager privateDataManager = connection.getExtensionManager(PrivateDataManager.class);
+        privateDataManager.storeData(new Annotation(null));
+
+        List<Annotation> annotationList = privateDataManager.getData(Annotation.class);
+        Assert.assertEquals(annotationList.size(), 1);
+    }
+}

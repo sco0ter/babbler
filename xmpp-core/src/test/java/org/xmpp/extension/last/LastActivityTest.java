@@ -26,7 +26,7 @@ package org.xmpp.extension.last;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class LastActivityTest extends UnmarshalTest {
+public class LastActivityTest extends XmlTest {
 
     protected LastActivityTest() throws JAXBException, XMLStreamException {
         super(IQ.class, LastActivity.class);

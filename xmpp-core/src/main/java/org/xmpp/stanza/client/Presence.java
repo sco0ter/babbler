@@ -28,6 +28,7 @@ import org.xmpp.stanza.AbstractPresence;
 import org.xmpp.stanza.StanzaError;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <presence/>} element.
@@ -43,6 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "presence")
+@XmlType(propOrder = {"from", "id", "to", "type", "status", "show", "priority", "extensions", "error"})
 public final class Presence extends AbstractPresence {
     /**
      * Constructs an empty presence.

@@ -26,8 +26,11 @@ package org.xmpp.stanza;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.Jid;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
+import org.xmpp.stanza.errors.ServiceUnavailable;
+import org.xmpp.stanza.errors.UndefinedCondition;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -35,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class IQTest extends UnmarshalTest {
+public class IQTest extends XmlTest {
 
     protected IQTest() throws JAXBException, XMLStreamException {
         super(IQ.class);
@@ -80,52 +83,52 @@ public class IQTest extends UnmarshalTest {
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertEquals(iq.getType(), IQ.Type.ERROR);
     }
-    //
-    //    @Test
-    //    public void marshalIQ() throws JAXBException, XMLStreamException, IOException {
-    //        IQ iq = new IQ(IQ.Type.GET);
-    //        iq.setId("id");
-    //        iq.setTo(new Jid("to", "domain"));
-    //        iq.setFrom(new Jid("from", "domain"));
-    //        String xml = marshall(iq);
-    //        Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"></iq>");
-    //    }
-    //
-    //    @Test
-    //    public void marshalIQWithError() throws JAXBException, XMLStreamException, IOException {
-    //        IQ iq = new IQ(IQ.Type.GET);
-    //        iq.setId("id");
-    //        iq.setTo(new Jid("to", "domain"));
-    //        iq.setFrom(new Jid("from", "domain"));
-    //        iq.setError(new StanzaError(StanzaError.Type.MODIFY, new ServiceUnavailable()));
-    //        String xml = marshall(iq);
-    //        Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"><error type=\"modify\"><service-unavailable xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></service-unavailable></error></iq>");
-    //    }
-    //
-    //    @Test
-    //    public void testErrorIQ() throws JAXBException, XMLStreamException {
-    //        IQ iq = new IQ(IQ.Type.GET);
-    //        iq.setId("id");
-    //        iq.setTo(new Jid("to", "domain"));
-    //        iq.setFrom(new Jid("from", "domain"));
-    //        IQ error = iq.createError(new StanzaError(new UndefinedCondition()));
-    //        Assert.assertEquals(error.getType(), IQ.Type.ERROR);
-    //        Assert.assertEquals(error.getId(), iq.getId());
-    //        Assert.assertEquals(error.getTo(), iq.getFrom());
-    //        Assert.assertEquals(error.getFrom(), iq.getTo());
-    //        Assert.assertEquals(error.getError().getBy(), error.getFrom());
-    //    }
-    //
-    //    @Test
-    //    public void testResultIQ() throws JAXBException, XMLStreamException {
-    //        IQ iq = new IQ(IQ.Type.GET);
-    //        iq.setId("id");
-    //        iq.setTo(new Jid("to", "domain"));
-    //        iq.setFrom(new Jid("from", "domain"));
-    //        IQ result = iq.createResult();
-    //        Assert.assertEquals(result.getType(), IQ.Type.RESULT);
-    //        Assert.assertEquals(result.getId(), iq.getId());
-    //        Assert.assertEquals(result.getTo(), iq.getFrom());
-    //        Assert.assertEquals(result.getFrom(), iq.getTo());
-    //    }
+
+    @Test
+    public void marshalIQ() throws JAXBException, XMLStreamException {
+        IQ iq = new IQ(IQ.Type.GET);
+        iq.setId("id");
+        iq.setTo(new Jid("to", "domain"));
+        iq.setFrom(new Jid("from", "domain"));
+        String xml = marshal(iq);
+        Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"></iq>");
+    }
+
+    @Test
+    public void marshalIQWithError() throws JAXBException, XMLStreamException {
+        IQ iq = new IQ(IQ.Type.GET);
+        iq.setId("id");
+        iq.setTo(new Jid("to", "domain"));
+        iq.setFrom(new Jid("from", "domain"));
+        iq.setError(new StanzaError(StanzaError.Type.MODIFY, new ServiceUnavailable()));
+        String xml = marshal(iq);
+        Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"><error type=\"modify\"><service-unavailable xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></service-unavailable></error></iq>");
+    }
+
+    @Test
+    public void testErrorIQ() throws JAXBException, XMLStreamException {
+        IQ iq = new IQ(IQ.Type.GET);
+        iq.setId("id");
+        iq.setTo(new Jid("to", "domain"));
+        iq.setFrom(new Jid("from", "domain"));
+        IQ error = iq.createError(new StanzaError(new UndefinedCondition()));
+        Assert.assertEquals(error.getType(), IQ.Type.ERROR);
+        Assert.assertEquals(error.getId(), iq.getId());
+        Assert.assertEquals(error.getTo(), iq.getFrom());
+        Assert.assertEquals(error.getFrom(), iq.getTo());
+        Assert.assertEquals(error.getError().getBy(), error.getFrom());
+    }
+
+    @Test
+    public void testResultIQ() throws JAXBException, XMLStreamException {
+        IQ iq = new IQ(IQ.Type.GET);
+        iq.setId("id");
+        iq.setTo(new Jid("to", "domain"));
+        iq.setFrom(new Jid("from", "domain"));
+        IQ result = iq.createResult();
+        Assert.assertEquals(result.getType(), IQ.Type.RESULT);
+        Assert.assertEquals(result.getId(), iq.getId());
+        Assert.assertEquals(result.getTo(), iq.getFrom());
+        Assert.assertEquals(result.getFrom(), iq.getTo());
+    }
 }

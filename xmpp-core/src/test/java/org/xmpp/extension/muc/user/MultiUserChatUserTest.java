@@ -27,7 +27,7 @@ package org.xmpp.extension.muc.user;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.muc.Affiliation;
 import org.xmpp.extension.muc.MucElementFactory;
 import org.xmpp.extension.muc.Role;
@@ -36,18 +36,17 @@ import org.xmpp.stanza.client.Presence;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 
 /**
  * @author Christian Schudt
  */
-public class MultiUserChatUserTest extends UnmarshalTest {
+public class MultiUserChatUserTest extends XmlTest {
     protected MultiUserChatUserTest() throws JAXBException, XMLStreamException {
         super(Presence.class, Message.class, MucUser.class);
     }
 
     @Test
-    public void testPresenceBroadCast() throws JAXBException, XMLStreamException, IOException {
+    public void testPresenceBroadCast() throws JAXBException, XMLStreamException {
         String xml = "<presence\n" +
                 "    from='coven@chat.shakespeare.lit/firstwitch'\n" +
                 "    id='3DCB0401-D7CF-4E31-BE05-EDF8D057BFBD'\n" +
@@ -261,7 +260,7 @@ public class MultiUserChatUserTest extends UnmarshalTest {
     }
 
     @Test
-    public void marshalDestroyRoom() throws JAXBException, XMLStreamException, IOException {
+    public void marshalDestroyRoom() throws JAXBException, XMLStreamException {
         MucUser mucOwner = new MucUser(MucElementFactory.createDestroy(Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come."));
         String xml = marshal(mucOwner);
         Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></x>");

@@ -32,6 +32,7 @@ import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class ChatService {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
-                    AbstractMessage message = e.getMessage();
+                    Message message = e.getMessage();
                     if (message.getBody() == null && message.getSubject() != null) {
                         // Subject changed.
                     }

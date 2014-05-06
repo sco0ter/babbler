@@ -26,7 +26,7 @@ package org.xmpp.stream;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stream.errors.*;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class StreamErrorTest extends UnmarshalTest {
+public class StreamErrorTest extends XmlTest {
 
     protected StreamErrorTest() throws JAXBException, XMLStreamException {
         super(StreamException.class);

@@ -26,7 +26,7 @@ package org.xmpp.extension.rsm;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -34,7 +34,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class ResultSetTest extends UnmarshalTest {
+public class ResultSetTest extends XmlTest {
     protected ResultSetTest() throws JAXBException, XMLStreamException {
         super(ResultSet.class);
     }

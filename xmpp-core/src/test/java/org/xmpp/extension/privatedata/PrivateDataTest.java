@@ -26,7 +26,7 @@ package org.xmpp.extension.privatedata;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class PrivateDataTest extends UnmarshalTest {
+public class PrivateDataTest extends XmlTest {
     protected PrivateDataTest() throws JAXBException, XMLStreamException {
         super(PrivateData.class, Annotation.class);
     }
@@ -46,18 +46,4 @@ public class PrivateDataTest extends UnmarshalTest {
         String xml = marshal(privateData);
         Assert.assertEquals("<query xmlns=\"jabber:iq:private\"><storage xmlns=\"storage:rosternotes\"></storage></query>", xml);
     }
-
-    //    @Test
-    //    public void testManager() throws XmppException, IOException {
-    //        MockServer mockServer = new MockServer();
-    //
-    //        Connection connection = new TestConnection(null, mockServer);
-    //        connection.connect();
-    //
-    //        PrivateDataManager privateDataManager = connection.getExtensionManager(PrivateDataManager.class);
-    //        privateDataManager.storeData(new Annotation(null));
-    //
-    //        List<Annotation> annotationList = privateDataManager.getData(Annotation.class);
-    //
-    //    }
 }

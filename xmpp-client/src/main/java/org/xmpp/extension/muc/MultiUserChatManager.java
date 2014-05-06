@@ -38,7 +38,11 @@ import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.extension.muc.conference.DirectInvitation;
 import org.xmpp.extension.muc.user.Invite;
 import org.xmpp.extension.muc.user.MucUser;
-import org.xmpp.stanza.*;
+import org.xmpp.stanza.MessageEvent;
+import org.xmpp.stanza.MessageListener;
+import org.xmpp.stanza.PresenceEvent;
+import org.xmpp.stanza.PresenceListener;
+import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 
 import java.net.URL;
@@ -72,7 +76,7 @@ public final class MultiUserChatManager extends ExtensionManager {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
-                    AbstractMessage message = e.getMessage();
+                    Message message = e.getMessage();
 
                     // Check, if the message contains a direct invitation.
                     DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);

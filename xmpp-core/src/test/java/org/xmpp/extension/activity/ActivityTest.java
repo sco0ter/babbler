@@ -26,7 +26,7 @@ package org.xmpp.extension.activity;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -34,7 +34,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class ActivityTest extends UnmarshalTest {
+public class ActivityTest extends XmlTest {
 
     protected ActivityTest() throws JAXBException, XMLStreamException {
         super(Activity.class);

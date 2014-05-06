@@ -26,7 +26,7 @@ package org.xmpp.extension.jingle.transports.iceudp;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.jingle.Jingle;
 import org.xmpp.stanza.client.IQ;
 
@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class IceUdpTransportTest extends UnmarshalTest {
+public class IceUdpTransportTest extends XmlTest {
     protected IceUdpTransportTest() throws JAXBException, XMLStreamException {
         super(IQ.class, Jingle.class, IceUdpTransport.class);
     }

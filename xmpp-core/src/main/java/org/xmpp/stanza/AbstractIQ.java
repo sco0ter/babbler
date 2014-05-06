@@ -57,7 +57,6 @@ import java.util.UUID;
  * @author Christian Schudt
  */
 @XmlTransient
-@XmlType(propOrder = {"from", "id", "to", "type", "extension", "error"})
 public abstract class AbstractIQ extends Stanza {
 
     @XmlAttribute

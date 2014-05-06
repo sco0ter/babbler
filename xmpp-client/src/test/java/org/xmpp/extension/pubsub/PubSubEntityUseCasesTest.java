@@ -22,39 +22,33 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.nick;
+package org.xmpp.extension.pubsub;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.XmlTest;
-import org.xmpp.stanza.client.Presence;
+import org.xmpp.TestConnection;
+import org.xmpp.extension.disco.info.Feature;
+import org.xmpp.extension.disco.info.InfoDiscovery;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
  */
-public class NicknameTest extends XmlTest {
-    protected NicknameTest() throws JAXBException, XMLStreamException {
-        super(Presence.class, Nickname.class);
-    }
+public class PubSubEntityUseCasesTest {
 
     @Test
-    public void unmarshalNickname() throws XMLStreamException, JAXBException {
-        String xml = "<presence from='narrator@moby-dick.lit' to='starbuck@moby-dick.lit' type='subscribe'>\n" +
-                "  <nick xmlns='http://jabber.org/protocol/nick'>Ishmael</nick>\n" +
-                "</presence>\n";
-        Presence presence = unmarshal(xml, Presence.class);
-        Nickname nickname = presence.getExtension(Nickname.class);
-        Assert.assertNotNull(nickname);
-        Assert.assertEquals(nickname.getValue(), "Ishmael");
-    }
+    public void testFeatures() {
+        TestConnection connection = new TestConnection();
+        InfoDiscovery infoDiscovery = new InfoDiscovery();
+        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#collections"));
+        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#config-node"));
+        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/disco#info"));
+        PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
+        Set<PubSubFeature> pubSubFeatures = pubSubManager.createPubSubService(null).getFeatures(infoDiscovery);
 
-    @Test
-    public void marshalNickname() throws JAXBException, XMLStreamException {
-        String xml = marshal(new Nickname("Ishmael"));
-        Assert.assertEquals("<nick xmlns=\"http://jabber.org/protocol/nick\">Ishmael</nick>", xml);
+        Assert.assertEquals(pubSubFeatures.size(), 2);
+        Assert.assertTrue(pubSubFeatures.contains(PubSubFeature.COLLECTIONS));
+        Assert.assertTrue(pubSubFeatures.contains(PubSubFeature.CONFIG_NODE));
     }
-
 }

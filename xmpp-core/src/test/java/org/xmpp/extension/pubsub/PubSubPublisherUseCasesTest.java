@@ -24,45 +24,55 @@
 
 package org.xmpp.extension.pubsub;
 
-import org.xmpp.UnmarshalTest;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.xmpp.XmlTest;
+import org.xmpp.stanza.client.IQ;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt
  */
-public class PubSubPublisherUseCasesTest extends UnmarshalTest {
+public class PubSubPublisherUseCasesTest extends XmlTest {
 
-//    @Test
-//    public void marshalPublish() throws JAXBException, XMLStreamException, IOException {
-//        PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null);
-//        String xml = marshall(pubSub);
-//        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish></pubsub>");
-//    }
-//
-//    @Test
-//    public void unmarshalPubSubPublishSuccess() throws XMLStreamException, JAXBException {
-//        String xml = "<iq type='result'\n" +
-//                "    from='pubsub.shakespeare.lit'\n" +
-//                "    to='hamlet@denmark.lit/blogbot'\n" +
-//                "    id='publish1'>\n" +
-//                "  <pubsub xmlns='http://jabber.org/protocol/pubsub'>\n" +
-//                "    <publish node='princely_musings'>\n" +
-//                "      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>\n" +
-//                "    </publish>\n" +
-//                "  </pubsub>\n" +
-//                "</iq>";
-//        XMLEventReader xmlEventReader = UnmarshalHelper.getStream(xml);
-//        IQ iq = (IQ) unmarshaller.unmarshal(xmlEventReader);
-//        PubSub pubSub = iq.getExtension(PubSub.class);
-//        Assert.assertNotNull(pubSub);
-//        Assert.assertNotNull(pubSub.getPublish());
-//        Assert.assertEquals(pubSub.getPublish().getNode(), "princely_musings");
-//        Assert.assertNotNull(pubSub.getPublish().getItem());
-//    }
-//
-//    @Test
-//    public void marshalDeleteItem() throws JAXBException, XMLStreamException, IOException {
-//        PubSub pubSub = PubSub.withRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
-//        String xml = marshall(pubSub);
-//        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract notify=\"false\" node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
-//    }
+    protected PubSubPublisherUseCasesTest() throws JAXBException, XMLStreamException {
+        super(IQ.class, PubSub.class);
+    }
+
+    @Test
+    public void marshalPublish() throws JAXBException, XMLStreamException {
+        PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null);
+        String xml = marshal(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish></pubsub>");
+    }
+
+    @Test
+    public void unmarshalPubSubPublishSuccess() throws XMLStreamException, JAXBException {
+        String xml = "<iq type='result'\n" +
+                "    from='pubsub.shakespeare.lit'\n" +
+                "    to='hamlet@denmark.lit/blogbot'\n" +
+                "    id='publish1'>\n" +
+                "  <pubsub xmlns='http://jabber.org/protocol/pubsub'>\n" +
+                "    <publish node='princely_musings'>\n" +
+                "      <item id='ae890ac52d0df67ed7cfdf51b644e901'/>\n" +
+                "    </publish>\n" +
+                "  </pubsub>\n" +
+                "</iq>";
+
+        IQ iq = unmarshal(xml, IQ.class);
+        PubSub pubSub = iq.getExtension(PubSub.class);
+        Assert.assertNotNull(pubSub);
+        Assert.assertNotNull(pubSub.getPublish());
+        Assert.assertEquals(pubSub.getPublish().getNode(), "princely_musings");
+        Assert.assertNotNull(pubSub.getPublish().getItem());
+    }
+
+    @Test
+    public void marshalDeleteItem() throws JAXBException, XMLStreamException {
+        PubSub pubSub = PubSub.withRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
+        String xml = marshal(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract notify=\"false\" node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
+    }
 }

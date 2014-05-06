@@ -26,7 +26,7 @@ package org.xmpp.extension.register;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.register.feature.RegisterFeature;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stream.Feature;
@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class RegistrationTest extends UnmarshalTest {
+public class RegistrationTest extends XmlTest {
     protected RegistrationTest() throws JAXBException, XMLStreamException {
         super(IQ.class, Registration.class, RegisterFeature.class);
     }

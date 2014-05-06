@@ -26,7 +26,7 @@ package org.xmpp.extension.attention;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class AttentionTest extends UnmarshalTest {
+public class AttentionTest extends XmlTest {
     protected AttentionTest() throws JAXBException, XMLStreamException {
         super(Message.class, Attention.class);
     }

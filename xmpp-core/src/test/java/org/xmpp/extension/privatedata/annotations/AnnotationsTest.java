@@ -27,7 +27,7 @@ package org.xmpp.extension.privatedata.annotations;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.privatedata.PrivateData;
 import org.xmpp.stanza.client.IQ;
 
@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class AnnotationsTest extends UnmarshalTest {
+public class AnnotationsTest extends XmlTest {
     protected AnnotationsTest() throws JAXBException, XMLStreamException {
         super(IQ.class, PrivateData.class, Annotation.class);
     }

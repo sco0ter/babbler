@@ -34,9 +34,9 @@ import java.io.*;
 /**
  * @author Christian Schudt
  */
-public abstract class UnmarshalTest {
+public abstract class XmlTest {
 
-    private static final String START_STREAM = "<?xml version='1.0' encoding='UTF-8'?><stream:stream xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"jabber:server\" from=\"localhost\" id=\"55aa4529\" xml:lang=\"en\" version=\"1.0\">";
+    private static final String START_STREAM = "<?xml version='1.0' encoding='UTF-8'?><stream:stream xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"jabber:client\" from=\"localhost\" id=\"55aa4529\" xml:lang=\"en\" version=\"1.0\">";
 
     private static final String END_STREAM = "</stream:stream>";
 
@@ -44,15 +44,9 @@ public abstract class UnmarshalTest {
 
     private Marshaller marshaller;
 
-    @Deprecated
-    protected UnmarshalTest() {
-
-    }
-
-    protected UnmarshalTest(Class<?>... context) throws JAXBException, XMLStreamException {
+    protected XmlTest(Class<?>... context) throws JAXBException, XMLStreamException {
         JAXBContext jaxbContext = JAXBContext.newInstance(context);
         unmarshaller = jaxbContext.createUnmarshaller();
-
         marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
     }

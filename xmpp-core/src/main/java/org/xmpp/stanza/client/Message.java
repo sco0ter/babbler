@@ -29,6 +29,7 @@ import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.StanzaError;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <message/>} element.
@@ -40,9 +41,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "message")
+@XmlType(propOrder = {"from", "id", "to", "type", "body", "subject", "thread", "extensions", "error"})
 public final class Message extends AbstractMessage {
 
-    Message() {
+    @SuppressWarnings("unused")
+    private Message() {
     }
 
     /**

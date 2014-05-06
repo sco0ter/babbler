@@ -22,7 +22,10 @@ package org.xmpp;/*
  * THE SOFTWARE.
  */
 
-import org.xmpp.stanza.*;
+import org.xmpp.stanza.IQEvent;
+import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.Marshaller;

@@ -25,10 +25,10 @@
 package org.xmpp.extension.forward;
 
 import org.xmpp.extension.delay.DelayedDelivery;
-import org.xmpp.stanza.AbstractIQ;
-import org.xmpp.stanza.AbstractMessage;
-import org.xmpp.stanza.AbstractPresence;
 import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.client.IQ;
+import org.xmpp.stanza.client.Message;
+import org.xmpp.stanza.client.Presence;
 
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementRefs;
@@ -47,7 +47,8 @@ public final class Forwarded {
     @XmlElementRef
     private DelayedDelivery delayedDelivery;
 
-    //@XmlElementRefs({@XmlElementRef(type = AbstractMessage.class), @XmlElementRef(type = AbstractPresence.class), @XmlElementRef(type = AbstractIQ.class)})
+    @XmlElementRefs({@XmlElementRef(type = Message.class), @XmlElementRef(type = Presence.class), @XmlElementRef(type = IQ.class),
+            @XmlElementRef(type = org.xmpp.stanza.server.Message.class), @XmlElementRef(type = org.xmpp.stanza.server.Presence.class), @XmlElementRef(type = org.xmpp.stanza.server.IQ.class),})
     private Stanza stanza;
 
     private Forwarded() {

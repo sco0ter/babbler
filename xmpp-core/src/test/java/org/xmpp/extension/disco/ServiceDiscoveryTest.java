@@ -27,7 +27,7 @@ package org.xmpp.extension.disco;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.Identity;
@@ -43,7 +43,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class ServiceDiscoveryTest extends UnmarshalTest {
+public class ServiceDiscoveryTest extends XmlTest {
     protected ServiceDiscoveryTest() throws JAXBException, XMLStreamException {
         super(IQ.class, ItemDiscovery.class, InfoDiscovery.class);
     }

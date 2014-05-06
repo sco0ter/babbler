@@ -27,7 +27,7 @@ package org.xmpp.extension.muc.owner;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.muc.Affiliation;
 import org.xmpp.extension.muc.MucElementFactory;
@@ -37,18 +37,17 @@ import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 
 /**
  * @author Christian Schudt
  */
-public class MultiUserChatOwnerTest extends UnmarshalTest {
+public class MultiUserChatOwnerTest extends XmlTest {
     protected MultiUserChatOwnerTest() throws JAXBException, XMLStreamException {
         super(IQ.class, MucOwner.class, MucAdmin.class);
     }
 
     @Test
-    public void testKickOccupant() throws JAXBException, XMLStreamException, IOException {
+    public void testKickOccupant() throws JAXBException, XMLStreamException {
         String xml = "<iq from='fluellen@shakespeare.lit/pda'\n" +
                 "    id='kick1'\n" +
                 "    to='harfleur@chat.shakespeare.lit'\n" +
@@ -68,7 +67,7 @@ public class MultiUserChatOwnerTest extends UnmarshalTest {
     }
 
     @Test
-    public void testGrantVoice() throws JAXBException, XMLStreamException, IOException {
+    public void testGrantVoice() throws JAXBException, XMLStreamException {
         String xml = "<iq from='crone1@shakespeare.lit/desktop'\n" +
                 "    id='voice1'\n" +
                 "    to='coven@chat.shakespeare.lit'\n" +
@@ -87,7 +86,7 @@ public class MultiUserChatOwnerTest extends UnmarshalTest {
     }
 
     @Test
-    public void testRevokeVoice() throws JAXBException, XMLStreamException, IOException {
+    public void testRevokeVoice() throws JAXBException, XMLStreamException {
         String xml = "<iq from='crone1@shakespeare.lit/desktop'\n" +
                 "    id='voice2'\n" +
                 "    to='coven@chat.shakespeare.lit'\n" +
@@ -109,7 +108,7 @@ public class MultiUserChatOwnerTest extends UnmarshalTest {
     }
 
     @Test
-    public void testBanUser() throws JAXBException, XMLStreamException, IOException {
+    public void testBanUser() throws JAXBException, XMLStreamException {
         String xml = "<iq from='kinghenryv@shakespeare.lit/throne'\n" +
                 "    id='ban1'\n" +
                 "    to='southampton@chat.shakespeare.lit'\n" +
@@ -131,21 +130,21 @@ public class MultiUserChatOwnerTest extends UnmarshalTest {
     }
 
     @Test
-    public void marshalCreateInstantRoom() throws JAXBException, XMLStreamException, IOException {
+    public void marshalCreateInstantRoom() throws JAXBException, XMLStreamException {
         MucOwner mucOwner = new MucOwner(new DataForm(DataForm.Type.SUBMIT));
         String xml = marshal(mucOwner);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><x xmlns=\"jabber:x:data\" type=\"submit\"></x></query>");
     }
 
     @Test
-    public void marshalRequestConfigurationForm() throws JAXBException, XMLStreamException, IOException {
+    public void marshalRequestConfigurationForm() throws JAXBException, XMLStreamException {
         MucOwner mucOwner = new MucOwner();
         String xml = marshal(mucOwner);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"></query>");
     }
 
     @Test
-    public void unmarshalConfigurationForm() throws JAXBException, XMLStreamException, IOException {
+    public void unmarshalConfigurationForm() throws JAXBException, XMLStreamException {
         String xml = "<iq from='coven@chat.shakespeare.lit'\n" +
                 "    id='config1'\n" +
                 "    to='crone1@shakespeare.lit/desktop'\n" +
@@ -163,7 +162,7 @@ public class MultiUserChatOwnerTest extends UnmarshalTest {
     }
 
     @Test
-    public void marshalDestroyRoom() throws JAXBException, XMLStreamException, IOException {
+    public void marshalDestroyRoom() throws JAXBException, XMLStreamException {
         MucOwner mucOwner = new MucOwner(MucElementFactory.createDestroy(Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come."));
         String xml = marshal(mucOwner);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></query>");

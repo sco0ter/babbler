@@ -26,7 +26,7 @@ package org.xmpp.extension.sm;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.errors.UnexpectedRequest;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class StreamManagementTest extends UnmarshalTest {
+public class StreamManagementTest extends XmlTest {
     protected StreamManagementTest() throws JAXBException, XMLStreamException {
         super(StreamManagement.class, UnexpectedRequest.class);
     }

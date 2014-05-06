@@ -26,7 +26,7 @@ package org.xmpp.extension.offline;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class OfflineMessageTest extends UnmarshalTest {
+public class OfflineMessageTest extends XmlTest {
     protected OfflineMessageTest() throws JAXBException, XMLStreamException {
         super(IQ.class, OfflineMessage.class);
     }

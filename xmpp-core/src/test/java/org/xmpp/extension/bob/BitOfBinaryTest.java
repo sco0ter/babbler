@@ -26,24 +26,23 @@ package org.xmpp.extension.bob;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 
 /**
  * @author Christian Schudt
  */
-public class BitOfBinaryTest extends UnmarshalTest {
+public class BitOfBinaryTest extends XmlTest {
 
     protected BitOfBinaryTest() throws JAXBException, XMLStreamException {
         super(IQ.class, Data.class);
     }
 
     @Test
-    public void unmarshalBitsOfBinaryResponse() throws IOException, JAXBException, XMLStreamException {
+    public void unmarshalBitsOfBinaryResponse() throws JAXBException, XMLStreamException {
         String xml = "<iq from='ladymacbeth@shakespeare.lit/castle'\n" +
                 "    id='get-data-1'\n" +
                 "    to='doctor@shakespeare.lit/pda'\n" +

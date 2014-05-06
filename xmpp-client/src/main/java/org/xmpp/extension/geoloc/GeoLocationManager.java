@@ -32,10 +32,10 @@ import org.xmpp.extension.pubsub.Item;
 import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.pubsub.PubSubService;
 import org.xmpp.extension.pubsub.event.Event;
-import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.client.Message;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -60,7 +60,7 @@ public final class GeoLocationManager extends ExtensionManager {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming() && isEnabled()) {
-                    AbstractMessage message = e.getMessage();
+                    Message message = e.getMessage();
                     Event event = message.getExtension(Event.class);
                     if (event != null) {
                         for (Item item : event.getItems()) {

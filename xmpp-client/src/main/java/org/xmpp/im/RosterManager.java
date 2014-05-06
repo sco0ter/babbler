@@ -25,7 +25,10 @@
 package org.xmpp.im;
 
 import org.xmpp.*;
-import org.xmpp.stanza.*;
+import org.xmpp.stanza.IQEvent;
+import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.StanzaError;
+import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.ServiceUnavailable;
 import org.xmpp.stanza.errors.UnexpectedRequest;

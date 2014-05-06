@@ -26,7 +26,7 @@ package org.xmpp.extension.blocking.errors;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class BlockingErrorsTest extends UnmarshalTest {
+public class BlockingErrorsTest extends XmlTest {
 
     protected BlockingErrorsTest() throws JAXBException, XMLStreamException {
         super(Message.class, Blocked.class);

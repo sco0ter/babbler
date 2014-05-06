@@ -22,8 +22,8 @@ package org.xmpp;/*
  * THE SOFTWARE.
  */
 
-import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.Stanza;
+import org.xmpp.stanza.client.IQ;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -26,7 +26,7 @@ package org.xmpp.extension.data.validate;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.data.DataForm;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class DataFormsValidateTest extends UnmarshalTest {
+public class DataFormsValidateTest extends XmlTest {
     protected DataFormsValidateTest() throws JAXBException, XMLStreamException {
         super(DataForm.class, Validation.class);
     }

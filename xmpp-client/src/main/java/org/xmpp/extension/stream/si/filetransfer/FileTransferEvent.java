@@ -29,8 +29,8 @@ import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.featureneg.FeatureNegotiation;
 import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
 import org.xmpp.extension.stream.si.StreamInitiation;
-import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.StanzaError;
+import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.Forbidden;
 
 import java.util.EventObject;

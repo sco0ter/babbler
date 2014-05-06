@@ -26,7 +26,7 @@ package org.xmpp.extension.carbons;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class MessageCarbonsTest extends UnmarshalTest {
+public class MessageCarbonsTest extends XmlTest {
 
     protected MessageCarbonsTest() throws JAXBException, XMLStreamException {
         super(IQ.class, MessageCarbons.class);

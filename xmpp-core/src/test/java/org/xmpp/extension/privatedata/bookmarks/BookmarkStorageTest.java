@@ -27,7 +27,7 @@ package org.xmpp.extension.privatedata.bookmarks;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -37,7 +37,7 @@ import java.net.URL;
 /**
  * @author Christian Schudt
  */
-public class BookmarkStorageTest extends UnmarshalTest {
+public class BookmarkStorageTest extends XmlTest {
     protected BookmarkStorageTest() throws JAXBException, XMLStreamException {
         super(BookmarkStorage.class);
     }

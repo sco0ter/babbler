@@ -26,7 +26,7 @@ package org.xmpp.extension.forward;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
@@ -35,12 +35,12 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class StanzaForwardingTest extends UnmarshalTest {
+public class StanzaForwardingTest extends XmlTest {
     protected StanzaForwardingTest() throws JAXBException, XMLStreamException {
         super(Message.class, Forwarded.class);
     }
 
-    //@Test
+    @Test
     public void unmarshalForwarded() throws XMLStreamException, JAXBException {
         String xml = "<message to='mercutio@verona.lit' from='romeo@montague.lit/orchard' type='chat' id='28gs'>\n" +
                 "        <body>A most courteous exposition!</body>\n" +

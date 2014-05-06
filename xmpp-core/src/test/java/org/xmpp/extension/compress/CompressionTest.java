@@ -26,7 +26,7 @@ package org.xmpp.extension.compress;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.compress.feature.Compression;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class CompressionTest extends UnmarshalTest {
+public class CompressionTest extends XmlTest {
     protected CompressionTest() throws JAXBException, XMLStreamException {
         super(Compress.class);
     }

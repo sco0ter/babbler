@@ -26,7 +26,7 @@ package org.xmpp.extension.data.layout;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.data.DataForm;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class DataFormsLayoutTest extends UnmarshalTest {
+public class DataFormsLayoutTest extends XmlTest {
     protected DataFormsLayoutTest() throws JAXBException, XMLStreamException {
         super(DataForm.class, Page.class);
     }

@@ -43,7 +43,6 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlTransient
-@XmlType(propOrder = {"from", "id", "to", "type", "status", "show", "priority", "extensions", "error"})
 public abstract class AbstractPresence extends Stanza implements Comparable<AbstractPresence> {
 
     @XmlAnyElement(lax = true)

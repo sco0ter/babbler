@@ -27,7 +27,7 @@ package org.xmpp.extension.address;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-public class AddressTest extends UnmarshalTest {
+public class AddressTest extends XmlTest {
 
     protected AddressTest() throws JAXBException, XMLStreamException {
         super(Addresses.class);

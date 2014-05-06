@@ -24,7 +24,9 @@
 
 package org.xmpp.im;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Represents a contact group in the user's roster.

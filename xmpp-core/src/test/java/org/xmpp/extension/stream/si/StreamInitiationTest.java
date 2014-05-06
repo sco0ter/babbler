@@ -26,7 +26,7 @@ package org.xmpp.extension.stream.si;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.BadRequest;
@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class StreamInitiationTest extends UnmarshalTest {
+public class StreamInitiationTest extends XmlTest {
     protected StreamInitiationTest() throws JAXBException, XMLStreamException {
         super(IQ.class, StreamInitiation.class);
     }

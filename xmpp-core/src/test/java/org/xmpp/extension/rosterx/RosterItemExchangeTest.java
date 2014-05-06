@@ -27,7 +27,7 @@ package org.xmpp.extension.rosterx;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class RosterItemExchangeTest extends UnmarshalTest {
+public class RosterItemExchangeTest extends XmlTest {
     protected RosterItemExchangeTest() throws JAXBException, XMLStreamException {
         super(Message.class, RosterExchange.class);
     }

@@ -27,7 +27,7 @@ package org.xmpp.extension.privacy;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class PrivacyListTest extends UnmarshalTest {
+public class PrivacyListTest extends XmlTest {
 
     protected PrivacyListTest() throws JAXBException, XMLStreamException {
         super(IQ.class, Privacy.class);

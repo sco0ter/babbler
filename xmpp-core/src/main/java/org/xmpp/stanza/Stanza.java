@@ -44,13 +44,13 @@ import javax.xml.bind.annotation.XmlTransient;
 public abstract class Stanza {
 
     @XmlAttribute
-    protected Jid to;
-
-    @XmlAttribute
     protected Jid from;
 
     @XmlAttribute
     protected String id;
+
+    @XmlAttribute
+    protected Jid to;
 
     @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
     protected String language;

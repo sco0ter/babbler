@@ -28,8 +28,8 @@ import org.xmpp.Connection;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.client.IQ;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

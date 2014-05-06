@@ -26,7 +26,7 @@ package org.xmpp.extension.version;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class SoftwareVersionTest extends UnmarshalTest {
+public class SoftwareVersionTest extends XmlTest {
     protected SoftwareVersionTest() throws JAXBException, XMLStreamException {
         super(IQ.class, SoftwareVersion.class);
     }

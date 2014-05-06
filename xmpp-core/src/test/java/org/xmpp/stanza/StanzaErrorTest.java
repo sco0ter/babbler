@@ -27,7 +27,7 @@ package org.xmpp.stanza;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Element;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class StanzaErrorTest extends UnmarshalTest {
+public class StanzaErrorTest extends XmlTest {
 
     public StanzaErrorTest() throws JAXBException, XMLStreamException {
         super(IQ.class, Message.class, Presence.class, StanzaError.class);
@@ -485,12 +485,12 @@ public class StanzaErrorTest extends UnmarshalTest {
         Assert.assertEquals(iq.getError().getType(), StanzaError.Type.CONTINUE);
         Assert.assertTrue(iq.getError().getCondition() instanceof UndefinedCondition);
     }
-    //
-    //    @Test
-    //    public void marshalCondition() throws JAXBException, XMLStreamException, IOException {
-    //        String xml = "<error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error>";
-    //        StanzaError error = new StanzaError(new UnexpectedRequest());
-    //        String marshalledXml = marshall(error);
-    //        Assert.assertEquals(marshalledXml, xml);
-    //    }
+
+    @Test
+    public void marshalCondition() throws JAXBException, XMLStreamException {
+        String xml = "<error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error>";
+        StanzaError error = new StanzaError(new UnexpectedRequest());
+        String marshalledXml = marshal(error);
+        Assert.assertEquals(marshalledXml, xml);
+    }
 }

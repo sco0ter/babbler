@@ -27,10 +27,7 @@ package org.xmpp.extension.forward;
 import org.xmpp.Connection;
 import org.xmpp.Jid;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.delay.DelayedDelivery;
 import org.xmpp.stanza.AbstractMessage;
-
-import java.util.Date;
 
 /**
  * This manager allows to forward stanzas to other XMPP entities.

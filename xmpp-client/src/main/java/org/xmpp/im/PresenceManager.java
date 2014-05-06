@@ -28,9 +28,9 @@ import org.xmpp.Connection;
 import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
-import org.xmpp.stanza.client.Presence;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
+import org.xmpp.stanza.client.Presence;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

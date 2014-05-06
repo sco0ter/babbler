@@ -27,7 +27,7 @@ package org.xmpp.im;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class RosterTest extends UnmarshalTest {
+public class RosterTest extends XmlTest {
 
     protected RosterTest() throws JAXBException, XMLStreamException {
         super(IQ.class, Roster.class);
@@ -154,17 +154,17 @@ public class RosterTest extends UnmarshalTest {
         Assert.assertTrue(roster.getContacts().get(0).isApproved());
     }
 
-    //    @Test
-    //    public void testMarshalRoster() throws XMLStreamException, JAXBException {
-    //        String xml = "<query xmlns=\"jabber:iq:roster\"><item jid=\"node1@domain\"></item><item jid=\"node2@domain\" name=\"Name\"><group>Group1</group><group>Group2</group></item></query>";
-    //
-    //        Roster roster = new Roster();
-    //        roster.getContacts().add(new Contact(Jid.valueOf("node1@domain")));
-    //        roster.getContacts().add(new Contact(Jid.valueOf("node2@domain"), "Name", "Group1", "Group2"));
-    //
-    //        String rosterXml = marshall(roster);
-    //        Assert.assertEquals(rosterXml, xml);
-    //    }
+    @Test
+    public void testMarshalRoster() throws XMLStreamException, JAXBException {
+        String xml = "<query xmlns=\"jabber:iq:roster\"><item jid=\"node1@domain\"></item><item jid=\"node2@domain\" name=\"Name\"><group>Group1</group><group>Group2</group></item></query>";
+
+        Roster roster = new Roster();
+        roster.getContacts().add(new Contact(Jid.valueOf("node1@domain")));
+        roster.getContacts().add(new Contact(Jid.valueOf("node2@domain"), "Name", "Group1", "Group2"));
+
+        String rosterXml = marshal(roster);
+        Assert.assertEquals(rosterXml, xml);
+    }
 
     @Test
     public void testContactEquality() throws XMLStreamException, JAXBException {

@@ -26,7 +26,7 @@ package org.xmpp.extension.featureneg;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class FeatureNegotiationTest extends UnmarshalTest {
+public class FeatureNegotiationTest extends XmlTest {
 
     protected FeatureNegotiationTest() throws JAXBException, XMLStreamException {
         super(IQ.class, FeatureNegotiation.class);

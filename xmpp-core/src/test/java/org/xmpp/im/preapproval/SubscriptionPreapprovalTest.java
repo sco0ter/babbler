@@ -26,7 +26,7 @@ package org.xmpp.im.preapproval;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -34,7 +34,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class SubscriptionPreapprovalTest extends UnmarshalTest {
+public class SubscriptionPreapprovalTest extends XmlTest {
 
     protected SubscriptionPreapprovalTest() throws JAXBException, XMLStreamException {
         super(SubscriptionPreApproval.class);

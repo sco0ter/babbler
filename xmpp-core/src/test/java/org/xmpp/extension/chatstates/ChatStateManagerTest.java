@@ -26,7 +26,7 @@ package org.xmpp.extension.chatstates;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class ChatStateManagerTest extends UnmarshalTest {
+public class ChatStateManagerTest extends XmlTest {
 
     protected ChatStateManagerTest() throws JAXBException, XMLStreamException {
         super(Message.class, Active.class, Composing.class, Paused.class, Inactive.class, Gone.class);

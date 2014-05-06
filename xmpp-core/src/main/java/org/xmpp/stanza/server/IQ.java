@@ -22,18 +22,20 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.stanza.client;
+package org.xmpp.stanza.server;
 
 import org.xmpp.Jid;
 import org.xmpp.stanza.AbstractIQ;
 import org.xmpp.stanza.StanzaError;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "iq")
+@XmlType(propOrder = {"from", "id", "to", "type", "extension", "error"})
 public final class IQ extends AbstractIQ {
     /**
      * Default constructor for unmarshalling.
@@ -64,7 +66,7 @@ public final class IQ extends AbstractIQ {
 
     /**
      * Creates an IQ stanza with the given id and type.
-     * Not that, if the type is {@link Type#SET} or {@link Type#GET}, you will have to also set an extension.
+     * Not that, if the type is {@link org.xmpp.stanza.AbstractIQ.Type#SET} or {@link org.xmpp.stanza.AbstractIQ.Type#GET}, you will have to also set an extension.
      *
      * @param id   The id.
      * @param type The type.

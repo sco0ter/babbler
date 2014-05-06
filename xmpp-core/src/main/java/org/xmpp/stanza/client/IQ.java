@@ -29,11 +29,13 @@ import org.xmpp.stanza.AbstractIQ;
 import org.xmpp.stanza.StanzaError;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "iq")
+@XmlType(propOrder = {"from", "id", "to", "type", "extension", "error"})
 public final class IQ extends AbstractIQ {
     /**
      * Default constructor for unmarshalling.

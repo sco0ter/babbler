@@ -27,7 +27,7 @@ package org.xmpp.extension.httpbind;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.im.Roster;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.client.Presence;
@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class BoshTest extends UnmarshalTest {
+public class BoshTest extends XmlTest {
 
     protected BoshTest() throws JAXBException, XMLStreamException {
         super(IQ.class, Roster.class, Presence.class, Body.class);
@@ -186,47 +186,4 @@ public class BoshTest extends UnmarshalTest {
         body.getWrappedObjects().add(new Presence());
         Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\"><iq xmlns=\"jabber:client\" id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"></query></iq><presence xmlns=\"jabber:client\"></presence></body>");
     }
-
-    //    @Test
-    //    public void testInsertionOrder() {
-    //
-    //        BoshConnection boshConnection = new BoshConnection("");
-    //
-    //        Body body1 = new Body();
-    //        boshConnection.unacknowledgedRequests.put(1L, body1);
-    //
-    //        Body body2 = new Body();
-    //        boshConnection.unacknowledgedRequests.put(2L, body2);
-    //
-    //        Body body3 = new Body();
-    //        boshConnection.unacknowledgedRequests.put(3L, body3);
-    //
-    //        Body body4 = new Body();
-    //        boshConnection.unacknowledgedRequests.put(4L, body4);
-    //
-    //        Body body5 = new Body();
-    //        boshConnection.unacknowledgedRequests.put(5L, body5);
-    //
-    //        int i = 0;
-    //        for (Body body : boshConnection.unacknowledgedRequests.values()) {
-    //            switch (i) {
-    //                case 0:
-    //                    Assert.assertEquals(body, body1);
-    //                    break;
-    //                case 1:
-    //                    Assert.assertEquals(body, body2);
-    //                    break;
-    //                case 2:
-    //                    Assert.assertEquals(body, body3);
-    //                    break;
-    //                case 3:
-    //                    Assert.assertEquals(body, body4);
-    //                    break;
-    //                case 4:
-    //                    Assert.assertEquals(body, body5);
-    //                    break;
-    //            }
-    //            i++;
-    //        }
-    //    }
 }

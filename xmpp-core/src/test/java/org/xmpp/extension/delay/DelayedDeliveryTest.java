@@ -27,7 +27,7 @@ package org.xmpp.extension.delay;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.DatatypeConverter;
@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class DelayedDeliveryTest extends UnmarshalTest {
+public class DelayedDeliveryTest extends XmlTest {
     protected DelayedDeliveryTest() throws JAXBException, XMLStreamException {
         super(Message.class, DelayedDelivery.class);
     }

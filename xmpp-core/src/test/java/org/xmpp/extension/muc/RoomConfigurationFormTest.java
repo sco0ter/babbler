@@ -27,7 +27,7 @@ package org.xmpp.extension.muc;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.data.DataForm;
 
 import javax.xml.bind.JAXBException;
@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class RoomConfigurationFormTest extends UnmarshalTest {
+public class RoomConfigurationFormTest extends XmlTest {
     protected RoomConfigurationFormTest() throws JAXBException, XMLStreamException {
         super(DataForm.class);
     }

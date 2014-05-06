@@ -26,13 +26,12 @@ package org.xmpp.extension.muc;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Presence;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -40,14 +39,14 @@ import java.util.GregorianCalendar;
 /**
  * @author Christian Schudt
  */
-public class MultiUserChatTest extends UnmarshalTest {
+public class MultiUserChatTest extends XmlTest {
 
     protected MultiUserChatTest() throws JAXBException, XMLStreamException {
         super(Presence.class, Muc.class);
     }
 
     @Test
-    public void testEnterRoom() throws JAXBException, XMLStreamException, IOException {
+    public void testEnterRoom() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
         presence.getExtensions().add(new Muc());
         String xml = marshal(presence);
@@ -55,7 +54,7 @@ public class MultiUserChatTest extends UnmarshalTest {
     }
 
     @Test
-    public void testEnterRoomWithPassword() throws JAXBException, XMLStreamException, IOException {
+    public void testEnterRoomWithPassword() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
         presence.getExtensions().add(new Muc("cauldronburn"));
         String xml = marshal(presence);
@@ -63,7 +62,7 @@ public class MultiUserChatTest extends UnmarshalTest {
     }
 
     @Test
-    public void testEnterRoomWithHistoryMaxChars() throws JAXBException, XMLStreamException, IOException {
+    public void testEnterRoomWithHistoryMaxChars() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
         presence.getExtensions().add(new Muc(History.forMaxChars(65000)));
         String xml = marshal(presence);
@@ -71,7 +70,7 @@ public class MultiUserChatTest extends UnmarshalTest {
     }
 
     @Test
-    public void testEnterRoomWithHistoryMaxStanzas() throws JAXBException, XMLStreamException, IOException {
+    public void testEnterRoomWithHistoryMaxStanzas() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
         presence.getExtensions().add(new Muc(History.forMaxMessages(20)));
         String xml = marshal(presence);
@@ -79,7 +78,7 @@ public class MultiUserChatTest extends UnmarshalTest {
     }
 
     @Test
-    public void testEnterRoomWithHistorySeconds() throws JAXBException, XMLStreamException, IOException {
+    public void testEnterRoomWithHistorySeconds() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
         presence.getExtensions().add(new Muc(History.forSeconds(180)));
         String xml = marshal(presence);
@@ -87,7 +86,7 @@ public class MultiUserChatTest extends UnmarshalTest {
     }
 
     @Test
-    public void testEnterRoomWithHistorySince() throws JAXBException, XMLStreamException, IOException {
+    public void testEnterRoomWithHistorySince() throws JAXBException, XMLStreamException {
         Date date = new Date();
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(date);

@@ -30,9 +30,9 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.im.ChatSession;
 import org.xmpp.im.ChatSessionEvent;
 import org.xmpp.im.ChatSessionListener;
-import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
+import org.xmpp.stanza.client.Message;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +74,7 @@ public final class ChatStateManager extends ExtensionManager {
                 chatSession.addMessageListener(new MessageListener() {
                     @Override
                     public void handle(MessageEvent e) {
-                        AbstractMessage message = e.getMessage();
+                        Message message = e.getMessage();
                         if (!e.isIncoming()) {
                             // In the absence of explicit discovery or negotiation, the User MAY implicitly request and discover the use of chat state notifications in a one-to-one chat session by adhering to the following business rules:
                             // 1. If the User desires chat state notifications, the message(s) that it sends to the Contact before receiving a reply MUST contain a chat state notification extension, which SHOULD be <active/>.

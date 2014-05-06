@@ -26,7 +26,7 @@ package org.xmpp.extension.reach;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -36,7 +36,7 @@ import java.util.Arrays;
 /**
  * @author Christian Schudt
  */
-public class ReachabilityTest extends UnmarshalTest {
+public class ReachabilityTest extends XmlTest {
 
     protected ReachabilityTest() throws JAXBException, XMLStreamException {
         super(Reachability.class);

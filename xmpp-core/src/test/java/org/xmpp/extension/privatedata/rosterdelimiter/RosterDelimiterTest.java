@@ -26,7 +26,7 @@ package org.xmpp.extension.privatedata.rosterdelimiter;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.privatedata.PrivateData;
 import org.xmpp.stanza.client.IQ;
 
@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class RosterDelimiterTest extends UnmarshalTest {
+public class RosterDelimiterTest extends XmlTest {
 
     protected RosterDelimiterTest() throws JAXBException, XMLStreamException {
         super(IQ.class, PrivateData.class, RosterDelimiter.class);

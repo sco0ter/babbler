@@ -27,7 +27,7 @@ package org.xmpp.extension.search;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.stanza.client.IQ;
 
@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class SearchTest extends UnmarshalTest {
+public class SearchTest extends XmlTest {
 
     protected SearchTest() throws JAXBException, XMLStreamException {
         super(IQ.class, Search.class);

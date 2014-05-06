@@ -41,7 +41,6 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlTransient
-@XmlType(propOrder = {"from", "id", "to", "type", "body", "subject", "thread", "extensions", "error"})
 public abstract class AbstractMessage extends Stanza {
 
     @XmlElement(name = "body")
@@ -106,7 +105,7 @@ public abstract class AbstractMessage extends Stanza {
      * @return The bodies.
      * @see #getBody()
      */
-    public List<? extends Body> getBodies() {
+    public List<Body> getBodies() {
         return body;
     }
 

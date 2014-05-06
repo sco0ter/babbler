@@ -26,7 +26,7 @@ package org.xmpp.tls;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -34,7 +34,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class TlsTest extends UnmarshalTest {
+public class TlsTest extends XmlTest {
 
     protected TlsTest() throws JAXBException, XMLStreamException {
         super(StartTls.class, Proceed.class, Failure.class);
@@ -61,9 +61,9 @@ public class TlsTest extends UnmarshalTest {
         Assert.assertNotNull(failure);
     }
 
-    //    @Test
-    //    public void marshalStartTls() throws JAXBException, XMLStreamException, IOException {
-    //        String xml = marshall(new StartTls());
-    //        Assert.assertEquals(xml, "<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"></starttls>");
-    //    }
+    @Test
+    public void marshalStartTls() throws JAXBException, XMLStreamException {
+        String xml = marshal(new StartTls());
+        Assert.assertEquals(xml, "<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"></starttls>");
+    }
 }

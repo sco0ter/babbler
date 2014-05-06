@@ -26,7 +26,7 @@ package org.xmpp.extension.tune;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -35,7 +35,7 @@ import java.net.URI;
 /**
  * @author Christian Schudt
  */
-public class TuneTest extends UnmarshalTest {
+public class TuneTest extends XmlTest {
 
     protected TuneTest() throws JAXBException, XMLStreamException {
         super(Tune.class);

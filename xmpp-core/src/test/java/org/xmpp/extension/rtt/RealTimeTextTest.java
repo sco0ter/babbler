@@ -26,7 +26,7 @@ package org.xmpp.extension.rtt;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class RealTimeTextTest extends UnmarshalTest {
+public class RealTimeTextTest extends XmlTest {
     protected RealTimeTextTest() throws JAXBException, XMLStreamException {
         super(Message.class, RealTimeText.class);
     }

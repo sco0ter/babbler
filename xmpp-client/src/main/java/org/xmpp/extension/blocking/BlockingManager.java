@@ -29,10 +29,10 @@ import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.client.IQ;
 
 import java.util.ArrayList;
 import java.util.List;

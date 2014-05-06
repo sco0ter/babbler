@@ -35,10 +35,10 @@ import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.extension.pubsub.event.Event;
-import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.client.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public final class PubSubManager extends ExtensionManager {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
-                    AbstractMessage message = e.getMessage();
+                    Message message = e.getMessage();
                     Event event = message.getExtension(Event.class);
                     if (event != null) {
                         int i = 0;

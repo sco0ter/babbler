@@ -26,7 +26,7 @@ package org.xmpp.extension.avatar;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class AvatarTest extends UnmarshalTest {
+public class AvatarTest extends XmlTest {
     protected AvatarTest() throws JAXBException, XMLStreamException {
         super(AvatarUpdate.class);
     }

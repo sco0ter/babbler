@@ -66,8 +66,6 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
-import org.xmpp.extension.muc.ChatService;
-import org.xmpp.extension.muc.MultiUserChatManager;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
@@ -642,15 +640,7 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                MultiUserChatManager multiUserChatManager = connection.getExtensionManager(MultiUserChatManager.class);
-                ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.christian-schudts-macbook-pro"));
-                try {
-                    //chatService.getPublicRooms();
-                    //multiUserChatManager.getRoomInfo(Jid.valueOf("test@conference.christian-schudts-macbook-pro"));
-                    chatService.joinRoom("test", "nick");
-                } catch (XmppException e) {
-                    e.printStackTrace();
-                }
+
             }
         });
         Button btnExit = new Button("Exit");

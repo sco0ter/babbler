@@ -26,7 +26,7 @@ package org.xmpp.extension.json;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -34,7 +34,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class JsonTest extends UnmarshalTest {
+public class JsonTest extends XmlTest {
     protected JsonTest() throws JAXBException, XMLStreamException {
         super(Json.class);
     }

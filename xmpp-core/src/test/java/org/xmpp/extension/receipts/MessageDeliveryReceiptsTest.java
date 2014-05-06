@@ -26,7 +26,7 @@ package org.xmpp.extension.receipts;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.UnmarshalTest;
+import org.xmpp.XmlTest;
 import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class MessageDeliveryReceiptsTest extends UnmarshalTest {
+public class MessageDeliveryReceiptsTest extends XmlTest {
     protected MessageDeliveryReceiptsTest() throws JAXBException, XMLStreamException {
         super(Message.class, Request.class, Received.class);
     }

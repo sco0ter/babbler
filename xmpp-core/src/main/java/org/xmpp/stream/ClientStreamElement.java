@@ -22,24 +22,15 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.sm;
-
-import org.xmpp.stanza.errors.Condition;
-import org.xmpp.stream.ServerStreamElement;
-
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
+package org.xmpp.stream;
 
 /**
+ * This is a marker interface to mark top-level elements, which can be sent over the client stream.
+ * <p>
+ * Usually this is a stanza like {@code <iq/>}, {@code <message/>} and {@code <presence/>}, but can also be XML elements used for SASL, TLS or by <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
+ * </p>
+ *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "failed")
-public final class Failed implements ServerStreamElement {
-
-    @XmlElementRef
-    private Condition stanzaError;
-
-    public Condition getError() {
-        return stanzaError;
-    }
+public interface ClientStreamElement {
 }

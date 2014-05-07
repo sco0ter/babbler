@@ -27,16 +27,19 @@ package org.xmpp.stanza.client;
 import org.xmpp.Jid;
 import org.xmpp.stanza.AbstractIQ;
 import org.xmpp.stanza.StanzaError;
+import org.xmpp.stream.ClientStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
+ * The implementation of the {@code <iq/>} element for the client namespace ('jabber:client').
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "iq")
 @XmlType(propOrder = {"from", "id", "to", "type", "extension", "error"})
-public final class IQ extends AbstractIQ {
+public final class IQ extends AbstractIQ implements ClientStreamElement {
     /**
      * Default constructor for unmarshalling.
      */

@@ -52,7 +52,15 @@ public final class Forwarded {
     private Stanza stanza;
 
     private Forwarded() {
+    }
 
+    /**
+     * Creates a forwarded element.
+     *
+     * @param stanza The stanza to forward.
+     */
+    public Forwarded(Stanza stanza) {
+        this(stanza, null);
     }
 
     /**
@@ -61,7 +69,7 @@ public final class Forwarded {
      * @param delayedDelivery The delayed delivery, which indicates, when the forwarded stanza was originally received by the forwarder.
      * @param stanza          The stanza to forward.
      */
-    public Forwarded(DelayedDelivery delayedDelivery, Stanza stanza) {
+    public Forwarded(Stanza stanza, DelayedDelivery delayedDelivery) {
         this.delayedDelivery = delayedDelivery;
         this.stanza = stanza;
     }

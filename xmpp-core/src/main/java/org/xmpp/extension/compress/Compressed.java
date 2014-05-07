@@ -24,11 +24,13 @@
 
 package org.xmpp.extension.compress;
 
+import org.xmpp.stream.ServerStreamElement;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "compressed")
-final class Compressed {
+final class Compressed implements ServerStreamElement {
 }

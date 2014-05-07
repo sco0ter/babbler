@@ -24,6 +24,8 @@
 
 package org.xmpp.tls;
 
+import org.xmpp.stream.ServerStreamElement;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -34,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement
-final class Proceed {
+final class Proceed implements ServerStreamElement {
     private Proceed() {
     }
 }

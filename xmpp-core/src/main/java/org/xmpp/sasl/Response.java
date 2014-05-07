@@ -24,6 +24,8 @@
 
 package org.xmpp.sasl;
 
+import org.xmpp.stream.ClientStreamElement;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -38,7 +40,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @see Challenge
  */
 @XmlRootElement
-final class Response {
+final class Response implements ClientStreamElement {
 
     @XmlValue
     private byte[] value;

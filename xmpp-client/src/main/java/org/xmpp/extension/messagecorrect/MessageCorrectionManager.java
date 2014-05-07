@@ -27,6 +27,7 @@ package org.xmpp.extension.messagecorrect;
 import org.xmpp.Connection;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.AbstractMessage;
+import org.xmpp.stanza.client.Message;
 
 /**
  * This manager allows to correct last sent messages as specified by <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>.
@@ -60,7 +61,7 @@ public final class MessageCorrectionManager extends ExtensionManager {
      * @param id      The message id of the old message, which shall be corrected.
      * @param message The new message, which will replace the old message.
      */
-    public void correctMessage(String id, AbstractMessage message) {
+    public void correctMessage(String id, Message message) {
         if (id == null) {
             throw new IllegalArgumentException("id must not be null");
         }

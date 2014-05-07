@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.sm;
 
+import org.xmpp.stream.ServerStreamElement;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "enabled")
-public final class Enabled {
+public final class Enabled implements ServerStreamElement {
 
     @XmlAttribute(name = "id")
     private String id;

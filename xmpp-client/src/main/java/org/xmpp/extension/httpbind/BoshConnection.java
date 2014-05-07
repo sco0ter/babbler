@@ -28,6 +28,7 @@ import org.xmpp.Connection;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppContext;
 import org.xmpp.XmppUtils;
+import org.xmpp.stream.ClientStreamElement;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -472,7 +473,7 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public void send(Object element) {
+    public void send(ClientStreamElement element) {
         queue.add(element);
         sendNewRequest(new Body(), true);
     }

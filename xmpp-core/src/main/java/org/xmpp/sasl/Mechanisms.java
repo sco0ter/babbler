@@ -25,6 +25,7 @@
 package org.xmpp.sasl;
 
 import org.xmpp.stream.Feature;
+import org.xmpp.stream.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -38,7 +39,7 @@ import java.util.List;
  */
 @XmlRootElement
 @XmlSeeAlso({Abort.class, Auth.class, Challenge.class, Failure.class, Response.class, Success.class})
-public final class Mechanisms extends Feature {
+public final class Mechanisms extends Feature implements ServerStreamElement {
 
     @XmlElement
     private List<String> mechanism;

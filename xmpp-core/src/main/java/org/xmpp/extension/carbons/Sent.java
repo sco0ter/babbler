@@ -35,6 +35,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "sent")
 public final class Sent {
 
+    private Sent() {
+    }
+
+    public Sent(Forwarded forwarded) {
+        this.forwarded = forwarded;
+    }
+
     @XmlElementRef
     private Forwarded forwarded;
 }

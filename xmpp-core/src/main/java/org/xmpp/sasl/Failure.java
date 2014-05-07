@@ -24,6 +24,8 @@
 
 package org.xmpp.sasl;
 
+import org.xmpp.stream.ServerStreamElement;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.*;
 
@@ -38,7 +40,7 @@ import javax.xml.bind.annotation.*;
  */
 @XmlRootElement
 @XmlSeeAlso({Failure.Aborted.class, Failure.AccountDisabled.class, Failure.CredentialsExpired.class, Failure.EncryptionRequired.class, Failure.IncorrectEncoding.class, Failure.InvalidAuthzid.class, Failure.InvalidMechanism.class, Failure.MalformedRequest.class, Failure.MechanismTooWeak.class, Failure.NotAuthorized.class, Failure.TemporaryAuthFailure.class})
-final class Failure {
+final class Failure implements ServerStreamElement {
 
     @XmlElementRef
     private Condition condition;

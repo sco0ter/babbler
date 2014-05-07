@@ -27,6 +27,7 @@ import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.Stanza;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
+import org.xmpp.stream.ClientStreamElement;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -66,7 +67,7 @@ public class TestConnection extends Connection {
     }
 
     @Override
-    public void send(Object element) {
+    public void send(ClientStreamElement element) {
         super.send(element);
         if (mockServer != null && element instanceof Stanza) {
             ((Stanza) element).setFrom(connectedResource);

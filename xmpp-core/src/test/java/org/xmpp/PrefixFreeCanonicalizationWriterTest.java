@@ -26,10 +26,14 @@ package org.xmpp;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.xmpp.extension.carbons.Sent;
+import org.xmpp.extension.forward.Forwarded;
 import org.xmpp.extension.httpbind.Body;
 import org.xmpp.im.Contact;
 import org.xmpp.im.Roster;
+import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.client.IQ;
+import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -54,11 +58,12 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
 
-        PrefixFreeCanonicalizationWriter prefixFreeWriter = new PrefixFreeCanonicalizationWriter(xmlStreamWriter, "jabber:client");
+        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(IQ.class, Roster.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+
         Roster roster = new Roster();
         List<Contact> contacts = new ArrayList<>();
         contacts.add(new Contact(new Jid("domain")));
@@ -70,13 +75,34 @@ public class PrefixFreeCanonicalizationWriterTest {
     }
 
     @Test
+    public void testMessage() throws XMLStreamException, JAXBException {
+
+        Writer writer = new StringWriter();
+
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(Message.class, Sent.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+
+        Message forwardedMessage = new Message(Jid.valueOf("romeo@example.net"), Message.Type.CHAT, "Hi!!");
+
+        Message message = new Message(Jid.valueOf("juliet@example.net"));
+        message.getExtensions().add(new Sent(new Forwarded(forwardedMessage)));
+        marshaller.marshal(message, xmppStreamWriter);
+
+        System.out.println(writer.toString());
+
+    }
+
+    @Test
     public void testElementWithPrefixedAttribute() throws XMLStreamException, JAXBException {
 
         Writer writer = new StringWriter();
 
         XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
-
-        PrefixFreeCanonicalizationWriter prefixFreeWriter = new PrefixFreeCanonicalizationWriter(xmlStreamWriter, "jabber:client");
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Body.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
@@ -86,6 +112,6 @@ public class PrefixFreeCanonicalizationWriterTest {
         body.setRestart(true);
         body.setRid(1L);
 
-        marshaller.marshal(body, prefixFreeWriter);
+        marshaller.marshal(body, xmppStreamWriter);
     }
 }

@@ -24,6 +24,8 @@
 
 package org.xmpp.sasl;
 
+import org.xmpp.stream.ClientStreamElement;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -37,5 +39,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement
-final class Abort {
+final class Abort implements ClientStreamElement {
 }

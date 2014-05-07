@@ -24,12 +24,14 @@
 
 package org.xmpp.extension.sm;
 
+import org.xmpp.stream.ClientStreamElement;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "resume")
-public final class Resume extends AbstractResume {
+public final class Resume extends AbstractResume implements ClientStreamElement {
 
 }

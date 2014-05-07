@@ -25,6 +25,7 @@
 package org.xmpp.extension.compress;
 
 import org.xmpp.extension.compress.feature.Compression;
+import org.xmpp.stream.ClientStreamElement;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -35,7 +36,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  */
 @XmlRootElement(name = "compress")
 @XmlSeeAlso({Compression.class, Compressed.class, Failure.class})
-public final class Compress {
+public final class Compress implements ClientStreamElement {
 
     @XmlElement
     private Method method;

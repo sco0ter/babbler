@@ -37,6 +37,7 @@ import org.xmpp.stanza.AbstractPresence;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
 import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.client.Presence;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -102,7 +103,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
                         // Resend presence. This manager will add the caps extension later.
                         PresenceManager presenceManager = connection.getPresenceManager();
-                        AbstractPresence lastPresence = presenceManager.getLastSentPresence();
+                        Presence lastPresence = presenceManager.getLastSentPresence();
                         lastPresence.getExtensions().clear();
                         connection.send(lastPresence);
                     }
@@ -231,7 +232,6 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             }
         });
     }
-
 
 
     private void publishCapsNode() {

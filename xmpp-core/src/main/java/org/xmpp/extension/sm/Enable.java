@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.sm;
 
+import org.xmpp.stream.ClientStreamElement;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "enable")
-public final class Enable {
+public final class Enable implements ClientStreamElement {
 
     @XmlAttribute(name = "resume")
     private Boolean resume;

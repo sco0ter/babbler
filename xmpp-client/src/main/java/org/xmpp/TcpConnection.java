@@ -24,6 +24,8 @@
 
 package org.xmpp;
 
+import org.xmpp.stream.ClientStreamElement;
+
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -221,7 +223,7 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public void send(Object element) {
+    public void send(ClientStreamElement element) {
         super.send(element);
         xmppStreamWriter.send(element);
     }

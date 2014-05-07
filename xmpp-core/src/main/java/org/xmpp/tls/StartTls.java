@@ -24,6 +24,7 @@
 
 package org.xmpp.tls;
 
+import org.xmpp.stream.ClientStreamElement;
 import org.xmpp.stream.Feature;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  */
 @XmlRootElement(name = "starttls")
 @XmlSeeAlso({Proceed.class, Failure.class})
-public final class StartTls extends Feature {
+public final class StartTls extends Feature implements ClientStreamElement {
 
     @XmlElement
     protected String required;

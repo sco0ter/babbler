@@ -565,7 +565,7 @@ public abstract class Connection implements Closeable {
      *
      * @param element The XML element.
      */
-    public void send(Object element) {
+    public void send(ClientStreamElement element) {
         if (element instanceof Stanza) {
             notifyStanzaListeners((Stanza) element, false);
         }

@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.compress;
 
+import org.xmpp.stream.ServerStreamElement;
+
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -33,7 +35,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  */
 @XmlRootElement(name = "failure")
 @XmlSeeAlso({Failure.SetupFailed.class, Failure.ProcessingFailed.class, Failure.UnsupportedMethod.class})
-final class Failure {
+final class Failure implements ServerStreamElement {
     @XmlElementRef
     private Condition condition;
 

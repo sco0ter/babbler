@@ -27,22 +27,19 @@ package org.xmpp.stanza.server;
 import org.xmpp.Jid;
 import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.StanzaError;
+import org.xmpp.stream.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <message/>} element.
- * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message">5.  Exchanging Messages</a></cite></p>
- * <p>Once a client has authenticated with a server and bound a resource to an XML stream as described in [XMPP-CORE], an XMPP server will route XML stanzas to and from that client. One kind of stanza that can be exchanged is {@code <message/>} (if, that is, messaging functionality is enabled on the server). Exchanging messages is a basic use of XMPP and occurs when a user generates a message stanza that is addressed to another entity. As defined under Section 8, the sender's server is responsible for delivering the message to the intended recipient (if the recipient is on the same local server) or for routing the message to the recipient's server (if the recipient is on a remote server). Thus a message stanza is used to "push" information to another entity.</p>
- * </blockquote>
+ * The implementation of the {@code <message/>} element for the server namespace ('jabber:server').
  *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "message")
 @XmlType(propOrder = {"from", "id", "to", "type", "body", "subject", "thread", "extensions", "error"})
-public final class Message extends AbstractMessage {
+public final class Message extends AbstractMessage implements ServerStreamElement {
 
     @SuppressWarnings("unused")
     private Message() {

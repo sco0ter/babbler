@@ -24,6 +24,8 @@
 
 package org.xmpp.sasl;
 
+import org.xmpp.stream.ClientStreamElement;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
@@ -39,7 +41,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Christian Schudt
  */
 @XmlRootElement
-final class Auth {
+final class Auth implements ClientStreamElement {
 
     @XmlValue
     private byte[] initialResponse;

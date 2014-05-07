@@ -26,26 +26,19 @@ package org.xmpp.stanza.server;
 
 import org.xmpp.stanza.AbstractPresence;
 import org.xmpp.stanza.StanzaError;
+import org.xmpp.stream.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <presence/>} element.
- * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#presence-fundamentals">4.1.  Presence Fundamentals</a></cite></p>
- * <p>The concept of presence refers to an entity's availability for communication over a network. At the most basic level, presence is a boolean "on/off" variable that signals whether an entity is available or unavailable for communication (the terms "online" and "offline" are also used). In XMPP, an entity's availability is signaled when its client generates a {@code <presence/>} stanza with no 'type' attribute, and an entity's lack of availability is signaled when its client generates a {@code <presence/>} stanza whose 'type' attribute has a value of "unavailable".</p>
- * <p>XMPP presence typically follows a "publish-subscribe" or "observer" pattern, wherein an entity sends presence to its server, and its server then broadcasts that information to all of the entity's contacts who have a subscription to the entity's presence (in the terminology of [IMP-MODEL], an entity that generates presence is a "presentity" and the entities that receive presence are "subscribers"). A client generates presence for broadcast to all subscribed entities by sending a presence stanza to its server with no 'to' address, where the presence stanza has either no 'type' attribute or a 'type' attribute whose value is "unavailable". This kind of presence is called "broadcast presence".</p>
- * <p>After a client completes the preconditions specified in [XMPP-CORE], it can establish a "presence session" at its server by sending initial presence, where the presence session is terminated by sending unavailable presence. For the duration of its presence session, a connected resource (in the terminology of [XMPP-CORE]) is said to be an "available resource".</p>
- * <p>In XMPP, applications that combine messaging and presence functionality, the default type of communication for which presence signals availability is messaging; however, it is not necessary for XMPP applications to combine messaging and presence functionality, and they can provide standalone presence features without messaging (in addition, XMPP servers do not require information about network availability in order to successfully route message and IQ stanzas).</p>
- * </blockquote>
- * Please also refer to <a href="http://xmpp.org/rfcs/rfc6121.html#presence-syntax">4.7.  Presence Syntax</a>.
+ * The implementation of the {@code <presence/>} element for the server namespace ('jabber:server').
  *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "presence")
 @XmlType(propOrder = {"from", "id", "to", "type", "status", "show", "priority", "extensions", "error"})
-public final class Presence extends AbstractPresence {
+public final class Presence extends AbstractPresence implements ServerStreamElement {
     /**
      * Constructs an empty presence.
      */

@@ -24,11 +24,14 @@
 
 package org.xmpp.extension.sm;
 
+import org.xmpp.stream.ClientStreamElement;
+import org.xmpp.stream.ServerStreamElement;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "r")
-public final class Request {
+public final class Request implements ClientStreamElement, ServerStreamElement {
 }

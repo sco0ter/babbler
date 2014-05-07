@@ -24,6 +24,9 @@
 
 package org.xmpp.extension.sm;
 
+import org.xmpp.stream.ClientStreamElement;
+import org.xmpp.stream.ServerStreamElement;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "a")
-public final class Answer {
+public final class Answer implements ClientStreamElement, ServerStreamElement {
 
     @XmlAttribute(name = "h")
     private Integer h;

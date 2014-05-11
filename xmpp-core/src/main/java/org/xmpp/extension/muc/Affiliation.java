@@ -34,6 +34,12 @@ import javax.xml.bind.annotation.XmlEnumValue;
  */
 public enum Affiliation {
     /**
+     * The owner affiliation.
+     */
+    @XmlEnumValue("owner")
+    OWNER,
+
+    /**
      * The admin affiliation.
      */
     @XmlEnumValue("admin")
@@ -46,20 +52,14 @@ public enum Affiliation {
     MEMBER,
 
     /**
-     * No affiliation.
-     */
-    @XmlEnumValue("none")
-    NONE,
-
-    /**
      * The outcast affiliation.
      */
     @XmlEnumValue("outcast")
     OUTCAST,
 
     /**
-     * The owner affiliation.
+     * No affiliation.
      */
-    @XmlEnumValue("owner")
-    OWNER
+    @XmlEnumValue("none")
+    NONE
 }

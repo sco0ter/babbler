@@ -24,10 +24,13 @@
 
 package org.xmpp.extension.muc;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.stanza.client.Presence;
+
+import java.util.*;
 
 /**
  * @author Christian Schudt
@@ -39,27 +42,74 @@ public class OccupantTest {
         Presence presence1 = new Presence();
         presence1.setFrom(Jid.valueOf("room@conference/firstwitch"));
         presence1.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.MODERATOR));
+        Occupant occupant1 = new Occupant(presence1);
 
         Presence presence2 = new Presence();
         presence2.setFrom(Jid.valueOf("room@conference/secondwitch"));
-        presence2.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.MODERATOR));
+        presence2.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.PARTICIPANT));
+        Occupant occupant2 = new Occupant(presence2);
+
+        Presence presence2a = new Presence();
+        presence2a.setFrom(Jid.valueOf("room@conference/thirdwitch"));
+        presence2a.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.VISITOR));
+        Occupant occupant2a = new Occupant(presence2a);
+
+        Presence presence2b = new Presence();
+        presence2b.setFrom(Jid.valueOf("room@conference/zzz"));
+        presence2b.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.VISITOR));
+        Occupant occupant2b = new Occupant(presence2b);
 
         Presence presence3 = new Presence();
         presence3.setFrom(Jid.valueOf("room@conference/aaa"));
         presence3.getExtensions().add(MucUser.withItem(Affiliation.ADMIN, Role.MODERATOR));
+        Occupant occupant3 = new Occupant(presence3);
 
         Presence presence4 = new Presence();
         presence4.setFrom(Jid.valueOf("room@conference/bbb"));
         presence4.getExtensions().add(MucUser.withItem(Affiliation.MEMBER, Role.PARTICIPANT));
+        Occupant occupant4 = new Occupant(presence4);
 
         Presence presence5 = new Presence();
         presence5.setFrom(Jid.valueOf("room@conference/bbb"));
         presence5.getExtensions().add(MucUser.withItem(Affiliation.OUTCAST, Role.PARTICIPANT));
+        Occupant occupant5 = new Occupant(presence5);
+
+        Presence presence5a = new Presence();
+        presence5a.setFrom(Jid.valueOf("room@conference/ccc"));
+        presence5a.getExtensions().add(MucUser.withItem(Affiliation.OUTCAST, Role.PARTICIPANT));
+        Occupant occupant5a = new Occupant(presence5a);
 
         Presence presence6 = new Presence();
         presence6.setFrom(Jid.valueOf("room@conference/bbb"));
         presence6.getExtensions().add(MucUser.withItem(Affiliation.NONE, Role.PARTICIPANT));
+        Occupant occupant6 = new Occupant(presence6);
 
-        // TODO
+        List<Occupant> occupants = new ArrayList<>();
+        occupants.add(occupant1);
+        occupants.add(occupant2);
+        occupants.add(occupant2a);
+        occupants.add(occupant2b);
+        occupants.add(occupant3);
+        occupants.add(occupant4);
+        occupants.add(occupant5);
+        occupants.add(occupant5a);
+        occupants.add(occupant6);
+
+        Collections.shuffle(occupants);
+        Collections.sort(occupants);
+
+        Iterator<Occupant> iterator = occupants.iterator();
+
+        Assert.assertEquals(iterator.next(), occupant1);
+        Assert.assertEquals(iterator.next(), occupant2);
+        Assert.assertEquals(iterator.next(), occupant2a);
+        Assert.assertEquals(iterator.next(), occupant2b);
+        Assert.assertEquals(iterator.next(), occupant3);
+        Assert.assertEquals(iterator.next(), occupant4);
+        Assert.assertEquals(iterator.next(), occupant5);
+        Assert.assertEquals(iterator.next(), occupant5a);
+        Assert.assertEquals(iterator.next(), occupant6);
+
+
     }
 }

@@ -38,19 +38,22 @@ public enum Role {
      */
     @XmlEnumValue("moderator")
     MODERATOR,
-    /**
-     * No role.
-     */
-    @XmlEnumValue("none")
-    NONE,
+
     /**
      * The participant role.
      */
     @XmlEnumValue("participant")
     PARTICIPANT,
+
     /**
      * The visitor role.
      */
     @XmlEnumValue("visitor")
-    VISITOR
+    VISITOR,
+
+    /**
+     * No role.
+     */
+    @XmlEnumValue("none")
+    NONE
 }

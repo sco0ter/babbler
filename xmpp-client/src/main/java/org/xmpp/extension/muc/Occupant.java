@@ -35,7 +35,7 @@ import org.xmpp.stanza.client.Presence;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#user">7. Occupant Use Cases</a>
  */
-public final class Occupant implements Comparable<Occupant>{
+public final class Occupant implements Comparable<Occupant> {
 
     private final Affiliation affiliation;
 
@@ -99,6 +99,20 @@ public final class Occupant implements Comparable<Occupant>{
         return nick;
     }
 
+    /**
+     * Compares this occupant with another occupant.
+     * Occupants are compared first by their affiliation, then by their role, then by their nickname.
+     * <p>
+     * Affiliations and roles are ranked by their privileges, so that occupants with the most privileges are ranked higher.
+     * </p>
+     * <p>
+     * That means, in a sorted list of occupants, the owners are listed first, followed by the admins, followed by the mere members.
+     * Within each affiliation group, the moderators are listed first, followed by the participants and visitors. Each group is then sorted by its occupants' nicknames.
+     * </p>
+     *
+     * @param o The other occupant.
+     * @return The comparison result.
+     */
     @Override
     public int compareTo(Occupant o) {
         if (this == o) {

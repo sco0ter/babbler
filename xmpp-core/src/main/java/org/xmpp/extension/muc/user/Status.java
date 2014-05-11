@@ -44,7 +44,7 @@ public final class Status {
      *
      * @param code The code.
      */
-    public Status(int code) {
+    private Status(int code) {
         this.code = code;
     }
 
@@ -75,5 +75,81 @@ public final class Status {
         int result = 17;
         result = 31 * result + ((code == null) ? 0 : code.hashCode());
         return result;
+    }
+
+    public static Status roomIsNonAnonymous() {
+        return new Status(100);
+    }
+
+    public static Status affiliationChanged() {
+        return new Status(101);
+    }
+
+    public static Status roomShowsUnavailableMembers() {
+        return new Status(102);
+    }
+
+    public static Status roomDoesNotShowUnavailableMembers() {
+        return new Status(103);
+    }
+
+    public static Status roomConfigurationChange() {
+        return new Status(104);
+    }
+
+    public static Status self() {
+        return new Status(110);
+    }
+
+    public static Status roomLoggingEnabled() {
+        return new Status(170);
+    }
+
+    public static Status roomLoggingDisabled() {
+        return new Status(171);
+    }
+
+    public static Status roomNonAnonymous() {
+        return new Status(172);
+    }
+
+    public static Status roomSemiAnonymous() {
+        return new Status(173);
+    }
+
+    public static Status roomFullyAnonymous() {
+        return new Status(174);
+    }
+
+    public static Status newRoomCreated() {
+        return new Status(201);
+    }
+
+    public static Status serviceHasAssignedOrModifiedNick() {
+        return new Status(210);
+    }
+
+    public static Status banned() {
+        return new Status(301);
+    }
+
+    public static Status nicknameChanged() {
+        return new Status(303);
+    }
+
+    public static Status kicked() {
+        return new Status(307);
+    }
+
+    public static Status membershipRevoked() {
+        return new Status(321);
+    }
+
+    public static Status roomChangedToMembersOnly() {
+        return new Status(322);
+    }
+
+    public static Status systemShutdown() {
+        return new Status(332);
     }
 }

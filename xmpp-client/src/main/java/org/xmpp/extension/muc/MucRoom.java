@@ -35,13 +35,13 @@ import org.xmpp.stanza.client.Message;
  */
 public interface MucRoom {
 
-    void join(String nick) throws XmppException;
+    void enter(String nick) throws XmppException;
 
-    void join(String nick, String password) throws XmppException;
+    void enter(String nick, String password) throws XmppException;
 
-    void join(String nick, History history) throws XmppException;
+    void enter(String nick, History history) throws XmppException;
 
-    void join(String nick, String password, History history) throws XmppException;
+    void enter(String nick, String password, History history) throws XmppException;
 
     void addSubjectChangeListener(SubjectChangeListener subjectChangeListener);
 

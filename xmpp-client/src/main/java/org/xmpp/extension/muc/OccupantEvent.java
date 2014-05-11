@@ -24,70 +24,44 @@
 
 package org.xmpp.extension.muc;
 
-import java.util.Date;
 import java.util.EventObject;
 
 /**
  * @author Christian Schudt
  */
-public final class SubjectChangeEvent extends EventObject {
-    private final String subject;
+public final class OccupantEvent extends EventObject {
+
+    private final boolean hasJoined;
+
+    private final boolean hasLeft;
 
     private final Occupant occupant;
-
-    private final Date date;
-
-    private final boolean isDelayed;
 
     /**
      * Constructs a prototypical Event.
      *
-     * @param source   The object on which the Event initially occurred.
-     * @param subject  The subject.
-     * @param occupant The occupant who changed the subject.
+     * @param source    The object on which the Event initially occurred.
+     * @param occupant  The occupant.
+     * @param hasJoined If the occupant has joined.
+     * @param hasLeft   If the occupant has left.
      * @throws IllegalArgumentException if source is null.
      */
-    SubjectChangeEvent(Object source, String subject, Occupant occupant, boolean isDelayed, Date date) {
+    public OccupantEvent(Object source, Occupant occupant, boolean hasJoined, boolean hasLeft) {
         super(source);
-        this.subject = subject;
         this.occupant = occupant;
-        this.isDelayed = isDelayed;
-        this.date = date;
+        this.hasJoined = hasJoined;
+        this.hasLeft = hasLeft;
     }
 
-    /**
-     * Gets the new subject.
-     *
-     * @return The subject.
-     */
-    public String getSubject() {
-        return subject;
+    public boolean hasJoined() {
+        return hasJoined;
     }
 
-    /**
-     * Gets the occupant, who changed the subject or null, if the subject was set by the room.
-     *
-     * @return The occupant or null.
-     */
+    public boolean hasLeft() {
+        return hasLeft;
+    }
+
     public Occupant getOccupant() {
         return occupant;
-    }
-
-    /**
-     * Gets the date, when the message was sent.
-     *
-     * @return The send date.
-     */
-    public Date getDate() {
-        return date;
-    }
-
-    /**
-     * Indicates, if the subject change is delayed.
-     *
-     * @return True, if the subject change is delayed.
-     */
-    public boolean isDelayed() {
-        return isDelayed;
     }
 }

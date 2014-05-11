@@ -27,6 +27,7 @@ package org.xmpp.extension.avatar;
 import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.avatar.vcard.AvatarUpdate;
+import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
 import org.xmpp.stanza.PresenceEvent;
@@ -82,7 +83,7 @@ public final class AvatarManager extends ExtensionManager {
                     final Presence presence = e.getPresence();
                     AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
                     // If the presence has a avatar update information.
-                    if (e.isIncoming() && avatarUpdate != null && avatarUpdate.getHash() != null) {
+                    if (e.isIncoming() && presence.getExtension(MucUser.class) == null && avatarUpdate != null && avatarUpdate.getHash() != null) {
                         synchronized (avatars) {
                             // Check, if we already know this avatar.
                             Avatar avatar = avatars.get(avatarUpdate.getHash());

@@ -66,6 +66,7 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
+import org.xmpp.extension.muc.*;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
@@ -87,6 +88,7 @@ import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 import org.xmpp.stanza.errors.ServiceUnavailable;
 
@@ -640,6 +642,39 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+
+                MultiUserChatManager multiUserChatManager = connection.getExtensionManager(MultiUserChatManager.class);
+                ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.christian-schudts-macbook-pro"));
+                try {
+                    final ChatRoom chatRoom = chatService.createRoom("test");
+                    chatRoom.addSubjectChangeListener(new SubjectChangeListener() {
+                        @Override
+                        public void subjectChanged(SubjectChangeEvent e) {
+                            int i = 0;
+                        }
+                    });
+                    chatRoom.addMessageListener(new MessageListener() {
+                        @Override
+                        public void handle(MessageEvent e) {
+                            Message message = e.getMessage();
+                            if (e.isIncoming()) {
+                                System.out.println(message.getBody());
+                            }
+                        }
+                    });
+                    chatRoom.addOccupantListener(new OccupantListener() {
+                        @Override
+                        public void occupantChanged(OccupantEvent e) {
+                            System.out.println(e.getOccupant().getNick() + " : joined");
+                        }
+                    });
+
+                    chatRoom.enter(UUID.randomUUID().toString());
+
+
+                } catch (XmppException e) {
+                    e.printStackTrace();
+                }
 
             }
         });

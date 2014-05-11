@@ -24,29 +24,12 @@
 
 package org.xmpp.extension.muc;
 
-import java.util.EventObject;
+import java.util.EventListener;
 
 /**
  * @author Christian Schudt
  */
-public class OccupantEvent extends EventObject {
+public interface OccupantExitListener extends EventListener {
 
-    private final boolean hasJoined;
-
-    private final boolean hasLeft;
-
-    /**
-     * Constructs a prototypical Event.
-     *
-     * @param source    The object on which the Event initially occurred.
-     * @param occupant  The occupant.
-     * @param hasJoined If the occupant has joined.
-     * @param hasLeft   If the occupant has left.
-     * @throws IllegalArgumentException if source is null.
-     */
-    public OccupantEvent(Object source, Occupant occupant, boolean hasJoined, boolean hasLeft) {
-        super(source);
-        this.hasJoined = hasJoined;
-        this.hasLeft = hasLeft;
-    }
+    void occupantExited(OccupantExitEvent e);
 }

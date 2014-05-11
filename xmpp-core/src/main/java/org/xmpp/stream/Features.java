@@ -35,7 +35,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement
-public final class Features {
+public final class Features implements ServerStreamElement {
 
     @XmlAnyElement(lax = true)
     @SuppressWarnings("unused")

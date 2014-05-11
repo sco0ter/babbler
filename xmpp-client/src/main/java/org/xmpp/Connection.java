@@ -67,6 +67,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -445,6 +446,108 @@ public abstract class Connection implements Closeable {
     }
 
     /**
+     * Awaits for a presence stanza to arrive. The filter determined the characteristics of the presence stanza.
+     *
+     * @param filter  The presence filter.
+     * @param timeout The timeout.
+     * @return The presence stanza.
+     * @throws NoResponseException If no presence stanza has arrived in time.
+     */
+    public Presence sendAndAwait(Presence presence, final Predicate<Presence> filter, long timeout) throws NoResponseException, StanzaException {
+
+        final Presence[] result = new Presence[1];
+
+        final Condition resultReceived = lock.newCondition();
+
+        final PresenceListener listener = new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                Presence presence = e.getPresence();
+                if (e.isIncoming() && filter.test(presence)) {
+                    lock.lock();
+                    try {
+                        result[0] = presence;
+                    } finally {
+                        resultReceived.signal();
+                        lock.unlock();
+                    }
+                }
+            }
+        };
+
+        lock.lock();
+        try {
+            addPresenceListener(listener);
+            send(presence);
+            // Wait for the stanza to arrive.
+            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
+                throw new NoResponseException("Timeout reached, while waiting on a response.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
+            removePresenceListener(listener);
+        }
+        Presence response = result[0];
+        if (response.getType() == Presence.Type.ERROR) {
+            throw new StanzaException(response);
+        }
+        return result[0];
+    }
+
+    /**
+     * Awaits for a presence stanza to arrive. The filter determined the characteristics of the presence stanza.
+     *
+     * @param filter  The presence filter.
+     * @param timeout The timeout.
+     * @return The presence stanza.
+     * @throws NoResponseException If no presence stanza has arrived in time.
+     */
+    public Message sendAndAwait(Message message, final Predicate<Message> filter, long timeout) throws NoResponseException, StanzaException {
+
+        final Message[] result = new Message[1];
+
+        final Condition resultReceived = lock.newCondition();
+
+        final MessageListener listener = new MessageListener() {
+            @Override
+            public void handle(MessageEvent e) {
+                Message message = e.getMessage();
+                if (e.isIncoming() && filter.test(message)) {
+                    lock.lock();
+                    try {
+                        result[0] = message;
+                    } finally {
+                        resultReceived.signal();
+                        lock.unlock();
+                    }
+                }
+            }
+        };
+
+        lock.lock();
+        try {
+            addMessageListener(listener);
+            send(message);
+            // Wait for the stanza to arrive.
+            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
+                throw new NoResponseException("Timeout reached, while waiting on a response.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
+            removeMessageListener(listener);
+        }
+        Message response = result[0];
+        if (response.getType() == Message.Type.ERROR) {
+            throw new StanzaException(response);
+        }
+        return response;
+    }
+
+    /**
      * Sends an {@code <iq/>} stanza and waits for the response.
      * <p>
      * This method blocks until a result was received or a timeout occurred.
@@ -456,7 +559,7 @@ public abstract class Connection implements Closeable {
      * @throws NoResponseException If the entity did not respond.
      */
     public IQ query(IQ iq) throws XmppException {
-        return this.query(iq, 20000);
+        return query(iq, 20000);
     }
 
     /**

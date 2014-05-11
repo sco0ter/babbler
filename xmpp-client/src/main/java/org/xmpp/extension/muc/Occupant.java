@@ -27,7 +27,7 @@ package org.xmpp.extension.muc;
 import org.xmpp.Jid;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.muc.user.Status;
-import org.xmpp.stanza.AbstractPresence;
+import org.xmpp.stanza.client.Presence;
 
 /**
  * The main actor in a multi-user chat environment is the occupant, who can be said to be located "in" a multi-user chat room and to participate in the discussions held in that room.
@@ -47,14 +47,14 @@ public final class Occupant {
 
     private final boolean me;
 
-    Occupant(AbstractPresence presence) {
+    Occupant(Presence presence) {
         this.nick = presence.getFrom().getResource();
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null && mucUser.getItem() != null) {
             this.affiliation = mucUser.getItem().getAffiliation();
             this.role = mucUser.getItem().getRole();
             this.jid = mucUser.getItem().getJid();
-            this.me = mucUser.getStatusCodes().contains(new Status(110));
+            this.me = mucUser.getStatusCodes().contains(Status.self());
         } else {
             this.affiliation = null;
             this.role = null;

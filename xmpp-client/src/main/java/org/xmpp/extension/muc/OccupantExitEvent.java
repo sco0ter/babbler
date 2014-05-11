@@ -24,70 +24,52 @@
 
 package org.xmpp.extension.muc;
 
-import java.util.Date;
 import java.util.EventObject;
 
 /**
  * @author Christian Schudt
  */
-public final class SubjectChangeEvent extends EventObject {
-    private final String subject;
+public final class OccupantExitEvent extends EventObject {
 
     private final Occupant occupant;
 
-    private final Date date;
+    private final Reason type;
 
-    private final boolean isDelayed;
+    private final boolean selfPresence;
 
     /**
      * Constructs a prototypical Event.
      *
      * @param source   The object on which the Event initially occurred.
-     * @param subject  The subject.
-     * @param occupant The occupant who changed the subject.
+     * @param occupant The occupant.
      * @throws IllegalArgumentException if source is null.
      */
-    SubjectChangeEvent(Object source, String subject, Occupant occupant, boolean isDelayed, Date date) {
+    public OccupantExitEvent(Object source, Occupant occupant, Reason exitType, boolean selfPresence) {
         super(source);
-        this.subject = subject;
         this.occupant = occupant;
-        this.isDelayed = isDelayed;
-        this.date = date;
+        this.type = exitType;
+        this.selfPresence = selfPresence;
     }
 
-    /**
-     * Gets the new subject.
-     *
-     * @return The subject.
-     */
-    public String getSubject() {
-        return subject;
+    public Reason getType() {
+        return type;
     }
 
-    /**
-     * Gets the occupant, who changed the subject or null, if the subject was set by the room.
-     *
-     * @return The occupant or null.
-     */
     public Occupant getOccupant() {
         return occupant;
     }
 
-    /**
-     * Gets the date, when the message was sent.
-     *
-     * @return The send date.
-     */
-    public Date getDate() {
-        return date;
+    public boolean isSelfPresence() {
+        return selfPresence;
     }
 
-    /**
-     * Indicates, if the subject change is delayed.
-     *
-     * @return True, if the subject change is delayed.
-     */
-    public boolean isDelayed() {
-        return isDelayed;
+    public enum Reason {
+        NONE,
+        KICKED,
+        BANNED,
+        MEMBERSHIP_REVOKED,
+        ROOM_BECAME_MEMBERS_ONLY,
+        NICKNAME_CHANGED,
+        SYSTEM_SHUTDOWN
     }
 }

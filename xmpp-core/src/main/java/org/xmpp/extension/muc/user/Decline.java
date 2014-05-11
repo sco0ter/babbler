@@ -61,15 +61,6 @@ public final class Decline {
     }
 
     /**
-     * Creates a 'decline' element.
-     *
-     * @param to The inviter, who will receive the declination.
-     */
-    public Decline(Jid to) {
-        this(to, null);
-    }
-
-    /**
      * Gets the reason for the declination.
      *
      * @return The reason.
@@ -88,11 +79,29 @@ public final class Decline {
     }
 
     /**
+     * Sets the invitee, who declined the invitation.
+     *
+     * @param from The invitee.
+     */
+    public void setFrom(Jid from) {
+        this.from = from;
+    }
+
+    /**
      * Gets the inviter, who sent the invitation.
      *
      * @return The inviter.
      */
     public Jid getTo() {
         return to;
+    }
+
+    /**
+     * Sets the inviter, who sent the invitation.
+     *
+     * @param to The inviter.
+     */
+    public void setTo(Jid to) {
+        this.to = to;
     }
 }

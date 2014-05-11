@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import org.xmpp.Jid;
 import org.xmpp.XmlTest;
 import org.xmpp.extension.muc.Affiliation;
-import org.xmpp.extension.muc.MucElementFactory;
 import org.xmpp.extension.muc.Role;
 import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
@@ -261,8 +260,41 @@ public class MultiUserChatUserTest extends XmlTest {
 
     @Test
     public void marshalDestroyRoom() throws JAXBException, XMLStreamException {
-        MucUser mucOwner = new MucUser(MucElementFactory.createDestroy(Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come."));
-        String xml = marshal(mucOwner);
-        Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></x>");
+        MucUser mucUser = MucUser.withDestroy(Affiliation.NONE, Role.NONE, Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come.");
+        String xml = marshal(mucUser);
+        Assert.assertEquals(mucUser.getDestroy().getReason(), "Macbeth doth come.");
+        Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><item affiliation=\"none\" role=\"none\"></item><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></x>");
+    }
+
+    @Test
+    public void marshalWithItem() throws JAXBException, XMLStreamException {
+        MucUser mucUser = MucUser.withItem(Affiliation.NONE, Role.NONE, Jid.valueOf("coven@chat.shakespeare.lit"), "Nick");
+        String xml = marshal(mucUser);
+        Assert.assertEquals(mucUser.getItem().getNick(), "Nick");
+        Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><item affiliation=\"none\" jid=\"coven@chat.shakespeare.lit\" nick=\"Nick\" role=\"none\"></item></x>");
+    }
+
+    @Test
+    public void marshalWithInvites() throws JAXBException, XMLStreamException {
+        MucUser mucUser = MucUser.withInvites(new Invite(Jid.valueOf("coven@chat.shakespeare.lit"), "reason"));
+        String xml = marshal(mucUser);
+        Assert.assertEquals(mucUser.getInvites().size(), 1);
+        Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><invite to=\"coven@chat.shakespeare.lit\"><reason>reason</reason></invite></x>");
+    }
+
+    @Test
+    public void marshalWithStatus() throws JAXBException, XMLStreamException {
+        MucUser mucUser = MucUser.withStatus(Status.affiliationChanged());
+        String xml = marshal(mucUser);
+        Assert.assertEquals(mucUser.getStatusCodes().size(), 1);
+        Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><status code=\"101\"></status></x>");
+    }
+
+    @Test
+    public void marshalWithDecline() throws JAXBException, XMLStreamException {
+        MucUser mucUser = MucUser.withDecline(Jid.valueOf("coven@chat.shakespeare.lit"), "reason");
+        String xml = marshal(mucUser);
+        Assert.assertEquals(mucUser.getDecline().getReason(), "reason");
+        Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><decline to=\"coven@chat.shakespeare.lit\"><reason>reason</reason></decline></x>");
     }
 }

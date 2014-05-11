@@ -56,23 +56,64 @@ public final class MucAdmin {
      *
      * @param items The items.
      */
-    public MucAdmin(Item... items) {
+    private MucAdmin(Item... items) {
         for (Item item : items) {
             this.items.add(new MucAdminItem(item));
         }
     }
 
-    public static MucAdmin withItem(String nick, Role role, String reason) {
-        return new MucAdmin(new MucAdminItem(nick, role, reason));
+    public static MucAdmin withItem(Affiliation affiliation) {
+        return new MucAdmin(new MucAdminItem(affiliation, null, null));
     }
 
-    public static MucAdmin withItem(Jid jid, Affiliation affiliation, String reason) {
-        return new MucAdmin(new MucAdminItem(jid, affiliation, reason));
+    public static MucAdmin withItem(Role role, String nick, String reason) {
+        return new MucAdmin(new MucAdminItem(role, nick, reason));
+    }
+
+    public static MucAdmin withItem(Affiliation affiliation, Jid jid, String reason) {
+        return new MucAdmin(new MucAdminItem(affiliation, jid, reason));
     }
 
     public static MucAdmin withItems(List<Item> items) {
-        Item[] itemArray = new Item[items.size()];
-        return new MucAdmin(items.toArray(itemArray));
+        Item[] array = new Item[items.size()];
+        items.toArray(array);
+        return new MucAdmin(array);
+    }
+
+    public static MucAdmin withItems(Item... items) {
+        return new MucAdmin(items);
+    }
+
+    public static Item createItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor, String reason) {
+        return new MucAdminItem(affiliation, role, jid, nick, actor, reason);
+    }
+
+    public static Item createItem(Role role, String nick, String reason) {
+        return new MucAdminItem(role, nick, reason);
+    }
+
+    public static Item createItem(Role role, String nick) {
+        return new MucAdminItem(role, nick, null);
+    }
+
+    public static Item createItem(Role role) {
+        return new MucAdminItem(role, null, null);
+    }
+
+    public static Item createItem(Affiliation affiliation) {
+        return new MucAdminItem(affiliation, null, null);
+    }
+
+    public static Item createItem(Affiliation affiliation, Jid jid) {
+        return new MucAdminItem(affiliation, jid, null);
+    }
+
+    public static Item createItem(Affiliation affiliation, Jid jid, String reason) {
+        return new MucAdminItem(affiliation, jid, reason);
+    }
+
+    public static Item createItem(Affiliation affiliation, Jid jid, String nick, String reason) {
+        return new MucAdminItem(affiliation, null, jid, nick, null, reason);
     }
 
     /**
@@ -84,7 +125,7 @@ public final class MucAdmin {
         return items;
     }
 
-    static final class MucAdminItem implements Item {
+    private static final class MucAdminItem implements Item {
 
         @XmlElement(name = "actor")
         private MucAdminActor actor;
@@ -107,24 +148,26 @@ public final class MucAdmin {
         private MucAdminItem() {
         }
 
-        MucAdminItem(Jid jid, Affiliation affiliation, String reason) {
-            this(jid, affiliation, reason, null);
+        private MucAdminItem(Affiliation affiliation, Jid jid, String reason) {
+            this(affiliation, null, jid, null, null, reason);
         }
 
-        MucAdminItem(Jid jid, Affiliation affiliation, String reason, String nick) {
-            this.jid = jid;
+        private MucAdminItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor, String reason) {
             this.affiliation = affiliation;
-            this.reason = reason;
-            this.nick = nick;
-        }
-
-        MucAdminItem(String nick, Role role, String reason) {
-            this.nick = nick;
             this.role = role;
+            this.jid = jid;
+            this.nick = nick;
+            this.actor = actor != null ? new MucAdminActor(actor) : null;
             this.reason = reason;
         }
 
-        MucAdminItem(Item item) {
+        private MucAdminItem(Role role, String nick, String reason) {
+            this.role = role;
+            this.nick = nick;
+            this.reason = reason;
+        }
+
+        private MucAdminItem(Item item) {
             if (item.getActor() != null) {
                 this.actor = new MucAdminActor(item.getActor());
             }
@@ -165,7 +208,7 @@ public final class MucAdmin {
             return actor;
         }
 
-        static final class MucAdminActor implements Actor {
+        private static final class MucAdminActor implements Actor {
             @XmlAttribute(name = "jid")
             private Jid jid;
 
@@ -175,7 +218,7 @@ public final class MucAdmin {
             private MucAdminActor() {
             }
 
-            MucAdminActor(Actor actor) {
+            private MucAdminActor(Actor actor) {
                 this.jid = actor.getJid();
                 this.nick = actor.getNick();
             }

@@ -66,10 +66,32 @@ public final class MucOwner {
     /**
      * Creates a query element with a {@code <destroy/>} element.
      *
-     * @param destroy The destroy element.
+     * @param jid    The jid.
+     * @param reason The reason.
      */
-    public MucOwner(Destroy destroy) {
-        this.destroy = new MucOwnerDestroy(destroy);
+    private MucOwner(Jid jid, String reason) {
+        this.destroy = new MucOwnerDestroy(jid, reason);
+    }
+
+    /**
+     * Creates a {@code <query/>} element with an {@code <destroy/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <query xmlns='http://jabber.org/protocol/muc#owner'>
+     *     <destroy jid='coven@chat.shakespeare.lit'>
+     *         <reason>Macbeth doth come.</reason>
+     *     </destroy>
+     * </query>
+     * }
+     * </pre>
+     *
+     * @param jid    The JID.
+     * @param reason The reason.
+     * @return The {@link MucOwner} instance.
+     */
+    public static MucOwner withDestroy(Jid jid, String reason) {
+        return new MucOwner(jid, reason);
     }
 
     /**
@@ -81,10 +103,16 @@ public final class MucOwner {
         return dataForm;
     }
 
-    static final class MucOwnerDestroy implements Destroy {
-        @XmlElement(name = "password")
-        private String password;
+    /**
+     * Gets the destroy element.
+     *
+     * @return The destroy element.
+     */
+    public Destroy getDestroy() {
+        return destroy;
+    }
 
+    private static final class MucOwnerDestroy implements Destroy {
         @XmlElement(name = "reason")
         private String reason;
 
@@ -94,9 +122,9 @@ public final class MucOwner {
         private MucOwnerDestroy() {
         }
 
-        private MucOwnerDestroy(Destroy destroy) {
-            this.jid = destroy.getJid();
-            this.reason = destroy.getReason();
+        private MucOwnerDestroy(Jid jid, String reason) {
+            this.jid = jid;
+            this.reason = reason;
         }
 
         @Override

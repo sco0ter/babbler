@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -63,12 +64,300 @@ public final class MucUser {
     private MucUser() {
     }
 
-    public MucUser(Invite invite) {
-        this.invites.add(invite);
+    private MucUser(String password, Invite... invite) {
+        this.invites.addAll(Arrays.asList(invite));
+        this.password = password;
     }
 
-    MucUser(Destroy destroy) {
-        this.destroy = new MucUserDestroy(destroy);
+    private MucUser(Decline decline) {
+        this.decline = decline;
+    }
+
+    private MucUser(MucUserItem item, Status... status) {
+        this.item = item;
+        this.statusCodes.addAll(Arrays.asList(status));
+    }
+
+    private MucUser(MucUserItem item, MucUserDestroy destroy) {
+        this.item = item;
+        this.destroy = destroy;
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <item affiliation='owner' role='moderator'/>
+     *     <status code='110'/>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param role        The role.
+     * @param status      The status.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withItem(Affiliation affiliation, Role role, Status... status) {
+        return new MucUser(new MucUserItem(affiliation, role, null, null, null, null), status);
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <item affiliation='none'
+     *           jid='hag66@shakespeare.lit/pda'
+     *           role='participant'/>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param role        The role.
+     * @param jid         The JID.
+     * @param status      The status.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withItem(Affiliation affiliation, Role role, Jid jid, Status... status) {
+        return new MucUser(new MucUserItem(affiliation, role, jid, null, null, null), status);
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <item affiliation='member'
+     *           jid='hag66@shakespeare.lit/pda'
+     *           nick='oldhag'
+     *           role='participant'/>
+     *     <status code='303'/>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param role        The role.
+     * @param jid         The JID.
+     * @param nick        The nick.
+     * @param status      The status.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withItem(Affiliation affiliation, Role role, Jid jid, String nick, Status... status) {
+        return new MucUser(new MucUserItem(affiliation, role, jid, nick, null, null), status);
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <item affiliation='member'
+     *           jid='hag66@shakespeare.lit/pda'
+     *           nick='oldhag'
+     *           role='participant'/>
+     *     <status code='303'/>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param role   The role.
+     * @param nick   The nick.
+     * @param reason The reason.
+     * @param status The status.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withItem(Role role, String nick, String reason, Status... status) {
+        return new MucUser(new MucUserItem(null, role, null, nick, null, reason), status);
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <item affiliation='none' role='none'>
+     *         <actor nick='Fluellen'/>
+     *         <reason>Avaunt, you cullion!</reason>
+     *     </item>
+     *     <status code='307'/>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param role        The role.
+     * @param actor       The actor.
+     * @param reason      The reason.
+     * @param status      The status.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withItem(Affiliation affiliation, Role role, Actor actor, String reason, Status... status) {
+        return new MucUser(new MucUserItem(affiliation, role, null, null, actor, reason), status);
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <item affiliation='member'
+     *           nick='thirdwitch'
+     *           role='participant'>
+     *         <reason>A worthy witch indeed!</reason>
+     *     </item>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param role        The role.
+     * @param nick        The nick.
+     * @param reason      The reason.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withItem(Affiliation affiliation, Role role, String nick, String reason) {
+        return new MucUser(new MucUserItem(affiliation, role, null, nick, null, reason));
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <item affiliation='none' role='none' jid='hag66@shakespeare.lit/pda' nick='oldhag'>
+     *         <actor nick='Fluellen'/>
+     *         <reason>Avaunt, you cullion!</reason>
+     *     </item>
+     *     <status code='307'/>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param role        The role.
+     * @param jid         The JID.
+     * @param nick        The nick.
+     * @param actor       The actor.
+     * @param reason      The reason.
+     * @param status      The status.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor, String reason, Status... status) {
+        return new MucUser(new MucUserItem(affiliation, role, jid, nick, actor, reason), status);
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <destroy/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <item affiliation='none' role='none'/>
+     *     <destroy jid='coven@chat.shakespeare.lit'>
+     *         <reason>Macbeth doth come.</reason>
+     *     </destroy>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param role        The role.
+     * @param jid         The JID.
+     * @param reason      The reason.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withDestroy(Affiliation affiliation, Role role, Jid jid, String reason) {
+        return new MucUser(new MucUserItem(affiliation, role, null, null, null, null), new MucUserDestroy(jid, reason));
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <invite/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <invite to='hecate@shakespeare.lit'/>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param invite The invites.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withInvites(Invite... invite) {
+        return new MucUser(null, invite);
+    }
+
+    /**
+     * Creates a {@code <x/>} element with an {@code <invite/>} and a {@code <password/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <invite to='hecate@shakespeare.lit'/>
+     *     <password>cauldronburn</password>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param password The password.
+     * @param invite   The invites.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withInvite(String password, Invite... invite) {
+        return new MucUser(password, invite);
+    }
+
+    /**
+     * Creates a {@code <x/>} element with a {@code <decline/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <decline to='crone1@shakespeare.lit'>
+     *         <reason>
+     *             Sorry, I'm too busy right now.
+     *         </reason>
+     *     </decline>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param to     The to attribute.
+     * @param reason The reason.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withDecline(Jid to, String reason) {
+        return new MucUser(new Decline(to, reason));
+    }
+
+    /**
+     * Creates a {@code <x/>} element with one or more {@code <status/>} child elements.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <x xmlns='http://jabber.org/protocol/muc#user'>
+     *     <status code='170'/>
+     * </x>
+     * }
+     * </pre>
+     *
+     * @param status The status.
+     * @return The {@link MucUser} instance.
+     */
+    public static MucUser withStatus(Status... status) {
+        return new MucUser(null, status);
     }
 
     /**
@@ -116,14 +405,19 @@ public final class MucUser {
         return destroy;
     }
 
+    /**
+     * Gets the password for the room.
+     *
+     * @return The password for the room.
+     */
     public String getPassword() {
         return password;
     }
 
-    static class MucUserItem implements Item {
+    private static class MucUserItem implements Item {
 
         @XmlElement(name = "actor")
-        private MucAdminActor actor;
+        private MucUserActor actor;
 
         @XmlElement(name = "reason")
         private String reason;
@@ -143,32 +437,12 @@ public final class MucUser {
         private MucUserItem() {
         }
 
-        MucUserItem(Affiliation affiliation) {
-            this(affiliation, null, null);
-        }
-
-        MucUserItem(Affiliation affiliation, Jid jid) {
-            this(affiliation, jid, null);
-        }
-
-        MucUserItem(Affiliation affiliation, Jid jid, String reason) {
-            this(affiliation, jid, reason, null);
-        }
-
-        MucUserItem(Affiliation affiliation, Jid jid, String reason, String nick) {
+        private MucUserItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor, String reason) {
             this.affiliation = affiliation;
-            this.jid = jid;
-            this.reason = reason;
-            this.nick = nick;
-        }
-
-        MucUserItem(Role role, String nick) {
-            this(role, nick, null);
-        }
-
-        MucUserItem(Role role, String nick, String reason) {
             this.role = role;
+            this.jid = jid;
             this.nick = nick;
+            this.actor = actor != null ? new MucUserActor(actor) : null;
             this.reason = reason;
         }
 
@@ -203,7 +477,7 @@ public final class MucUser {
         }
     }
 
-    static final class MucUserDestroy implements Destroy {
+    private static final class MucUserDestroy implements Destroy {
 
         @XmlElement(name = "reason")
         private String reason;
@@ -214,14 +488,9 @@ public final class MucUser {
         private MucUserDestroy() {
         }
 
-        MucUserDestroy(Jid jid, String reason) {
+        private MucUserDestroy(Jid jid, String reason) {
             this.jid = jid;
             this.reason = reason;
-        }
-
-        private MucUserDestroy(Destroy destroy) {
-            this.jid = destroy.getJid();
-            this.reason = destroy.getReason();
         }
 
         @Override
@@ -235,17 +504,17 @@ public final class MucUser {
         }
     }
 
-    static final class MucAdminActor implements Actor {
+    private static final class MucUserActor implements Actor {
         @XmlAttribute(name = "jid")
         private Jid jid;
 
         @XmlAttribute(name = "nick")
         private String nick;
 
-        private MucAdminActor() {
+        private MucUserActor() {
         }
 
-        MucAdminActor(Actor actor) {
+        private MucUserActor(Actor actor) {
             this.jid = actor.getJid();
             this.nick = actor.getNick();
         }

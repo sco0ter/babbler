@@ -104,12 +104,31 @@ public final class Invite {
     }
 
     /**
+     * Sets the inviter. This should only be set by a chat service.
+     *
+     * @param from The inviter.
+     */
+    public void setFrom(Jid from) {
+        this.from = from;
+    }
+
+    /**
      * Gets the invitee.
      *
      * @return The invitee.
      */
     public Jid getTo() {
         return to;
+    }
+
+
+    /**
+     * Sets the invitee.
+     *
+     * @param to The invitee.
+     */
+    public void setTo(Jid to) {
+        this.to = to;
     }
 
     /**

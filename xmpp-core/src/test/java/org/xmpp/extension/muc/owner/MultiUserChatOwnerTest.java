@@ -163,7 +163,7 @@ public class MultiUserChatOwnerTest extends XmlTest {
 
     @Test
     public void marshalDestroyRoom() throws JAXBException, XMLStreamException {
-        MucOwner mucOwner = new MucOwner(MucElementFactory.createDestroy(Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come."));
+        MucOwner mucOwner = MucOwner.withDestroy(Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come.");
         String xml = marshal(mucOwner);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></query>");
     }

@@ -389,7 +389,7 @@ public final class ChatRoom implements MucRoom {
             message.getExtensions().add(new DirectInvitation(roomJid, null, reason));
         } else {
             message = new Message(roomJid, Message.Type.NORMAL);
-            message.getExtensions().add(new MucUser(new Invite(invitee, reason)));
+            message.getExtensions().add(MucUser.withInvites(new Invite(invitee, reason)));
         }
         connection.send(message);
     }
@@ -469,7 +469,7 @@ public final class ChatRoom implements MucRoom {
      */
     @Override
     public void kickOccupant(String nickname, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(nickname, Role.NONE, reason)));
+        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.NONE, nickname, reason)));
     }
 
     /**
@@ -482,7 +482,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
      */
     public void grantVoice(String nickname, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(nickname, Role.PARTICIPANT, reason)));
+        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.PARTICIPANT, nickname, reason)));
     }
 
     /**
@@ -495,11 +495,11 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
      */
     public void revokeVoice(String nickname, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(nickname, Role.VISITOR, reason)));
+        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.VISITOR, nickname, reason)));
     }
 
     public List<? extends Item> getVoiceList() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(null, Role.PARTICIPANT, null)));
+        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -510,7 +510,7 @@ public final class ChatRoom implements MucRoom {
 
     @Override
     public void banUser(Jid user, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(user, Affiliation.OUTCAST, reason)));
+        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.OUTCAST, user, reason)));
     }
 
     /**
@@ -522,7 +522,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public List<? extends Item> getBanList() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(null, Affiliation.OUTCAST, null)));
+        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -541,7 +541,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
      */
     public void grantMembership(Jid user, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(user, Affiliation.MEMBER, reason)));
+        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.MEMBER, user, reason)));
     }
 
     /**
@@ -554,7 +554,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
      */
     public void revokeMembership(Jid user, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(user, Affiliation.NONE, reason)));
+        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.NONE, user, reason)));
     }
 
     /**
@@ -572,7 +572,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public List<? extends Item> getMembers() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(null, Affiliation.MEMBER, null)));
+        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -591,7 +591,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
      */
     public void grantModeratorStatus(String nick, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(nick, Role.MODERATOR, reason)));
+        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.MODERATOR, nick, reason)));
     }
 
     /**
@@ -604,7 +604,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
     public void revokeModeratorStatus(String nick, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(nick, Role.PARTICIPANT, reason)));
+        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.PARTICIPANT, nick, reason)));
     }
 
     /**
@@ -616,7 +616,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
     public List<? extends Item> getModerators() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(null, Role.MODERATOR, null)));
+        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }

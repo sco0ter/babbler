@@ -35,7 +35,7 @@ import org.xmpp.stanza.client.Presence;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#user">7. Occupant Use Cases</a>
  */
-public final class Occupant {
+public final class Occupant implements Comparable<Occupant>{
 
     private final Affiliation affiliation;
 
@@ -97,5 +97,69 @@ public final class Occupant {
      */
     public String getNick() {
         return nick;
+    }
+
+    @Override
+    public int compareTo(Occupant o) {
+        if (this == o) {
+            return 0;
+        }
+
+        if (o != null) {
+            int result;
+            // First compare affiliations.
+            if (affiliation != null) {
+                if (o.affiliation != null) {
+                    result = affiliation.compareTo(o.affiliation);
+                } else {
+                    result = -1;
+                }
+            } else {
+                if (o.affiliation != null) {
+                    result = 1;
+                } else {
+                    result = 0;
+                }
+            }
+            // If the affiliations are equal, compare roles.
+            if (result == 0) {
+                if (role != null) {
+                    if (o.role != null) {
+                        result = role.compareTo(o.role);
+                    } else {
+                        // If this role is not null, but the other is null, move this up (-1).
+                        result = -1;
+                    }
+                } else {
+                    // If this role is null, but the other is not, move this down (1).
+                    if (o.role != null) {
+                        result = 1;
+                    } else {
+                        result = 0;
+                    }
+                }
+            }
+            // If the roles are equal, compare nick names.
+            if (result == 0) {
+                if (nick != null) {
+                    if (o.nick != null) {
+                        result = nick.compareTo(o.nick);
+                    } else {
+                        // If this nick is not null, but the other is null, move this up (-1).
+                        result = -1;
+                    }
+                } else {
+                    // If this nick is null, but the other is not, move this down (1).
+                    if (o.nick != null) {
+                        result = 1;
+                    } else {
+                        result = 0;
+                    }
+                }
+            }
+            return result;
+        } else {
+            return -1;
+        }
     }
 }

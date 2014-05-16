@@ -74,7 +74,7 @@ public final class MucOwner {
     }
 
     /**
-     * Creates a {@code <query/>} element with an {@code <destroy/>} child element.
+     * Creates a {@code <query/>} element with a {@code <destroy/>} child element.
      * <p><b>Sample:</b></p>
      * <pre>
      * {@code

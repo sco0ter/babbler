@@ -34,6 +34,7 @@ import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Arrays;
 
 /**
  * @author Christian Schudt
@@ -173,6 +174,13 @@ public class MultiUserChatAdminTest extends XmlTest {
     @Test
     public void marshalModifyModeratorList() throws JAXBException, XMLStreamException {
         MucAdmin mucAdmin = MucAdmin.withItems(MucAdmin.createItem(Role.PARTICIPANT, "thirdwitch"), MucAdmin.createItem(Role.MODERATOR, "Hecate"));
+        String xml = marshal(mucAdmin);
+        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"></item><item nick=\"Hecate\" role=\"moderator\"></item></query>");
+    }
+
+    @Test
+    public void marshalModifyModeratorList2() throws JAXBException, XMLStreamException {
+        MucAdmin mucAdmin = MucAdmin.withItems(Arrays.asList(MucAdmin.createItem(Role.PARTICIPANT, "thirdwitch"), MucAdmin.createItem(Role.MODERATOR, "Hecate")));
         String xml = marshal(mucAdmin);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"></item><item nick=\"Hecate\" role=\"moderator\"></item></query>");
     }

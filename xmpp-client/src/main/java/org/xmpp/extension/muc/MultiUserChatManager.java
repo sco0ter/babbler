@@ -43,7 +43,6 @@ import org.xmpp.stanza.MessageListener;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
 import org.xmpp.stanza.client.Message;
-import org.xmpp.stanza.client.Presence;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -77,18 +76,17 @@ public final class MultiUserChatManager extends ExtensionManager {
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
                     Message message = e.getMessage();
-
-                    // Check, if the message contains a direct invitation.
-                    DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
-                    if (directInvitation != null) {
-                        notifyListeners(new InvitationEvent(MultiUserChatManager.this, connection, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
+                    // Check, if the message contains a mediated invitation.
+                    MucUser mucUser = message.getExtension(MucUser.class);
+                    if (mucUser != null) {
+                        for (Invite invite : mucUser.getInvites()) {
+                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, connection, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                        }
                     } else {
-                        // Check, if the message contains a mediated invitation.
-                        MucUser mucUser = message.getExtension(MucUser.class);
-                        if (mucUser != null) {
-                            for (Invite invite : mucUser.getInvites()) {
-                                notifyListeners(new InvitationEvent(MultiUserChatManager.this, connection, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
-                            }
+                        // Check, if the message contains a direct invitation.
+                        DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
+                        if (directInvitation != null) {
+                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, connection, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
                         }
                     }
                 }
@@ -199,13 +197,6 @@ public final class MultiUserChatManager extends ExtensionManager {
         return chatRoom;
     }
 
-
-    public void enterRoom(String room, String service, String nick) {
-        Presence presence = new Presence();
-        presence.setTo(new Jid(room, service, nick));
-        presence.getExtensions().add(new Muc());
-        connection.send(presence);
-    }
 
     public void getFeatures(Jid jid) throws XmppException {
         serviceDiscoveryManager.discoverInformation(jid);

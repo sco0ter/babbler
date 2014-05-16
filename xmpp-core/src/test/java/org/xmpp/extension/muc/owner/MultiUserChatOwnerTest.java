@@ -30,7 +30,6 @@ import org.xmpp.Jid;
 import org.xmpp.XmlTest;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.muc.Affiliation;
-import org.xmpp.extension.muc.MucElementFactory;
 import org.xmpp.extension.muc.Role;
 import org.xmpp.extension.muc.admin.MucAdmin;
 import org.xmpp.stanza.client.IQ;

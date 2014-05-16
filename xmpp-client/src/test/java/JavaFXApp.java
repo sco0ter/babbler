@@ -260,12 +260,20 @@ public class JavaFXApp extends Application {
                                 });
                             }
                         });
-                        connection.addMessageListener(new MessageListener() {
+                        final MultiUserChatManager multiUserChatManager = connection.getExtensionManager(MultiUserChatManager.class);
+                        multiUserChatManager.addInvitationListener(new InvitationListener() {
                             @Override
-                            public void handle(MessageEvent e) {
-
+                            public void invitationReceived(InvitationEvent e) {
+                                ChatService chatService = multiUserChatManager.createChatService(new Jid(e.getRoomAddress().getDomain()));
+                                ChatRoom chatRoom = chatService.createRoom(e.getRoomAddress().getLocal());
+                                try {
+                                    chatRoom.enter("222");
+                                } catch (XmppException e1) {
+                                    e1.printStackTrace();
+                                }
                             }
                         });
+
                         connection.getRosterManager().addRosterListener(new RosterListener() {
                             @Override
                             public void rosterChanged(final RosterEvent e) {
@@ -366,7 +374,7 @@ public class JavaFXApp extends Application {
                         try {
                             connection.connect();
                             connection.login(txtUser.getText(), txtPassword.getText(), "test");
-                            //connection.send(new Presence());
+                            connection.send(new Presence());
                             connection.getRosterManager().requestRoster();
 
                         } catch (Exception e) {

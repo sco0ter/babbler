@@ -62,56 +62,219 @@ public final class MucAdmin {
         }
     }
 
+    /**
+     * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <query xmlns='http://jabber.org/protocol/muc#admin'>
+     *     <item role='participant'/>
+     * </query>
+     * }
+     * </pre>
+     *
+     * @param role The role.
+     * @return The {@link MucAdmin} instance.
+     */
+    public static MucAdmin withItem(Role role) {
+        return new MucAdmin(new MucAdminItem(role, null, null));
+    }
+
+    /**
+     * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <query xmlns='http://jabber.org/protocol/muc#admin'>
+     *     <item affiliation='outcast'/>
+     * </query>
+     *
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @return The {@link MucAdmin} instance.
+     */
     public static MucAdmin withItem(Affiliation affiliation) {
         return new MucAdmin(new MucAdminItem(affiliation, null, null));
     }
 
+    /**
+     * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <query xmlns='http://jabber.org/protocol/muc#admin'>
+     *     <item nick='thirdwitch'
+     *           role='participant'>
+     *         <reason>A worthy witch indeed!</reason>
+     *     </item>
+     * </query>
+     * }
+     * </pre>
+     *
+     * @param role   The role.
+     * @param nick   The nick.
+     * @param reason The reason.
+     * @return The {@link MucAdmin} instance.
+     */
     public static MucAdmin withItem(Role role, String nick, String reason) {
         return new MucAdmin(new MucAdminItem(role, nick, reason));
     }
 
+    /**
+     * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <query xmlns='http://jabber.org/protocol/muc#admin'>
+     *     <item affiliation='outcast'
+     *           jid='earlofcambridge@shakespeare.lit'/>
+     * </query>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param jid         The JID.
+     * @param reason      The reason.
+     * @return The {@link MucAdmin} instance.
+     */
     public static MucAdmin withItem(Affiliation affiliation, Jid jid, String reason) {
         return new MucAdmin(new MucAdminItem(affiliation, jid, reason));
     }
 
+    /**
+     * Creates a {@code <query/>} element with {@code <item/>} child elements.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <query xmlns='http://jabber.org/protocol/muc#admin'>
+     *     <item affiliation='none'
+     *           jid='polonius@hamlet/castle'
+     *           nick='Polo'
+     *           role='participant'/>
+     *     <item affiliation='none'
+     *           jid='horatio@hamlet/castle'
+     *           nick='horotoro'
+     *           role='participant'/>
+     *     <item affiliation='member'
+     *           jid='hecate@shakespeare.lit/broom'
+     *           nick='Hecate'
+     *           role='participant'/>
+     * </query>
+     * }
+     * </pre>
+     *
+     * @param items The items.
+     * @return The {@link MucAdmin} instance.
+     */
     public static MucAdmin withItems(List<Item> items) {
         Item[] array = new Item[items.size()];
         items.toArray(array);
         return new MucAdmin(array);
     }
 
+    /**
+     * Creates a {@code <query/>} element with {@code <item/>} child elements.
+     *
+     * @param items The items.
+     * @return The {@link MucAdmin} instance.
+     * @see #withItems(org.xmpp.extension.muc.Item...)
+     */
     public static MucAdmin withItems(Item... items) {
         return new MucAdmin(items);
     }
 
+    /**
+     * Creates an item, which can be used as input parameter for {@link #withItems(org.xmpp.extension.muc.Item...)}.
+     *
+     * @param affiliation The affiliation.
+     * @param role        The role.
+     * @param jid         The JID.
+     * @param nick        The nick.
+     * @param actor       The actor.
+     * @param reason      The reason.
+     * @return The item.
+     */
     public static Item createItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor, String reason) {
         return new MucAdminItem(affiliation, role, jid, nick, actor, reason);
     }
 
+    /**
+     * Creates an item, which can be used as input parameter for {@link #withItems(org.xmpp.extension.muc.Item...)}.
+     *
+     * @param role   The role.
+     * @param nick   The nick.
+     * @param reason The reason.
+     * @return The item.
+     */
     public static Item createItem(Role role, String nick, String reason) {
         return new MucAdminItem(role, nick, reason);
     }
 
+    /**
+     * Creates an item, which can be used as input parameter for {@link #withItems(org.xmpp.extension.muc.Item...)}.
+     *
+     * @param role The role.
+     * @param nick The nick.
+     * @return The item.
+     */
     public static Item createItem(Role role, String nick) {
         return new MucAdminItem(role, nick, null);
     }
 
+    /**
+     * Creates an item, which can be used as input parameter for {@link #withItems(org.xmpp.extension.muc.Item...)}.
+     *
+     * @param role The role.
+     * @return The item.
+     */
     public static Item createItem(Role role) {
         return new MucAdminItem(role, null, null);
     }
 
+    /**
+     * Creates an item, which can be used as input parameter for {@link #withItems(org.xmpp.extension.muc.Item...)}.
+     *
+     * @param affiliation The affiliation.
+     * @return The item.
+     */
     public static Item createItem(Affiliation affiliation) {
         return new MucAdminItem(affiliation, null, null);
     }
 
+    /**
+     * Creates an item, which can be used as input parameter for {@link #withItems(org.xmpp.extension.muc.Item...)}.
+     *
+     * @param affiliation The affiliation.
+     * @param jid         The JID.
+     * @return The item.
+     */
     public static Item createItem(Affiliation affiliation, Jid jid) {
         return new MucAdminItem(affiliation, jid, null);
     }
 
+    /**
+     * Creates an item, which can be used as input parameter for {@link #withItems(org.xmpp.extension.muc.Item...)}.
+     *
+     * @param affiliation The affiliation.
+     * @param jid         The JID.
+     * @param reason      The reason.
+     * @return The item.
+     */
     public static Item createItem(Affiliation affiliation, Jid jid, String reason) {
         return new MucAdminItem(affiliation, jid, reason);
     }
 
+    /**
+     * Creates an item, which can be used as input parameter for {@link #withItems(org.xmpp.extension.muc.Item...)}.
+     *
+     * @param affiliation The affiliation.
+     * @param jid         The JID.
+     * @param nick        The nick.
+     * @param reason      The reason.
+     * @return The item.
+     */
     public static Item createItem(Affiliation affiliation, Jid jid, String nick, String reason) {
         return new MucAdminItem(affiliation, null, jid, nick, null, reason);
     }

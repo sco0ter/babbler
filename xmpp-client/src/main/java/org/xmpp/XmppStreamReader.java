@@ -49,10 +49,13 @@ final class XmppStreamReader {
 
     private final TcpConnection connection;
 
+    private final XmppSession xmppSession;
+
     private final ExecutorService executorService;
 
-    public XmppStreamReader(final TcpConnection connection) throws JAXBException {
+    public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession) throws JAXBException {
         this.connection = connection;
+        this.xmppSession = xmppSession;
 
         executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
@@ -89,16 +92,16 @@ final class XmppStreamReader {
                                 }
                                 Attribute fromAttribute = startElement.getAttributeByName(new QName("from"));
                                 if (fromAttribute != null) {
-                                    connection.xmppServiceDomain = fromAttribute.getValue();
+                                    xmppSession.xmppServiceDomain = fromAttribute.getValue();
                                 }
                                 xmlEventReader.next();
                             } else {
-                                Object object = connection.unmarshaller.unmarshal(xmlEventReader);
+                                Object object = xmppSession.unmarshaller.unmarshal(xmlEventReader);
                                 if (logger.isLoggable(Level.FINE)) {
                                     logger.fine("<--  " + new String(byteArrayOutputStream.toByteArray()));
                                 }
                                 byteArrayOutputStream.reset();
-                                doRestart = connection.handleElement(object);
+                                doRestart = xmppSession.handleElement(object);
                             }
                         } else {
                             xmlEventReader.next();
@@ -107,7 +110,7 @@ final class XmppStreamReader {
                     }
                     xmlEventReader.close();
                 } catch (Exception e) {
-                    connection.notifyException(e);
+                    xmppSession.notifyException(e);
                 } finally {
                     if (doRestart) {
                         connection.restartStream();

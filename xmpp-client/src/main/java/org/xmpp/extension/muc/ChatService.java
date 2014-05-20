@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.muc;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemNode;
@@ -39,14 +40,14 @@ import java.util.List;
  */
 public class ChatService {
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private final Jid serviceAddress;
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    public ChatService(Jid serviceAddress, Connection connection, ServiceDiscoveryManager serviceDiscoveryManager) {
-        this.connection = connection;
+    public ChatService(Jid serviceAddress, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
+        this.xmppSession = xmppSession;
         this.serviceAddress = serviceAddress;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
     }
@@ -55,12 +56,12 @@ public class ChatService {
         List<ChatRoom> chatRooms = new ArrayList<>();
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(serviceAddress);
         for (Item item : itemNode.getItems()) {
-            chatRooms.add(new ChatRoom(item.getName(), item.getJid(), connection));
+            chatRooms.add(new ChatRoom(item.getName(), item.getJid(), xmppSession));
         }
         return chatRooms;
     }
 
     public ChatRoom createRoom(String room) {
-        return new ChatRoom(null, new Jid(room, serviceAddress.getDomain()), connection);
+        return new ChatRoom(null, new Jid(room, serviceAddress.getDomain()), xmppSession);
     }
 }

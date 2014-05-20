@@ -24,10 +24,11 @@
 
 package org.xmpp.im;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
+import org.xmpp.XmppSession;
 import org.xmpp.stanza.PresenceEvent;
 import org.xmpp.stanza.PresenceListener;
 import org.xmpp.stanza.client.Presence;
@@ -50,17 +51,17 @@ public final class PresenceManager {
 
     // TODO auto deny or auto approve some or all requests.
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private final Map<Jid, Map<String, Presence>> presenceMap = new ConcurrentHashMap<>();
 
     private final Map<String, Presence> lastSentPresences = new ConcurrentHashMap<>();
 
-    public PresenceManager(final Connection connection) {
+    public PresenceManager(final XmppSession xmppSession) {
 
-        this.connection = connection;
+        this.xmppSession = xmppSession;
 
-        connection.addPresenceListener(new PresenceListener() {
+        xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
                 Presence presence = e.getPresence();
@@ -86,13 +87,13 @@ public final class PresenceManager {
             }
         });
 
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
                 // Resend the last presences, as soon as we are reconnected.
-                if (e.getStatus() == Connection.Status.CONNECTED) {
+                if (e.getStatus() == XmppSession.Status.CONNECTED) {
                     for (Presence presence : lastSentPresences.values()) {
-                        connection.send(presence);
+                        xmppSession.send(presence);
                     }
                 }
             }
@@ -160,7 +161,7 @@ public final class PresenceManager {
         presence.setTo(jid.asBareJid());
         presence.setId(UUID.randomUUID().toString());
         presence.setStatus(status);
-        connection.send(presence);
+        xmppSession.send(presence);
         return presence.getId();
     }
 
@@ -178,7 +179,7 @@ public final class PresenceManager {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         presence.setId(UUID.randomUUID().toString());
         presence.setTo(jid);
-        connection.send(presence);
+        xmppSession.send(presence);
         return presence.getId();
     }
 
@@ -197,7 +198,7 @@ public final class PresenceManager {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         presence.setId(UUID.randomUUID().toString());
         presence.setTo(jid);
-        connection.send(presence);
+        xmppSession.send(presence);
         return presence.getId();
     }
 
@@ -216,7 +217,7 @@ public final class PresenceManager {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         presence.setId(UUID.randomUUID().toString());
         presence.setTo(jid);
-        connection.send(presence);
+        xmppSession.send(presence);
         return presence.getId();
     }
 

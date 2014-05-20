@@ -24,8 +24,9 @@
 
 package org.xmpp.extension.stream.ibb;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -55,10 +56,10 @@ public class InBandBytestreamManager extends ExtensionManager {
 
     private Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
-    private InBandBytestreamManager(final Connection connection) {
-        super(connection, NAMESPACE);
+    private InBandBytestreamManager(final XmppSession xmppSession) {
+        super(xmppSession, NAMESPACE);
 
-        connection.addIQListener(new IQListener() {
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 if (e.isIncoming()) {
@@ -71,10 +72,10 @@ public class InBandBytestreamManager extends ExtensionManager {
                                 IbbSession ibbSession = getIbbSession(iq, data.getSessionId());
                                 if (ibbSession != null) {
                                     if (ibbSession.handleData(data)) {
-                                        connection.send(iq.createResult());
+                                        xmppSession.send(iq.createResult());
                                     } else {
                                         // 2. Because the sequence number has already been used, the recipient returns an <unexpected-request/> error with a type of 'cancel'.
-                                        connection.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new UnexpectedRequest())));
+                                        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new UnexpectedRequest())));
                                     }
                                 }
                             } else {
@@ -90,7 +91,7 @@ public class InBandBytestreamManager extends ExtensionManager {
                                 // Notify the listeners.
                                 for (IbbListener ibbListener : ibbListeners) {
                                     try {
-                                        ibbListener.streamRequested(new IbbEvent(InBandBytestreamManager.this, connection, iq, iq.getExtension(Open.class)));
+                                        ibbListener.streamRequested(new IbbEvent(InBandBytestreamManager.this, xmppSession, iq, iq.getExtension(Open.class)));
                                     } catch (Exception exc) {
                                         logger.log(Level.WARNING, exc.getMessage(), exc);
                                     }
@@ -111,7 +112,7 @@ public class InBandBytestreamManager extends ExtensionManager {
                                     } catch (IOException e1) {
                                         // logger.warning(e1.);
                                     } finally {
-                                        connection.send(iq.createResult());
+                                        xmppSession.send(iq.createResult());
                                     }
                                 }
                             } else {
@@ -131,19 +132,19 @@ public class InBandBytestreamManager extends ExtensionManager {
         IbbSession ibbSession = ibbSessionMap.get(sessionId);
         if (ibbSession == null) {
             // 1. Because the session ID is unknown, the recipient returns an <item-not-found/> error with a type of 'cancel'.
-            connection.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new ItemNotFound())));
+            xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new ItemNotFound())));
         }
         return ibbSession;
     }
 
     public IbbSession createInBandByteStream(Jid jid, int blockSize) {
-        IbbSession ibbSession = new IbbSession(connection, jid, blockSize);
+        IbbSession ibbSession = new IbbSession(xmppSession, jid, blockSize);
         ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;
     }
 
     public IbbSession createInBandByteStream(Jid jid, int blockSize, String sessionId) {
-        IbbSession ibbSession = new IbbSession(connection, jid, blockSize, sessionId);
+        IbbSession ibbSession = new IbbSession(xmppSession, jid, blockSize, sessionId);
         ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;
     }

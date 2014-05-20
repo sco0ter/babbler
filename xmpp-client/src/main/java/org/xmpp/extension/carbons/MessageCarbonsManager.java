@@ -24,8 +24,9 @@
 
 package org.xmpp.extension.carbons;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.client.IQ;
 
@@ -34,15 +35,15 @@ import org.xmpp.stanza.client.IQ;
  */
 public final class MessageCarbonsManager extends ExtensionManager {
 
-    private MessageCarbonsManager(Connection connection) {
-        super(connection, MessageCarbons.NAMESPACE);
+    private MessageCarbonsManager(XmppSession xmppSession) {
+        super(xmppSession, MessageCarbons.NAMESPACE);
     }
 
     public void enableCarbons() throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new Enable()));
+        xmppSession.query(new IQ(IQ.Type.SET, new Enable()));
     }
 
     public void disableCarbons() throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new Disable()));
+        xmppSession.query(new IQ(IQ.Type.SET, new Disable()));
     }
 }

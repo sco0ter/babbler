@@ -58,10 +58,10 @@ public class RpcManagerTest extends BaseTest {
     public void testCall() throws XmppException, RpcException {
         MockServer mockServer = new MockServer();
 
-        Connection connection1 = new TestConnection(ROMEO, mockServer);
-        Connection connection2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
 
-        RpcManager rpcManager = connection1.getExtensionManager(RpcManager.class);
+        RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override
@@ -73,7 +73,7 @@ public class RpcManagerTest extends BaseTest {
             }
         });
 
-        Value result = connection2.getExtensionManager(RpcManager.class).call(ROMEO, "square", new Value(2));
+        Value result = xmppSession2.getExtensionManager(RpcManager.class).call(ROMEO, "square", new Value(2));
         Assert.assertEquals(result.getAsInteger().intValue(), 4);
     }
 
@@ -81,10 +81,10 @@ public class RpcManagerTest extends BaseTest {
     public void testRpcException() throws XmppException {
         MockServer mockServer = new MockServer();
 
-        Connection connection1 = new TestConnection(ROMEO, mockServer);
-        Connection connection2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
 
-        RpcManager rpcManager = connection1.getExtensionManager(RpcManager.class);
+        RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override
@@ -97,7 +97,7 @@ public class RpcManagerTest extends BaseTest {
         });
 
         try {
-            connection2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
+            xmppSession2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
         } catch (RpcException e) {
             Assert.assertEquals(e.getFaultCode(), 2);
             Assert.assertEquals(e.getFaultString(), "faulty");
@@ -110,10 +110,10 @@ public class RpcManagerTest extends BaseTest {
     public void testStanzaException() throws XmppException, RpcException {
         MockServer mockServer = new MockServer();
 
-        Connection connection1 = new TestConnection(ROMEO, mockServer);
-        Connection connection2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
 
-        RpcManager rpcManager = connection1.getExtensionManager(RpcManager.class);
+        RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override
@@ -128,7 +128,7 @@ public class RpcManagerTest extends BaseTest {
         });
 
         try {
-            connection2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
+            xmppSession2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
         } catch (StanzaException e) {
             Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Forbidden);
             return;

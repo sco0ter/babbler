@@ -97,7 +97,7 @@ public abstract class FeatureNegotiator {
      *
      * @param element The XML element, which belongs to the feature negotiation, e.g. {@code <challenge/>} for SASL negotiation or the feature element itself, e.g. {@code <mechanisms/>}.
      * @return The status of the feature negotiation.
-     * @throws Exception Any exception which might be thrown during a feature negotiation. Note that any exception thrown during the feature negotiation process is thrown by the {@link org.xmpp.Connection#connect()} method and therefore will abort the connection process.
+     * @throws Exception Any exception which might be thrown during a feature negotiation. Note that any exception thrown during the feature negotiation process is thrown by the {@link org.xmpp.XmppSession#connect()} method and therefore will abort the connection process.
      */
     public abstract Status processNegotiation(Object element) throws Exception;
 

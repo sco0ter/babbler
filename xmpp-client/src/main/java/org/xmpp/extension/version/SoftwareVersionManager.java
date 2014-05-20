@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.version;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -47,9 +48,9 @@ public final class SoftwareVersionManager extends ExtensionManager {
 
     private SoftwareVersion softwareVersion;
 
-    private SoftwareVersionManager(final Connection connection) {
-        super(connection, SoftwareVersion.NAMESPACE);
-        connection.addIQListener(new IQListener() {
+    private SoftwareVersionManager(final XmppSession xmppSession) {
+        super(xmppSession, SoftwareVersion.NAMESPACE);
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
@@ -59,7 +60,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
                         if (isEnabled() && softwareVersion != null) {
                             IQ result = iq.createResult();
                             result.setExtension(softwareVersion);
-                            connection.send(result);
+                            xmppSession.send(result);
                         } else {
                             sendServiceUnavailable(iq);
                         }
@@ -81,7 +82,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
     public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {
         IQ iq = new IQ(IQ.Type.GET, new SoftwareVersion());
         iq.setTo(jid);
-        IQ result = connection.query(iq);
+        IQ result = xmppSession.query(iq);
         return result.getExtension(SoftwareVersion.class);
     }
 

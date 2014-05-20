@@ -24,7 +24,8 @@
 
 package org.xmpp.extension.stream.si.filetransfer;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.featureneg.FeatureNegotiation;
 import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
@@ -42,7 +43,7 @@ public final class FileTransferEvent extends EventObject {
 
     private final FileTransfer fileTransfer;
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private final IQ iq;
 
@@ -52,9 +53,9 @@ public final class FileTransferEvent extends EventObject {
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    FileTransferEvent(Object source, Connection connection, IQ iq, FileTransfer fileTransfer) {
+    FileTransferEvent(Object source, XmppSession xmppSession, IQ iq, FileTransfer fileTransfer) {
         super(source);
-        this.connection = connection;
+        this.xmppSession = xmppSession;
         this.iq = iq;
         this.fileTransfer = fileTransfer;
     }
@@ -75,13 +76,13 @@ public final class FileTransferEvent extends EventObject {
         StreamInitiation streamInitiation = new StreamInitiation(featureNegotiation);
         IQ result = iq.createResult();
         result.setExtension(streamInitiation);
-        connection.send(result);
+        xmppSession.send(result);
     }
 
     /**
      * Rejects the incoming file transfer request.
      */
     public void reject() {
-        connection.send(iq.createError(new StanzaError(new Forbidden())));
+        xmppSession.send(iq.createError(new StanzaError(new Forbidden())));
     }
 }

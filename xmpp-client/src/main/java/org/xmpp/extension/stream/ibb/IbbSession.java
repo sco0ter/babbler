@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.stream.ibb;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.stanza.client.IQ;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ public final class IbbSession {
 
     private final int blockSize;
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private int incomingSequence = 0;
 
@@ -57,16 +58,16 @@ public final class IbbSession {
 
     private volatile boolean closed;
 
-    IbbSession(Connection connection, final Jid jid, int blockSize) {
-        this(connection, jid, blockSize, UUID.randomUUID().toString());
+    IbbSession(XmppSession xmppSession, final Jid jid, int blockSize) {
+        this(xmppSession, jid, blockSize, UUID.randomUUID().toString());
     }
 
-    IbbSession(Connection connection, final Jid jid, int blockSize, final String sessionId) {
+    IbbSession(XmppSession xmppSession, final Jid jid, int blockSize, final String sessionId) {
         this.outputStream = new IbbOutputStream(this, blockSize);
         this.inputStream = new IbbInputStream();
         this.jid = jid;
         this.sessionId = sessionId;
-        this.connection = connection;
+        this.xmppSession = xmppSession;
         this.blockSize = blockSize;
     }
 
@@ -83,7 +84,7 @@ public final class IbbSession {
     public void open() throws XmppException {
         IQ iq = new IQ(IQ.Type.SET, new Open(blockSize, sessionId));
         iq.setTo(jid);
-        connection.query(iq);
+        xmppSession.query(iq);
     }
 
     public OutputStream getOutputStream() {
@@ -95,7 +96,7 @@ public final class IbbSession {
     }
 
     synchronized void send(byte[] bytes) throws XmppException {
-        connection.query(new IQ(jid, IQ.Type.SET, new Data(bytes, sessionId, outgoingSequence)));
+        xmppSession.query(new IQ(jid, IQ.Type.SET, new Data(bytes, sessionId, outgoingSequence)));
         // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2, and so on. The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.
         if (++outgoingSequence > 65535) {
             outgoingSequence = 0;
@@ -107,7 +108,7 @@ public final class IbbSession {
             closed = true;
             inputStream.close();
             outputStream.close();
-            connection.send(new IQ(jid, IQ.Type.SET, new Close(sessionId)));
+            xmppSession.send(new IQ(jid, IQ.Type.SET, new Close(sessionId)));
         }
     }
 

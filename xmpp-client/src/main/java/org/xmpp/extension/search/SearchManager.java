@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.search;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
@@ -46,10 +47,10 @@ public final class SearchManager extends ExtensionManager {
     /**
      * Creates the search manager.
      *
-     * @param connection The search manager.
+     * @param xmppSession The search manager.
      */
-    private SearchManager(Connection connection) {
-        super(connection);
+    private SearchManager(XmppSession xmppSession) {
+        super(xmppSession);
     }
 
     /**
@@ -66,7 +67,7 @@ public final class SearchManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public Search discoverSearchFields(Jid service) throws XmppException {
-        IQ result = connection.query(new IQ(service, IQ.Type.GET, new Search()));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, new Search()));
         return result.getExtension(Search.class);
     }
 
@@ -81,7 +82,7 @@ public final class SearchManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public Search search(Search search, Jid service) throws XmppException {
-        IQ result = connection.query(new IQ(service, IQ.Type.SET, search));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.SET, search));
         return result.getExtension(Search.class);
     }
 }

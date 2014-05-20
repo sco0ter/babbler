@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.register;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -42,8 +43,8 @@ import org.xmpp.stanza.client.IQ;
  */
 public final class RegistrationManager extends ExtensionManager {
 
-    private RegistrationManager(Connection connection) {
-        super(connection);
+    private RegistrationManager(XmppSession xmppSession) {
+        super(xmppSession);
     }
 
     /**
@@ -55,11 +56,11 @@ public final class RegistrationManager extends ExtensionManager {
      */
     public boolean isRegistrationSupported() throws XmppException {
         // server returns a stream header to the client and MAY announce support for in-band registration by including the relevant stream feature.
-        boolean isSupported = connection.getFeaturesManager().getFeatures().containsKey(RegisterFeature.class);
+        boolean isSupported = xmppSession.getFeaturesManager().getFeatures().containsKey(RegisterFeature.class);
 
         // Since the stream feature is only optional, discover the server features, too.
         if (!isSupported) {
-            ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+            ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
             InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
             isSupported = infoNode.getFeatures().contains(new Feature("jabber:iq:register"));
         }
@@ -80,7 +81,7 @@ public final class RegistrationManager extends ExtensionManager {
      * @see Registration
      */
     public Registration getRegistration() throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new Registration()));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Registration()));
         return result.getExtension(Registration.class);
     }
 
@@ -96,7 +97,7 @@ public final class RegistrationManager extends ExtensionManager {
         if (registration == null) {
             throw new IllegalArgumentException("registration must not be null.");
         }
-        connection.query(new IQ(IQ.Type.SET, registration));
+        xmppSession.query(new IQ(IQ.Type.SET, registration));
     }
 
     /**
@@ -107,7 +108,7 @@ public final class RegistrationManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing Registration</a>
      */
     public void cancelRegistration() throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new Registration(true)));
+        xmppSession.query(new IQ(IQ.Type.SET, new Registration(true)));
     }
 
     /**
@@ -120,6 +121,6 @@ public final class RegistrationManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-changepw">3.3 User Changes Password</a>
      */
     public void changePassword(String username, String password) throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new Registration(username, password)));
+        xmppSession.query(new IQ(IQ.Type.SET, new Registration(username, password)));
     }
 }

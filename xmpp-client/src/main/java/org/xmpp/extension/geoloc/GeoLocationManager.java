@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.geoloc;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.pubsub.Item;
 import org.xmpp.extension.pubsub.PubSubManager;
@@ -53,10 +54,10 @@ public final class GeoLocationManager extends ExtensionManager {
 
     private PubSubService pepService;
 
-    private GeoLocationManager(Connection connection) {
-        super(connection, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
+    private GeoLocationManager(XmppSession xmppSession) {
+        super(xmppSession, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
 
-        connection.addMessageListener(new MessageListener() {
+        xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming() && isEnabled()) {
@@ -90,7 +91,7 @@ public final class GeoLocationManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public void publish(GeoLocation geoLocation) throws XmppException {
-        pepService = connection.getExtensionManager(PubSubManager.class).createPersonalEventingService();
+        pepService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
         pepService.publish(GeoLocation.NAMESPACE, geoLocation);
     }
 

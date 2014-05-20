@@ -27,9 +27,10 @@ package org.xmpp.extension.reach;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.MockServer;
 import org.xmpp.TestConnection;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -48,11 +49,11 @@ public class ReachabilityManagerTest extends BaseTest {
 
         MockServer mockServer = new MockServer();
 
-        Connection connection1 = new TestConnection(ROMEO, mockServer);
-        Connection connection2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
 
         final boolean[] attentionReceived = {false};
-        connection2.addMessageListener(new MessageListener() {
+        xmppSession2.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming() && e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
@@ -62,7 +63,7 @@ public class ReachabilityManagerTest extends BaseTest {
             }
         });
 
-        AttentionManager attentionManager = connection1.getExtensionManager(AttentionManager.class);
+        AttentionManager attentionManager = xmppSession1.getExtensionManager(AttentionManager.class);
         attentionManager.captureAttention(JULIET);
 
         Assert.assertTrue(attentionReceived[0]);

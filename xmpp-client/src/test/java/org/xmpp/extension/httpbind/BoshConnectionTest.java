@@ -35,7 +35,7 @@ public class BoshConnectionTest {
     @Test
     public void testInsertionOrder() {
 
-        BoshConnection boshConnection = new BoshConnection("");
+        BoshConnection boshConnection = new BoshConnection(null, "");
 
         Body body1 = new Body();
         boshConnection.unacknowledgedRequests.put(1L, body1);

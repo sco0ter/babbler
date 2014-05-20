@@ -100,6 +100,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.Proxy;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -111,7 +112,7 @@ import java.util.logging.*;
  */
 public class JavaFXApp extends Application {
 
-    private Connection connection;
+    private XmppSession xmppSession;
 
     private Map<Jid, ChatWindow> windows = new HashMap<>();
 
@@ -139,14 +140,14 @@ public class JavaFXApp extends Application {
         useBosh.setText("Use BOSH");
 
         for (int i = 0; i < 1; i++) {
-            Connection connection1 = new TestConnection();
-            connection1.getExtensionManager(LastActivityManager.class).setLastActivityStrategy(new LastActivityStrategy() {
+            XmppSession xmppSession1 = new TestConnection();
+            xmppSession1.getExtensionManager(LastActivityManager.class).setLastActivityStrategy(new LastActivityStrategy() {
                 @Override
                 public Date getLastActivity() {
                     return null;
                 }
             });
-            connection1.close();
+            xmppSession1.close();
         }
 
         ComboBox<Presence.Show> comboBox = new ComboBox<>();
@@ -169,7 +170,7 @@ public class JavaFXApp extends Application {
         comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Presence.Show>() {
             @Override
             public void changed(ObservableValue<? extends Presence.Show> observableValue, Presence.Show show, Presence.Show show2) {
-                connection.send(new Presence(show2));
+                xmppSession.send(new Presence(show2));
             }
         });
 
@@ -201,13 +202,11 @@ public class JavaFXApp extends Application {
                     @Override
                     public void run() {
 
+                        xmppSession = new XmppSession(txtDomain.getText());
                         if (!useBosh.isSelected()) {
-
-                            XmppContext.getDefault().registerExtension(Product.class);
-
-                            connection = new TcpConnection(txtDomain.getText(), txtServer.getText(), Integer.parseInt(txtPort.getText()));
+                            xmppSession.getConnections().add(new TcpConnection(xmppSession, txtServer.getText(), Integer.parseInt(txtPort.getText()), Proxy.NO_PROXY));
                         } else {
-                            connection = new BoshConnection(txtDomain.getText(), txtServer.getText(), Integer.parseInt(txtPort.getText()));
+                            xmppSession.getConnections().add(new BoshConnection(xmppSession, txtDomain.getText(), txtServer.getText(), Integer.parseInt(txtPort.getText())));
                         }
                         try {
                             SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -227,13 +226,13 @@ public class JavaFXApp extends Application {
                                         }
                                     }
                             }, new SecureRandom());
-                            connection.getSecurityManager().setSSLContext(sslContext);
+                            xmppSession.getSecurityManager().setSSLContext(sslContext);
                         } catch (Exception e) {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
 
-                        connection.getExtensionManager(HeaderManager.class).setEnabled(true);
-                        connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
+                        xmppSession.getExtensionManager(HeaderManager.class).setEnabled(true);
+                        xmppSession.getChatManager().addChatSessionListener(new ChatSessionListener() {
                             @Override
                             public void chatSessionCreated(final ChatSessionEvent chatSessionEvent) {
                                 final ChatSession chatSession = chatSessionEvent.getChatSession();
@@ -247,7 +246,7 @@ public class JavaFXApp extends Application {
                                                 Jid chatPartner = chatSession.getChatPartner().asBareJid();
                                                 ChatWindow chatWindow = windows.get(chatPartner);
                                                 if (chatWindow == null) {
-                                                    chatWindow = new ChatWindow(chatPartner, connection);
+                                                    chatWindow = new ChatWindow(chatPartner, xmppSession);
                                                     windows.put(chatPartner, chatWindow);
                                                 }
 
@@ -260,7 +259,7 @@ public class JavaFXApp extends Application {
                                 });
                             }
                         });
-                        final MultiUserChatManager multiUserChatManager = connection.getExtensionManager(MultiUserChatManager.class);
+                        final MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
                         multiUserChatManager.addInvitationListener(new InvitationListener() {
                             @Override
                             public void invitationReceived(InvitationEvent e) {
@@ -274,7 +273,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        connection.getRosterManager().addRosterListener(new RosterListener() {
+                        xmppSession.getRosterManager().addRosterListener(new RosterListener() {
                             @Override
                             public void rosterChanged(final RosterEvent e) {
                                 Platform.runLater(new Runnable() {
@@ -299,7 +298,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        connection.addPresenceListener(new PresenceListener() {
+                        xmppSession.addPresenceListener(new PresenceListener() {
                             @Override
                             public void handle(final PresenceEvent e) {
                                 if (e.isIncoming()) {
@@ -308,7 +307,7 @@ public class JavaFXApp extends Application {
                                             @Override
                                             public void run() {
                                                 Presence presence = e.getPresence();
-                                                Contact contact = connection.getRosterManager().getContact(presence.getFrom());
+                                                Contact contact = xmppSession.getRosterManager().getContact(presence.getFrom());
                                                 if (contact != null) {
                                                     ContactItem contactItem1 = contactMap.get(contact);
                                                     contactItem1.presence.set(presence);
@@ -317,13 +316,13 @@ public class JavaFXApp extends Application {
                                             }
                                         });
                                     } else if (e.getPresence().getType() == Presence.Type.SUBSCRIBE) {
-                                        connection.getPresenceManager().denySubscription(e.getPresence().getFrom());
+                                        xmppSession.getPresenceManager().denySubscription(e.getPresence().getFrom());
                                     }
                                 }
                             }
                         });
 
-                        FileTransferManager fileTransferManager = connection.getExtensionManager(FileTransferManager.class);
+                        FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
                         fileTransferManager.addFileTransferListener(new FileTransferListener() {
                             @Override
                             public void fileTransferRequest(FileTransferEvent e) {
@@ -331,7 +330,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        AvatarManager avatarManager = connection.getExtensionManager(AvatarManager.class);
+                        AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
                         avatarManager.addAvatarChangeListener(new AvatarChangeListener() {
                             @Override
                             public void avatarChanged(final AvatarChangeEvent e) {
@@ -339,7 +338,7 @@ public class JavaFXApp extends Application {
                                     @Override
                                     public void run() {
 
-                                        Contact contact = connection.getRosterManager().getContact(e.getContact());
+                                        Contact contact = xmppSession.getRosterManager().getContact(e.getContact());
                                         if (contact != null) {
                                             ContactItem contactItem = contactMap.get(contact);
                                             if (contactItem != null) {
@@ -351,7 +350,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection.getExtensionManager(MessageDeliveryReceiptsManager.class);
+                        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getExtensionManager(MessageDeliveryReceiptsManager.class);
                         messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
                             @Override
                             public void messageDelivered(MessageDeliveredEvent e) {
@@ -361,7 +360,7 @@ public class JavaFXApp extends Application {
 
                         //connection.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
 
-                        GeoLocationManager geoLocationManager = connection.getExtensionManager(GeoLocationManager.class);
+                        GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
                         geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
                             @Override
                             public void geoLocationUpdated(GeoLocationEvent e) {
@@ -369,13 +368,13 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
+                        SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
                         try {
-                            connection.connect();
-                            connection.login(txtUser.getText(), txtPassword.getText(), "test");
-                            connection.send(new Presence());
-                            connection.getRosterManager().requestRoster();
+                            xmppSession.connect();
+                            xmppSession.login(txtUser.getText(), txtPassword.getText(), "test");
+                            xmppSession.send(new Presence());
+                            xmppSession.getRosterManager().requestRoster();
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -404,7 +403,7 @@ public class JavaFXApp extends Application {
                                 final Task<Avatar> task = new Task<Avatar>() {
                                     @Override
                                     protected Avatar call() throws Exception {
-                                        AvatarManager avatarManager = connection.getExtensionManager(AvatarManager.class);
+                                        AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
                                         return avatarManager.getAvatar(user);
                                     }
                                 };
@@ -429,7 +428,7 @@ public class JavaFXApp extends Application {
                             lastActivityMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+                                    LastActivityManager lastActivityManager = xmppSession.getExtensionManager(LastActivityManager.class);
                                     try {
                                         lastActivityManager.getLastActivity(item.contact.get().getJid().withResource("test"));
                                     } catch (XmppException e) {
@@ -441,7 +440,7 @@ public class JavaFXApp extends Application {
                             pingMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    PingManager pingManager = connection.getExtensionManager(PingManager.class);
+                                    PingManager pingManager = xmppSession.getExtensionManager(PingManager.class);
                                     try {
                                         pingManager.pingServer();
                                     } catch (XmppException e) {
@@ -453,7 +452,7 @@ public class JavaFXApp extends Application {
                             searchMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    SearchManager searchManager = connection.getExtensionManager(SearchManager.class);
+                                    SearchManager searchManager = xmppSession.getExtensionManager(SearchManager.class);
                                     try {
                                         Search search = new Search();
                                         search.setFirst("22*");
@@ -471,7 +470,7 @@ public class JavaFXApp extends Application {
                             softwareVersionItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
+                                    SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
                                     try {
                                         SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(item.contact.get().getJid());
                                         if (softwareVersion != null)
@@ -485,7 +484,7 @@ public class JavaFXApp extends Application {
                             serviceDiscoveryMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+                                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
                                     try {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
                                         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
@@ -500,7 +499,7 @@ public class JavaFXApp extends Application {
                             vCardItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
+                                    VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
                                     try {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
                                         VCard vCard = vCardManager.getVCard(jid);
@@ -515,7 +514,7 @@ public class JavaFXApp extends Application {
                             storeAnnotationsItems.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    PrivateDataManager privateDataManager = connection.getExtensionManager(PrivateDataManager.class);
+                                    PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
                                     try {
                                         List<Annotation.Note> notes = new ArrayList<>();
                                         notes.add(new Annotation.Note("Hallo", item.contact.get().getJid()));
@@ -530,7 +529,7 @@ public class JavaFXApp extends Application {
                             getAnnotationsItems.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    PrivateDataManager privateDataManager = connection.getExtensionManager(PrivateDataManager.class);
+                                    PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
                                     try {
                                         List<Annotation> annotations = privateDataManager.getData(Annotation.class);
                                         int i = 0;
@@ -543,8 +542,8 @@ public class JavaFXApp extends Application {
                             pubSubItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
-                                    ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+                                    PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+                                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
                                     try {
                                         ItemNode infoNode = serviceDiscoveryManager.discoverItems(null);
                                         int i = 0;
@@ -559,7 +558,7 @@ public class JavaFXApp extends Application {
                                 public void handle(ActionEvent actionEvent) {
 
                                     try {
-                                        GeoLocationManager geoLocationManager = connection.getExtensionManager(GeoLocationManager.class);
+                                        GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
                                         geoLocationManager.publish(new GeoLocation(45.44, 12.33));
                                     } catch (XmppException e) {
                                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -571,12 +570,12 @@ public class JavaFXApp extends Application {
                             sendFile.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    FileTransferManager fileTransferManager = connection.getExtensionManager(FileTransferManager.class);
+                                    FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
                                     FileChooser fileChooser = new FileChooser();
                                     File file = fileChooser.showOpenDialog(stage);
 
                                     try {
-                                        fileTransferManager.sendFile(file, connection.getPresenceManager().getPresence(item.contact.get().getJid()).getFrom(), 10000);
+                                        fileTransferManager.sendFile(file, xmppSession.getPresenceManager().getPresence(item.contact.get().getJid()).getFrom(), 10000);
                                     } catch (XmppException e) {
                                         e.printStackTrace();
                                     }
@@ -587,7 +586,7 @@ public class JavaFXApp extends Application {
                             timeItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    EntityTimeManager entityTimeManager = connection.getExtensionManager(EntityTimeManager.class);
+                                    EntityTimeManager entityTimeManager = xmppSession.getExtensionManager(EntityTimeManager.class);
 
                                     try {
                                         EntityTime entityTime = entityTimeManager.getEntityTime(Jid.valueOf("juliet@example.net/balcony"));
@@ -618,7 +617,7 @@ public class JavaFXApp extends Application {
                             Jid chatPartner = listCell.getItem().contact.get().getJid().asBareJid();
                             ChatWindow chatWindow = windows.get(chatPartner);
                             if (chatWindow == null) {
-                                chatWindow = new ChatWindow(chatPartner, connection);
+                                chatWindow = new ChatWindow(chatPartner, xmppSession);
                                 windows.put(chatPartner, chatWindow);
                             }
                             chatWindow.show();
@@ -639,7 +638,7 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 try {
-                    connection.close();
+                    xmppSession.close();
                     contactItems.clear();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -651,7 +650,7 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                MultiUserChatManager multiUserChatManager = connection.getExtensionManager(MultiUserChatManager.class);
+                MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
                 ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.christian-schudts-macbook-pro"));
                 try {
                     final ChatRoom chatRoom = chatService.createRoom("test");
@@ -705,7 +704,7 @@ public class JavaFXApp extends Application {
 
         private ChatSession chatSession;
 
-        public ChatWindow(final Jid chatPartner, final Connection connection) {
+        public ChatWindow(final Jid chatPartner, final XmppSession xmppSession) {
             messages = new TextArea();
             messages.setDisable(true);
             final TextArea textArea = new TextArea();
@@ -715,7 +714,7 @@ public class JavaFXApp extends Application {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     if (chatSession == null) {
-                        chatSession = connection.getChatManager().createChatSession(chatPartner);
+                        chatSession = xmppSession.getChatManager().createChatSession(chatPartner);
                     }
                     //AbstractMessage message = new AbstractMessage(chatSession.getChatPartner(), AbstractMessage.Type.CHAT, textArea.getText());
                     //message.setId(UUID.randomUUID().toString());

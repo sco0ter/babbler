@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.pubsub;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -54,11 +55,11 @@ public final class PubSubManager extends ExtensionManager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private PubSubManager(Connection connection) {
-        super(connection);
-        serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+    private PubSubManager(XmppSession xmppSession) {
+        super(xmppSession);
+        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
 
-        connection.addMessageListener(new MessageListener() {
+        xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
@@ -96,7 +97,7 @@ public final class PubSubManager extends ExtensionManager {
      * @return The pubsub service.
      */
     public PubSubService createPubSubService(Jid service) {
-        return new PubSubService(service, connection, serviceDiscoveryManager);
+        return new PubSubService(service, xmppSession, serviceDiscoveryManager);
     }
 
     /**
@@ -104,7 +105,7 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
      */
     public PubSubService createPersonalEventingService() {
-        return new PubSubService(connection.getConnectedResource().asBareJid(), connection, serviceDiscoveryManager);
+        return new PubSubService(xmppSession.getConnectedResource().asBareJid(), xmppSession, serviceDiscoveryManager);
     }
 
     /**

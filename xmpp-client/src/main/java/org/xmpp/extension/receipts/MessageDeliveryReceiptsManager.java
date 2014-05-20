@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.receipts;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.delay.DelayedDelivery;
 import org.xmpp.stanza.MessageEvent;
@@ -77,10 +78,10 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
     /**
      * Creates the manager.
      *
-     * @param connection The underlying connection.
+     * @param xmppSession The underlying connection.
      */
-    private MessageDeliveryReceiptsManager(final Connection connection) {
-        super(connection, Request.NAMESPACE);
+    private MessageDeliveryReceiptsManager(final XmppSession xmppSession) {
+        super(xmppSession, Request.NAMESPACE);
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
         messageFilters.add(new MessageFilter() {
@@ -90,15 +91,15 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             }
         });
 
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     messageDeliveredListeners.clear();
                 }
             }
         });
-        connection.addMessageListener(new MessageListener() {
+        xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 if (isEnabled()) {
@@ -112,7 +113,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                             // Add an empty body. Otherwise some servers, won't store it in offline storage.
                             Message receiptMessage = new Message(message.getFrom(), Message.Type.NORMAL, " ");
                             receiptMessage.getExtensions().add(new Received(message.getId()));
-                            connection.send(receiptMessage);
+                            xmppSession.send(receiptMessage);
                         }
                         // If the message is a receipt.
                         Received received = message.getExtension(Received.class);

@@ -35,9 +35,9 @@ import java.util.EventObject;
 public final class ConnectionEvent extends EventObject {
     private final Exception exception;
 
-    private final Connection.Status status;
+    private final XmppSession.Status status;
 
-    ConnectionEvent(Connection source, Connection.Status status) {
+    ConnectionEvent(XmppSession source, XmppSession.Status status) {
         this(source, status, null);
     }
 
@@ -49,7 +49,7 @@ public final class ConnectionEvent extends EventObject {
      * @param exception An optionally exception.
      * @throws IllegalArgumentException if source is null.
      */
-    ConnectionEvent(Connection source, Connection.Status status, Exception exception) {
+    ConnectionEvent(XmppSession source, XmppSession.Status status, Exception exception) {
         super(source);
         this.exception = exception;
         this.status = status;
@@ -60,7 +60,7 @@ public final class ConnectionEvent extends EventObject {
      *
      * @return The connection status.
      */
-    public Connection.Status getStatus() {
+    public XmppSession.Status getStatus() {
         return status;
     }
 

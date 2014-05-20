@@ -24,10 +24,11 @@
 
 package org.xmpp.im;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
+import org.xmpp.XmppSession;
 import org.xmpp.stanza.*;
 import org.xmpp.stanza.client.Message;
 
@@ -71,7 +72,7 @@ public final class ChatManager {
 
     private static final Logger logger = Logger.getLogger(ChatManager.class.getName());
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     /**
      * <blockquote>
@@ -85,12 +86,12 @@ public final class ChatManager {
     /**
      * Creates the chat manager.
      *
-     * @param connection The connection.
+     * @param xmppSession The connection.
      */
-    public ChatManager(final Connection connection) {
-        this.connection = connection;
+    public ChatManager(final XmppSession xmppSession) {
+        this.xmppSession = xmppSession;
 
-        connection.addMessageListener(new MessageListener() {
+        xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 Message message = e.getMessage();
@@ -108,7 +109,7 @@ public final class ChatManager {
                             }
                             Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
                             if (!chatSessionMap.containsKey(threadId)) {
-                                ChatSession chatSession = new ChatSession(chatPartner, threadId, connection);
+                                ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession);
                                 chatSessionMap.put(threadId, chatSession);
                                 notifyChatSessionCreated(chatSession, e.isIncoming());
                             }
@@ -123,7 +124,7 @@ public final class ChatManager {
                 }
             }
         });
-        connection.addPresenceListener(new PresenceListener() {
+        xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
                 if (e.isIncoming()) {
@@ -141,10 +142,10 @@ public final class ChatManager {
             }
         });
 
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     chatSessionListeners.clear();
                     chatSessions.clear();
                 }
@@ -192,7 +193,7 @@ public final class ChatManager {
         if (chatPartner == null) {
             throw new IllegalArgumentException("chatPartner must not be null.");
         }
-        ChatSession chatSession = new ChatSession(chatPartner, UUID.randomUUID().toString(), connection);
+        ChatSession chatSession = new ChatSession(chatPartner, UUID.randomUUID().toString(), xmppSession);
         notifyChatSessionCreated(chatSession, false);
         return chatSession;
     }

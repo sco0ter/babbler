@@ -80,9 +80,9 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private String node;
 
-    private EntityCapabilitiesManager(final Connection connection) {
-        super(connection, EntityCapabilities.NAMESPACE);
-        serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+    private EntityCapabilitiesManager(final XmppSession xmppSession) {
+        super(xmppSession, EntityCapabilities.NAMESPACE);
+        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent e) {
@@ -102,19 +102,19 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                         publishCapsNode();
 
                         // Resend presence. This manager will add the caps extension later.
-                        PresenceManager presenceManager = connection.getPresenceManager();
+                        PresenceManager presenceManager = xmppSession.getPresenceManager();
                         Presence lastPresence = presenceManager.getLastSentPresence();
                         lastPresence.getExtensions().clear();
-                        connection.send(lastPresence);
+                        xmppSession.send(lastPresence);
                     }
                 }
             }
         });
 
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     jidInfos.clear();
                     cache.clear();
                     capsSent = false;
@@ -123,7 +123,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             }
         });
 
-        connection.addPresenceListener(new PresenceListener() {
+        xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
                 if (isEnabled()) {

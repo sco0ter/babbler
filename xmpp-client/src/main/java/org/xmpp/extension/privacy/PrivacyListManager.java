@@ -58,24 +58,24 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public final class PrivacyListManager extends ExtensionManager {
     private final Set<PrivacyListListener> privacyListListeners = new CopyOnWriteArraySet<>();
 
-    private PrivacyListManager(final Connection connection) {
-        super(connection);
-        connection.addConnectionListener(new ConnectionListener() {
+    private PrivacyListManager(final XmppSession xmppSession) {
+        super(xmppSession);
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     privacyListListeners.clear();
                 }
             }
         });
-        connection.addIQListener(new IQListener() {
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && iq.getType() == IQ.Type.SET) {
                     // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
                     IQ result = iq.createResult();
-                    connection.send(result);
+                    xmppSession.send(result);
 
                     Privacy privacy = iq.getExtension(Privacy.class);
                     if (privacy != null) {
@@ -121,7 +121,7 @@ public final class PrivacyListManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
     public Privacy getPrivacyLists() throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new Privacy()));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy()));
         return result.getExtension(Privacy.class);
     }
 
@@ -135,7 +135,7 @@ public final class PrivacyListManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
     public PrivacyList getPrivacyList(String name) throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new Privacy(new PrivacyList(name))));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy(new PrivacyList(name))));
         Privacy privacy = result.getExtension(Privacy.class);
         if (privacy != null) {
             return privacy.getPrivacyLists().get(0);
@@ -223,6 +223,6 @@ public final class PrivacyListManager extends ExtensionManager {
     }
 
     private void setPrivacy(Privacy privacy) throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, privacy));
+        xmppSession.query(new IQ(IQ.Type.SET, privacy));
     }
 }

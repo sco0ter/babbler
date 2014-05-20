@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.privatedata;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
@@ -45,8 +46,8 @@ import java.util.List;
  */
 public final class PrivateDataManager extends ExtensionManager {
 
-    private PrivateDataManager(Connection connection) {
-        super(connection);
+    private PrivateDataManager(XmppSession xmppSession) {
+        super(xmppSession);
     }
 
     /**
@@ -64,7 +65,7 @@ public final class PrivateDataManager extends ExtensionManager {
             Constructor<T> constructor = type.getDeclaredConstructor();
             constructor.setAccessible(true);
             T instance = constructor.newInstance();
-            IQ result = connection.query(new IQ(IQ.Type.GET, new PrivateData(instance)));
+            IQ result = xmppSession.query(new IQ(IQ.Type.GET, new PrivateData(instance)));
             PrivateData privateData = result.getExtension(PrivateData.class);
             return (List<T>) privateData.getItems();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -82,6 +83,6 @@ public final class PrivateDataManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public void storeData(Object privateData) throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new PrivateData(privateData)));
+        xmppSession.query(new IQ(IQ.Type.SET, new PrivateData(privateData)));
     }
 }

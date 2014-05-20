@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.shim;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -56,10 +57,10 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private HeaderManager(Connection connection) {
-        super(connection, Headers.NAMESPACE);
+    private HeaderManager(XmppSession xmppSession) {
+        super(xmppSession, Headers.NAMESPACE);
         this.supportedHeaders = new CopyOnWriteArraySet<>();
-        serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         setEnabled(false);
     }
 

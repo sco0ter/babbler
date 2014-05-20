@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.ping;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -50,18 +51,18 @@ public final class PingManager extends ExtensionManager {
     /**
      * Creates the ping manager.
      *
-     * @param connection The underlying connection.
+     * @param xmppSession The underlying connection.
      */
-    private PingManager(final Connection connection) {
-        super(connection, Ping.NAMESPACE);
-        connection.addIQListener(new IQListener() {
+    private PingManager(final XmppSession xmppSession) {
+        super(xmppSession, Ping.NAMESPACE);
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 if (e.isIncoming()) {
                     IQ iq = e.getIQ();
                     if (iq.getType() == IQ.Type.GET && iq.getExtension(Ping.class) != null) {
                         if (isEnabled()) {
-                            connection.send(iq.createResult());
+                            xmppSession.send(iq.createResult());
                         } else {
                             sendServiceUnavailable(iq);
                         }
@@ -80,7 +81,7 @@ public final class PingManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public void ping(Jid jid) throws XmppException {
-        connection.query(new IQ(jid, IQ.Type.GET, new Ping()));
+        xmppSession.query(new IQ(jid, IQ.Type.GET, new Ping()));
     }
 
     /**

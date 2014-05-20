@@ -24,8 +24,9 @@
 
 package org.xmpp.im;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
+import org.xmpp.XmppSession;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 import org.xmpp.stanza.client.Message;
@@ -50,23 +51,23 @@ public final class ChatSession {
 
     private final String thread;
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
 
     volatile Jid chatPartner;
 
-    ChatSession(Jid chatPartner, String thread, Connection connection) {
+    ChatSession(Jid chatPartner, String thread, XmppSession xmppSession) {
         if (chatPartner == null) {
             throw new IllegalArgumentException("chatPartner must not be null.");
         }
-        if (connection == null) {
+        if (xmppSession == null) {
             throw new IllegalArgumentException("connection must not be null.");
         }
         // The user's client SHOULD address the initial message in a chat session to the bare JID <contact@domainpart> of the contact (rather than attempting to guess an appropriate full JID <contact@domainpart/resourcepart> based on the <show/>, <status/>, or <priority/> value of any presence notifications it might have received from the contact).
         this.chatPartner = chatPartner.asBareJid();
         this.thread = thread;
-        this.connection = connection;
+        this.xmppSession = xmppSession;
     }
 
     /**
@@ -110,7 +111,7 @@ public final class ChatSession {
         // The user's client also SHOULD include a <thread/> element with its initial message, which the contact's client SHOULD also preserve during the life of the chat session (see Section 5.2.5).
         message.setThread(thread);
         message.setTo(chatPartner);
-        connection.send(message);
+        xmppSession.send(message);
     }
 
     /**

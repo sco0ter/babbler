@@ -24,7 +24,8 @@
 
 package org.xmpp.extension;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.stanza.StanzaError;
@@ -39,7 +40,7 @@ import java.util.Collection;
  */
 public abstract class ExtensionManager {
 
-    protected final Connection connection;
+    protected final XmppSession xmppSession;
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -47,14 +48,14 @@ public abstract class ExtensionManager {
 
     private volatile boolean enabled;
 
-    protected ExtensionManager(Connection connection, String... features) {
-        this.connection = connection;
+    protected ExtensionManager(XmppSession xmppSession, String... features) {
+        this.xmppSession = xmppSession;
         this.features = Arrays.asList(features);
 
         if (this instanceof ServiceDiscoveryManager) {
             serviceDiscoveryManager = (ServiceDiscoveryManager) this;
         } else {
-            serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+            serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         }
     }
 
@@ -88,6 +89,6 @@ public abstract class ExtensionManager {
     }
 
     protected void sendServiceUnavailable(IQ iq) {
-        connection.send(iq.createError(new StanzaError(new ServiceUnavailable())));
+        xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
     }
 }

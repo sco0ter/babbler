@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.muc;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.delay.DelayedDelivery;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -92,7 +93,7 @@ public final class ChatRoom implements MucRoom {
 
     private String subject;
 
-    private Connection connection;
+    private XmppSession xmppSession;
 
     private volatile String nick;
 
@@ -101,12 +102,12 @@ public final class ChatRoom implements MucRoom {
     public ChatRoom() {
     }
 
-    public ChatRoom(String name, final Jid roomJid, Connection connection) {
+    public ChatRoom(String name, final Jid roomJid, XmppSession xmppSession) {
         this.name = name;
         this.roomJid = roomJid;
-        this.connection = connection;
+        this.xmppSession = xmppSession;
 
-        connection.addMessageListener(new MessageListener() {
+        xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
@@ -132,7 +133,7 @@ public final class ChatRoom implements MucRoom {
             }
         });
 
-        connection.addPresenceListener(new PresenceListener() {
+        xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
                 if (e.isIncoming()) {
@@ -261,7 +262,7 @@ public final class ChatRoom implements MucRoom {
         enterPresence.setTo(roomJid.withResource(nick));
         enterPresence.getExtensions().add(new Muc(password, history));
         this.nick = nick;
-        connection.sendAndAwait(enterPresence, new Predicate<Presence>() {
+        xmppSession.sendAndAwait(enterPresence, new Predicate<Presence>() {
             @Override
             public boolean test(Presence presence) {
                 Jid room = presence.getFrom().asBareJid();
@@ -351,7 +352,7 @@ public final class ChatRoom implements MucRoom {
     public void sendMessage(Message message) {
         message.setType(Message.Type.GROUPCHAT);
         message.setTo(roomJid);
-        connection.send(message);
+        xmppSession.send(message);
     }
 
     @Override
@@ -368,7 +369,7 @@ public final class ChatRoom implements MucRoom {
     public void changeNickname(String newNickname) throws XmppException {
         Presence presence = new Presence();
         presence.setTo(roomJid.withResource(newNickname));
-        connection.send(presence);
+        xmppSession.send(presence);
         // TODO: Wait for presence in order to check for error.
     }
 
@@ -391,7 +392,7 @@ public final class ChatRoom implements MucRoom {
             message = new Message(roomJid, Message.Type.NORMAL);
             message.getExtensions().add(MucUser.withInvites(new Invite(invitee, reason)));
         }
-        connection.send(message);
+        xmppSession.send(message);
     }
 
     @Override
@@ -412,7 +413,7 @@ public final class ChatRoom implements MucRoom {
      * @throws NoResponseException If the entity did not respond.
      */
     public String getReservedNickname() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid, "x-roomuser-item");
         if (infoNode != null) {
             for (Identity identity : infoNode.getIdentities()) {
@@ -454,7 +455,7 @@ public final class ChatRoom implements MucRoom {
         Presence presence = new Presence(Presence.Type.UNAVAILABLE);
         presence.setTo(roomJid.withResource(nick));
         presence.setStatus(message);
-        connection.send(presence);
+        xmppSession.send(presence);
         nick = null;
         entered = false;
         occupantMap.clear();
@@ -469,7 +470,7 @@ public final class ChatRoom implements MucRoom {
      */
     @Override
     public void kickOccupant(String nickname, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.NONE, nickname, reason)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.NONE, nickname, reason)));
     }
 
     /**
@@ -482,7 +483,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
      */
     public void grantVoice(String nickname, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.PARTICIPANT, nickname, reason)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.PARTICIPANT, nickname, reason)));
     }
 
     /**
@@ -495,22 +496,22 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
      */
     public void revokeVoice(String nickname, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.VISITOR, nickname, reason)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.VISITOR, nickname, reason)));
     }
 
     public List<? extends Item> getVoiceList() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
 
     public void modifyVoiceList(List<Item> items) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
     }
 
     @Override
     public void banUser(Jid user, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.OUTCAST, user, reason)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.OUTCAST, user, reason)));
     }
 
     /**
@@ -522,13 +523,13 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public List<? extends Item> getBanList() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
 
     public void modifyBanList(List<Item> items) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
     }
 
     /**
@@ -541,7 +542,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
      */
     public void grantMembership(Jid user, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.MEMBER, user, reason)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.MEMBER, user, reason)));
     }
 
     /**
@@ -554,7 +555,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
      */
     public void revokeMembership(Jid user, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.NONE, user, reason)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.NONE, user, reason)));
     }
 
     /**
@@ -572,13 +573,13 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public List<? extends Item> getMembers() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
 
     public void modifyMemberList(List<Item> items) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
     }
 
     /**
@@ -591,7 +592,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
      */
     public void grantModeratorStatus(String nick, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.MODERATOR, nick, reason)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.MODERATOR, nick, reason)));
     }
 
     /**
@@ -604,7 +605,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
     public void revokeModeratorStatus(String nick, String reason) throws XmppException {
-        connection.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.PARTICIPANT, nick, reason)));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.PARTICIPANT, nick, reason)));
     }
 
     /**
@@ -616,7 +617,7 @@ public final class ChatRoom implements MucRoom {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
     public List<? extends Item> getModerators() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -628,14 +629,14 @@ public final class ChatRoom implements MucRoom {
      */
     public void createRoom(String room, String nick) throws XmppException {
         enter(nick);
-        connection.query(new IQ(roomJid, IQ.Type.SET, new MucOwner(new DataForm(DataForm.Type.SUBMIT))));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, new MucOwner(new DataForm(DataForm.Type.SUBMIT))));
     }
 
     /**
      * Gets the configuration form for the room.
      */
     public DataForm getConfigurationForm() throws XmppException {
-        IQ result = connection.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
         MucOwner mucOwner = result.getExtension(MucOwner.class);
         return mucOwner.getConfigurationForm();
     }

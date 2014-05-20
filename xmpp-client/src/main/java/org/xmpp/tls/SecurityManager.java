@@ -24,7 +24,8 @@
 
 package org.xmpp.tls;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppSession;
 import org.xmpp.stream.FeatureListener;
 import org.xmpp.stream.FeatureNegotiator;
 
@@ -36,14 +37,14 @@ import java.security.NoSuchAlgorithmException;
  */
 public final class SecurityManager extends FeatureNegotiator {
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private volatile SSLContext sslContext;
 
-    public SecurityManager(Connection connection, FeatureListener featureListener) {
+    public SecurityManager(XmppSession xmppSession, FeatureListener featureListener) {
         super(StartTls.class);
         addFeatureListener(featureListener);
-        if (connection == null) {
+        if (xmppSession == null) {
             throw new IllegalArgumentException("connection must not be null.");
         }
         try {
@@ -52,7 +53,7 @@ public final class SecurityManager extends FeatureNegotiator {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        this.connection = connection;
+        this.xmppSession = xmppSession;
     }
 
     @Override
@@ -66,7 +67,7 @@ public final class SecurityManager extends FeatureNegotiator {
                     throw new Exception("The server requires TLS, but you disabled it.");
                 }
                 if (isEnabled()) {
-                    connection.send(new StartTls());
+                    xmppSession.send(new StartTls());
                 } else {
                     status = Status.IGNORE;
                 }

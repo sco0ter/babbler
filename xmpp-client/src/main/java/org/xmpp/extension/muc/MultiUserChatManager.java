@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.muc;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -63,15 +64,15 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     private final Set<InvitationListener> invitationListeners = new CopyOnWriteArraySet<>();
 
-    protected MultiUserChatManager(final Connection connection) {
-        super(connection, Muc.NAMESPACE);
-        connection.addPresenceListener(new PresenceListener() {
+    protected MultiUserChatManager(final XmppSession xmppSession) {
+        super(xmppSession, Muc.NAMESPACE);
+        xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
 
             }
         });
-        connection.addMessageListener(new MessageListener() {
+        xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
@@ -80,19 +81,19 @@ public final class MultiUserChatManager extends ExtensionManager {
                     MucUser mucUser = message.getExtension(MucUser.class);
                     if (mucUser != null) {
                         for (Invite invite : mucUser.getInvites()) {
-                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, connection, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
                         }
                     } else {
                         // Check, if the message contains a direct invitation.
                         DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
                         if (directInvitation != null) {
-                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, connection, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
+                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
                         }
                     }
                 }
             }
         });
-        this.serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
     }
 
     private void notifyListeners(InvitationEvent invitationEvent) {
@@ -139,7 +140,7 @@ public final class MultiUserChatManager extends ExtensionManager {
     }
 
     public ChatService createChatService(Jid chatService) {
-        return new ChatService(chatService, connection, serviceDiscoveryManager);
+        return new ChatService(chatService, xmppSession, serviceDiscoveryManager);
     }
 
     public ChatRoom getRoomInfo(Jid room) throws XmppException {

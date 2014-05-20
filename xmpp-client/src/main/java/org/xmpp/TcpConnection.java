@@ -69,51 +69,9 @@ public final class TcpConnection extends Connection {
     private OutputStream outputStream;
 
     /**
-     * Creates a default connection to a XMPP server by only using a XMPP service domain.
-     * The fully qualified domain name and port of the server is looked up via a <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV lookup</a>.
-     * If the lookup fails the fallback mechanism is used, i.e. it is tried to resolve the domain and connect on port 5222.
-     *
-     * @param xmppServiceDomain The XMPP service domain.
+     * True, if the connection is secured by TLS or SSL.
      */
-    public TcpConnection(String xmppServiceDomain) {
-        super(xmppServiceDomain, Proxy.NO_PROXY);
-    }
-
-    /**
-     * Creates a default connection through a proxy to a XMPP server by only using a XMPP service domain.
-     *
-     * @param xmppServiceDomain The XMPP service domain.
-     * @param proxy             The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
-     * @see #TcpConnection(String)
-     */
-    public TcpConnection(String xmppServiceDomain, Proxy proxy) {
-        super(xmppServiceDomain, proxy);
-    }
-
-    /**
-     * Creates a default connection to a given hostname and port.
-     *
-     * @param xmppServiceDomain The XMPP service domain, which will only be used in the opening XMPP stream as the value in the 'to' attribute.
-     * @param hostname          The hostname.
-     * @param port              The port.
-     */
-    public TcpConnection(String xmppServiceDomain, String hostname, int port) {
-        super(xmppServiceDomain, hostname, port, Proxy.NO_PROXY);
-    }
-
-    /**
-     * Creates a default connection to a given hostname and port through a proxy.
-     *
-     * @param xmppServiceDomain The XMPP service domain, which will only be used in the opening XMPP stream as the value in the 'to' attribute.
-     * @param hostname          The hostname.
-     * @param port              The port.
-     * @param proxy             The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
-     * @param xmppContext       The XMPP context.
-     * @see #TcpConnection(String, String, int)
-     */
-    public TcpConnection(String xmppServiceDomain, String hostname, int port, Proxy proxy, XmppContext xmppContext) {
-        super(xmppServiceDomain, hostname, port, proxy, xmppContext);
-    }
+    private volatile boolean isSecure;
 
     /**
      * Creates a default connection to a given hostname and port.
@@ -121,8 +79,8 @@ public final class TcpConnection extends Connection {
      * @param hostname The hostname.
      * @param port     The port.
      */
-    public TcpConnection(String hostname, int port) {
-        super(null, hostname, port, Proxy.NO_PROXY);
+    public TcpConnection(XmppSession xmppSession, String hostname, int port) {
+        super(xmppSession, hostname, port, Proxy.NO_PROXY);
     }
 
     /**
@@ -131,15 +89,15 @@ public final class TcpConnection extends Connection {
      * @param hostname The hostname.
      * @param port     The port.
      * @param proxy    The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
-     * @see #TcpConnection(String, int)
+     * @see #TcpConnection(org.xmpp.XmppSession, String, int)
      */
-    public TcpConnection(String hostname, int port, Proxy proxy) {
-        super(null, hostname, port, proxy);
+    public TcpConnection(XmppSession xmppSession, String hostname, int port, Proxy proxy) {
+        super(xmppSession, hostname, port, proxy);
     }
 
     /**
      * Connects to the specified XMPP server using a socket connection.
-     * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link #login(String, String)} method.
+     * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppSession#login(String, String)} method.
      * <p>If only a XMPP service domain has been specified, it is tried to resolve the FQDN via SRV lookup.<br>
      * If that fails, it is tried to connect directly the XMPP service domain on port 5222.<br>
      * If a hostname and port have been specified, these are used to establish the connection.<br>
@@ -150,19 +108,18 @@ public final class TcpConnection extends Connection {
      */
     @Override
     public synchronized void connect() throws IOException {
-        super.connect();
         int port = getPort() == 0 ? 5222 : getPort();
 
         this.socket = new Socket(proxy);
 
         if (getHostname() != null && !getHostname().isEmpty()) {
             socket.connect(new InetSocketAddress(getHostname(), getPort()));
-        } else if (xmppServiceDomain != null) {
+        } else if (xmppSession.getDomain() != null) {
             try {
-                connectWithXmppServiceDomain(xmppServiceDomain);
+                connectWithXmppServiceDomain(xmppSession.getDomain());
             } catch (NamingException e) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                socket.connect(new InetSocketAddress(InetAddress.getByName(xmppServiceDomain), port));
+                socket.connect(new InetSocketAddress(InetAddress.getByName(xmppSession.getDomain()), port));
             }
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
@@ -172,7 +129,7 @@ public final class TcpConnection extends Connection {
         inputStream = socket.getInputStream();
         // Start writing to the output stream.
         try {
-            xmppStreamWriter = new XmppStreamWriter(outputStream, this, this.xmlOutputFactory, this.marshaller);
+            xmppStreamWriter = new XmppStreamWriter(outputStream, this.xmppSession, this.xmppSession.xmlOutputFactory, this.xmppSession.marshaller);
         } catch (JAXBException | XMLStreamException e) {
             throw new IOException(e);
         }
@@ -180,7 +137,7 @@ public final class TcpConnection extends Connection {
 
         // Start reading from the input stream.
         try {
-            xmppStreamReader = new XmppStreamReader(this);
+            xmppStreamReader = new XmppStreamReader(this, this.xmppSession);
         } catch (JAXBException e) {
             throw new IOException(e);
         }
@@ -193,15 +150,14 @@ public final class TcpConnection extends Connection {
             throw new IOException(e);
         }
 
-        if (!isSecure && getSecurityManager().isEnabled()) {
+        if (!isSecure && xmppSession.getSecurityManager().isEnabled()) {
             throw new IllegalStateException("Connection could not be secured.");
         }
-        updateStatus(Status.CONNECTED);
     }
 
     @Override
     protected void secureConnection() throws IOException {
-        socket = getSecurityManager().getSSLContext().getSocketFactory().createSocket(
+        socket = xmppSession.getSecurityManager().getSSLContext().getSocketFactory().createSocket(
                 socket,
                 socket.getInetAddress().getHostAddress(),
                 socket.getPort(),
@@ -214,7 +170,7 @@ public final class TcpConnection extends Connection {
     @Override
     protected void compressStream() {
 
-        switch (getCompressionManager().getMethod()) {
+        switch (xmppSession.getCompressionManager().getMethod()) {
             case ZLIB:
                 inputStream = new InflaterInputStream(inputStream);
                 outputStream = new DeflaterOutputStream(outputStream, true);
@@ -224,7 +180,6 @@ public final class TcpConnection extends Connection {
 
     @Override
     public void send(ClientStreamElement element) {
-        super.send(element);
         xmppStreamWriter.send(element);
     }
 
@@ -241,8 +196,6 @@ public final class TcpConnection extends Connection {
 
     @Override
     public synchronized void close() throws IOException {
-        super.close();
-
         // This call closes the stream and waits until everything has been sent to the server.
         xmppStreamWriter.shutdown();
         // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
@@ -250,7 +203,6 @@ public final class TcpConnection extends Connection {
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also statusChanged the stream by sending </stream:stream>.
         // Now close the socket.
         socket.close();
-        updateStatus(Status.CLOSED);
     }
 
     /**

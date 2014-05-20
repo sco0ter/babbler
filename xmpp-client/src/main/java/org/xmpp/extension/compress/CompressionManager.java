@@ -24,7 +24,8 @@
 
 package org.xmpp.extension.compress;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.compress.feature.Compression;
 import org.xmpp.stream.FeatureListener;
 import org.xmpp.stream.FeatureNegotiator;
@@ -41,16 +42,16 @@ import org.xmpp.stream.FeatureNegotiator;
  */
 public final class CompressionManager extends FeatureNegotiator {
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     // Currently only support zlib compression.
     private final Method method = Method.ZLIB;
 
-    public CompressionManager(Connection connection, FeatureListener featureListener) {
+    public CompressionManager(XmppSession xmppSession, FeatureListener featureListener) {
         super(Compression.class);
         addFeatureListener(featureListener);
         setEnabled(true);
-        this.connection = connection;
+        this.xmppSession = xmppSession;
     }
 
     @Override
@@ -60,7 +61,7 @@ public final class CompressionManager extends FeatureNegotiator {
             if (element instanceof Compression) {
                 synchronized (this) {
                     if (isEnabled() && method != null) {
-                        connection.send(new Compress(method));
+                        xmppSession.send(new Compress(method));
                         status = Status.INCOMPLETE;
                     } else {
                         status = Status.IGNORE;

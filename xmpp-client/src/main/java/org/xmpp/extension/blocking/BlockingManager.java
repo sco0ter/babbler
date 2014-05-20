@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.blocking;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -47,10 +48,10 @@ import java.util.List;
  */
 public final class BlockingManager extends ExtensionManager {
 
-    private BlockingManager(final Connection connection) {
-        super(connection);
+    private BlockingManager(final XmppSession xmppSession) {
+        super(xmppSession);
         // Listen for "un/block pushes"
-        connection.addIQListener(new IQListener() {
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 if (e.isIncoming()) {
@@ -58,12 +59,12 @@ public final class BlockingManager extends ExtensionManager {
                     if (iq.getType() == IQ.Type.SET) {
                         Block block = iq.getExtension(Block.class);
                         if (block != null) {
-                            connection.send(iq.createResult());
+                            xmppSession.send(iq.createResult());
                         }
 
                         Unblock unblock = iq.getExtension(Unblock.class);
                         if (unblock != null) {
-                            connection.send(iq.createResult());
+                            xmppSession.send(iq.createResult());
                         }
                     }
                 }
@@ -80,7 +81,7 @@ public final class BlockingManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#blocklist">3.2 User Retrieves Block List</a>
      */
     public BlockList getBlockList() throws XmppException {
-        IQ result = connection.query(new IQ(IQ.Type.GET, new BlockList()));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
         return result.getExtension(BlockList.class);
     }
 
@@ -100,7 +101,7 @@ public final class BlockingManager extends ExtensionManager {
         for (Jid jid : jids) {
             items.add(new Item(jid));
         }
-        connection.query(new IQ(IQ.Type.SET, new Block(items)));
+        xmppSession.query(new IQ(IQ.Type.SET, new Block(items)));
     }
 
     /**
@@ -116,6 +117,6 @@ public final class BlockingManager extends ExtensionManager {
         for (Jid jid : jids) {
             items.add(new Item(jid));
         }
-        connection.query(new IQ(IQ.Type.SET, new Unblock(items)));
+        xmppSession.query(new IQ(IQ.Type.SET, new Unblock(items)));
     }
 }

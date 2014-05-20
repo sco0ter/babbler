@@ -42,14 +42,14 @@ public final class VCardManager extends ExtensionManager {
 
     private volatile VCard myVCard;
 
-    private VCardManager(final Connection connection) {
-        super(connection, VCard.NAMESPACE);
+    private VCardManager(final XmppSession xmppSession) {
+        super(xmppSession, VCard.NAMESPACE);
         setEnabled(true);
 
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     myVCard = null;
                 }
             }
@@ -67,7 +67,7 @@ public final class VCardManager extends ExtensionManager {
         if (myVCard != null) {
             return myVCard;
         }
-        IQ result = connection.query(new IQ(IQ.Type.GET, new VCard()));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
         myVCard = result.getExtension(VCard.class);
 
         return myVCard;
@@ -85,16 +85,16 @@ public final class VCardManager extends ExtensionManager {
             throw new IllegalArgumentException("vCard must not be null.");
         }
         // Update the vCard
-        connection.query(new IQ(IQ.Type.SET, vCard));
+        xmppSession.query(new IQ(IQ.Type.SET, vCard));
         myVCard = vCard;
         // Then inform about the update by sending a presence. The avatar manager will add the update extension.
         if (isEnabled() && vCard.getPhoto() != null) {
-            Presence presence = connection.getPresenceManager().getLastSentPresence();
+            Presence presence = xmppSession.getPresenceManager().getLastSentPresence();
             if (presence == null) {
                 presence = new Presence();
             }
             presence.getExtensions().clear();
-            connection.send(presence);
+            xmppSession.send(presence);
         }
     }
 
@@ -110,7 +110,7 @@ public final class VCardManager extends ExtensionManager {
         if (jid == null) {
             throw new IllegalArgumentException("jid must not be null.");
         }
-        IQ result = connection.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
+        IQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
         return result.getExtension(VCard.class);
     }
 }

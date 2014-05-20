@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.rosterx;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.im.Contact;
 import org.xmpp.stanza.AbstractPresence;
@@ -38,8 +39,8 @@ import java.util.List;
  * @author Christian Schudt
  */
 public class RosterExchangeManager extends ExtensionManager {
-    private RosterExchangeManager(Connection connection) {
-        super(connection);
+    private RosterExchangeManager(XmppSession xmppSession) {
+        super(xmppSession);
     }
 
     public void suggestContactAddition(Jid jid, List<Contact> contacts) throws XmppException {
@@ -49,9 +50,9 @@ public class RosterExchangeManager extends ExtensionManager {
             rosterExchange.getItems().add(rosterItem);
         }
         // http://xmpp.org/extensions/xep-0144.html#stanza
-        AbstractPresence presence = connection.getPresenceManager().getPresence(jid);
+        AbstractPresence presence = xmppSession.getPresenceManager().getPresence(jid);
         if (presence.isAvailable()) {
-            connection.query(new IQ(presence.getFrom(), IQ.Type.SET, rosterExchange));
+            xmppSession.query(new IQ(presence.getFrom(), IQ.Type.SET, rosterExchange));
         } else {
             //connection.send(new AbstractMessage(jid, AbstractMessage.Type.NORMAL));
         }

@@ -33,18 +33,18 @@ import java.util.Map;
  */
 public class MockServer {
 
-    private Map<Jid, Connection> connections = new HashMap<>();
+    private Map<Jid, XmppSession> connections = new HashMap<>();
 
-    public void registerConnection(Connection connection) {
-        connections.put(connection.getConnectedResource(), connection);
+    public void registerConnection(XmppSession xmppSession) {
+        connections.put(xmppSession.getConnectedResource(), xmppSession);
     }
 
     public void receive(Stanza stanza) {
 
-        Connection toConnection = connections.get(stanza.getTo());
-        if (toConnection != null) {
+        XmppSession toXmppSession = connections.get(stanza.getTo());
+        if (toXmppSession != null) {
             try {
-                toConnection.handleElement(stanza);
+                toXmppSession.handleElement(stanza);
             } catch (Exception e) {
                 e.printStackTrace();
             }

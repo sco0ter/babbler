@@ -24,8 +24,9 @@
 
 package org.xmpp.extension.attention;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.client.Message;
 
@@ -61,8 +62,8 @@ import org.xmpp.stanza.client.Message;
  */
 public final class AttentionManager extends ExtensionManager {
 
-    private AttentionManager(Connection connection) {
-        super(connection, Attention.NAMESPACE);
+    private AttentionManager(XmppSession xmppSession) {
+        super(xmppSession, Attention.NAMESPACE);
     }
 
     /**
@@ -73,6 +74,6 @@ public final class AttentionManager extends ExtensionManager {
     public void captureAttention(Jid jid) {
         Message message = new Message(jid, Message.Type.HEADLINE);
         message.getExtensions().add(new Attention());
-        connection.send(message);
+        xmppSession.send(message);
     }
 }

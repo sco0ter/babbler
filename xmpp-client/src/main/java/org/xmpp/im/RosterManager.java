@@ -59,7 +59,7 @@ public final class RosterManager {
 
     private final Set<RosterListener> rosterListeners = new CopyOnWriteArraySet<>();
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private final Set<ContactGroup> groups = new TreeSet<>();
 
@@ -71,9 +71,9 @@ public final class RosterManager {
 
     private String groupDelimiter = null;
 
-    public RosterManager(final Connection connection) {
-        this.connection = connection;
-        connection.addIQListener(new IQListener() {
+    public RosterManager(final XmppSession xmppSession) {
+        this.xmppSession = xmppSession;
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 if (e.isIncoming()) {
@@ -83,16 +83,16 @@ public final class RosterManager {
                         // 2.1.6.  Roster Push
                         if (iq.getType() == IQ.Type.SET) {
                             // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
-                            if (iq.getFrom() == null || iq.getFrom().equals(connection.getConnectedResource().asBareJid())) {
+                            if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
                                 // Gracefully send an empty result.
-                                connection.send(iq.createResult());
+                                xmppSession.send(iq.createResult());
                                 updateRoster(roster, true);
                             } else {
                                 // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
-                                connection.send(iq.createError(new StanzaError(new ServiceUnavailable())));
+                                xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
                             }
                         } else if (iq.getType() == IQ.Type.GET) {
-                            connection.send(iq.createError(new StanzaError(new UnexpectedRequest())));
+                            xmppSession.send(iq.createError(new StanzaError(new UnexpectedRequest())));
                         } else if (iq.getType() == IQ.Type.RESULT) {
                             updateRoster(roster, false);
                         }
@@ -100,10 +100,10 @@ public final class RosterManager {
                 }
             }
         });
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     rosterListeners.clear();
                 }
             }
@@ -340,7 +340,7 @@ public final class RosterManager {
     public void requestRoster() {
         IQ iq = new IQ(IQ.Type.GET);
         iq.setExtension(new Roster());
-        this.connection.send(iq);
+        this.xmppSession.send(iq);
     }
 
     /**
@@ -358,9 +358,9 @@ public final class RosterManager {
         }
         Roster roster = new Roster();
         roster.getContacts().add(contact);
-        connection.query(new IQ(IQ.Type.SET, roster));
+        xmppSession.query(new IQ(IQ.Type.SET, roster));
         if (requestSubscription) {
-            connection.getPresenceManager().requestSubscription(contact.getJid(), status);
+            xmppSession.getPresenceManager().requestSubscription(contact.getJid(), status);
         }
     }
 
@@ -387,7 +387,7 @@ public final class RosterManager {
         Contact contact = new Contact(jid);
         contact.setSubscription(Contact.Subscription.REMOVE);
         roster.getContacts().add(contact);
-        connection.query(new IQ(IQ.Type.SET, roster));
+        xmppSession.query(new IQ(IQ.Type.SET, roster));
     }
 
     /**

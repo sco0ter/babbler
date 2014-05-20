@@ -30,7 +30,7 @@ import java.util.EventListener;
  * Allows to listen for connection status changes, e.g. disconnects.
  *
  * @author Christian Schudt
- * @see Connection#addConnectionListener(ConnectionListener)
+ * @see XmppSession#addConnectionListener(ConnectionListener)
  */
 public interface ConnectionListener extends EventListener {
 

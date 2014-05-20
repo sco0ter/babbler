@@ -24,9 +24,10 @@
 
 package org.xmpp.stream;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
+import org.xmpp.XmppSession;
 import org.xmpp.tls.StartTls;
 
 import java.util.*;
@@ -44,7 +45,7 @@ import java.util.*;
  * @author Christian Schudt
  */
 public final class FeaturesManager {
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     /**
      * The features which have been advertised by the server.
@@ -66,12 +67,12 @@ public final class FeaturesManager {
     /**
      * Creates a feature manager.
      *
-     * @param connection The connection, features will be negotiated for.
+     * @param xmppSession The connection, features will be negotiated for.
      */
-    public FeaturesManager(Connection connection) {
-        this.connection = connection;
+    public FeaturesManager(XmppSession xmppSession) {
+        this.xmppSession = xmppSession;
 
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
                 switch (e.getStatus()) {

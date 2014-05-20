@@ -58,19 +58,19 @@ public final class ReachabilityManager extends ExtensionManager {
 
     private final List<Address> addresses = new CopyOnWriteArrayList<>();
 
-    private ReachabilityManager(final Connection connection) {
-        super(connection, Reachability.NAMESPACE);
-        connection.addConnectionListener(new ConnectionListener() {
+    private ReachabilityManager(final XmppSession xmppSession) {
+        super(xmppSession, Reachability.NAMESPACE);
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     reachabilityListeners.clear();
                     reachabilities.clear();
                 }
             }
         });
 
-        connection.addPresenceListener(new PresenceListener() {
+        xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
                 AbstractPresence presence = e.getPresence();
@@ -94,7 +94,7 @@ public final class ReachabilityManager extends ExtensionManager {
         });
 
         // A user MAY send reachability addresses in an XMPP <message/> stanza.
-        connection.addMessageListener(new MessageListener() {
+        xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
@@ -104,7 +104,7 @@ public final class ReachabilityManager extends ExtensionManager {
         });
 
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
-        connection.addIQListener(new IQListener() {
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 if (e.isIncoming()) {
@@ -115,7 +115,7 @@ public final class ReachabilityManager extends ExtensionManager {
                             if (isEnabled()) {
                                 IQ result = iq.createResult();
                                 result.setExtension(new Reachability(new ArrayList<>(addresses)));
-                                connection.send(result);
+                                xmppSession.send(result);
                             } else {
                                 sendServiceUnavailable(iq);
                             }
@@ -190,7 +190,7 @@ public final class ReachabilityManager extends ExtensionManager {
      */
     public List<Address> requestReachabilityAddresses(Jid contact) throws XmppException {
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get".
-        IQ result = connection.query(new IQ(contact, IQ.Type.GET, new Reachability()));
+        IQ result = xmppSession.query(new IQ(contact, IQ.Type.GET, new Reachability()));
         Reachability reachability = result.getExtension(Reachability.class);
         if (reachability != null) {
             return reachability.getAddresses();

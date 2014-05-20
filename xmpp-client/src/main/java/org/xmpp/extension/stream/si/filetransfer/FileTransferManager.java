@@ -24,9 +24,10 @@
 
 package org.xmpp.extension.stream.si.filetransfer;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.featureneg.FeatureNegotiation;
@@ -60,10 +61,10 @@ public final class FileTransferManager extends ExtensionManager {
 
     private final Set<FileTransferListener> fileTransferListeners = new CopyOnWriteArraySet<>();
 
-    private FileTransferManager(final Connection connection) {
-        super(connection, "http://jabber.org/protocol/si", PROFILE);
+    private FileTransferManager(final XmppSession xmppSession) {
+        super(xmppSession, "http://jabber.org/protocol/si", PROFILE);
 
-        connection.addIQListener(new IQListener() {
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
@@ -82,7 +83,7 @@ public final class FileTransferManager extends ExtensionManager {
                             StanzaError error = new StanzaError(StanzaError.Type.MODIFY, new BadRequest());
                             error.setExtension(new BadProfile());
                             IQ result = iq.createError(error);
-                            connection.send(result);
+                            xmppSession.send(result);
                         }
                     }
                 }
@@ -91,7 +92,7 @@ public final class FileTransferManager extends ExtensionManager {
     }
 
     private void notifyIncomingFileTransferRequest(IQ iq, FileTransfer fileTransfer) {
-        FileTransferEvent fileTransferEvent = new FileTransferEvent(this, connection, iq, fileTransfer);
+        FileTransferEvent fileTransferEvent = new FileTransferEvent(this, xmppSession, iq, fileTransfer);
         for (FileTransferListener fileTransferListener : fileTransferListeners) {
             try {
                 fileTransferListener.fileTransferRequest(fileTransferEvent);
@@ -156,9 +157,9 @@ public final class FileTransferManager extends ExtensionManager {
 
         IQ iq = new IQ(jid, IQ.Type.SET, streamInitiation);
 
-        IQ result = connection.query(iq, timeout);
+        IQ result = xmppSession.query(iq, timeout);
 
-        InBandBytestreamManager ibbManager = connection.getExtensionManager(InBandBytestreamManager.class);
+        InBandBytestreamManager ibbManager = xmppSession.getExtensionManager(InBandBytestreamManager.class);
         IbbSession ibbSession = ibbManager.createInBandByteStream(jid, 4096);
         ibbSession.open();
 

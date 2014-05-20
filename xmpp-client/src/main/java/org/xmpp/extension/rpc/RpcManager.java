@@ -53,19 +53,19 @@ public final class RpcManager extends ExtensionManager {
 
     private RpcHandler rpcHandler;
 
-    private RpcManager(final Connection connection) {
-        super(connection, Rpc.NAMESPACE);
+    private RpcManager(final XmppSession xmppSession) {
+        super(xmppSession, Rpc.NAMESPACE);
         // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     rpcHandler = null;
                 }
             }
         });
 
-        connection.addIQListener(new IQListener() {
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
@@ -85,16 +85,16 @@ public final class RpcManager extends ExtensionManager {
                                         Value value = rpcHandler.process(methodCall.getMethodName(), parameters);
                                         IQ result = iq.createResult();
                                         result.setExtension(new Rpc(value));
-                                        connection.send(result);
+                                        xmppSession.send(result);
                                     } catch (StanzaException e1) {
-                                        connection.send(iq.createError(e1.getStanza().getError()));
+                                        xmppSession.send(iq.createError(e1.getStanza().getError()));
                                     } catch (RpcException e1) {
                                         IQ result = iq.createResult();
                                         result.setExtension(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
-                                        connection.send(result);
+                                        xmppSession.send(result);
                                     } catch (Exception e1) {
                                         logger.log(Level.WARNING, e1.getMessage(), e1);
-                                        connection.send(iq.createError(new StanzaError(new InternalServerError())));
+                                        xmppSession.send(iq.createError(new StanzaError(new InternalServerError())));
                                     }
                                 }
                             }
@@ -119,7 +119,7 @@ public final class RpcManager extends ExtensionManager {
      * @throws RpcException        If the RPC returned with an application-level error ({@code <fault/>} element).
      */
     public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {
-        IQ result = connection.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
         if (result != null) {
             Rpc rpc = result.getExtension(Rpc.class);
             if (rpc != null) {

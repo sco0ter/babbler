@@ -24,15 +24,16 @@
 
 package org.xmpp.extension.rtt;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 
 /**
  * @author Christian Schudt
  */
 public final class RealTimeTextManager extends ExtensionManager {
-    protected RealTimeTextManager(Connection connection) {
-        super(connection, RealTimeText.NAMESPACE);
+    protected RealTimeTextManager(XmppSession xmppSession) {
+        super(xmppSession, RealTimeText.NAMESPACE);
     }
 
     RealTimeText createRealTimeMessage() {

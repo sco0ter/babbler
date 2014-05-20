@@ -63,21 +63,21 @@ public final class AvatarManager extends ExtensionManager {
 
     private final Set<AvatarChangeListener> avatarChangeListeners = new CopyOnWriteArraySet<>();
 
-    private AvatarManager(final Connection connection) {
-        super(connection);
-        connection.addConnectionListener(new ConnectionListener() {
+    private AvatarManager(final XmppSession xmppSession) {
+        super(xmppSession);
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     avatarChangeListeners.clear();
                     avatars.clear();
                 }
             }
         });
-        connection.addPresenceListener(new PresenceListener() {
+        xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
-                final VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
+                final VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
                 // If vCard base avatars are enabled.
                 if (vCardManager != null && vCardManager.isEnabled()) {
                     final Presence presence = e.getPresence();
@@ -118,7 +118,7 @@ public final class AvatarManager extends ExtensionManager {
                         // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
 
                         // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element, i.e.:
-                        final Jid me = connection.getConnectedResource().asBareJid();
+                        final Jid me = xmppSession.getConnectedResource().asBareJid();
                         byte[] myHash = userAvatars.get(me);
                         if (myHash == null) {
                             // Load my own avatar in order to advertise an image.
@@ -129,12 +129,12 @@ public final class AvatarManager extends ExtensionManager {
                                         getAvatar(null);
                                         // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
                                         // As soon as the vCard has been loaded, broadcast presence, in order to update the avatar.
-                                        Presence presence = connection.getPresenceManager().getLastSentPresence();
+                                        Presence presence = xmppSession.getPresenceManager().getLastSentPresence();
                                         if (presence == null) {
                                             presence = new Presence();
                                         }
                                         presence.getExtensions().clear();
-                                        connection.send(presence);
+                                        xmppSession.send(presence);
                                     } catch (XmppException e1) {
                                         logger.log(Level.WARNING, e1.getMessage(), e1);
                                     }
@@ -188,7 +188,7 @@ public final class AvatarManager extends ExtensionManager {
         if (user != null) {
             user = user.asBareJid();
         } else {
-            user = connection.getConnectedResource().asBareJid();
+            user = xmppSession.getConnectedResource().asBareJid();
         }
         synchronized (avatars) {
             // Let's see, if there's a stored image already.
@@ -197,12 +197,12 @@ public final class AvatarManager extends ExtensionManager {
                 return avatars.get(hash);
             } else {
                 // If there's no avatar for that user, load it.
-                VCardManager vCardManager = connection.getExtensionManager(VCardManager.class);
+                VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
                 hash = new byte[0];
 
                 // Load the vCard for that user
                 VCard vCard;
-                if (user.equals(connection.getConnectedResource().asBareJid())) {
+                if (user.equals(xmppSession.getConnectedResource().asBareJid())) {
                     vCard = vCardManager.getVCard();
                 } else {
                     vCard = vCardManager.getVCard(user);

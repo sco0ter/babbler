@@ -38,8 +38,8 @@ final class ReconnectionManager {
 
     private final Random random = new Random();
 
-    public ReconnectionManager(final Connection connection) {
-        connection.addConnectionListener(new ConnectionListener() {
+    public ReconnectionManager(final XmppSession xmppSession) {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
                 if (e.getException() != null) {
@@ -50,7 +50,7 @@ final class ReconnectionManager {
                         @Override
                         public void run() {
                             try {
-                                connection.reconnect();
+                                xmppSession.reconnect();
                                 scheduledExecutorService.shutdown();
                             } catch (IOException | LoginException e1) {
                                 e1.printStackTrace();

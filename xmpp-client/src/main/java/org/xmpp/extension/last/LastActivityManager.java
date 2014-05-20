@@ -64,19 +64,19 @@ public final class LastActivityManager extends ExtensionManager {
 
     private volatile LastActivityStrategy lastActivityStrategy;
 
-    private LastActivityManager(final Connection connection) {
-        super(connection, LastActivity.NAMESPACE);
-        lastActivityStrategy = new DefaultLastActivityStrategy(connection);
+    private LastActivityManager(final XmppSession xmppSession) {
+        super(xmppSession, LastActivity.NAMESPACE);
+        lastActivityStrategy = new DefaultLastActivityStrategy(xmppSession);
 
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     lastActivityStrategy = null;
                 }
             }
         });
-        connection.addPresenceListener(new PresenceListener() {
+        xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
                 if (!e.isIncoming() && isEnabled()) {
@@ -93,7 +93,7 @@ public final class LastActivityManager extends ExtensionManager {
             }
         });
 
-        connection.addIQListener(new IQListener() {
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 if (e.isIncoming()) {
@@ -105,7 +105,7 @@ public final class LastActivityManager extends ExtensionManager {
                                 IQ result = iq.createResult();
                                 long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
                                 result.setExtension(new LastActivity(seconds, null));
-                                connection.send(result);
+                                xmppSession.send(result);
                             } else {
                                 sendServiceUnavailable(iq);
                             }
@@ -134,7 +134,7 @@ public final class LastActivityManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public LastActivity getLastActivity(Jid jid) throws XmppException {
-        IQ result = connection.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
         return result.getExtension(LastActivity.class);
     }
 
@@ -164,8 +164,8 @@ public final class LastActivityManager extends ExtensionManager {
     private static class DefaultLastActivityStrategy implements LastActivityStrategy {
         private volatile Date lastActivity;
 
-        public DefaultLastActivityStrategy(Connection connection) {
-            connection.addMessageListener(new MessageListener() {
+        public DefaultLastActivityStrategy(XmppSession xmppSession) {
+            xmppSession.addMessageListener(new MessageListener() {
                 @Override
                 public void handle(MessageEvent e) {
                     if (!e.isIncoming()) {
@@ -173,7 +173,7 @@ public final class LastActivityManager extends ExtensionManager {
                     }
                 }
             });
-            connection.addPresenceListener(new PresenceListener() {
+            xmppSession.addPresenceListener(new PresenceListener() {
                 @Override
                 public void handle(PresenceEvent e) {
                     AbstractPresence presence = e.getPresence();

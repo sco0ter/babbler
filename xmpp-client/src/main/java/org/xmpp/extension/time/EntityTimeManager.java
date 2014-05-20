@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.time;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -47,9 +48,9 @@ import java.util.TimeZone;
  */
 public final class EntityTimeManager extends ExtensionManager {
 
-    private EntityTimeManager(final Connection connection) {
-        super(connection, EntityTime.NAMESPACE);
-        connection.addIQListener(new IQListener() {
+    private EntityTimeManager(final XmppSession xmppSession) {
+        super(xmppSession, EntityTime.NAMESPACE);
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
@@ -57,7 +58,7 @@ public final class EntityTimeManager extends ExtensionManager {
                     if (isEnabled()) {
                         IQ result = iq.createResult();
                         result.setExtension(new EntityTime(TimeZone.getDefault(), new Date()));
-                        connection.send(result);
+                        xmppSession.send(result);
                     } else {
                         sendServiceUnavailable(iq);
                     }
@@ -76,7 +77,7 @@ public final class EntityTimeManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public EntityTime getEntityTime(Jid jid) throws XmppException {
-        IQ result = connection.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
         return result.getExtension(EntityTime.class);
     }
 }

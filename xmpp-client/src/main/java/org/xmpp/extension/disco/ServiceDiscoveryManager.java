@@ -80,13 +80,13 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    private ServiceDiscoveryManager(final Connection connection) {
-        super(connection, "http://jabber.org/protocol/disco#info", "http://jabber.org/protocol/disco#items");
+    private ServiceDiscoveryManager(final XmppSession xmppSession) {
+        super(xmppSession, "http://jabber.org/protocol/disco#info", "http://jabber.org/protocol/disco#items");
 
-        connection.addConnectionListener(new ConnectionListener() {
+        xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == Connection.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
                     for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
                         pcs.removePropertyChangeListener(propertyChangeListener);
                     }
@@ -94,7 +94,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
             }
         });
 
-        connection.addIQListener(new IQListener() {
+        xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
@@ -106,15 +106,15 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                             if (infoDiscovery.getNode() == null) {
                                 IQ result = iq.createResult();
                                 result.setExtension(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
-                                connection.send(result);
+                                xmppSession.send(result);
                             } else {
                                 InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
                                 if (infoNode != null) {
                                     IQ result = iq.createResult();
                                     result.setExtension(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
-                                    connection.send(result);
+                                    xmppSession.send(result);
                                 } else {
-                                    connection.send(iq.createError(new StanzaError(new ItemNotFound())));
+                                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
                                 }
                             }
 
@@ -128,15 +128,15 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                                 if (itemDiscovery.getNode() == null) {
                                     IQ result = iq.createResult();
                                     result.setExtension(new ItemDiscovery(items));
-                                    connection.send(result);
+                                    xmppSession.send(result);
                                 } else {
                                     ItemNode itemNode = itemNodeMap.get(itemDiscovery.getNode());
                                     if (itemNode != null) {
                                         IQ result = iq.createResult();
                                         result.setExtension(new ItemDiscovery(itemNode.getNode(), items));
-                                        connection.send(result);
+                                        xmppSession.send(result);
                                     } else {
-                                        connection.send(iq.createError(new StanzaError(new ItemNotFound())));
+                                        xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
                                     }
                                 }
 
@@ -381,7 +381,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      */
     public InfoNode discoverInformation(Jid jid, String node) throws XmppException {
         IQ iq = new IQ(jid, IQ.Type.GET, new InfoDiscovery(node));
-        IQ result = connection.query(iq);
+        IQ result = xmppSession.query(iq);
         return result.getExtension(InfoDiscovery.class);
     }
 
@@ -409,7 +409,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
     public ItemNode discoverItems(Jid jid, String node) throws XmppException {
         IQ iq = new IQ(IQ.Type.GET, new ItemDiscovery(node));
         iq.setTo(jid);
-        IQ result = connection.query(iq);
+        IQ result = xmppSession.query(iq);
         return result.getExtension(ItemDiscovery.class);
     }
 

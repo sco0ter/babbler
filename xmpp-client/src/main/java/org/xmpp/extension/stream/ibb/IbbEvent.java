@@ -24,7 +24,8 @@
 
 package org.xmpp.extension.stream.ibb;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppSession;
 import org.xmpp.stanza.client.IQ;
 
 import java.util.EventObject;
@@ -34,22 +35,22 @@ import java.util.EventObject;
  */
 public final class IbbEvent extends EventObject {
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private final IQ iq;
 
     private final Open open;
 
-    public IbbEvent(Object source, Connection connection, IQ iq, Open open) {
+    public IbbEvent(Object source, XmppSession xmppSession, IQ iq, Open open) {
         super(source);
-        this.connection = connection;
+        this.xmppSession = xmppSession;
         this.iq = iq;
         this.open = open;
     }
 
     public IbbSession accept() {
-        connection.send(iq.createResult());
-        return connection.getExtensionManager(InBandBytestreamManager.class).createInBandByteStream(iq.getFrom(), open.getBlockSize(), open.getSessionId());
+        xmppSession.send(iq.createResult());
+        return xmppSession.getExtensionManager(InBandBytestreamManager.class).createInBandByteStream(iq.getFrom(), open.getBlockSize(), open.getSessionId());
     }
 
     public void reject() {

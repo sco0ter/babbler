@@ -24,8 +24,9 @@
 
 package org.xmpp.extension.muc;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
+import org.xmpp.XmppSession;
 
 import java.util.EventObject;
 
@@ -50,9 +51,9 @@ public final class InvitationEvent extends EventObject {
 
     private final boolean mediated;
 
-    private Connection connection;
+    private XmppSession xmppSession;
 
-    InvitationEvent(Object source, Connection connection, Jid inviter, Jid room, String reason, String password, boolean aContinue, String thread, boolean mediated) {
+    InvitationEvent(Object source, XmppSession xmppSession, Jid inviter, Jid room, String reason, String password, boolean aContinue, String thread, boolean mediated) {
         super(source);
         this.inviter = inviter;
         this.room = room;
@@ -61,7 +62,7 @@ public final class InvitationEvent extends EventObject {
         this.aContinue = aContinue;
         this.thread = thread;
         this.mediated = mediated;
-        this.connection = connection;
+        this.xmppSession = xmppSession;
     }
 
     /**

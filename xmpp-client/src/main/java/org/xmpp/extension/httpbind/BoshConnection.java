@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.httpbind;
 
-import org.xmpp.Connection;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppContext;
-import org.xmpp.XmppUtils;
+import org.xmpp.*;
 import org.xmpp.stream.ClientStreamElement;
 
 import javax.naming.Context;
@@ -142,8 +139,8 @@ public final class BoshConnection extends Connection {
      *
      * @param xmppServiceDomain The XMPP service domain.
      */
-    public BoshConnection(String xmppServiceDomain) {
-        this(xmppServiceDomain, Proxy.NO_PROXY);
+    public BoshConnection(XmppSession xmppSession, String xmppServiceDomain) {
+        this(xmppSession, xmppServiceDomain, Proxy.NO_PROXY);
     }
 
     /**
@@ -151,10 +148,10 @@ public final class BoshConnection extends Connection {
      *
      * @param xmppServiceDomain The XMPP service domain.
      * @param proxy             The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
-     * @see #BoshConnection(String)
+     * @see #BoshConnection(XmppSession, String)
      */
-    public BoshConnection(String xmppServiceDomain, Proxy proxy) {
-        this(xmppServiceDomain, null, 0, null, proxy, XmppContext.getDefault(), null, (short) 60);
+    public BoshConnection(XmppSession xmppSession, String xmppServiceDomain, Proxy proxy) {
+        this(xmppSession, xmppServiceDomain, null, 0, null, proxy, null, (short) 60);
     }
 
     /**
@@ -164,8 +161,8 @@ public final class BoshConnection extends Connection {
      * @param hostname The hostname.
      * @param port     The port.
      */
-    public BoshConnection(String hostname, int port) {
-        this(hostname, port, null, Proxy.NO_PROXY);
+    public BoshConnection(XmppSession xmppSession, String hostname, int port) {
+        this(xmppSession, hostname, port, null, Proxy.NO_PROXY);
     }
 
     /**
@@ -176,8 +173,8 @@ public final class BoshConnection extends Connection {
      * @param hostname          The hostname.
      * @param port              The port.
      */
-    public BoshConnection(String xmppServiceDomain, String hostname, int port) {
-        this(xmppServiceDomain, hostname, port, null, Proxy.NO_PROXY, XmppContext.getDefault(), null, (short) 60);
+    public BoshConnection(XmppSession xmppSession, String xmppServiceDomain, String hostname, int port) {
+        this(xmppSession, xmppServiceDomain, hostname, port, null, Proxy.NO_PROXY, null, (short) 60);
     }
 
     /**
@@ -189,8 +186,8 @@ public final class BoshConnection extends Connection {
      * @param file     The file, which is needed to construct the URL, e.g. "/http-bind/".
      * @param proxy    The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
      */
-    public BoshConnection(String hostname, int port, String file, Proxy proxy) {
-        this(null, hostname, port, file, proxy, XmppContext.getDefault(), null, (short) 60);
+    public BoshConnection(XmppSession xmppSession, String hostname, int port, String file, Proxy proxy) {
+        this(xmppSession, null, hostname, port, file, proxy, null, (short) 60);
     }
 
     /**
@@ -202,12 +199,11 @@ public final class BoshConnection extends Connection {
      * @param port              The port.
      * @param file              The file, which is needed to construct the URL, e.g. "/http-bind/".
      * @param proxy             The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
-     * @param xmppContext       The XMPP context, which is used for this connection.
      * @param route             The route, formatted as "proto:host:port" (e.g., "xmpp:example.com:9999").
      * @param wait              The maximal number of seconds to wait between two requests. If a request exceeds this time an exception is thrown, which will terminate the connection.
      */
-    public BoshConnection(String xmppServiceDomain, String hostname, int port, String file, Proxy proxy, XmppContext xmppContext, String route, short wait) {
-        super(xmppServiceDomain, hostname, port, proxy, xmppContext);
+    public BoshConnection(XmppSession xmppSession, String xmppServiceDomain, String hostname, int port, String file, Proxy proxy, String route, short wait) {
+        super(xmppSession, hostname, port, proxy);
         this.route = route;
         this.file = file;
         this.wait = wait;
@@ -295,7 +291,6 @@ public final class BoshConnection extends Connection {
 
     @Override
     public synchronized void connect() throws IOException {
-        super.connect();
         // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
         if (url == null) {
             if (file == null) {
@@ -305,12 +300,12 @@ public final class BoshConnection extends Connection {
                 url = new URL("http", getHostname(), getPort(), file);
             } else {
                 try {
-                    url = new URL(findBoshUrl(xmppServiceDomain));
+                    url = new URL(findBoshUrl(xmppSession.xmppServiceDomain));
                 } catch (NamingException e) {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 80 as default.
-                    if (xmppServiceDomain != null) {
-                        url = new URL("http", xmppServiceDomain, 80, file);
+                    if (xmppSession.xmppServiceDomain != null) {
+                        url = new URL("http", xmppSession.xmppServiceDomain, 80, file);
                     } else {
                         throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
                     }
@@ -328,7 +323,7 @@ public final class BoshConnection extends Connection {
 
         // Create initial request.
         Body body = new Body();
-        body.setTo(xmppServiceDomain);
+        body.setTo(xmppSession.xmppServiceDomain);
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setVersion("1.10");
         body.setWait(wait);
@@ -346,7 +341,6 @@ public final class BoshConnection extends Connection {
         } catch (NoResponseException e) {
             throw new IOException(e);
         }
-        updateStatus(Status.CONNECTED);
     }
 
     /**
@@ -354,7 +348,7 @@ public final class BoshConnection extends Connection {
      * <p>
      * If it is the session creation response it contains additional attributes like the session id. These attributes are set to this connection.
      * </p>
-     * The contents are delegated to the {@link #handleElement(Object)} method, where they are treated as normal XMPP elements, i.e. the same way as in a normal TCP connection.
+     * The contents are delegated to the {@link org.xmpp.XmppSession#handleElement(Object)} method, where they are treated as normal XMPP elements, i.e. the same way as in a normal TCP connection.
      *
      * @param body The body.
      * @param rid  The request id, which was used for the request. If the body contains no 'ack' attribute, it means it's the response to the request with that 'rid'.
@@ -370,7 +364,7 @@ public final class BoshConnection extends Connection {
             }
 
             if (body.getFrom() != null) {
-                xmppServiceDomain = body.getFrom().getDomain();
+                xmppSession.xmppServiceDomain = body.getFrom().getDomain();
             }
         }
 
@@ -390,7 +384,7 @@ public final class BoshConnection extends Connection {
 
         if (body.getWrappedObjects() != null) {
             for (Object wrappedObject : body.getWrappedObjects()) {
-                handleElement(wrappedObject);
+                xmppSession.handleElement(wrappedObject);
             }
         }
     }
@@ -422,7 +416,7 @@ public final class BoshConnection extends Connection {
     protected void restartStream() {
         Body body = new Body();
         body.setRestart(true);
-        body.setTo(xmppServiceDomain);
+        body.setTo(xmppSession.xmppServiceDomain);
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setSid(getSessionId());
         sendNewRequest(body, false);
@@ -443,7 +437,6 @@ public final class BoshConnection extends Connection {
      */
     @Override
     public synchronized void close() throws IOException {
-        super.close();
         if (!requestExecutor.isShutdown()) {
             // Terminate the BOSH session.
             Body body = new Body();
@@ -469,7 +462,6 @@ public final class BoshConnection extends Connection {
                 Thread.currentThread().interrupt();
             }
         }
-        updateStatus(Status.CLOSED);
     }
 
     @Override
@@ -545,9 +537,9 @@ public final class BoshConnection extends Connection {
                                 // Branch the stream, so that its output can also be logged.
                                 try (OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest)) {
                                     // Create the writer for this connection.
-                                    xmlStreamWriter = createXMLStreamWriter(branchedOutputStream);
+                                    xmlStreamWriter = xmppSession.createXMLStreamWriter(branchedOutputStream);
                                     // Then write the XML to the output stream by marshalling the object to the writer.
-                                    marshaller.marshal(body, xmlStreamWriter);
+                                    xmppSession.marshaller.marshal(body, xmlStreamWriter);
 
                                     if (logger.isLoggable(Level.FINE)) {
                                         logger.fine("--> " + new String(byteArrayOutputStreamRequest.toByteArray()));
@@ -574,7 +566,7 @@ public final class BoshConnection extends Connection {
                                         // Parse the <body/> element.
                                         synchronized (responseExecutor) {
                                             if (xmlEvent.isStartElement()) {
-                                                final JAXBElement<Body> element = unmarshaller.unmarshal(xmlEventReader, Body.class);
+                                                final JAXBElement<Body> element = xmppSession.unmarshaller.unmarshal(xmlEventReader, Body.class);
                                                 if (logger.isLoggable(Level.FINE)) {
                                                     logger.fine("<-- " + new String(byteArrayOutputStream.toByteArray()));
                                                 }
@@ -586,7 +578,7 @@ public final class BoshConnection extends Connection {
                                                             try {
                                                                 unpackBody(element.getValue(), body.getRid());
                                                             } catch (Exception e) {
-                                                                notifyException(e);
+                                                                xmppSession.notifyException(e);
                                                             }
                                                         }
                                                     });
@@ -605,7 +597,7 @@ public final class BoshConnection extends Connection {
                                 handleCode(httpConnection.getResponseCode());
                             }
                         } catch (Exception e) {
-                            notifyException(e);
+                            xmppSession.notifyException(e);
                         } finally {
                             if (httpConnection != null) {
                                 httpConnection.disconnect();

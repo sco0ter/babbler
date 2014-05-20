@@ -24,8 +24,9 @@
 
 package org.xmpp.extension.forward;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.AbstractMessage;
 
@@ -52,10 +53,10 @@ public final class StanzaForwardingManager extends ExtensionManager {
     /**
      * Creates the stanza forwarding manager.
      *
-     * @param connection The underlying connection.
+     * @param xmppSession The underlying connection.
      */
-    private StanzaForwardingManager(final Connection connection) {
-        super(connection, "urn:xmpp:forward:0");
+    private StanzaForwardingManager(final XmppSession xmppSession) {
+        super(xmppSession, "urn:xmpp:forward:0");
         setEnabled(false);
     }
 

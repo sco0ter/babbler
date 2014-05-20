@@ -24,7 +24,8 @@
 
 package org.xmpp.sasl;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppSession;
 import org.xmpp.stream.FeatureNegotiator;
 
 import javax.security.auth.callback.*;
@@ -59,7 +60,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
         Security.addProvider(new SaslProvider());
     }
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     /**
      * The condition, which is triggered, when the authentication either failed or succeeded.
@@ -107,19 +108,19 @@ public final class AuthenticationManager extends FeatureNegotiator {
     private CallbackHandler lastCallbackHandler;
 
     /**
-     * Creates the authentication manager. Usually only the {@link Connection} should create it implicitly.
+     * Creates the authentication manager. Usually only the {@link org.xmpp.XmppSession} should create it implicitly.
      *
-     * @param connection The connection.
+     * @param xmppSession The connection.
      * @param lock       The lock object, which is used to make the current thread wait during authentication.
      */
-    public AuthenticationManager(final Connection connection, Lock lock) {
+    public AuthenticationManager(final XmppSession xmppSession, Lock lock) {
         super(Mechanisms.class);
 
-        if (connection == null) {
+        if (xmppSession == null) {
             throw new IllegalArgumentException("connection must not be null.");
         }
 
-        this.connection = connection;
+        this.xmppSession = xmppSession;
         this.lock = lock;
         this.authenticationComplete = lock.newCondition();
         this.supportedMechanisms = new LinkedHashSet<>();
@@ -212,7 +213,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
      * @see #authenticate(String, String, String, javax.security.auth.callback.CallbackHandler)
      */
     private void authenticate(String[] mechanisms, String authorizationId, String user, String password, CallbackHandler callbackHandler) throws SaslException, LoginException {
-        if (connection.getStatus() != Connection.Status.CONNECTED) {
+        if (xmppSession.getStatus() != XmppSession.Status.CONNECTED) {
             throw new IllegalStateException("You must be connected to the server before trying to authenticate.");
         }
         // Reset variables.
@@ -236,7 +237,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
             initialResponse = saslClient.evaluateChallenge(new byte[0]);
         }
 
-        connection.send(new Auth(saslClient.getMechanismName(), initialResponse));
+        xmppSession.send(new Auth(saslClient.getMechanismName(), initialResponse));
 
         // Wait until the authentication succeeded or failed, but max. 10 seconds.
         lock.lock();
@@ -380,7 +381,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
             };
         }
 
-        return Sasl.createSaslClient(mechanisms, authorizationId, "xmpp", connection.getDomain(), new HashMap<String, Object>(), callbackHandler);
+        return Sasl.createSaslClient(mechanisms, authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
     }
 
     /**
@@ -394,6 +395,6 @@ public final class AuthenticationManager extends FeatureNegotiator {
     private void sendResponse(Challenge challenge) throws SaslException {
         byte[] responseArray = saslClient.evaluateChallenge(challenge.getValue());
         Response response = new Response(responseArray);
-        connection.send(response);
+        xmppSession.send(response);
     }
 }

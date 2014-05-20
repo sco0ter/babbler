@@ -24,7 +24,8 @@
 
 package org.xmpp.extension.messagecorrect;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.client.Message;
@@ -51,8 +52,8 @@ import org.xmpp.stanza.client.Message;
  */
 public final class MessageCorrectionManager extends ExtensionManager {
 
-    private MessageCorrectionManager(Connection connection) {
-        super(connection, Replace.NAMESPACE);
+    private MessageCorrectionManager(XmppSession xmppSession) {
+        super(xmppSession, Replace.NAMESPACE);
     }
 
     /**
@@ -70,6 +71,6 @@ public final class MessageCorrectionManager extends ExtensionManager {
         }
 
         message.getExtensions().add(new Replace(id));
-        connection.send(message);
+        xmppSession.send(message);
     }
 }

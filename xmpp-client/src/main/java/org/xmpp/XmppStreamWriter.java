@@ -45,7 +45,7 @@ final class XmppStreamWriter {
 
     private static final Logger logger = Logger.getLogger(XmppStreamWriter.class.getName());
 
-    private final Connection connection;
+    private final XmppSession xmppSession;
 
     private final ExecutorService executor;
 
@@ -63,8 +63,8 @@ final class XmppStreamWriter {
 
     private ByteArrayOutputStream byteArrayOutputStream;
 
-    public XmppStreamWriter(final OutputStream outputStream, final Connection connection, final XMLOutputFactory xof, final Marshaller marshaller) throws JAXBException, XMLStreamException, IOException {
-        this.connection = connection;
+    public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession, final XMLOutputFactory xof, final Marshaller marshaller) throws JAXBException, XMLStreamException, IOException {
+        this.xmppSession = xmppSession;
         this.xof = xof;
         this.marshaller = marshaller;
 
@@ -91,7 +91,7 @@ final class XmppStreamWriter {
         keepAliveExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                if (connection.getStatus() == Connection.Status.CONNECTED) {
+                if (xmppSession.getStatus() == XmppSession.Status.CONNECTED) {
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -100,7 +100,7 @@ final class XmppStreamWriter {
                                     xmlStreamWriter.writeCharacters(" ");
                                     xmlStreamWriter.flush();
                                 } catch (XMLStreamException e) {
-                                    connection.notifyException(e);
+                                    xmppSession.notifyException(e);
                                 }
                             }
                         }
@@ -133,7 +133,7 @@ final class XmppStreamWriter {
                 BranchedOutputStream branchedOutputStream = new BranchedOutputStream(outputStream, byteArrayOutputStream);
                 xmlStreamWriter = xof.createXMLStreamWriter(branchedOutputStream);
 
-                prefixFreeCanonicalizationWriter = connection.createXMLStreamWriter(branchedOutputStream);
+                prefixFreeCanonicalizationWriter = xmppSession.createXMLStreamWriter(branchedOutputStream);
             }
         }
     }
@@ -152,7 +152,7 @@ final class XmppStreamWriter {
                             }
                             byteArrayOutputStream.reset();
                         } catch (XMLStreamException | JAXBException e) {
-                            connection.notifyException(e);
+                            xmppSession.notifyException(e);
                         }
                     }
                 }
@@ -171,8 +171,8 @@ final class XmppStreamWriter {
                             xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
                             xmlStreamWriter.writeStartElement("stream", "stream", "http://etherx.jabber.org/streams");
                             xmlStreamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", Locale.getDefault().getLanguage());
-                            if (connection.xmppServiceDomain != null) {
-                                xmlStreamWriter.writeAttribute("to", connection.xmppServiceDomain);
+                            if (xmppSession.xmppServiceDomain != null) {
+                                xmlStreamWriter.writeAttribute("to", xmppSession.xmppServiceDomain);
                             }
                             if (from != null) {
                                 xmlStreamWriter.writeAttribute("from", from.toString());
@@ -187,7 +187,7 @@ final class XmppStreamWriter {
                             }
                             byteArrayOutputStream.reset();
                         } catch (XMLStreamException e) {
-                            connection.notifyException(e);
+                            xmppSession.notifyException(e);
                         }
                     }
                 }
@@ -210,7 +210,7 @@ final class XmppStreamWriter {
                         byteArrayOutputStream.reset();
                         xmlStreamWriter.close();
                     } catch (XMLStreamException e) {
-                        connection.notifyException(e);
+                        xmppSession.notifyException(e);
                     }
                 }
             }

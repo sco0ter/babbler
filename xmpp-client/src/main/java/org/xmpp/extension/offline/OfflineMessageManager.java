@@ -24,10 +24,11 @@
 
 package org.xmpp.extension.offline;
 
-import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -53,8 +54,8 @@ import java.util.List;
 public final class OfflineMessageManager extends ExtensionManager {
 
 
-    private OfflineMessageManager(Connection connection) {
-        super(connection);
+    private OfflineMessageManager(XmppSession xmppSession) {
+        super(xmppSession);
     }
 
     /**
@@ -65,7 +66,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @throws NoResponseException If the server did not respond.
      */
     public boolean isSupported() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
         return infoNode.getFeatures().contains(new Feature(OfflineMessage.NAMESPACE));
     }
@@ -79,7 +80,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-number">2.2 Requesting Number of Messages</a>
      */
     public int requestNumberOfMessages() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(null, OfflineMessage.NAMESPACE);
         if (!infoDiscovery.getExtensions().isEmpty()) {
             DataForm dataForm = infoDiscovery.getExtensions().get(0);
@@ -105,7 +106,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      */
     public List<OfflineMessageHeader> requestMessageHeaders() throws XmppException {
         List<OfflineMessageHeader> result = new ArrayList<>();
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, OfflineMessage.NAMESPACE);
         for (Item item : itemNode.getItems()) {
             result.add(new OfflineMessageHeader(Jid.valueOf(item.getName()), item.getNode()));
@@ -122,7 +123,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-specific">2.4 Retrieving Specific Messages</a>
      */
     public void requestMessage(String id) throws XmppException {
-        connection.query(new IQ(IQ.Type.GET, new OfflineMessage(new OfflineMessage.Item(id, OfflineMessage.Item.Action.VIEW))));
+        xmppSession.query(new IQ(IQ.Type.GET, new OfflineMessage(new OfflineMessage.Item(id, OfflineMessage.Item.Action.VIEW))));
     }
 
     /**
@@ -138,7 +139,7 @@ public final class OfflineMessageManager extends ExtensionManager {
         for (String id : ids) {
             offlineMessage.getItems().add(new OfflineMessage.Item(id, OfflineMessage.Item.Action.REMOVE));
         }
-        connection.query(new IQ(IQ.Type.SET, offlineMessage));
+        xmppSession.query(new IQ(IQ.Type.SET, offlineMessage));
     }
 
     /**
@@ -149,7 +150,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-all">2.6 Retrieving All Messages</a>
      */
     public void requestAllMessages() throws XmppException {
-        connection.query(new IQ(IQ.Type.GET, new OfflineMessage(true, false)));
+        xmppSession.query(new IQ(IQ.Type.GET, new OfflineMessage(true, false)));
     }
 
     /**
@@ -160,6 +161,6 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-all">2.7 Removing All Messages</a>
      */
     public void removeAllMessages() throws XmppException {
-        connection.query(new IQ(IQ.Type.SET, new OfflineMessage(false, true)));
+        xmppSession.query(new IQ(IQ.Type.SET, new OfflineMessage(false, true)));
     }
 }

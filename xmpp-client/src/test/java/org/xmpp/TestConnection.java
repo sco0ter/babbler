@@ -41,7 +41,7 @@ import java.util.concurrent.Executor;
 /**
  * @author Christian Schudt
  */
-public class TestConnection extends Connection {
+public class TestConnection extends XmppSession {
 
     private MockServer mockServer;
 
@@ -50,7 +50,7 @@ public class TestConnection extends Connection {
     }
 
     public TestConnection(Jid jid, MockServer mockServer) {
-        super("", Proxy.NO_PROXY);
+        super(null);
         connectedResource = jid;
         stanzaListenerExecutor = new Executor() {
             @Override
@@ -60,10 +60,6 @@ public class TestConnection extends Connection {
         };
         this.mockServer = mockServer;
         mockServer.registerConnection(this);
-    }
-
-    @Override
-    protected void secureConnection() {
     }
 
     @Override
@@ -97,10 +93,6 @@ public class TestConnection extends Connection {
             throw new StanzaException(response);
         }
         return response;
-    }
-
-    @Override
-    protected void restartStream() {
     }
 
     @Override

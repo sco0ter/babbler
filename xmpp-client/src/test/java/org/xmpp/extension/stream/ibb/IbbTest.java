@@ -58,13 +58,13 @@ public class IbbTest extends BaseTest {
     public void testInBandBytestreamManager() throws IOException {
         MockServer mockServer = new MockServer();
         final Lock lock = new ReentrantLock();
-        final Connection connection1 = new TestConnection(ROMEO, mockServer);
-        final Connection connection2 = new TestConnection(JULIET, mockServer);
+        final XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
+        final XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
         final Condition condition = lock.newCondition();
         new Thread() {
             @Override
             public void run() {
-                InBandBytestreamManager inBandBytestreamManager2 = connection2.getExtensionManager(InBandBytestreamManager.class);
+                InBandBytestreamManager inBandBytestreamManager2 = xmppSession2.getExtensionManager(InBandBytestreamManager.class);
                 inBandBytestreamManager2.addIbbListener(new IbbListener() {
                     @Override
                     public void streamRequested(final IbbEvent e) {
@@ -106,7 +106,7 @@ public class IbbTest extends BaseTest {
                         }.start();
                     }
                 });
-                InBandBytestreamManager inBandBytestreamManager1 = connection1.getExtensionManager(InBandBytestreamManager.class);
+                InBandBytestreamManager inBandBytestreamManager1 = xmppSession1.getExtensionManager(InBandBytestreamManager.class);
                 IbbSession ibbSession = inBandBytestreamManager1.createInBandByteStream(JULIET, 4096);
 
                 try {

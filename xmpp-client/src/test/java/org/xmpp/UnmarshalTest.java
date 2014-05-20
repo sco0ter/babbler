@@ -56,11 +56,6 @@ public abstract class UnmarshalTest {
         unmarshaller = jaxbContext.createUnmarshaller();
     }
 
-    protected <T> T unmarshal(String xml, Class<T> type) throws XMLStreamException, JAXBException {
-        XMLEventReader xmlEventReader = getStream(xml);
-        return unmarshaller.unmarshal(xmlEventReader, type).getValue();
-    }
-
     private static XMLEventReader getStream(String stanza) throws XMLStreamException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(byteArrayOutputStream);
@@ -72,5 +67,10 @@ public abstract class UnmarshalTest {
         xmlEventReader.nextEvent();
         xmlEventReader.nextEvent();
         return xmlEventReader;
+    }
+
+    protected <T> T unmarshal(String xml, Class<T> type) throws XMLStreamException, JAXBException {
+        XMLEventReader xmlEventReader = getStream(xml);
+        return unmarshaller.unmarshal(xmlEventReader, type).getValue();
     }
 }

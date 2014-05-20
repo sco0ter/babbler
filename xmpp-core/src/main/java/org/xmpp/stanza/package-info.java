@@ -29,7 +29,7 @@
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 //@XmlSchema(namespace = "jabber:client", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stanza;
 
-package org.xmpp.stanza;
+        package org.xmpp.stanza;
 
 import org.xmpp.Jid;
 import org.xmpp.JidAdapter;

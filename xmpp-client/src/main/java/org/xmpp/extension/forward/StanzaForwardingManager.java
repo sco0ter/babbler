@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.forward;
 
-import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;

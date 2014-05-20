@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.shim;
 
-import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;

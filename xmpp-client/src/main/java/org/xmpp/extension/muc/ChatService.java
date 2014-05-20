@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.muc;
 
-import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;

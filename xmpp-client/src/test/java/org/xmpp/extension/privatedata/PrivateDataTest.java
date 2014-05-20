@@ -26,8 +26,9 @@ package org.xmpp.extension.privatedata;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.*;
+import org.xmpp.MockServer;
 import org.xmpp.TestXmppSession;
+import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 

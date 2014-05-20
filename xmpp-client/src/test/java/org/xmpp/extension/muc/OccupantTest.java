@@ -30,7 +30,10 @@ import org.xmpp.Jid;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.stanza.client.Presence;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Christian Schudt

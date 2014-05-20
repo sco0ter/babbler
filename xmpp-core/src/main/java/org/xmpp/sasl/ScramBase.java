@@ -265,9 +265,7 @@ class ScramBase {
      * @param i    The iteration count.
      * @return The salted password.
      * @throws java.security.NoSuchAlgorithmException
-     *
      * @throws java.security.InvalidKeyException
-     *
      */
     byte[] hi(byte[] str, byte[] salt, int i) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac hmac = Mac.getInstance(hmacAlgorithm);

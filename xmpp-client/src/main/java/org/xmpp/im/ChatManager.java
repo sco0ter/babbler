@@ -24,7 +24,6 @@
 
 package org.xmpp.im;
 
-import org.xmpp.XmppSession;
 import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;

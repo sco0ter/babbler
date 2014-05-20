@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.attention;
 
-import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;

@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
 import org.xmpp.TestXmppSession;
-import org.xmpp.TestXmppSession;
 import org.xmpp.XmppException;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;

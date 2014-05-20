@@ -49,15 +49,15 @@ import java.util.List;
 @XmlRootElement(name = "storage")
 public final class Annotation {
 
+    @XmlElement(name = "note")
+    private List<Note> notes;
+
     private Annotation() {
     }
 
     public Annotation(List<Note> notes) {
         this.notes = notes;
     }
-
-    @XmlElement(name = "note")
-    private List<Note> notes;
 
     public List<Note> getNotes() {
         return notes;
@@ -67,6 +67,19 @@ public final class Annotation {
      * Represents a note for a contact in the roster (roster item).
      */
     public static final class Note {
+        @XmlJavaTypeAdapter(JidAdapter.class)
+        @XmlAttribute(name = "jid")
+        private Jid jid;
+
+        @XmlAttribute(name = "cdate")
+        private Date creationDate;
+
+        @XmlAttribute(name = "mdate")
+        private Date modificationDate;
+
+        @XmlValue
+        private String value;
+
         private Note() {
         }
 
@@ -97,19 +110,6 @@ public final class Annotation {
             this.creationDate = creationDate;
             this.modificationDate = modificationDate;
         }
-
-        @XmlJavaTypeAdapter(JidAdapter.class)
-        @XmlAttribute(name = "jid")
-        private Jid jid;
-
-        @XmlAttribute(name = "cdate")
-        private Date creationDate;
-
-        @XmlAttribute(name = "mdate")
-        private Date modificationDate;
-
-        @XmlValue
-        private String value;
 
         /**
          * Gets the value of the note.

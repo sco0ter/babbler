@@ -24,7 +24,6 @@
 
 package org.xmpp.im;
 
-import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppSession;
 import org.xmpp.stanza.MessageEvent;

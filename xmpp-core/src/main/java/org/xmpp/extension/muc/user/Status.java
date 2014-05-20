@@ -48,35 +48,6 @@ public final class Status {
         this.code = code;
     }
 
-    /**
-     * Gets the status code.
-     *
-     * @return The status code.
-     */
-    public int getCode() {
-        return code != null ? code : 0;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof Status)) {
-            return false;
-        }
-        Status other = (Status) o;
-
-        return (code == null ? other.code == null : code.equals(other.code));
-    }
-
-    @Override
-    public int hashCode() {
-        int result = 17;
-        result = 31 * result + ((code == null) ? 0 : code.hashCode());
-        return result;
-    }
-
     public static Status roomIsNonAnonymous() {
         return new Status(100);
     }
@@ -151,5 +122,34 @@ public final class Status {
 
     public static Status systemShutdown() {
         return new Status(332);
+    }
+
+    /**
+     * Gets the status code.
+     *
+     * @return The status code.
+     */
+    public int getCode() {
+        return code != null ? code : 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Status)) {
+            return false;
+        }
+        Status other = (Status) o;
+
+        return (code == null ? other.code == null : code.equals(other.code));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + ((code == null) ? 0 : code.hashCode());
+        return result;
     }
 }

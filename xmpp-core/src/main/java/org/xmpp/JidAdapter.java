@@ -24,8 +24,6 @@
 
 package org.xmpp;
 
-import org.xmpp.Jid;
-
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**

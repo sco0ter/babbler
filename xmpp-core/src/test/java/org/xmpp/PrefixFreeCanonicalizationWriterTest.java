@@ -26,14 +26,10 @@ package org.xmpp;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.extension.carbons.Sent;
-import org.xmpp.extension.forward.Forwarded;
 import org.xmpp.extension.httpbind.Body;
 import org.xmpp.im.Contact;
 import org.xmpp.im.Roster;
-import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.client.IQ;
-import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

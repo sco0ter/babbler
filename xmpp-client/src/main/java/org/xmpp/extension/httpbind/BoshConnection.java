@@ -25,7 +25,6 @@
 package org.xmpp.extension.httpbind;
 
 import org.xmpp.Connection;
-import org.xmpp.NoResponseException;
 import org.xmpp.XmppSession;
 import org.xmpp.XmppUtils;
 import org.xmpp.stream.ClientStreamElement;

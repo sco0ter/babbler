@@ -25,9 +25,7 @@
 package org.xmpp.extension.messagecorrect;
 
 import org.xmpp.XmppSession;
-import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.stanza.AbstractMessage;
 import org.xmpp.stanza.client.Message;
 
 /**

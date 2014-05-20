@@ -25,7 +25,6 @@
 package org.xmpp.extension.compress;
 
 import org.xmpp.XmppSession;
-import org.xmpp.XmppSession;
 import org.xmpp.extension.compress.feature.Compression;
 import org.xmpp.stream.FeatureListener;
 import org.xmpp.stream.FeatureNegotiator;

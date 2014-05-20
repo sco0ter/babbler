@@ -43,6 +43,14 @@ public final class EntityTime {
 
     static final String NAMESPACE = "urn:xmpp:time";
 
+    @XmlJavaTypeAdapter(TimeZoneAdapter.class)
+    @XmlElement(name = "tzo")
+    private TimeZone tzo;
+
+    @XmlJavaTypeAdapter(UTCDateAdapter.class)
+    @XmlElement(name = "utc")
+    private Date utc;
+
     /**
      * Creates a empty entity time element for requesting entity time.
      */
@@ -53,14 +61,6 @@ public final class EntityTime {
         this.tzo = timeZone;
         this.utc = date;
     }
-
-    @XmlJavaTypeAdapter(TimeZoneAdapter.class)
-    @XmlElement(name = "tzo")
-    private TimeZone tzo;
-
-    @XmlJavaTypeAdapter(UTCDateAdapter.class)
-    @XmlElement(name = "utc")
-    private Date utc;
 
     /**
      * Gets the entity's time zone.

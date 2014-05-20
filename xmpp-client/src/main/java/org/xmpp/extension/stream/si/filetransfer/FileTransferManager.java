@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.stream.si.filetransfer;
 
-import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;

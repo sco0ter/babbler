@@ -27,7 +27,6 @@ package org.xmpp.stanza.server;
 import org.xmpp.Jid;
 import org.xmpp.stanza.AbstractIQ;
 import org.xmpp.stanza.StanzaError;
-import org.xmpp.stream.ClientStreamElement;
 import org.xmpp.stream.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;

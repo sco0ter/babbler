@@ -51,6 +51,19 @@ public abstract class XmlTest {
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
     }
 
+    private static XMLEventReader getStream(String stanza) throws XMLStreamException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(byteArrayOutputStream);
+        printStream.print(START_STREAM + stanza + END_STREAM);
+
+        InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+
+        XMLEventReader xmlEventReader = XMLInputFactory.newFactory().createXMLEventReader(inputStream);
+        xmlEventReader.nextEvent();
+        xmlEventReader.nextEvent();
+        return xmlEventReader;
+    }
+
     protected <T> T unmarshal(String xml, Class<T> type) throws XMLStreamException, JAXBException {
         XMLEventReader xmlEventReader = getStream(xml);
         return unmarshaller.unmarshal(xmlEventReader, type).getValue();
@@ -64,18 +77,5 @@ public abstract class XmlTest {
         XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
         marshaller.marshal(object, prefixFreeWriter);
         return writer.toString();
-    }
-
-    private static XMLEventReader getStream(String stanza) throws XMLStreamException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(byteArrayOutputStream);
-        printStream.print(START_STREAM + stanza + END_STREAM);
-
-        InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-
-        XMLEventReader xmlEventReader = XMLInputFactory.newFactory().createXMLEventReader(inputStream);
-        xmlEventReader.nextEvent();
-        xmlEventReader.nextEvent();
-        return xmlEventReader;
     }
 }

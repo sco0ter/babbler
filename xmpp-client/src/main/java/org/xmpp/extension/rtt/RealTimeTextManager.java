@@ -25,7 +25,6 @@
 package org.xmpp.extension.rtt;
 
 import org.xmpp.XmppSession;
-import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 
 /**

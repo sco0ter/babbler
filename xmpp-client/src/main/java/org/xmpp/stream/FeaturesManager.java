@@ -24,7 +24,6 @@
 
 package org.xmpp.stream;
 
-import org.xmpp.XmppSession;
 import org.xmpp.ConnectionEvent;
 import org.xmpp.ConnectionListener;
 import org.xmpp.XmppSession;

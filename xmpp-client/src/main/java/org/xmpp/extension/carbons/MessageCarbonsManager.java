@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.carbons;
 
-import org.xmpp.XmppSession;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;

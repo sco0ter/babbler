@@ -26,7 +26,8 @@ package org.xmpp.extension.receipts;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.*;
+import org.xmpp.BaseTest;
+import org.xmpp.MockServer;
 import org.xmpp.TestXmppSession;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;

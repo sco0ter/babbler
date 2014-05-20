@@ -25,7 +25,6 @@
 package org.xmpp.tls;
 
 import org.xmpp.XmppSession;
-import org.xmpp.XmppSession;
 import org.xmpp.stream.FeatureListener;
 import org.xmpp.stream.FeatureNegotiator;
 

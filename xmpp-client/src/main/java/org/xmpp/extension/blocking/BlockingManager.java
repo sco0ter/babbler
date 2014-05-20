@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.blocking;
 
-import org.xmpp.XmppSession;
 import org.xmpp.Jid;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;

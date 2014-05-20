@@ -25,7 +25,6 @@
 package org.xmpp.extension.stream.ibb;
 
 import org.xmpp.XmppSession;
-import org.xmpp.XmppSession;
 import org.xmpp.stanza.client.IQ;
 
 import java.util.EventObject;

@@ -27,7 +27,6 @@ package org.xmpp.extension.pubsub;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.TestXmppSession;
-import org.xmpp.TestXmppSession;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoDiscovery;
 

@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.register;
 
-import org.xmpp.XmppSession;
 import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;

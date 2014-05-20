@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
 import org.xmpp.TestXmppSession;
-import org.xmpp.TestXmppSession;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

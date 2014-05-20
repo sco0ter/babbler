@@ -52,16 +52,16 @@ public final class StartTls extends Feature implements ClientStreamElement {
         return required != null;
     }
 
-    @Override
-    public int getPriority() {
-        return 0;
-    }
-
     public void setMandatory(boolean mandatory) {
         if (mandatory) {
             required = "";
         } else {
             required = null;
         }
+    }
+
+    @Override
+    public int getPriority() {
+        return 0;
     }
 }

@@ -256,14 +256,14 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
         private String defaultNS;
 
+        private Set<String> currentNamespaceUris = new HashSet<>();
+
+        private Stack<String> namespaces = new Stack<>();
+
         private ContentNamespaceContext(String contentNamespace) {
             this.defaultNS = contentNamespace;
             this.contentNamespace = contentNamespace;
         }
-
-        private Set<String> currentNamespaceUris = new HashSet<>();
-
-        private Stack<String> namespaces = new Stack<>();
 
         private void setDefaultNS(String ns) {
             defaultNS = ns;

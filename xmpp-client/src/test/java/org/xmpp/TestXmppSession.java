@@ -46,7 +46,7 @@ public class TestXmppSession extends XmppSession {
         this(Jid.valueOf("test@domain/resource"), new MockServer());
     }
 
-    public TestXmppSession(Jid jid, MockServer mockServer)  {
+    public TestXmppSession(Jid jid, MockServer mockServer) {
         super(null);
         connectedResource = jid;
         activeConnection = new Connection(this, "hostname", 5222, Proxy.NO_PROXY) {

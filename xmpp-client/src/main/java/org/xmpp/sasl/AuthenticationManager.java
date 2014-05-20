@@ -25,7 +25,6 @@
 package org.xmpp.sasl;
 
 import org.xmpp.XmppSession;
-import org.xmpp.XmppSession;
 import org.xmpp.stream.FeatureNegotiator;
 
 import javax.security.auth.callback.*;
@@ -111,7 +110,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
      * Creates the authentication manager. Usually only the {@link org.xmpp.XmppSession} should create it implicitly.
      *
      * @param xmppSession The connection.
-     * @param lock       The lock object, which is used to make the current thread wait during authentication.
+     * @param lock        The lock object, which is used to make the current thread wait during authentication.
      */
     public AuthenticationManager(final XmppSession xmppSession, Lock lock) {
         super(Mechanisms.class);

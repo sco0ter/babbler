@@ -135,7 +135,7 @@ final class XmppStreamWriter {
                 BranchedOutputStream branchedOutputStream = new BranchedOutputStream(outputStream, byteArrayOutputStream);
                 xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(branchedOutputStream);
 
-                prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(outputStream), true);
+                prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream), true);
             }
         }
     }

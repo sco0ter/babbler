@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppException;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.Identity;
@@ -56,8 +57,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     @Test
     public void testInfoDiscovery() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
-        new TestConnection(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
         InfoNode result = serviceDiscoveryManager.discoverInformation(JULIET);
         Assert.assertNotNull(result);
@@ -68,7 +69,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(serviceDiscoveryManager.isEnabled());

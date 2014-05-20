@@ -26,11 +26,8 @@ package org.xmpp;
 
 import org.xmpp.stream.ClientStreamElement;
 
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamException;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +39,7 @@ public abstract class Connection implements Closeable {
     /**
      * The proxy, which is used while connecting to a host.
      */
-    protected final Proxy proxy;
+    private final Proxy proxy;
 
     private final String hostname;
 
@@ -58,9 +55,9 @@ public abstract class Connection implements Closeable {
     /**
      * Creates a connection to the specified host and port through a proxy.
      *
-     * @param hostname          The host, which is used to establish the connection.
-     * @param port              The port, which is used to establish the connection.
-     * @param proxy             The proxy.
+     * @param hostname The host, which is used to establish the connection.
+     * @param port     The port, which is used to establish the connection.
+     * @param proxy    The proxy.
      */
     protected Connection(XmppSession xmppSession, String hostname, int port, Proxy proxy) {
         this.xmppSession = xmppSession;
@@ -71,17 +68,6 @@ public abstract class Connection implements Closeable {
 
     public void setXmppSession(XmppSession xmppSession) {
         this.xmppSession = xmppSession;
-    }
-
-    /**
-     * Creates the reader to read the stream.
-     *
-     * @param inputStream The input stream.
-     * @return The XML reader.
-     * @throws javax.xml.stream.XMLStreamException If the reader could not be created.
-     */
-    protected XMLEventReader createXMLEventReader(InputStream inputStream) throws XMLStreamException {
-        return xmppSession.xmlInputFactory.createXMLEventReader(inputStream);
     }
 
     /**
@@ -100,6 +86,15 @@ public abstract class Connection implements Closeable {
      */
     public final int getPort() {
         return port;
+    }
+
+    /**
+     * Gets the proxy.
+     *
+     * @return The proxy.
+     */
+    public final Proxy getProxy() {
+        return proxy;
     }
 
     /**
@@ -123,34 +118,5 @@ public abstract class Connection implements Closeable {
      * @throws IOException If an error occurs during TLS negotiation.
      */
     protected void secureConnection() throws IOException {
-    }
-
-    /**
-     * Waits until SASL negotiation has started and then releases the lock. This method must be invoked at the end of the {@link #connect()} method.
-     *
-     * @throws NoResponseException If no response was received from the server.
-     * @throws IOException         If any exception occurred during stream negotiation.
-     */
-    protected final void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
-        // Wait for the response and wait until all features have been negotiated.
-        xmppSession.lock.lock();
-        try {
-            if (!xmppSession.streamNegotiatedUntilSasl.await(10000, TimeUnit.SECONDS)) {
-                throw new NoResponseException("Timeout reached while connecting.");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            xmppSession.lock.unlock();
-        }
-
-        // Check if an exception has occurred during stream negotiation and throw it.
-        if (exception != null) {
-            try {
-                throw new IOException(exception);
-            } finally {
-                exception = null;
-            }
-        }
     }
 }

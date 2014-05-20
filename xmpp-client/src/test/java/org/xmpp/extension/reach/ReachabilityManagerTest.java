@@ -26,10 +26,8 @@ package org.xmpp.extension.reach;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.XmppSession;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.*;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
@@ -49,8 +47,8 @@ public class ReachabilityManagerTest extends BaseTest {
 
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         final boolean[] attentionReceived = {false};
         xmppSession2.addMessageListener(new MessageListener() {
@@ -72,7 +70,7 @@ public class ReachabilityManagerTest extends BaseTest {
     @Test
     public void testServiceDiscoveryEntry() {
 
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         ReachabilityManager reachabilityManager = connection1.getExtensionManager(ReachabilityManager.class);
         Assert.assertFalse(reachabilityManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);

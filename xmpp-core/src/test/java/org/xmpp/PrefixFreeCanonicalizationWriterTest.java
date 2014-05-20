@@ -75,28 +75,6 @@ public class PrefixFreeCanonicalizationWriterTest {
     }
 
     @Test
-    public void testMessage() throws XMLStreamException, JAXBException {
-
-        Writer writer = new StringWriter();
-
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
-        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-
-        JAXBContext jaxbContext = JAXBContext.newInstance(Message.class, Sent.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-
-        Message forwardedMessage = new Message(Jid.valueOf("romeo@example.net"), Message.Type.CHAT, "Hi!!");
-
-        Message message = new Message(Jid.valueOf("juliet@example.net"));
-        message.getExtensions().add(new Sent(new Forwarded(forwardedMessage)));
-        marshaller.marshal(message, xmppStreamWriter);
-
-        System.out.println(writer.toString());
-
-    }
-
-    @Test
     public void testElementWithPrefixedAttribute() throws XMLStreamException, JAXBException {
 
         Writer writer = new StringWriter();

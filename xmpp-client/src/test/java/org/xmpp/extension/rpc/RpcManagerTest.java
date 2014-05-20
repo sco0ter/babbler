@@ -43,7 +43,7 @@ public class RpcManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         RpcManager rpcManager = connection1.getExtensionManager(RpcManager.class);
         Assert.assertFalse(rpcManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
@@ -58,8 +58,8 @@ public class RpcManagerTest extends BaseTest {
     public void testCall() throws XmppException, RpcException {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);
@@ -81,8 +81,8 @@ public class RpcManagerTest extends BaseTest {
     public void testRpcException() throws XmppException {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);
@@ -110,8 +110,8 @@ public class RpcManagerTest extends BaseTest {
     public void testStanzaException() throws XmppException, RpcException {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);

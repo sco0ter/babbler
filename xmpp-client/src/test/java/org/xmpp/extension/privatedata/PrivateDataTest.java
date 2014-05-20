@@ -26,10 +26,8 @@ package org.xmpp.extension.privatedata;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.XmppSession;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
-import org.xmpp.XmppException;
+import org.xmpp.*;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 
@@ -46,8 +44,7 @@ public class PrivateDataTest {
     public void testManager() throws XmppException, IOException {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession = new TestConnection(null, mockServer);
-        xmppSession.connect();
+        XmppSession xmppSession = new TestXmppSession(null, mockServer);
 
         PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
         privateDataManager.storeData(new Annotation(null));

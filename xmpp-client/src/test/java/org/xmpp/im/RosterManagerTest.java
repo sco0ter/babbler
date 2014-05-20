@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.Jid;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
+import org.xmpp.TestXmppSession;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -45,7 +46,7 @@ public class RosterManagerTest extends BaseTest {
     public void testRosterListener() throws XMLStreamException, JAXBException {
         final int[] rosterPushCount = new int[1];
 
-        RosterManager rosterManager = new RosterManager(new TestConnection());
+        RosterManager rosterManager = new RosterManager(new TestXmppSession());
         rosterManager.addRosterListener(new RosterListener() {
             @Override
             public void rosterChanged(RosterEvent e) {
@@ -100,7 +101,7 @@ public class RosterManagerTest extends BaseTest {
 
     @Test
     public void testRosterGroups() {
-        RosterManager rosterManager = new RosterManager(new TestConnection());
+        RosterManager rosterManager = new RosterManager(new TestXmppSession());
 
         Roster roster1 = new Roster();
         roster1.getContacts().add(new Contact(Jid.valueOf("contact1@domain"), "contact1", "Group1"));
@@ -126,7 +127,7 @@ public class RosterManagerTest extends BaseTest {
 
     @Test
     public void testNestedRosterGroups() {
-        RosterManager rosterManager = new RosterManager(new TestConnection());
+        RosterManager rosterManager = new RosterManager(new TestXmppSession());
         rosterManager.setGroupDelimiter("::");
         Roster roster1 = new Roster();
         roster1.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3::SubGroup"));
@@ -155,7 +156,7 @@ public class RosterManagerTest extends BaseTest {
     @Test
     public void testRosterIntegrity() {
 
-        RosterManager rosterManager = new RosterManager(new TestConnection());
+        RosterManager rosterManager = new RosterManager(new TestXmppSession());
 
         // Initial roster
         Roster roster1 = new Roster();

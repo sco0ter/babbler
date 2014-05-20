@@ -27,6 +27,7 @@ package org.xmpp;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -53,6 +54,8 @@ final class XmppStreamReader {
 
     private final ExecutorService executorService;
 
+    private final XMLInputFactory xmlInputFactory;
+
     public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession) throws JAXBException {
         this.connection = connection;
         this.xmppSession = xmppSession;
@@ -65,6 +68,7 @@ final class XmppStreamReader {
                 return thread;
             }
         });
+        this.xmlInputFactory = XMLInputFactory.newFactory();
     }
 
     void startReading(final InputStream inputStream) {
@@ -78,7 +82,7 @@ final class XmppStreamReader {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
                     InputStream xmppInputStream = new BranchedInputStream(inputStream, byteArrayOutputStream);
-                    XMLEventReader xmlEventReader = connection.createXMLEventReader(xmppInputStream);
+                    XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream);
 
                     while (!doRestart && xmlEventReader.hasNext()) {
                         XMLEvent xmlEvent = xmlEventReader.peek();
@@ -96,7 +100,7 @@ final class XmppStreamReader {
                                 }
                                 xmlEventReader.next();
                             } else {
-                                Object object = xmppSession.unmarshaller.unmarshal(xmlEventReader);
+                                Object object = xmppSession.getUnmarshaller().unmarshal(xmlEventReader);
                                 if (logger.isLoggable(Level.FINE)) {
                                     logger.fine("<--  " + new String(byteArrayOutputStream.toByteArray()));
                                 }

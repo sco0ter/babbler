@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppException;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -42,9 +43,9 @@ public class SoftwareVersionManagerTest extends BaseTest {
     @Test
     public void testSoftwareVersionManager() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
-        new TestConnection(JULIET, mockServer);
-        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        new TestXmppSession(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getExtensionManager(SoftwareVersionManager.class).setSoftwareVersion(new SoftwareVersion("Name", "Version"));
         SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
         SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(JULIET);
@@ -56,8 +57,8 @@ public class SoftwareVersionManagerTest extends BaseTest {
     @Test
     public void testSoftwareVersionManagerIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
-        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getExtensionManager(SoftwareVersionManager.class).setEnabled(false);
         SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
         try {
@@ -70,7 +71,7 @@ public class SoftwareVersionManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(softwareVersionManager.isEnabled());

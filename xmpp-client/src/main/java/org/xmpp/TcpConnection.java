@@ -110,7 +110,7 @@ public final class TcpConnection extends Connection {
     public synchronized void connect() throws IOException {
         int port = getPort() == 0 ? 5222 : getPort();
 
-        this.socket = new Socket(proxy);
+        this.socket = new Socket(getProxy());
 
         if (getHostname() != null && !getHostname().isEmpty()) {
             socket.connect(new InetSocketAddress(getHostname(), getPort()));
@@ -129,8 +129,8 @@ public final class TcpConnection extends Connection {
         inputStream = socket.getInputStream();
         // Start writing to the output stream.
         try {
-            xmppStreamWriter = new XmppStreamWriter(outputStream, this.xmppSession, this.xmppSession.xmlOutputFactory, this.xmppSession.marshaller);
-        } catch (JAXBException | XMLStreamException e) {
+            xmppStreamWriter = new XmppStreamWriter(outputStream, this.xmppSession);
+        } catch (XMLStreamException e) {
             throw new IOException(e);
         }
         xmppStreamWriter.openStream(null);
@@ -142,17 +142,6 @@ public final class TcpConnection extends Connection {
             throw new IOException(e);
         }
         xmppStreamReader.startReading(inputStream);
-
-        // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
-        try {
-            waitUntilSaslNegotiationStarted();
-        } catch (NoResponseException e) {
-            throw new IOException(e);
-        }
-
-        if (!isSecure && xmppSession.getSecurityManager().isEnabled()) {
-            throw new IllegalStateException("Connection could not be secured.");
-        }
     }
 
     @Override

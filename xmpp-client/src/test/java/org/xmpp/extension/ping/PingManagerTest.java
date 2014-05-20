@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppException;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -42,8 +43,8 @@ public class PingManagerTest extends BaseTest {
     @Test
     public void testPing() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
-        new TestConnection(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        new TestXmppSession(JULIET, mockServer);
         PingManager pingManager = connection1.getExtensionManager(PingManager.class);
         pingManager.ping(JULIET);
     }
@@ -51,8 +52,8 @@ public class PingManagerTest extends BaseTest {
     @Test(expectedExceptions = StanzaException.class)
     public void testPingIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
-        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getExtensionManager(PingManager.class).setEnabled(false);
         PingManager pingManager = connection1.getExtensionManager(PingManager.class);
         pingManager.ping(JULIET);
@@ -60,7 +61,7 @@ public class PingManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         PingManager pingManager = connection1.getExtensionManager(PingManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(pingManager.isEnabled());

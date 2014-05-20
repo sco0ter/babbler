@@ -26,10 +26,8 @@ package org.xmpp.extension.receipts;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.XmppSession;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.*;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -48,8 +46,8 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
     public void testManager() {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getExtensionManager(MessageDeliveryReceiptsManager.class);
         // Test if the manager is disabled by default.
@@ -82,8 +80,8 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
     public void testManagerIfContactDoesNotSupportReceipts() {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getExtensionManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
@@ -110,7 +108,7 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
     public void testManagerIfNoMessageId() {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getExtensionManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
@@ -131,7 +129,7 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
     public void testManagerIfErrorType() {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getExtensionManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
@@ -151,7 +149,7 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
     public void testDisabledManager() {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
 
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
@@ -167,15 +165,14 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
 
     @Test
     public void testEnablingManager() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
     }
 
     @Test
     public void testListeners() throws IOException {
-        TestConnection connection1 = new TestConnection();
-        connection1.connect();
+        TestXmppSession connection1 = new TestXmppSession();
 
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);
 
@@ -203,7 +200,7 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);

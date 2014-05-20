@@ -26,7 +26,8 @@ package org.xmpp.extension.pubsub;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
+import org.xmpp.TestXmppSession;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoDiscovery;
 
@@ -39,7 +40,7 @@ public class PubSubEntityUseCasesTest {
 
     @Test
     public void testFeatures() {
-        TestConnection connection = new TestConnection();
+        TestXmppSession connection = new TestXmppSession();
         InfoDiscovery infoDiscovery = new InfoDiscovery();
         infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#collections"));
         infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#config-node"));

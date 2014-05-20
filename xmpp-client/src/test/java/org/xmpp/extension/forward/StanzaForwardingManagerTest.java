@@ -26,7 +26,7 @@ package org.xmpp.extension.forward;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 
@@ -37,7 +37,7 @@ public class StanzaForwardingManagerTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         StanzaForwardingManager stanzaForwardingManager = connection1.getExtensionManager(StanzaForwardingManager.class);
         // By default, the manager should be NOT enabled.
         Assert.assertFalse(stanzaForwardingManager.isEnabled());

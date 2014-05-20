@@ -42,7 +42,7 @@ public class IbbTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         InBandBytestreamManager inBandBytestreamManager = connection1.getExtensionManager(InBandBytestreamManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(inBandBytestreamManager.isEnabled());
@@ -58,8 +58,8 @@ public class IbbTest extends BaseTest {
     public void testInBandBytestreamManager() throws IOException {
         MockServer mockServer = new MockServer();
         final Lock lock = new ReentrantLock();
-        final XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
-        final XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
+        final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        final XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
         final Condition condition = lock.newCondition();
         new Thread() {
             @Override

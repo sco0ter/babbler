@@ -358,7 +358,6 @@ public class JidTest {
 
             try {
                 Jid.prepare(aChar, true);
-                System.out.println(i);
             } catch (IllegalArgumentException e) {
                 failed++;
             }

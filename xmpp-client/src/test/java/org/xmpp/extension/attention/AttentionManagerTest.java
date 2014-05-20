@@ -26,10 +26,8 @@ package org.xmpp.extension.attention;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.XmppSession;
-import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.*;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -47,8 +45,8 @@ public class AttentionManagerTest extends BaseTest {
 
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestConnection(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestConnection(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         final boolean[] attentionReceived = {false};
         xmppSession2.addMessageListener(new MessageListener() {
@@ -71,7 +69,7 @@ public class AttentionManagerTest extends BaseTest {
     @Test
     public void testServiceDiscoveryEntry() {
 
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         AttentionManager attentionManager = connection1.getExtensionManager(AttentionManager.class);
         Assert.assertFalse(attentionManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);

@@ -24,6 +24,8 @@
 
 package org.xmpp;
 
+import org.xmpp.stream.StreamException;
+
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.Random;

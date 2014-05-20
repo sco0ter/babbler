@@ -1,4 +1,4 @@
-package org.xmpp;/*
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Christian Schudt
@@ -22,6 +22,8 @@ package org.xmpp;/*
  * THE SOFTWARE.
  */
 
+package org.xmpp;
+
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.Stanza;
@@ -29,29 +31,45 @@ import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stream.ClientStreamElement;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Proxy;
 import java.util.concurrent.Executor;
 
 /**
  * @author Christian Schudt
  */
-public class TestConnection extends XmppSession {
+public class TestXmppSession extends XmppSession {
 
     private MockServer mockServer;
 
-    public TestConnection() {
+    public TestXmppSession() {
         this(Jid.valueOf("test@domain/resource"), new MockServer());
     }
 
-    public TestConnection(Jid jid, MockServer mockServer) {
+    public TestXmppSession(Jid jid, MockServer mockServer)  {
         super(null);
         connectedResource = jid;
+        activeConnection = new Connection(this, "hostname", 5222, Proxy.NO_PROXY) {
+            @Override
+            protected void restartStream() {
+
+            }
+
+            @Override
+            public void send(ClientStreamElement clientStreamElement) {
+
+            }
+
+            @Override
+            public void connect() throws IOException {
+
+            }
+
+            @Override
+            public void close() throws IOException {
+
+            }
+        };
         stanzaListenerExecutor = new Executor() {
             @Override
             public void execute(Runnable runnable) {
@@ -99,18 +117,5 @@ public class TestConnection extends XmppSession {
     public void close() throws IOException {
         super.close();
         updateStatus(Status.CLOSED);
-    }
-
-    @Override
-    public XMLStreamWriter createXMLStreamWriter(OutputStream outputStream) throws XMLStreamException {
-        return super.createXMLStreamWriter(outputStream);
-    }
-
-    public Unmarshaller getUnmarshaller() {
-        return unmarshaller;
-    }
-
-    public Marshaller getMarhaller() {
-        return marshaller;
     }
 }

@@ -140,7 +140,7 @@ public class JavaFXApp extends Application {
         useBosh.setText("Use BOSH");
 
         for (int i = 0; i < 1; i++) {
-            XmppSession xmppSession1 = new TestConnection();
+            XmppSession xmppSession1 = new TestXmppSession();
             xmppSession1.getExtensionManager(LastActivityManager.class).setLastActivityStrategy(new LastActivityStrategy() {
                 @Override
                 public Date getLastActivity() {

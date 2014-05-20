@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppException;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -46,8 +47,8 @@ public class HeadersManagerTest extends BaseTest {
     @Test
     public void testServiceDiscoveryIfHeadersAreDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(JULIET, mockServer);
-        TestConnection connection2 = new TestConnection(ROMEO, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
 
         // JULIET supports the following headers:
         HeaderManager headerManager = connection1.getExtensionManager(HeaderManager.class);
@@ -76,8 +77,8 @@ public class HeadersManagerTest extends BaseTest {
     @Test
     public void testServiceDiscoveryIfHeadersAreEnabled() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(JULIET, mockServer);
-        TestConnection connection2 = new TestConnection(ROMEO, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
 
         // JULIET supports the following headers:
         HeaderManager headerManager = connection1.getExtensionManager(HeaderManager.class);
@@ -106,8 +107,8 @@ public class HeadersManagerTest extends BaseTest {
     @Test
     public void testDiscoverSupportedHeaders() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(JULIET, mockServer);
-        TestConnection connection2 = new TestConnection(ROMEO, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
 
         // JULIET supports the following headers:
         HeaderManager headerManager = connection1.getExtensionManager(HeaderManager.class);

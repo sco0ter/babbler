@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
+import org.xmpp.TestXmppSession;
 import org.xmpp.XmppException;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -49,7 +50,7 @@ public class LastActivityManagerTest extends BaseTest {
 
     @Test
     public void testLastActivityManagerIsCleared() throws IOException {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
         lastActivityManager.setLastActivityStrategy(new LastActivityStrategy() {
             @Override
@@ -64,8 +65,8 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testGetLastActivity() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
-        new TestConnection(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        new TestXmppSession(JULIET, mockServer);
         LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
         LastActivity lastActivity = lastActivityManager.getLastActivity(JULIET);
         Assert.assertNotNull(lastActivity);
@@ -74,8 +75,8 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testGetLastActivityIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestConnection connection1 = new TestConnection(ROMEO, mockServer);
-        TestConnection connection2 = new TestConnection(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getExtensionManager(LastActivityManager.class).setEnabled(false);
         LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
         try {
@@ -88,7 +89,7 @@ public class LastActivityManagerTest extends BaseTest {
 
     @Test
     public void testLastActivityInAwayPresence() {
-        final TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        final TestXmppSession connection1 = new TestXmppSession(ROMEO, new MockServer());
         connection1.getExtensionManager(VCardManager.class).setEnabled(false);
         connection1.addPresenceListener(new PresenceListener() {
             @Override
@@ -103,7 +104,7 @@ public class LastActivityManagerTest extends BaseTest {
 
     @Test
     public void testLastActivityInXAPresence() {
-        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, new MockServer());
         connection1.getExtensionManager(VCardManager.class).setEnabled(false);
         connection1.addPresenceListener(new PresenceListener() {
             @Override
@@ -117,7 +118,7 @@ public class LastActivityManagerTest extends BaseTest {
 
     @Test
     public void testLastActivityInChatPresence() {
-        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, new MockServer());
         connection1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
@@ -129,7 +130,7 @@ public class LastActivityManagerTest extends BaseTest {
 
     @Test
     public void testLastActivityInDndPresence() {
-        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, new MockServer());
         connection1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
@@ -141,7 +142,7 @@ public class LastActivityManagerTest extends BaseTest {
 
     @Test
     public void testLastActivityInInitialPresence() {
-        TestConnection connection1 = new TestConnection(ROMEO, new MockServer());
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, new MockServer());
         connection1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
@@ -153,7 +154,7 @@ public class LastActivityManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         LastActivityManager lastActivityManager = connection1.getExtensionManager(LastActivityManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(lastActivityManager.isEnabled());

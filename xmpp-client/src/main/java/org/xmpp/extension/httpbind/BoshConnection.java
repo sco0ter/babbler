@@ -24,7 +24,10 @@
 
 package org.xmpp.extension.httpbind;
 
-import org.xmpp.*;
+import org.xmpp.Connection;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppSession;
+import org.xmpp.XmppUtils;
 import org.xmpp.stream.ClientStreamElement;
 
 import javax.naming.Context;
@@ -36,6 +39,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayOutputStream;
@@ -98,6 +103,10 @@ public final class BoshConnection extends Connection {
      * The number of seconds to wait.
      */
     private final Short wait;
+
+    private final XMLOutputFactory xmlOutputFactory;
+
+    private final XMLInputFactory xmlInputFactory;
 
     /**
      *
@@ -228,6 +237,8 @@ public final class BoshConnection extends Connection {
                 return thread;
             }
         });
+        xmlOutputFactory = XMLOutputFactory.newFactory();
+        xmlInputFactory = XMLInputFactory.newFactory();
     }
 
     /**
@@ -334,13 +345,6 @@ public final class BoshConnection extends Connection {
 
         // Send the initial request.
         sendNewRequest(body, false);
-
-        // Wait for the response and wait until all features have been negotiated.
-        try {
-            waitUntilSaslNegotiationStarted();
-        } catch (NoResponseException e) {
-            throw new IOException(e);
-        }
     }
 
     /**
@@ -523,7 +527,7 @@ public final class BoshConnection extends Connection {
                                     unacknowledgedRequests.put(body.getRid(), body);
                                 }
 
-                                httpConnection = (HttpURLConnection) url.openConnection(proxy);
+                                httpConnection = (HttpURLConnection) url.openConnection(getProxy());
                                 //httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
@@ -537,9 +541,9 @@ public final class BoshConnection extends Connection {
                                 // Branch the stream, so that its output can also be logged.
                                 try (OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest)) {
                                     // Create the writer for this connection.
-                                    xmlStreamWriter = xmppSession.createXMLStreamWriter(branchedOutputStream);
+                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream), true);
                                     // Then write the XML to the output stream by marshalling the object to the writer.
-                                    xmppSession.marshaller.marshal(body, xmlStreamWriter);
+                                    xmppSession.getMarshaller().marshal(body, xmlStreamWriter);
 
                                     if (logger.isLoggable(Level.FINE)) {
                                         logger.fine("--> " + new String(byteArrayOutputStreamRequest.toByteArray()));
@@ -559,14 +563,14 @@ public final class BoshConnection extends Connection {
                                 // Branch the stream so that its input can be logged.
                                 try (InputStream inputStream = XmppUtils.createBranchedInputStream(httpConnection.getInputStream(), byteArrayOutputStream)) {
                                     // Read the response.
-                                    xmlEventReader = createXMLEventReader(inputStream);
+                                    xmlEventReader = xmlInputFactory.createXMLEventReader(inputStream);
                                     while (xmlEventReader.hasNext()) {
                                         XMLEvent xmlEvent = xmlEventReader.peek();
 
                                         // Parse the <body/> element.
                                         synchronized (responseExecutor) {
                                             if (xmlEvent.isStartElement()) {
-                                                final JAXBElement<Body> element = xmppSession.unmarshaller.unmarshal(xmlEventReader, Body.class);
+                                                final JAXBElement<Body> element = xmppSession.getUnmarshaller().unmarshal(xmlEventReader, Body.class);
                                                 if (logger.isLoggable(Level.FINE)) {
                                                     logger.fine("<-- " + new String(byteArrayOutputStream.toByteArray()));
                                                 }

@@ -53,13 +53,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -81,27 +76,23 @@ public class XmppSession implements Closeable {
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
     /**
-     * The unmarshaller, which is used to unmarshal XML during reading from the input stream.
-     */
-    public final Unmarshaller unmarshaller;
-
-    /**
-     * The marshaller, which is used to marshal XML during writing to the output stream.
-     */
-    public final Marshaller marshaller;
-
-    /**
      * A lock object, used to create wait conditions.
      */
     public final Lock lock = new ReentrantLock();
-
-    final XMLOutputFactory xmlOutputFactory;
 
     final Condition streamNegotiatedUntilSasl;
 
     final Condition streamNegotiatedUntilResourceBinding;
 
-    final XMLInputFactory xmlInputFactory;
+    /**
+     * The unmarshaller, which is used to unmarshal XML during reading from the input stream.
+     */
+    private final Unmarshaller unmarshaller;
+
+    /**
+     * The marshaller, which is used to marshal XML during writing to the output stream.
+     */
+    private final Marshaller marshaller;
 
     private final SecurityManager securityManager;
 
@@ -143,7 +134,7 @@ public class XmppSession implements Closeable {
      */
     volatile Jid connectedResource;
 
-    private Connection activeConnection;
+    Connection activeConnection;
 
     /**
      * Holds the connection state.
@@ -182,9 +173,6 @@ public class XmppSession implements Closeable {
      */
     public XmppSession(String xmppServiceDomain, XmppContext xmppContext) {
         this.xmppServiceDomain = xmppServiceDomain;
-        this.xmlInputFactory = XMLInputFactory.newFactory();
-        this.xmlOutputFactory = XMLOutputFactory.newFactory();
-
         this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -630,6 +618,12 @@ public class XmppSession implements Closeable {
                 }
             }
         }
+        // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
+        try {
+            waitUntilSaslNegotiationStarted();
+        } catch (NoResponseException e) {
+            throw new IOException(e);
+        }
 
         updateStatus(Status.CONNECTED);
     }
@@ -666,7 +660,11 @@ public class XmppSession implements Closeable {
         if (element instanceof Stanza) {
             notifyStanzaListeners((Stanza) element, false);
         }
-        activeConnection.send(element);
+        if (activeConnection != null) {
+            activeConnection.send(element);
+        } else {
+            throw new IllegalStateException("No connection established.");
+        }
     }
 
     /**
@@ -885,17 +883,6 @@ public class XmppSession implements Closeable {
     }
 
     /**
-     * Creates the writer for writing to the stream.
-     *
-     * @param outputStream The output stream to write to.
-     * @return The XML writer.
-     * @throws XMLStreamException If the writer could not be created.
-     */
-    public XMLStreamWriter createXMLStreamWriter(OutputStream outputStream) throws XMLStreamException {
-        return XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(outputStream), true);
-    }
-
-    /**
      * Gets the security manager, which is responsible for TLS.
      *
      * @return The security manager.
@@ -1015,6 +1002,49 @@ public class XmppSession implements Closeable {
 
     public List<Connection> getConnections() {
         return connections;
+    }
+
+    /**
+     * Gets the unmarshaller, which is used to unmarshal XML during reading from the input stream.
+     */
+    public Unmarshaller getUnmarshaller() {
+        return unmarshaller;
+    }
+
+    /**
+     * Gets the marshaller, which is used to marshal XML during writing to the output stream.
+     */
+    public Marshaller getMarshaller() {
+        return marshaller;
+    }
+
+    /**
+     * Waits until SASL negotiation has started and then releases the lock. This method must be invoked at the end of the {@link #connect()} method.
+     *
+     * @throws NoResponseException If no response was received from the server.
+     * @throws IOException         If any exception occurred during stream negotiation.
+     */
+    protected final void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
+        // Wait for the response and wait until all features have been negotiated.
+        lock.lock();
+        try {
+            if (!streamNegotiatedUntilSasl.await(10000, TimeUnit.SECONDS)) {
+                throw new NoResponseException("Timeout reached while connecting.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
+        }
+
+        // Check if an exception has occurred during stream negotiation and throw it.
+        if (exception != null) {
+            try {
+                throw new IOException(exception);
+            } finally {
+                exception = null;
+            }
+        }
     }
 
     /**

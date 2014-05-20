@@ -29,6 +29,7 @@ import org.testng.annotations.BeforeClass;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
@@ -47,22 +48,23 @@ public class BaseTest {
 
     protected Unmarshaller unmarshaller;
 
-    protected TestConnection connection;
+    protected TestXmppSession connection;
 
     public BaseTest() {
-        connection = new TestConnection();
+        connection = new TestXmppSession();
 
     }
 
     @BeforeClass
     public void setupMarshaller() throws JAXBException, XMLStreamException {
-        marshaller = connection.getMarhaller();
+        marshaller = connection.getMarshaller();
         unmarshaller = connection.getUnmarshaller();
     }
 
     protected String marshall(Object object) throws XMLStreamException, JAXBException, IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        XMLStreamWriter xmlStreamWriter = connection.createXMLStreamWriter(outputStream);
+        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
+        XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(outputStream), true);
         marshaller.marshal(object, xmlStreamWriter);
         xmlStreamWriter.close();
         outputStream.close();

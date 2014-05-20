@@ -24,6 +24,8 @@
 
 package org.xmpp;
 
+import org.xmpp.stream.ClientStreamElement;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -49,7 +51,7 @@ final class XmppStreamWriter {
 
     private final ExecutorService executor;
 
-    private final XMLOutputFactory xof;
+    private final XMLOutputFactory xmlOutputFactory;
 
     private final Marshaller marshaller;
 
@@ -63,10 +65,10 @@ final class XmppStreamWriter {
 
     private ByteArrayOutputStream byteArrayOutputStream;
 
-    public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession, final XMLOutputFactory xof, final Marshaller marshaller) throws JAXBException, XMLStreamException, IOException {
+    public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession) throws XMLStreamException, IOException {
         this.xmppSession = xmppSession;
-        this.xof = xof;
-        this.marshaller = marshaller;
+        this.xmlOutputFactory = XMLOutputFactory.newFactory();
+        this.marshaller = xmppSession.getMarshaller();
 
         reset(outputStream);
 
@@ -95,7 +97,7 @@ final class XmppStreamWriter {
                     executor.execute(new Runnable() {
                         @Override
                         public void run() {
-                            synchronized (xof) {
+                            synchronized (xmlOutputFactory) {
                                 try {
                                     xmlStreamWriter.writeCharacters(" ");
                                     xmlStreamWriter.flush();
@@ -111,7 +113,7 @@ final class XmppStreamWriter {
     }
 
     void reset(OutputStream outputStream) throws XMLStreamException, IOException {
-        synchronized (xof) {
+        synchronized (xmlOutputFactory) {
             // Only recreate the writer, if the stream has changed (e.g. due to TLS or compression)
             if (lastOutputStream != outputStream) {
                 lastOutputStream = outputStream;
@@ -131,21 +133,21 @@ final class XmppStreamWriter {
                 }
                 byteArrayOutputStream = new ByteArrayOutputStream();
                 BranchedOutputStream branchedOutputStream = new BranchedOutputStream(outputStream, byteArrayOutputStream);
-                xmlStreamWriter = xof.createXMLStreamWriter(branchedOutputStream);
+                xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(branchedOutputStream);
 
-                prefixFreeCanonicalizationWriter = xmppSession.createXMLStreamWriter(branchedOutputStream);
+                prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(outputStream), true);
             }
         }
     }
 
-    void send(final Object object) {
-        if (!executor.isShutdown() && object != null) {
+    void send(final ClientStreamElement clientStreamElement) {
+        if (!executor.isShutdown() && clientStreamElement != null) {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    synchronized (xof) {
+                    synchronized (xmlOutputFactory) {
                         try {
-                            marshaller.marshal(object, prefixFreeCanonicalizationWriter);
+                            marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                             prefixFreeCanonicalizationWriter.flush();
                             if (logger.isLoggable(Level.FINE)) {
                                 logger.fine("-->  " + new String(byteArrayOutputStream.toByteArray()));
@@ -166,7 +168,7 @@ final class XmppStreamWriter {
 
                 @Override
                 public void run() {
-                    synchronized (xof) {
+                    synchronized (xmlOutputFactory) {
                         try {
                             xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
                             xmlStreamWriter.writeStartElement("stream", "stream", "http://etherx.jabber.org/streams");
@@ -199,7 +201,7 @@ final class XmppStreamWriter {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                synchronized (xof) {
+                synchronized (xmlOutputFactory) {
                     // Close the stream.
                     try {
                         xmlStreamWriter.writeEndElement();

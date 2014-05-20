@@ -26,7 +26,8 @@ package org.xmpp.extension.messagecorrect;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.TestConnection;
+import org.xmpp.TestXmppSession;
+import org.xmpp.TestXmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 
@@ -37,7 +38,7 @@ public class MessageCorrectionManagerTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestConnection connection1 = new TestConnection();
+        TestXmppSession connection1 = new TestXmppSession();
         MessageCorrectionManager manager = connection1.getExtensionManager(MessageCorrectionManager.class);
         // By default, the manager should NOT be enabled.
         Assert.assertFalse(manager.isEnabled());

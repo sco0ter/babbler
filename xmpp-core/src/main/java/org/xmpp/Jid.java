@@ -26,6 +26,8 @@ package org.xmpp;
 
 import java.text.Normalizer;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,6 +81,16 @@ public final class Jid implements Comparable<Jid> {
     // B.1 Commonly mapped to nothing
     // Every space, except white-space (\u0020)
     private static final Pattern MAP_TO_NOTHING = Pattern.compile("([\u00AD\u034F\u1806\u180B\u180C\u180D\u200B\u200C\u200D\u2060\uFE00\uFE01\uFE0F\uFEFF])");
+
+    /**
+     * Caches the escaped JIDs.
+     */
+    private static final LruCache<String, Jid> ESCAPED_CACHE = new LruCache<>(5000);
+
+    /**
+     * Caches the unescaped JIDs.
+     */
+    private static final LruCache<String, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
 
     private final String escapedLocal;
 
@@ -172,9 +184,26 @@ public final class Jid implements Comparable<Jid> {
             throw new IllegalArgumentException("jid must not be empty.");
         }
 
+        Jid result;
+        if (doUnescape) {
+            result = UNESCAPED_CACHE.get(jid);
+        } else {
+            result = ESCAPED_CACHE.get(jid);
+        }
+
+        if (result != null) {
+            return result;
+        }
+
         Matcher matcher = JID.matcher(jid);
         if (matcher.matches()) {
-            return new Jid(matcher.group(2), matcher.group(3), matcher.group(8), doUnescape, true);
+            Jid jidValue = new Jid(matcher.group(2), matcher.group(3), matcher.group(8), doUnescape, true);
+            if (doUnescape) {
+                UNESCAPED_CACHE.put(jid, jidValue);
+            } else {
+                ESCAPED_CACHE.put(jid, jidValue);
+            }
+            return jidValue;
         } else {
             throw new IllegalArgumentException("Could not parse JID.");
         }
@@ -483,6 +512,61 @@ public final class Jid implements Comparable<Jid> {
             return result;
         } else {
             return -1;
+        }
+    }
+
+    /**
+     * A simple concurrent implementation of a least-recently-used cache.
+     *
+     * @param <K> The key.
+     * @param <V> The value.
+     * @see <a href="http://javadecodedquestions.blogspot.de/2013/02/java-cache-static-data-loading.html">http://javadecodedquestions.blogspot.de/2013/02/java-cache-static-data-loading.html</a>
+     * @see <a href="http://stackoverflow.com/a/22891780">http://stackoverflow.com/a/22891780</a>
+     */
+    private static final class LruCache<K, V> {
+        private final int maxEntries;
+
+        private final ConcurrentHashMap<K, V> map;
+
+        private final ConcurrentLinkedQueue<K> queue;
+
+        private LruCache(int maxEntries) {
+            this.maxEntries = maxEntries;
+            this.map = new ConcurrentHashMap<>(maxEntries);
+            this.queue = new ConcurrentLinkedQueue<>();
+        }
+
+        private void put(final K key, final V value) {
+            boolean removed = false;
+            boolean isNew = false;
+            // Put the new key/value in the map.
+            if (map.put(key, value) != null) {
+                // If the key already existed, remove it from the queue.
+                removed = queue.remove(key);
+            } else {
+                isNew = true;
+            }
+
+            // If it was either in the queue before, or if it wasn't in the map yet, add it.
+            // This logic prevents duplicates in the queue.
+            if (removed || isNew) {
+                queue.offer(key);
+            }
+
+            while (queue.size() > maxEntries) {
+                K oldestKey = queue.poll();
+                if (null != oldestKey) {
+                    map.remove(oldestKey);
+                }
+            }
+        }
+
+        private V get(K key) {
+            // Remove the key from the queue and re-add it to the tail. It is now the most recently used key.
+            if (queue.remove(key)) {
+                queue.offer(key);
+            }
+            return map.get(key);
         }
     }
 }

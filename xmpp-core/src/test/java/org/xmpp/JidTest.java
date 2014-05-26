@@ -30,11 +30,42 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt
  */
 public class JidTest {
+
+    public static void main(String[] args) {
+        Executor executor = Executors.newFixedThreadPool(1);
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Executor executor1 = Executors.newCachedThreadPool();
+                for (int i = 0; i < 100; i++) {
+                    // Start 100 threads
+                    executor1.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            int j = 0;
+                            while (true) {
+                                j++;
+                                Jid.valueOf(j+"@test");
+                                if (j == 3000) {
+                                    j = 0;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+    }
 
     @Test
     public void testJidDomainOnly() {
@@ -466,16 +497,19 @@ public class JidTest {
         Assert.assertEquals(Jid.prepare(s8, true), "\u03C5\u0313\u0300");
     }
 
-    //@Test
+    @Test
     public void testPerformance() {
 
 
         long start = System.currentTimeMillis();
 
-        for (int i = 0; i < 100000; i++) {
-            Jid.prepare("testὒNode", false);
+        Jid.valueOf("test1" + "@DOMAIN", false);
+
+        for (int i = 0; i < 10000; i++) {
+            Jid.valueOf(UUID.randomUUID().toString() + "@DOMAIN", false);
         }
 
+        Jid.valueOf("test1" + "@DOMAIN", false);
         System.out.println(System.currentTimeMillis() - start);
     }
 
@@ -513,4 +547,6 @@ public class JidTest {
         Assert.assertEquals(jids.get(6), jid7);
         Assert.assertEquals(jids.get(7), jid8);
     }
+
+
 }

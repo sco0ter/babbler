@@ -537,19 +537,13 @@ public final class Jid implements Comparable<Jid> {
         }
 
         private void put(final K key, final V value) {
-            boolean removed = false;
-            boolean isNew = false;
             // Put the new key/value in the map.
             if (map.put(key, value) != null) {
-                // If the key already existed, remove it from the queue.
-                removed = queue.remove(key);
+                // If the key already existed, remove it from the queue and re-add it, to make it the most recently used key.
+                if (queue.remove(key)) {
+                    queue.offer(key);
+                }
             } else {
-                isNew = true;
-            }
-
-            // If it was either in the queue before, or if it wasn't in the map yet, add it.
-            // This logic prevents duplicates in the queue.
-            if (removed || isNew) {
                 queue.offer(key);
             }
 

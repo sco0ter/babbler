@@ -30,6 +30,7 @@ import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.TimeZone;
 
 /**
  * @author Christian Schudt
@@ -48,6 +49,7 @@ public class GeoLocationTest extends XmlTest {
                 "          <lat>45.44</lat>\n" +
                 "          <locality>Venice</locality>\n" +
                 "          <lon>12.33</lon>\n" +
+                "          <tzo>-08:00</tzo>\n" +
                 "        </geoloc>\n";
         GeoLocation geoLocation = unmarshal(xml, GeoLocation.class);
         Assert.assertNotNull(geoLocation);
@@ -57,6 +59,7 @@ public class GeoLocationTest extends XmlTest {
         Assert.assertEquals(geoLocation.getLatitude(), 45.44);
         Assert.assertEquals(geoLocation.getLocality(), "Venice");
         Assert.assertEquals(geoLocation.getLongitude(), 12.33);
+        Assert.assertEquals(geoLocation.getTimeZone(), TimeZone.getTimeZone("GMT-08:00"));
 
     }
 }

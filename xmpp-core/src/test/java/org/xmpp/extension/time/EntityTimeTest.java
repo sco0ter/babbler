@@ -92,9 +92,12 @@ public class EntityTimeTest extends XmlTest {
 
     @Test
     public void testTimezoneAdapter() throws Exception {
-        EntityTime.TimeZoneAdapter adapter = new EntityTime.TimeZoneAdapter();
+        TimeZoneAdapter adapter = new TimeZoneAdapter();
         TimeZone timeZone = TimeZone.getTimeZone("GMT-08:00");
         String str = adapter.marshal(timeZone);
         Assert.assertEquals(str, "-08:00");
+
+        TimeZone timeZoneUtc = adapter.unmarshal("Z");
+        Assert.assertEquals(timeZoneUtc, TimeZone.getTimeZone("GMT"));
     }
 }

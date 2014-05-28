@@ -24,12 +24,16 @@
 
 package org.xmpp.extension.geoloc;
 
+import org.xmpp.extension.time.TimeZoneAdapter;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>.
@@ -111,6 +115,10 @@ public final class GeoLocation {
 
     @XmlElement(name = "timestamp")
     private Date timestamp;
+
+    @XmlJavaTypeAdapter(TimeZoneAdapter.class)
+    @XmlElement(name = "tzo")
+    private TimeZone timeZone;
 
     @XmlElement(name = "uri")
     private URI uri;
@@ -561,5 +569,23 @@ public final class GeoLocation {
      */
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    /**
+     * Gets the time zone offset from UTC for the current location.
+     *
+     * @return The time zone.
+     */
+    public TimeZone getTimeZone() {
+        return timeZone;
+    }
+
+    /**
+     * Sets the time zone offset from UTC for the current location.
+     *
+     * @param timeZone The time zone.
+     */
+    public void setTimeZone(TimeZone timeZone) {
+        this.timeZone = timeZone;
     }
 }

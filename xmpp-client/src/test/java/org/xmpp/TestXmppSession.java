@@ -49,7 +49,7 @@ public class TestXmppSession extends XmppSession {
     public TestXmppSession(Jid jid, MockServer mockServer) {
         super(null);
         connectedResource = jid;
-        activeConnection = new Connection(this, "hostname", 5222, Proxy.NO_PROXY) {
+        activeConnection = new Connection("hostname", 5222, Proxy.NO_PROXY) {
             @Override
             protected void restartStream() {
 

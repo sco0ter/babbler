@@ -28,12 +28,12 @@ By enabling an extension, support for it will be automatically advertised by [XE
 
 All so-called extension managers are therefore derived from ```org.xmpp.extension.ExtensionManager``` (which provides the enabling/disabling logic).
 
-To get an extension manager for a specific extension, you use the ```getExtensionManager``` method of the connection.
+To get an extension manager for a specific extension, you use the ```getExtensionManager``` method of the ```XmppSession```.
 
 **Examples:**
 
 ```java
-EntityCapabilitiesManager entityCapabilitiesManager = connection.getExtensionManager(EntityCapabilitiesManager.class);
+EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
 entityCapabilitiesManager.setEnabled(true);
 ```
 
@@ -43,7 +43,7 @@ Furthermore, it will analyze incoming presence stanzas for a "caps" extension an
 ---
 
 ```
-EntityTimeManager entityTimeManager = connection.getExtensionManager(EntityTimeManager.class);
+EntityTimeManager entityTimeManager = xmppSession.getExtensionManager(EntityTimeManager.class);
 entityTimeManager.setEnabled(false);
 ```
 
@@ -53,7 +53,7 @@ Incoming "time" requests are automatically replied to with the current time, whi
 ---
 
 ```
-SoftwareVersionManager softwareVersionManager = connection.getExtensionManager(SoftwareVersionManager.class);
+SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
 softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "1.0"));
 ```
 
@@ -64,6 +64,6 @@ If an entity requests your software version, this manager automatically replies 
 Managers usually also allow to interact with other entities, e.g. retrieving the time, software version, or last activity of another entity:
 
 ```
-LastActivityManager lastActivityManager = connection.getExtensionManager(LastActivityManager.class);
+LastActivityManager lastActivityManager = xmppSession.getExtensionManager(LastActivityManager.class);
 LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@example.net"));
 ```

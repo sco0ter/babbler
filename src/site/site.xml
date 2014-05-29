@@ -62,8 +62,10 @@
             <item href="customextensions.html" name="Writing custom extensions"/>
             <item href="errors.html" name="Exceptions and XMPP Errors"/>
             <item href="debugging.html" name="Debugging XMPP traffic"/>
+            <item href="buildinstructions.html" name="Build Instructions"/>
         </menu>
         <menu name="Extension Guide">
+            <item href="xep/muc.html" name="Multi-User Chat"/>
             <item href="xep/pubsub.html" name="PubSub and PEP"/>
         </menu>
         <menu name="API Documentation">

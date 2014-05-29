@@ -58,8 +58,7 @@ public abstract class Connection implements Closeable {
      * @param port     The port, which is used to establish the connection.
      * @param proxy    The proxy.
      */
-    protected Connection(XmppSession xmppSession, String hostname, int port, Proxy proxy) {
-        this.xmppSession = xmppSession;
+    protected Connection(String hostname, int port, Proxy proxy) {
         this.hostname = hostname;
         this.port = port;
         this.proxy = proxy;

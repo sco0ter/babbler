@@ -31,5 +31,6 @@ While designing the library I had the following design goals in mind:
     * Implement *java.io.Closeable* on the connection, so that it you can use try-with-resources statement.
     * Use *java.net.HttpURLConnection* for BOSH, instead of some heavy HTTP library.
 
+
 [JAXB]: http://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding "Java Architecture for XML Binding"
 [XMPP]: http://xmpp.org "eXtensible Messaging and Presence Protocol"

@@ -30,6 +30,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.compress.CompressionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
+import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.im.ChatManager;
 import org.xmpp.im.PresenceManager;
 import org.xmpp.im.RosterManager;
@@ -57,6 +58,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
@@ -160,9 +163,10 @@ public class XmppSession implements Closeable {
      * Creates a connection with the specified XMPP domain through a proxy.
      *
      * @param xmppServiceDomain The XMPP service domain, which is used to lookup up the actual host via a DNS lookup.
+     * @param connection        The connections.
      */
-    public XmppSession(String xmppServiceDomain) {
-        this(xmppServiceDomain, XmppContext.getDefault());
+    public XmppSession(String xmppServiceDomain, Connection... connection) {
+        this(xmppServiceDomain, XmppContext.getDefault(), connection);
     }
 
     /**
@@ -171,7 +175,7 @@ public class XmppSession implements Closeable {
      * @param xmppServiceDomain The XMPP service domain, which is used as value in the 'to' attribute of the opening stream.
      * @param xmppContext       The XMPP context.
      */
-    public XmppSession(String xmppServiceDomain, XmppContext xmppContext) {
+    public XmppSession(String xmppServiceDomain, XmppContext xmppContext, Connection... connection) {
         this.xmppServiceDomain = xmppServiceDomain;
         this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
@@ -249,7 +253,7 @@ public class XmppSession implements Closeable {
 
         streamNegotiatedUntilSasl = lock.newCondition();
         streamNegotiatedUntilResourceBinding = lock.newCondition();
-
+        new BoshConnection("jabber.org", 80, new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxyServer", 3128)));
         featuresManager.addFeatureNegotiator(securityManager);
         featuresManager.addFeatureNegotiator(authenticationManager);
         featuresManager.addFeatureNegotiator(new FeatureNegotiator(Bind.class) {
@@ -283,6 +287,11 @@ public class XmppSession implements Closeable {
 
         // Every connection supports XEP-106 JID Escaping.
         getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
+
+        for (Connection con : connection) {
+            con.setXmppSession(this);
+            connections.add(con);
+        }
     }
 
     /**
@@ -1001,7 +1010,7 @@ public class XmppSession implements Closeable {
     }
 
     public List<Connection> getConnections() {
-        return connections;
+        return Collections.unmodifiableList(connections);
     }
 
     /**

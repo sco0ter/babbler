@@ -53,7 +53,7 @@ public class Product {
 }
 ```
 
-Then you have to register that class **before** creating the connection. (That is because the connection creates the JAXB context in its constructor, it can\'t be modified later):
+Then you have to register that class **before** creating the session. (That is because the session creates the JAXB context in its constructor, it can\'t be modified later):
 
 ```java
 XmppContext.getDefault().registerExtension(Product.class);
@@ -66,7 +66,7 @@ You can then simply send a message with that extension:
 ```java
 Message message = new Message(Jid.valueOf("romeo@example.net"));
 message.getExtensions().add(new Product("1", "5.99 €", "New product", "A very cool product!!"));
-connection.send(message);
+xmppSession.send(message);
 ```
 
 Which will result in the following stanza on the XMPP stream:

@@ -12,12 +12,12 @@ For now, there are three subclasses of it:
 
 ## Dealing with Stream Errors
 
-XMPP Stream Errors are unrecoverable, which means the connection will get disconnected after they have occurred.
+XMPP Stream Errors are unrecoverable, which means the session will get disconnected after they have occurred.
 
 Here's an example how to react with stream errors.
 
 ```java
-connection.addConnectionListener(new ConnectionListener() {
+xmppSession.addConnectionListener(new ConnectionListener() {
     @Override
     public void statusChanged(ConnectionEvent e) {
         if (e.getException() instanceof StreamException) {
@@ -34,7 +34,7 @@ connection.addConnectionListener(new ConnectionListener() {
 
 Most stanza errors are returned in response to an IQ-get or IQ-set query.
 
-For querying another XMPP entity, there's a ```query``` method on the ```org.xmpp.Connection``` class, which queries another entity for information and which is used by most methods.
+For querying another XMPP entity, there's a ```query``` method on the ```org.xmpp.XmppSession``` class, which queries another entity for information and which is used by most methods.
 
 Now two things can happen:
 * The entity does not respond at all.

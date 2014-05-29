@@ -202,11 +202,11 @@ public class JavaFXApp extends Application {
                     @Override
                     public void run() {
 
-                        xmppSession = new XmppSession(txtDomain.getText());
+
                         if (!useBosh.isSelected()) {
-                            xmppSession.getConnections().add(new TcpConnection(xmppSession, txtServer.getText(), Integer.parseInt(txtPort.getText()), Proxy.NO_PROXY));
+                            xmppSession = new XmppSession(txtDomain.getText(), new TcpConnection(txtServer.getText(), Integer.parseInt(txtPort.getText()), Proxy.NO_PROXY));
                         } else {
-                            xmppSession.getConnections().add(new BoshConnection(xmppSession, txtDomain.getText(), txtServer.getText(), Integer.parseInt(txtPort.getText())));
+                            xmppSession = new XmppSession(txtDomain.getText(), new BoshConnection(txtServer.getText(), Integer.parseInt(txtPort.getText())));
                         }
                         try {
                             SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -265,6 +265,11 @@ public class JavaFXApp extends Application {
                             public void invitationReceived(InvitationEvent e) {
                                 ChatService chatService = multiUserChatManager.createChatService(new Jid(e.getRoomAddress().getDomain()));
                                 ChatRoom chatRoom = chatService.createRoom(e.getRoomAddress().getLocal());
+                                try {
+                                    chatRoom.kickOccupant("Nickname", "Because I can!");
+                                } catch (XmppException e1) {
+                                    e1.printStackTrace();
+                                }
                                 try {
                                     chatRoom.enter("222");
                                 } catch (XmppException e1) {

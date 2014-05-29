@@ -1,32 +1,53 @@
 # Getting started
 ---
 
-## Creating a XMPP connection
+## Creating a XMPP session
 
-The first thing you want to do in order to connect to a XMPP server is creating a connection object.
-
-There are two kinds of connection:
-
-1. A [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
-2. A [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
-
-A normal TCP connection is created with:
+The first thing you want to do in order to connect to a XMPP server is creating a ```XmppSession``` object:
 
 ```java
-Connection connection = new TcpConnection("hostname", 5222);
+XmppSession xmppSession = new XmppSession("xmppDomain");
 ```
 
-If you want to establish a BOSH connection, use the following class instead:
+A session to a XMPP server can be established in two ways:
+
+1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
+2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
+
+By default, the ```XmppSession``` instance will try to connect to the domain with a TCP connection first (port 5222) during the connection process.
+If connection fails, it will try to connect with BOSH (port 5280).
+The hostname and port is determined by doing a DNS lookup.
+
+You can also configure the connections manually and specify concrete connection instances instead (e.g. if you want to use another port or want to use a proxy):
 
 ```java
-Connection connection = new BoshConnection("hostname", 5280);
+Connection tcpConnection = new TcpConnection("hostname", 5222);
 ```
 
-This connection instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+If you also want to use a BOSH connection with a HTTP proxy, use the following class:
 
-## Preparing the connection
+```java
+Connection boshConnection = new BoshConnection("hostname", 80, new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxyServer", 3128)));
+```
 
-Before connecting to a server, you should configure your connection.
+Then create the session with both connections:
+
+```java
+XmppSession xmppSession = new XmppSession("hostname", tcpConnection, boshConnection);
+```
+
+During connecting, the session will try both connections in order, until a connection is established.
+
+The ```XmppSession``` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+
+Here\'s an overview over the relation between session and connections:
+
+![Architecture](XmppSession.png)
+
+
+## Preparing the session
+
+Before connecting to a server, you should configure your XMPP session.
 
 You might want to do one of the following:
 
@@ -43,9 +64,9 @@ Here are some examples:
 
 ```java
 // Setting a custom SSL context
-connection.getSecurityManager().setSSLContext(sslContext);
+xmppSession.getSecurityManager().setSSLContext(sslContext);
 // Listen for presence changes
-connection.addPresenceListener(new PresenceListener() {
+xmppSession.addPresenceListener(new PresenceListener() {
     @Override
     public void handle(PresenceEvent e) {
         if (e.isIncoming()) {
@@ -54,14 +75,14 @@ connection.addPresenceListener(new PresenceListener() {
     }
 });
 // Listen for messages
-connection.addMessageListener(new MessageListener() {
+xmppSession.addMessageListener(new MessageListener() {
     @Override
     public void handle(MessageEvent e) {
         // Handle outgoing or incoming message
     }
 });
 // Listen for roster pushes
-connection.getRosterManager().addRosterListener(new RosterListener() {
+xmppSession.getRosterManager().addRosterListener(new RosterListener() {
     @Override
     public void rosterChanged(RosterEvent e) {
     }
@@ -70,17 +91,20 @@ connection.getRosterManager().addRosterListener(new RosterListener() {
 
 ## Connecting to a server
 
-If you have prepared your connection, you are now ready to connect to the server:
+If you have prepared your session, you are now ready to connect to the server:
 
 ```java
 try {
-   connection.connect();
+   xmppSession.connect();
 } catch (IOException e) {
    // e.g. UnknownHostException
 }
 ```
 
+The session will try to connect to the XMPP server by using the configured connections in order.
+
 Connecting involves opening the initial XMPP stream header and negotiate any features offered by the server (most likely only TLS).
+
 
 ## Authenticating and binding a resource
 
@@ -88,7 +112,7 @@ After connecting, you have to authenticate and bind a resource, in order to beco
 
 ```java
 try {
-   connection.login("username", "password", "resource");
+   xmppSession.login("username", "password", "resource");
 } catch (FailedLoginException e) {
    // Login failed, due to wrong username/password
 }
@@ -99,7 +123,7 @@ try {
 After you are connected, authenticated and have bound a resource, you should now establish a presence session, by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
 
 ```java
-connection.send(new Presence());
+xmppSession.send(new Presence());
 ```
 
 ## Sending a message
@@ -107,22 +131,22 @@ connection.send(new Presence());
 Sending a message works like this:
 
 ```java
-connection.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
+xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
 ```
 
-## Closing the connection
+## Closing the session
 
-Closing a connection is simply done with:
+Closing a session is simply done with:
 
 ```java
-connection.close();
+xmppSession.close();
 ```
 
-Note, that ```org.xmpp.Connection``` implements ```java.io.Closeable```, which means you can also use the try-with-resources statement, which automatically closes the connection:
+Note, that ```org.xmpp.XmppSession``` implements ```java.io.Closeable```, which means you can also use the try-with-resources statement, which automatically closes the session:
 
 ```java
-try (Connection connection = new TcpConnection("hostname", 5222)) {
-    connection.connect();
+try (XmppSession xmppSession = new XmppSession("domain")) {
+    xmppSession.connect();
 } catch (Exception e) {
     // handle exception
 }

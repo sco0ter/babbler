@@ -12,7 +12,7 @@
 If you don't know the address of your server\'s pubsub service, you can discover pubsub services like that:
 
 ```java
-PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
+PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
 try {
     List<Jid> pubSubServices = pubSubManager.discoverPubSubServices();
 } catch (XmppException e) {
@@ -80,7 +80,7 @@ pubSubService.unsubscribe("princely_musings");
 For now, you have to just deal directly with the messages. This may change in the future.
 
 ```java
-connection.addMessageListener(new MessageListener() {
+xmppSession.addMessageListener(new MessageListener() {
     @Override
     public void handle(MessageEvent e) {
         if (e.isIncoming()) {

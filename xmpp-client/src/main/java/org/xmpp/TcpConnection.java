@@ -79,8 +79,8 @@ public final class TcpConnection extends Connection {
      * @param hostname The hostname.
      * @param port     The port.
      */
-    public TcpConnection(XmppSession xmppSession, String hostname, int port) {
-        super(xmppSession, hostname, port, Proxy.NO_PROXY);
+    public TcpConnection(String hostname, int port) {
+        this(hostname, port, Proxy.NO_PROXY);
     }
 
     /**
@@ -89,10 +89,10 @@ public final class TcpConnection extends Connection {
      * @param hostname The hostname.
      * @param port     The port.
      * @param proxy    The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
-     * @see #TcpConnection(org.xmpp.XmppSession, String, int)
+     * @see #TcpConnection(String, int)
      */
-    public TcpConnection(XmppSession xmppSession, String hostname, int port, Proxy proxy) {
-        super(xmppSession, hostname, port, proxy);
+    public TcpConnection(String hostname, int port, Proxy proxy) {
+        super(hostname, port, proxy);
     }
 
     /**

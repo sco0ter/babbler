@@ -1,9 +1,18 @@
 pre.prettyprint {
-    padding: 10px;
+    padding: 1em;
 }
 
 a.externalLink[href^="http"] {
     background: none;
     background-image: none;
     padding-right: 0;
+}
+
+h2 {
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+}
+
+blockquote {
+    margin: 1.5em;
 }

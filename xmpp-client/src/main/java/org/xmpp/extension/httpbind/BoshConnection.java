@@ -25,7 +25,6 @@
 package org.xmpp.extension.httpbind;
 
 import org.xmpp.Connection;
-import org.xmpp.XmppSession;
 import org.xmpp.XmppUtils;
 import org.xmpp.stream.ClientStreamElement;
 
@@ -144,45 +143,54 @@ public final class BoshConnection extends Connection {
      * </p>
      * If this fails, the fallback mechanism will be to assemble the BOSH URL in the following way:
      * http://[xmppServiceDomain]/http-bind/
-     *
-     * @param xmppServiceDomain The XMPP service domain.
      */
-    public BoshConnection(XmppSession xmppSession, String xmppServiceDomain) {
-        this(xmppSession, xmppServiceDomain, Proxy.NO_PROXY);
+    public BoshConnection() {
+        this(Proxy.NO_PROXY);
     }
 
     /**
      * Creates a BOSH connection on basis of the XMPP service domain through a proxy.
      *
-     * @param xmppServiceDomain The XMPP service domain.
-     * @param proxy             The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
-     * @see #BoshConnection(XmppSession, String)
+     * @param proxy The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
+     * @see #BoshConnection()
      */
-    public BoshConnection(XmppSession xmppSession, String xmppServiceDomain, Proxy proxy) {
-        this(xmppSession, xmppServiceDomain, null, 0, null, proxy, null, (short) 60);
-    }
-
-    /**
-     * Creates a BOSH connection on basis of a host and port.
-     * The BOSH URL used during connecting will be {@code http://<host>:<port>/http-bind/}
-     *
-     * @param hostname The hostname.
-     * @param port     The port.
-     */
-    public BoshConnection(XmppSession xmppSession, String hostname, int port) {
-        this(xmppSession, hostname, port, null, Proxy.NO_PROXY);
+    public BoshConnection(Proxy proxy) {
+        this(null, 0, null, proxy, null, (short) 60);
     }
 
     /**
      * Creates a BOSH connection on basis of the XMPP service domain, host and port.
      * The BOSH URL used during connecting will be {@code http://<host>:<port>/http-bind/}
      *
-     * @param xmppServiceDomain The XMPP service domain.
-     * @param hostname          The hostname.
-     * @param port              The port.
+     * @param hostname The hostname.
+     * @param port     The port.
      */
-    public BoshConnection(XmppSession xmppSession, String xmppServiceDomain, String hostname, int port) {
-        this(xmppSession, xmppServiceDomain, hostname, port, null, Proxy.NO_PROXY, null, (short) 60);
+    public BoshConnection(String hostname, int port) {
+        this(hostname, port, null, Proxy.NO_PROXY, null, (short) 60);
+    }
+
+    /**
+     * Creates a BOSH connection on basis of the XMPP service domain, host and port.
+     * The BOSH URL used during connecting will be {@code http://<host>:<port>/http-bind/}
+     *
+     * @param hostname The hostname.
+     * @param port     The port.
+     * @param file     The file, which is needed to construct the URL, e.g. "/http-bind/".
+     */
+    public BoshConnection(String hostname, int port, String file) {
+        this(hostname, port, file, Proxy.NO_PROXY, null, (short) 60);
+    }
+
+    /**
+     * Creates a BOSH connection on basis of the XMPP service domain, host and port.
+     * The BOSH URL used during connecting will be {@code http://<host>:<port>/http-bind/}
+     *
+     * @param hostname The hostname.
+     * @param port     The port.
+     * @param proxy    The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
+     */
+    public BoshConnection(String hostname, int port, Proxy proxy) {
+        this(hostname, port, null, proxy, null, (short) 60);
     }
 
     /**
@@ -194,24 +202,23 @@ public final class BoshConnection extends Connection {
      * @param file     The file, which is needed to construct the URL, e.g. "/http-bind/".
      * @param proxy    The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
      */
-    public BoshConnection(XmppSession xmppSession, String hostname, int port, String file, Proxy proxy) {
-        this(xmppSession, null, hostname, port, file, proxy, null, (short) 60);
+    public BoshConnection(String hostname, int port, String file, Proxy proxy) {
+        this(hostname, port, file, proxy, null, (short) 60);
     }
 
     /**
      * Creates a BOSH connection, using the specified host, port and file to create the URL in the form of {@code http://<host>:<port>/<file>}.
      * The initial session creation request will contain the specified route and content.
      *
-     * @param xmppServiceDomain The XMPP service domain.
-     * @param hostname          The host.
-     * @param port              The port.
-     * @param file              The file, which is needed to construct the URL, e.g. "/http-bind/".
-     * @param proxy             The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
-     * @param route             The route, formatted as "proto:host:port" (e.g., "xmpp:example.com:9999").
-     * @param wait              The maximal number of seconds to wait between two requests. If a request exceeds this time an exception is thrown, which will terminate the connection.
+     * @param hostname The host.
+     * @param port     The port.
+     * @param file     The file, which is needed to construct the URL, e.g. "/http-bind/".
+     * @param proxy    The proxy, which should be of type {@link java.net.Proxy.Type#HTTP}
+     * @param route    The route, formatted as "proto:host:port" (e.g., "xmpp:example.com:9999").
+     * @param wait     The maximal number of seconds to wait between two requests. If a request exceeds this time an exception is thrown, which will terminate the connection.
      */
-    public BoshConnection(XmppSession xmppSession, String xmppServiceDomain, String hostname, int port, String file, Proxy proxy, String route, short wait) {
-        super(xmppSession, hostname, port, proxy);
+    public BoshConnection(String hostname, int port, String file, Proxy proxy, String route, short wait) {
+        super(hostname, port, proxy);
         this.route = route;
         this.file = file;
         this.wait = wait;

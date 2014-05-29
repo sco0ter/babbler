@@ -1,12 +1,12 @@
 # Contacts, Presence and Messaging
 ---
 
-For XMPP core aspects like roster and presence management, there\'s a corresponding manager class, directly on the connection.
+For XMPP core aspects like roster and presence management, there\'s a corresponding manager class, directly on the xmppSession instance.
 
 ## Adding contacts to your roster
 
 ```java
-connection.getRosterManager().addContact(new Roster.Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
+xmppSession.getRosterManager().addContact(new Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
 ```
 
 This will create a contact on your roster and subsequently sends a presence subscription request to the user.
@@ -18,7 +18,7 @@ The roster manager also provides other methods, e.g. for deleting and updating a
 You can listen for roster pushes with:
 
 ```java
-connection.getRosterManager().addRosterListener(new RosterListener() {
+xmppSession.getRosterManager().addRosterListener(new RosterListener() {
     @Override
     public void rosterChanged(RosterEvent e) {
         // The roster event contains information about added, updated or deleted contacts.
@@ -30,12 +30,12 @@ connection.getRosterManager().addRosterListener(new RosterListener() {
 
 
 ```java
-connection.addPresenceListener(new PresenceListener() {
+xmppSession.addPresenceListener(new PresenceListener() {
     @Override
     public void handle(PresenceEvent e) {
         if (e.isIncoming()) {
             Presence presence = e.getPresence();
-            Roster.Contact contact = connection.getRosterManager().getContact(presence.getFrom());
+            Contact contact = xmppSession.getRosterManager().getContact(presence.getFrom());
             if (contact != null) {
                 // ... contact's presence has updated.
             }
@@ -49,7 +49,7 @@ connection.addPresenceListener(new PresenceListener() {
 Listening for messages is done by adding a message listener to the connection.
 
 ```java
-connection.addMessageListener(new MessageListener() {
+xmppSession.addMessageListener(new MessageListener() {
     @Override
     public void handle(MessageEvent e) {
         if (e.isIncoming()) {
@@ -67,7 +67,7 @@ The same approach as for incoming messages is also used for outgoing messages. T
 You can use this, if you want to add extensions to a stanza or otherwise modify the stanza.
 
 ```java
-connection.addMessageListener(new MessageListener() {
+xmppSession.addMessageListener(new MessageListener() {
     @Override
     public void handle(MessageEvent e) {
         if (!e.isIncoming()) {

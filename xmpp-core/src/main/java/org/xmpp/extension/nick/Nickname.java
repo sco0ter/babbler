@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>.
+ * The implementation of the {@code <nick/>} element in the {@code http://jabber.org/protocol/nick} namespace.
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0172.html#intro">1. Introduction</a></cite></p>
  * <p>A nickname is a global, memorable (but not necessarily unique) friendly or informal name chosen by the owner of a bare JID {@code <localpart@domain.tld>} for the purpose of associating a distinctive mapping between the person's unique JID and non-unique nickname.</p>
@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.XmlValue;
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0172.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "nick")
 public final class Nickname {

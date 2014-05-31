@@ -54,7 +54,7 @@ public class JidTest {
                             int j = 0;
                             while (true) {
                                 j++;
-                                Jid.valueOf(j+"@test");
+                                Jid.valueOf(j + "@test");
                                 if (j == 3000) {
                                     j = 0;
                                 }

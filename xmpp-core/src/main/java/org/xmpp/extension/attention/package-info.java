@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a>.
+ * Contains classes for <a href="http://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a> (version: 1.0).
  * <p>
  * It defines an XMPP protocol extension for getting the attention of another user.
  * </p>

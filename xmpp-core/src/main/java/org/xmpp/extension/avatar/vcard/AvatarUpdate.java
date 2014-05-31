@@ -28,9 +28,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the 'vcard-temp:x:update' presence extension as specified by <a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>.
+ * The implementation of the {@code <x/>} element in the {@code vcard-temp:x:update} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0153.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "x")
 public final class AvatarUpdate {

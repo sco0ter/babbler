@@ -30,9 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <section/>} element in the {@code http://jabber.org/protocol/xdata-layout} namespace.
+ * <p>
  * A section is used to partition a page.
+ * </p>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
  * @see <a href="http://xmpp.org/extensions/xep-0141.html#sectioning">3.2 Sectioning Fields</a>
  * @see org.xmpp.extension.data.layout.Page#getSections()
  */

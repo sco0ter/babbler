@@ -22,17 +22,24 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.carbons;
+package org.xmpp.extension.amp;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
+ * The implementation of the {@code <rule/>} element, used both in the {@code http://jabber.org/protocol/amp} namespace as well as in the {@code http://jabber.org/protocol/amp#errors} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-amp">XML Schema</a>
  */
-@XmlTransient
-@XmlSeeAlso({Enable.class, Disable.class, Private.class, Received.class, Sent.class})
-public final class MessageCarbons {
+public final class Rule {
+    @XmlAttribute(name = "action")
+    private String action;
 
-    static final String NAMESPACE = "urn:xmpp:carbons:2";
+    @XmlAttribute(name = "condition")
+    private String condition;
+
+    @XmlAttribute(name = "value")
+    private String value;
 }

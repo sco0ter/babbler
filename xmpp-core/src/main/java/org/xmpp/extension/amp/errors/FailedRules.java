@@ -24,13 +24,18 @@
 
 package org.xmpp.extension.amp.errors;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import org.xmpp.extension.amp.Rule;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <failed-rules/>} element in the {@code http://jabber.org/protocol/amp#errors} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-err">XML Schema</a>
  */
 @XmlRootElement(name = "failed-rules")
 public final class FailedRules {
@@ -39,17 +44,5 @@ public final class FailedRules {
 
     public List<Rule> getRules() {
         return rules;
-    }
-
-    public static class Rule {
-
-        @XmlAttribute(name = "action")
-        private String action;
-
-        @XmlAttribute(name = "condition")
-        private String condition;
-
-        @XmlAttribute(name = "value")
-        private String value;
     }
 }

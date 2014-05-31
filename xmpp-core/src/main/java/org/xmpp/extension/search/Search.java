@@ -35,9 +35,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the 'jabber:iq:search' extension.
+ * The implementation of the {@code <query/>} element in the {@code jabber:iq:search} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0055.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Search {

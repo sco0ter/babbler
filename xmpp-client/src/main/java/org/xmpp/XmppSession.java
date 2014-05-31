@@ -163,7 +163,7 @@ public class XmppSession implements Closeable {
      * Creates a connection with the specified XMPP domain through a proxy.
      *
      * @param xmppServiceDomain The XMPP service domain, which is used to lookup up the actual host via a DNS lookup.
-     * @param connection        The connections.
+     * @param connection        The connections. The can alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
      */
     public XmppSession(String xmppServiceDomain, Connection... connection) {
         this(xmppServiceDomain, XmppContext.getDefault(), connection);
@@ -174,6 +174,7 @@ public class XmppSession implements Closeable {
      *
      * @param xmppServiceDomain The XMPP service domain, which is used as value in the 'to' attribute of the opening stream.
      * @param xmppContext       The XMPP context.
+     * @param connection        The connections. The can alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
      */
     public XmppSession(String xmppServiceDomain, XmppContext xmppContext, Connection... connection) {
         this.xmppServiceDomain = xmppServiceDomain;
@@ -416,10 +417,12 @@ public class XmppSession implements Closeable {
     /**
      * Awaits for a presence stanza to arrive. The filter determined the characteristics of the presence stanza.
      *
-     * @param filter  The presence filter.
-     * @param timeout The timeout.
+     * @param presence The presence, which is sent.
+     * @param filter   The presence filter.
+     * @param timeout  The timeout.
      * @return The presence stanza.
      * @throws NoResponseException If no presence stanza has arrived in time.
+     * @throws StanzaException     If the returned presence contains a stanza error.
      */
     public Presence sendAndAwait(Presence presence, final Predicate<Presence> filter, long timeout) throws NoResponseException, StanzaException {
 
@@ -467,10 +470,12 @@ public class XmppSession implements Closeable {
     /**
      * Awaits for a presence stanza to arrive. The filter determined the characteristics of the presence stanza.
      *
-     * @param filter  The presence filter.
+     * @param message The message, which is sent.
+     * @param filter  The message filter.
      * @param timeout The timeout.
-     * @return The presence stanza.
-     * @throws NoResponseException If no presence stanza has arrived in time.
+     * @return The message stanza.
+     * @throws NoResponseException If no message stanza has arrived in time.
+     * @throws StanzaException     If the returned message contains a stanza error.
      */
     public Message sendAndAwait(Message message, final Predicate<Message> filter, long timeout) throws NoResponseException, StanzaException {
 
@@ -1009,12 +1014,19 @@ public class XmppSession implements Closeable {
         }
     }
 
+    /**
+     * Gets an unmodifiable list of connections.
+     *
+     * @return The connections.
+     */
     public List<Connection> getConnections() {
         return Collections.unmodifiableList(connections);
     }
 
     /**
      * Gets the unmarshaller, which is used to unmarshal XML during reading from the input stream.
+     *
+     * @return The unmarshaller.
      */
     public Unmarshaller getUnmarshaller() {
         return unmarshaller;
@@ -1022,6 +1034,8 @@ public class XmppSession implements Closeable {
 
     /**
      * Gets the marshaller, which is used to marshal XML during writing to the output stream.
+     *
+     * @return The marshaller.
      */
     public Marshaller getMarshaller() {
         return marshaller;

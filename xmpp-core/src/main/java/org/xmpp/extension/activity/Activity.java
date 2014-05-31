@@ -27,13 +27,15 @@ package org.xmpp.extension.activity;
 import javax.xml.bind.annotation.*;
 
 /**
- * The implementation of the {@code <activity/>} element.
+ * The implementation of the {@code <activity/>} element in the {@code http://jabber.org/protocol/activity} namespace.
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0108.html#activities">3. Activity Values</a></cite></p>
  * <p>Each activity has a REQUIRED general category and an OPTIONAL specific instance. One can understand each specifier as '[user] is [activity]' (e.g., 'Juliet is partying'), where the relevant value is the most specific activity provided (e.g., specifically "partying" rather than generally "relaxing").</p>
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0108.html">XEP-0108: User Activity</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0108.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "activity")
 @XmlSeeAlso({Activity.AbstractCategory.class})

@@ -31,9 +31,11 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import java.net.URI;
 
 /**
- * The implementation of the {@code <address/>} element.
+ * The implementation of the {@code <address/>} element in the {@code http://jabber.org/protocol/address} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0033.html#schema">XML Schema</a>
  * @see Addresses
  */
 public final class Address {

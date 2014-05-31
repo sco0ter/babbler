@@ -27,9 +27,11 @@ package org.xmpp.extension.chatstates;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the {@code <active/>} chat state.
+ * The implementation of the {@code <active/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents an active chat state.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0085.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Active {

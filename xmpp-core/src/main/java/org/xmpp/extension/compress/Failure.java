@@ -31,11 +31,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
+ * The implementation of the {@code <failure/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates failure during compression negotiation.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
  */
 @XmlRootElement(name = "failure")
 @XmlSeeAlso({Failure.SetupFailed.class, Failure.ProcessingFailed.class, Failure.UnsupportedMethod.class})
-final class Failure implements ServerStreamElement {
+public final class Failure implements ServerStreamElement {
     @XmlElementRef
     private Condition condition;
 

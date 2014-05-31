@@ -30,10 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the {@code <query/>} element.
+ * The implementation of the {@code <query/>} element in the {@code jabber:iq:private} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0049.html#sect-id236947">2. jabber:iq:private Namespace</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0049.html#sect-idp1528656">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class PrivateData {

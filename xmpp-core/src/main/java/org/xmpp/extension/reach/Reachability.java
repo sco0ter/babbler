@@ -30,7 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <reach/>} element in the {@code urn:xmpp:reach:0} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0152.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "reach")
 public final class Reachability {

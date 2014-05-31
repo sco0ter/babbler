@@ -30,7 +30,11 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <sent/>} element in the {@code urn:xmpp:carbons:2} namespace, used to mark a carbon copied message as sent.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "sent")
 public final class Sent {
@@ -41,7 +45,19 @@ public final class Sent {
     private Sent() {
     }
 
-    public Sent(Forwarded forwarded) {
-        this.forwarded = forwarded;
+    /**
+     * @param forwardedMessage The forwarded message.
+     */
+    public Sent(Forwarded forwardedMessage) {
+        this.forwarded = forwardedMessage;
+    }
+
+    /**
+     * Gets the forwarded message.
+     *
+     * @return The forwarded message.
+     */
+    public Forwarded getForwardedMessage() {
+        return forwarded;
     }
 }

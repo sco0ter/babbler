@@ -34,15 +34,17 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>.
+ * The implementation of the {@code <x/>} element in the {@code jabber:x:data} namespace, which represents data forms.
  * <blockquote>
  * <p>This specification defines an XMPP protocol extension for data forms that can be used in workflows such as service configuration as well as for application-specific data description and reporting. The protocol includes lightweight semantics for forms processing (such as request, response, submit, and cancel), defines several common field types (boolean, list options with single or multiple choice, text with single line or multiple lines, single or multiple JabberIDs, hidden fields, etc.), provides extensibility for future data types, and can be embedded in a wide range of applications. The protocol is not intended to provide complete forms-processing functionality as is provided in the W3C XForms technology, but instead provides a basic subset of such functionality for use by XMPP entities.</p>
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0004.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "x")
-public class DataForm implements Comparable<DataForm> {
+public final class DataForm implements Comparable<DataForm> {
     @XmlAttribute
     private Type type;
 
@@ -212,6 +214,13 @@ public class DataForm implements Comparable<DataForm> {
         return null;
     }
 
+    /**
+     * Compares this data form with another data form.
+     * Data forms which have a "FORM_TYPE" field are are listed first in a collection.
+     *
+     * @param o The other data form.
+     * @return The comparison result.
+     */
     @Override
     public int compareTo(DataForm o) {
         String ft = getFormType(this);

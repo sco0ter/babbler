@@ -26,12 +26,15 @@ package org.xmpp.extension.amp;
 
 import org.xmpp.Jid;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <amp/>} element in the {@code http://jabber.org/protocol/amp} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-amp">XML Schema</a>
  */
 @XmlRootElement(name = "amp")
 public final class AdvancedMessageProcessing {
@@ -45,17 +48,4 @@ public final class AdvancedMessageProcessing {
     private Jid to;
 
     private List<Rule> rules;
-
-    public static class Rule {
-
-        @XmlAttribute(name = "action")
-        private String action;
-
-        @XmlAttribute(name = "condition")
-        private String condition;
-
-        @XmlAttribute(name = "value")
-        private String value;
-    }
-
 }

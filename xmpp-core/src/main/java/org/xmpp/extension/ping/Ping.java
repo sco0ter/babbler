@@ -27,9 +27,11 @@ package org.xmpp.extension.ping;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the {@code <ping/>} element.
+ * The implementation of the {@code <ping/>} element in the {@code urn:xmpp:ping} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0199.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Ping {

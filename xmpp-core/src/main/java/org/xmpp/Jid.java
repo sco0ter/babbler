@@ -90,7 +90,7 @@ public final class Jid implements Comparable<Jid> {
     /**
      * Caches the unescaped JIDs.
      */
-    private static final LruCache<String, Jid> UNESCAPED_CACHE  = new LruCache<>(5000);
+    private static final LruCache<String, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
 
     private final String escapedLocal;
 

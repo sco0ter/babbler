@@ -63,7 +63,7 @@ public class BitOfBinaryTest extends XmlTest {
 
         Data data = iq.getExtension(Data.class);
         Assert.assertNotNull(data);
-        Assert.assertEquals(data.getCid(), "sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org");
+        Assert.assertEquals(data.getContentId(), "sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org");
         Assert.assertEquals(data.getMaxAge(), 86400);
         Assert.assertEquals(data.getType(), "image/png");
         Assert.assertNotNull(data.getBytes());

@@ -26,7 +26,6 @@ package org.xmpp.extension.disco.info;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents an identity of an XMPP entity.
@@ -37,7 +36,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Christian Schudt
  */
-@XmlRootElement
 public final class Identity implements Comparable<Identity> {
 
     @XmlAttribute

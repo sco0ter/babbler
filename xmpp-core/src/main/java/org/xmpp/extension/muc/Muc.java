@@ -28,9 +28,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the {@code <x/>} element, which allows to enter a room.
+ * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc} namespace, which allows to enter a room.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-muc">XML Schema</a>
  */
 @XmlRootElement(name = "x")
 public final class Muc {

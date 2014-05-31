@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = MessageCarbons.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.carbons;
+@XmlSchema(namespace = Enable.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.carbons;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

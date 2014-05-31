@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * The implementation of the {@code <addresses/>} element.
+ * The implementation of the {@code <addresses/>} element in the {@code http://jabber.org/protocol/address} namespace..
  * <p>
  * Use this class to add extended address information to a stanza.
  * </p>
@@ -43,6 +43,7 @@ import java.util.List;
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0033.html#schema">XML Schema</a>
  * @see Address
  */
 @XmlRootElement(name = "addresses")

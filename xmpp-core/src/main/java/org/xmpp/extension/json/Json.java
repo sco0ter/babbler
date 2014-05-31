@@ -28,7 +28,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
+ * The implementation of the {@code <json/>} element in the {@code urn:xmpp:json:0} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0335.html">XEP-0335: JSON Containers</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0335.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "json")
 public final class Json {

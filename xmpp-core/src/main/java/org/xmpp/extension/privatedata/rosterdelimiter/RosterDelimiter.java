@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
- * This class implements <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>.
+ * The implementation of the {@code <roster/>} element in the {@code roster:delimiter} namespace.
  * <p>
  * It allows to store a roster group delimiter in the private storage, in order to display nested roster groups.
  * </p>
@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.XmlValue;
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0083.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "roster")
 public final class RosterDelimiter {

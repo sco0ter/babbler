@@ -35,7 +35,7 @@ import org.xmpp.stanza.client.IQ;
 public final class MessageCarbonsManager extends ExtensionManager {
 
     private MessageCarbonsManager(XmppSession xmppSession) {
-        super(xmppSession, MessageCarbons.NAMESPACE);
+        super(xmppSession, Enable.NAMESPACE);
     }
 
     public void enableCarbons() throws XmppException {

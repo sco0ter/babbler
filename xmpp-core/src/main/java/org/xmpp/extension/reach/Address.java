@@ -33,7 +33,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <address/>} element in the {@code urn:xmpp:reach:0} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0152.html#schema">XML Schema</a>
  */
 public final class Address {
 

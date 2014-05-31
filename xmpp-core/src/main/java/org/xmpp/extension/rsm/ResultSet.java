@@ -28,9 +28,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>.
+ * The implementation of the {@code <set/>} element in the {@code http://jabber.org/protocol/rsm} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0059.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "set")
 public final class ResultSet {

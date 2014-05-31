@@ -29,7 +29,11 @@ import org.xmpp.stream.ServerStreamElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <compressed/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates that the stream is now compressed.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
  */
 @XmlRootElement(name = "compressed")
 final class Compressed implements ServerStreamElement {

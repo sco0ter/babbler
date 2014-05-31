@@ -28,7 +28,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
+ * The implementation of the {@code <data/>} element in the {@code urn:xmpp:avatar:data} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0084.html#schema-data">XML Schema</a>
  */
 @XmlRootElement(name = "data")
 public final class AvatarData {
@@ -36,4 +40,22 @@ public final class AvatarData {
     @XmlValue
     private byte[] data;
 
+    private AvatarData() {
+    }
+
+    /**
+     * @param data The image data.
+     */
+    public AvatarData(byte[] data) {
+        this.data = data;
+    }
+
+    /**
+     * Gets the image data.
+     *
+     * @return The image data.
+     */
+    public byte[] getData() {
+        return data;
+    }
 }

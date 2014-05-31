@@ -25,7 +25,6 @@
 package org.xmpp.extension.disco.info;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents a feature offered or protocol supported by an XMPP entity.
@@ -36,7 +35,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Christian Schudt
  */
-@XmlRootElement
 public final class Feature implements Comparable<Feature> {
 
     /**

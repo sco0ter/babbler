@@ -34,9 +34,11 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * The implementation of the {@code <time/>} element for requesting and retrieving entity time.
+ * The implementation of the {@code <time/>} element in the {@code urn:xmpp:time} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0202.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "time")
 public final class EntityTime {

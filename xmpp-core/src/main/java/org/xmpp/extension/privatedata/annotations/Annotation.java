@@ -36,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This class implements <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>.
+ * The implementation of the {@code <storage/>} element in the {@code storage:rosternotes} namespace.
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a></cite></p>
  * <p>Many modern IM clients offer functionality that enables users to make notes about items in their roster. This comes in handy if users don't have meaningful information in their vCard or if you need to remember additional things related to a roster item.</p>
@@ -45,6 +45,8 @@ import java.util.List;
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0145.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "storage")
 public final class Annotation {

@@ -34,13 +34,14 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The implementation of the {@code <query/>} element.
+ * The implementation of the the {@code <query/>} element in the {@code jabber:iq:privacy} namespace.
  * <p>
  * This class contains information about the active and default list and holds the privacy lists.
  * </p>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-syntax">2.1 Syntax and Semantics</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0016.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Privacy {

@@ -31,9 +31,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the {@code <query/>} element.
+ * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#item} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0030.html#schemas-items">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class ItemDiscovery implements ItemNode {

@@ -29,13 +29,15 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a>.
+ * The implementation of the {@code <mood/>} element in the {@code http://jabber.org/protocol/mood} namespace.
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a></cite></p>
  * <p>This specification defines a payload format for communicating information about user moods, such as whether a person is currently happy, sad, angy, or annoyed. The payload format is typically transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0107.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "mood")
 @XmlSeeAlso({

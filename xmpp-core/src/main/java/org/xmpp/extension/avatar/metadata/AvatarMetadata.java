@@ -32,7 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <metadata/>} element in the {@code urn:xmpp:avatar:metadata} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0084.html#schema-metadata">XML Schema</a>
  */
 @XmlRootElement(name = "metadata")
 public final class AvatarMetadata {
@@ -49,6 +53,9 @@ public final class AvatarMetadata {
         this.infoList = infoList;
     }
 
+    /**
+     * The implementation of the {@code <info/>} element in the {@code urn:xmpp:avatar:metadata} namespace.
+     */
     public static final class Info {
 
         @XmlAttribute(name = "bytes")

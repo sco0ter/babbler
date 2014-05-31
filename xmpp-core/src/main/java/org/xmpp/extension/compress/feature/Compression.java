@@ -33,9 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the compression feature element.
+ * The implementation of the {@code <compression/>} element in the {@code http://jabber.org/features/compress} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-stream">XML Schema</a>
  */
 @XmlRootElement(name = "compression")
 public final class Compression extends Feature {

@@ -30,7 +30,11 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <open/>} element in the {@code http://jabber.org/protocol/ibb} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Open {
@@ -44,7 +48,6 @@ public final class Open {
     private StanzaType stanza;
 
     public Open() {
-
     }
 
     public Open(int blockSize, String sid) {

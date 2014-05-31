@@ -33,9 +33,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The implementation of the {@code <query />} element.
+ * The implementation of the {@code <query/>} element in the {@code jabber:iq:rpc} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0009.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Rpc {

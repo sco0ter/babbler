@@ -32,7 +32,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
+ * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
  */
 @XmlRootElement(name = "compress")
 @XmlSeeAlso({Compression.class, Compressed.class, Failure.class})

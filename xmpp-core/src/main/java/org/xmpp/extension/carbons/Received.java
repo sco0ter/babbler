@@ -30,11 +30,34 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <received/>} element in the {@code urn:xmpp:carbons:2} namespace, used to mark a carbon copied message as received.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "received")
 public final class Received {
 
     @XmlElementRef
     private Forwarded forwarded;
+
+    private Received() {
+    }
+
+    /**
+     * @param forwardedMessage The forwarded message.
+     */
+    public Received(Forwarded forwardedMessage) {
+        this.forwarded = forwardedMessage;
+    }
+
+    /**
+     * Gets the forwarded message.
+     *
+     * @return The forwarded message.
+     */
+    public Forwarded getForwardedMessage() {
+        return forwarded;
+    }
 }

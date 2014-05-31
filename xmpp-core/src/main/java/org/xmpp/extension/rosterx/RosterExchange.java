@@ -33,7 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/rosterx} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0144.html#schema">11. XML Schema</a>
  */
 @XmlRootElement(name = "x")
 public final class RosterExchange {

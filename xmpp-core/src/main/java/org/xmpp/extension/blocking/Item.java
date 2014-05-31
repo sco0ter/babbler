@@ -29,7 +29,11 @@ import org.xmpp.Jid;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
+ * The implementation of the {@code <item/>} element in the {@code urn:xmpp:blocking} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
  */
 public final class Item {
 

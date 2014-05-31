@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the bookmark storage as described in <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048: Bookmarks</a>.
+ * The implementation of the {@code <storage/>} element in the {@code storage:bookmarks} namespace.
  * <p>Note:</p>
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/extensions/xep-0048.html#storage">3. Storage</a></cite></p>
@@ -40,6 +40,8 @@ import java.util.List;
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048: Bookmarks</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0048.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "storage")
 public final class BookmarkStorage {

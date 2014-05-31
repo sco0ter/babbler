@@ -34,10 +34,11 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the {@code <query/>} element in the muc#owner namespace.
+ * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#owner} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-owner">18.4 http://jabber.org/protocol/muc#owner</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-owner">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class MucOwner {

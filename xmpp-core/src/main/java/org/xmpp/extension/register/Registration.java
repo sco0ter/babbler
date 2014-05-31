@@ -33,9 +33,11 @@ import java.net.URL;
 import java.util.Date;
 
 /**
- * The registration data.
+ * The implementation of the {@code <query/>} element in the {@code jabber:iq:register} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0077.html#schemas-register">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Registration {

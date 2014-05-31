@@ -29,9 +29,11 @@ import org.xmpp.extension.featureneg.FeatureNegotiation;
 import javax.xml.bind.annotation.*;
 
 /**
- * The implementation of the {@code <si/>} element.
+ * The implementation of the {@code <open/>} element in the {@code http://jabber.org/protocol/ibb} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0095.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "si")
 @XmlSeeAlso({BadProfile.class, NoValidStreams.class})

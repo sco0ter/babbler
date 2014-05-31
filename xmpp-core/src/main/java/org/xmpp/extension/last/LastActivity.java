@@ -29,9 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
- * The implementation of the <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> protocol extension.
+ * The implementation of the {@code <query/>} element in the {@code jabber:iq:last} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0012.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class LastActivity {

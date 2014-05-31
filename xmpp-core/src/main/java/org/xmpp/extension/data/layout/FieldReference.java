@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  * The {@link #getVar() var attribute} must be equal to the field's {@link org.xmpp.extension.data.DataForm.Field#getVar() var attribute}.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
  * @see org.xmpp.extension.data.DataForm#getFields()
  * @see org.xmpp.extension.data.layout.Page#getFieldReferences()
  */

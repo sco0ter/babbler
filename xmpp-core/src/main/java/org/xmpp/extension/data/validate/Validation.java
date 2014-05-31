@@ -27,10 +27,11 @@ package org.xmpp.extension.data.validate;
 import javax.xml.bind.annotation.*;
 
 /**
- * The implementation of the validation element, which is used to validate form fields.
+ * The implementation of the {@code <validate/>} element in the {@code http://jabber.org/protocol/xdata-validate} namespace, which is used to validate form fields.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0122.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "validate")
 public final class Validation {

@@ -27,10 +27,11 @@ package org.xmpp.extension.blocking.errors;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the {@code <blocked/>} error.
+ * The implementation of the {@code <blocked/>} element in the {@code urn:xmpp:blocking:errors} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking-errors">XML Schema</a>
  */
 @XmlRootElement(name = "blocked")
 public final class Blocked {

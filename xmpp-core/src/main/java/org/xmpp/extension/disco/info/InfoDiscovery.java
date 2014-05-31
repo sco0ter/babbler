@@ -33,9 +33,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The implementation of the {@code <query/>} element.
+ * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#info} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0030.html#schemas-info">XML Schema</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
  */
 @XmlRootElement(name = "query")
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -28,7 +28,11 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <rtt/>} element in the {@code urn:xmpp:rtt:0} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0301.html">XEP-0301: In-Band Real Time Text</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0301.html#xml_schema">XML Schema</a>
  */
 @XmlRootElement(name = "rtt")
 public final class RealTimeText {

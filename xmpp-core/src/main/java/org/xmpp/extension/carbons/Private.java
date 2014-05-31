@@ -27,7 +27,11 @@ package org.xmpp.extension.carbons;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <private/>} element in the {@code urn:xmpp:carbons:2} namespace, used to send private messages, which are not copied.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "private")
 public final class Private {

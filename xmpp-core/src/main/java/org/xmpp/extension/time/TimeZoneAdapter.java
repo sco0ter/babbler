@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.TimeZone;
 
 /**
- * Converts a time zone to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>.
+ * Converts a {@link java.util.TimeZone} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
  */
 public final class TimeZoneAdapter extends XmlAdapter<String, TimeZone> {
 

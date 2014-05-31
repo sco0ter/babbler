@@ -28,9 +28,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the {@code <replace/>} element.
+ * The implementation of the {@code <replace/>} element in the {@code urn:xmpp:message-correct:0} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0308.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Replace {

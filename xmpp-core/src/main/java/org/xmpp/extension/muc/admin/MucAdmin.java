@@ -37,10 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the {@code <query/>} element in the muc#admin namespace.
+ * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#admin} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-admin">18.3 http://jabber.org/protocol/muc#admin</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-admin">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class MucAdmin {

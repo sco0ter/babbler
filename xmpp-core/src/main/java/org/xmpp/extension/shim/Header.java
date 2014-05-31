@@ -31,6 +31,9 @@ import javax.xml.bind.annotation.XmlValue;
  * A header element which hold stanza header information or internet metadata.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0131.html#schema">XML Schema</a>
+ * @see Headers
  */
 public final class Header {
 

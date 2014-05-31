@@ -37,12 +37,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * The implementation of the {@code <pubsub/>} element in the 'http://jabber.org/protocol/pubsub' namespace.
+ * The implementation of the {@code <pubsub/>} element in the {@code http://jabber.org/protocol/pubsub} namespace.
  * <p>
  * Child elements are created with a bunch of static factory methods.
  * </p>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html#schemas-pubsub">XML Schema</a>
  */
 @XmlRootElement(name = "pubsub")
 @XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class, ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class, SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class, InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class, ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class,

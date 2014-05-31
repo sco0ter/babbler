@@ -36,7 +36,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>.
+ * The implementation of the {@code <geoloc/>} element in the {@code http://jabber.org/protocol/geoloc} namespace.
  * <p>
  * This class represents the geological location of a user.
  * </p>
@@ -47,6 +47,8 @@ import java.util.TimeZone;
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0080.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "geoloc")
 public final class GeoLocation {

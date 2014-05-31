@@ -28,9 +28,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the software version protocol extension.
+ * The implementation of the {@code <query/>} element in the {@code jabber:iq:version} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0092.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class SoftwareVersion {

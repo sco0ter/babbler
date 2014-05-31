@@ -30,7 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <headers/>} element in the {@code http://jabber.org/protocol/shim} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0131.html#schema">XML Schema</a>
+ * @see Header
  */
 @XmlRootElement(name = "headers")
 public final class Headers {

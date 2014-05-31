@@ -29,7 +29,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
+ * The implementation of the {@code <data/>} element in the {@code http://jabber.org/protocol/ibb} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Data {
@@ -47,7 +51,6 @@ public final class Data {
      * Private constructor for unmarshalling.
      */
     private Data() {
-
     }
 
     /**

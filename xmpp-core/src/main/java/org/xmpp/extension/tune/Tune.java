@@ -29,9 +29,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0118.html">XEP-0118: User Tune</a>.
+ * The implementation of the {@code <tune/>} element in the {@code http://jabber.org/protocol/tune} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0118.html">XEP-0118: User Tune</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0118.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "tune")
 public final class Tune {

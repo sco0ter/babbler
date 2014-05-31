@@ -29,9 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the {@code <offline/>} element.
+ * The implementation of the {@code <offline/>} element in the {@code http://jabber.org/protocol/offline} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0013.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "offline")
 public final class OfflineMessage {

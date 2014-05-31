@@ -27,7 +27,11 @@ package org.xmpp.extension.carbons;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <disable/>} element in the {@code urn:xmpp:carbons:2} namespace, used to disable message carbons.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "disable")
 public final class Disable {

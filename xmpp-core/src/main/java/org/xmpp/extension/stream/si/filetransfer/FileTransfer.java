@@ -33,6 +33,8 @@ import java.util.Date;
  * The implementation of the file transfer profile, i.e. the {@code <file/>} element.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0096.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "file")
 public final class FileTransfer {

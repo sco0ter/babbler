@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the {@code <x/>} element, which represents a direct multi-user chat invitation.
+ * The implementation of the {@code <x/>} element in the {@code jabber:x:conference} namespace, which represents a direct multi-user chat invitation.
  *
  * @author Christian Schudt
  */

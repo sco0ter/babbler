@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
 public class MessageCarbonsTest extends XmlTest {
 
     protected MessageCarbonsTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, MessageCarbons.class);
+        super(IQ.class, Enable.class, Disable.class, Private.class, Received.class, Sent.class);
     }
 
     @Test

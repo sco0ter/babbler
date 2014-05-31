@@ -28,15 +28,13 @@ import org.xmpp.Jid;
 import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * The implementation of the {@code <item/>} element, used for item discovery.
+ * The implementation of the {@code <item/>} element in the {@code http://jabber.org/protocol/disco#item} namespace, used for item discovery.
  *
  * @author Christian Schudt
  */
-@XmlRootElement
 public final class Item {
     @XmlJavaTypeAdapter(JidAdapter.class)
     @XmlAttribute

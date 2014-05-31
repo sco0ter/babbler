@@ -33,7 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the {@code <body/>} wrapper element.
+ * The implementation of the {@code <body/>} element in the {@code http://jabber.org/protocol/httpbind} namespace.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0124.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Body {

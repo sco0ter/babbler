@@ -32,7 +32,11 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <blocklist/>} element in the {@code urn:xmpp:blocking} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
  */
 @XmlRootElement(name = "blocklist")
 @XmlSeeAlso({Block.class, Unblock.class, Blocked.class})

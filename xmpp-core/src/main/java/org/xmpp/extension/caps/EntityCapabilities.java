@@ -38,9 +38,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * The implementation of the {@code <c/>} element.
+ * The implementation of the {@code <c/>} element in the {@code http://jabber.org/protocol/caps}.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0115.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "c")
 public final class EntityCapabilities extends Feature {
@@ -65,12 +67,24 @@ public final class EntityCapabilities extends Feature {
     private EntityCapabilities() {
     }
 
+    /**
+     * @param node The node.
+     * @param hash The hashing algorithm used to generate the verification string, e.g. "sha-1".
+     * @param ver  The verification string.
+     */
     public EntityCapabilities(String node, String hash, String ver) {
         this.node = node;
         this.hash = hash;
         this.ver = ver;
     }
 
+    /**
+     * Gets the verification string as specified in <a href="http://xmpp.org/extensions/xep-0115.html#ver">XEP-0115, 5. Verification String</a>.
+     *
+     * @param infoNode      The root node of the service discovery. It has information about the entities features and identities as well as extended service discovery information.
+     * @param messageDigest The hashing algorithm. Usually this is SHA-1.
+     * @return The generated verification string.
+     */
     public static String getVerificationString(InfoNode infoNode, MessageDigest messageDigest) {
 
         List<Identity> identities = new ArrayList<>(infoNode.getIdentities());

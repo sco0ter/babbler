@@ -29,17 +29,33 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <unblock/>} element in the {@code urn:xmpp:blocking} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
  */
 @XmlRootElement(name = "unblock")
-final class Unblock {
+public final class Unblock {
     @XmlElement(name = "item")
     private List<Item> items;
 
+    /**
+     * @param items The unblocked items.
+     */
     public Unblock(List<Item> items) {
         this.items = items;
     }
 
     private Unblock() {
+    }
+
+    /**
+     * Gets the unblocked items.
+     *
+     * @return The unblocked items.
+     */
+    public List<Item> getItems() {
+        return items;
     }
 }

@@ -34,9 +34,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0221.html">XEP-0221: Data Forms Media Element</a>.
+ * The implementation of the {@code <media/>} element in the {@code urn:xmpp:media-element} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0221.html">XEP-0221: Data Forms Media Element</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0221.html#schema">XML Schema</a>
+ * @see org.xmpp.extension.data.DataForm.Field#getMedia()
  */
 @XmlRootElement(name = "media")
 public final class Media {

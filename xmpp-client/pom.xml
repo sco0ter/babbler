@@ -35,6 +35,66 @@
     <artifactId>xmpp-client</artifactId>
     <name>Babbler</name>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.6</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>index</report>
+                            <!--<report>project-team</report>-->
+                            <!--<report>modules</report>-->
+                            <!--<report>dependency-info</report>-->
+                            <!--<report>dependency-management</report>-->
+                            <!--<report>plugins</report>-->
+                            <!--<report>cim</report>-->
+                            <!--<report>issue-tracking</report>-->
+                            <!--<report>scm</report>-->
+                            <!--<report>dependency-convergence</report>-->
+                            <!--<report>license</report>-->
+                            <!--<report>plugin-management</report>-->
+                            <!--<report>distribution-management</report>-->
+                            <!--<report>summary</report>-->
+                            <!--<report>mailing-list</report>-->
+                            <!--<report>dependencies</report>-->
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+                <configuration>
+                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+                    <includeDependencySources>true</includeDependencySources>
+                    <dependencySourceIncludes>
+                        <dependencySourceInclude>org.xmpp:*</dependencySourceInclude>
+                    </dependencySourceIncludes>
+                    <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
+                    <nodeprecated>true</nodeprecated>
+                    <nodeprecatedlist>true</nodeprecatedlist>
+                    <author>false</author>
+                    <notimestamp>true</notimestamp>
+                    <doctitle>${project.name} ${project.version}</doctitle>
+                    <windowtitle>${project.name} ${project.version}</windowtitle>
+                    <docfilessubdirs>true</docfilessubdirs>
+                    <show>public</show>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <build>
         <plugins>
             <!-- Construct the assembly -->

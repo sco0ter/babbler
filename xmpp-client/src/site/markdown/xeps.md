@@ -11,7 +11,7 @@
 * ![alt supported][supported]           [XEP-0020: Feature Negotiation](http://xmpp.org/extensions/xep-0020.html)
 * ![alt supported][supported]           [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
 * ![alt supported][supported]           [XEP-0033: Extended Stanza Addressing](http://xmpp.org/extensions/xep-0033.html)
-* ![alt not supported][not supported]   [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)
+* ![alt in development][in development] [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)
 * ![alt in development][in development] [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
 * ![alt supported][supported]           [XEP-0048: Bookmarks](http://xmpp.org/extensions/xep-0048.html)
 * ![alt supported][supported]           [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)
@@ -26,7 +26,7 @@
 * ![alt not supported][not supported]   [XEP-0071: XHTML-IM](http://xmpp.org/extensions/xep-0071.html)
 * ![alt not supported][not supported]   [XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)
 * ![alt supported][supported]           [XEP-0077: In-Band Registration](http://xmpp.org/extensions/xep-0077.html)
-* ![alt not supported][not supported]   [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
+* ![alt supported][supported]           [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
 * ![alt supported][supported]           [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html)
 * ![alt not supported][not supported]   [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
 * ![alt supported][supported]           [XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)
@@ -38,13 +38,13 @@
 * ![alt supported][supported]           [XEP-0108: User Activity](http://xmpp.org/extensions/xep-0108.html)
 * ![alt supported][supported]           [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
 * ![alt supported][supported]           [XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)
-* ![alt not supported][not supported]   [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
+* ![alt supported][supported]           [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
 * ![alt supported][supported]           [XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)](http://xmpp.org/extensions/xep-0124.html)
 * ![alt supported][supported]           [XEP-0131: Stanza Headers and Internet Metadata](http://xmpp.org/extensions/xep-0131.html)
 * ![alt not supported][not supported]   [XEP-0136: Message Archiving](http://xmpp.org/extensions/xep-0136.html)
 * ![alt not supported][not supported]   [XEP-0137: Publishing Stream Initiation Requests](http://xmpp.org/extensions/xep-0137.html)
 * ![alt supported][supported]           [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)
-* ![alt not supported][not supported]   [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
+* ![alt supported][supported]           [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
 * ![alt in development][in development] [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 * ![alt supported][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
 * ![alt supported][supported]           [XEP-0152: Reachability Addresses](http://xmpp.org/extensions/xep-0152.html)
@@ -71,7 +71,7 @@
 * ![alt supported][supported]           [XEP-0224: Attention](http://xmpp.org/extensions/xep-0224.html)
 * ![alt not supported][not supported]   [XEP-0229: Stream Compression with LZW](http://xmpp.org/extensions/xep-0229.html)
 * ![alt not supported][not supported]   [XEP-0231: Bits of Binary](http://xmpp.org/extensions/xep-0231.html)
-* ![alt not supported][not supported]   [XEP-0249: Direct MUC Invitations](http://xmpp.org/extensions/xep-0249.html)
+* ![alt supported][supported]           [XEP-0249: Direct MUC Invitations](http://xmpp.org/extensions/xep-0249.html)
 * ![alt supported][supported]           [XEP-0256: Last Activity in Presence](http://xmpp.org/extensions/xep-0256.html)
 * ![alt not supported][not supported]   [XEP-0258: Security Labels in XMPP](http://xmpp.org/extensions/xep-0258.html)
 * ![alt not supported][not supported]   [XEP-0260: Jingle SOCKS5 Bytestreams Transport Method](http://xmpp.org/extensions/xep-0260.html)
@@ -82,6 +82,12 @@
 * ![alt supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 * ![alt not supported][not supported]   [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![alt supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
+
+Supported experimental XEPs:
+
+* ![alt supported][supported]           [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
+* ![alt supported][supported]           [XEP-0280: Message Carbons](http://xmpp.org/extensions/xep-0280.html)
+
 
 Additionally following informational XEP documents are respected:
 

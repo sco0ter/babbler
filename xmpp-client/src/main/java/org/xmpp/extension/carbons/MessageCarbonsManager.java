@@ -24,13 +24,26 @@
 
 package org.xmpp.extension.carbons;
 
+import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 
 /**
+ * Manages message carbons. It allows you to {@linkplain #enableCarbons()} ()} enable} or {@linkplain #disableCarbons()} disable} message carbons on the server.
+ * <p>
+ * If successfully enabled, you should have the following behavior:
+ * </p>
+ * <ul>
+ * <li>Chat messages sent to your bare jid, will be "forked" to your carbons-enabled session.</li>
+ * <li>Chat messages sent to another of your available resources (i.e. to another full JID), will be copied to you with a {@link org.xmpp.extension.carbons.Received} extension.</li>
+ * <li>Chat messages you sent from another resource, will be copied to you with a {@link org.xmpp.extension.carbons.Sent} extension.</li>
+ * </ul>
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
  */
 public final class MessageCarbonsManager extends ExtensionManager {
 
@@ -38,10 +51,22 @@ public final class MessageCarbonsManager extends ExtensionManager {
         super(xmppSession, Enable.NAMESPACE);
     }
 
+    /**
+     * Enables message carbons on the server for this session.
+     *
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
     public void enableCarbons() throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, new Enable()));
     }
 
+    /**
+     * Enables message carbons on the server for this session.
+     *
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
     public void disableCarbons() throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, new Disable()));
     }

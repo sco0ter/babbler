@@ -22,9 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.amp.errors;
-
-import org.xmpp.extension.amp.Rule;
+package org.xmpp.extension.amp;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,25 +30,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The implementation of the {@code <failed-rules/>} element in the {@code http://jabber.org/protocol/amp#errors} namespace.
+ * The implementation of the {@code <invalid-rules/>} element in the {@code http://jabber.org/protocol/amp} namespace.
  * <p>
- * One or more rules triggered the "error" action. This condition contains the triggered rules.
+ * One or more rules are not acceptable by this server, usually because the condition/action combination is restricted. It contains the rules that are not acceptable.
  * </p>
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
- * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-err">XML Schema</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas">XML Schema</a>
  */
-@XmlRootElement(name = "failed-rules")
-public final class FailedRules {
+@XmlRootElement(name = "invalid-rules")
+public final class InvalidRules {
 
     @XmlElement(name = "rule")
     private List<Rule> rules = new ArrayList<>();
 
     /**
-     * Gets the failed rules.
+     * Gets the invalid rules.
      *
-     * @return The failed rules.
+     * @return The invalid rules.
      */
     public List<Rule> getRules() {
         return rules;

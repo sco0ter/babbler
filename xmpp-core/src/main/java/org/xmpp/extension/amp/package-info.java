@@ -29,9 +29,14 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = "http://jabber.org/protocol/amp", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.amp;
+
+import org.xmpp.Jid;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

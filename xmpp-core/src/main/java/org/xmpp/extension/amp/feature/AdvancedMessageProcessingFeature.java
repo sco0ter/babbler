@@ -42,9 +42,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "amp")
 public final class AdvancedMessageProcessingFeature extends Feature {
 
-    private AdvancedMessageProcessingFeature() {
-    }
-
     @Override
     public int getPriority() {
         return 0;

@@ -160,7 +160,7 @@ public class XmppSession implements Closeable {
      * Creates a connection with the specified XMPP domain through a proxy.
      *
      * @param xmppServiceDomain The XMPP service domain, which is used to lookup up the actual host via a DNS lookup.
-     * @param connection        The connections. The can alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
+     * @param connection        The connections. The session can have alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
      */
     public XmppSession(String xmppServiceDomain, Connection... connection) {
         this(xmppServiceDomain, XmppContext.getDefault(), connection);
@@ -171,7 +171,7 @@ public class XmppSession implements Closeable {
      *
      * @param xmppServiceDomain The XMPP service domain, which is used as value in the 'to' attribute of the opening stream.
      * @param xmppContext       The XMPP context.
-     * @param connection        The connections. The can alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
+     * @param connection        The connections. The session can have alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
      */
     public XmppSession(String xmppServiceDomain, XmppContext xmppContext, Connection... connection) {
         this.xmppServiceDomain = xmppServiceDomain;

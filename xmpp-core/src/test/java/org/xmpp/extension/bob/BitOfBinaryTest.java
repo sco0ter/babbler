@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.bob;
 
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.XmlTest;
@@ -65,13 +64,13 @@ public class BitOfBinaryTest extends XmlTest {
         Data data = iq.getExtension(Data.class);
         Assert.assertNotNull(data);
         Assert.assertEquals(data.getContentId(), "sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org");
-        Assert.assertEquals(data.getMaxAge(), 86400);
+        Assert.assertEquals(data.getMaxAge(), (Integer) 86400);
         Assert.assertEquals(data.getType(), "image/png");
         Assert.assertNotNull(data.getBytes());
     }
 
     @Test
-    public void testCreateContentId() throws Base64DecodingException {
+    public void testCreateContentId() {
 
         String base64 = "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP" +
                 "C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA" +
@@ -79,7 +78,8 @@ public class BitOfBinaryTest extends XmlTest {
                 "REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq" +
                 "ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0" +
                 "vr4MkhoXe0rZigAAAABJRU5ErkJggg==";
-        // It's unclear, if the cid is generated from the binary data or the bytes of the base64 string.
+        // Here we use the bytes from the base64 encoded string, because it's also used in the examples of XEP-0231.
+        // However, the example are wrong here. The sha1 string should actually be generated from the binary data.
         String cid = Data.createContendId(base64.getBytes());
         Assert.assertEquals(cid, "sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org");
     }

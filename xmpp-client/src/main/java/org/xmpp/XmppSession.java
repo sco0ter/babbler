@@ -254,7 +254,7 @@ public class XmppSession implements Closeable {
 
         streamNegotiatedUntilSasl = lock.newCondition();
         streamNegotiatedUntilResourceBinding = lock.newCondition();
-        new BoshConnection("jabber.org", 80, new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxyServer", 3128)));
+
         featuresManager.addFeatureNegotiator(securityManager);
         featuresManager.addFeatureNegotiator(authenticationManager);
         featuresManager.addFeatureNegotiator(new FeatureNegotiator(Bind.class) {

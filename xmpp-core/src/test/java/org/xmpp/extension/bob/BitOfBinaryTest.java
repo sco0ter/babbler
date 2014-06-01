@@ -24,6 +24,7 @@
 
 package org.xmpp.extension.bob;
 
+import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.XmlTest;
@@ -67,5 +68,19 @@ public class BitOfBinaryTest extends XmlTest {
         Assert.assertEquals(data.getMaxAge(), 86400);
         Assert.assertEquals(data.getType(), "image/png");
         Assert.assertNotNull(data.getBytes());
+    }
+
+    @Test
+    public void testCreateContentId() throws Base64DecodingException {
+
+        String base64 = "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP" +
+                "C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA" +
+                "AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J" +
+                "REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq" +
+                "ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0" +
+                "vr4MkhoXe0rZigAAAABJRU5ErkJggg==";
+        // It's unclear, if the cid is generated from the binary data or the bytes of the base64 string.
+        String cid = Data.createContendId(base64.getBytes());
+        Assert.assertEquals(cid, "sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org");
     }
 }

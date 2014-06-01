@@ -45,7 +45,7 @@ import java.util.List;
 public final class Media {
 
     @XmlElement(name = "uri")
-    private List<Location> locations = new ArrayList<>();
+    private final List<Location> locations = new ArrayList<>();
 
     @XmlAttribute(name = "height")
     private int height;

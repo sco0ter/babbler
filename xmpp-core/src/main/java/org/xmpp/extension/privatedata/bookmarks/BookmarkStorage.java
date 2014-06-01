@@ -49,7 +49,7 @@ public final class BookmarkStorage {
     @XmlElements({
             @XmlElement(name = "conference", type = Conference.class),
             @XmlElement(name = "url", type = WebPage.class)})
-    private List<Bookmark> bookmarks = new ArrayList<>();
+    private final List<Bookmark> bookmarks = new ArrayList<>();
 
     public BookmarkStorage() {
     }

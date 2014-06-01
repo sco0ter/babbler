@@ -42,12 +42,12 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class Roster {
 
+    @XmlElement
+    private final List<Contact> item = new ArrayList<>();
+
     @XmlAttribute
     @SuppressWarnings("unused") // Only set by server.
     private String ver;
-
-    @XmlElement
-    private List<Contact> item = new ArrayList<>();
 
     /**
      * Gets the roster version.

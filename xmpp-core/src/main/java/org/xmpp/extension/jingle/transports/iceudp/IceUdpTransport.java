@@ -38,14 +38,14 @@ import java.util.List;
 @XmlRootElement(name = "transport")
 public final class IceUdpTransport extends Transport {
 
+    @XmlElement(name = "candidate")
+    private final List<Candidate> candidates = new ArrayList<>();
+
     @XmlAttribute(name = "pwd")
     private String password;
 
     @XmlAttribute(name = "ufrag")
     private String userFragment;
-
-    @XmlElement(name = "candidate")
-    private List<Candidate> candidates = new ArrayList<>();
 
     @XmlElement(name = "remote-candidate")
     private RemoteCandidate remoteCandidate;

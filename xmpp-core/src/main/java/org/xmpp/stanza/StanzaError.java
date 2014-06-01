@@ -337,7 +337,7 @@ public final class StanzaError {
         @XmlEnumValue(value = "wait")
         WAIT("retry after waiting (the error is temporary)");
 
-        private String errorText;
+        private final String errorText;
 
         private Type(String errorText) {
             this.errorText = errorText;

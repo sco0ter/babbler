@@ -31,6 +31,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.im.Contact;
 import org.xmpp.stanza.AbstractPresence;
 import org.xmpp.stanza.client.IQ;
+import org.xmpp.stanza.client.Message;
 
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class RosterExchangeManager extends ExtensionManager {
         if (presence.isAvailable()) {
             xmppSession.query(new IQ(presence.getFrom(), IQ.Type.SET, rosterExchange));
         } else {
-            //connection.send(new AbstractMessage(jid, AbstractMessage.Type.NORMAL));
+            xmppSession.send(new Message(jid, Message.Type.NORMAL));
         }
     }
 }

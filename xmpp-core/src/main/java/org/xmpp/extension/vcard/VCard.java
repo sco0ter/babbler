@@ -813,7 +813,7 @@ public final class VCard {
          * @see #setLatitude(double)
          */
         public double getLatitude() {
-            return latitude != null ? latitude.doubleValue() : 0;
+            return latitude != null ? latitude : 0;
         }
 
         /**
@@ -833,7 +833,7 @@ public final class VCard {
          * @see #setLongitude(double)
          */
         public double getLongitude() {
-            return longitude != null ? longitude.doubleValue() : 0;
+            return longitude != null ? longitude : 0;
         }
 
         /**

@@ -44,10 +44,10 @@ import java.util.List;
 public abstract class AbstractMessage extends Stanza {
 
     @XmlElement(name = "body")
-    protected final List<Body> body = new ArrayList<>();
+    private final List<Body> body = new ArrayList<>();
 
     @XmlElement(name = "subject")
-    protected final List<Subject> subject = new ArrayList<>();
+    private final List<Subject> subject = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new ArrayList<>();

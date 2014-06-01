@@ -34,7 +34,7 @@ import java.util.List;
 final class StructType {
 
     @XmlElement(name = "member")
-    List<MemberType> values = new ArrayList<>();
+    final List<MemberType> values = new ArrayList<>();
 
     static final class MemberType {
         @XmlElement(name = "name")

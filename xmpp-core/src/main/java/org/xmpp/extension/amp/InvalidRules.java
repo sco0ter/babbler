@@ -43,7 +43,7 @@ import java.util.List;
 public final class InvalidRules {
 
     @XmlElement(name = "rule")
-    private List<Rule> rules = new ArrayList<>();
+    private final List<Rule> rules = new ArrayList<>();
 
     /**
      * Gets the invalid rules.

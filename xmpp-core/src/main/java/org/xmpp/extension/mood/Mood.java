@@ -596,7 +596,7 @@ public final class Mood {
          */
         WORRIED(Worried.class);
 
-        private Class<? extends AbstractValue> valueClass;
+        private final Class<? extends AbstractValue> valueClass;
 
         private Value(Class<? extends AbstractValue> valueClass) {
             this.valueClass = valueClass;
@@ -607,7 +607,7 @@ public final class Mood {
     private static abstract class AbstractValue {
 
         @XmlTransient
-        private Value value;
+        private final Value value;
 
         private AbstractValue(Value value) {
             this.value = value;

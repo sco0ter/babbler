@@ -161,9 +161,6 @@ final class ScramClient extends ScramBase implements SaslClient {
             if (saltBase64 == null) {
                 throw new SaslException("SCRAM: salt was null in the server response.");
             }
-            if (iterationCount == null) {
-                throw new SaslException("SCRAM: iterationCount was null in the server response.");
-            }
 
             byte[] salt = DatatypeConverter.parseBase64Binary(saltBase64);
 

@@ -94,7 +94,7 @@ public enum MucFeature {
      */
     UNSECURED("muc_unsecured");
 
-    private String feature;
+    private final String feature;
 
     private MucFeature(String feature) {
         this.feature = feature;

@@ -375,7 +375,7 @@ public final class PubSubOwner {
     private static final class Affiliations extends PubSubOwnerChildElement {
 
         @XmlElement(name = "affiliation")
-        private List<AffiliationNodeOwner> affiliations = new ArrayList<>();
+        private final List<AffiliationNodeOwner> affiliations = new ArrayList<>();
 
         private Affiliations() {
             super(null);

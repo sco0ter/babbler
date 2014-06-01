@@ -47,7 +47,7 @@ import java.util.List;
 public final class MucAdmin {
 
     @XmlElement(name = "item")
-    private List<MucAdminItem> items = new ArrayList<>();
+    private final List<MucAdminItem> items = new ArrayList<>();
 
     private MucAdmin() {
     }

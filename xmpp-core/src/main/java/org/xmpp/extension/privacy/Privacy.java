@@ -46,6 +46,9 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class Privacy {
 
+    @XmlElement(name = "list")
+    private final List<PrivacyList> privacyLists = new ArrayList<>();
+
     @XmlJavaTypeAdapter(ActiveNameAdapter.class)
     @XmlElement(name = "active")
     private String activeName;
@@ -53,9 +56,6 @@ public final class Privacy {
     @XmlJavaTypeAdapter(DefaultNameAdapter.class)
     @XmlElement(name = "default")
     private String defaultName;
-
-    @XmlElement(name = "list")
-    private List<PrivacyList> privacyLists = new ArrayList<>();
 
     /**
      * Creates an empty privacy element.

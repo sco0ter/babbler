@@ -173,8 +173,8 @@ final class XmppStreamWriter {
                             xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
                             xmlStreamWriter.writeStartElement("stream", "stream", "http://etherx.jabber.org/streams");
                             xmlStreamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", Locale.getDefault().getLanguage());
-                            if (xmppSession.xmppServiceDomain != null) {
-                                xmlStreamWriter.writeAttribute("to", xmppSession.xmppServiceDomain);
+                            if (xmppSession.getXmppServiceDomain() != null) {
+                                xmlStreamWriter.writeAttribute("to", xmppSession.getXmppServiceDomain());
                             }
                             if (from != null) {
                                 xmlStreamWriter.writeAttribute("from", from.toString());

@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlTransient
 public abstract class Bookmark {
     @XmlAttribute(name = "name")
-    private String name;
+    private final String name;
 
     protected Bookmark(String name) {
         this.name = name;

@@ -44,6 +44,9 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class Search {
 
+    @XmlElement(name = "item")
+    private final List<Item> items = new ArrayList<>();
+
     @XmlElement
     private String instructions;
 
@@ -58,9 +61,6 @@ public final class Search {
 
     @XmlElement
     private String email;
-
-    @XmlElement(name = "item")
-    private List<Item> items = new ArrayList<>();
 
     @XmlElementRef
     private DataForm form;

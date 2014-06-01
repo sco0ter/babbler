@@ -330,5 +330,5 @@ public enum PubSubFeature {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-subchange">12.13 Notification of Subscription State Changes</a>
      */
     @XmlEnumValue("subscription-notifications")
-    SUBSCRIPTION_NOTIFICATIONS;
+    SUBSCRIPTION_NOTIFICATIONS
 }

@@ -80,7 +80,7 @@ public enum Category {
      */
     WORKING(Activity.AbstractCategory.Working.class);
 
-    Class<? extends Activity.AbstractCategory> categoryClass;
+    final Class<? extends Activity.AbstractCategory> categoryClass;
 
     private Category(Class<? extends Activity.AbstractCategory> categoryClass) {
         this.categoryClass = categoryClass;

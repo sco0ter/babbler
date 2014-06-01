@@ -45,6 +45,9 @@ import java.util.List;
  */
 public final class Contact implements Comparable<Contact> {
 
+    @XmlElement
+    private final List<String> group = new ArrayList<>();
+
     @XmlAttribute
     Boolean approved;
 
@@ -60,9 +63,6 @@ public final class Contact implements Comparable<Contact> {
 
     @XmlAttribute
     private Subscription subscription;
-
-    @XmlElement
-    private List<String> group = new ArrayList<>();
 
     /**
      * Private default constructor for unmarshalling.

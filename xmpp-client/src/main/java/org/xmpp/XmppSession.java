@@ -30,7 +30,6 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.compress.CompressionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
-import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.im.ChatManager;
 import org.xmpp.im.PresenceManager;
 import org.xmpp.im.RosterManager;
@@ -58,8 +57,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
@@ -81,11 +78,11 @@ public class XmppSession implements Closeable {
     /**
      * A lock object, used to create wait conditions.
      */
-    public final Lock lock = new ReentrantLock();
+    private final Lock lock = new ReentrantLock();
 
-    final Condition streamNegotiatedUntilSasl;
+    private final Condition streamNegotiatedUntilSasl;
 
-    final Condition streamNegotiatedUntilResourceBinding;
+    private final Condition streamNegotiatedUntilResourceBinding;
 
     /**
      * The unmarshaller, which is used to unmarshal XML during reading from the input stream.
@@ -125,11 +122,6 @@ public class XmppSession implements Closeable {
 
     private final List<Connection> connections = new ArrayList<>();
 
-    /**
-     * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
-     */
-    public volatile String xmppServiceDomain;
-
     Executor stanzaListenerExecutor;
 
     /**
@@ -138,6 +130,11 @@ public class XmppSession implements Closeable {
     volatile Jid connectedResource;
 
     Connection activeConnection;
+
+    /**
+     * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
+     */
+    private volatile String xmppServiceDomain;
 
     /**
      * Holds the connection state.
@@ -293,6 +290,24 @@ public class XmppSession implements Closeable {
             con.setXmppSession(this);
             connections.add(con);
         }
+    }
+
+    /**
+     * Gets the XMPP service domain.
+     *
+     * @return The XMPP service domain.
+     */
+    public String getXmppServiceDomain() {
+        return xmppServiceDomain;
+    }
+
+    /**
+     * Sets the XMPP service domain. This should only be set by a connection implementation.
+     *
+     * @param xmppServiceDomain The XMPP service domain.
+     */
+    public void setXmppServiceDomain(String xmppServiceDomain) {
+        this.xmppServiceDomain = xmppServiceDomain;
     }
 
     /**

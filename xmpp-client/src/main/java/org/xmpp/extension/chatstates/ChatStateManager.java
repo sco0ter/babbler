@@ -59,11 +59,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public final class ChatStateManager extends ExtensionManager {
 
-    private Set<ChatStateListener> chatStateListeners = new CopyOnWriteArraySet<>();
+    private final Set<ChatStateListener> chatStateListeners = new CopyOnWriteArraySet<>();
 
-    private Map<ChatSession, ChatState> chatSessionMap = new ConcurrentHashMap<>();
+    private final Map<ChatSession, ChatState> chatSessionMap = new ConcurrentHashMap<>();
 
-    private Map<Jid, Boolean> contactSupportsChatStateNotifications = new HashMap<>();
+    private final Map<Jid, Boolean> contactSupportsChatStateNotifications = new HashMap<>();
 
     private ChatStateManager(final XmppSession xmppSession) {
         super(xmppSession, "http://jabber.org/protocol/chatstates");

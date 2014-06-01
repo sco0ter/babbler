@@ -37,6 +37,9 @@ import java.util.List;
 @XmlRootElement(name = "jingle")
 public final class Jingle {
 
+    @XmlElement(name = "content")
+    private final List<Content> contents = new ArrayList<>();
+
     @XmlAttribute(name = "action")
     private Action action;
 
@@ -51,9 +54,6 @@ public final class Jingle {
 
     @XmlElement(name = "reason")
     private Reason reason;
-
-    @XmlElement(name = "content")
-    private List<Content> contents = new ArrayList<>();
 
     public Action getAction() {
         return action;
@@ -159,6 +159,9 @@ public final class Jingle {
 
     public static final class Content {
 
+        @XmlElementRef
+        private final List<Transport> transports = new ArrayList<>();
+
         @XmlAttribute(name = "creator")
         private Creator creator;
 
@@ -167,9 +170,6 @@ public final class Jingle {
 
         @XmlAttribute(name = "name")
         private String name;
-
-        @XmlElementRef
-        private List<Transport> transports = new ArrayList<>();
 
         public Creator getCreator() {
             return creator;

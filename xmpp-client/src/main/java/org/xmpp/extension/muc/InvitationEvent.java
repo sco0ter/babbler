@@ -26,6 +26,8 @@ package org.xmpp.extension.muc;
 
 import org.xmpp.Jid;
 import org.xmpp.XmppSession;
+import org.xmpp.extension.muc.user.Decline;
+import org.xmpp.stanza.client.Message;
 
 import java.util.EventObject;
 
@@ -50,7 +52,7 @@ public final class InvitationEvent extends EventObject {
 
     private final boolean mediated;
 
-    private XmppSession xmppSession;
+    private final XmppSession xmppSession;
 
     InvitationEvent(Object source, XmppSession xmppSession, Jid inviter, Jid room, String reason, String password, boolean aContinue, String thread, boolean mediated) {
         super(source);
@@ -75,9 +77,9 @@ public final class InvitationEvent extends EventObject {
 
         // Therefore only decline mediated invitations.
         if (mediated) {
-            //AbstractMessage message = new AbstractMessage(room);
-            //message.getExtensions().add(new Decline(inviter, reason));
-            //connection.send(message);
+            Message message = new Message(room);
+            message.getExtensions().add(new Decline(inviter, reason));
+            xmppSession.send(message);
         }
     }
 

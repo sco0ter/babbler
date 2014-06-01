@@ -39,11 +39,11 @@ import java.util.List;
  * @author Christian Schudt
  */
 public final class PrivacyList {
+    @XmlElement(name = "item")
+    private final List<PrivacyRule> items = new ArrayList<>();
+
     @XmlAttribute(name = "name")
     private String name;
-
-    @XmlElement(name = "item")
-    private List<PrivacyRule> items = new ArrayList<>();
 
     private PrivacyList() {
     }

@@ -44,14 +44,14 @@ import java.util.List;
 @XmlRootElement(name = "x")
 public final class MucUser {
 
-    @XmlElement(name = "item")
-    private MucUserItem item;
-
     @XmlElement(name = "status")
-    private List<Status> statusCodes = new ArrayList<>();
+    private final List<Status> statusCodes = new ArrayList<>();
 
     @XmlElement(name = "invite")
-    private List<Invite> invites = new ArrayList<>();
+    private final List<Invite> invites = new ArrayList<>();
+
+    @XmlElement(name = "item")
+    private MucUserItem item;
 
     @XmlElement(name = "decline")
     private Decline decline;

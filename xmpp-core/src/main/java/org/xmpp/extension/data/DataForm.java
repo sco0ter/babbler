@@ -45,23 +45,23 @@ import java.util.List;
  */
 @XmlRootElement(name = "x")
 public final class DataForm implements Comparable<DataForm> {
+    @XmlElement
+    private final List<String> instructions = new ArrayList<>();
+
+    @XmlElementRef
+    private final List<Page> pages = new ArrayList<>();
+
+    @XmlElement(name = "field")
+    private final List<Field> fields = new ArrayList<>();
+
+    @XmlElement(name = "item")
+    private final List<Item> items = new ArrayList<>();
+
     @XmlAttribute
     private Type type;
 
     @XmlElement
     private String title;
-
-    @XmlElement
-    private List<String> instructions = new ArrayList<>();
-
-    @XmlElementRef
-    private List<Page> pages = new ArrayList<>();
-
-    @XmlElement(name = "field")
-    private List<Field> fields = new ArrayList<>();
-
-    @XmlElement(name = "item")
-    private List<Item> items = new ArrayList<>();
 
     @XmlElementWrapper(name = "reported")
     @XmlElement(name = "field")
@@ -276,6 +276,9 @@ public final class DataForm implements Comparable<DataForm> {
     @XmlRootElement(name = "field")
     public static final class Field implements Comparable<Field> {
 
+        @XmlElement(name = "option")
+        private final List<Option> options = new ArrayList<>();
+
         @XmlElement(name = "desc")
         private String description;
 
@@ -290,9 +293,6 @@ public final class DataForm implements Comparable<DataForm> {
 
         @XmlElementRef
         private Media media;
-
-        @XmlElement(name = "option")
-        private List<Option> options = new ArrayList<>();
 
         @XmlAttribute(name = "label")
         private String label;
@@ -560,7 +560,7 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public static final class Item {
         @XmlElement(name = "field")
-        private List<Field> fields = new ArrayList<>();
+        private final List<Field> fields = new ArrayList<>();
 
         /**
          * Gets the fields.

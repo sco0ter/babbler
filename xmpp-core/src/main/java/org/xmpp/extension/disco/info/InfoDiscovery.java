@@ -79,7 +79,6 @@ public final class InfoDiscovery implements InfoNode {
      * @param extensions The extensions.
      */
     public InfoDiscovery(Set<Identity> identities, Set<Feature> features, List<DataForm> extensions) {
-        this.node = node;
         this.identities = identities;
         this.features = features;
         this.extensions = extensions;

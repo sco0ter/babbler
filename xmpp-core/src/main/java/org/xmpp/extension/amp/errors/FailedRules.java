@@ -45,7 +45,7 @@ import java.util.List;
 public final class FailedRules {
 
     @XmlElement(name = "rule")
-    private List<Rule> rules = new ArrayList<>();
+    private final List<Rule> rules = new ArrayList<>();
 
     /**
      * Gets the failed rules.

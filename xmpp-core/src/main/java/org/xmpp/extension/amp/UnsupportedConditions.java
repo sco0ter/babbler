@@ -43,7 +43,7 @@ import java.util.List;
 public final class UnsupportedConditions {
 
     @XmlElement(name = "rule")
-    private List<Rule> rules = new ArrayList<>();
+    private final List<Rule> rules = new ArrayList<>();
 
     /**
      * Gets the rules, that specify the unsupported conditions.

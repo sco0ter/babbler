@@ -43,7 +43,7 @@ import java.util.List;
 public final class Compression extends Feature {
 
     @XmlElement(name = "method")
-    private List<Method> methods = new ArrayList<>();
+    private final List<Method> methods = new ArrayList<>();
 
     /**
      * Gets the available compression methods.

@@ -59,7 +59,7 @@ public final class RoomConfigurationForm {
     //    private String subject;
     //
     //    private Connection connection;
-    private DataForm dataForm;
+    private final DataForm dataForm;
 
     public RoomConfigurationForm(DataForm dataForm) {
         this.dataForm = dataForm;

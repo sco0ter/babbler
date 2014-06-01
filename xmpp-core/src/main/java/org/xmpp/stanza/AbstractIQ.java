@@ -79,7 +79,7 @@ public abstract class AbstractIQ extends Stanza {
      */
     protected AbstractIQ(Type type) {
         // The 'id' attribute is REQUIRED for IQ stanzas.
-        this(UUID.randomUUID().toString(), type);
+        this(UUID.randomUUID().toString(), type, null);
     }
 
     /**
@@ -90,17 +90,6 @@ public abstract class AbstractIQ extends Stanza {
      */
     protected AbstractIQ(Type type, Object extension) {
         this(UUID.randomUUID().toString(), type, extension);
-    }
-
-    /**
-     * Creates an IQ stanza with the given id and type.
-     * Not that, if the type is {@link Type#SET} or {@link Type#GET}, you will have to also set an extension.
-     *
-     * @param id   The id.
-     * @param type The type.
-     */
-    protected AbstractIQ(String id, Type type) {
-        this(id, type, null);
     }
 
     /**

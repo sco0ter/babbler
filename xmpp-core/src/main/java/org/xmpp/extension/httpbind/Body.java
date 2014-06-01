@@ -636,7 +636,7 @@ public final class Body {
         @XmlEnumValue(value = "undefined-condition")
         UNDEFINED_CONDITION("undefined-condition");
 
-        private String xmlValue;
+        private final String xmlValue;
 
         private Condition(String xmlValue) {
             this.xmlValue = xmlValue;

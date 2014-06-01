@@ -36,6 +36,6 @@ final class ArrayType {
 
     @XmlElementWrapper(name = "data")
     @XmlElement(name = "value")
-    List<Value> values = new ArrayList<>();
+    final List<Value> values = new ArrayList<>();
 
 }

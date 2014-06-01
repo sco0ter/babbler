@@ -96,7 +96,7 @@ final class XmppStreamReader {
                                 }
                                 Attribute fromAttribute = startElement.getAttributeByName(new QName("from"));
                                 if (fromAttribute != null) {
-                                    xmppSession.xmppServiceDomain = fromAttribute.getValue();
+                                    xmppSession.setXmppServiceDomain(fromAttribute.getValue());
                                 }
                                 xmlEventReader.next();
                             } else {

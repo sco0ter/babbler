@@ -75,12 +75,12 @@ public final class Rpc {
     }
 
     static final class MethodCall {
-        @XmlElement(name = "methodName")
-        private String methodName;
-
         @XmlElementWrapper(name = "params")
         @XmlElement(name = "param")
-        private List<Parameter> parameters = new ArrayList<>();
+        private final List<Parameter> parameters = new ArrayList<>();
+
+        @XmlElement(name = "methodName")
+        private String methodName;
 
         private MethodCall() {
 
@@ -107,7 +107,7 @@ public final class Rpc {
     static final class MethodResponse {
         @XmlElementWrapper(name = "params")
         @XmlElement(name = "param")
-        private List<Parameter> parameters = new ArrayList<>();
+        private final List<Parameter> parameters = new ArrayList<>();
 
         @XmlElement(name = "fault")
         private Fault fault;

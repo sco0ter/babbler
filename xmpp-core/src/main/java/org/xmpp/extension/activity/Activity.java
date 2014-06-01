@@ -105,10 +105,8 @@ public final class Activity {
             this.category = category.categoryClass.newInstance();
             this.category.specificActivity = specificActivity;
             this.text = text;
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -145,7 +143,7 @@ public final class Activity {
     static abstract class AbstractCategory {
 
         @XmlTransient
-        private Category category;
+        private final Category category;
 
         @XmlElementRef
         private SpecificActivity specificActivity;

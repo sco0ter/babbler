@@ -41,14 +41,14 @@ import java.util.List;
  * @see org.xmpp.extension.data.layout.Page#getSections()
  */
 public final class Section {
+    @XmlElement(name = "section")
+    private final List<Section> sections = new ArrayList<>();
+
     @XmlAttribute(name = "label")
     private String label;
 
     @XmlElement(name = "text")
     private List<String> text = new ArrayList<>();
-
-    @XmlElement(name = "section")
-    private List<Section> sections = new ArrayList<>();
 
     @XmlElement(name = "fieldref")
     private List<FieldReference> fieldReferences = new ArrayList<>();

@@ -53,7 +53,7 @@ public class InBandBytestreamManager extends ExtensionManager {
 
     final Set<IbbListener> ibbListeners = new CopyOnWriteArraySet<>();
 
-    private Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
+    private final Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
     private InBandBytestreamManager(final XmppSession xmppSession) {
         super(xmppSession, NAMESPACE);

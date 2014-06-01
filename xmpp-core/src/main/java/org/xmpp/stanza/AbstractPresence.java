@@ -49,7 +49,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     private final List<Object> extensions = new ArrayList<>();
 
     @XmlElement
-    private List<Status> status = new ArrayList<>();
+    private final List<Status> status = new ArrayList<>();
 
     @XmlElement
     private Byte priority;
@@ -63,7 +63,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     /**
      * Constructs an empty presence.
      */
-    public AbstractPresence() {
+    protected AbstractPresence() {
     }
 
     /**
@@ -71,7 +71,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @param type The type.
      */
-    public AbstractPresence(Type type) {
+    protected AbstractPresence(Type type) {
         this.type = type;
     }
 
@@ -80,7 +80,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @param show The 'show' attribute.
      */
-    public AbstractPresence(Show show) {
+    protected AbstractPresence(Show show) {
         this.show = show;
     }
 

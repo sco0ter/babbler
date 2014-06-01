@@ -200,7 +200,7 @@ public final class Event {
     private static final class Items extends PubSubEventChildElement {
 
         @XmlElement(name = "item")
-        private List<ItemElement> items = new ArrayList<>();
+        private final List<ItemElement> items = new ArrayList<>();
 
         @XmlAttribute(name = "max_items")
         private Long maxItems;

@@ -601,7 +601,7 @@ public final class PubSub {
     private static final class AffiliationsElement extends PubSubChildElement {
 
         @XmlElement(name = "affiliation")
-        private List<AffiliationInfo> affiliations = new ArrayList<>();
+        private final List<AffiliationInfo> affiliations = new ArrayList<>();
 
         private AffiliationsElement() {
 
@@ -674,7 +674,7 @@ public final class PubSub {
     private static final class Items extends PubSubChildElement {
 
         @XmlElement(name = "item")
-        private List<ItemElement> items = new ArrayList<>();
+        private final List<ItemElement> items = new ArrayList<>();
 
         @XmlAttribute(name = "max_items")
         private Integer maxItems;
@@ -813,7 +813,7 @@ public final class PubSub {
     private static final class Subscriptions extends PubSubChildElement {
 
         @XmlElement(name = "subscription")
-        private List<SubscriptionInfo> subscriptions = new ArrayList<>();
+        private final List<SubscriptionInfo> subscriptions = new ArrayList<>();
 
         private Subscriptions() {
         }

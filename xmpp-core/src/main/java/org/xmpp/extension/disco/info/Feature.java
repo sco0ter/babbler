@@ -106,8 +106,6 @@ public final class Feature implements Comparable<Feature> {
                 result = 0;
             } else if (getVar() == null) {
                 result = -1;
-            } else if (getVar() == null) {
-                result = 1;
             } else {
                 result = getVar().compareTo(o.getVar());
             }

@@ -315,18 +315,16 @@ public final class BoshConnection extends Connection {
             }
             if (getHostname() != null) {
                 url = new URL("http", getHostname(), getPort(), file);
-            } else {
+            } else if (xmppSession.getXmppServiceDomain() != null) {
                 try {
-                    url = new URL(findBoshUrl(xmppSession.xmppServiceDomain));
+                    url = new URL(findBoshUrl(xmppSession.getXmppServiceDomain()));
                 } catch (NamingException e) {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 80 as default.
-                    if (xmppSession.xmppServiceDomain != null) {
-                        url = new URL("http", xmppSession.xmppServiceDomain, 80, file);
-                    } else {
-                        throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
-                    }
+                    url = new URL("http", xmppSession.getXmppServiceDomain(), 80, file);
                 }
+            } else {
+                throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
             }
         }
 
@@ -340,7 +338,7 @@ public final class BoshConnection extends Connection {
 
         // Create initial request.
         Body body = new Body();
-        body.setTo(xmppSession.xmppServiceDomain);
+        body.setTo(xmppSession.getXmppServiceDomain());
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setVersion("1.10");
         body.setWait(wait);
@@ -374,7 +372,7 @@ public final class BoshConnection extends Connection {
             }
 
             if (body.getFrom() != null) {
-                xmppSession.xmppServiceDomain = body.getFrom().getDomain();
+                xmppSession.setXmppServiceDomain(body.getFrom().getDomain());
             }
         }
 
@@ -426,7 +424,7 @@ public final class BoshConnection extends Connection {
     protected void restartStream() {
         Body body = new Body();
         body.setRestart(true);
-        body.setTo(xmppSession.xmppServiceDomain);
+        body.setTo(xmppSession.getXmppServiceDomain());
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setSid(getSessionId());
         sendNewRequest(body, false);

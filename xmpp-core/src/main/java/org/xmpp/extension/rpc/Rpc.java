@@ -27,6 +27,7 @@ package org.xmpp.extension.rpc;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,7 +75,9 @@ public final class Rpc {
         return methodResponse;
     }
 
+    @XmlType(propOrder = {"methodName", "parameters"})
     static final class MethodCall {
+
         @XmlElementWrapper(name = "params")
         @XmlElement(name = "param")
         private final List<Parameter> parameters = new ArrayList<>();
@@ -124,7 +127,7 @@ public final class Rpc {
         }
 
         public Value getResponse() {
-            if (parameters != null && !parameters.isEmpty()) {
+            if (!parameters.isEmpty()) {
                 return parameters.get(0).getValue();
             }
             return null;

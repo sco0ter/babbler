@@ -63,13 +63,11 @@ class ScramBase {
 
     protected String nonce;
 
-    protected String gs2Header;
-
     protected String channelBinding;
 
     private String mechanism;
 
-    ScramBase(String hashAlgorithm, Map<String, ?> props, CallbackHandler callbackHandler) throws SaslException {
+    ScramBase(String hashAlgorithm, CallbackHandler callbackHandler) throws SaslException {
         mechanism = "SCRAM-";
         hashAlgorithm = hashAlgorithm.toUpperCase();
 
@@ -115,10 +113,11 @@ class ScramBase {
     }
 
     /**
-     * Prepares a username or password.
+     * Prepares a username or password according to SASLPrep
      *
      * @param str The string.
      * @return The normalized string.
+     * @see <a href="http://tools.ietf.org/search/rfc4013">RFC 4013</a>
      */
     static String prepare(String str) {
         // http://tools.ietf.org/search/rfc4013

@@ -48,7 +48,7 @@ public final class XmppSaslClientFactory implements SaslClientFactory {
                 return new AnonymousSaslClient();
             }
             if ("SCRAM-SHA-1".equals(mechanism)) {
-                return new ScramClient("SHA-1", authorizationId, protocol, serverName, props, cbh);
+                return new ScramClient("SHA-1", authorizationId, cbh);
             }
         }
         return null;

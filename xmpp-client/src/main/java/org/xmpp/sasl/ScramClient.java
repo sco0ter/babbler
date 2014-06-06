@@ -50,12 +50,8 @@ final class ScramClient extends ScramBase implements SaslClient {
 
     private char[] passwd;
 
-    private String username;
-
-    private String cnonce;
-
-    public ScramClient(String hashAlgorithm, String authorizationId, String protocol, String serverName, Map<String, ?> props, CallbackHandler callbackHandler) throws SaslException {
-        super(hashAlgorithm, props, callbackHandler);
+    public ScramClient(String hashAlgorithm, String authorizationId, CallbackHandler callbackHandler) throws SaslException {
+        super(hashAlgorithm, callbackHandler);
 
         // authzID can only be encoded in UTF8 - RFC 2222
         if (authorizationId != null) {
@@ -101,6 +97,7 @@ final class ScramClient extends ScramBase implements SaslClient {
                     new NameCallback("SCRAM username: ", authorizationId);
             PasswordCallback pcb = new PasswordCallback("SCRAM-SHA-1 password: ", false);
 
+            String username;
             try {
                 callbackHandler.handle(new Callback[]{ncb, pcb});
                 passwd = pcb.getPassword();
@@ -129,6 +126,7 @@ final class ScramClient extends ScramBase implements SaslClient {
                 throw new SaslException("SCRAM: Cannot perform callback to acquire username or password", e);
             }
 
+            String cnonce;
             try {
                 cnonce = generateNonce();
             } catch (NoSuchAlgorithmException e) {
@@ -146,7 +144,7 @@ final class ScramClient extends ScramBase implements SaslClient {
             serverFirstMessage = new String(challenge);
             Map<Character, String> attributes = getAttributes(serverFirstMessage);
             nonce = attributes.get('r');
-            clientFirstMessageBare = createClientFirstMessageBare(username, nonce);
+
             String saltBase64 = attributes.get('s');
             Integer iterationCount;
             try {

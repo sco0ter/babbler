@@ -67,6 +67,7 @@ import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
 import org.xmpp.extension.muc.*;
+import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
@@ -77,6 +78,7 @@ import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.shim.HeaderManager;
+import org.xmpp.extension.sm.StreamManagement;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferEvent;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferListener;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferManager;
@@ -88,8 +90,10 @@ import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
+import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
+import org.xmpp.stanza.errors.FeatureNotImplemented;
 import org.xmpp.stanza.errors.ServiceUnavailable;
 
 import javax.imageio.ImageIO;
@@ -655,38 +659,44 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
-                ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.christian-schudts-macbook-pro"));
-                try {
-                    final ChatRoom chatRoom = chatService.createRoom("test");
-                    chatRoom.addSubjectChangeListener(new SubjectChangeListener() {
-                        @Override
-                        public void subjectChanged(SubjectChangeEvent e) {
-                            int i = 0;
-                        }
-                    });
-                    chatRoom.addMessageListener(new MessageListener() {
-                        @Override
-                        public void handle(MessageEvent e) {
-                            Message message = e.getMessage();
-                            if (e.isIncoming()) {
-                                System.out.println(message.getBody());
-                            }
-                        }
-                    });
-                    chatRoom.addOccupantListener(new OccupantListener() {
-                        @Override
-                        public void occupantChanged(OccupantEvent e) {
-                            System.out.println(e.getOccupant().getNick() + " : joined");
-                        }
-                    });
+//                MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
+//                ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.christian-schudts-macbook-pro"));
+//                try {
+//                    final ChatRoom chatRoom = chatService.createRoom("test");
+//                    chatRoom.addSubjectChangeListener(new SubjectChangeListener() {
+//                        @Override
+//                        public void subjectChanged(SubjectChangeEvent e) {
+//                            int i = 0;
+//                        }
+//                    });
+//                    chatRoom.addMessageListener(new MessageListener() {
+//                        @Override
+//                        public void handle(MessageEvent e) {
+//                            Message message = e.getMessage();
+//                            if (e.isIncoming()) {
+//                                System.out.println(message.getBody());
+//                            }
+//                        }
+//                    });
+//                    chatRoom.addOccupantListener(new OccupantListener() {
+//                        @Override
+//                        public void occupantChanged(OccupantEvent e) {
+//                            System.out.println(e.getOccupant().getNick() + " : joined");
+//                        }
+//                    });
+//
+//                    chatRoom.enter(UUID.randomUUID().toString());
+//
+//
+//                } catch (XmppException e) {
+//                    e.printStackTrace();
+//                }
 
-                    chatRoom.enter(UUID.randomUUID().toString());
-
-
-                } catch (XmppException e) {
-                    e.printStackTrace();
-                }
+                //xmppSession.send(new Message(Jid.valueOf("222@christian-schudts-macbook-pro.local"), AbstractMessage.Type.GROUPCHAT, "Hi"));
+                IQ iq = new IQ(AbstractIQ.Type.GET, new Ping());
+                IQ error = iq.createError(new StanzaError(new FeatureNotImplemented()));
+                error.setTo(Jid.valueOf("christian-schudts-macbook-pro.local"));
+                xmppSession.send(error);
 
             }
         });

@@ -55,8 +55,8 @@ public class ScramServer extends ScramBase implements SaslServer {
 
     private String authorizationId;
 
-    ScramServer(String hashAlgorithm, Map<String, ?> props, CallbackHandler callbackHandler) throws SaslException {
-        super(hashAlgorithm, props, callbackHandler);
+    ScramServer(String hashAlgorithm, CallbackHandler callbackHandler) throws SaslException {
+        super(hashAlgorithm, callbackHandler);
     }
 
     static String validateAndGetUsername(String userAttribute) throws SaslException {

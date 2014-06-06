@@ -42,7 +42,7 @@ public class ScramTest {
 
     @Test
     public void testHiFunction() throws InvalidKeyException, NoSuchAlgorithmException, SaslException {
-        ScramClient scramSaslClient = new ScramClient("SHA-1", null, "xmpp", "server", null, new CallbackHandler() {
+        ScramClient scramSaslClient = new ScramClient("SHA-1", "server", new CallbackHandler() {
             @Override
             public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
                 for (Callback callback : callbacks) {
@@ -63,7 +63,7 @@ public class ScramTest {
     @Test
     public void testServerResponse() throws SaslException {
 
-        ScramClient scramSha1SaslClient = new ScramClient("SHA-1", null, "xmpp", "server", null, new CallbackHandler() {
+        ScramClient scramSha1SaslClient = new ScramClient("SHA-1", "server", new CallbackHandler() {
             @Override
             public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
                 for (Callback callback : callbacks) {

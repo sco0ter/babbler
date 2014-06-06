@@ -24,6 +24,7 @@
 
 package org.xmpp;
 
+import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,9 +71,9 @@ public final class Jid implements Comparable<Jid> {
     private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\(20|22|26|27|2f|3a|3c|3e|40|5c)");
 
     /**
-     * Every character, which is not a letter, number, punctuation, symbol character, marker character or space.
+     * Every character, which is not a letter, number, punctuation, symbol character, marker character or space, as well as 0340 and 0341 (
      */
-    private static final Pattern PROHIBITED_CHARACTERS = Pattern.compile("[^\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\s]");
+    private static final Pattern PROHIBITED_CHARACTERS = Pattern.compile("[^\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\s]|[\u0340\u0341]");
 
     private static final String DOMAIN_PART = "((?:(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+)";
 
@@ -80,7 +81,7 @@ public final class Jid implements Comparable<Jid> {
 
     // B.1 Commonly mapped to nothing
     // Every space, except white-space (\u0020)
-    private static final Pattern MAP_TO_NOTHING = Pattern.compile("([\u00AD\u034F\u1806\u180B\u180C\u180D\u200B\u200C\u200D\u2060\uFE00\uFE01\uFE0F\uFEFF])");
+    private static final Pattern MAP_TO_NOTHING = Pattern.compile("([\u00AD\u034F\u1806\u180B-\u180D\u200B-\u200D\u2060\uFE00-\uFE0F\uFEFF])");
 
     /**
      * Caches the escaped JIDs.
@@ -252,19 +253,51 @@ public final class Jid implements Comparable<Jid> {
 
     static String prepare(String input, boolean caseFold) {
         if (input != null) {
-            String mappedToNothing = MAP_TO_NOTHING.matcher(input).replaceAll("");
-            String normalized = Normalizer.normalize(mappedToNothing, Normalizer.Form.NFKC);
+            // 2. Preparation Overview
+            //    The steps for preparing strings are:
+
+            // 1) Map -- For each character in the input, check if it has a mapping
+            //    and, if so, replace it with its mapping.  This is described in
+            //    section 3.
+            String prepared = MAP_TO_NOTHING.matcher(input).replaceAll("");
             if (caseFold) {
-                normalized = normalized.toUpperCase(Locale.ENGLISH).toLowerCase(Locale.ENGLISH);
+                prepared = prepared.toUpperCase(Locale.ENGLISH).toLowerCase(Locale.ENGLISH);
             }
-            // A.7. Notes
-            // Because the additional characters prohibited by Nodeprep are
-            // prohibited after normalization
-            Matcher matcher = PROHIBITED_CHARACTERS.matcher(normalized);
+
+            // 2) Normalize -- Possibly normalize the result of step 1 using Unicode
+            //    normalization.  This is described in section 4.
+            prepared = Normalizer.normalize(prepared, Normalizer.Form.NFKC);
+
+            // 3) Prohibit -- Check for any characters that are not allowed in the
+            //    output.  If any are found, return an error.  This is described in
+            //    section 5.
+            Matcher matcher = PROHIBITED_CHARACTERS.matcher(prepared);
             if (matcher.find()) {
                 throw new IllegalArgumentException("Local or resource part contains prohibited characters.");
             }
-            return normalized;
+
+            // 4) Check bidi -- Possibly check for right-to-left characters, and if
+            //    any are found, make sure that the whole string satisfies the
+            //    requirements for bidirectional strings.  If the string does not
+            //    satisfy the requirements for bidirectional strings, return an
+            //    error.  This is described in section 6.
+            if (Bidi.requiresBidi(prepared.toCharArray(), 0, prepared.length())) {
+                Bidi bidi = new Bidi(input, Bidi.DIRECTION_LEFT_TO_RIGHT);
+
+                //  2) If a string contains any RandALCat character, the string MUST NOT
+                //     contain any LCat character.
+                if (bidi.isMixed()) {
+                    // except...
+                    // 3) If a string contains any RandALCat character, a RandALCat
+                    //    character MUST be the first character of the string, and a
+                    //    RandALCat character MUST be the last character of the string.
+                    if (!(bidi.getLevelAt(0) == Bidi.DIRECTION_RIGHT_TO_LEFT && bidi.getLevelAt(0) == bidi.getLevelAt(input.length() - 1))) {
+                        throw new IllegalArgumentException("Local or resource part contains mixed bidirectional characters.");
+                    }
+                }
+            }
+
+            return prepared;
         }
         return null;
     }

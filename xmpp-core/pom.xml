@@ -57,5 +57,11 @@
             <version>6.8.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+        	<groupId>org.gnu.inet</groupId>
+        	<artifactId>libidn</artifactId>
+        	<version>1.15</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

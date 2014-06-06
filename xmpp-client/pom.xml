@@ -166,5 +166,11 @@
             <artifactId>xmpp-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.xmpp</groupId>
+            <artifactId>xmpp-server</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

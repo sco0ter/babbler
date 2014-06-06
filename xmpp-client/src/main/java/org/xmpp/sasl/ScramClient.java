@@ -86,7 +86,7 @@ final class ScramClient extends ScramBase implements SaslClient {
         // by an application protocol ("initial client response")
         return true;
     }
-
+    String username;
     @Override
     public byte[] evaluateChallenge(byte[] challenge) throws SaslException {
 
@@ -97,7 +97,7 @@ final class ScramClient extends ScramBase implements SaslClient {
                     new NameCallback("SCRAM username: ", authorizationId);
             PasswordCallback pcb = new PasswordCallback("SCRAM-SHA-1 password: ", false);
 
-            String username;
+
             try {
                 callbackHandler.handle(new Callback[]{ncb, pcb});
                 passwd = pcb.getPassword();
@@ -111,7 +111,7 @@ final class ScramClient extends ScramBase implements SaslClient {
                 // prepare the username using the "SASLprep" profile [RFC4013] of
                 // the "stringprep" algorithm [RFC3454] treating it as a query
                 // string (i.e., unassigned Unicode code points are allowed).
-                username = prepare(username);
+                username = SaslPrep.prepare(username);
 
                 // If the preparation of the username fails or results in an empty
                 // string, the client SHOULD abort the authentication exchange.
@@ -133,6 +133,7 @@ final class ScramClient extends ScramBase implements SaslClient {
                 throw new SaslException("SCRAM: Failed to generate nonce.", e);
             }
             clientFirstMessageBare = createClientFirstMessageBare(username, cnonce);
+
             // First, the client sends the "client-first-message"
             String clientFirstMessage = gs2Header + clientFirstMessageBare;
             return clientFirstMessage.getBytes();
@@ -168,7 +169,7 @@ final class ScramClient extends ScramBase implements SaslClient {
                 byte[] clientSignature = computeClientSignature(clientKey, computeAuthMessage());
                 // ClientProof     := ClientKey XOR ClientSignature
                 byte[] clientProof = xor(clientKey, clientSignature);
-                clientFinalMessageWithoutProof = "c=" + channelBinding + ",r=" + nonce;
+                String clientFinalMessageWithoutProof = "c=" + channelBinding + ",r=" + nonce;
                 // The client then responds by sending a "client-final-message" with the
                 // same nonce and a ClientProof computed using the selected hash
                 // function as explained earlier.

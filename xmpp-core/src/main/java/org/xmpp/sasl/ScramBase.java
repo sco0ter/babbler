@@ -33,12 +33,13 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 /**
+ * A base SCRAM implementation.
+ *
  * @author Christian Schudt
  */
 class ScramBase {
@@ -58,8 +59,6 @@ class ScramBase {
     protected String clientFirstMessageBare;
 
     protected String serverFirstMessage;
-
-    protected String clientFinalMessageWithoutProof;
 
     protected String nonce;
 
@@ -103,7 +102,7 @@ class ScramBase {
      * Generates a nonce.
      *
      * @return The nonce.
-     * @throws NoSuchAlgorithmException
+     * @throws java.security.NoSuchAlgorithmException
      */
     static String generateNonce() throws NoSuchAlgorithmException {
         byte[] nonce = new byte[16];
@@ -113,27 +112,13 @@ class ScramBase {
     }
 
     /**
-     * Prepares a username or password according to SASLPrep
-     *
-     * @param str The string.
-     * @return The normalized string.
-     * @see <a href="http://tools.ietf.org/search/rfc4013">RFC 4013</a>
-     */
-    static String prepare(String str) {
-        // http://tools.ietf.org/search/rfc4013
-        // This profile specifies using Unicode normalization form KC, as
-        // described in Section 4 of [StringPrep].
-        return Normalizer.normalize(str, Normalizer.Form.NFKC);
-    }
-
-    /**
      * Gets the attributes from a SCRAM string.
      *
      * @param str The string.
      * @return The attributes.
      */
     static Map<Character, String> getAttributes(String str) {
-        Map<Character, String> map = new HashMap<>();
+        Map<Character, String> map = new HashMap<Character, String>();
         String[] parts = str.split(",");
         for (String part : parts) {
             if (part.length() > 1) {
@@ -160,8 +145,8 @@ class ScramBase {
      * @param clientKey   The client key.
      * @param authMessage The auth message.
      * @return The client signature.
-     * @throws InvalidKeyException
-     * @throws NoSuchAlgorithmException
+     * @throws java.security.InvalidKeyException
+     * @throws java.security.NoSuchAlgorithmException
      */
     byte[] computeClientSignature(byte[] clientKey, String authMessage) throws InvalidKeyException, NoSuchAlgorithmException {
         byte[] storedKey = computeStoredKey(clientKey);
@@ -189,12 +174,12 @@ class ScramBase {
      * @param salt           The salt.
      * @param iterationCount The iteration count.
      * @return The salted password.
-     * @throws InvalidKeyException
-     * @throws NoSuchAlgorithmException
+     * @throws java.security.InvalidKeyException
+     * @throws java.security.NoSuchAlgorithmException
      */
     byte[] computeSaltedPassword(char[] password, byte[] salt, int iterationCount) throws InvalidKeyException, NoSuchAlgorithmException {
         // SaltedPassword  := Hi(Normalize(password), salt, i)
-        return hi(prepare(new String(password)).getBytes(), salt, iterationCount);
+        return hi(SaslPrep.prepare(new String(password)).getBytes(), salt, iterationCount);
     }
 
     /**
@@ -202,8 +187,8 @@ class ScramBase {
      *
      * @param saltedPassword The salted password.
      * @return The client key.
-     * @throws InvalidKeyException
-     * @throws NoSuchAlgorithmException
+     * @throws java.security.InvalidKeyException
+     * @throws java.security.NoSuchAlgorithmException
      */
     byte[] computeClientKey(byte[] saltedPassword) throws InvalidKeyException, NoSuchAlgorithmException {
         // ClientKey       := HMAC(SaltedPassword, "Client Key")
@@ -215,7 +200,7 @@ class ScramBase {
      *
      * @param clientKey The client key.
      * @return The stored key.
-     * @throws NoSuchAlgorithmException
+     * @throws java.security.NoSuchAlgorithmException
      */
     byte[] computeStoredKey(byte[] clientKey) throws NoSuchAlgorithmException {
         // StoredKey       := H(ClientKey)
@@ -246,8 +231,8 @@ class ScramBase {
      * @param key The key.
      * @param str The input.
      * @return The HMAC keyed hash.
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeyException
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws java.security.InvalidKeyException
      */
     byte[] hmac(byte[] key, byte[] str) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac mac = Mac.getInstance(hmacAlgorithm);
@@ -301,3 +286,4 @@ class ScramBase {
         return mechanism;
     }
 }
+

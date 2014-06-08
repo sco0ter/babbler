@@ -31,8 +31,10 @@ import org.xmpp.XmppSession;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.delay.DelayedDelivery;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
+import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.Identity;
 import org.xmpp.extension.disco.info.InfoNode;
+import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.extension.muc.admin.MucAdmin;
 import org.xmpp.extension.muc.conference.DirectInvitation;
 import org.xmpp.extension.muc.owner.MucOwner;
@@ -67,6 +69,8 @@ public final class ChatRoom implements MucRoom {
     private final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
 
     private final Map<String, Occupant> occupantMap = new HashMap<>();
+
+    private ServiceDiscoveryManager serviceDiscoveryManager;
 
     private String name;
 
@@ -105,6 +109,7 @@ public final class ChatRoom implements MucRoom {
         this.name = name;
         this.roomJid = roomJid;
         this.xmppSession = xmppSession;
+        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
 
         xmppSession.addMessageListener(new MessageListener() {
             @Override
@@ -401,7 +406,7 @@ public final class ChatRoom implements MucRoom {
 
     @Override
     public void submitRegistrationForm() throws XmppException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -426,7 +431,7 @@ public final class ChatRoom implements MucRoom {
 
     @Override
     public void requestVoice() {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     /**
@@ -632,6 +637,67 @@ public final class ChatRoom implements MucRoom {
     }
 
     /**
+     * Gets the room information for this chat room.
+     *
+     * @return The room info.
+     * @throws XmppException
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
+     */
+    public RoomInfo getRoomInfo() throws XmppException {
+        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid);
+
+        Identity identity = null;
+        Set<MucFeature> mucFeatures = new HashSet<>();
+        RoomInfoForm roomInfoForm = null;
+
+        if (infoNode != null) {
+            Set<Identity> identities = infoNode.getIdentities();
+            Iterator<Identity> iterator = identities.iterator();
+            if (iterator.hasNext()) {
+                identity = iterator.next();
+            }
+            for (Feature feature : infoNode.getFeatures()) {
+                for (MucFeature mucFeature : MucFeature.values()) {
+                    if (mucFeature.getServiceDiscoveryFeature().equals(feature.getVar())) {
+                        mucFeatures.add(mucFeature);
+                    }
+                }
+            }
+
+            for (DataForm dataForm : infoNode.getExtensions()) {
+                DataForm.Field formType = dataForm.findField("FORM_TYPE");
+                if (formType != null && !formType.getValues().isEmpty() && formType.getValues().get(0).equals("http://jabber.org/protocol/muc#roominfo")) {
+                    roomInfoForm = new RoomInfoForm(dataForm);
+                    break;
+                }
+            }
+        }
+
+        return new RoomInfo(identity, mucFeatures, roomInfoForm);
+    }
+
+    /**
+     * Gets the occupants in this room, i.e. their nicknames.
+     *
+     * @return The occupants.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roomitems">6.5 Querying for Room Items</a>
+     */
+    public List<String> getOccupants() throws XmppException {
+        ItemNode itemNode = serviceDiscoveryManager.discoverItems(roomJid);
+        List<String> occupants = new ArrayList<>();
+        List<org.xmpp.extension.disco.items.Item> items = itemNode.getItems();
+        for (org.xmpp.extension.disco.items.Item item : items) {
+            if (item.getJid() != null) {
+                String nickname = item.getJid().getResource();
+                if (nickname != null) {
+                    occupants.add(nickname);
+                }
+            }
+        }
+        return occupants;
+    }
+
+    /**
      * Gets the configuration form for the room.
      */
     public DataForm getConfigurationForm() throws XmppException {
@@ -639,167 +705,4 @@ public final class ChatRoom implements MucRoom {
         MucOwner mucOwner = result.getExtension(MucOwner.class);
         return mucOwner.getConfigurationForm();
     }
-
-    public void setFeatures(Set<MucFeature> features) {
-        this.features = features;
-    }
-
-    /**
-     * Gets the maximum number of history messages returned by the room.
-     *
-     * @return Gets the maximum number of history messages returned by the room.
-     */
-    public int getMaxHistoryMessages() {
-        // muc#maxhistoryfetch
-        return maxHistory;
-    }
-
-    /**
-     * Gets the contact addresses (normally, room owner or owners).
-     *
-     * @return The contact addresses.
-     */
-    public List<Jid> getContacts() {
-        // muc#roominfo_contactjid
-        return contacts;
-    }
-
-    public void setContacts(List<Jid> contacts) {
-        this.contacts = contacts;
-    }
-
-    /**
-     * Get a short description.
-     *
-     * @return The description.
-     */
-    public String getDescription() {
-        // muc#roominfo_description
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * Gets the natural language for room discussions
-     *
-     * @return The language.
-     */
-    public String getLanguage() {
-        // muc#roominfo_lang
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    /**
-     * Gets an associated LDAP group that defines
-     * room membership; this should be an LDAP
-     * Distinguished Name according to an
-     * implementation-specific or
-     * deployment-specific definition of a
-     * group.
-     *
-     * @return The LDAP group.
-     */
-    public String getLdapGroup() {
-        // muc#roominfo_ldapgroup
-        return ldapGroup;
-    }
-
-    public void setLdapGroup(String ldapGroup) {
-        this.ldapGroup = ldapGroup;
-    }
-
-    /**
-     * Gets an URL for archived discussion logs
-     *
-     * @return The URL.
-     */
-    public URL getLogs() {
-        // muc#roominfo_logs
-        return logs;
-    }
-
-    public void setLogs(URL logs) {
-        this.logs = logs;
-    }
-
-    public int getCurrentNumberOfOccupants() {
-        // muc#roominfo_occupants
-        return currentNumberOfOccupants;
-    }
-
-    public void setCurrentNumberOfOccupants(int currentNumberOfOccupants) {
-        this.currentNumberOfOccupants = currentNumberOfOccupants;
-    }
-
-    /**
-     * Indicates, whether the room subject can be modified by participants.
-     *
-     * @return Whether the room subject can be modified by participants.
-     */
-    public boolean isChangeSubjectAllowed() {
-        // muc#roominfo_subjectmod
-        return changeSubjectAllowed;
-    }
-
-    public void setChangeSubjectAllowed(boolean changeSubjectAllowed) {
-        this.changeSubjectAllowed = changeSubjectAllowed;
-    }
-
-    public void setMaxHistory(int maxHistory) {
-        this.maxHistory = maxHistory;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-          /*
-    public boolean isPrivateMessagesAllowed() {
-
-    }
-
-    public boolean isEnableLogging() {
-
-    }
-
-    // getmemberlist
-
-    public URI getPubSubUri() {
-
-    }
-
-    public boolean isMembersOnly() {
-
-    }
-
-    public boolean isPersistent() {
-
-    }
-
-    public boolean isPublic() {
-
-    }
-
-    public List<Jid> getAdmins() {
-
-    }
-
-    public List<Jid> getOwners() {
-
-    }
-
-    public String getPassword() {
-
-    }
-         */
 }

@@ -648,7 +648,7 @@ public final class RoomConfigurationForm {
      * @return The owners.
      */
     public List<Jid> getOwners() {
-        DataForm.Field field = dataForm.findField("muc#roomconfig_roomowners");
+        DataForm.Field field = dataForm.findField(ROOM_OWNERS);
         List<Jid> owners = new ArrayList<>();
         if (field != null) {
             for (String value : field.getValues()) {

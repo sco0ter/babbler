@@ -383,7 +383,7 @@ public abstract class AbstractMessage extends Stanza {
          *
          * @param text The text.
          */
-        protected Body(String text) {
+        public Body(String text) {
             this.text = text;
         }
 
@@ -393,7 +393,7 @@ public abstract class AbstractMessage extends Stanza {
          * @param text     The text
          * @param language The language.
          */
-        protected Body(String text, String language) {
+        public Body(String text, String language) {
             this.text = text;
             this.language = language;
         }

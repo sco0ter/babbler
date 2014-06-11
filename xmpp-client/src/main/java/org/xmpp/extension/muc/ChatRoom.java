@@ -41,12 +41,12 @@ import org.xmpp.extension.muc.owner.MucOwner;
 import org.xmpp.extension.muc.user.Invite;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.muc.user.Status;
+import org.xmpp.extension.register.Registration;
 import org.xmpp.stanza.*;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Predicate;
@@ -70,31 +70,15 @@ public final class ChatRoom implements MucRoom {
 
     private final Map<String, Occupant> occupantMap = new HashMap<>();
 
+    private final MessageListener messageListener;
+
+    private final PresenceListener presenceListener;
+
     private ServiceDiscoveryManager serviceDiscoveryManager;
 
     private String name;
 
     private Jid roomJid;
-
-    private String description;
-
-    private Set<MucFeature> features;
-
-    private int maxHistory;
-
-    private List<Jid> contacts;
-
-    private String language;
-
-    private String ldapGroup;
-
-    private URL logs;
-
-    private int currentNumberOfOccupants;
-
-    private boolean changeSubjectAllowed;
-
-    private String subject;
 
     private XmppSession xmppSession;
 
@@ -102,16 +86,13 @@ public final class ChatRoom implements MucRoom {
 
     private boolean entered;
 
-    public ChatRoom() {
-    }
-
     public ChatRoom(String name, final Jid roomJid, XmppSession xmppSession) {
         this.name = name;
         this.roomJid = roomJid;
         this.xmppSession = xmppSession;
         this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
 
-        xmppSession.addMessageListener(new MessageListener() {
+        messageListener = new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
                 if (e.isIncoming()) {
@@ -135,9 +116,9 @@ public final class ChatRoom implements MucRoom {
                     }
                 }
             }
-        });
+        };
 
-        xmppSession.addPresenceListener(new PresenceListener() {
+        presenceListener = new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
                 if (e.isIncoming()) {
@@ -188,7 +169,7 @@ public final class ChatRoom implements MucRoom {
                     }
                 }
             }
-        });
+        };
     }
 
     private void notifyOccupantListeners(OccupantEvent occupantEvent) {
@@ -262,18 +243,30 @@ public final class ChatRoom implements MucRoom {
             throw new IllegalArgumentException("nick must not be null.");
         }
 
-        final Presence enterPresence = new Presence();
-        enterPresence.setTo(roomJid.withResource(nick));
-        enterPresence.getExtensions().add(new Muc(password, history));
-        this.nick = nick;
-        xmppSession.sendAndAwait(enterPresence, new Predicate<Presence>() {
-            @Override
-            public boolean test(Presence presence) {
-                Jid room = presence.getFrom().asBareJid();
-                return room.equals(roomJid) && isSelfPresence(presence);
-            }
-        }, 5000);
+        if (entered) {
+            throw new IllegalStateException("You already entered this room.");
+        }
 
+        try {
+            xmppSession.addMessageListener(messageListener);
+            xmppSession.addPresenceListener(presenceListener);
+
+            final Presence enterPresence = new Presence();
+            enterPresence.setTo(roomJid.withResource(nick));
+            enterPresence.getExtensions().add(new Muc(password, history));
+            this.nick = nick;
+            xmppSession.sendAndAwait(enterPresence, new Predicate<Presence>() {
+                @Override
+                public boolean test(Presence presence) {
+                    Jid room = presence.getFrom().asBareJid();
+                    return room.equals(roomJid) && isSelfPresence(presence);
+                }
+            });
+        } catch (XmppException e) {
+            xmppSession.removeMessageListener(messageListener);
+            xmppSession.removePresenceListener(presenceListener);
+            throw e;
+        }
         entered = true;
     }
 
@@ -337,19 +330,23 @@ public final class ChatRoom implements MucRoom {
         occupantListeners.remove(occupantListener);
     }
 
-
     @Override
-    public void changeSubject(String subject) {
-        //        Message message = new Message(roomJid, Message.Type.GROUPCHAT);
-        //        message.setSubject(subject);
-        //        connection.send(message);
+    public void changeSubject(final String subject) throws XmppException {
+        Message message = new Message(roomJid, Message.Type.GROUPCHAT);
+        message.setSubject(subject);
+        xmppSession.sendAndAwait(message, new Predicate<Message>() {
+            @Override
+            public boolean test(Message message) {
+                return message.getSubject() != null && message.getSubject().equals(subject);
+            }
+        });
     }
 
     @Override
     public void sendMessage(String message) {
-        //        Message m = new Message(roomJid, Message.Type.GROUPCHAT);
-        //        m.setBody(message);
-        //        connection.send(m);
+        Message m = new Message(roomJid, Message.Type.GROUPCHAT);
+        m.setBody(message);
+        xmppSession.send(m);
     }
 
     @Override
@@ -370,16 +367,30 @@ public final class ChatRoom implements MucRoom {
     }
 
     @Override
-    public void changeNickname(String newNickname) throws XmppException {
-        Presence presence = new Presence();
-        presence.setTo(roomJid.withResource(newNickname));
-        xmppSession.send(presence);
-        // TODO: Wait for presence in order to check for error.
+    public synchronized void changeNickname(String newNickname) throws XmppException {
+        if (!entered) {
+            throw new IllegalStateException("You must have entered the room to change your nickname.");
+        }
+        final Presence changeNickNamePresence = new Presence();
+        changeNickNamePresence.setTo(roomJid.withResource(newNickname));
+        xmppSession.sendAndAwait(changeNickNamePresence, new Predicate<Presence>() {
+            @Override
+            public boolean test(Presence presence) {
+                return presence.getFrom().equals(changeNickNamePresence.getTo());
+            }
+        });
     }
 
     @Override
-    public void changeAvailabilityStatus(Presence.Show show, String status) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public synchronized void changeAvailabilityStatus(Presence.Show show, String status) {
+        if (!entered) {
+            throw new IllegalStateException("You must have entered the room to change the availability status.");
+        }
+        Presence presence = new Presence();
+        presence.setTo(roomJid.withResource(nick));
+        presence.setShow(show);
+        presence.setStatus(status);
+        xmppSession.send(presence);
     }
 
     @Override
@@ -401,12 +412,26 @@ public final class ChatRoom implements MucRoom {
 
     @Override
     public DataForm getRegistrationForm() throws XmppException {
+        IQ iq = new IQ(roomJid, IQ.Type.GET, new Registration());
+        IQ result = xmppSession.query(iq);
+        Registration registration = result.getExtension(Registration.class);
+        if (registration != null) {
+            return registration.getRegistrationForm();
+        }
         return null;
     }
 
     @Override
-    public void submitRegistrationForm() throws XmppException {
-        throw new UnsupportedOperationException();
+    public void submitRegistrationForm(DataForm dataForm) throws XmppException {
+        if (dataForm == null) {
+            throw new IllegalArgumentException("dataForm must not be null.");
+        }
+        if (!"http://jabber.org/protocol/muc#register".equals(dataForm.getFormType())) {
+            throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#register'");
+        }
+        Registration registration = new Registration(dataForm);
+        IQ iq = new IQ(roomJid, IQ.Type.SET, registration);
+        xmppSession.query(iq);
     }
 
     /**
@@ -460,6 +485,9 @@ public final class ChatRoom implements MucRoom {
         presence.setTo(roomJid.withResource(nick));
         presence.setStatus(message);
         xmppSession.send(presence);
+        xmppSession.removeMessageListener(messageListener);
+        xmppSession.removePresenceListener(presenceListener);
+
         nick = null;
         entered = false;
         occupantMap.clear();
@@ -563,6 +591,32 @@ public final class ChatRoom implements MucRoom {
     }
 
     /**
+     * Grants owner status to a user.
+     *
+     * @param user   The user.
+     * @param reason The reason.
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantowner">10.3 Granting Owner Status</a>
+     */
+    public void grantOwnerStatus(Jid user, String reason) throws XmppException {
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.OWNER, user, reason)));
+    }
+
+    /**
+     * Grants admin status to a user.
+     *
+     * @param user   The user.
+     * @param reason The reason.
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
+     */
+    public void grantAdminStatus(Jid user, String reason) throws XmppException {
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.ADMIN, user, reason)));
+    }
+
+    /**
      * Gets the members of the room.
      * <p>
      * In the context of a members-only room, the member list is essentially a "whitelist" of people who are allowed to enter the room.
@@ -622,6 +676,12 @@ public final class ChatRoom implements MucRoom {
      */
     public List<? extends Item> getModerators() throws XmppException {
         IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
+        MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
+        return mucAdmin.getItems();
+    }
+
+    public List<? extends Item> getAllAffiliatedUsers() throws XmppException {
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItems(MucAdmin.createItem(Affiliation.ADMIN), MucAdmin.createItem(Affiliation.OWNER), MucAdmin.createItem(Affiliation.MEMBER))));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -704,5 +764,9 @@ public final class ChatRoom implements MucRoom {
         IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
         MucOwner mucOwner = result.getExtension(MucOwner.class);
         return mucOwner.getConfigurationForm();
+    }
+
+    public String getName() {
+        return name;
     }
 }

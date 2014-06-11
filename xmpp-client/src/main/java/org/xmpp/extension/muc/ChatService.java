@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-public class ChatService {
+public final class ChatService {
 
     private final XmppSession xmppSession;
 
@@ -45,12 +45,18 @@ public class ChatService {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    public ChatService(Jid serviceAddress, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
+    ChatService(Jid serviceAddress, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
         this.xmppSession = xmppSession;
         this.serviceAddress = serviceAddress;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
     }
 
+    /**
+     * Gets the list of public chat rooms hosted by this chat service.
+     *
+     * @return The public rooms.
+     * @throws XmppException
+     */
     public List<ChatRoom> getPublicRooms() throws XmppException {
         List<ChatRoom> chatRooms = new ArrayList<>();
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(serviceAddress);
@@ -60,6 +66,12 @@ public class ChatService {
         return chatRooms;
     }
 
+    /**
+     * Creates a new chat room. Note that this room is only created locally.
+     *
+     * @param room The room. This is the local part of the room address, e.g. room@service.
+     * @return The chat room.
+     */
     public ChatRoom createRoom(String room) {
         return new ChatRoom(null, new Jid(room, serviceAddress.getDomain()), xmppSession);
     }

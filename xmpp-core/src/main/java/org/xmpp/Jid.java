@@ -397,7 +397,7 @@ public final class Jid implements Comparable<Jid> {
      * @see #asBareJid()
      */
     public Jid withResource(String resource) {
-        return new Jid(local, domain, resource, false, false);
+        return new Jid(local, domain, resource, false, true);
     }
 
     /**

@@ -73,6 +73,8 @@ import java.util.logging.Logger;
  */
 public class XmppSession implements Closeable {
 
+    private static final long DEFAULT_REPLY_TIMEOUT = 20000;
+
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
     /**
@@ -434,12 +436,11 @@ public class XmppSession implements Closeable {
      *
      * @param presence The presence, which is sent.
      * @param filter   The presence filter.
-     * @param timeout  The timeout.
      * @return The presence stanza.
      * @throws NoResponseException If no presence stanza has arrived in time.
      * @throws StanzaException     If the returned presence contains a stanza error.
      */
-    public Presence sendAndAwait(Presence presence, final Predicate<Presence> filter, long timeout) throws NoResponseException, StanzaException {
+    public Presence sendAndAwait(Presence presence, final Predicate<Presence> filter) throws NoResponseException, StanzaException {
 
         final Presence[] result = new Presence[1];
 
@@ -466,7 +467,7 @@ public class XmppSession implements Closeable {
             addPresenceListener(listener);
             send(presence);
             // Wait for the stanza to arrive.
-            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
+            if (!resultReceived.await(DEFAULT_REPLY_TIMEOUT, TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
             }
         } catch (InterruptedException e) {
@@ -487,12 +488,11 @@ public class XmppSession implements Closeable {
      *
      * @param message The message, which is sent.
      * @param filter  The message filter.
-     * @param timeout The timeout.
      * @return The message stanza.
      * @throws NoResponseException If no message stanza has arrived in time.
      * @throws StanzaException     If the returned message contains a stanza error.
      */
-    public Message sendAndAwait(Message message, final Predicate<Message> filter, long timeout) throws NoResponseException, StanzaException {
+    public Message sendAndAwait(Message message, final Predicate<Message> filter) throws NoResponseException, StanzaException {
 
         final Message[] result = new Message[1];
 
@@ -519,7 +519,7 @@ public class XmppSession implements Closeable {
             addMessageListener(listener);
             send(message);
             // Wait for the stanza to arrive.
-            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
+            if (!resultReceived.await(DEFAULT_REPLY_TIMEOUT, TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
             }
         } catch (InterruptedException e) {
@@ -547,7 +547,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException If the entity did not respond.
      */
     public IQ query(IQ iq) throws XmppException {
-        return query(iq, 20000);
+        return query(iq, DEFAULT_REPLY_TIMEOUT);
     }
 
     /**

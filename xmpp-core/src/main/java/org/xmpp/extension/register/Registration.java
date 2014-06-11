@@ -101,6 +101,10 @@ public final class Registration {
     public Registration() {
     }
 
+    public Registration(DataForm dataForm) {
+        this.dataForm = dataForm;
+    }
+
     public Registration(String username, String password, String email) {
         if (username == null) {
             throw new IllegalArgumentException("username must not be null.");

@@ -25,9 +25,12 @@
 package org.xmpp.extension.muc;
 
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.extension.data.DataForm;
+import org.xmpp.extension.register.Registration;
 import org.xmpp.stanza.AbstractPresence;
+import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.Message;
 
 /**
@@ -47,7 +50,7 @@ public interface MucRoom {
 
     void removeSubjectChangeListener(SubjectChangeListener subjectChangeListener);
 
-    void changeSubject(String subject);
+    void changeSubject(String subject) throws XmppException;
 
     void sendMessage(String message);
 
@@ -65,7 +68,7 @@ public interface MucRoom {
 
     DataForm getRegistrationForm() throws XmppException;
 
-    void submitRegistrationForm() throws XmppException;
+    void submitRegistrationForm(DataForm dataForm) throws XmppException;
 
     void requestVoice();
 

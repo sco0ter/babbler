@@ -103,17 +103,22 @@ public final class DataForm implements Comparable<DataForm> {
         this.instructions.addAll(Arrays.asList(instructions));
     }
 
-    private static String getFormType(DataForm dataForm) {
-        for (Field field : dataForm.getFields()) {
+    public static boolean parseBoolean(String value) {
+        return Boolean.parseBoolean(value) || "1".equals(value);
+    }
+
+    /**
+     * Gets the form type of this form, i.e. the value of the "FORM_TYPE" field.
+     *
+     * @return The form type or null, if there is no form type.
+     */
+    public String getFormType() {
+        for (Field field : getFields()) {
             if ("FORM_TYPE".equals(field.getVar()) && !field.getValues().isEmpty()) {
                 return field.getValues().get(0);
             }
         }
         return null;
-    }
-
-    public static boolean parseBoolean(String value) {
-        return Boolean.parseBoolean(value) || "1".equals(value);
     }
 
     /**
@@ -223,8 +228,8 @@ public final class DataForm implements Comparable<DataForm> {
      */
     @Override
     public int compareTo(DataForm o) {
-        String ft = getFormType(this);
-        String fto = getFormType(o);
+        String ft = getFormType();
+        String fto = o != null ? o.getFormType() : null;
         if (ft == null && fto == null) {
             return 0;
         } else if (ft == null) {

@@ -1849,7 +1849,7 @@ public final class VCard {
          * Sets the given name.
          *
          * @param givenName The given name.
-         * @see #setMiddleName(String)
+         * @see #setGivenName(String)
          */
         public void setGivenName(String givenName) {
             this.givenName = givenName;

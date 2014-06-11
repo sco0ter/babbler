@@ -45,6 +45,9 @@ import java.util.List;
  */
 @XmlRootElement(name = "x")
 public final class DataForm implements Comparable<DataForm> {
+
+    private static final String FORM_TYPE = "FORM_TYPE";
+
     @XmlElement
     private final List<String> instructions = new ArrayList<>();
 
@@ -114,11 +117,26 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public String getFormType() {
         for (Field field : getFields()) {
-            if ("FORM_TYPE".equals(field.getVar()) && !field.getValues().isEmpty()) {
+            if (FORM_TYPE.equals(field.getVar()) && !field.getValues().isEmpty()) {
                 return field.getValues().get(0);
             }
         }
         return null;
+    }
+
+    /**
+     * Sets the form type of this data form.
+     *
+     * @param formType The form type.
+     */
+    public void setFormType(String formType) {
+        Field field = findField(FORM_TYPE);
+        if (field == null) {
+            field = new Field(Field.Type.HIDDEN, FORM_TYPE);
+            getFields().add(0, field);
+        }
+        field.getValues().clear();
+        field.getValues().add(formType);
     }
 
     /**
@@ -472,7 +490,7 @@ public final class DataForm implements Comparable<DataForm> {
         @Override
         public int compareTo(Field o) {
 
-            if ("FORM_TYPE".equals(getVar()) && !"FORM_TYPE".equals(o.getVar())) {
+            if (FORM_TYPE.equals(getVar()) && !FORM_TYPE.equals(o.getVar())) {
                 return -1;
             }
 

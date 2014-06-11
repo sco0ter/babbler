@@ -454,9 +454,19 @@ public final class ChatRoom implements MucRoom {
         return null;
     }
 
+    /**
+     * Requests voice in a moderated room.
+     *
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>
+     */
     @Override
     public void requestVoice() {
-
+        Message message = new Message(roomJid);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
+        RequestVoiceForm requestVoiceForm = new RequestVoiceForm(dataForm);
+        requestVoiceForm.setRole(Role.PARTICIPANT);
+        message.getExtensions().add(dataForm);
+        xmppSession.send(message);
     }
 
     /**

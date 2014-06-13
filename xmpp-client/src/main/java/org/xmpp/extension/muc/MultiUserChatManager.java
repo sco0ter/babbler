@@ -25,13 +25,12 @@
 package org.xmpp.extension.muc;
 
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
-import org.xmpp.extension.disco.info.Identity;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemNode;
@@ -40,14 +39,11 @@ import org.xmpp.extension.muc.user.Invite;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
-import org.xmpp.stanza.PresenceEvent;
-import org.xmpp.stanza.PresenceListener;
+import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.Message;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
@@ -65,12 +61,8 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     protected MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, Muc.NAMESPACE);
-        xmppSession.addPresenceListener(new PresenceListener() {
-            @Override
-            public void handle(PresenceEvent e) {
 
-            }
-        });
+        // Listen for incoming invitations.
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
@@ -106,7 +98,7 @@ public final class MultiUserChatManager extends ExtensionManager {
     }
 
     /**
-     * Adds a invitation listener, which allows to listen for incoming multi-user chat invitations.
+     * Adds an invitation listener, which allows to listen for incoming multi-user chat invitations.
      *
      * @param invitationListener The listener.
      * @see #removeInvitationListener(InvitationListener)
@@ -125,19 +117,33 @@ public final class MultiUserChatManager extends ExtensionManager {
         invitationListeners.remove(invitationListener);
     }
 
-    public Set<Item> getMucServices() throws XmppException {
+    /**
+     * Discovers the multi-user chat services hosted at the connected domain.
+     *
+     * @return The list of chat services.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
+     */
+    public Collection<ChatService> getChatServices() throws XmppException {
         ItemNode itemDiscovery = serviceDiscoveryManager.discoverItems(null);
-        Set<Item> identities = new HashSet<>();
+        Collection<ChatService> chatServices = new ArrayList<>();
 
         for (Item item : itemDiscovery.getItems()) {
             InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(item.getJid());
             if (infoDiscovery.getFeatures().contains(new Feature(Muc.NAMESPACE))) {
-                identities.add(item);
+                chatServices.add(new ChatService(item.getJid(), xmppSession, serviceDiscoveryManager));
             }
         }
-        return identities;
+        return chatServices;
     }
 
+    /**
+     * Creates a chat service for the specified service address.
+     *
+     * @param chatService The chat service address. Usually this is hosted at the subdomain "conference".
+     * @return The chat service.
+     */
     public ChatService createChatService(Jid chatService) {
         return new ChatService(chatService, xmppSession, serviceDiscoveryManager);
     }

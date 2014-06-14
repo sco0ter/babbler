@@ -30,17 +30,17 @@ xmppSession.addConnectionListener(new ConnectionListener() {
 });
 ```
 
-## Dealing with Stanza Errors and lack of responses
+## Dealing with Stanza Errors and Lack of Responses
 
 Most stanza errors are returned in response to an IQ-get or IQ-set query.
 
-For querying another XMPP entity, there's a ```query``` method on the ```org.xmpp.XmppSession``` class, which queries another entity for information and which is used by most methods.
+For querying another XMPP entity, there\'s a `query` method on the `org.xmpp.XmppSession` class, which queries another entity for information and which is used by most methods.
 
 Now two things can happen:
 * The entity does not respond at all.
 * The entity returned a stanza error.
 
-In the first case a ```NoResponseException``` is thrown, in the latter case a ```StanzaException``` is thrown.
+In the first case a `NoResponseException` is thrown, in the latter case a `StanzaException` is thrown.
 
 If you want to determine, which kind of exception it is, simply ask for their type.
 

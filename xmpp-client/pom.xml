@@ -33,7 +33,7 @@
         <version>0.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-client</artifactId>
-    <name>Babbler - a XMPP client library</name>
+    <name>Babbler - a XMPP client library for Java SE</name>
 
     <reporting>
         <plugins>
@@ -76,10 +76,11 @@
                     </reportSet>
                 </reportSets>
                 <configuration>
+                    <quiet>true</quiet>
                     <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
                     <includeDependencySources>true</includeDependencySources>
                     <dependencySourceIncludes>
-                        <dependencySourceInclude>org.xmpp:*</dependencySourceInclude>
+                        <dependencySourceInclude>org.xmpp:xmpp-core</dependencySourceInclude>
                     </dependencySourceIncludes>
                     <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
                     <nodeprecated>true</nodeprecated>

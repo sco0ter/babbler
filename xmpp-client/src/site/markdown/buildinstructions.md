@@ -3,7 +3,7 @@
 
 If you want to build the source code yourself, this site is for you!
 
-Babbler uses [Maven](http://maven.apache.org/) as build tool.
+Babbler uses [Maven](http://maven.apache.org/) as build tool and is separated into a few modules. Actually only two, le\t's see...
 
 ## Module Overview
 

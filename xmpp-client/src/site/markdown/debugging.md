@@ -1,4 +1,4 @@
-# Debugging XMPP traffic
+# Debugging XMPP Traffic
 ---
 
 XMPP traffic is logged with java.util.logging (JUL) on log level "FINE".

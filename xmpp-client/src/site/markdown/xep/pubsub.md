@@ -1,4 +1,4 @@
-# PubSub and PEP
+# XEP-0060: Publish-Subscribe
 ---
 
 [XEP-0060: Publish-Subscribe][PubSub] allows XMPP entities to create nodes (topics) at a pubsub service and publish information at those nodes; an event notification (with or without payload) is then broadcasted to all entities that have subscribed to the node. Pubsub therefore adheres to the classic Observer design pattern and can serve as the foundation for a wide variety of applications, including news feeds, content syndication, rich presence, geolocation, workflow systems, network management systems, and any other application that requires event notifications.

@@ -1,7 +1,7 @@
-# Getting started
+# Getting Started
 ---
 
-## Creating a XMPP session
+## Creating a XMPP Session
 
 The first thing you want to do in order to connect to a XMPP server is creating a ```XmppSession``` object:
 
@@ -15,7 +15,7 @@ A session to a XMPP server can be established in two ways:
 2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
 
 By default, the ```XmppSession``` instance will try to connect to the domain with a TCP connection first (port 5222) during the connection process.
-If connection fails, it will try to connect with BOSH (port 5280).
+If the connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually BOSH).
 The hostname and port is determined by doing a DNS lookup.
 
 You can also configure the connections manually and specify concrete connection instances instead (e.g. if you want to use another port or want to use a proxy):
@@ -40,12 +40,12 @@ During connecting, the session will try both connections in order, until a conne
 
 The ```XmppSession``` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
 
-Here\'s an overview over the relation between session and connections:
+Here\'s an overview over the relation between the session and connections:
 
 ![Architecture](XmppSession.png)
 
 
-## Preparing the session
+## Preparing the Session
 
 Before connecting to a server, you should configure your XMPP session.
 
@@ -53,7 +53,7 @@ You might want to do one of the following:
 
 * Adding event listeners in order to listen for incoming messages, roster and presence changes or to modify outgoing messages.
 * Setting up a custom SSL
-* Enable stream compression (XEP-0138)
+* Enable stream compression ([XEP-0138](http://xmpp.org/extensions/xep-0138.html))
 * Configuring extensions, e.g.
     * Enable or disable certain extensions
     * Setting an identity for the connection (Service Discovery)
@@ -85,11 +85,12 @@ xmppSession.addMessageListener(new MessageListener() {
 xmppSession.getRosterManager().addRosterListener(new RosterListener() {
     @Override
     public void rosterChanged(RosterEvent e) {
+
     }
 });
 ```
 
-## Connecting to a server
+## Connecting to a Server
 
 If you have prepared your session, you are now ready to connect to the server:
 
@@ -106,9 +107,9 @@ The session will try to connect to the XMPP server by using the configured conne
 Connecting involves opening the initial XMPP stream header and negotiate any features offered by the server (most likely only TLS).
 
 
-## Authenticating and binding a resource
+## Authenticating and Binding a Resource
 
-After connecting, you have to authenticate and bind a resource, in order to become a "connected resource". Both steps are combined as a "login":
+After connecting, you have to authenticate and bind a resource, in order to become a \"connected resource\". Both steps are understood as \"login\":
 
 ```java
 try {
@@ -118,7 +119,7 @@ try {
 }
 ```
 
-## Establishing a presence session
+## Establishing a Presence Session
 
 After you are connected, authenticated and have bound a resource, you should now establish a presence session, by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
 
@@ -126,15 +127,25 @@ After you are connected, authenticated and have bound a resource, you should now
 xmppSession.send(new Presence());
 ```
 
-## Sending a message
+You are now an \"available resource\” (you will appear online to your contacts) and can now start sending messages.
 
-Sending a message works like this:
+## Sending a Message
+
+Sending a simple chat message works like this:
 
 ```java
 xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
 ```
 
-## Closing the session
+## Changing Availability
+
+If you want to change your presence availability, just send a new presence with a \"show\” value.
+
+```java
+xmppSession.send(new Presence(Presence.Show.AWAY));
+```
+
+## Closing the Session
 
 Closing a session is simply done with:
 

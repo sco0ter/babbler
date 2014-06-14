@@ -1,5 +1,26 @@
+html, body {
+    height: 100%
+}
+
+body {
+    font-family: Georgia, Palatino, serif;
+    font-size: 16px;
+    font-weight: 400;
+    font-style: normal;
+    background-image: linear-gradient(#FAFAFA 0%, #FFFFFF 30%, #F6F6F6 100%);
+    background-attachment: fixed;
+}
+
+tt {
+    background-color: transparent;
+}
+
 pre.prettyprint {
     padding: 1em;
+}
+
+.source {
+    margin: 20px;
 }
 
 a.externalLink[href^="http"] {

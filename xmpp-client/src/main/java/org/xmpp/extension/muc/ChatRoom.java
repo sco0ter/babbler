@@ -38,6 +38,7 @@ import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.extension.muc.admin.MucAdmin;
 import org.xmpp.extension.muc.conference.DirectInvitation;
 import org.xmpp.extension.muc.owner.MucOwner;
+import org.xmpp.extension.muc.user.Decline;
 import org.xmpp.extension.muc.user.Invite;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.muc.user.Status;
@@ -56,9 +57,11 @@ import java.util.logging.Logger;
 /**
  * @author Christian Schudt
  */
-public final class ChatRoom implements MucRoom {
+public final class ChatRoom {
 
     private static final Logger logger = Logger.getLogger(ChatRoom.class.getName());
+
+    private final Set<InvitationDeclineListener> invitationDeclineListeners = new CopyOnWriteArraySet<>();
 
     private final Set<SubjectChangeListener> subjectChangeListeners = new CopyOnWriteArraySet<>();
 
@@ -98,20 +101,30 @@ public final class ChatRoom implements MucRoom {
                 if (e.isIncoming()) {
                     Message message = e.getMessage();
                     if (message.getFrom().asBareJid().equals(roomJid)) {
-                        // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
-                        Occupant occupant = occupantMap.get(message.getFrom().getResource());
-                        if (message.getSubject() != null && message.getBody() == null) {
+                        if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
+                            // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
+                            Occupant occupant = occupantMap.get(message.getFrom().getResource());
+                            if (message.getSubject() != null && message.getBody() == null) {
 
-                            Date date;
-                            DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                            if (delayedDelivery != null) {
-                                date = delayedDelivery.getTimeStamp();
+                                Date date;
+                                DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
+                                if (delayedDelivery != null) {
+                                    date = delayedDelivery.getTimeStamp();
+                                } else {
+                                    date = new Date();
+                                }
+                                notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), occupant, delayedDelivery != null, date));
                             } else {
-                                date = new Date();
+                                notifyMessageListeners(new MessageEvent(ChatRoom.this, message, true));
                             }
-                            notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), occupant, delayedDelivery != null, date));
                         } else {
-                            notifyMessageListeners(new MessageEvent(ChatRoom.this, message, true));
+                            MucUser mucUser = message.getExtension(MucUser.class);
+                            if (mucUser != null) {
+                                Decline decline = mucUser.getDecline();
+                                if (decline != null) {
+                                    notifyInvitationDeclineListeners(new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
+                                }
+                            }
                         }
                     }
                 }
@@ -172,6 +185,16 @@ public final class ChatRoom implements MucRoom {
         };
     }
 
+    private void notifyInvitationDeclineListeners(InvitationDeclineEvent invitationDeclineEvent) {
+        for (InvitationDeclineListener invitationDeclineListener : invitationDeclineListeners) {
+            try {
+                invitationDeclineListener.invitationDeclined(invitationDeclineEvent);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+    }
+
     private void notifyOccupantListeners(OccupantEvent occupantEvent) {
         for (OccupantListener occupantListener : occupantListeners) {
             try {
@@ -222,52 +245,24 @@ public final class ChatRoom implements MucRoom {
         return isSelfPresence || nick != null && presence.getFrom() != null && nick.equals(presence.getFrom().getResource());
     }
 
-    @Override
-    public void enter(String nick) throws XmppException {
-        enter(nick, null, null);
+    /**
+     * Adds a invitation decline listener, which allows to listen for invitation declines.
+     *
+     * @param invitationDeclineListener The listener.
+     * @see #removeInvitationDeclineListener(InvitationDeclineListener)
+     */
+    public void addInvitationDeclineListener(InvitationDeclineListener invitationDeclineListener) {
+        invitationDeclineListeners.add(invitationDeclineListener);
     }
 
-    @Override
-    public void enter(String nick, String password) throws XmppException {
-        enter(nick, password, null);
-    }
-
-    @Override
-    public void enter(String nick, History history) throws XmppException {
-        enter(nick, null, history);
-    }
-
-    @Override
-    public synchronized void enter(final String nick, String password, History history) throws XmppException {
-        if (nick == null) {
-            throw new IllegalArgumentException("nick must not be null.");
-        }
-
-        if (entered) {
-            throw new IllegalStateException("You already entered this room.");
-        }
-
-        try {
-            xmppSession.addMessageListener(messageListener);
-            xmppSession.addPresenceListener(presenceListener);
-
-            final Presence enterPresence = new Presence();
-            enterPresence.setTo(roomJid.withResource(nick));
-            enterPresence.getExtensions().add(new Muc(password, history));
-            this.nick = nick;
-            xmppSession.sendAndAwait(enterPresence, new Predicate<Presence>() {
-                @Override
-                public boolean test(Presence presence) {
-                    Jid room = presence.getFrom().asBareJid();
-                    return room.equals(roomJid) && isSelfPresence(presence);
-                }
-            });
-        } catch (XmppException e) {
-            xmppSession.removeMessageListener(messageListener);
-            xmppSession.removePresenceListener(presenceListener);
-            throw e;
-        }
-        entered = true;
+    /**
+     * Removes a previously added invitation decline listener.
+     *
+     * @param invitationDeclineListener The listener.
+     * @see #addInvitationDeclineListener(InvitationDeclineListener)
+     */
+    public void removeInvitationDeclineListener(InvitationDeclineListener invitationDeclineListener) {
+        invitationDeclineListeners.remove(invitationDeclineListener);
     }
 
     /**
@@ -330,7 +325,88 @@ public final class ChatRoom implements MucRoom {
         occupantListeners.remove(occupantListener);
     }
 
-    @Override
+    /**
+     * Enters the room.
+     *
+     * @param nick The nickname.
+     * @throws XmppException
+     */
+    public void enter(String nick) throws XmppException {
+        enter(nick, null, null);
+    }
+
+    /**
+     * Enters the room with a password.
+     *
+     * @param nick     The nickname.
+     * @param password The password.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public void enter(String nick, String password) throws XmppException {
+        enter(nick, password, null);
+    }
+
+    /**
+     * Enters the room and requests history messages.
+     *
+     * @param nick    The nickname.
+     * @param history The history.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public void enter(String nick, History history) throws XmppException {
+        enter(nick, null, history);
+    }
+
+    /**
+     * Enters the room with a password and requests history messages.
+     *
+     * @param nick     The nickname.
+     * @param password The password.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     * @throws XmppException
+     */
+    public synchronized void enter(final String nick, String password, History history) throws XmppException {
+        if (nick == null) {
+            throw new IllegalArgumentException("nick must not be null.");
+        }
+
+        if (entered) {
+            throw new IllegalStateException("You already entered this room.");
+        }
+
+        try {
+            xmppSession.addMessageListener(messageListener);
+            xmppSession.addPresenceListener(presenceListener);
+
+            final Presence enterPresence = new Presence();
+            enterPresence.setTo(roomJid.withResource(nick));
+            enterPresence.getExtensions().add(new Muc(password, history));
+            this.nick = nick;
+            xmppSession.sendAndAwait(enterPresence, new Predicate<Presence>() {
+                @Override
+                public boolean test(Presence presence) {
+                    Jid room = presence.getFrom().asBareJid();
+                    return room.equals(roomJid) && isSelfPresence(presence);
+                }
+            });
+        } catch (XmppException e) {
+            xmppSession.removeMessageListener(messageListener);
+            xmppSession.removePresenceListener(presenceListener);
+            throw e;
+        }
+        entered = true;
+    }
+
+    /**
+     * Changes the room subject.
+     *
+     * @param subject The subject.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
     public void changeSubject(final String subject) throws XmppException {
         Message message = new Message(roomJid, Message.Type.GROUPCHAT);
         message.setSubject(subject);
@@ -342,31 +418,36 @@ public final class ChatRoom implements MucRoom {
         });
     }
 
-    @Override
+    /**
+     * Sends a message to the room.
+     *
+     * @param message The message text.
+     */
     public void sendMessage(String message) {
         Message m = new Message(roomJid, Message.Type.GROUPCHAT);
         m.setBody(message);
         xmppSession.send(m);
     }
 
-    @Override
+    /**
+     * Sends a message to the room.
+     *
+     * @param message The message.
+     */
     public void sendMessage(Message message) {
         message.setType(Message.Type.GROUPCHAT);
         message.setTo(roomJid);
         xmppSession.send(message);
     }
 
-    @Override
-    public void sendPrivateMessage(String message, String nick) {
-        throw new UnsupportedOperationException(); // TODO
-    }
-
-    @Override
-    public void sendPrivateMessage(Message message, String nick) {
-        throw new UnsupportedOperationException(); // TODO
-    }
-
-    @Override
+    /**
+     * Changes the nickname.
+     *
+     * @param newNickname The new nickname.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#changenick">7.6 Changing Nickname</a>
+     */
     public synchronized void changeNickname(String newNickname) throws XmppException {
         if (!entered) {
             throw new IllegalStateException("You must have entered the room to change your nickname.");
@@ -381,7 +462,13 @@ public final class ChatRoom implements MucRoom {
         });
     }
 
-    @Override
+    /**
+     * Changes the availability status.
+     *
+     * @param show   The 'show' value.
+     * @param status The status.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#changepres">7.7 Changing Availability Status</a>
+     */
     public synchronized void changeAvailabilityStatus(Presence.Show show, String status) {
         if (!entered) {
             throw new IllegalStateException("You must have entered the room to change the availability status.");
@@ -393,12 +480,25 @@ public final class ChatRoom implements MucRoom {
         xmppSession.send(presence);
     }
 
-    @Override
+    /**
+     * Invites another user to the room. The invitation will be mediated by the room.
+     *
+     * @param invitee The invitee.
+     * @param reason  The reason.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite">7.8 Inviting Another User to a Room</a>
+     */
     public void invite(Jid invitee, String reason) {
         invite(invitee, reason, false);
     }
 
-    private void invite(Jid invitee, String reason, boolean direct) {
+    /**
+     * @param invitee The invitee.
+     * @param reason  The reason.
+     * @param direct  True, if the message is sent directly to the invitee; false if it is mediated by the room.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite-direct">7.8.1 Direct Invitation</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite-mediated">7.8.2 Mediated Invitation</a>
+     */
+    public void invite(Jid invitee, String reason, boolean direct) {
         Message message;
         if (direct) {
             message = new Message(invitee, Message.Type.NORMAL);
@@ -410,7 +510,15 @@ public final class ChatRoom implements MucRoom {
         xmppSession.send(message);
     }
 
-    @Override
+    /**
+     * Gets the data form necessary to register with the room.
+     *
+     * @return The data form.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
+     * @see org.xmpp.extension.muc.RoomRegistrationForm
+     */
     public DataForm getRegistrationForm() throws XmppException {
         IQ iq = new IQ(roomJid, IQ.Type.GET, new Registration());
         IQ result = xmppSession.query(iq);
@@ -421,10 +529,21 @@ public final class ChatRoom implements MucRoom {
         return null;
     }
 
-    @Override
+    /**
+     * Submits the registration form.
+     *
+     * @param dataForm The data form.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
+     * @see org.xmpp.extension.muc.RoomRegistrationForm
+     */
     public void submitRegistrationForm(DataForm dataForm) throws XmppException {
         if (dataForm == null) {
             throw new IllegalArgumentException("dataForm must not be null.");
+        }
+        if (dataForm.getType() != DataForm.Type.SUBMIT) {
+            throw new IllegalArgumentException("Data Form must be of type 'submit'");
         }
         if (!"http://jabber.org/protocol/muc#register".equals(dataForm.getFormType())) {
             throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#register'");
@@ -459,7 +578,6 @@ public final class ChatRoom implements MucRoom {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>
      */
-    @Override
     public void requestVoice() {
         Message message = new Message(roomJid);
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
@@ -474,7 +592,6 @@ public final class ChatRoom implements MucRoom {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    @Override
     public void exit() {
         exit(null);
     }
@@ -485,7 +602,6 @@ public final class ChatRoom implements MucRoom {
      * @param message The exit message.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    @Override
     public synchronized void exit(String message) {
 
         if (!entered) {
@@ -504,43 +620,11 @@ public final class ChatRoom implements MucRoom {
     }
 
     /**
-     * Kicks an occupant. Note that you need to be a moderator in order to kick an occupant.
+     * Gets the voice list.
      *
-     * @param nickname The occupant's nickname to kick.
-     * @param reason   The reason for the kick.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
+     * @return
+     * @throws XmppException
      */
-    @Override
-    public void kickOccupant(String nickname, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.NONE, nickname, reason)));
-    }
-
-    /**
-     * Grants voice to a visitor in a moderated room.
-     *
-     * @param nickname The occupant's nickname.
-     * @param reason   The reason.
-     * @throws StanzaException     If the chat service returned a stanza error.
-     * @throws NoResponseException If the chat service did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
-     */
-    public void grantVoice(String nickname, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.PARTICIPANT, nickname, reason)));
-    }
-
-    /**
-     * Revokes voice from a participant.
-     *
-     * @param nickname The occupant's nickname.
-     * @param reason   The reason.
-     * @throws StanzaException     If the chat service returned a stanza error.
-     * @throws NoResponseException If the chat service did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
-     */
-    public void revokeVoice(String nickname, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.VISITOR, nickname, reason)));
-    }
-
     public List<? extends Item> getVoiceList() throws XmppException {
         IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
@@ -549,11 +633,6 @@ public final class ChatRoom implements MucRoom {
 
     public void modifyVoiceList(List<Item> items) throws XmppException {
         xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
-    }
-
-    @Override
-    public void banUser(Jid user, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.OUTCAST, user, reason)));
     }
 
     /**
@@ -575,56 +654,65 @@ public final class ChatRoom implements MucRoom {
     }
 
     /**
-     * Grants membership to a user.
+     * Changes the affiliation for an user.
+     * <p>
+     * Use this method for one of the following use cases:
+     * </p>
+     * <ul>
+     * <li>Banning a User (affiliation = {@link org.xmpp.extension.muc.Affiliation#OUTCAST})</li>
+     * <li>Granting Membership (affiliation = {@link org.xmpp.extension.muc.Affiliation#MEMBER})</li>
+     * <li>Revoking Membership (affiliation = {@link org.xmpp.extension.muc.Affiliation#NONE})</li>
+     * <li>Granting Admin Status (affiliation = {@link org.xmpp.extension.muc.Affiliation#ADMIN})</li>
+     * <li>Revoking Admin Status (affiliation = {@link org.xmpp.extension.muc.Affiliation#MEMBER})</li>
+     * <li>Granting Owner Status (affiliation = {@link org.xmpp.extension.muc.Affiliation#OWNER})</li>
+     * <li>Revoking Owner Status (affiliation = {@link org.xmpp.extension.muc.Affiliation#ADMIN})</li>
+     * </ul>
      *
-     * @param user   The user.
-     * @param reason The reason.
+     * @param affiliation The new affiliation for the user.
+     * @param user        The user.
+     * @param reason      The reason.
      * @throws StanzaException     If the chat service returned a stanza error.
      * @throws NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
-     */
-    public void grantMembership(Jid user, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.MEMBER, user, reason)));
-    }
-
-    /**
-     * Revokes a user's membership.
-     *
-     * @param user   The user.
-     * @param reason The reason.
-     * @throws StanzaException     If the chat service returned a stanza error.
-     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
-     */
-    public void revokeMembership(Jid user, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.NONE, user, reason)));
-    }
-
-    /**
-     * Grants owner status to a user.
-     *
-     * @param user   The user.
-     * @param reason The reason.
-     * @throws StanzaException     If the chat service returned a stanza error.
-     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantowner">10.3 Granting Owner Status</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeowner">10.4 Revoking Owner Status</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
      */
-    public void grantOwnerStatus(Jid user, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.OWNER, user, reason)));
+    public void changeAffiliation(Affiliation affiliation, Jid user, String reason) throws XmppException {
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(affiliation, user, reason)));
     }
 
     /**
-     * Grants admin status to a user.
+     * Changes the role for an occupant.
+     * <p>
+     * Use this method for one of the following use cases:
+     * </p>
+     * <ul>
+     * <li>Kicking an Occupant (role = {@link org.xmpp.extension.muc.Role#NONE})</li>
+     * <li>Granting Voice to a Visitor (role = {@link org.xmpp.extension.muc.Role#PARTICIPANT})</li>
+     * <li>Revoking Voice from a Participant (affiliation = {@link org.xmpp.extension.muc.Role#VISITOR})</li>
+     * <li>Granting Moderator Status (role = {@link org.xmpp.extension.muc.Role#MODERATOR})</li>
+     * <li>Revoking Moderator Status (role = {@link org.xmpp.extension.muc.Role#PARTICIPANT})</li>
+     * </ul>
      *
-     * @param user   The user.
-     * @param reason The reason.
+     * @param role     The new role for the user.
+     * @param nickname The occupant's nickname.
+     * @param reason   The reason.
      * @throws StanzaException     If the chat service returned a stanza error.
      * @throws NoResponseException If the chat service did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
-    public void grantAdminStatus(Jid user, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Affiliation.ADMIN, user, reason)));
+    public void changeRole(Role role, String nickname, String reason) throws XmppException {
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(role, nickname, reason)));
     }
+
 
     /**
      * Gets the members of the room.
@@ -650,31 +738,6 @@ public final class ChatRoom implements MucRoom {
         xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
     }
 
-    /**
-     * Grants moderator status to an user.
-     *
-     * @param nick   The nick.
-     * @param reason The reason.
-     * @throws StanzaException     If the chat service returned a stanza error.
-     * @throws NoResponseException If the chat service did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
-     */
-    public void grantModeratorStatus(String nick, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.MODERATOR, nick, reason)));
-    }
-
-    /**
-     * Revokes a user's moderator status.
-     *
-     * @param nick   The nick.
-     * @param reason The reason.
-     * @throws StanzaException     If the chat service returned a stanza error.
-     * @throws NoResponseException If the chat service did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
-     */
-    public void revokeModeratorStatus(String nick, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(Role.PARTICIPANT, nick, reason)));
-    }
 
     /**
      * Gets the moderators.
@@ -701,7 +764,7 @@ public final class ChatRoom implements MucRoom {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant">10.1.2 Creating an Instant Room</a>
      */
-    public void createRoom(String room, String nick) throws XmppException {
+    public void createRoom() throws XmppException {
         enter(nick);
         xmppSession.query(new IQ(roomJid, IQ.Type.SET, new MucOwner(new DataForm(DataForm.Type.SUBMIT))));
     }
@@ -710,7 +773,8 @@ public final class ChatRoom implements MucRoom {
      * Gets the room information for this chat room.
      *
      * @return The room info.
-     * @throws XmppException
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
      */
     public RoomInfo getRoomInfo() throws XmppException {
@@ -750,6 +814,8 @@ public final class ChatRoom implements MucRoom {
      * Gets the occupants in this room, i.e. their nicknames.
      *
      * @return The occupants.
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roomitems">6.5 Querying for Room Items</a>
      */
     public List<String> getOccupants() throws XmppException {
@@ -769,6 +835,17 @@ public final class ChatRoom implements MucRoom {
 
     /**
      * Gets the configuration form for the room.
+     * You can wrap the form into {@link org.xmpp.extension.muc.RoomConfigurationForm} for easier processing.
+     * <p>
+     * Use this method if you want to create a reserved room or configure an existing room.
+     * </p>
+     *
+     * @return The configuration form.
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
+     * @see org.xmpp.extension.muc.RoomConfigurationForm
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
+     * @see #submitConfigurationForm(org.xmpp.extension.data.DataForm)
      */
     public DataForm getConfigurationForm() throws XmppException {
         IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
@@ -776,7 +853,50 @@ public final class ChatRoom implements MucRoom {
         return mucOwner.getConfigurationForm();
     }
 
+    /**
+     * Submits the configuration form for this room.
+     *
+     * @param dataForm The data form.
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
+     * @see #getConfigurationForm()
+     */
+    public void submitConfigurationForm(DataForm dataForm) throws XmppException {
+        if (dataForm == null) {
+            throw new IllegalArgumentException("dataForm must not be null.");
+        }
+        if (dataForm.getType() != DataForm.Type.SUBMIT && dataForm.getType() != DataForm.Type.CANCEL) {
+            throw new IllegalArgumentException("Data Form must be of type 'submit' or 'cancel'");
+        }
+        if (!"http://jabber.org/protocol/muc#roomconfig".equals(dataForm.getFormType())) {
+            throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#roomconfig'");
+        }
+        MucOwner mucOwner = new MucOwner(dataForm);
+        IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
+        xmppSession.query(iq);
+    }
+
+    /**
+     * Gets the name for this room.
+     *
+     * @return The room name.
+     */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Destroys the room.
+     *
+     * @param reason The reason for the room destruction.
+     * @throws StanzaException     If the chat service returned a stanza error.
+     * @throws NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
+     */
+    public void destroy(String reason) throws XmppException {
+        MucOwner mucOwner = MucOwner.withDestroy(roomJid, reason);
+        IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
+        xmppSession.query(iq);
     }
 }

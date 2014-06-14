@@ -1,4 +1,4 @@
-# Multi-User Chat
+# XEP-0045: Multi-User Chat
 ---
 
 For all MUC-related operations, you will need the ```MultiUserChatManager```, which you can get like this:
@@ -29,7 +29,7 @@ First, discovering public chat rooms hosted by this service:
 List<ChatRoom> publicRooms = chatService.getPublicRooms();
 ```
 
-or second, creating a new chat room directly:
+or second - if you know an existing room or want to create a new one - creating a new chat room directly:
 
 ```java
 ChatRoom chatRoom = chatService.createRoom("myroom");
@@ -44,29 +44,33 @@ Note, that no room is created on the server! All you have now is a local `ChatRo
 
 ## Chat Rooms
 
-Once you have obtained a `ChatRoom` instance as described above, you can now do multiple things with it:
+Once you have a `ChatRoom` instance, you can now do multiple things with it:
 
-* Discover occupants in the room and room information
+* Discovering occupants in the room and room information.
 * Entering (aka joining) and exiting (aka leaving) the room.
 * Configuring a room.
 * Sending messages.
 * Listening to messages, subject changes, occupant events (\"leaves\" and \"joins\"), ...
 
-### Discovering occupants and room info
+### Discovering Occupants and Room Info
+
+You can discover the occupants, which are currently in the room (nicknames only) with:
 
 ```java
 List<String> occupants = chatRoom.getOccupants();
 ```
 
-gets the occupants, which are currently in the room (nicknames only).
+And you get additional room info (e.g. the current subject, the max history messages, the description and room features) with:
 
 ```java
 RoomInfo roomInfo = chatRoom.getRoomInfo();
 ```
 
-gets the room info, e.g. the current subject, the max history messages, the description and room features.
+### Occupant Use Cases
 
-### Entering a room
+These are the use cases, when you are *in* the room (or want to enter the room).
+
+#### Entering a Room
 
 Before entering a room, you should add listeners to it, if you want to listen for occupants \"joins\" and \"leaves\", subject changes or messages being sent by the room, then enter the room with your desired nickname:
 
@@ -87,26 +91,97 @@ chatRoom.addSubjectChangeListener(new SubjectChangeListener() {
 chatRoom.enter("nickname");
 ```
 
+#### Sending Messages
 
+```java
+chatRoom.sendMessage("Hi all!");
+```
 
-### Exiting a room
+#### Changing Nickname
 
-Simply call
+```java
+chatRoom.changeNickname("newNickname");
+```
+
+#### Inviting other Users
+
+```java
+chatRoom.invite(Jid.valueOf("romeo@example.net"), "Hey, please join the room");
+```
+
+#### Requesting Voice
+
+If you are a mere visitor to a moderated room, you can request voice:
+
+```java
+chatRoom.requestVoice();
+```
+
+#### Exiting a Room
+
+In order to exit the room, simply call:
 
 ```java
 chatRoom.exit();
 ```
 
-or with an optional presence status exit message:
+Optionally you can also provide a presence status exit message:
 
 ```java
 chatRoom.exit("Bye!");
 ```
 
+## Admin, Owner and Moderator Use Cases
 
-## Listening to MUC invitations
+As admin, owner or moderator you have elevated privileges in the room, including banning users, kicking occupants, change room subject, change room configuration, etc.
 
-The ```MultiUserChatManager``` listens for both kinds of invitations: [mediated][Mediated] and [direct][Direct].
+### Modifying the Room Subject
+
+```java
+chatRoom.changeSubject("New subject");
+```
+
+### Changing Roles and Affiliations
+
+If you have enough privileges in the room, you can ban users, kick occupants, grant moderator status, revoke voice, etc...
+
+These use cases are all covered by two methods: `changeRole` and `changeAffiliation`. Here are some examples:
+
+#### Granting Moderator Status
+
+```java
+chatRoom.changeRole(Role.MODERATOR, "nick", "You are now a moderator!");
+```
+
+#### Banning a User
+
+If you are allowed (you need to be admin or owner), you can ban a user based on his JID:
+
+```java
+chatRoom.changeAffiliation(Affiliation.OUTCAST, Jid.valueOf("juliet@example.net"), "You are banned!");
+```
+
+#### Kicking an Occupant
+
+If you are a moderator in the room, you can kick other occupants (based on their nickname):
+
+```java
+chatRoom.changeRole(Role.NONE, "nick", "You are kicked!");
+```
+
+### Destroying a Room
+
+If you are owner, you can destroy the room.
+
+```java
+chatRoom.destroy("Macbeth doth come.")
+```
+
+## Managing Room Invitations
+
+### Listening to Room Invitations
+
+`MultiUserChatManager` listens for both kinds of invitations: [mediated][Mediated] and [direct][Direct].
 You can listen for them in the following way:
 
 ```java
@@ -118,7 +193,7 @@ multiUserChatManager.addInvitationListener(new InvitationListener() {
 });
 ```
 
-### Accepting an invitation
+### Accepting an Invitation
 
 You get the MUC with ```e.getRoomAddress()``` of the event object. A room is in the form ```room@chatservice```, so we have to create the service and then the room at that service:
 
@@ -129,38 +204,21 @@ ChatRoom chatRoom = chatService.createRoom(e.getRoomAddress().getLocal());
 
 When you've created the room, you should add listeners to it and then enter it.
 
-### Declining an invitation
+### Declining an Invitation
 
 ```java
-e.decline("I don\'t have time right now...");
+e.decline("I don't have time right now...");
 ```
 
-
-## Sending messages
-
-```java
-chatRoom.sendMessage("Hi all!");
-```
-
-
-## Banning an user
+#### Listening for Room Declinations
 
 ```java
-try {
-    chatRoom.banUser(Jid.valueOf("juliet@example.net"), "Because I can!");
-} catch (XmppException e) {
-    // e.g. if you are not allowed to ban a user.
-}
-```
-
-## Kicking an occupant
-
-```java
-try {
-    chatRoom.kickOccupant("Nickname", "Because I can!");
-} catch (XmppException e) {
-    // e.g. if you are not allowed to kick an occupant.
-}
+chatRoom.addInvitationDeclineListener(new InvitationDeclineListener() {
+    @Override
+    public void invitationDeclined(InvitationDeclineEvent e) {
+        // e.getInvitee() declined your invitation.
+    }
+});
 ```
 
 [MUC]: http://xmpp.org/extensions/xep-0045.html "XEP-0045: Multi-User Chat"

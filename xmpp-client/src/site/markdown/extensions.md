@@ -1,7 +1,7 @@
-# Using extensions
+# Using Extensions
 ---
 
-## Getting extensions from stanzas
+## Getting Extensions from Stanzas
 
 Extensions in stanzas can simply be retrieved in the following way:
 
@@ -15,7 +15,7 @@ Attention attention = message.getExtension(Attention.class); // XEP-224
 EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class); // XEP-115
 ```
 
-## Managing extensions
+## Managing Extensions
 
 Most extensions need some kind of logic or have to implement business rules defined in the respective XEP.
 

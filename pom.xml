@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.xmpp</groupId>
-    <artifactId>babbler</artifactId>
+    <artifactId>xmpp-stack</artifactId>
     <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
@@ -37,7 +37,6 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
-    <name>Babbler - a XMPP client library</name>
     <organization>
         <name>${project.name}</name>
         <url>https://bitbucket.org/sco0ter/babbler</url>

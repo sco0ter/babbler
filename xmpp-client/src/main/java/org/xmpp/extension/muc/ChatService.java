@@ -61,7 +61,8 @@ public final class ChatService {
      * Gets the list of public chat rooms hosted by this chat service.
      *
      * @return The public rooms.
-     * @throws XmppException
+     * @throws org.xmpp.stanza.StanzaException If the chat service returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the chat service did not respond.
      */
     public List<ChatRoom> getPublicRooms() throws XmppException {
         List<ChatRoom> chatRooms = new ArrayList<>();

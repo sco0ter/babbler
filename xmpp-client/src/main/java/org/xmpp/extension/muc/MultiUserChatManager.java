@@ -147,8 +147,4 @@ public final class MultiUserChatManager extends ExtensionManager {
     public ChatService createChatService(Jid chatService) {
         return new ChatService(chatService, xmppSession, serviceDiscoveryManager);
     }
-
-    public void getFeatures(Jid jid) throws XmppException {
-        serviceDiscoveryManager.discoverInformation(jid);
-    }
 }

@@ -18,7 +18,7 @@ Collection<ChatService> chatServices = multiUserChatManager.getChatServices();
 If you already know the address of your chat service, you can also create an instance of the `ChatService` directly:
 
 ```java
-ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.yourxmppdomain.com"));
+ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.yourxmppdomain"));
 ```
 
 A chat service allows you to do two things:
@@ -35,7 +35,7 @@ or second - if you know an existing room or want to create a new one - creating 
 ChatRoom chatRoom = chatService.createRoom("myroom");
 ```
 
-whose room address would basically be `myroom@conference.yourxmppdomain.com`.
+whose room address would basically be `myroom@conference.yourxmppdomain`.
 
 This can also be used, if you want to create instant chat rooms (e.g. with an UUID).
 
@@ -210,7 +210,7 @@ When you've created the room, you should add listeners to it and then enter it.
 e.decline("I don't have time right now...");
 ```
 
-#### Listening for Room Declinations
+#### Listening for Room Declines
 
 ```java
 chatRoom.addInvitationDeclineListener(new InvitationDeclineListener() {

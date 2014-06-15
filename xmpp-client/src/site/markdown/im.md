@@ -76,7 +76,7 @@ xmppSession.getPresenceManager().approveSubscription(presence.getFrom());
 xmppSession.getPresenceManager().denySubscription(presence.getFrom());
 ```
 
-## Listen for Incoming Messages
+## Listening for Incoming Messages
 
 Listening for messages is done by adding a message listener to the session.
 
@@ -92,7 +92,7 @@ xmppSession.addMessageListener(new MessageListener() {
 });
 ```
 
-## Intercept Outgoing Messages (or Stanzas in general)
+## Intercepting Outgoing Messages (or Stanzas in general)
 
 The same approach as for incoming messages is also used for outgoing messages. The only difference is the \'incoming\’ property of the event.
 

@@ -20,6 +20,19 @@ messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredL
 });
 ```
 
-Currently, if the manager is enabled, message receipts are requested for every sent message. This will change in the future by adding message filters, so that you can request receipts for only chat messages (as example).
+## Filtering Messages
+
+In order to request receipts, you need to enable the manager. Simply enabling it will request receipts for every outbound non-error message.
+If you want to request receipts only for a messages, you can add a filter. The following example would request receipts only for message of type `normal`.
+
+```java
+messageDeliveryReceiptsManager.addMessageFilter(new StanzaFilter<Message>() {
+    @Override
+    public boolean accept(Message message) {
+        return message.getType() == Message.Type.NORMAL;
+    }
+});
+```
+
 
 [Receipts]: http://xmpp.org/extensions/xep-0184.html "XEP-0184: Message Delivery Receipts"

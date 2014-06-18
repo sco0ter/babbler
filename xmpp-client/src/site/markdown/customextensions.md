@@ -1,4 +1,4 @@
-# Writing custom Extensions
+# Writing Custom Extensions
 ---
 
 Writing your own extensions is pretty easy and robust. This is where this library really shines. You basically only have to write a class and annotate it with JAXB annotations.

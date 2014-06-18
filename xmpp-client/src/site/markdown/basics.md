@@ -1,7 +1,7 @@
 # Getting Started
 ---
 
-## Creating a XMPP Session
+## Creating an XMPP Session
 
 The first thing you want to do in order to connect to a XMPP server is creating a ```XmppSession``` object:
 

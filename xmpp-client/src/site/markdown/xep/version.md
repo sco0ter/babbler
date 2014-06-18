@@ -4,7 +4,7 @@
 [XEP-0092: Software Version][Software Version] allows you to discover the software version and operating system associated with another XMPP entity.
 
 
-## Querying Another Entity for its Software Version
+## Querying Another Entity for Its Software Version
 
 ```java
 SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
@@ -14,7 +14,7 @@ SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.
 If you query a server, you will obviously get the server software.
 If you query a full JID, you will get the client software associated with the connected resource.
 
-## Setting your own Software Version
+## Setting Your Own Software Version
 
 You can set your own version, if you want other entities to discover your version:
 

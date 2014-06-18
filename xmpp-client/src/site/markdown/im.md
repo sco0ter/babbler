@@ -3,7 +3,7 @@
 
 For XMPP core aspects like roster and presence management, there\'s a corresponding manager class, directly on the `XmppSession` instance.
 
-## Adding Contacts to your Roster
+## Adding Contacts to Your Roster
 
 ```java
 xmppSession.getRosterManager().addContact(new Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
@@ -92,7 +92,7 @@ xmppSession.addMessageListener(new MessageListener() {
 });
 ```
 
-## Intercepting Outgoing Messages (or Stanzas in general)
+## Intercepting Outgoing Messages (or Stanzas in General)
 
 The same approach as for incoming messages is also used for outgoing messages. The only difference is the \'incoming\’ property of the event.
 

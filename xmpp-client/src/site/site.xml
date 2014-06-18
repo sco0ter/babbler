@@ -22,9 +22,9 @@
   ~ THE SOFTWARE.
   -->
 
-<project name="Babbler - a XMPP client library for Java SE">
+<project name="Babbler - a XMPP Client Library for Java SE">
     <bannerRight>
-        <name>Babbler - a XMPP client library for Java SE</name>
+        <name>Babbler - a XMPP Client Library for Java SE</name>
         <src>xmpp.png</src>
     </bannerRight>
     <publishDate position="left"/>
@@ -69,6 +69,7 @@
             <item href="xep/last.html" name="XEP-0012: Last Activity"/>
             <item href="xep/disco.html" name="XEP-0030: Service Discovery"/>
             <item href="xep/muc.html" name="XEP-0045: Multi-User Chat"/>
+            <item href="xep/vcard.html" name="XEP-0054: vcard-temp"/>
             <item href="xep/pubsub.html" name="XEP-0060: Publish-Subscribe"/>
             <item href="xep/version.html" name="XEP-0092: Software Version"/>
             <item href="xep/receipts.html" name="XEP-0184: Message Delivery Receipts"/>

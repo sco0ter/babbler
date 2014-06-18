@@ -16,7 +16,7 @@ The project is structured into the following Maven modules:
 
 ![Module Overview](ModuleOverview.png)
 
-## Building the project
+## Building the Project
 
 First you obviously need to get the source code. You can get it either by [downloading the repository](https://bitbucket.org/sco0ter/babbler/downloads) as zip package or cloning it via Mercurial.
 In order to build the project you need to run the following common Maven command on the root directory:

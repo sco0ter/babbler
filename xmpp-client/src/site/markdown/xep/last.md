@@ -45,7 +45,7 @@ lastActivityManager.setLastActivityStrategy(new LastActivityStrategy() {
 });
 ```
 
-If you don't want your XMPP session to respond to last activiy queries, you have to disable `LastActivityManager`, otherwise keep it enabled.
+If you don\'t want your XMPP session to respond to last activiy queries, you have to disable `LastActivityManager`, otherwise keep it enabled.
 
 ```java
 LastActivityManager lastActivityManager = xmppSession.getExtensionManager(LastActivityManager.class);
@@ -69,12 +69,12 @@ LastActivity lastActivity = lastActivityManager.getLastActivity(null);
 
 ## Sending Last Activity in Presence
 
-There's also a related specification: [XEP-0256: Last Activity in Presence][Last Activity in Presence], which basically says:
-\"Let's just inform my contacts about my last activity automatically, so that they don't need to ask me\".
+There\'s also a related specification: [XEP-0256: Last Activity in Presence][Last Activity in Presence], which basically says:
+\"Let\'s just inform my contacts about my last activity automatically, so that they don\'t need to ask me\".
 
 By default this information is automatically attached to your outbound presence stanzas of type "away" and "dnd".
 
-If you don't want it, disable the manager:
+If you don\'t want it, disable the manager:
 
 ```java
 LastActivityManager lastActivityManager = xmppSession.getExtensionManager(LastActivityManager.class);

@@ -202,7 +202,7 @@ ChatService chatService = multiUserChatManager.createChatService(new Jid(e.getRo
 ChatRoom chatRoom = chatService.createRoom(e.getRoomAddress().getLocal());
 ```
 
-When you've created the room, you should add listeners to it and then enter it.
+When you\'ve created the room, you should add listeners to it and then enter it.
 
 ### Declining an Invitation
 

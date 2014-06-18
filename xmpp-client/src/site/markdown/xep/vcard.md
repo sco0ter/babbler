@@ -1,7 +1,7 @@
 # XEP-0054: vcard-temp
 ---
 
-[XEP-0054: vcard-temp][vcard-temp] allows you to retrieve another user's profile and store your own.
+[XEP-0054: vcard-temp][vcard-temp] allows you to retrieve another user\'s profile and store your own.
 
 Here are a few examples how to do it.
 

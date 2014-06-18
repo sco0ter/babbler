@@ -15,13 +15,13 @@ PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.clas
 
 ### Discovering PubSub Services
 
-If you don't know the address of your server\'s pubsub service, you can discover pubsub services like that:
+If you don\'t know the address of your server\'s pubsub service, you can discover pubsub services like that:
 
 ```java
 Collection<PubSubService> pubSubServices = pubSubManager.getPubSubServices();
 ```
 
-The resulting list will contain the available PubSub services on your server. Most often it's probably only one: \"pubsub.yourxmppdomain\".
+The resulting list will contain the available PubSub services on your server. Most often it\'s probably only one: \"pubsub.yourxmppdomain\".
 
 ### Using a PubSub Service
 
@@ -120,7 +120,7 @@ Note that this is also a ```PubSubService``` because PEP is just a subset of Pub
 
 If you want to publish personal data to the service, you can do it in the same way as described above.
 
-Here's a sample to publish your geo location:
+Here\'s a sample to publish your geo location:
 
 ```java
 PubSubService pubSubService = pubSubManager.createPersonalEventingService();

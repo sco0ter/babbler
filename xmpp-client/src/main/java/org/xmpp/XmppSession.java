@@ -62,12 +62,11 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The base connection class for establishing a XMPP session.
+ * The base class for establishing a XMPP session.
  *
  * @author Christian Schudt
  */
@@ -641,12 +640,17 @@ public class XmppSession implements Closeable {
                 break;
             } catch (IOException e) {
                 if (connectionIterator.hasNext()) {
-                    logger.log(Level.WARNING, "", e);
+                    if (xmppServiceDomain != null) {
+                        logger.log(Level.WARNING, String.format("Connection to domain %s failed. Trying alternative connection.", xmppServiceDomain), e);
+                    } else {
+                        logger.log(Level.WARNING, String.format("Connection to host %s:%s failed. Trying alternative connection.", connection.getHostname(), connection.getPort()), e);
+                    }
                 } else {
                     throw e;
                 }
             }
         }
+
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
         try {
             waitUntilSaslNegotiationStarted();
@@ -1067,21 +1071,22 @@ public class XmppSession implements Closeable {
         lock.lock();
         try {
             if (!streamNegotiatedUntilSasl.await(10000, TimeUnit.SECONDS)) {
-                throw new NoResponseException("Timeout reached while connecting.");
+                // Check if an exception has occurred during stream negotiation and throw it.
+                if (exception != null) {
+                    try {
+                        throw new IOException(exception);
+                    } finally {
+                        exception = null;
+                    }
+                }
+                else {
+                    throw new NoResponseException("Timeout reached while connecting.");
+                }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
             lock.unlock();
-        }
-
-        // Check if an exception has occurred during stream negotiation and throw it.
-        if (exception != null) {
-            try {
-                throw new IOException(exception);
-            } finally {
-                exception = null;
-            }
         }
     }
 

@@ -114,12 +114,12 @@ public final class TcpConnection extends Connection {
 
         if (getHostname() != null && !getHostname().isEmpty()) {
             socket.connect(new InetSocketAddress(getHostname(), getPort()));
-        } else if (xmppSession.getDomain() != null) {
+        } else if (getXmppSession().getDomain() != null) {
             try {
-                connectWithXmppServiceDomain(xmppSession.getDomain());
+                connectWithXmppServiceDomain(getXmppSession().getDomain());
             } catch (NamingException e) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                socket.connect(new InetSocketAddress(InetAddress.getByName(xmppSession.getDomain()), port));
+                socket.connect(new InetSocketAddress(InetAddress.getByName(getXmppSession().getDomain()), port));
             }
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
@@ -129,7 +129,7 @@ public final class TcpConnection extends Connection {
         inputStream = socket.getInputStream();
         // Start writing to the output stream.
         try {
-            xmppStreamWriter = new XmppStreamWriter(outputStream, this.xmppSession);
+            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession());
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }
@@ -137,7 +137,7 @@ public final class TcpConnection extends Connection {
 
         // Start reading from the input stream.
         try {
-            xmppStreamReader = new XmppStreamReader(this, this.xmppSession);
+            xmppStreamReader = new XmppStreamReader(this, this.getXmppSession());
         } catch (JAXBException e) {
             throw new IOException(e);
         }
@@ -146,7 +146,7 @@ public final class TcpConnection extends Connection {
 
     @Override
     protected void secureConnection() throws IOException {
-        socket = xmppSession.getSecurityManager().getSSLContext().getSocketFactory().createSocket(
+        socket = getXmppSession().getSecurityManager().getSSLContext().getSocketFactory().createSocket(
                 socket,
                 socket.getInetAddress().getHostAddress(),
                 socket.getPort(),
@@ -159,7 +159,7 @@ public final class TcpConnection extends Connection {
     @Override
     protected void compressStream() {
 
-        switch (xmppSession.getCompressionManager().getMethod()) {
+        switch (getXmppSession().getCompressionManager().getMethod()) {
             case ZLIB:
                 inputStream = new InflaterInputStream(inputStream);
                 outputStream = new DeflaterOutputStream(outputStream, true);

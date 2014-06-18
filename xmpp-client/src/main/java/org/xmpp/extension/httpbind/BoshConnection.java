@@ -315,13 +315,13 @@ public final class BoshConnection extends Connection {
             }
             if (getHostname() != null) {
                 url = new URL("http", getHostname(), getPort(), file);
-            } else if (xmppSession.getXmppServiceDomain() != null) {
+            } else if (getXmppSession().getXmppServiceDomain() != null) {
                 try {
-                    url = new URL(findBoshUrl(xmppSession.getXmppServiceDomain()));
+                    url = new URL(findBoshUrl(getXmppSession().getXmppServiceDomain()));
                 } catch (NamingException e) {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 80 as default.
-                    url = new URL("http", xmppSession.getXmppServiceDomain(), 80, file);
+                    url = new URL("http", getXmppSession().getXmppServiceDomain(), 80, file);
                 }
             } else {
                 throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
@@ -338,7 +338,7 @@ public final class BoshConnection extends Connection {
 
         // Create initial request.
         Body body = new Body();
-        body.setTo(xmppSession.getXmppServiceDomain());
+        body.setTo(getXmppSession().getXmppServiceDomain());
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setVersion("1.10");
         body.setWait(wait);
@@ -372,7 +372,7 @@ public final class BoshConnection extends Connection {
             }
 
             if (body.getFrom() != null) {
-                xmppSession.setXmppServiceDomain(body.getFrom().getDomain());
+                getXmppSession().setXmppServiceDomain(body.getFrom().getDomain());
             }
         }
 
@@ -392,7 +392,7 @@ public final class BoshConnection extends Connection {
 
         if (body.getWrappedObjects() != null) {
             for (Object wrappedObject : body.getWrappedObjects()) {
-                xmppSession.handleElement(wrappedObject);
+                getXmppSession().handleElement(wrappedObject);
             }
         }
     }
@@ -424,7 +424,7 @@ public final class BoshConnection extends Connection {
     protected void restartStream() {
         Body body = new Body();
         body.setRestart(true);
-        body.setTo(xmppSession.getXmppServiceDomain());
+        body.setTo(getXmppSession().getXmppServiceDomain());
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setSid(getSessionId());
         sendNewRequest(body, false);
@@ -547,7 +547,7 @@ public final class BoshConnection extends Connection {
                                     // Create the writer for this connection.
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream), true);
                                     // Then write the XML to the output stream by marshalling the object to the writer.
-                                    xmppSession.getMarshaller().marshal(body, xmlStreamWriter);
+                                    getXmppSession().getMarshaller().marshal(body, xmlStreamWriter);
 
                                     if (logger.isLoggable(Level.FINE)) {
                                         logger.fine("--> " + new String(byteArrayOutputStreamRequest.toByteArray()));
@@ -574,7 +574,7 @@ public final class BoshConnection extends Connection {
                                         // Parse the <body/> element.
                                         synchronized (responseExecutor) {
                                             if (xmlEvent.isStartElement()) {
-                                                final JAXBElement<Body> element = xmppSession.getUnmarshaller().unmarshal(xmlEventReader, Body.class);
+                                                final JAXBElement<Body> element = getXmppSession().getUnmarshaller().unmarshal(xmlEventReader, Body.class);
                                                 if (logger.isLoggable(Level.FINE)) {
                                                     logger.fine("<-- " + new String(byteArrayOutputStream.toByteArray()));
                                                 }
@@ -586,7 +586,7 @@ public final class BoshConnection extends Connection {
                                                             try {
                                                                 unpackBody(element.getValue(), body.getRid());
                                                             } catch (Exception e) {
-                                                                xmppSession.notifyException(e);
+                                                                getXmppSession().notifyException(e);
                                                             }
                                                         }
                                                     });
@@ -605,7 +605,7 @@ public final class BoshConnection extends Connection {
                                 handleCode(httpConnection.getResponseCode());
                             }
                         } catch (Exception e) {
-                            xmppSession.notifyException(e);
+                            getXmppSession().notifyException(e);
                         } finally {
                             if (httpConnection != null) {
                                 httpConnection.disconnect();

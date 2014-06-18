@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.net.Proxy;
 
 /**
+ * The base connection class which provides hostname, port and proxy information.
+ *
  * @author Christian Schudt
  */
 public abstract class Connection implements Closeable {
@@ -44,12 +46,7 @@ public abstract class Connection implements Closeable {
 
     private final int port;
 
-    protected XmppSession xmppSession;
-
-    /**
-     * Any exception that occurred during stream negotiation ({@link #connect()}).
-     */
-    private volatile Exception exception;
+    private XmppSession xmppSession;
 
     /**
      * Creates a connection to the specified host and port through a proxy.
@@ -64,6 +61,20 @@ public abstract class Connection implements Closeable {
         this.proxy = proxy;
     }
 
+    /**
+     * Gets the XMPP session which is associated with this connection. This method should only be called from the session itself.
+     *
+     * @return The XMPP session.
+     */
+    public XmppSession getXmppSession() {
+        return xmppSession;
+    }
+
+    /**
+     * Sets the XMPP session which is associated with this connection. This method should only be called from the session itself.
+     *
+     * @param xmppSession The XMPP session.
+     */
     public void setXmppSession(XmppSession xmppSession) {
         this.xmppSession = xmppSession;
     }
@@ -100,6 +111,11 @@ public abstract class Connection implements Closeable {
      */
     protected abstract void restartStream();
 
+    /**
+     * Sends an element.
+     *
+     * @param clientStreamElement The element.
+     */
     public abstract void send(ClientStreamElement clientStreamElement);
 
     /**
@@ -108,6 +124,11 @@ public abstract class Connection implements Closeable {
     protected void compressStream() {
     }
 
+    /**
+     * Connects to the server.
+     *
+     * @throws IOException If no connection could be established, e.g. due to unknown host.
+     */
     public abstract void connect() throws IOException;
 
     /**

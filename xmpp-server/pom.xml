@@ -29,11 +29,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.xmpp</groupId>
-        <artifactId>babbler</artifactId>
+        <artifactId>xmpp-stack</artifactId>
         <version>0.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-server</artifactId>
-
+    <build>
+        <plugins>
+            <!-- Skip site generation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>
@@ -44,7 +56,7 @@
         <dependency>
             <groupId>org.xmpp</groupId>
             <artifactId>xmpp-core</artifactId>
-            <version>0.2.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

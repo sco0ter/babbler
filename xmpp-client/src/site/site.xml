@@ -22,9 +22,12 @@
   ~ THE SOFTWARE.
   -->
 
-<project name="Babbler - a XMPP Client Library for Java SE">
+<project name="${project.name}">
+    <bannerLeft>
+        <name>${project.name}</name>
+    </bannerLeft>
     <bannerRight>
-        <name>Babbler - a XMPP Client Library for Java SE</name>
+        <name>${project.name}</name>
         <src>xmpp.png</src>
     </bannerRight>
     <publishDate position="left"/>
@@ -60,7 +63,7 @@
             <item href="basics.html" name="Getting Started"/>
             <item href="im.html" name="Contacts, Presence and Messaging"/>
             <item href="extensions.html" name="Using Extensions"/>
-            <item href="customextensions.html" name="Writing custom Extensions"/>
+            <item href="customextensions.html" name="Writing Custom Extensions"/>
             <item href="errors.html" name="Exceptions and XMPP Errors"/>
             <item href="debugging.html" name="Debugging XMPP Traffic"/>
             <item href="buildinstructions.html" name="Build Instructions"/>

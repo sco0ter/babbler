@@ -479,9 +479,9 @@ public final class VCard {
      * Gets the time zone.
      *
      * @return The time zone.
-     * @see #setTimezone(String)
+     * @see #setTimeZone(String)
      */
-    public String getTimezone() {
+    public String getTimeZone() {
         return timezone;
     }
 
@@ -489,9 +489,9 @@ public final class VCard {
      * Sets the time zone.
      *
      * @param timezone The time zone.
-     * @see #getTimezone()
+     * @see #getTimeZone()
      */
-    public void setTimezone(String timezone) {
+    public void setTimeZone(String timezone) {
         this.timezone = timezone;
     }
 
@@ -875,9 +875,26 @@ public final class VCard {
         private String country;
 
         public Address() {
-            super(false, false, true, true, true, true);
+            super(true, false, true, true, true, true);
         }
 
+        /**
+         * Creates a address with all possible values.
+         *
+         * @param preferred       True, if this is the preferred address.
+         * @param home            If this is a home address.
+         * @param work            If it is a work address.
+         * @param postal          If it is a postal address.
+         * @param parcel          If it is a parcel address.
+         * @param international   If it is a international address.
+         * @param postOfficeBox   The post office box.
+         * @param extendedAddress The extended address.
+         * @param street          The street.
+         * @param city            The city.
+         * @param region          The region.
+         * @param postalCode      The postal code.
+         * @param country         The country.
+         */
         public Address(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international, String postOfficeBox, String extendedAddress, String street, String city, String region, String postalCode, String country) {
             super(preferred, home, work, postal, parcel, international);
             this.postOfficeBox = postOfficeBox;
@@ -889,8 +906,20 @@ public final class VCard {
             this.country = country;
         }
 
-        public Address(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international) {
-            super(preferred, home, work, postal, parcel, international);
+        /**
+         * Creates a postal home address (marked as preferred).
+         *
+         * @param street     The street.
+         * @param city       The city.
+         * @param postalCode The postal code.
+         * @param country    The country.
+         */
+        public Address(String street, String city, String postalCode, String country) {
+            super(true, true, false, true, true, true);
+            this.street = street;
+            this.city = city;
+            this.postalCode = postalCode;
+            this.country = country;
         }
 
         /**

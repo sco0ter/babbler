@@ -22,14 +22,20 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.receipts;
-
-import org.xmpp.stanza.client.Message;
+package org.xmpp.stanza;
 
 /**
+ * A simple filter for stanzas.
+ *
  * @author Christian Schudt
  */
-interface MessageFilter {
+public interface StanzaFilter<T extends Stanza> {
 
-    boolean accept(Message message);
+    /**
+     * Checks whether the stanza is accepted by this filter.
+     *
+     * @param stanza The stanza.
+     * @return True, if the filter accepts the stanza.
+     */
+    boolean accept(T stanza);
 }

@@ -31,6 +31,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.delay.DelayedDelivery;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
+import org.xmpp.stanza.StanzaFilter;
 import org.xmpp.stanza.client.Message;
 
 import java.util.Date;
@@ -72,7 +73,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
     final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
-    private final List<MessageFilter> messageFilters = new CopyOnWriteArrayList<>();
+    private final List<StanzaFilter<Message>> messageFilters = new CopyOnWriteArrayList<>();
 
     /**
      * Creates the manager.
@@ -83,7 +84,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
         super(xmppSession, Request.NAMESPACE);
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
-        messageFilters.add(new MessageFilter() {
+        messageFilters.add(new StanzaFilter<Message>() {
             @Override
             public boolean accept(Message message) {
                 return message.getType() != Message.Type.ERROR;
@@ -135,8 +136,8 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                             }
                         }
                     } else {
-                        // If we are sending a message, append a receipt request.
-                        for (MessageFilter messageFilter : messageFilters) {
+                        // If we are sending a message, append a receipt request, if it passes all filters.
+                        for (StanzaFilter<Message> messageFilter : messageFilters) {
                             if (!messageFilter.accept(message)) {
                                 return;
                             }
@@ -173,11 +174,23 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
         messageDeliveredListeners.remove(messageDeliveredListener);
     }
 
-    private void addMessageFilter(MessageFilter messageFilter) {
+    /**
+     * Adds a message filter in order to filter messages for which receipts are requested.
+     *
+     * @param messageFilter The message filter.
+     * @see #removeMessageFilter(org.xmpp.stanza.StanzaFilter)
+     */
+    public void addMessageFilter(StanzaFilter<Message> messageFilter) {
         messageFilters.add(messageFilter);
     }
 
-    private void removeMessageFilter(MessageFilter messageFilter) {
+    /**
+     * Removes a previously added message filter.
+     *
+     * @param messageFilter The message filter.
+     * @see #addMessageFilter(org.xmpp.stanza.StanzaFilter)
+     */
+    public void removeMessageFilter(StanzaFilter<Message> messageFilter) {
         messageFilters.remove(messageFilter);
     }
 }

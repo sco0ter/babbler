@@ -440,7 +440,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException If no presence stanza has arrived in time.
      * @throws StanzaException     If the returned presence contains a stanza error.
      */
-    public Presence sendAndAwait(Presence presence, final Predicate<Presence> filter) throws NoResponseException, StanzaException {
+    public Presence sendAndAwait(Presence presence, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
 
         final Presence[] result = new Presence[1];
 
@@ -450,7 +450,7 @@ public class XmppSession implements Closeable {
             @Override
             public void handle(PresenceEvent e) {
                 Presence presence = e.getPresence();
-                if (e.isIncoming() && filter.test(presence)) {
+                if (e.isIncoming() && filter.accept(presence)) {
                     lock.lock();
                     try {
                         result[0] = presence;
@@ -492,7 +492,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException If no message stanza has arrived in time.
      * @throws StanzaException     If the returned message contains a stanza error.
      */
-    public Message sendAndAwait(Message message, final Predicate<Message> filter) throws NoResponseException, StanzaException {
+    public Message sendAndAwait(Message message, final StanzaFilter<Message> filter) throws NoResponseException, StanzaException {
 
         final Message[] result = new Message[1];
 
@@ -502,7 +502,7 @@ public class XmppSession implements Closeable {
             @Override
             public void handle(MessageEvent e) {
                 Message message = e.getMessage();
-                if (e.isIncoming() && filter.test(message)) {
+                if (e.isIncoming() && filter.accept(message)) {
                     lock.lock();
                     try {
                         result[0] = message;

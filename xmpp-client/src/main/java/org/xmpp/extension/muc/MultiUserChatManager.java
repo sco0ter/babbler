@@ -50,7 +50,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Manages Multi-User Chat.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
 public final class MultiUserChatManager extends ExtensionManager {
     private static final Logger logger = Logger.getLogger(MultiUserChatManager.class.getName());
@@ -59,7 +62,7 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     private final Set<InvitationListener> invitationListeners = new CopyOnWriteArraySet<>();
 
-    protected MultiUserChatManager(final XmppSession xmppSession) {
+    private MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, Muc.NAMESPACE);
 
         // Listen for incoming invitations.

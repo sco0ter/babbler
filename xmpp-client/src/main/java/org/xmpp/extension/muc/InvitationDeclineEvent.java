@@ -68,7 +68,7 @@ public final class InvitationDeclineEvent extends EventObject {
 
 
     /**
-     * Gets the reason for the invitation.
+     * Gets the reason for the decline.
      *
      * @return The reason.
      */

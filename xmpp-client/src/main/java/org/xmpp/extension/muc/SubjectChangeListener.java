@@ -26,8 +26,14 @@ package org.xmpp.extension.muc;
 
 /**
  * @author Christian Schudt
+ * @see ChatRoom#addSubjectChangeListener(SubjectChangeListener)
  */
 public interface SubjectChangeListener {
 
+    /**
+     * Called when the subject has changed.
+     *
+     * @param e The event object.
+     */
     void subjectChanged(SubjectChangeEvent e);
 }

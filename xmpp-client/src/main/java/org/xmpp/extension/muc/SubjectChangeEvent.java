@@ -28,31 +28,33 @@ import java.util.Date;
 import java.util.EventObject;
 
 /**
+ * This event is fired, when the subject in a chat room has changed.
+ *
  * @author Christian Schudt
+ * @see org.xmpp.extension.muc.SubjectChangeListener
  */
 public final class SubjectChangeEvent extends EventObject {
     private final String subject;
-
-    private final Occupant occupant;
 
     private final Date date;
 
     private final boolean isDelayed;
 
+    private final String nickname;
+
     /**
      * Constructs a prototypical Event.
      *
-     * @param source   The object on which the Event initially occurred.
-     * @param subject  The subject.
-     * @param occupant The occupant who changed the subject.
+     * @param source  The object on which the Event initially occurred.
+     * @param subject The subject.
      * @throws IllegalArgumentException if source is null.
      */
-    SubjectChangeEvent(Object source, String subject, Occupant occupant, boolean isDelayed, Date date) {
+    SubjectChangeEvent(Object source, String subject, String nick, boolean isDelayed, Date date) {
         super(source);
         this.subject = subject;
-        this.occupant = occupant;
         this.isDelayed = isDelayed;
         this.date = date;
+        this.nickname = nick;
     }
 
     /**
@@ -65,21 +67,21 @@ public final class SubjectChangeEvent extends EventObject {
     }
 
     /**
-     * Gets the occupant, who changed the subject or null, if the subject was set by the room.
-     *
-     * @return The occupant or null.
-     */
-    public Occupant getOccupant() {
-        return occupant;
-    }
-
-    /**
      * Gets the date, when the message was sent.
      *
      * @return The send date.
      */
     public Date getDate() {
         return date;
+    }
+
+    /**
+     * Gets the nickname who changed the subject.
+     *
+     * @return The nickname.
+     */
+    public String getNickname() {
+        return nickname;
     }
 
     /**

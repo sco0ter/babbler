@@ -57,7 +57,7 @@ Once you have a `ChatRoom` instance, you can now do multiple things with it:
 You can discover the occupants, which are currently in the room (nicknames only) with:
 
 ```java
-List<String> occupants = chatRoom.getOccupants();
+List<String> occupants = chatRoom.discoverOccupants();
 ```
 
 And you get additional room info (e.g. the current subject, the max history messages, the description and room features) with:
@@ -75,20 +75,48 @@ These are the use cases, when you are *in* the room (or want to enter the room).
 Before entering a room, you should add listeners to it, if you want to listen for occupants \"joins\" and \"leaves\", subject changes or messages being sent by the room, then enter the room with your desired nickname:
 
 ```java
+chatRoom.addOccupantListener(new OccupantListener() {
+    @Override
+    public void occupantChanged(OccupantEvent e) {
+        if (!e.getOccupant().isSelf()) {
+            switch (e.getType()) {
+                case ENTERED:
+                    System.out.println(e.getOccupant().getNick() + " has entered the room.");
+                    break;
+                case EXITED:
+                    System.out.println(e.getOccupant().getNick() + " has exited the room.");
+                    break;
+                case KICKED:
+                    System.out.println(e.getOccupant().getNick() + " has been kicked out of the room.");
+                    break;
+            }
+        }
+    }
+});
+
 chatRoom.addMessageListener(new MessageListener() {
     @Override
     public void handle(MessageEvent e) {
-
+        Message message = e.getMessage();
+        if (e.isIncoming()) {
+            System.out.println(String.format("%s: %s", message.getFrom().getResource(), message.getBody()));
+        }
     }
 });
 chatRoom.addSubjectChangeListener(new SubjectChangeListener() {
     @Override
     public void subjectChanged(SubjectChangeEvent e) {
-
+        System.out.println(String.format("%s changed the subject to '%s'", e.getNickname(), e.getSubject()));
     }
 });
 
 chatRoom.enter("nickname");
+```
+
+You can also request history when entering, e.g.:
+
+```java
+chatRoom.enter("nickname", History.forMaxMessages(20));
 ```
 
 #### Sending Messages

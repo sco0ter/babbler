@@ -26,7 +26,6 @@ package org.xmpp.extension.muc;
 
 import org.xmpp.Jid;
 import org.xmpp.extension.muc.user.MucUser;
-import org.xmpp.extension.muc.user.Status;
 import org.xmpp.stanza.client.Presence;
 
 /**
@@ -45,21 +44,24 @@ public final class Occupant implements Comparable<Occupant> {
 
     private final String nick;
 
-    private final boolean me;
+    private final boolean isSelf;
 
-    Occupant(Presence presence) {
+    private final Presence presence;
+
+    Occupant(Presence presence, boolean isSelf) {
+        this.presence = presence;
         this.nick = presence.getFrom().getResource();
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null && mucUser.getItem() != null) {
             this.affiliation = mucUser.getItem().getAffiliation();
             this.role = mucUser.getItem().getRole();
             this.jid = mucUser.getItem().getJid();
-            this.me = mucUser.getStatusCodes().contains(Status.self());
+            this.isSelf = isSelf;
         } else {
             this.affiliation = null;
             this.role = null;
             this.jid = null;
-            this.me = false;
+            this.isSelf = isSelf;
         }
     }
 
@@ -97,6 +99,24 @@ public final class Occupant implements Comparable<Occupant> {
      */
     public String getNick() {
         return nick;
+    }
+
+    /**
+     * Gets the current presence of this occupant.
+     *
+     * @return The presence.
+     */
+    public Presence getPresence() {
+        return presence;
+    }
+
+    /**
+     * If the occupant is yourself.
+     *
+     * @return True, if this occupant is you.
+     */
+    public boolean isSelf() {
+        return isSelf;
     }
 
     /**

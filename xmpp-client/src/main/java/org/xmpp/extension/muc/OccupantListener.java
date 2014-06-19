@@ -27,9 +27,16 @@ package org.xmpp.extension.muc;
 import java.util.EventListener;
 
 /**
+ * This listener listens for any kind of occupant events in a chat room, e.g. "joins" and "leaves", nickname changes or presence status changes.
+ *
  * @author Christian Schudt
+ * @see org.xmpp.extension.muc.ChatRoom#addOccupantListener(OccupantListener)
  */
 public interface OccupantListener extends EventListener {
-
+    /**
+     * Called, when the occupant status has changed.
+     *
+     * @param e The event object.
+     */
     void occupantChanged(OccupantEvent e);
 }

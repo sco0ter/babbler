@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.muc;
 
+import org.xmpp.Jid;
+
 import java.util.EventObject;
 
 /**
@@ -31,37 +33,124 @@ import java.util.EventObject;
  */
 public final class OccupantEvent extends EventObject {
 
-    private final boolean hasJoined;
-
-    private final boolean hasLeft;
-
     private final Occupant occupant;
+
+    private final Type type;
+
+    private final Actor actor;
+
+    private final String reason;
+
+    private final Jid alternativeRoom;
 
     /**
      * Constructs a prototypical Event.
      *
-     * @param source    The object on which the Event initially occurred.
-     * @param occupant  The occupant.
-     * @param hasJoined If the occupant has joined.
-     * @param hasLeft   If the occupant has left.
+     * @param source         The object on which the Event initially occurred.
+     * @param occupant       The occupant.
+     * @param type           The exit reason.
+     * @param actor          The actor in case the occupant was kicked or banned.
+     * @param reason         The reason for kicking or banning an occupant or for destroying the room.
+     * @param alternativeJid The alternative room JID in case the room has been destroyed.
      * @throws IllegalArgumentException if source is null.
      */
-    public OccupantEvent(Object source, Occupant occupant, boolean hasJoined, boolean hasLeft) {
+    OccupantEvent(Object source, Occupant occupant, Type type, Actor actor, String reason, Jid alternativeJid) {
         super(source);
         this.occupant = occupant;
-        this.hasJoined = hasJoined;
-        this.hasLeft = hasLeft;
+        this.type = type;
+        this.reason = reason;
+        this.actor = actor;
+        this.alternativeRoom = alternativeJid;
     }
 
-    public boolean hasJoined() {
-        return hasJoined;
-    }
-
-    public boolean hasLeft() {
-        return hasLeft;
-    }
-
+    /**
+     * Gets the occupant.
+     *
+     * @return The occupant.
+     */
     public Occupant getOccupant() {
         return occupant;
+    }
+
+    /**
+     * Gets the type of this event.
+     *
+     * @return The type.
+     */
+    public Type getType() {
+        return type;
+    }
+
+    /**
+     * Gets the actor in case the occupant was kicked or banned from the room.
+     *
+     * @return The actor or null.
+     */
+    public Actor getActor() {
+        return actor;
+    }
+
+    /**
+     * Gets the reason for kicking or banning an occupant or for destroying the room.
+     *
+     * @return The reason for kicking or banning an occupant or for destroying the room.
+     */
+    public String getReason() {
+        return reason;
+    }
+
+    /**
+     * Gets the alternative room address in case the old room has been destroyed.
+     *
+     * @return The alternative room address.
+     */
+    public Jid getAlternativeRoom() {
+        return alternativeRoom;
+    }
+
+    /**
+     * The exit reason. Possible reasons for exiting a room can be (among others), that an occupant got kicked or banned.
+     */
+    public enum Type {
+        /**
+         * The occupant has entered the room.
+         */
+        ENTERED,
+        /**
+         * The occupant has exited the room in a normal way.
+         */
+        EXITED,
+        /**
+         * The occupants has changed his or her presence status.
+         */
+        STATUS_CHANGED,
+        /**
+         * The occupant got kicked out of the room by a moderator.
+         */
+        KICKED,
+        /**
+         * The occupant got banned by an admin.
+         */
+        BANNED,
+        /**
+         * The occupant has exited the room, because he's no longer a member of the room.
+         */
+        MEMBERSHIP_REVOKED,
+        /**
+         * The occupant has exited the room, because the room became member's only.
+         */
+        ROOM_BECAME_MEMBERS_ONLY,
+        /**
+         * The occupant has exited the room, because he changed his nickname.
+         */
+        NICKNAME_CHANGED,
+        /**
+         * The occupant has exited the room, because the system was shutdown.
+         */
+        SYSTEM_SHUTDOWN,
+        /**
+         * The occupant has exited because the room got destroyed by the owner.
+         */
+        ROOM_DESTROYED
     }
 }

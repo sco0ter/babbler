@@ -41,7 +41,7 @@ import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.Message;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -79,19 +79,22 @@ public final class PubSubManager extends ExtensionManager {
      * @throws StanzaException     If the server returned a stanza error.
      * @throws NoResponseException If the server did not respond.
      */
-    public List<Jid> discoverPubSubServices() throws XmppException {
-        List<Jid> result = new ArrayList<>();
+    public Collection<PubSubService> getPubSubServices() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null);
+        Collection<PubSubService> pubSubServices = new ArrayList<>();
+
         for (Item item : itemNode.getItems()) {
             InfoNode infoNode = serviceDiscoveryManager.discoverInformation(item.getJid());
             if (infoNode.getFeatures().contains(new Feature(PubSub.NAMESPACE))) {
-                result.add(item.getJid());
+                pubSubServices.add(new PubSubService(item.getJid(), xmppSession, serviceDiscoveryManager));
             }
         }
-        return result;
+        return pubSubServices;
     }
 
     /**
+     * Creates a pubsub service.
+     *
      * @param service The pubsub service address.
      * @return The pubsub service.
      */
@@ -100,6 +103,8 @@ public final class PubSubManager extends ExtensionManager {
     }
 
     /**
+     * Creates a personal eventing service.
+     *
      * @return The personal eventing service.
      * @see <a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
      */

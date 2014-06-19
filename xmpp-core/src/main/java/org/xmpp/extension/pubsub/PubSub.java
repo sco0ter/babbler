@@ -490,6 +490,13 @@ public final class PubSub {
         return new PubSub(new Retract(node, new ItemElement(id), notify));
     }
 
+    Default getDefault() {
+        if (type instanceof Default) {
+            return (Default) type;
+        }
+        return null;
+    }
+
     Subscription getSubscription() {
         if (type instanceof SubscriptionInfo) {
             return (SubscriptionInfo) type;
@@ -529,7 +536,7 @@ public final class PubSub {
         return null;
     }
 
-    List<AffiliationNode> getAffiliations() {
+    List<Affiliation> getAffiliations() {
         if (type instanceof AffiliationsElement) {
             return Collections.unmodifiableList(new ArrayList<>(((AffiliationsElement) type).getAffiliations()));
         }
@@ -611,17 +618,17 @@ public final class PubSub {
             super(node);
         }
 
-        private List<? extends AffiliationNode> getAffiliations() {
+        private List<? extends Affiliation> getAffiliations() {
             return affiliations;
         }
 
-        private static final class AffiliationInfo implements AffiliationNode {
+        private static final class AffiliationInfo implements Affiliation {
 
             @XmlAttribute(name = "node")
             private String node;
 
             @XmlAttribute(name = "affiliation")
-            private Affiliation affiliation;
+            private AffiliationState affiliation;
 
             @XmlAttribute(name = "jid")
             private Jid jid;
@@ -632,7 +639,7 @@ public final class PubSub {
             }
 
             @Override
-            public Affiliation getAffiliation() {
+            public AffiliationState getAffiliationState() {
                 return affiliation;
             }
 
@@ -643,7 +650,7 @@ public final class PubSub {
         }
     }
 
-    private static final class Default extends PubSubChildElement {
+    static final class Default extends PubSubChildElement {
 
         @XmlAttribute(name = "type")
         private Type type;
@@ -659,7 +666,12 @@ public final class PubSub {
             super(node);
         }
 
-        private DataForm getDataForm() {
+        /**
+         * Gets the default subscription options.
+         *
+         * @return The default subscription options.
+         */
+        DataForm getDataForm() {
             return dataForm;
         }
 

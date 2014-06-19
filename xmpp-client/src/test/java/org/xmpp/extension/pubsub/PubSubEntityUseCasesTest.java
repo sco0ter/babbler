@@ -30,6 +30,7 @@ import org.xmpp.TestXmppSession;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoDiscovery;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -45,7 +46,7 @@ public class PubSubEntityUseCasesTest {
         infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#config-node"));
         infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/disco#info"));
         PubSubManager pubSubManager = connection.getExtensionManager(PubSubManager.class);
-        Set<PubSubFeature> pubSubFeatures = pubSubManager.createPubSubService(null).getFeatures(infoDiscovery);
+        Collection<PubSubFeature> pubSubFeatures = pubSubManager.createPubSubService(null).getFeatures(infoDiscovery);
 
         Assert.assertEquals(pubSubFeatures.size(), 2);
         Assert.assertTrue(pubSubFeatures.contains(PubSubFeature.COLLECTIONS));

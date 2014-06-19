@@ -91,7 +91,7 @@ public final class GeoLocationManager extends ExtensionManager {
      */
     public void publish(GeoLocation geoLocation) throws XmppException {
         pepService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
-        pepService.publish(GeoLocation.NAMESPACE, geoLocation);
+        //pepService.publish(GeoLocation.NAMESPACE, geoLocation);
     }
 
     /**

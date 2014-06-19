@@ -171,10 +171,10 @@ public class PubSubEntityUseCasesTest extends XmlTest {
         Assert.assertNotNull(pubSub.getAffiliations());
         Assert.assertEquals(pubSub.getAffiliations().size(), 4);
         Assert.assertEquals(pubSub.getAffiliations().get(0).getNode(), "node1");
-        Assert.assertEquals(pubSub.getAffiliations().get(0).getAffiliation(), Affiliation.OWNER);
+        Assert.assertEquals(pubSub.getAffiliations().get(0).getAffiliationState(), AffiliationState.OWNER);
 
-        Assert.assertEquals(pubSub.getAffiliations().get(1).getAffiliation(), Affiliation.PUBLISHER);
-        Assert.assertEquals(pubSub.getAffiliations().get(2).getAffiliation(), Affiliation.OUTCAST);
+        Assert.assertEquals(pubSub.getAffiliations().get(1).getAffiliationState(), AffiliationState.PUBLISHER);
+        Assert.assertEquals(pubSub.getAffiliations().get(2).getAffiliationState(), AffiliationState.OUTCAST);
     }
 
     @Test

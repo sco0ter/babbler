@@ -24,33 +24,43 @@
 
 package org.xmpp.extension.pubsub;
 
-import org.xmpp.Jid;
+import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
- * Represents the {@code <affiliation/>} element, which is used in both 'pubsub' and 'pubsub#owner' namespace.
+ * Represents the affiliations which allow to manage permissions.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html#affiliations">4.1 Affiliations</a>
  */
-public interface Affiliation {
-
+public enum AffiliationState {
     /**
-     * Gets the affiliation to a node.
-     *
-     * @return The affiliation.
+     * A member, which is allowed to subscribe to and retrieve items from a node.
      */
-    AffiliationState getAffiliationState();
-
+    @XmlEnumValue("member")
+    MEMBER,
     /**
-     * Gets the node.
-     *
-     * @return The node.
+     * No affiliation.
      */
-    String getNode();
-
+    @XmlEnumValue("none")
+    NONE,
     /**
-     * Gets the JID.
-     *
-     * @return The JID.
+     * An entity that is disallowed from subscribing or publishing to a node.
      */
-    Jid getJid();
+    @XmlEnumValue("outcast")
+    OUTCAST,
+    /**
+     * The manager of a node, of which there may be more than one; often but not necessarily the node creator.
+     */
+    @XmlEnumValue("owner")
+    OWNER,
+    /**
+     * An entity that is allowed to publish items to a node and that is automatically subscribed to the node.
+     */
+    @XmlEnumValue("publisher")
+    PUBLISHER,
+    /**
+     * An entity that is allowed to publish items to a node but that is not allowed to receive notifications. (This affiliation is useful in the context of nodes that do not have an open access model when automated entities need to generate notifications on behalf of the owner.)
+     */
+    @XmlEnumValue("publish-only")
+    PUBLISH_ONLY
 }

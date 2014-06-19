@@ -449,10 +449,10 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
         Assert.assertEquals(pubSubOwner.getNode(), "princely_musings");
         Assert.assertEquals(pubSubOwner.getAffiliations().size(), 2);
         Assert.assertEquals(pubSubOwner.getAffiliations().get(0).getJid(), Jid.valueOf("hamlet@denmark.lit"));
-        Assert.assertEquals(pubSubOwner.getAffiliations().get(0).getAffiliation(), Affiliation.OWNER);
+        Assert.assertEquals(pubSubOwner.getAffiliations().get(0).getAffiliationState(), AffiliationState.OWNER);
 
         Assert.assertEquals(pubSubOwner.getAffiliations().get(1).getJid(), Jid.valueOf("polonius@denmark.lit"));
-        Assert.assertEquals(pubSubOwner.getAffiliations().get(1).getAffiliation(), Affiliation.OUTCAST);
+        Assert.assertEquals(pubSubOwner.getAffiliations().get(1).getAffiliationState(), AffiliationState.OUTCAST);
     }
 
     @Test

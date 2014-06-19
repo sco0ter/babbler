@@ -24,33 +24,27 @@
 
 package org.xmpp.extension.pubsub;
 
-import org.xmpp.Jid;
+import org.xmpp.extension.disco.info.Identity;
+
+import java.util.Set;
 
 /**
- * Represents the {@code <affiliation/>} element, which is used in both 'pubsub' and 'pubsub#owner' namespace.
- *
  * @author Christian Schudt
  */
-public interface AffiliationNode {
+public class NodeInfo {
 
-    /**
-     * Gets the affiliation to a node.
-     *
-     * @return The affiliation.
-     */
-    Affiliation getAffiliation();
+    private final Identity identity;
 
-    /**
-     * Gets the node.
-     *
-     * @return The node.
-     */
-    String getNode();
+    private final Set<PubSubFeature> features;
 
-    /**
-     * Gets the JID.
-     *
-     * @return The JID.
-     */
-    Jid getJid();
+    private final PubSubMetaDataForm metaDataForm;
+
+    private final PubSubNode.Type type;
+
+    public NodeInfo(Identity identity, Set<PubSubFeature> features, PubSubMetaDataForm metaDataForm) {
+        this.identity = identity;
+        this.features = features;
+        this.metaDataForm = metaDataForm;
+        this.type = "collection".equals(identity.getType()) ? PubSubNode.Type.COLLECTION : PubSubNode.Type.LEAF;
+    }
 }

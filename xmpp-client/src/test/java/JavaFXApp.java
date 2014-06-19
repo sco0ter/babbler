@@ -66,19 +66,20 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
-import org.xmpp.extension.muc.*;
-import org.xmpp.extension.ping.Ping;
+import org.xmpp.extension.muc.MultiUserChatManager;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
+import org.xmpp.extension.pubsub.PubSubFeature;
 import org.xmpp.extension.pubsub.PubSubManager;
+import org.xmpp.extension.pubsub.PubSubNode;
+import org.xmpp.extension.pubsub.PubSubService;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.shim.HeaderManager;
-import org.xmpp.extension.sm.StreamManagement;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferEvent;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferListener;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferManager;
@@ -90,10 +91,8 @@ import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
-import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
-import org.xmpp.stanza.errors.FeatureNotImplemented;
 import org.xmpp.stanza.errors.ServiceUnavailable;
 
 import javax.imageio.ImageIO;
@@ -263,24 +262,6 @@ public class JavaFXApp extends Application {
                                 });
                             }
                         });
-                        final MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
-                        multiUserChatManager.addInvitationListener(new InvitationListener() {
-                            @Override
-                            public void invitationReceived(InvitationEvent e) {
-                                ChatService chatService = multiUserChatManager.createChatService(new Jid(e.getRoomAddress().getDomain()));
-                                ChatRoom chatRoom = chatService.createRoom(e.getRoomAddress().getLocal());
-                                try {
-                                    chatRoom.kickOccupant("Nickname", "Because I can!");
-                                } catch (XmppException e1) {
-                                    e1.printStackTrace();
-                                }
-                                try {
-                                    chatRoom.enter("222");
-                                } catch (XmppException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
-                        });
 
                         xmppSession.getRosterManager().addRosterListener(new RosterListener() {
                             @Override
@@ -381,9 +362,12 @@ public class JavaFXApp extends Application {
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
                         try {
                             xmppSession.connect();
-                            xmppSession.login(txtUser.getText(), txtPassword.getText(), "test");
-                            xmppSession.send(new Presence());
-                            xmppSession.getRosterManager().requestRoster();
+                            xmppSession.login(txtUser.getText(), txtPassword.getText());
+                            //xmppSession.loginAnonymously();
+                            Presence presence = new Presence();
+                            presence.setPriority((byte) 3);
+                            xmppSession.send(presence);
+                            //xmppSession.getRosterManager().requestRoster();
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -692,11 +676,31 @@ public class JavaFXApp extends Application {
 //                    e.printStackTrace();
 //                }
 
-                //xmppSession.send(new Message(Jid.valueOf("222@christian-schudts-macbook-pro.local"), AbstractMessage.Type.GROUPCHAT, "Hi"));
-                IQ iq = new IQ(AbstractIQ.Type.GET, new Ping());
-                IQ error = iq.createError(new StanzaError(new FeatureNotImplemented()));
-                error.setTo(Jid.valueOf("christian-schudts-macbook-pro.local"));
-                xmppSession.send(error);
+                xmppSession.getRosterManager().addRosterListener(new RosterListener() {
+                    @Override
+                    public void rosterChanged(RosterEvent e) {
+
+                    }
+                });
+                MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
+                MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getExtensionManager(MessageDeliveryReceiptsManager.class);
+                messageDeliveryReceiptsManager.setEnabled(true);
+
+                PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+
+                PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.local"));
+                PubSubNode pubSubNode = pubSubService.node("princely_musings");
+
+
+
+                try {
+                    Collection<PubSubFeature> pubSubFeatures = pubSubService.getFeatures();
+                    int i = 0;
+                } catch (XmppException e) {
+                    e.printStackTrace();
+                }
+
+                //xmppSession.send(new Message(Jid.valueOf("222@christian-schudts-macbook-pro.local"), AbstractMessage.Type.CHAT, "Hi"));
 
             }
         });

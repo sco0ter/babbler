@@ -27,7 +27,8 @@ package org.xmpp.extension.pubsub.owner;
 import org.xmpp.Jid;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.pubsub.Affiliation;
-import org.xmpp.extension.pubsub.AffiliationNode;
+import org.xmpp.extension.pubsub.AffiliationState;
+import org.xmpp.extension.pubsub.Affiliation;
 import org.xmpp.extension.pubsub.Subscription;
 import org.xmpp.extension.pubsub.SubscriptionState;
 
@@ -262,7 +263,7 @@ public final class PubSubOwner {
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-affiliations-modify">8.9.2 Modify Affiliation</a>
      */
-    public static PubSubOwner withAffiliations(String node, AffiliationNode... affiliationNodes) {
+    public static PubSubOwner withAffiliations(String node, Affiliation... affiliationNodes) {
         return new PubSubOwner((new Affiliations(node))); // TODO
     }
 
@@ -353,7 +354,7 @@ public final class PubSubOwner {
      *
      * @return True, if the pubsub element contains a 'affiliations' child element.
      */
-    public List<? extends AffiliationNode> getAffiliations() {
+    public List<? extends Affiliation> getAffiliations() {
         if (type instanceof Affiliations) {
             return ((Affiliations) type).getAffiliations();
         }
@@ -385,17 +386,17 @@ public final class PubSubOwner {
             super(node);
         }
 
-        private List<? extends AffiliationNode> getAffiliations() {
+        private List<? extends Affiliation> getAffiliations() {
             return affiliations;
         }
 
-        private static final class AffiliationNodeOwner implements AffiliationNode {
+        private static final class AffiliationNodeOwner implements Affiliation {
 
             @XmlAttribute(name = "node")
             private String node;
 
             @XmlAttribute(name = "affiliation")
-            private Affiliation affiliation;
+            private AffiliationState affiliation;
 
             @XmlAttribute(name = "jid")
             private Jid jid;
@@ -406,7 +407,7 @@ public final class PubSubOwner {
             }
 
             @Override
-            public Affiliation getAffiliation() {
+            public AffiliationState getAffiliationState() {
                 return affiliation;
             }
 

@@ -31,18 +31,16 @@ import org.xmpp.XmppSession;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
-import org.xmpp.extension.disco.info.Identity;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.extension.pubsub.owner.PubSubOwner;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,8 +63,6 @@ public final class PubSubService {
         this.xmppSession = xmppSession;
     }
 
-    // ENTITY USE CASES START
-
     /**
      * Gets the features, which are supported by the pubsub service.
      *
@@ -75,13 +71,13 @@ public final class PubSubService {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-features">5.1 Discover Features</a>
      */
-    public Set<PubSubFeature> getFeatures() throws XmppException {
+    public Collection<PubSubFeature> getFeatures() throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(service);
         return getFeatures(infoNode);
     }
 
-    Set<PubSubFeature> getFeatures(InfoNode infoNode) {
-        EnumSet<PubSubFeature> features = EnumSet.noneOf(PubSubFeature.class);
+    Collection<PubSubFeature> getFeatures(InfoNode infoNode) {
+        Collection<PubSubFeature> features = EnumSet.noneOf(PubSubFeature.class);
         for (Feature feature : infoNode.getFeatures()) {
             if (feature.getVar().startsWith(PubSub.NAMESPACE + "#")) {
                 String f = feature.getVar().substring(feature.getVar().indexOf("#") + 1);
@@ -99,37 +95,18 @@ public final class PubSubService {
     }
 
     /**
-     * Gets the first-level nodes of the pubsub service.
+     * Gets the first-level nodes of this pubsub service.
      *
      * @return The list of nodes.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
      */
-    private List<Node> getNodes() throws XmppException {
+    public List<PubSubNode> getNodes() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(service);
-        List<Node> nodes = new ArrayList<>();
+        List<PubSubNode> nodes = new ArrayList<>();
         for (org.xmpp.extension.disco.items.Item item : itemNode.getItems()) {
-            Node node = new Node(item.getNode(), item.getName());
-            nodes.add(node);
-        }
-        return nodes;
-    }
-
-    /**
-     * Gets the (sub-)nodes, which hierarchically reside under the given node, e.g. the "second-level" nodes.
-     *
-     * @param node The node.
-     * @return The list of nodes.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
-     */
-    private List<Node> getNodes(String node) throws XmppException {
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(service);
-        List<Node> nodes = new ArrayList<>();
-        for (org.xmpp.extension.disco.items.Item item : itemNode.getItems()) {
-            Node n = new Node(item.getNode(), item.getName());
+            PubSubNode n = new PubSubNode(item.getNode(), item.getName(), service, xmppSession);
             nodes.add(n);
         }
         return nodes;
@@ -140,67 +117,22 @@ public final class PubSubService {
      *
      * @param node The node.
      * @return The node.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-info">5.3 Discover Node Information</a>
      */
-    private Node getNode(String node) throws XmppException {
-        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(service, node);
-        Node result = new Node();
-        result.setNode(node);
-        if (infoNode.getIdentities() != null && infoNode.getIdentities().iterator().hasNext()) {
-            Identity identity = infoNode.getIdentities().iterator().next();
-            result.setName(identity.getName());
-            result.setType("leaf".equals(identity.getType()) ? Node.Type.LEAF : Node.Type.COLLECTION);
-        }
-        // TODO node meta information.
-        return result;
+    public PubSubNode node(String node) {
+        return new PubSubNode(node, null, service, xmppSession);
     }
 
-    /**
-     * Gets the items for a node.
-     *
-     * @param node The node.
-     * @return The items.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-discoveritems">5.5 Discover Items for a Node</a>
-     */
-    private List<Item> getItems(String node) throws XmppException {
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(service, node);
-        List<Item> result = new ArrayList<>();
-        for (org.xmpp.extension.disco.items.Item item : itemNode.getItems()) {
-            // The 'name' attribute of each Service Discovery item MUST contain its ItemID
-            result.add(new PubSub.ItemElement(item.getName()));
-        }
-        return result;
-    }
 
     /**
      * Gets the subscriptions for all nodes.
      *
      * @return The subscriptions for all nodes.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
      */
     private List<Subscription> getSubscriptions() throws XmppException {
         IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withSubscriptions()));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getSubscriptions();
-    }
-
-    /**
-     * Gets the subscriptions for a specific node.
-     *
-     * @param node The node.
-     * @return The subscriptions for the node.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
-     */
-    private List<Subscription> getSubscriptions(String node) throws XmppException {
-        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withSubscriptions(node)));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getSubscriptions();
     }
@@ -213,105 +145,14 @@ public final class PubSubService {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
-    private List<AffiliationNode> getAffiliations() throws XmppException {
+    private List<Affiliation> getAffiliations() throws XmppException {
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withAffiliations()));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getAffiliations();
     }
 
     /**
-     * Gets the affiliations for a specific node.
-     *
-     * @param node The node.
-     * @return The affiliations for all nodes.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
-     */
-    private List<AffiliationNode> getAffiliations(String node) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withAffiliations(node)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getAffiliations();
-    }
-
-    // ENTITY USE CASES END
-
-    // SUBSCRIBER USE CASES START
-
-    /**
-     * Subscribes to a node.
-     *
-     * @param node The node to subscribe to.
-     * @return The subscription.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe">6.1 Subscribe to a Node</a>
-     */
-    public Subscription subscribe(String node) throws XmppException {
-        return subscribe(node, null);
-    }
-
-    /**
-     * Subscribes to and configures a node.
-     *
-     * @param node     The node to subscribe to.
-     * @param dataForm The configuration form.
-     * @return The subscription.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
-     */
-    public Subscription subscribe(String node, DataForm dataForm) throws XmppException {
-        if (node == null) {
-            throw new IllegalArgumentException("node must not be null");
-        }
-        IQ result = xmppSession.query(new IQ(IQ.Type.SET, PubSub.withSubscribe(node, xmppSession.getConnectedResource().asBareJid(), dataForm)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getSubscription();
-    }
-
-    /**
-     * Unsubscribes from a node.
-     *
-     * @param node The node to unsubscribe from.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
-     */
-    public void unsubscribe(String node) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, PubSub.withUnsubscribe(node, xmppSession.getConnectedResource().asBareJid())));
-    }
-
-    /**
-     * Requests the subscription options for a node.
-     *
-     * @param node The node.
-     * @return The data form.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
-     */
-    private DataForm getSubscriptionOptions(String node) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withOptions(node, xmppSession.getConnectedResource().asBareJid())));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getOptions().getDataForm();
-    }
-
-    /**
-     * Submits subscription options.
-     *
-     * @param node     The node.
-     * @param dataForm The configuration form.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
-     */
-    private void submitSubscriptionOptions(String node, DataForm dataForm) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, PubSub.withOptions(node, xmppSession.getConnectedResource().asBareJid())));
-    }
-
-    /**
-     * Gets the default subscription options for the pubsub service.
+     * Gets the default subscription options for this pubsub service.
      *
      * @return The default subscription options.
      * @throws StanzaException     If the entity returned a stanza error.
@@ -321,203 +162,11 @@ public final class PubSubService {
     private DataForm getDefaultSubscriptionOptions() throws XmppException {
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withDefault()));
         PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getOptions().getDataForm();
+        return pubSub.getDefault().getDataForm();
     }
 
     /**
-     * Gets the default subscription options for a specific node.
-     *
-     * @param node The node.
-     * @return The default subscription options.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
-     */
-    private DataForm getDefaultSubscriptionOptions(String node) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withDefault(node)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getOptions().getDataForm();
-    }
-
-    /**
-     * Gets all items for a specific node.
-     *
-     * @param node The node.
-     * @return The items.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
-     */
-    private List<Item> getAllItems(String node) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withItems(node)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getItems();
-    }
-
-    /**
-     * Gets one or more items with a given item id for a specific node.
-     *
-     * @param node The node.
-     * @param ids  The item ids.
-     * @return The items.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning Notifications Only</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestone">6.5.8 Requesting a Particular Item</a>
-     */
-    private List<Item> getItems(String node, String... ids) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withItems(node, ids)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getItems();
-    }
-
-    /**
-     * Gets the most recent items.
-     *
-     * @param node     The node.
-     * @param maxItems The maximal number of items.
-     * @return The items.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
-     */
-    private List<Item> getItems(String node, int maxItems) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withItems(node, maxItems)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getItems();
-    }
-
-    // SUBSCRIBER USE CASES END
-
-    // PUBLISHER USE CASES START
-
-    /**
-     * Publishes an item to a node.
-     *
-     * @param node The node.
-     * @param item The item to be published. Note that this item must be known to the {@link org.xmpp.XmppContext}, so that it can be marshalled into XML.
-     * @return The item id, generated by the pubsub service.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
-     */
-    public String publish(String node, Object item) throws XmppException {
-        return publish(node, null, item);
-    }
-
-    /**
-     * Publishes an item to a node.
-     *
-     * @param node The node.
-     * @param id   The item's id.
-     * @param item The item to be published. Note that this item must be known to the {@link org.xmpp.XmppContext}, so that it can be marshalled into XML.
-     * @return The item id.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
-     */
-    public String publish(String node, String id, Object item) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.SET, PubSub.withPublish(node, id, item)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        if (pubSub != null && pubSub.getPublish() != null && pubSub.getPublish().getItem() != null) {
-            return pubSub.getPublish().getItem().getId();
-        }
-        return id;
-    }
-
-    /**
-     * Deletes an item.
-     *
-     * @param node   The node.
-     * @param id     The item id.
-     * @param notify If the pubsub service shall notify the subscribers about the deletion.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
-     */
-    private void deleteItem(String node, String id, boolean notify) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, PubSub.withRetract(node, id, notify)));
-    }
-
-    // PUBLISHER USE CASES END
-
-    /**
-     * Creates an instant node.
-     *
-     * @return The node id, which is generated by the pubsub service.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
-     */
-    private String createNode() throws XmppException {
-        return createNode(null, null);
-    }
-
-    /**
-     * Creates a node.
-     *
-     * @param node The node.
-     * @return The node id.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
-     */
-    private String createNode(String node) throws XmppException {
-        return createNode(node, null);
-    }
-
-    /**
-     * Creates and configures a node.
-     *
-     * @param node     The node.
-     * @param dataForm The configuration form.
-     * @return The node id.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
-     */
-    private String createNode(String node, DataForm dataForm) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.SET, PubSub.withCreate(node, dataForm)));
-        if (node != null) {
-            return node;
-        }
-        PubSub pubSub = result.getExtension(PubSub.class);
-        if (pubSub != null) {
-            return pubSub.getNode();
-        }
-        return null;
-    }
-
-    /**
-     * Gets the node configuration form.
-     *
-     * @param node The node.
-     * @return The configuration form.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-request">8.2.1 Request</a>
-     */
-    private DataForm getNodeConfiguration(String node) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSubOwner.withConfigure(node)));
-        PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
-        return pubSubOwner.getConfigurationForm();
-    }
-
-    /**
-     * Submits the node configuration form.
-     *
-     * @param node     The node.
-     * @param dataForm The configuration form.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
-     */
-    private void submitNodeConfiguration(String node, DataForm dataForm) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, PubSubOwner.withConfigure(node, dataForm)));
-    }
-
-    /**
-     * Gets the default node configuration form.
+     * Gets the default node configuration form for this pubsub service.
      *
      * @return The configuration form.
      * @throws StanzaException     If the entity returned a stanza error.
@@ -528,42 +177,5 @@ public final class PubSubService {
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSubOwner.withDefault()));
         PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
         return pubSubOwner.getConfigurationForm();
-    }
-
-    /**
-     * Deletes a node.
-     *
-     * @param node The node.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
-     */
-    private void deleteNode(String node) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, PubSubOwner.withDelete(node)));
-    }
-
-    /**
-     * Deletes a node and specifies a replacement node.
-     *
-     * @param node The node.
-     * @param uri  The replacement node.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
-     */
-    private void deleteNode(String node, URI uri) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, PubSubOwner.withDelete(node, uri)));
-    }
-
-    /**
-     * Purges a node of all published items.
-     *
-     * @param node The node.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-purge">8.5 Purge All Node Items</a>
-     */
-    private void purgeNode(String node) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, PubSubOwner.withPurge(node)));
     }
 }

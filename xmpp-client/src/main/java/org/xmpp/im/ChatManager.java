@@ -44,7 +44,7 @@ import java.util.logging.Logger;
  * This class manages one-to-one chat sessions, which are described in <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="http://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
  * <h3>Creating a new chat session</h3>
  * <pre>
- * <code>ChatSession chatSession = connection.getChatManager().createChatSession(chatPartner);</code>
+ * <code>ChatSession chatSession = xmppSession.getChatManager().createChatSession(chatPartner);</code>
  * </pre>
  * <h3>Listen for new chat sessions</h3>
  * <p>When a contact initiates a new chat session with you, you can listen for it with the {@link ChatSessionListener}.
@@ -52,7 +52,7 @@ import java.util.logging.Logger;
  * </p>
  * <p>You should add a {@link MessageListener} to the chat session in order to listen for messages.</p>
  * <pre><code>
- * connection.getChatManager().addChatSessionListener(new ChatSessionListener() {
+ * xmppSession.getChatManager().addChatSessionListener(new ChatSessionListener() {
  *     {@literal @}Override
  *     public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
  *         ChatSession chatSession = chatSessionEvent.getChatSession();

@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  * <h3>Code sample</h3>
  * <pre>
  * <code>
- * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection.getExtensionManager(MessageDeliveryReceiptsManager.class);
+ * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getExtensionManager(MessageDeliveryReceiptsManager.class);
  * messageDeliveryReceiptsManager.addPubSubListener(new MessageDeliveredListener() {
  *    {@literal @}Override
  *    public void messageDelivered(MessageDeliveredEvent e) {

@@ -50,7 +50,7 @@ public final class PingManager extends ExtensionManager {
     /**
      * Creates the ping manager.
      *
-     * @param xmppSession The underlying connection.
+     * @param xmppSession The underlying XMPP session.
      */
     private PingManager(final XmppSession xmppSession) {
         super(xmppSession, Ping.NAMESPACE);

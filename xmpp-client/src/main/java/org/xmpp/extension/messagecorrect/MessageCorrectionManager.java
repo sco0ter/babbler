@@ -35,7 +35,7 @@ import org.xmpp.stanza.client.Message;
  * </p>
  * <h3>Advertising support for message correction</h3>
  * <pre><code>
- * connection.getExtensionManager(MessageCorrectionManager.class).setEnabled(true);
+ * xmppSession.getExtensionManager(MessageCorrectionManager.class).setEnabled(true);
  * </code></pre>
  * <h3>Checking if a message should be corrected</h3>
  * <pre><code>

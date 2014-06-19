@@ -26,8 +26,11 @@ package org.xmpp.sasl;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.xmpp.TestXmppSession;
+import org.xmpp.XmppSession;
 
 import javax.security.auth.callback.*;
+import javax.security.sasl.RealmCallback;
 import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
@@ -60,6 +63,30 @@ public class ScramClientTest {
 
         scramSaslClient.evaluateChallenge(new byte[0]);
         Assert.assertEquals(DatatypeConverter.printBase64Binary(scramSaslClient.hi("test".getBytes(), "salt".getBytes(), 4096)), "suIjHg0e14CDoom6wmHKz3naWOc=");
+    }
+
+    @Test
+    public void testSasl() throws SaslException {
+        XmppSession xmppSession = new TestXmppSession();
+        String[] preferredMechanisms = xmppSession.getAuthenticationManager().getPreferredMechanisms().toArray(new String[xmppSession.getAuthenticationManager().getPreferredMechanisms().size()]);
+        SaslClient sc = Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, new CallbackHandler() {
+            @Override
+            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+                for (Callback callback : callbacks) {
+                    if (callback instanceof NameCallback) {
+                        ((NameCallback) callback).setName("admin");
+                    }
+                    if (callback instanceof PasswordCallback) {
+                        ((PasswordCallback) callback).setPassword("admin".toCharArray());
+                    }
+                    if (callback instanceof RealmCallback) {
+                        ((RealmCallback) callback).setText("realm");
+                    }
+                }
+            }
+        });
+
+        Assert.assertNotNull(sc);
     }
 
     @Test

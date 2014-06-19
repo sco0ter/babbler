@@ -11,7 +11,7 @@
 * ![alt supported][supported]           [XEP-0020: Feature Negotiation](http://xmpp.org/extensions/xep-0020.html)
 * ![alt supported][supported]           [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html)
 * ![alt supported][supported]           [XEP-0033: Extended Stanza Addressing](http://xmpp.org/extensions/xep-0033.html)
-* ![alt in development][in development] [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)
+* ![alt supported][supported]           [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)
 * ![alt in development][in development] [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
 * ![alt supported][supported]           [XEP-0048: Bookmarks](http://xmpp.org/extensions/xep-0048.html)
 * ![alt supported][supported]           [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)

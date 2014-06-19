@@ -40,29 +40,6 @@ public class SaslTest extends XmlTest {
         super(Auth.class, Challenge.class, Response.class, Success.class, Abort.class, Failure.class);
     }
 
-    //    @Test
-    //    public void testSasl() throws SaslException {
-    //        String[] preferredMechanisms = connection.getAuthenticationManager().getPreferredMechanisms().toArray(new String[connection.getAuthenticationManager().getPreferredMechanisms().size()]);
-    //        SaslClient sc = Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, new CallbackHandler() {
-    //            @Override
-    //            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-    //                for (Callback callback : callbacks) {
-    //                    if (callback instanceof NameCallback) {
-    //                        ((NameCallback) callback).setName("admin");
-    //                    }
-    //                    if (callback instanceof PasswordCallback) {
-    //                        ((PasswordCallback) callback).setPassword("admin".toCharArray());
-    //                    }
-    //                    if (callback instanceof RealmCallback) {
-    //                        ((RealmCallback) callback).setText("realm");
-    //                    }
-    //                }
-    //            }
-    //        });
-    //
-    //        Assert.assertNotNull(sc);
-    //    }
-
     @Test
     public void unmarshalAuth() throws XMLStreamException, JAXBException {
         String xml = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>";

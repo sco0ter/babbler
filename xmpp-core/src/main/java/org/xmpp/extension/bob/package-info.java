@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>.
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:bob", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.bob;

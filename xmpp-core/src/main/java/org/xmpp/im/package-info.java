@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/rfcs/rfc6121.html">Instant Messaging and Presence Functionality</a>.
+ * Provides classes for <a href="http://xmpp.org/rfcs/rfc6121.html">Instant Messaging and Presence Functionality</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)

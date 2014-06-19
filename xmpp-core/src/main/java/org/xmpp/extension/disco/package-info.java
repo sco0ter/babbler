@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
  * <p>
  * This specification defines an XMPP protocol extension for discovering information about other XMPP entities. Two kinds of information can be discovered: (1) the identity and capabilities of an entity, including the protocols and features it supports; and (2) the items associated with an entity, such as the list of rooms hosted at a multi-user chat service.
  * </p>

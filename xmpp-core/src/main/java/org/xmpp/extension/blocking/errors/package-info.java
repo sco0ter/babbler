@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a> (errors).
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a> (errors).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:blocking:errors", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.blocking.errors;

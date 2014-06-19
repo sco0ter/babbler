@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes to manage extensions (XEPs) and sub packages which implements extensions.
+ * Provides classes to manage extensions (XEPs) and sub packages which implements extensions.
  */
 package org.xmpp.extension;
 

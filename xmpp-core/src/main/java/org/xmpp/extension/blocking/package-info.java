@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>.
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>.
  * <p>
  * It specifies an XMPP protocol extension for communications blocking that is intended to be simpler than privacy lists (XEP-0016).
  * </p>

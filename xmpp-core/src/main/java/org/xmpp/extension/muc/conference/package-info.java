@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>.
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>.
  * <p>
  * It defines a method for inviting a contact to a multi-user chat room directly, instead of sending the invitation through the chat room.
  * </p>

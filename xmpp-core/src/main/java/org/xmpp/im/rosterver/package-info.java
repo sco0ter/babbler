@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a>.
+ * Provides classes for <a href="http://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:features:rosterver", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.im.rosterver;

@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for core XMPP functionality.
+ * Provides classes for core XMPP functionality.
  */
 package org.xmpp;
 

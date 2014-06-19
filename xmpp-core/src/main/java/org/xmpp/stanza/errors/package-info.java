@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes from the <a href="http://xmpp.org/rfcs/rfc6120.html#schemas-stanzaerror">Stanza Error Namespace</a>.
+ * Provides classes from the <a href="http://xmpp.org/rfcs/rfc6120.html#schemas-stanzaerror">Stanza Error Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-stanzas", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stanza.errors;

@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/rfcs/rfc3921.html#session">Session Establishment</a>.
+ * Provides classes for <a href="http://xmpp.org/rfcs/rfc3921.html#session">Session Establishment</a>.
  */
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-session", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.im.session;
 

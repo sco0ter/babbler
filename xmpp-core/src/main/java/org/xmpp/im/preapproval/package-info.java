@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/rfcs/rfc6121.html#sub-preapproval">Subscription Pre-Approval</a>.
+ * Provides classes for <a href="http://xmpp.org/rfcs/rfc6121.html#sub-preapproval">Subscription Pre-Approval</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:features:pre-approval", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.im.preapproval;

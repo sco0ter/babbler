@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>.
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>.
  * <p>
  * It defines a protocol for making annotations about roster items and other entities.
  * </p>

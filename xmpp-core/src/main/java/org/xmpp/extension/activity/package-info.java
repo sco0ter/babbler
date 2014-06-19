@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0108.html">XEP-0108: User Activity</a>.
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0108.html">XEP-0108: User Activity</a>.
  * <p>
  * It defines a payload format for communicating information about user activities, such as whether a person is currently working, travelling, or relaxing. The payload format is typically transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.
  * </p>

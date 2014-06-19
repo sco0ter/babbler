@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes from the <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-stream">Stream Namespace</a>, like <a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">Features</a>.
+ * Provides classes from the <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-stream">Stream Namespace</a>, like <a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">Features</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://etherx.jabber.org/streams", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stream;

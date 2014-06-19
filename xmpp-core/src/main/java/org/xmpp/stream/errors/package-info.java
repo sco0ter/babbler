@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes from the <a href="http://xmpp.org/rfcs/rfc6120.html#schemas-streamerror">Stream Error Namespace</a>.
+ * Provides classes from the <a href="http://xmpp.org/rfcs/rfc6120.html#schemas-streamerror">Stream Error Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-streams", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stream.errors;

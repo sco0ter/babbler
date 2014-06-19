@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> ({@linkplain org.xmpp.stanza.AbstractMessage}, {@linkplain org.xmpp.stanza.AbstractPresence} and {@linkplain org.xmpp.stanza.AbstractIQ}).
+ * Provides <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> in the client namespace ({@linkplain org.xmpp.stanza.client.Message}, {@linkplain org.xmpp.stanza.client.Presence} and {@linkplain org.xmpp.stanza.client.IQ}).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)

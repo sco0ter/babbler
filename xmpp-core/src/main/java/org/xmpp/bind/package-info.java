@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/rfcs/rfc6120.html#bind">Resource Binding</a>.
+ * Provides classes for <a href="http://xmpp.org/rfcs/rfc6120.html#bind">Resource Binding</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-bind", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.bind;

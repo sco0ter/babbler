@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a> (#info).
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a> (#info).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/protocol/disco#info", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.disco.info;

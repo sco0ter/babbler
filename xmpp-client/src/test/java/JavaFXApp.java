@@ -66,14 +66,11 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
-import org.xmpp.extension.muc.MultiUserChatManager;
+import org.xmpp.extension.muc.*;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
-import org.xmpp.extension.pubsub.PubSubFeature;
 import org.xmpp.extension.pubsub.PubSubManager;
-import org.xmpp.extension.pubsub.PubSubNode;
-import org.xmpp.extension.pubsub.PubSubService;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -643,65 +640,7 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-//                MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
-//                ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.christian-schudts-macbook-pro"));
-//                try {
-//                    final ChatRoom chatRoom = chatService.createRoom("test");
-//                    chatRoom.addSubjectChangeListener(new SubjectChangeListener() {
-//                        @Override
-//                        public void subjectChanged(SubjectChangeEvent e) {
-//                            int i = 0;
-//                        }
-//                    });
-//                    chatRoom.addMessageListener(new MessageListener() {
-//                        @Override
-//                        public void handle(MessageEvent e) {
-//                            Message message = e.getMessage();
-//                            if (e.isIncoming()) {
-//                                System.out.println(message.getBody());
-//                            }
-//                        }
-//                    });
-//                    chatRoom.addOccupantListener(new OccupantListener() {
-//                        @Override
-//                        public void occupantChanged(OccupantEvent e) {
-//                            System.out.println(e.getOccupant().getNick() + " : joined");
-//                        }
-//                    });
-//
-//                    chatRoom.enter(UUID.randomUUID().toString());
-//
-//
-//                } catch (XmppException e) {
-//                    e.printStackTrace();
-//                }
-
-                xmppSession.getRosterManager().addRosterListener(new RosterListener() {
-                    @Override
-                    public void rosterChanged(RosterEvent e) {
-
-                    }
-                });
-                MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
-                MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getExtensionManager(MessageDeliveryReceiptsManager.class);
-                messageDeliveryReceiptsManager.setEnabled(true);
-
-                PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
-
-                PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.christian-schudts-macbook-pro.local"));
-                PubSubNode pubSubNode = pubSubService.node("princely_musings");
-
-
-
-                try {
-                    Collection<PubSubFeature> pubSubFeatures = pubSubService.getFeatures();
-                    int i = 0;
-                } catch (XmppException e) {
-                    e.printStackTrace();
-                }
-
-                //xmppSession.send(new Message(Jid.valueOf("222@christian-schudts-macbook-pro.local"), AbstractMessage.Type.CHAT, "Hi"));
-
+                History.forMaxMessages(20);
             }
         });
         Button btnExit = new Button("Exit");

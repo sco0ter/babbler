@@ -23,7 +23,7 @@
  */
 
 /**
- * Contains classes for <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a> (feature).
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a> (feature).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/features/compress", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.compress.feature;

@@ -1057,6 +1057,7 @@ public class XmppSession implements Closeable {
      * Updates the status and notifies the connection listeners.
      *
      * @param status The new status.
+     * @param e      The exception.
      */
     final void updateStatus(Status status, Exception e) {
         if (this.status != status) {

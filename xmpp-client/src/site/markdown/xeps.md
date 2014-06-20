@@ -15,7 +15,7 @@
 * ![in development][in development] [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
 * ![supported][supported]           [XEP-0048: Bookmarks](http://xmpp.org/extensions/xep-0048.html)
 * ![supported][supported]           [XEP-0049: Private XML Storage](http://xmpp.org/extensions/xep-0049.html)
-* ![supported][not supported]   [XEP-0050: Ad-Hoc Commands](http://xmpp.org/extensions/xep-0050.html)
+* ![not supported][not supported]   [XEP-0050: Ad-Hoc Commands](http://xmpp.org/extensions/xep-0050.html)
 * ![supported][supported]           [XEP-0054: vcard-temp](http://xmpp.org/extensions/xep-0054.html)
 * ![supported][supported]           [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
 * ![in development][in development] [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)

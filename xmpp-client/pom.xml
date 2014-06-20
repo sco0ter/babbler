@@ -116,6 +116,8 @@
                 <configuration>
                     <finalName>Babbler-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <!-- http://jira.codehaus.org/browse/MASSEMBLY-352 -->
+                    <attach>false</attach>
                     <descriptorId>jar-with-dependencies</descriptorId>
                 </configuration>
             </plugin>
@@ -133,6 +135,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <quiet>true</quiet>
                             <finalName>Babbler-${project.version}</finalName>
                             <includeDependencySources>true</includeDependencySources>
                             <dependencySourceIncludes>

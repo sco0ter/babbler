@@ -212,9 +212,6 @@ public final class AuthenticationManager extends FeatureNegotiator {
      * @see #authenticate(String, String, String, javax.security.auth.callback.CallbackHandler)
      */
     private void authenticate(String[] mechanisms, String authorizationId, String user, String password, CallbackHandler callbackHandler) throws SaslException, LoginException {
-        if (xmppSession.getStatus() != XmppSession.Status.CONNECTED) {
-            throw new IllegalStateException("You must be connected to the server before trying to authenticate.");
-        }
         // Reset variables.
         authenticationFailure = null;
         authenticated = false;

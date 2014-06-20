@@ -34,6 +34,8 @@ import org.xmpp.stanza.client.Presence;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages subscription requests and presences.
@@ -49,6 +51,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PresenceManager {
 
     // TODO auto deny or auto approve some or all requests.
+
+    private static final Logger logger = Logger.getLogger(PresenceManager.class.getName());
 
     private final XmppSession xmppSession;
 
@@ -90,9 +94,20 @@ public final class PresenceManager {
             @Override
             public void statusChanged(ConnectionEvent e) {
                 // Resend the last presences, as soon as we are reconnected.
-                if (e.getStatus() == XmppSession.Status.CONNECTED) {
+                if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
                     for (Presence presence : lastSentPresences.values()) {
                         xmppSession.send(presence);
+                    }
+                }
+                if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
+                    for (Contact contact : xmppSession.getRosterManager().getContacts()) {
+                        try {
+                            Presence presence = new Presence(Presence.Type.UNAVAILABLE);
+                            presence.setFrom(contact.getJid());
+                            xmppSession.handleElement(presence);
+                        } catch (Exception e1) {
+                            logger.log(Level.WARNING, e1.getMessage(), e1);
+                        }
                     }
                 }
             }

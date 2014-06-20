@@ -420,10 +420,10 @@ public class XmppSession implements Closeable {
         }
     }
 
-    private void notifyConnectionListeners(Status status) {
+    private void notifyConnectionListeners(Status status, Status oldStatus, Exception exception) {
         for (ConnectionListener connectionListener : connectionListeners) {
             try {
-                connectionListener.statusChanged(new ConnectionEvent(this, status, exception));
+                connectionListener.statusChanged(new ConnectionEvent(this, status, oldStatus, exception));
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -614,8 +614,15 @@ public class XmppSession implements Closeable {
      */
     public final synchronized void reconnect() throws IOException, LoginException {
         connect();
-        getAuthenticationManager().reAuthenticate();
-        bindResource(resource);
+        try {
+            updateStatus(Status.AUTHENTICATING);
+            getAuthenticationManager().reAuthenticate();
+            bindResource(resource);
+        } catch (Exception e) {
+            updateStatus(Status.DISCONNECTED);
+            throw e;
+        }
+        updateStatus(Status.AUTHENTICATED);
     }
 
     /**
@@ -624,9 +631,11 @@ public class XmppSession implements Closeable {
      * @throws IOException If anything went wrong, e.g. the host was not found.
      */
     public synchronized void connect() throws IOException {
-        if (status == Status.CONNECTED) {
+        if (status != Status.CLOSED && status != Status.DISCONNECTED) {
             throw new IllegalStateException("Already connected.");
         }
+        // Should either be CLOSED or DISCONNECTED
+        Status previousStatus = status;
         updateStatus(Status.CONNECTING);
         // Reset
         exception = null;
@@ -646,6 +655,7 @@ public class XmppSession implements Closeable {
                         logger.log(Level.WARNING, String.format("Connection to host %s:%s failed. Trying alternative connection.", connection.getHostname(), connection.getPort()), e);
                     }
                 } else {
+                    updateStatus(previousStatus, e);
                     throw e;
                 }
             }
@@ -732,21 +742,34 @@ public class XmppSession implements Closeable {
         if (password == null) {
             throw new IllegalArgumentException("password must not be null.");
         }
-
+        if (getDomain() == null) {
+            throw new IllegalStateException("The XMPP domain must not be null.");
+        }
+        if (getStatus() == Status.AUTHENTICATED) {
+            throw new IllegalStateException("You are already logged in.");
+        }
+        if (getStatus() != Status.CONNECTED) {
+            throw new IllegalStateException("You must be connected to the server before trying to login.");
+        }
         try {
-            if (getDomain() == null) {
-                throw new IllegalStateException("The XMPP domain must not be null.");
+            try {
+                updateStatus(Status.AUTHENTICATING);
+                authenticationManager.authenticate(new Jid(user, getDomain()).toString(), user, password, null);
+            } catch (SaslException e) {
+                throw new LoginException(e.getMessage());
             }
-            authenticationManager.authenticate(new Jid(user, getDomain()).toString(), user, password, null);
-        } catch (SaslException e) {
-            throw new LoginException(e.getMessage());
-        }
 
-        bindResource(resource);
+            bindResource(resource);
 
-        if (getRosterManager().isRetrieveRosterOnLogin()) {
-            getRosterManager().requestRoster();
+            if (getRosterManager().isRetrieveRosterOnLogin()) {
+                getRosterManager().requestRoster();
+            }
+        } catch (Exception e) {
+            // Revert status
+            updateStatus(Status.CONNECTED);
+            throw e;
         }
+        updateStatus(Status.AUTHENTICATED);
     }
 
     /**
@@ -756,8 +779,16 @@ public class XmppSession implements Closeable {
      * @see org.xmpp.sasl.AuthenticationManager#authenticateAnonymously()
      */
     public synchronized final void loginAnonymously() throws LoginException {
-        authenticationManager.authenticateAnonymously();
-        bindResource(null);
+        try {
+            updateStatus(Status.AUTHENTICATING);
+            authenticationManager.authenticateAnonymously();
+            bindResource(null);
+        } catch (Exception e) {
+            // Revert status
+            updateStatus(Status.CONNECTED);
+            throw e;
+        }
+        updateStatus(Status.AUTHENTICATED);
     }
 
     /**
@@ -883,8 +914,8 @@ public class XmppSession implements Closeable {
             lock.unlock();
         }
         synchronized (this) {
-            if (status == Status.CONNECTED) {
-                updateStatus(Status.DISCONNECTED);
+            if (status == Status.AUTHENTICATED || status == Status.AUTHENTICATING || status == Status.CONNECTED || status == Status.CONNECTING) {
+                updateStatus(Status.DISCONNECTED, e);
             }
         }
     }
@@ -1018,15 +1049,20 @@ public class XmppSession implements Closeable {
         return status;
     }
 
+    private void updateStatus(Status status) {
+        updateStatus(status, null);
+    }
+
     /**
      * Updates the status and notifies the connection listeners.
      *
      * @param status The new status.
      */
-    protected final void updateStatus(Status status) {
+    final void updateStatus(Status status, Exception e) {
         if (this.status != status) {
+            Status oldStatus = this.status;
             this.status = status;
-            notifyConnectionListeners(status);
+            notifyConnectionListeners(status, oldStatus, e);
         }
         if (status == Status.CLOSED) {
             connectionListeners.clear();
@@ -1078,8 +1114,7 @@ public class XmppSession implements Closeable {
                     } finally {
                         exception = null;
                     }
-                }
-                else {
+                } else {
                     throw new NoResponseException("Timeout reached while connecting.");
                 }
             }
@@ -1095,23 +1130,31 @@ public class XmppSession implements Closeable {
      */
     public enum Status {
         /**
-         * The connection is currently negotiating features.
+         * The session is currently negotiating features.
          */
         CONNECTING,
         /**
-         * The connection is established with the server, features are negotiated, but we are not yet authenticated.
+         * The session is established with the server, features are negotiated, but we are not yet authenticated.
          */
         CONNECTED,
         /**
-         * The connection has been temporarily disconnect by an exception.
+         * The session is currently authenticating with the server.
+         */
+        AUTHENTICATING,
+        /**
+         * The session has authenticated.
+         */
+        AUTHENTICATED,
+        /**
+         * The session has been temporarily disconnect by an exception.
          */
         DISCONNECTED,
         /**
-         * The connection is closing.
+         * The session is closing.
          */
         CLOSING,
         /**
-         * The connection is closed.
+         * The session is closed.
          */
         CLOSED
     }

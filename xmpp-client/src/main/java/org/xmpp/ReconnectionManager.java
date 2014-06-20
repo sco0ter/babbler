@@ -38,25 +38,33 @@ final class ReconnectionManager {
 
     private final Random random = new Random();
 
-    public ReconnectionManager(final XmppSession xmppSession) {
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+    ReconnectionManager(final XmppSession xmppSession) {
         xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                if (e.getException() != null) {
-                    int randomInt = random.nextInt(60);
+                // Reconnect if we were logged in and an exception has occurred.
+                switch (e.getStatus()) {
+                    case DISCONNECTED:
+                        if (e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
+                            int randomInt = random.nextInt(60);
 
-                    final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-                    scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                xmppSession.reconnect();
-                                scheduledExecutorService.shutdown();
-                            } catch (IOException | LoginException e1) {
-                                e1.printStackTrace();
-                            }
+                            scheduledExecutorService.schedule(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        xmppSession.reconnect();
+                                    } catch (IOException | LoginException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                            }, 10, TimeUnit.SECONDS);
                         }
-                    }, 10, 10, TimeUnit.SECONDS);
+                        break;
+                    case CLOSED:
+                        scheduledExecutorService.shutdown();
+                        break;
                 }
             }
         });

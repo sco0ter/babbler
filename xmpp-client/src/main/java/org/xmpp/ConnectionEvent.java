@@ -37,9 +37,7 @@ public final class ConnectionEvent extends EventObject {
 
     private final XmppSession.Status status;
 
-    ConnectionEvent(XmppSession source, XmppSession.Status status) {
-        this(source, status, null);
-    }
+    private final XmppSession.Status oldStatus;
 
     /**
      * Constructs a connection event.
@@ -49,10 +47,11 @@ public final class ConnectionEvent extends EventObject {
      * @param exception An optionally exception.
      * @throws IllegalArgumentException if source is null.
      */
-    ConnectionEvent(XmppSession source, XmppSession.Status status, Exception exception) {
+    ConnectionEvent(XmppSession source, XmppSession.Status status, XmppSession.Status oldStatus, Exception exception) {
         super(source);
         this.exception = exception;
         this.status = status;
+        this.oldStatus = oldStatus;
     }
 
     /**
@@ -71,5 +70,14 @@ public final class ConnectionEvent extends EventObject {
      */
     public Exception getException() {
         return exception;
+    }
+
+    /**
+     * Gets the old connection status.
+     *
+     * @return The old connection status.
+     */
+    public XmppSession.Status getOldStatus() {
+        return oldStatus;
     }
 }

@@ -116,6 +116,6 @@ public class TestXmppSession extends XmppSession {
     @Override
     public void close() throws IOException {
         super.close();
-        updateStatus(Status.CLOSED);
+        updateStatus(Status.CLOSED, null);
     }
 }

@@ -32,9 +32,12 @@ import org.xmpp.extension.amp.errors.FailedRules;
 import org.xmpp.extension.amp.feature.AdvancedMessageProcessingFeature;
 import org.xmpp.stanza.client.Message;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 /**
  * @author Christian Schudt
@@ -205,5 +208,29 @@ public class AdvancedMessageProcessingTest extends XmlTest {
         AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Collections.<Rule>emptyList());
         String xml = marshal(amp);
         Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"></amp>");
+    }
+
+    @Test
+    public void marshalDeliver() throws XMLStreamException, JAXBException {
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliverValue.FORWARD));
+        String xml = marshal(amp);
+        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"deliver\" value=\"forward\"></rule></amp>");
+    }
+
+    @Test
+    public void marshalMatchResource() throws XMLStreamException, JAXBException {
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.matchResource(Rule.Action.ALERT, Rule.MatchResourceValue.EXACT));
+        String xml = marshal(amp);
+        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"match-resource\" value=\"exact\"></rule></amp>");
+    }
+
+    @Test
+    public void marshalExpireAt() throws XMLStreamException, JAXBException {
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.ALERT, date));
+        String xml = marshal(amp);
+        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"expire-at\" value=\"" + DatatypeConverter.printDateTime(calendar) + "\"></rule></amp>");
     }
 }

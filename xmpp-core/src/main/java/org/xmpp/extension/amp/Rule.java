@@ -24,8 +24,11 @@
 
 package org.xmpp.extension.amp;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * The implementation of the {@code <rule/>} element, used both in the {@code http://jabber.org/protocol/amp} namespace as well as in the {@code http://jabber.org/protocol/amp#errors} namespace.
@@ -48,6 +51,8 @@ public final class Rule {
     }
 
     /**
+     * Creates a rule.
+     *
      * @param action    The action.
      * @param condition The condition.
      * @param value     The value. This depends on the condition.
@@ -56,6 +61,41 @@ public final class Rule {
         this.action = action;
         this.condition = condition;
         this.value = value;
+    }
+
+    /**
+     * Creates the defined "expire-at" rule.
+     *
+     * @param action The action.
+     * @param date   The expiration date.
+     * @return The rule.
+     */
+    public static Rule expireAt(Action action, Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return new Rule(action, Condition.EXPIRE_AT, DatatypeConverter.printDateTime(calendar));
+    }
+
+    /**
+     * Creates the defined "deliver" rule.
+     *
+     * @param action The action.
+     * @param value  The value.
+     * @return The rule.
+     */
+    public static Rule deliver(Action action, DeliverValue value) {
+        return new Rule(action, Condition.DELIVER, value.name().toLowerCase());
+    }
+
+    /**
+     * Creates the defined "match-resource" rule.
+     *
+     * @param action The action.
+     * @param value  The value.
+     * @return The rule.
+     */
+    public static Rule matchResource(Action action, MatchResourceValue value) {
+        return new Rule(action, Condition.MATCH_RESOURCE, value.name().toLowerCase());
     }
 
     /**
@@ -130,7 +170,7 @@ public final class Rule {
         /**
          * The "deliver" condition is used to ensure delivery (or non-delivery) in one of five ways.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-expireat">3.3.2 expire-at</a>
+         * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
          */
         @XmlEnumValue("deliver")
         DELIVER,
@@ -148,5 +188,53 @@ public final class Rule {
          */
         @XmlEnumValue("match-resource")
         MATCH_RESOURCE,
+    }
+
+    /**
+     * The possible values for the {@link org.xmpp.extension.amp.Rule.Condition#DELIVER} condition.
+     *
+     * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
+     */
+    public enum DeliverValue {
+        /**
+         * The message would be immediately delivered to the intended recipient or routed to the next hop.
+         */
+        DIRECT,
+        /**
+         * The message would be forwarded to another XMPP address or account.
+         */
+        FORWARD,
+        /**
+         * The message would be sent through a gateway to an address or account on a non-XMPP system.
+         */
+        GATEWAY,
+        /**
+         * The message would not be delivered at all (e.g., because the intended recipient is offline and message storage is not enabled).
+         */
+        NONE,
+        /**
+         * The message would be stored offline for later delivery to the intended recipient.
+         */
+        STORED
+    }
+
+    /**
+     * The possible values for the {@link org.xmpp.extension.amp.Rule.Condition#MATCH_RESOURCE} condition.
+     *
+     * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-match">3.3.3 match-resource</a>
+     */
+    public enum MatchResourceValue {
+        /**
+         * Destination resource matches any value, effectively ignoring the intended resource.
+         */
+        ANY,
+        /**
+         * Destination resource exactly matches the intended resource.
+         */
+        EXACT,
+        /**
+         * Destination resource matches any value except for the intended resource.
+         */
+        OTHER
     }
 }

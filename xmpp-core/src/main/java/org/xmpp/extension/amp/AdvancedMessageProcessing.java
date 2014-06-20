@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -62,6 +63,15 @@ public final class AdvancedMessageProcessing {
     private List<Rule> rules = new ArrayList<>();
 
     private AdvancedMessageProcessing() {
+    }
+
+    /**
+     * Constructs an {@code <amp/>} element with rules.
+     *
+     * @param rules The rules.
+     */
+    public AdvancedMessageProcessing(Rule... rules) {
+        this.rules = Arrays.asList(rules);
     }
 
     /**

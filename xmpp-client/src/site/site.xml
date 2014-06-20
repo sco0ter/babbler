@@ -74,6 +74,7 @@
             <item href="xep/muc.html" name="XEP-0045: Multi-User Chat"/>
             <item href="xep/vcard.html" name="XEP-0054: vcard-temp"/>
             <item href="xep/pubsub.html" name="XEP-0060: Publish-Subscribe"/>
+            <item href="xep/amp.html" name="XEP-0079: Advanced Message Processing"/>
             <item href="xep/version.html" name="XEP-0092: Software Version"/>
             <item href="xep/receipts.html" name="XEP-0184: Message Delivery Receipts"/>
             <item href="xep/delay.html" name="XEP-0203: Delayed Delivery"/>

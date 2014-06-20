@@ -25,6 +25,7 @@
 package org.xmpp.extension.httpbind;
 
 import org.xmpp.Connection;
+import org.xmpp.XmppSession;
 import org.xmpp.XmppUtils;
 import org.xmpp.stream.ClientStreamElement;
 
@@ -536,8 +537,12 @@ public final class BoshConnection extends Connection {
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
                                 // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
-                                httpConnection.setReadTimeout((wait + 5) * 1000);
-
+                                if (getXmppSession().getStatus() == XmppSession.Status.CONNECTING) {
+                                    // If we are not yet connected, set a low timeout, in order to detect connection failure early.
+                                    httpConnection.setReadTimeout(10000);
+                                } else {
+                                    httpConnection.setReadTimeout((wait + 5) * 1000);
+                                }
                                 // This is for logging only.
                                 ByteArrayOutputStream byteArrayOutputStreamRequest = new ByteArrayOutputStream();
 

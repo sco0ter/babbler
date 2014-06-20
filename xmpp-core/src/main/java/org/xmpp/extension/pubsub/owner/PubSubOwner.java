@@ -28,7 +28,6 @@ import org.xmpp.Jid;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.pubsub.Affiliation;
 import org.xmpp.extension.pubsub.AffiliationState;
-import org.xmpp.extension.pubsub.Affiliation;
 import org.xmpp.extension.pubsub.Subscription;
 import org.xmpp.extension.pubsub.SubscriptionState;
 

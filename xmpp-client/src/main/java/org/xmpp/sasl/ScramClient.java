@@ -46,6 +46,8 @@ final class ScramClient extends ScramBase implements SaslClient {
 
     private final String gs2Header;
 
+    String username;
+
     private String authorizationId;
 
     private char[] passwd;
@@ -86,7 +88,7 @@ final class ScramClient extends ScramBase implements SaslClient {
         // by an application protocol ("initial client response")
         return true;
     }
-    String username;
+
     @Override
     public byte[] evaluateChallenge(byte[] challenge) throws SaslException {
 

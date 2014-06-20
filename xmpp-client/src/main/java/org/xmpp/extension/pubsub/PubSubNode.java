@@ -74,7 +74,8 @@ public final class PubSubNode {
      * Gets node info.
      *
      * @return The node info.
-     * @throws XmppException
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      */
     public NodeInfo getNodeInfo() throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(pubSubServiceAddress);
@@ -428,8 +429,8 @@ public final class PubSubNode {
      * Gets the (sub-)nodes, which hierarchically reside under this node, e.g. the "second-level" nodes.
      *
      * @return The list of nodes.
-     * @throws org.xmpp.stanza.StanzaException     If the entity returned a stanza error.
-     * @throws org.xmpp.NoResponseException If the entity did not respond.
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
      */
     public List<PubSubNode> getNodes() throws XmppException {

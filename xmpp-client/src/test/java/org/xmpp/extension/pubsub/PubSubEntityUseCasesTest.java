@@ -31,7 +31,6 @@ import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoDiscovery;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * @author Christian Schudt

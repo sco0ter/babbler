@@ -46,7 +46,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * <pre><code>
  * Message message = new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT);
  * message.getExtensions().add(new Composing());
- * connection.send(message);
+ * xmppSession.send(message);
  * </code></pre>
  * <h2>Reacting to chat states</h2>
  * <pre><code>

@@ -40,7 +40,7 @@ import org.xmpp.stanza.client.Message;
  * <h3>Sample</h3>
  * <pre>
  * <code>
- * connection.addMessageListener(new MessageListener() {
+ * xmppSession.addMessageListener(new MessageListener() {
  *     {@literal @}Override
  *     public void handle(MessageEvent e) {
  *         if (e.isIncoming() &amp;&amp; e.getMessage().getExtension(Attention.class) != null) {
@@ -53,7 +53,7 @@ import org.xmpp.stanza.client.Message;
  * <p>If you use attentions, enable this manager class, in order to register this extension in service discovery:</p>
  * <pre>
  * <code>
- * connection.getExtensionManager(AttentionManager.class).setEnabled(true);
+ * xmppSession.getExtensionManager(AttentionManager.class).setEnabled(true);
  * </code>
  * </pre>
  *

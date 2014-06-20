@@ -44,6 +44,7 @@ public class SaslPrepTest {
         String s = "\u034F\u1806\u180B\u180C\u180D\u200C\u200D\u2060\uFE00\uFE01\uFE02\uFE03\uFE04\uFE05\uFE06\uFE07\uFE08\uFE09\uFE0A\uFE0B\uFE0C\uFE0D\uFE0E\uFE0F\uFEFF";
         Assert.assertEquals(SaslPrep.prepare(s), "");
     }
+
     @Test
     public void testAsciiControlCharacters() {
         String[] chars = new String[]{"\u0000", "\u001F", "\u007F", "\uD83F\uDFFE"};

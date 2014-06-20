@@ -66,7 +66,7 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
-import org.xmpp.extension.muc.*;
+import org.xmpp.extension.muc.History;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
@@ -88,7 +88,6 @@ import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.extension.version.SoftwareVersionManager;
 import org.xmpp.im.*;
 import org.xmpp.stanza.*;
-import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 import org.xmpp.stanza.errors.ServiceUnavailable;
 

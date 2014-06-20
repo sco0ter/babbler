@@ -27,7 +27,10 @@ package org.xmpp.extension.forward;
 import org.xmpp.Jid;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.stanza.AbstractMessage;
+import org.xmpp.extension.delay.DelayedDelivery;
+import org.xmpp.stanza.client.Message;
+
+import java.util.Date;
 
 /**
  * This manager allows to forward stanzas to other XMPP entities.
@@ -65,11 +68,11 @@ public final class StanzaForwardingManager extends ExtensionManager {
      * @param message The original message.
      * @param to      The receiver.
      */
-    public void forwardMessage(AbstractMessage message, Jid to) {
-//        AbstractMessage outerMessage = new AbstractMessage(to, message.getType());
-//        // Include a empty body to make sure it will be stored in offline case.
-//        outerMessage.setBody(" ");
-//        outerMessage.getExtensions().add(new Forwarded(new DelayedDelivery(new Date()), message));
-//        connection.send(outerMessage);
+    public void forwardMessage(Message message, Jid to) {
+        Message outerMessage = new Message(to, message.getType());
+        // Include a empty body to make sure it will be stored in offline case.
+        outerMessage.setBody(" ");
+        outerMessage.getExtensions().add(new Forwarded(message, new DelayedDelivery(new Date())));
+        xmppSession.send(outerMessage);
     }
 }

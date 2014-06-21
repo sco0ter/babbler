@@ -103,6 +103,7 @@ chatRoom.addMessageListener(new MessageListener() {
         }
     }
 });
+
 chatRoom.addSubjectChangeListener(new SubjectChangeListener() {
     @Override
     public void subjectChanged(SubjectChangeEvent e) {
@@ -238,7 +239,7 @@ When you\'ve created the room, you should add listeners to it and then enter it.
 e.decline("I don't have time right now...");
 ```
 
-#### Listening for Room Declines
+#### Listening for Invitation Declines
 
 ```java
 chatRoom.addInvitationDeclineListener(new InvitationDeclineListener() {

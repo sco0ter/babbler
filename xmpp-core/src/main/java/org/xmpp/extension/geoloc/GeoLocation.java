@@ -53,7 +53,7 @@ import java.util.TimeZone;
 @XmlRootElement(name = "geoloc")
 public final class GeoLocation {
 
-    static final String NAMESPACE = "http://jabber.org/protocol/geoloc";
+    public static final String NAMESPACE = "http://jabber.org/protocol/geoloc";
 
     @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
     private String language;

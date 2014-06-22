@@ -118,10 +118,9 @@ public final class PubSubService {
      * @param node The node.
      * @return The node.
      */
-    public PubSubNode node(String node) {
+    public PubSubNode getNode(String node) {
         return new PubSubNode(node, null, service, xmppSession);
     }
-
 
     /**
      * Gets the subscriptions for all nodes.

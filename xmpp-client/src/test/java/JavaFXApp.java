@@ -66,11 +66,12 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
-import org.xmpp.extension.muc.History;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.pubsub.PubSubManager;
+import org.xmpp.extension.pubsub.PubSubNode;
+import org.xmpp.extension.pubsub.PubSubService;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
@@ -357,12 +358,14 @@ public class JavaFXApp extends Application {
                         SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
                         try {
+
                             xmppSession.connect();
                             xmppSession.login(txtUser.getText(), txtPassword.getText());
                             //xmppSession.loginAnonymously();
+
                             Presence presence = new Presence();
-                            presence.setPriority((byte) 3);
                             xmppSession.send(presence);
+
                             //xmppSession.getRosterManager().requestRoster();
 
                         } catch (Exception e) {
@@ -639,7 +642,16 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                History.forMaxMessages(20);
+                PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+                PubSubService personalEventingService = pubSubManager.createPersonalEventingService();
+                try {
+                    PubSubNode pubSubNode = personalEventingService.getNode(GeoLocation.NAMESPACE);
+                    pubSubNode.create();
+                    pubSubNode.publish(new GeoLocation(20, 40));
+                } catch (XmppException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
         Button btnExit = new Button("Exit");

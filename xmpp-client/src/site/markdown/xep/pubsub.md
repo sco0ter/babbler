@@ -69,7 +69,7 @@ The following publishes a geo location to the node.
 pubSubNode.publish(new GeoLocation(45.44, 12.33));
 ```
 
-*(Note, that this works, because `GeoLocation` is known to the JAXB Context. Unknown objects won't work)*
+*(Note, that this works, because `GeoLocation` is known to the JAXB Context. Unknown objects won\'t work)*
 
 ### Subscribing to a Node
 

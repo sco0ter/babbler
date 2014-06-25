@@ -3,7 +3,7 @@
 
 Writing your own extensions is pretty easy and robust. This is where this library really shines. You basically only have to write a class and annotate it with JAXB annotations.
 
-Let's consider the following example, where you want to send a message with some structured data about a product.
+Let\'s consider the following example, where you want to send a message with some structured data about a product.
 
 First you have to write the Product class with JAXB annotations:
 

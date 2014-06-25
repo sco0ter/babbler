@@ -34,7 +34,7 @@ private void initializeLogging() {
 }
 ```
 
-Here's an optional formatter class, which logs XMPP traffic in only one row. The default formatter uses two rows per log, which makes it less readable.
+Here\'s an optional formatter class, which logs XMPP traffic in only one row. The default formatter uses two rows per log, which makes it less readable.
 
 ```java
 public class LogFormatter extends SimpleFormatter {

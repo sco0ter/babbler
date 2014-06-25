@@ -19,7 +19,7 @@ EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities
 
 Most extensions need some kind of logic or have to implement business rules defined in the respective XEP.
 
-Thus extensions need to have a manager, which handles their business rules.
+Therefore extensions need to have a manager, which handles their business rules.
 
 While reading through the specifications, you quickly notice that nearly all extensions have one thing in common: They can be either enabled or disabled, e.g. you can either enable or disable
 support for [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html) or [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html).
@@ -38,7 +38,7 @@ entityCapabilitiesManager.setEnabled(true);
 ```
 
 This will enable support for [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html), which means Entity Capabilities are included in every presence being sent.
-Furthermore, it will analyze incoming presence stanzas for a "caps" extension and manage a cache of capabilities.
+Furthermore, it will analyze incoming presence stanzas for a \"caps\" extension and manage a cache of capabilities.
 
 ---
 
@@ -48,7 +48,7 @@ entityTimeManager.setEnabled(false);
 ```
 
 This manager manages [XEP-0202: Entity Time](http://xmpp.org/extensions/xep-0202.html) and is enabled by default.
-Incoming "time" requests are automatically replied to with the current time, while enabled.
+Incoming \"time\" requests are automatically replied to with the current time, while enabled.
 
 ---
 

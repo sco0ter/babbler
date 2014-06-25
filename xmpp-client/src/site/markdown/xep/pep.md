@@ -29,9 +29,9 @@ pubSubNode.publish(new GeoLocation(45.44, 12.33));
 
 By default (i.e. if not otherwise configured) all your contacts now receive an event notification about your new geo location.
 
-## Listening for PubSub Events
+## Listening for PEP Events
 
-Now that you have published your geo location all your contacts will receive notifications about it. This is just a message with a \"PubSub event\” extension.
+Now that you have published your geo location all your contacts will receive notifications about it. This is just a message with a \"PubSub event\" extension.
 
 ```java
 xmppSession.addMessageListener(new MessageListener() {

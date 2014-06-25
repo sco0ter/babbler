@@ -10,7 +10,7 @@
 * Added support for [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
 * Added support for [XEP-0280: Message Carbons](http://xmpp.org/extensions/xep-0280.html)
 * Added support for [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
-* Added support for [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html) (not yet done!)
+* Added support for [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html
 * RosterManager now supports (nested) contact groups
 
 ### Improvements

@@ -21,7 +21,7 @@ While designing the library I had the following design goals in mind:
 
 * Use [JAXB][JAXB], in order to make it robust, easy to use and easy to extend (i.e. writing custom protocol extensions).
 * Use an adequate core package: **org.xmpp** and use a separate sub-package for each XMPP namespace (e.g. bind, sasl, stanza, tls) and each extension.
-* Use [java.util.logging](http://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html) to properly log exceptions and XMPP input/output (not the best framework, but I didn't want to include a 3rd party logger).
+* Use [java.util.logging](http://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html) to properly log exceptions and XMPP input/output (not the best framework, but I didn\'t want to include a 3rd party logger).
 * Use an event-driven design by using the [Java Event Model](http://en.wikibooks.org/wiki/Java_Programming/Event_Handling).
 * Keep it lean and simple, e.g. by not relying on 3rd party dependencies (if possible)
 * Respect Java Coding Guidelines and best practices, e.g. use upper-case enum values, use appropriate modifiers for visibility, make classes final and immutable (if possible) etc...

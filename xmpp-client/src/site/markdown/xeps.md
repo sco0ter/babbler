@@ -85,8 +85,8 @@
 
 Supported experimental XEPs:
 
-* ![supported][supported]           [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
 * ![supported][supported]           [XEP-0280: Message Carbons](http://xmpp.org/extensions/xep-0280.html)
+* ![supported][supported]           [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
 
 
 Additionally following informational XEP documents are respected:

@@ -66,7 +66,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The base class for establishing a XMPP session.
+ * The base class for establishing an XMPP session.
  *
  * @author Christian Schudt
  */

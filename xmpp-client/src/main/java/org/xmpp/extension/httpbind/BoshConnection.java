@@ -473,6 +473,24 @@ public final class BoshConnection extends Connection {
         }
     }
 
+    /**
+     * Detaches this BOSH session without closing (aka terminating) it. This way the BOSH session is still alive on the server and can be ported over to a web page, but new BOSH requests are no longer sent by this connection.
+     *
+     * @return The current request ID (RID) which was used for the last BOSH request.
+     * @see <a href="https://conversejs.org/docs/html/#prebinding-and-single-session-support">https://conversejs.org/docs/html/#prebinding-and-single-session-support</a>
+     */
+    public synchronized long detach() {
+        if (!requestExecutor.isShutdown()) {
+            requestExecutor.shutdown();
+        }
+        if (!responseExecutor.isShutdown()) {
+            responseExecutor.shutdown();
+        }
+
+        // Return the latest and greatest rid.
+        return rid.get();
+    }
+
     @Override
     public void send(ClientStreamElement element) {
         queue.add(element);

@@ -22,16 +22,20 @@
  * THE SOFTWARE.
  */
 
-/**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>.
- * <p>
- * It defines an XMPP protocol extension for exchanging contact list items, including the ability to suggest whether the item is to be added, deleted, or modified in the contact list of the recipient, as well as the suggested roster group for the item.
- * </p>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = RosterExchange.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rosterx;
+package org.xmpp.extension.rosterx;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+/**
+ * Allows to listen for roster item exchanges.
+ *
+ * @author Christian Schudt
+ * @see org.xmpp.extension.rosterx.RosterExchangeManager#addRosterExchangeListener(RosterExchangeListener)
+ */
+public interface RosterExchangeListener {
+
+    /**
+     * Called when another entity suggests to exchange a roster item.
+     *
+     * @param e The roster exchange event.
+     */
+    void rosterItemExchangeSuggested(RosterExchangeEvent e);
+}

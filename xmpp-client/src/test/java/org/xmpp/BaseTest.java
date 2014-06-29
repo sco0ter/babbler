@@ -48,17 +48,17 @@ public class BaseTest {
 
     protected Unmarshaller unmarshaller;
 
-    protected TestXmppSession connection;
+    protected TestXmppSession xmppSession;
 
     public BaseTest() {
-        connection = new TestXmppSession();
+        xmppSession = new TestXmppSession();
 
     }
 
     @BeforeClass
     public void setupMarshaller() throws JAXBException, XMLStreamException {
-        marshaller = connection.getMarshaller();
-        unmarshaller = connection.getUnmarshaller();
+        marshaller = xmppSession.getMarshaller();
+        unmarshaller = xmppSession.getUnmarshaller();
     }
 
     protected String marshall(Object object) throws XMLStreamException, JAXBException, IOException {

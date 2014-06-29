@@ -27,7 +27,10 @@ package org.xmpp.extension.rosterx;
 import org.xmpp.Jid;
 import org.xmpp.JidAdapter;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +45,8 @@ import java.util.List;
 @XmlRootElement(name = "x")
 public final class RosterExchange {
 
+    static final String NAMESPACE = "http://jabber.org/protocol/rosterx";
+
     @XmlElement(name = "item")
     private List<Item> items;
 
@@ -49,7 +54,10 @@ public final class RosterExchange {
         return items;
     }
 
-    public static class Item {
+    /**
+     * The roster exchange item.
+     */
+    public static final class Item {
 
         @XmlAttribute
         private Action action;
@@ -65,7 +73,6 @@ public final class RosterExchange {
         private List<String> groups = new ArrayList<>();
 
         private Item() {
-
         }
 
         public Item(Jid jid, String name, List<String> groups, Action action) {
@@ -75,31 +82,67 @@ public final class RosterExchange {
             this.action = action;
         }
 
+        /**
+         * Gets the JID.
+         *
+         * @return The JID.
+         */
         public Jid getJid() {
             return jid;
         }
 
+        /**
+         * Gets the action indicating adding, deleting or modifying the roster item.
+         *
+         * @return The action.
+         */
         public Action getAction() {
             return action;
         }
 
+        /**
+         * Gets the suggested name.
+         *
+         * @return The name.
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Gets the suggested roster groups
+         *
+         * @return The roster groups.
+         */
         public List<String> getGroups() {
             return groups;
         }
 
-        @XmlEnum
+        /**
+         * The action for a roster item exchange.
+         */
         public enum Action {
+            /**
+             * Suggests roster item addition.
+             *
+             * @see <a href="http://xmpp.org/extensions/xep-0144.html#add">3.1 Suggesting Roster Item Addition</a>
+             */
             @XmlEnumValue("add")
             ADD,
+            /**
+             * Suggests roster item deletion.
+             *
+             * @see <a href="http://xmpp.org/extensions/xep-0144.html#delete">3.2 Suggesting Roster Item Deletion</a>
+             */
             @XmlEnumValue("delete")
             DELETE,
+            /**
+             * Suggests roster item modification.
+             *
+             * @see <a href="http://xmpp.org/extensions/xep-0144.html#modify">3.3 Suggesting Roster Item Modification</a>
+             */
             @XmlEnumValue("modify")
             MODIFY
         }
     }
-
 }

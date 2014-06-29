@@ -41,14 +41,14 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
     @Test
     public void testFeatureEquals() {
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(new Feature("http://jabber.org/protocol/muc")));
     }
 
     @Test
     public void testItemsEquals() {
-        ServiceDiscoveryManager serviceDiscoveryManager = connection.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));
         Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(new Identity("conference", "text", "name2", "en")));
     }

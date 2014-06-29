@@ -345,7 +345,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        //connection.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
+                        //xmppSession.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
 
                         GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
                         geoLocationManager.addGeoLocationListener(new GeoLocationListener() {

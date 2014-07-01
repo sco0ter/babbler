@@ -34,11 +34,11 @@ import java.util.List;
  * This event notifies listeners, when an entity suggests to add, delete or modify a contact.
  *
  * @author Christian Schudt
- * @see org.xmpp.extension.rosterx.RosterExchangeListener
+ * @see ContactExchangeListener
  */
-public final class RosterExchangeEvent extends EventObject {
+public final class ContactExchangeEvent extends EventObject {
 
-    private final List<RosterExchange.Item> items;
+    private final List<ContactExchange.Item> items;
 
     private final String message;
 
@@ -46,7 +46,7 @@ public final class RosterExchangeEvent extends EventObject {
 
     private final Date date;
 
-    RosterExchangeEvent(Object source, List<RosterExchange.Item> items, Jid from, String message, Date date) {
+    ContactExchangeEvent(Object source, List<ContactExchange.Item> items, Jid from, String message, Date date) {
         super(source);
         this.items = items;
         this.message = message;
@@ -68,7 +68,7 @@ public final class RosterExchangeEvent extends EventObject {
      *
      * @return The roster exchange items.
      */
-    public List<RosterExchange.Item> getItems() {
+    public List<ContactExchange.Item> getItems() {
         return items;
     }
 

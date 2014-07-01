@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = RosterExchange.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rosterx;
+@XmlSchema(namespace = ContactExchange.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.rosterx;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

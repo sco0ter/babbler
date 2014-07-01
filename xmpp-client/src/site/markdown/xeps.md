@@ -45,7 +45,7 @@
 * ![not supported][not supported]   [XEP-0137: Publishing Stream Initiation Requests](http://xmpp.org/extensions/xep-0137.html)
 * ![supported][supported]           [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)
 * ![supported][supported]           [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
-* ![in development][in development] [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
+* ![supported][supported]           [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 * ![supported][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
 * ![supported][supported]           [XEP-0152: Reachability Addresses](http://xmpp.org/extensions/xep-0152.html)
 * ![supported][supported]           [XEP-0153: vCard-Based Avatars](http://xmpp.org/extensions/xep-0153.html)

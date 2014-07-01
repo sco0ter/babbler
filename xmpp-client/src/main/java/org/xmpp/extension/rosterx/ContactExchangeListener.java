@@ -25,17 +25,17 @@
 package org.xmpp.extension.rosterx;
 
 /**
- * Allows to listen for roster item exchanges.
+ * Allows to listen for contact exchange suggestions.
  *
  * @author Christian Schudt
- * @see org.xmpp.extension.rosterx.RosterExchangeManager#addRosterExchangeListener(RosterExchangeListener)
+ * @see ContactExchangeManager#addContactExchangeListener(ContactExchangeListener)
  */
-public interface RosterExchangeListener {
+public interface ContactExchangeListener {
 
     /**
-     * Called when another entity suggests to exchange a roster item.
+     * Called when another entity suggests to exchange a contact.
      *
-     * @param e The roster exchange event.
+     * @param e The contact exchange event.
      */
-    void rosterItemExchangeSuggested(RosterExchangeEvent e);
+    void contactExchangeSuggested(ContactExchangeEvent e);
 }

@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class RosterItemExchangeTest extends XmlTest {
     protected RosterItemExchangeTest() throws JAXBException, XMLStreamException {
-        super(Message.class, RosterExchange.class);
+        super(Message.class, ContactExchange.class);
     }
 
     @Test
@@ -65,23 +65,23 @@ public class RosterItemExchangeTest extends XmlTest {
                 "</message>\n";
 
         Message message = unmarshal(xml, Message.class);
-        RosterExchange rosterExchange = message.getExtension(RosterExchange.class);
-        Assert.assertNotNull(rosterExchange);
-        Assert.assertEquals(rosterExchange.getItems().size(), 3);
-        Assert.assertEquals(rosterExchange.getItems().get(0).getJid(), Jid.valueOf("rosencrantz@denmark.lit"));
-        Assert.assertEquals(rosterExchange.getItems().get(0).getAction(), RosterExchange.Item.Action.ADD);
-        Assert.assertEquals(rosterExchange.getItems().get(0).getName(), "Rosencrantz");
-        Assert.assertEquals(rosterExchange.getItems().get(0).getGroups().size(), 1);
-        Assert.assertEquals(rosterExchange.getItems().get(0).getGroups().get(0), "Visitors");
-        Assert.assertEquals(rosterExchange.getItems().get(1).getJid(), Jid.valueOf("guildenstern@denmark.lit"));
-        Assert.assertEquals(rosterExchange.getItems().get(1).getAction(), RosterExchange.Item.Action.DELETE);
-        Assert.assertEquals(rosterExchange.getItems().get(1).getName(), "Guildenstern");
-        Assert.assertEquals(rosterExchange.getItems().get(1).getGroups().size(), 1);
-        Assert.assertEquals(rosterExchange.getItems().get(1).getGroups().get(0), "Visitors");
-        Assert.assertEquals(rosterExchange.getItems().get(2).getJid(), Jid.valueOf("rosencrantz@denmark.lit"));
-        Assert.assertEquals(rosterExchange.getItems().get(2).getAction(), RosterExchange.Item.Action.MODIFY);
-        Assert.assertEquals(rosterExchange.getItems().get(2).getName(), "Rosencrantz");
-        Assert.assertEquals(rosterExchange.getItems().get(2).getGroups().size(), 1);
-        Assert.assertEquals(rosterExchange.getItems().get(2).getGroups().get(0), "Retinue");
+        ContactExchange contactExchange = message.getExtension(ContactExchange.class);
+        Assert.assertNotNull(contactExchange);
+        Assert.assertEquals(contactExchange.getItems().size(), 3);
+        Assert.assertEquals(contactExchange.getItems().get(0).getJid(), Jid.valueOf("rosencrantz@denmark.lit"));
+        Assert.assertEquals(contactExchange.getItems().get(0).getAction(), ContactExchange.Item.Action.ADD);
+        Assert.assertEquals(contactExchange.getItems().get(0).getName(), "Rosencrantz");
+        Assert.assertEquals(contactExchange.getItems().get(0).getGroups().size(), 1);
+        Assert.assertEquals(contactExchange.getItems().get(0).getGroups().get(0), "Visitors");
+        Assert.assertEquals(contactExchange.getItems().get(1).getJid(), Jid.valueOf("guildenstern@denmark.lit"));
+        Assert.assertEquals(contactExchange.getItems().get(1).getAction(), ContactExchange.Item.Action.DELETE);
+        Assert.assertEquals(contactExchange.getItems().get(1).getName(), "Guildenstern");
+        Assert.assertEquals(contactExchange.getItems().get(1).getGroups().size(), 1);
+        Assert.assertEquals(contactExchange.getItems().get(1).getGroups().get(0), "Visitors");
+        Assert.assertEquals(contactExchange.getItems().get(2).getJid(), Jid.valueOf("rosencrantz@denmark.lit"));
+        Assert.assertEquals(contactExchange.getItems().get(2).getAction(), ContactExchange.Item.Action.MODIFY);
+        Assert.assertEquals(contactExchange.getItems().get(2).getName(), "Rosencrantz");
+        Assert.assertEquals(contactExchange.getItems().get(2).getGroups().size(), 1);
+        Assert.assertEquals(contactExchange.getItems().get(2).getGroups().get(0), "Retinue");
     }
 }

@@ -85,7 +85,8 @@ import org.xmpp.extension.receipts.Received;
 import org.xmpp.extension.receipts.Request;
 import org.xmpp.extension.register.Registration;
 import org.xmpp.extension.register.feature.RegisterFeature;
-import org.xmpp.extension.rosterx.RosterExchange;
+import org.xmpp.extension.rosterx.ContactExchange;
+import org.xmpp.extension.rosterx.ContactExchangeManager;
 import org.xmpp.extension.rpc.Rpc;
 import org.xmpp.extension.rsm.ResultSet;
 import org.xmpp.extension.rtt.RealTimeText;
@@ -289,7 +290,8 @@ public abstract class XmppContext {
             registerExtension(Page.class);
 
             // XEP-0144: Roster Item Exchange
-            registerExtension(RosterExchange.class);
+            registerExtension(ContactExchange.class);
+            registerManager(ContactExchangeManager.class);
 
             // XEP-0145: Annotations
             registerExtension(Annotation.class);

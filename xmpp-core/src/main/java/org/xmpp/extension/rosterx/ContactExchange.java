@@ -43,13 +43,18 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0144.html#schema">11. XML Schema</a>
  */
 @XmlRootElement(name = "x")
-public final class RosterExchange {
+public final class ContactExchange {
 
     static final String NAMESPACE = "http://jabber.org/protocol/rosterx";
 
     @XmlElement(name = "item")
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
 
+    /**
+     * Gets the contact exchange items.
+     *
+     * @return The items.
+     */
     public List<Item> getItems() {
         return items;
     }

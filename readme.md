@@ -29,7 +29,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![supported][supported]           [XEP-0054: vcard-temp](http://xmpp.org/extensions/xep-0054.html)
 * ![supported][supported]           [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
 * ![in development][in development] [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
-* ![in development][in development] [XEP-0060: Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)
+* ![supported][supported]           [XEP-0060: Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)
 * ![not supported][not supported]   [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
 * ![not supported][not supported]   [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)
 * ![not supported][not supported]   [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
@@ -55,14 +55,14 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![not supported][not supported]   [XEP-0137: Publishing Stream Initiation Requests](http://xmpp.org/extensions/xep-0137.html)
 * ![supported][supported]           [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)
 * ![supported][supported]           [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
-* ![in development][in development] [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
+* ![supported][supported]           [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
 * ![supported][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
 * ![supported][supported]           [XEP-0152: Reachability Addresses](http://xmpp.org/extensions/xep-0152.html)
 * ![supported][supported]           [XEP-0153: vCard-Based Avatars](http://xmpp.org/extensions/xep-0153.html)
 * ![not supported][not supported]   [XEP-0155: Stanza Session Negotiation](http://xmpp.org/extensions/xep-0155.html)
 * ![supported][supported]           [XEP-0156: Discovering Alternative XMPP Connection Methods](http://xmpp.org/extensions/xep-0156.html)
 * ![not supported][not supported]   [XEP-0158: CAPTCHA Forms](http://xmpp.org/extensions/xep-0158.html)
-* ![not supported][not supported]   [XEP-0163: Personal Eventing Protocol](http://xmpp.org/extensions/xep-0163.html)
+* ![supported][supported]           [XEP-0163: Personal Eventing Protocol](http://xmpp.org/extensions/xep-0163.html)
 * ![not supported][not supported]   [XEP-0166: Jingle](http://xmpp.org/extensions/xep-0166.html)
 * ![not supported][not supported]   [XEP-0167: Jingle RTP Sessions](http://xmpp.org/extensions/xep-0167.html)
 * ![not supported][not supported]   [XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)
@@ -95,8 +95,8 @@ Since this project is quite young, the API might change. Comments on the API are
 
 Supported experimental XEPs:
 
-* ![supported][supported]           [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
 * ![supported][supported]           [XEP-0280: Message Carbons](http://xmpp.org/extensions/xep-0280.html)
+* ![supported][supported]           [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
 
 
 Additionally following informational XEP documents are respected:

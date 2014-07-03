@@ -24,18 +24,17 @@
 
 package org.xmpp.extension.blocking;
 
-import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This manager allows to block communications with contacts.
@@ -47,8 +46,25 @@ import java.util.List;
  */
 public final class BlockingManager extends ExtensionManager {
 
+    private static final Logger logger = Logger.getLogger(BlockingManager.class.getName());
+
+    private final Set<Jid> blockedContacts = new HashSet<>();
+
+    private final Set<BlockingListener> blockingListeners = new CopyOnWriteArraySet<>();
+
     private BlockingManager(final XmppSession xmppSession) {
         super(xmppSession);
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    blockingListeners.clear();
+                    blockedContacts.clear();
+                }
+            }
+        });
+
         // Listen for "un/block pushes"
         xmppSession.addIQListener(new IQListener() {
             @Override
@@ -57,13 +73,33 @@ public final class BlockingManager extends ExtensionManager {
                     IQ iq = e.getIQ();
                     if (iq.getType() == IQ.Type.SET) {
                         Block block = iq.getExtension(Block.class);
-                        if (block != null) {
-                            xmppSession.send(iq.createResult());
-                        }
-
-                        Unblock unblock = iq.getExtension(Unblock.class);
-                        if (unblock != null) {
-                            xmppSession.send(iq.createResult());
+                        synchronized (blockedContacts) {
+                            if (block != null) {
+                                List<Jid> pushedContacts = new ArrayList<>();
+                                for (Item item : block.getItems()) {
+                                    blockedContacts.add(item.getJid());
+                                    pushedContacts.add(item.getJid());
+                                }
+                                xmppSession.send(iq.createResult());
+                                notifyListeners(pushedContacts, Collections.<Jid>emptyList());
+                            } else {
+                                Unblock unblock = iq.getExtension(Unblock.class);
+                                if (unblock != null) {
+                                    List<Jid> pushedContacts = new ArrayList<>();
+                                    if (unblock.getItems().isEmpty()) {
+                                        // Empty means, the user has unblocked communications with all contacts.
+                                        pushedContacts.addAll(blockedContacts);
+                                        blockedContacts.clear();
+                                    } else {
+                                        for (Item item : unblock.getItems()) {
+                                            blockedContacts.remove(item.getJid());
+                                            pushedContacts.add(item.getJid());
+                                        }
+                                    }
+                                    xmppSession.send(iq.createResult());
+                                    notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
+                                }
+                            }
                         }
                     }
                 }
@@ -71,17 +107,55 @@ public final class BlockingManager extends ExtensionManager {
         });
     }
 
+    private void notifyListeners(List<Jid> blockedContacts, List<Jid> unblockedContacts) {
+        for (BlockingListener blockingListener : blockingListeners) {
+            try {
+                blockingListener.blockListChanged(new BlockingEvent(BlockingManager.this, blockedContacts, unblockedContacts));
+            } catch (Exception ex) {
+                logger.log(Level.WARNING, ex.getMessage(), ex);
+            }
+        }
+    }
+
     /**
-     * Retrieves the block list.
+     * Adds a blocking listener, which allows to listen for block and unblock pushes.
+     *
+     * @param blockingListener The listener.
+     * @see #removeBlockingListener(BlockingListener)
+     */
+    public void addBlockingListener(BlockingListener blockingListener) {
+        blockingListeners.add(blockingListener);
+    }
+
+    /**
+     * Removes a previously added blocking listener.
+     *
+     * @param blockingListener The listener.
+     * @see #addBlockingListener(BlockingListener)
+     */
+    public void removeBlockingListener(BlockingListener blockingListener) {
+        blockingListeners.remove(blockingListener);
+    }
+
+    /**
+     * Retrieves the blocked contacts.
      *
      * @return The block list.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#blocklist">3.2 User Retrieves Block List</a>
      */
-    public BlockList getBlockList() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
-        return result.getExtension(BlockList.class);
+    public Collection<Jid> getBlockedContacts() throws XmppException {
+        synchronized (blockedContacts) {
+            IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
+            BlockList blockList = result.getExtension(BlockList.class);
+            if (blockList != null) {
+                for (Item item : blockList.getItems()) {
+                    blockedContacts.add(item.getJid());
+                }
+            }
+            return blockedContacts;
+        }
     }
 
     /**
@@ -93,9 +167,6 @@ public final class BlockingManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
      */
     public void blockContact(Jid... jids) throws XmppException {
-        if (jids.length == 0) {
-            throw new IllegalArgumentException("At least one JID must be set.");
-        }
         List<Item> items = new ArrayList<>();
         for (Jid jid : jids) {
             items.add(new Item(jid));
@@ -104,14 +175,15 @@ public final class BlockingManager extends ExtensionManager {
     }
 
     /**
-     * Unblocks communications with contacts.
+     * Unblocks communications with specific contacts or with all contacts. If you want to unblock all communications, pass no arguments to this method.
      *
      * @param jids The contacts.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblock">3.4 User Unblocks Contact</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblockall">3.5 User Unblocks All Contacts</a>
      */
-    public void unblock(Jid... jids) throws XmppException {
+    public void unblockContact(Jid... jids) throws XmppException {
         List<Item> items = new ArrayList<>();
         for (Jid jid : jids) {
             items.add(new Item(jid));

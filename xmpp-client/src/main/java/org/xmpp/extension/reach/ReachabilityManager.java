@@ -66,6 +66,7 @@ public final class ReachabilityManager extends ExtensionManager {
                 if (e.getStatus() == XmppSession.Status.CLOSED) {
                     reachabilityListeners.clear();
                     reachabilities.clear();
+                    addresses.clear();
                 }
             }
         });

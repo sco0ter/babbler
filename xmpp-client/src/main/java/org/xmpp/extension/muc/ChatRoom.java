@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.muc;
 
-import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.delay.DelayedDelivery;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -93,6 +90,19 @@ public final class ChatRoom {
         this.roomJid = roomJid;
         this.xmppSession = xmppSession;
         this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    invitationDeclineListeners.clear();
+                    subjectChangeListeners.clear();
+                    occupantListeners.clear();
+                    messageListeners.clear();
+                    occupantMap.clear();
+                }
+            }
+        });
 
         messageListener = new MessageListener() {
             @Override

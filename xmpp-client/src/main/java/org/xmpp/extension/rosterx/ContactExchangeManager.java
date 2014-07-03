@@ -24,9 +24,7 @@
 
 package org.xmpp.extension.rosterx;
 
-import org.xmpp.Jid;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.delay.DelayedDelivery;
 import org.xmpp.im.Contact;
@@ -57,6 +55,16 @@ public final class ContactExchangeManager extends ExtensionManager {
 
     private ContactExchangeManager(final XmppSession xmppSession) {
         super(xmppSession, ContactExchange.NAMESPACE);
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    contactExchangeListeners.clear();
+                    trustedEntities.clear();
+                }
+            }
+        });
 
         xmppSession.addMessageListener(new MessageListener() {
             @Override

@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.muc;
 
-import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -64,6 +61,15 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     private MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, Muc.NAMESPACE);
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    invitationListeners.clear();
+                }
+            }
+        });
 
         // Listen for incoming invitations.
         xmppSession.addMessageListener(new MessageListener() {

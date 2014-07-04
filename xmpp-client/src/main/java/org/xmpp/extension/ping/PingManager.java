@@ -57,15 +57,10 @@ public final class PingManager extends ExtensionManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
-                if (e.isIncoming()) {
-                    IQ iq = e.getIQ();
-                    if (iq.getType() == IQ.Type.GET && iq.getExtension(Ping.class) != null) {
-                        if (isEnabled()) {
-                            xmppSession.send(iq.createResult());
-                        } else {
-                            sendServiceUnavailable(iq);
-                        }
-                    }
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(Ping.class) != null) {
+                    xmppSession.send(iq.createResult());
+                    e.consume();
                 }
             }
         });

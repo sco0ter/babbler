@@ -69,37 +69,35 @@ public final class RpcManager extends ExtensionManager {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && iq.getType() == IQ.Type.SET) {
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     Rpc rpc = iq.getExtension(Rpc.class);
                     // If there's an incoming RPC
                     if (rpc != null) {
-                        if (isEnabled()) {
-                            synchronized (RpcManager.this) {
-                                if (rpcHandler != null) {
-                                    Rpc.MethodCall methodCall = rpc.getMethodCall();
-                                    List<Value> parameters = new ArrayList<>();
-                                    for (Parameter parameter : methodCall.getParameters()) {
-                                        parameters.add(parameter.getValue());
-                                    }
-                                    try {
-                                        Value value = rpcHandler.process(methodCall.getMethodName(), parameters);
-                                        IQ result = iq.createResult();
-                                        result.setExtension(new Rpc(value));
-                                        xmppSession.send(result);
-                                    } catch (StanzaException e1) {
-                                        xmppSession.send(iq.createError(e1.getStanza().getError()));
-                                    } catch (RpcException e1) {
-                                        IQ result = iq.createResult();
-                                        result.setExtension(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
-                                        xmppSession.send(result);
-                                    } catch (Exception e1) {
-                                        logger.log(Level.WARNING, e1.getMessage(), e1);
-                                        xmppSession.send(iq.createError(new StanzaError(new InternalServerError())));
-                                    }
+                        synchronized (RpcManager.this) {
+                            if (rpcHandler != null) {
+                                Rpc.MethodCall methodCall = rpc.getMethodCall();
+                                List<Value> parameters = new ArrayList<>();
+                                for (Parameter parameter : methodCall.getParameters()) {
+                                    parameters.add(parameter.getValue());
+                                }
+                                try {
+                                    Value value = rpcHandler.process(methodCall.getMethodName(), parameters);
+                                    IQ result = iq.createResult();
+                                    result.setExtension(new Rpc(value));
+                                    xmppSession.send(result);
+                                } catch (StanzaException e1) {
+                                    xmppSession.send(iq.createError(e1.getStanza().getError()));
+                                } catch (RpcException e1) {
+                                    IQ result = iq.createResult();
+                                    result.setExtension(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
+                                    xmppSession.send(result);
+                                } catch (Exception e1) {
+                                    logger.log(Level.WARNING, e1.getMessage(), e1);
+                                    xmppSession.send(iq.createError(new StanzaError(new InternalServerError())));
+                                } finally {
+                                    e.consume();
                                 }
                             }
-                        } else {
-                            sendServiceUnavailable(iq);
                         }
                     }
                 }

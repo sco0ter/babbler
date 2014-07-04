@@ -35,7 +35,6 @@ import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.ItemNotFound;
-import org.xmpp.stanza.errors.ServiceUnavailable;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,26 +53,19 @@ class BitsOfBinaryManager extends ExtensionManager {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming()) {
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
                     Data data = iq.getExtension(Data.class);
                     if (data != null) {
-                        if (iq.getType() == IQ.Type.GET) {
-                            if (isEnabled()) {
-                                // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
-                                Data cachedData = dataCache.get(data.getContentId());
-                                if (cachedData != null) {
-                                    IQ result = iq.createResult();
-                                    result.setExtension(cachedData);
-                                    xmppSession.send(result);
-                                } else {
-                                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
-                                }
-                            } else {
-                                xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
-                            }
-                        } else if (iq.getType() == IQ.Type.SET) {
-                            xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
+                        // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
+                        Data cachedData = dataCache.get(data.getContentId());
+                        if (cachedData != null) {
+                            IQ result = iq.createResult();
+                            result.setExtension(cachedData);
+                            xmppSession.send(result);
+                        } else {
+                            xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
                         }
+                        e.consume();
                     }
                 }
             }

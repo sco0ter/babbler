@@ -86,8 +86,4 @@ public abstract class ExtensionManager {
         }
         this.enabled = enabled;
     }
-
-    protected void sendServiceUnavailable(IQ iq) {
-        xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
-    }
 }

@@ -54,14 +54,13 @@ public final class SoftwareVersionManager extends ExtensionManager {
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
                 // If an entity asks us for our software version, reply.
-                if (e.isIncoming() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {
                     synchronized (SoftwareVersionManager.this) {
-                        if (isEnabled() && softwareVersion != null) {
+                        if (softwareVersion != null) {
                             IQ result = iq.createResult();
                             result.setExtension(softwareVersion);
                             xmppSession.send(result);
-                        } else {
-                            sendServiceUnavailable(iq);
+                            e.consume();
                         }
                     }
                 }

@@ -96,20 +96,15 @@ public final class LastActivityManager extends ExtensionManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
-                if (e.isIncoming()) {
-                    IQ iq = e.getIQ();
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
                     // If someone asks me to get my last activity, reply.
-                    if (iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
-                        synchronized (LastActivityManager.this) {
-                            if (isEnabled()) {
-                                IQ result = iq.createResult();
-                                long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
-                                result.setExtension(new LastActivity(seconds, null));
-                                xmppSession.send(result);
-                            } else {
-                                sendServiceUnavailable(iq);
-                            }
-                        }
+                    synchronized (LastActivityManager.this) {
+                        IQ result = iq.createResult();
+                        long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
+                        result.setExtension(new LastActivity(seconds, null));
+                        xmppSession.send(result);
+                        e.consume();
                     }
                 }
             }

@@ -92,28 +92,21 @@ public final class ContactExchangeManager extends ExtensionManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
-                if (e.isIncoming()) {
-                    IQ iq = e.getIQ();
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
                     if (contactExchange != null) {
-                        if (isEnabled()) {
-                            if (iq.getType() == AbstractIQ.Type.SET) {
-                                if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
-                                    // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
-                                    xmppSession.send(iq.createError(new StanzaError(new NotAuthorized())));
-                                } else {
-                                    List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                                    if (!items.isEmpty()) {
-                                        processItems(items, iq.getFrom(), null, new Date());
-                                    }
-                                    xmppSession.send(iq.createResult());
-                                }
-                            } else if (iq.getType() == AbstractIQ.Type.GET) {
-                                sendServiceUnavailable(iq);
+                        if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
+                            // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
+                            xmppSession.send(iq.createError(new StanzaError(new NotAuthorized())));
+                        } else {
+                            List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+                            if (!items.isEmpty()) {
+                                processItems(items, iq.getFrom(), null, new Date());
                             }
-                        } else if (iq.getType() == AbstractIQ.Type.GET || iq.getType() == AbstractIQ.Type.SET) {
-                            sendServiceUnavailable(iq);
+                            xmppSession.send(iq.createResult());
                         }
+                        e.consume();
                     }
                 }
             }

@@ -31,7 +31,6 @@ import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.ServiceUnavailable;
-import org.xmpp.stanza.errors.UnexpectedRequest;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +75,7 @@ public final class RosterManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
-                if (e.isIncoming()) {
+                if (e.isIncoming() && !e.isConsumed()) {
                     IQ iq = e.getIQ();
                     Roster roster = iq.getExtension(Roster.class);
                     if (roster != null) {
@@ -91,11 +90,10 @@ public final class RosterManager {
                                 // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
                                 xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
                             }
-                        } else if (iq.getType() == IQ.Type.GET) {
-                            xmppSession.send(iq.createError(new StanzaError(new UnexpectedRequest())));
                         } else if (iq.getType() == IQ.Type.RESULT) {
                             updateRoster(roster, false);
                         }
+                        e.consume();
                     }
                 }
             }

@@ -72,10 +72,10 @@ public final class PrivacyListManager extends ExtensionManager {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && iq.getType() == IQ.Type.SET) {
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
-                    IQ result = iq.createResult();
-                    xmppSession.send(result);
+                    xmppSession.send(iq.createResult());
+                    e.consume();
 
                     Privacy privacy = iq.getExtension(Privacy.class);
                     if (privacy != null) {
@@ -205,8 +205,7 @@ public final class PrivacyListManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-edit">2.6 Editing a Privacy List</a>
      */
     public void updateList(PrivacyList privacyList) throws XmppException {
-        Privacy privacy = new Privacy(privacyList);
-        setPrivacy(privacy);
+        setPrivacy(new Privacy(privacyList));
     }
 
     /**
@@ -218,8 +217,7 @@ public final class PrivacyListManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-remove">2.8 Removing a Privacy List</a>
      */
     public void removePrivacyList(String name) throws XmppException {
-        Privacy privacy = new Privacy(new PrivacyList(name));
-        setPrivacy(privacy);
+        setPrivacy(new Privacy(new PrivacyList(name)));
     }
 
     private void setPrivacy(Privacy privacy) throws XmppException {

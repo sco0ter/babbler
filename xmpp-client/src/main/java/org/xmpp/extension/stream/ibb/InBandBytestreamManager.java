@@ -61,64 +61,60 @@ public class InBandBytestreamManager extends ExtensionManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
-                if (e.isIncoming()) {
-                    IQ iq = e.getIQ();
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     // Check, if the IQ carries some IBB related payload.
-                    if (iq.getType() == IQ.Type.SET) {
-                        Data data = iq.getExtension(Data.class);
-                        if (data != null) {
-                            if (isEnabled()) {
-                                IbbSession ibbSession = getIbbSession(iq, data.getSessionId());
-                                if (ibbSession != null) {
-                                    if (ibbSession.handleData(data)) {
-                                        xmppSession.send(iq.createResult());
-                                    } else {
-                                        // 2. Because the sequence number has already been used, the recipient returns an <unexpected-request/> error with a type of 'cancel'.
-                                        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new UnexpectedRequest())));
-                                    }
-                                }
+                    Data data = iq.getExtension(Data.class);
+                    if (data != null) {
+
+                        IbbSession ibbSession = getIbbSession(iq, data.getSessionId());
+                        if (ibbSession != null) {
+                            if (ibbSession.handleData(data)) {
+                                xmppSession.send(iq.createResult());
                             } else {
-                                sendServiceUnavailable(iq);
+                                // 2. Because the sequence number has already been used, the recipient returns an <unexpected-request/> error with a type of 'cancel'.
+                                xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new UnexpectedRequest())));
                             }
-                            System.out.println("Data");
-                            return;
+                        } else {
+                            xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
                         }
-                        Open open = iq.getExtension(Open.class);
-                        if (open != null) {
-                            if (isEnabled()) {
-                                // Somebody wants to create a IBB session with me.
-                                // Notify the listeners.
-                                for (IbbListener ibbListener : ibbListeners) {
-                                    try {
-                                        ibbListener.streamRequested(new IbbEvent(InBandBytestreamManager.this, xmppSession, iq, iq.getExtension(Open.class)));
-                                    } catch (Exception exc) {
-                                        logger.log(Level.WARNING, exc.getMessage(), exc);
-                                    }
-                                }
-                            } else {
-                                sendServiceUnavailable(iq);
+                        e.consume();
+                        System.out.println("Data");
+                        return;
+                    }
+                    Open open = iq.getExtension(Open.class);
+                    if (open != null) {
+
+                        // Somebody wants to create a IBB session with me.
+                        // Notify the listeners.
+                        for (IbbListener ibbListener : ibbListeners) {
+                            try {
+                                ibbListener.streamRequested(new IbbEvent(InBandBytestreamManager.this, xmppSession, iq, iq.getExtension(Open.class)));
+                            } catch (Exception exc) {
+                                logger.log(Level.WARNING, exc.getMessage(), exc);
                             }
-                            return;
                         }
-                        Close close = iq.getExtension(Close.class);
-                        if (close != null) {
-                            if (isEnabled()) {
-                                IbbSession ibbSession = getIbbSession(iq, close.getSessionId());
-                                if (ibbSession != null) {
-                                    try {
-                                        ibbSessionMap.remove(close.getSessionId());
-                                        ibbSession.closedByPeer();
-                                    } catch (IOException e1) {
-                                        // logger.warning(e1.);
-                                    } finally {
-                                        xmppSession.send(iq.createResult());
-                                    }
-                                }
-                            } else {
-                                sendServiceUnavailable(iq);
+                        xmppSession.send(iq.createResult());
+                        e.consume();
+                        return;
+                    }
+                    Close close = iq.getExtension(Close.class);
+                    if (close != null) {
+                        IbbSession ibbSession = getIbbSession(iq, close.getSessionId());
+                        if (ibbSession != null) {
+                            try {
+                                ibbSessionMap.remove(close.getSessionId());
+                                ibbSession.closedByPeer();
+                            } catch (IOException e1) {
+                                // logger.warning(e1.);
+                            } finally {
+                                xmppSession.send(iq.createResult());
                             }
-                            System.out.println("Close");
+                        } else {
+                            xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
                         }
+                        e.consume();
+                        System.out.println("Close");
                     }
                 }
             }

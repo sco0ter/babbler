@@ -33,6 +33,9 @@ import org.xmpp.stanza.client.IQ;
  * @see IQListener
  */
 public final class IQEvent extends StanzaEvent<IQ> {
+
+    private boolean consumed;
+
     /**
      * Constructs an IQ event.
      *
@@ -52,5 +55,21 @@ public final class IQEvent extends StanzaEvent<IQ> {
      */
     public IQ getIQ() {
         return stanza;
+    }
+
+    /**
+     * Indicates, if this event has been consumed by an event handler, i.e. if the IQ has been responded to.
+     *
+     * @return True, if this event has been consumed.
+     */
+    public boolean isConsumed() {
+        return consumed;
+    }
+
+    /**
+     * Consumes this event, which basically indicates, that an IQ response has been sent by an event handler.
+     */
+    public void consume() {
+        consumed = true;
     }
 }

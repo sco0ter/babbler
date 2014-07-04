@@ -69,36 +69,36 @@ public final class BlockingManager extends ExtensionManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
-                if (e.isIncoming()) {
-                    IQ iq = e.getIQ();
-                    if (iq.getType() == IQ.Type.SET) {
-                        Block block = iq.getExtension(Block.class);
-                        synchronized (blockedContacts) {
-                            if (block != null) {
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
+                    Block block = iq.getExtension(Block.class);
+                    synchronized (blockedContacts) {
+                        if (block != null) {
+                            List<Jid> pushedContacts = new ArrayList<>();
+                            for (Item item : block.getItems()) {
+                                blockedContacts.add(item.getJid());
+                                pushedContacts.add(item.getJid());
+                            }
+                            xmppSession.send(iq.createResult());
+                            e.consume();
+                            notifyListeners(pushedContacts, Collections.<Jid>emptyList());
+                        } else {
+                            Unblock unblock = iq.getExtension(Unblock.class);
+                            if (unblock != null) {
                                 List<Jid> pushedContacts = new ArrayList<>();
-                                for (Item item : block.getItems()) {
-                                    blockedContacts.add(item.getJid());
-                                    pushedContacts.add(item.getJid());
+                                if (unblock.getItems().isEmpty()) {
+                                    // Empty means, the user has unblocked communications with all contacts.
+                                    pushedContacts.addAll(blockedContacts);
+                                    blockedContacts.clear();
+                                } else {
+                                    for (Item item : unblock.getItems()) {
+                                        blockedContacts.remove(item.getJid());
+                                        pushedContacts.add(item.getJid());
+                                    }
                                 }
                                 xmppSession.send(iq.createResult());
-                                notifyListeners(pushedContacts, Collections.<Jid>emptyList());
-                            } else {
-                                Unblock unblock = iq.getExtension(Unblock.class);
-                                if (unblock != null) {
-                                    List<Jid> pushedContacts = new ArrayList<>();
-                                    if (unblock.getItems().isEmpty()) {
-                                        // Empty means, the user has unblocked communications with all contacts.
-                                        pushedContacts.addAll(blockedContacts);
-                                        blockedContacts.clear();
-                                    } else {
-                                        for (Item item : unblock.getItems()) {
-                                            blockedContacts.remove(item.getJid());
-                                            pushedContacts.add(item.getJid());
-                                        }
-                                    }
-                                    xmppSession.send(iq.createResult());
-                                    notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
-                                }
+                                e.consume();
+                                notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
                             }
                         }
                     }

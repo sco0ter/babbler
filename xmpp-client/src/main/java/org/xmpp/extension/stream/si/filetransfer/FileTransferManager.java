@@ -39,6 +39,7 @@ import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.BadRequest;
+import org.xmpp.stanza.errors.ServiceUnavailable;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -67,16 +68,17 @@ public final class FileTransferManager extends ExtensionManager {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && iq.getType() == IQ.Type.SET) {
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
                     if (streamInitiation != null && streamInitiation.getProfile() != null && streamInitiation.getProfile().equals(PROFILE)) {
                         Object profileElement = streamInitiation.getProfileElement();
                         if (profileElement instanceof FileTransfer) {
                             if (fileTransferListeners.isEmpty()) {
-                                sendServiceUnavailable(iq);
+                                xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
                             } else {
                                 FileTransfer fileTransfer = (FileTransfer) profileElement;
                                 notifyIncomingFileTransferRequest(iq, fileTransfer);
+                                xmppSession.send(iq.createResult());
                             }
                         } else {
                             StanzaError error = new StanzaError(StanzaError.Type.MODIFY, new BadRequest());
@@ -84,6 +86,7 @@ public final class FileTransferManager extends ExtensionManager {
                             IQ result = iq.createError(error);
                             xmppSession.send(result);
                         }
+                        e.consume();
                     }
                 }
             }

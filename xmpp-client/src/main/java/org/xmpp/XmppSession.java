@@ -24,7 +24,6 @@
 
 package org.xmpp;
 
-import org.w3c.dom.Element;
 import org.xmpp.bind.Bind;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.compress.CompressionManager;
@@ -394,28 +393,37 @@ public class XmppSession implements Closeable {
 
     private void notifyStanzaListeners(Stanza element, boolean incoming) {
         if (element instanceof Message) {
+            MessageEvent messageEvent = new MessageEvent(this, (Message) element, incoming);
             for (MessageListener messageListener : messageListeners) {
                 try {
-                    messageListener.handle(new MessageEvent(this, (Message) element, incoming));
+                    messageListener.handle(messageEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
             }
         } else if (element instanceof Presence) {
+            PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) element, incoming);
             for (PresenceListener presenceListener : presenceListeners) {
                 try {
-                    presenceListener.handle(new PresenceEvent(this, (Presence) element, incoming));
+                    presenceListener.handle(presenceEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
             }
         } else if (element instanceof IQ) {
+            IQ iq = (IQ) element;
+            IQEvent iqEvent = new IQEvent(this, iq, incoming);
             for (IQListener iqListener : iqListeners) {
                 try {
-                    iqListener.handle(new IQEvent(this, (IQ) element, incoming));
+                    iqListener.handle(iqEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
+            }
+            if (incoming && (iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET) && !iqEvent.isConsumed()) {
+                // return <service-unavailble/> if the <iq/> is not understood or has not been handles by an event listener.
+                IQ error = iq.createError(new StanzaError(new ServiceUnavailable()));
+                send(error);
             }
         }
     }
@@ -866,18 +874,6 @@ public class XmppSession implements Closeable {
             stanzaListenerExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if (element instanceof IQ) {
-                        IQ iq = (IQ) element;
-                        if (iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET) {
-                            // By default JAXB creates an Element if it can't unmarshall some XML.
-                            // If it can't unmarshall it, it means that no listener will handle it and we should return an error.
-                            if (iq.getExtension(Element.class) != null) {
-                                // return <service-unavailble/> if the <iq/> is not understood.
-                                IQ error = iq.createError(new StanzaError(new ServiceUnavailable()));
-                                send(error);
-                            }
-                        }
-                    }
                     notifyStanzaListeners((Stanza) element, true);
                 }
             });

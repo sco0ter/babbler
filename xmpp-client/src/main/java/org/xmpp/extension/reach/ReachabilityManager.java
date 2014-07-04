@@ -108,22 +108,12 @@ public final class ReachabilityManager extends ExtensionManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handle(IQEvent e) {
-                if (e.isIncoming()) {
-                    IQ iq = e.getIQ();
-                    Reachability reachability = iq.getExtension(Reachability.class);
-                    if (reachability != null) {
-                        if (iq.getType() == IQ.Type.GET) {
-                            if (isEnabled()) {
-                                IQ result = iq.createResult();
-                                result.setExtension(new Reachability(new ArrayList<>(addresses)));
-                                xmppSession.send(result);
-                            } else {
-                                sendServiceUnavailable(iq);
-                            }
-                        } else if (iq.getType() == IQ.Type.SET) {
-                            sendServiceUnavailable(iq);
-                        }
-                    }
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(Reachability.class) != null) {
+                    IQ result = iq.createResult();
+                    result.setExtension(new Reachability(new ArrayList<>(addresses)));
+                    xmppSession.send(result);
+                    e.consume();
                 }
             }
         });

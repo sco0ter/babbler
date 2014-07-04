@@ -34,10 +34,7 @@ import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemDiscovery;
 import org.xmpp.extension.disco.items.ItemNode;
-import org.xmpp.stanza.IQEvent;
-import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.StanzaError;
-import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.*;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.ItemNotFound;
 
@@ -98,50 +95,45 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && iq.getType() == IQ.Type.GET) {
+                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
                     InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
                     if (infoDiscovery != null) {
-                        if (isEnabled()) {
-
-                            if (infoDiscovery.getNode() == null) {
-                                IQ result = iq.createResult();
-                                result.setExtension(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
-                                xmppSession.send(result);
-                            } else {
-                                InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
-                                if (infoNode != null) {
-                                    IQ result = iq.createResult();
-                                    result.setExtension(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
-                                    xmppSession.send(result);
-                                } else {
-                                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
-                                }
-                            }
-
+                        if (infoDiscovery.getNode() == null) {
+                            IQ result = iq.createResult();
+                            result.setExtension(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
+                            xmppSession.send(result);
+                            e.consume();
                         } else {
-                            sendServiceUnavailable(iq);
+                            InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
+                            if (infoNode != null) {
+                                IQ result = iq.createResult();
+                                result.setExtension(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
+                                xmppSession.send(result);
+                                e.consume();
+                            } else {
+                                xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                                e.consume();
+                            }
                         }
                     } else {
                         ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
                         if (itemDiscovery != null) {
-                            if (isEnabled()) {
-                                if (itemDiscovery.getNode() == null) {
-                                    IQ result = iq.createResult();
-                                    result.setExtension(new ItemDiscovery(items));
-                                    xmppSession.send(result);
-                                } else {
-                                    ItemNode itemNode = itemNodeMap.get(itemDiscovery.getNode());
-                                    if (itemNode != null) {
-                                        IQ result = iq.createResult();
-                                        result.setExtension(new ItemDiscovery(itemNode.getNode(), items));
-                                        xmppSession.send(result);
-                                    } else {
-                                        xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
-                                    }
-                                }
-
+                            if (itemDiscovery.getNode() == null) {
+                                IQ result = iq.createResult();
+                                result.setExtension(new ItemDiscovery(items));
+                                xmppSession.send(result);
+                                e.consume();
                             } else {
-                                sendServiceUnavailable(iq);
+                                ItemNode itemNode = itemNodeMap.get(itemDiscovery.getNode());
+                                if (itemNode != null) {
+                                    IQ result = iq.createResult();
+                                    result.setExtension(new ItemDiscovery(itemNode.getNode(), items));
+                                    xmppSession.send(result);
+                                    e.consume();
+                                } else {
+                                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                                    e.consume();
+                                }
                             }
                         }
                     }

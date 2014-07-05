@@ -24,10 +24,6 @@
 
 package org.xmpp.extension.privacy;
 
-/**
- * @author Christian Schudt
- */
-
 import org.xmpp.Jid;
 import org.xmpp.im.Contact;
 
@@ -46,8 +42,23 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * <li>If no fall-through item is provided in a list, the fall-through action is assumed to be "allow".</li>
  * </ul>
  * </blockquote>
+ *
+ * @author Christian Schudt
  */
 public final class PrivacyRule {
+
+    @XmlAttribute(name = "type")
+    private Type type;
+
+    @XmlAttribute(name = "value")
+    private String value;
+
+    @XmlAttribute(name = "action")
+    private Action action;
+
+    @XmlAttribute(name = "order")
+    private long order;
+
     @XmlElement(name = "iq")
     private String iq;
 
@@ -59,18 +70,6 @@ public final class PrivacyRule {
 
     @XmlElement(name = "presence-out")
     private String presenceOut;
-
-    @XmlAttribute(name = "order")
-    private long order;
-
-    @XmlAttribute(name = "value")
-    private String value;
-
-    @XmlAttribute(name = "type")
-    private Type type;
-
-    @XmlAttribute(name = "action")
-    private Action action;
 
     /**
      * Creates a privacy list item, which allows or blocks everything.
@@ -94,7 +93,7 @@ public final class PrivacyRule {
      *               <li>If the type is {@link Type#SUBSCRIPTION}, then the value must be one of "both", "to", "from", or "none".</li>
      *               </ul>
      */
-    public PrivacyRule(Action action, long order, Type type, String value) {
+    private PrivacyRule(Action action, long order, Type type, String value) {
         if (action == null) {
             throw new IllegalArgumentException("action must not be null.");
         }
@@ -238,80 +237,80 @@ public final class PrivacyRule {
      * Indicates, whether incoming message stanzas are blocked.
      *
      * @return True, if incoming message stanzas are blocked.
-     * @see #setBlockMessage(boolean)
+     * @see #setFilterMessage(boolean)
      */
-    public boolean isBlockMessage() {
+    public boolean isFilterMessage() {
         return message != null;
     }
 
     /**
      * Indicates, whether incoming message stanzas are blocked.
      *
-     * @param blockMessages True, if incoming message stanzas are blocked.
-     * @see #isBlockMessage()
+     * @param filterMessages True, if incoming message stanzas are blocked.
+     * @see #isFilterMessage()
      */
-    public void setBlockMessage(boolean blockMessages) {
-        this.message = blockMessages ? "" : null;
+    public void setFilterMessage(boolean filterMessages) {
+        this.message = filterMessages ? "" : null;
     }
 
     /**
      * Indicates, whether incoming IQ stanzas are blocked.
      *
      * @return True, if incoming IQ stanzas are blocked.
-     * @see #setBlockIQ(boolean)
+     * @see #setFilterIQ(boolean)
      */
-    public boolean isBlockIQ() {
+    public boolean isFilterIQ() {
         return iq != null;
     }
 
     /**
      * Indicates, whether incoming IQ stanzas are blocked.
      *
-     * @param blockIQ True, if incoming IQ stanzas are blocked.
-     * @see #isBlockIQ()
+     * @param filterIQ True, if incoming IQ stanzas are blocked.
+     * @see #isFilterIQ()
      */
-    public void setBlockIQ(boolean blockIQ) {
-        this.iq = blockIQ ? "" : null;
+    public void setFilterIQ(boolean filterIQ) {
+        this.iq = filterIQ ? "" : null;
     }
 
     /**
      * Indicates, whether incoming presence notifications are blocked.
      *
      * @return True, if incoming presence notifications are blocked.
-     * @see #setBlockPresenceIn(boolean)
+     * @see #setFilterPresenceIn(boolean)
      */
-    public boolean isBlockPresenceIn() {
+    public boolean isFilterPresenceIn() {
         return presenceIn != null;
     }
 
     /**
      * Indicates, whether incoming presence notifications are blocked.
      *
-     * @param blockPresenceIn True, if incoming presence notifications are blocked.
-     * @see #isBlockPresenceIn()
+     * @param filterPresenceIn True, if incoming presence notifications are blocked.
+     * @see #isFilterPresenceIn()
      */
-    public void setBlockPresenceIn(boolean blockPresenceIn) {
-        this.presenceIn = blockPresenceIn ? "" : null;
+    public void setFilterPresenceIn(boolean filterPresenceIn) {
+        this.presenceIn = filterPresenceIn ? "" : null;
     }
 
     /**
      * Indicates, whether outgoing presence notifications are blocked.
      *
      * @return True, if outgoing presence notifications are blocked.
-     * @see #setBlockPresenceOut(boolean)
+     * @see #setFilterPresenceOut(boolean)
      */
-    public boolean isBlockPresenceOut() {
+    public boolean isFilterPresenceOut() {
         return presenceOut != null;
     }
 
     /**
      * Indicates, whether outgoing presence notifications are blocked.
      *
-     * @param blockPresenceOut True, if outgoing presence notifications are blocked.
-     * @see #isBlockPresenceOut()
+     * @param filterPresenceOut True, if outgoing presence notifications are blocked.
+     * @see #isFilterPresenceOut()
      */
-    public void setBlockPresenceOut(boolean blockPresenceOut) {
-        this.presenceOut = blockPresenceOut ? "" : null;
+    public void setFilterPresenceOut(boolean filterPresenceOut) {
+        this.presenceOut = filterPresenceOut ? "" : null;
     }
 
     /**

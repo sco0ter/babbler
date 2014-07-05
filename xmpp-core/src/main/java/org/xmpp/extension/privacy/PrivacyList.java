@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.privacy;
 
+import org.xmpp.Jid;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
@@ -55,6 +57,103 @@ public final class PrivacyList {
      */
     public PrivacyList(String name) {
         this.name = name;
+    }
+
+    /**
+     * Creates a global invisibility list.
+     *
+     * @return The invisibility list.
+     */
+    public static PrivacyList createInvisibilityList() {
+        return createInvisibilityListExceptForUsers("invisible");
+    }
+
+    /**
+     * Creates a global invisibility list, where you are still visible to some contacts.
+     *
+     * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param jids     The JIDs to which you are still visible.
+     * @return The invisibility list.
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-jid">3.2.1 Becoming Visible by JID</a>
+     */
+    public static PrivacyList createInvisibilityListExceptForUsers(String listName, Jid... jids) {
+        PrivacyList privacyList = new PrivacyList(listName);
+        long order = 1;
+        for (Jid jid : jids) {
+            PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order++, jid);
+            privacyRule.setFilterPresenceOut(true);
+            privacyList.getPrivacyRules().add(privacyRule);
+        }
+        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order);
+        privacyRule.setFilterPresenceOut(true);
+        privacyList.getPrivacyRules().add(privacyRule);
+        return privacyList;
+    }
+
+    /**
+     * Creates a global invisibility list, where you are still visible to some contacts.
+     *
+     * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param groups   The roster groups to which you are still visible.
+     * @return The invisibility list.
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-jid">3.2.1 Becoming Visible by JID</a>
+     */
+    public static PrivacyList createInvisibilityListExceptForGroups(String listName, String... groups) {
+        PrivacyList privacyList = new PrivacyList(listName);
+        long order = 1;
+        for (String group : groups) {
+            PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order++, group);
+            privacyRule.setFilterPresenceOut(true);
+            privacyList.getPrivacyRules().add(privacyRule);
+        }
+        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order);
+        privacyRule.setFilterPresenceOut(true);
+        privacyList.getPrivacyRules().add(privacyRule);
+        return privacyList;
+    }
+
+    /**
+     * Creates a selective invisibility list. You are only invisible to the provided JIDs. You are visible to everyone else.
+     *
+     * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param jids     The JIDs to which you appear invisible.
+     * @return The invisibility list.
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-jid">3.4.1 Becoming Invisible by JID</a>
+     */
+    public static PrivacyList createInvisibilityListForUsers(String listName, Jid... jids) {
+        PrivacyList privacyList = new PrivacyList(listName);
+        long order = 1;
+        for (Jid jid : jids) {
+            PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order++, jid);
+            privacyRule.setFilterPresenceOut(true);
+            privacyList.getPrivacyRules().add(privacyRule);
+        }
+        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order);
+        privacyRule.setFilterPresenceOut(true);
+        privacyList.getPrivacyRules().add(privacyRule);
+        return privacyList;
+    }
+
+    /**
+     * Creates a selective invisibility list. You are only invisible to the provided JIDs. You are visible to everyone else.
+     *
+     * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param groups   The roster groups to which you appear invisible.
+     * @return The invisibility list.
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-roster>3.4.2 Becoming Invisible by Roster Group</a>
+     */
+    public static PrivacyList createInvisibilityListForGroups(String listName, String... groups) {
+        PrivacyList privacyList = new PrivacyList(listName);
+        long order = 1;
+        for (String group : groups) {
+            PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order++, group);
+            privacyRule.setFilterPresenceOut(true);
+            privacyList.getPrivacyRules().add(privacyRule);
+        }
+        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order);
+        privacyRule.setFilterPresenceOut(true);
+        privacyList.getPrivacyRules().add(privacyRule);
+        return privacyList;
     }
 
     /**

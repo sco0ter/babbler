@@ -245,6 +245,51 @@ public class PrivacyListTest extends XmlTest {
         privacyList.getPrivacyRules().add(privacyRule);
         privacy.getPrivacyLists().add(privacyList);
         String xml = marshal(privacy);
-        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"test\"><item order=\"0\" value=\"both\" type=\"subscription\" action=\"allow\"></item></list></query>");
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"test\"><item type=\"subscription\" value=\"both\" action=\"allow\" order=\"0\"></item></list></query>");
+    }
+
+    @Test
+    public void marshalInvisibilityList() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy();
+        PrivacyList privacyList = PrivacyList.createInvisibilityList();
+        privacy.getPrivacyLists().add(privacyList);
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"invisible\"><item action=\"deny\" order=\"1\"><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
+    public void marshalInvisibilityListForUsers() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy();
+        PrivacyList privacyList = PrivacyList.createInvisibilityListForUsers("invisible-to-Gandalf", Jid.valueOf("gandalf@tolkien.lit"));
+        privacy.getPrivacyLists().add(privacyList);
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"invisible-to-Gandalf\"><item type=\"jid\" value=\"gandalf@tolkien.lit\" action=\"deny\" order=\"1\"><presence-out></presence-out></item><item action=\"allow\" order=\"2\"><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
+    public void marshalInvisibilityListForGroups() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy();
+        PrivacyList privacyList = PrivacyList.createInvisibilityListForGroups("invisible-to-Wizards", "Wizards");
+        privacy.getPrivacyLists().add(privacyList);
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"invisible-to-Wizards\"><item type=\"group\" value=\"Wizards\" action=\"deny\" order=\"1\"><presence-out></presence-out></item><item action=\"allow\" order=\"2\"><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
+    public void marshalInvisibilityListExceptForUsers() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy();
+        PrivacyList privacyList = PrivacyList.createInvisibilityListExceptForUsers("visible-to-Frodo", Jid.valueOf("frodo@tolkien.lit"));
+        privacy.getPrivacyLists().add(privacyList);
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"visible-to-Frodo\"><item type=\"jid\" value=\"frodo@tolkien.lit\" action=\"allow\" order=\"1\"><presence-out></presence-out></item><item action=\"deny\" order=\"2\"><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
+    public void marshalInvisibilityListExceptForGroups() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy();
+        PrivacyList privacyList = PrivacyList.createInvisibilityListExceptForGroups("visible-to-Bagginses", "Bagginses");
+        privacy.getPrivacyLists().add(privacyList);
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"visible-to-Bagginses\"><item type=\"group\" value=\"Bagginses\" action=\"allow\" order=\"1\"><presence-out></presence-out></item><item action=\"deny\" order=\"2\"><presence-out></presence-out></item></list></query>");
     }
 }

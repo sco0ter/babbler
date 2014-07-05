@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
 import org.xmpp.XmlTest;
+import org.xmpp.im.Contact;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -234,5 +235,16 @@ public class PrivacyListTest extends XmlTest {
         iq.setId("getlist1");
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq from=\"romeo@example.net/orchard\" id=\"getlist1\" type=\"get\"><query xmlns=\"jabber:iq:privacy\"><default></default></query></iq>");
+    }
+
+    @Test
+    public void marshalPrivacyRule() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy();
+        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, 0, Contact.Subscription.BOTH);
+        PrivacyList privacyList = new PrivacyList("test");
+        privacyList.getPrivacyRules().add(privacyRule);
+        privacy.getPrivacyLists().add(privacyList);
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"test\"><item order=\"0\" value=\"both\" type=\"subscription\" action=\"allow\"></item></list></query>");
     }
 }

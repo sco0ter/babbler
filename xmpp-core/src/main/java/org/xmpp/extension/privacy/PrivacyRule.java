@@ -28,6 +28,9 @@ package org.xmpp.extension.privacy;
  * @author Christian Schudt
  */
 
+import org.xmpp.Jid;
+import org.xmpp.im.Contact;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
@@ -105,6 +108,45 @@ public final class PrivacyRule {
     }
 
     private PrivacyRule() {
+    }
+
+    /**
+     * Creates a privacy rule of type 'subscription'.
+     *
+     * @param action       The action to perform, i.e. either allow or deny.
+     * @param order        The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @param subscription The subscription.
+     */
+    public PrivacyRule(Action action, long order, Contact.Subscription subscription) {
+        if (Contact.Subscription.REMOVE.equals(subscription)) {
+            throw new IllegalArgumentException("subscription must not be 'remove'");
+        }
+        this.action = action;
+        this.order = order;
+        this.type = Type.SUBSCRIPTION;
+        this.value = subscription.name().toLowerCase();
+    }
+
+    /**
+     * Creates a privacy rule of type 'jid'.
+     *
+     * @param action The action to perform, i.e. either allow or deny.
+     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @param jid    The JID.
+     */
+    public PrivacyRule(Action action, long order, Jid jid) {
+        this(action, order, Type.JID, jid.toEscapedString());
+    }
+
+    /**
+     * Creates a privacy rule of type 'group'.
+     *
+     * @param action The action to perform, i.e. either allow or deny.
+     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @param group  The contact group.
+     */
+    public PrivacyRule(Action action, long order, String group) {
+        this(action, order, Type.GROUP, group);
     }
 
     /**

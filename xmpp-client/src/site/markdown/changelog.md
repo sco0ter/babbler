@@ -25,6 +25,7 @@
 * Message, Presence and IQ classes have been moved from org.xmpp.stanza to org.xmpp.stanza.client package (API change).
 * The \'from\' attribute of roster pushes are now checked
 * Updated [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html) implementation from version 1.7 to 1.8.
+* Provided convenience methods for creating [XEP-0126: Invisibility](http://xmpp.org/extensions/xep-0126.html) privacy lists.
 
 ## Version 0.1.0 (2014-03-22)
 

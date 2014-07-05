@@ -39,6 +39,7 @@ import java.util.List;
  * </blockquote>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
  */
 public final class PrivacyList {
     @XmlElement(name = "item")
@@ -74,6 +75,7 @@ public final class PrivacyList {
      * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
      * @param jids     The JIDs to which you are still visible.
      * @return The invisibility list.
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-jid">3.2.1 Becoming Visible by JID</a>
      */
     public static PrivacyList createInvisibilityListExceptForUsers(String listName, Jid... jids) {
@@ -96,7 +98,8 @@ public final class PrivacyList {
      * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
      * @param groups   The roster groups to which you are still visible.
      * @return The invisibility list.
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-jid">3.2.1 Becoming Visible by JID</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-roster">3.2.2 Becoming Visible by Roster Group</a>
      */
     public static PrivacyList createInvisibilityListExceptForGroups(String listName, String... groups) {
         PrivacyList privacyList = new PrivacyList(listName);
@@ -118,6 +121,7 @@ public final class PrivacyList {
      * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
      * @param jids     The JIDs to which you appear invisible.
      * @return The invisibility list.
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-jid">3.4.1 Becoming Invisible by JID</a>
      */
     public static PrivacyList createInvisibilityListForUsers(String listName, Jid... jids) {
@@ -140,7 +144,8 @@ public final class PrivacyList {
      * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
      * @param groups   The roster groups to which you appear invisible.
      * @return The invisibility list.
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-roster>3.4.2 Becoming Invisible by Roster Group</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-roster">3.4.2 Becoming Invisible by Roster Group</a>
      */
     public static PrivacyList createInvisibilityListForGroups(String listName, String... groups) {
         PrivacyList privacyList = new PrivacyList(listName);

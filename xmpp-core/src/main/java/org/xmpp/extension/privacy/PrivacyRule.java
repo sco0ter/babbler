@@ -234,19 +234,19 @@ public final class PrivacyRule {
     }
 
     /**
-     * Indicates, whether incoming message stanzas are blocked.
+     * Indicates, whether incoming message stanzas are filtered.
      *
-     * @return True, if incoming message stanzas are blocked.
+     * @return True, if incoming message stanzas are filtered.
      * @see #setFilterMessage(boolean)
      */
     public boolean isFilterMessage() {
-        return message != null;
+        return message != null || isFilterEverything();
     }
 
     /**
-     * Indicates, whether incoming message stanzas are blocked.
+     * Indicates, whether incoming message stanzas are filtered.
      *
-     * @param filterMessages True, if incoming message stanzas are blocked.
+     * @param filterMessages True, if incoming message stanzas are filtered.
      * @see #isFilterMessage()
      */
     public void setFilterMessage(boolean filterMessages) {
@@ -254,19 +254,19 @@ public final class PrivacyRule {
     }
 
     /**
-     * Indicates, whether incoming IQ stanzas are blocked.
+     * Indicates, whether incoming IQ stanzas are filtered.
      *
-     * @return True, if incoming IQ stanzas are blocked.
+     * @return True, if incoming IQ stanzas are filtered.
      * @see #setFilterIQ(boolean)
      */
     public boolean isFilterIQ() {
-        return iq != null;
+        return iq != null || isFilterEverything();
     }
 
     /**
-     * Indicates, whether incoming IQ stanzas are blocked.
+     * Indicates, whether incoming IQ stanzas are filtered.
      *
-     * @param filterIQ True, if incoming IQ stanzas are blocked.
+     * @param filterIQ True, if incoming IQ stanzas are filtered.
      * @see #isFilterIQ()
      */
     public void setFilterIQ(boolean filterIQ) {
@@ -274,19 +274,19 @@ public final class PrivacyRule {
     }
 
     /**
-     * Indicates, whether incoming presence notifications are blocked.
+     * Indicates, whether incoming presence notifications are filtered.
      *
-     * @return True, if incoming presence notifications are blocked.
+     * @return True, if incoming presence notifications are filtered.
      * @see #setFilterPresenceIn(boolean)
      */
     public boolean isFilterPresenceIn() {
-        return presenceIn != null;
+        return presenceIn != null || isFilterEverything();
     }
 
     /**
-     * Indicates, whether incoming presence notifications are blocked.
+     * Indicates, whether incoming presence notifications are filtered.
      *
-     * @param filterPresenceIn True, if incoming presence notifications are blocked.
+     * @param filterPresenceIn True, if incoming presence notifications are filtered.
      * @see #isFilterPresenceIn()
      */
     public void setFilterPresenceIn(boolean filterPresenceIn) {
@@ -294,23 +294,27 @@ public final class PrivacyRule {
     }
 
     /**
-     * Indicates, whether outgoing presence notifications are blocked.
+     * Indicates, whether outgoing presence notifications are filtered.
      *
-     * @return True, if outgoing presence notifications are blocked.
+     * @return True, if outgoing presence notifications are filtered.
      * @see #setFilterPresenceOut(boolean)
      */
     public boolean isFilterPresenceOut() {
-        return presenceOut != null;
+        return presenceOut != null || isFilterEverything();
     }
 
     /**
-     * Indicates, whether outgoing presence notifications are blocked.
+     * Indicates, whether outgoing presence notifications are filtered.
      *
-     * @param filterPresenceOut True, if outgoing presence notifications are blocked.
+     * @param filterPresenceOut True, if outgoing presence notifications are filtered.
      * @see #isFilterPresenceOut()
      */
     public void setFilterPresenceOut(boolean filterPresenceOut) {
         this.presenceOut = filterPresenceOut ? "" : null;
+    }
+
+    private boolean isFilterEverything() {
+        return (presenceIn == null && presenceOut == null && message == null && iq == null);
     }
 
     /**

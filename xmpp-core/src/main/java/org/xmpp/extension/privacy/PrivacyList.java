@@ -28,6 +28,7 @@ import org.xmpp.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,12 @@ import java.util.List;
 public final class PrivacyList {
     @XmlElement(name = "item")
     private final List<PrivacyRule> items = new ArrayList<>();
+
+    @XmlTransient
+    boolean isActive;
+
+    @XmlTransient
+    boolean isDefault;
 
     @XmlAttribute(name = "name")
     private String name;
@@ -174,19 +181,26 @@ public final class PrivacyList {
      * Gets the name of the privacy list.
      *
      * @return The name.
-     * @see #setName(String)
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Sets the name of the privacy list.
+     * Indicates whether this is the default list.
      *
-     * @param name The name.
-     * @see #getName()
+     * @return True, if this is the default list.
      */
-    public void setName(String name) {
-        this.name = name;
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    /**
+     * Indicates whether this is the active list.
+     *
+     * @return True, if this is the active list.
+     */
+    public boolean isActive() {
+        return isActive;
     }
 }

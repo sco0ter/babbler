@@ -37,5 +37,5 @@ public interface PrivacyListListener extends EventListener {
     /**
      * @param e The event object.
      */
-    void updated(PrivacyListEvent e);
+    void privacyListUpdated(PrivacyListEvent e);
 }

@@ -31,6 +31,7 @@ import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -72,7 +73,7 @@ public final class PrivacyListManager extends ExtensionManager {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
+                if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
                     // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
                     xmppSession.send(iq.createResult());
                     e.consume();
@@ -83,7 +84,7 @@ public final class PrivacyListManager extends ExtensionManager {
                         if (privacyLists.size() == 1) {
                             // Notify the listeners about the reception.
                             for (PrivacyListListener privacyListListener : privacyListListeners) {
-                                privacyListListener.updated(new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
+                                privacyListListener.privacyListUpdated(new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
                             }
                         }
                     }
@@ -120,9 +121,20 @@ public final class PrivacyListManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
-    public Privacy getPrivacyLists() throws XmppException {
+    public Collection<PrivacyList> getPrivacyLists() throws XmppException {
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy()));
-        return result.getExtension(Privacy.class);
+        Privacy privacy = result.getExtension(Privacy.class);
+
+        List<PrivacyList> privacyLists = privacy.getPrivacyLists();
+        for (PrivacyList privacyList : privacyLists) {
+            if (privacyList.getName() != null && privacyList.getName().equals(privacy.getDefaultName())) {
+                privacyList.isDefault = true;
+            }
+            if (privacyList.getName() != null && privacyList.getName().equals(privacy.getActiveName())) {
+                privacyList.isActive = true;
+            }
+        }
+        return privacyLists;
     }
 
     /**
@@ -204,7 +216,7 @@ public final class PrivacyListManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-edit">2.6 Editing a Privacy List</a>
      */
-    public void updateList(PrivacyList privacyList) throws XmppException {
+    public void createOrUpdateList(PrivacyList privacyList) throws XmppException {
         setPrivacy(new Privacy(privacyList));
     }
 
@@ -216,7 +228,7 @@ public final class PrivacyListManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-remove">2.8 Removing a Privacy List</a>
      */
-    public void removePrivacyList(String name) throws XmppException {
+    public void removeList(String name) throws XmppException {
         setPrivacy(new Privacy(new PrivacyList(name)));
     }
 

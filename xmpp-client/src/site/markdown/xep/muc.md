@@ -132,7 +132,7 @@ chatRoom.sendMessage("Hi all!");
 chatRoom.changeNickname("newNickname");
 ```
 
-#### Inviting other Users
+#### Inviting Other Users
 
 ```java
 chatRoom.invite(Jid.valueOf("romeo@example.net"), "Hey, please join the room");

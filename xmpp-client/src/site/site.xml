@@ -70,6 +70,7 @@
         </menu>
         <menu name="Extension Guide">
             <item href="xep/last.html" name="XEP-0012: Last Activity"/>
+            <item href="xep/privacy.html" name="XEP-0016: Privacy Lists"/>
             <item href="xep/disco.html" name="XEP-0030: Service Discovery"/>
             <item href="xep/muc.html" name="XEP-0045: Multi-User Chat"/>
             <item href="xep/vcard.html" name="XEP-0054: vcard-temp"/>

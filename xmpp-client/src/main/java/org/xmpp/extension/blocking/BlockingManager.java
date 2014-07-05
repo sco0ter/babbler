@@ -70,7 +70,7 @@ public final class BlockingManager extends ExtensionManager {
             @Override
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
+                if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
                     Block block = iq.getExtension(Block.class);
                     synchronized (blockedContacts) {
                         if (block != null) {

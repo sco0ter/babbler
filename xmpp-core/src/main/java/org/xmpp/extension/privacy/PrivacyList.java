@@ -42,7 +42,7 @@ import java.util.List;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
  */
-public final class PrivacyList {
+public final class PrivacyList implements Comparable<PrivacyList> {
     @XmlElement(name = "item")
     private final List<PrivacyRule> items = new ArrayList<>();
 
@@ -202,5 +202,48 @@ public final class PrivacyList {
      */
     public boolean isActive() {
         return isActive;
+    }
+
+    /**
+     * Compares this privacy list with another list. When sorted, default lists are listed first, then active lists, then lists are sorted by their name.
+     *
+     * @param o The other list.
+     * @return The comparison result.
+     */
+    @Override
+    public int compareTo(PrivacyList o) {
+        if (this == o) {
+            return 0;
+        }
+        if (o != null) {
+            if (isDefault) {
+                if (o.isDefault) {
+                    return name != null ? name.compareTo(o.name) : 1;
+                } else {
+                    return -1;
+                }
+            } else if (isActive) {
+                if (o.isDefault) {
+                    return 1;
+                } else if (o.isActive) {
+                    return name != null ? name.compareTo(o.name) : 1;
+                } else {
+                    return -1;
+                }
+            } else {
+                if (o.isDefault || o.isActive) {
+                    return 1;
+                } else {
+                    return name != null ? name.compareTo(o.name) : 1;
+                }
+            }
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

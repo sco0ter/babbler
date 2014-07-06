@@ -29,7 +29,6 @@ import org.xmpp.im.Contact;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
@@ -45,7 +44,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  *
  * @author Christian Schudt
  */
-public final class PrivacyRule {
+public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     @XmlAttribute(name = "type")
     private Type type;
@@ -318,9 +317,22 @@ public final class PrivacyRule {
     }
 
     /**
+     * Compares this rule with another rule by comparing their order.
+     *
+     * @param o The other rule.
+     * @return The comparison result.
+     */
+    @Override
+    public int compareTo(PrivacyRule o) {
+        if (this == o) {
+            return 0;
+        }
+        return o != null ? Long.compare(order, o.order) : -1;
+    }
+
+    /**
      * Defines the type of communication which should be allowed of denied.
      */
-    @XmlEnum
     public enum Type {
         /**
          * Allows or blocks communication based on a user's roster group name.
@@ -342,7 +354,6 @@ public final class PrivacyRule {
     /**
      * Defines the action to perform with the privacy item: either allow or deny communication.
      */
-    @XmlEnum
     public enum Action {
         /**
          * Allows communication.

@@ -33,6 +33,9 @@ import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -291,5 +294,64 @@ public class PrivacyListTest extends XmlTest {
         privacy.getPrivacyLists().add(privacyList);
         String xml = marshal(privacy);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"visible-to-Bagginses\"><item type=\"group\" value=\"Bagginses\" action=\"allow\" order=\"1\"><presence-out></presence-out></item><item action=\"deny\" order=\"2\"><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
+    public void testComparePrivacyLists() {
+
+        PrivacyList privacyList1 = new PrivacyList("zzz");
+        privacyList1.isDefault = true;
+
+        PrivacyList privacyList2 = new PrivacyList("yyy");
+        privacyList2.isActive = true;
+
+        PrivacyList privacyList3 = new PrivacyList("aaa");
+        PrivacyList privacyList4 = new PrivacyList("bbb");
+        PrivacyList privacyList5 = new PrivacyList("ccc");
+
+        List<PrivacyList> list = new ArrayList<>();
+        list.add(privacyList1);
+        list.add(privacyList2);
+        list.add(privacyList3);
+        list.add(privacyList4);
+        list.add(privacyList5);
+
+        Collections.shuffle(list);
+
+        Collections.sort(list);
+
+        Assert.assertEquals(list.get(0), privacyList1);
+        Assert.assertEquals(list.get(1), privacyList2);
+        Assert.assertEquals(list.get(2), privacyList3);
+        Assert.assertEquals(list.get(3), privacyList4);
+        Assert.assertEquals(list.get(4), privacyList5);
+    }
+
+    @Test
+    public void testComparePrivacyRules() {
+
+        PrivacyRule privacyRule1 = new PrivacyRule(PrivacyRule.Action.DENY, 0);
+        PrivacyRule privacyRule2 = new PrivacyRule(PrivacyRule.Action.DENY, 1);
+        PrivacyRule privacyRule3 = new PrivacyRule(PrivacyRule.Action.DENY, 2);
+        PrivacyRule privacyRule4 = new PrivacyRule(PrivacyRule.Action.DENY, 3);
+        PrivacyRule privacyRule5 = new PrivacyRule(PrivacyRule.Action.DENY, 4);
+
+
+        List<PrivacyRule> list = new ArrayList<>();
+        list.add(privacyRule1);
+        list.add(privacyRule2);
+        list.add(privacyRule3);
+        list.add(privacyRule4);
+        list.add(privacyRule5);
+
+        Collections.shuffle(list);
+
+        Collections.sort(list);
+
+        Assert.assertEquals(list.get(0), privacyRule1);
+        Assert.assertEquals(list.get(1), privacyRule2);
+        Assert.assertEquals(list.get(2), privacyRule3);
+        Assert.assertEquals(list.get(3), privacyRule4);
+        Assert.assertEquals(list.get(4), privacyRule5);
     }
 }

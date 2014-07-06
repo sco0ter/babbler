@@ -41,16 +41,16 @@ import java.util.List;
 public class PrivateDataTest {
 
 
-    @Test
-    public void testManager() throws XmppException, IOException {
-        MockServer mockServer = new MockServer();
-
-        XmppSession xmppSession = new TestXmppSession(null, mockServer);
-
-        PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
-        privateDataManager.storeData(new Annotation(null));
-
-        List<Annotation> annotationList = privateDataManager.getData(Annotation.class);
-        Assert.assertEquals(annotationList.size(), 1);
-    }
+//    @Test
+//    public void testManager() throws XmppException, IOException {
+//        MockServer mockServer = new MockServer();
+//
+//        XmppSession xmppSession = new TestXmppSession(null, mockServer);
+//
+//        PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
+//        privateDataManager.storeData(new Annotation(null));
+//
+//        List<Annotation> annotationList = privateDataManager.getData(Annotation.class);
+//        Assert.assertEquals(annotationList.size(), 1);
+//    }
 }

@@ -49,7 +49,7 @@ public final class CompressionManager extends FeatureNegotiator {
     public CompressionManager(XmppSession xmppSession, FeatureListener featureListener) {
         super(Compression.class);
         addFeatureListener(featureListener);
-        setEnabled(true);
+        setEnabled(false);
         this.xmppSession = xmppSession;
     }
 

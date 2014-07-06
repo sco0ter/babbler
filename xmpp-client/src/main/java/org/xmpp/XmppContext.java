@@ -53,6 +53,8 @@ import org.xmpp.extension.forward.StanzaForwardingManager;
 import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.Body;
+import org.xmpp.extension.invisible.Invisible;
+import org.xmpp.extension.invisible.Visible;
 import org.xmpp.extension.jingle.Jingle;
 import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransport;
 import org.xmpp.extension.json.Json;
@@ -316,6 +318,9 @@ public abstract class XmppContext {
             // XEP-0184: Message Delivery Receipts
             registerManager(MessageDeliveryReceiptsManager.class);
             registerExtension(Received.class, Request.class);
+
+            // XEP-0186: Invisible Command
+            registerExtension(Invisible.class, Visible.class);
 
             // XEP-0191: Blocking Command
             registerExtension(BlockList.class);

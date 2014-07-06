@@ -27,9 +27,6 @@ package org.xmpp.extension;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
-import org.xmpp.stanza.StanzaError;
-import org.xmpp.stanza.client.IQ;
-import org.xmpp.stanza.errors.ServiceUnavailable;
 
 import java.util.Arrays;
 import java.util.Collection;

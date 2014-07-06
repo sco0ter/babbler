@@ -34,7 +34,10 @@ import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemDiscovery;
 import org.xmpp.extension.disco.items.ItemNode;
-import org.xmpp.stanza.*;
+import org.xmpp.stanza.IQEvent;
+import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.StanzaError;
+import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.ItemNotFound;
 

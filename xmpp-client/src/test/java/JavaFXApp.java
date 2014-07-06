@@ -56,6 +56,8 @@ import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
+import org.xmpp.extension.caps.EntityCapabilitiesManager;
+import org.xmpp.extension.chatstates.ChatStateManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
@@ -70,14 +72,11 @@ import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
 import org.xmpp.extension.pubsub.PubSubManager;
-import org.xmpp.extension.pubsub.PubSubNode;
-import org.xmpp.extension.pubsub.PubSubService;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
-import org.xmpp.extension.shim.HeaderManager;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferEvent;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferListener;
 import org.xmpp.extension.stream.si.filetransfer.FileTransferManager;
@@ -231,7 +230,6 @@ public class JavaFXApp extends Application {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
 
-                        xmppSession.getExtensionManager(HeaderManager.class).setEnabled(true);
                         xmppSession.getChatManager().addChatSessionListener(new ChatSessionListener() {
                             @Override
                             public void chatSessionCreated(final ChatSessionEvent chatSessionEvent) {
@@ -345,7 +343,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        //xmppSession.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
+                        xmppSession.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
 
                         GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
                         geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
@@ -360,7 +358,7 @@ public class JavaFXApp extends Application {
                         try {
 
                             xmppSession.connect();
-                            xmppSession.login(txtUser.getText(), txtPassword.getText());
+                            xmppSession.login(txtUser.getText(), txtPassword.getText(), "test");
                             //xmppSession.loginAnonymously();
 
                             Presence presence = new Presence();
@@ -641,16 +639,8 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
-                PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
-                PubSubService personalEventingService = pubSubManager.createPersonalEventingService();
-                try {
-                    PubSubNode pubSubNode = personalEventingService.getNode(GeoLocation.NAMESPACE);
-                    pubSubNode.create();
-                    pubSubNode.publish(new GeoLocation(20, 40));
-                } catch (XmppException e) {
-                    e.printStackTrace();
-                }
+                ChatStateManager chatStateManager = xmppSession.getExtensionManager(ChatStateManager.class);
+                chatStateManager.setEnabled(true);
 
             }
         });

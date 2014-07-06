@@ -127,7 +127,7 @@ After you are connected, authenticated and have bound a resource, you should now
 xmppSession.send(new Presence());
 ```
 
-You are now an \"available resource\” (you will appear online to your contacts) and can now start sending messages.
+You are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
 
 ## Sending a Message
 
@@ -139,7 +139,7 @@ xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHA
 
 ## Changing Availability
 
-If you want to change your presence availability, just send a new presence with a \"show\” value.
+If you want to change your presence availability, just send a new presence with a \"show\" value.
 
 ```java
 xmppSession.send(new Presence(Presence.Show.AWAY));

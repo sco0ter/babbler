@@ -155,11 +155,6 @@ During connecting, the session will try both connections in order, until a conne
 
 The ```XmppSession``` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
 
-Here\'s an overview over the relation between the session and connections:
-
-![Architecture](XmppSession.png)
-
-
 ## Preparing the Session
 
 Before connecting to a server, you should configure your XMPP session.

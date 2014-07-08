@@ -26,8 +26,6 @@ package org.xmpp.extension.xhtmlim;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -75,6 +73,7 @@ public final class Html {
      *
      * @param xhtmlContent The body element as string, e.g. {@code <p>Hi</p>}.
      * @throws SAXException If the input string could not be parsed.
+     * @see #getContent()
      */
     public Html(String xhtmlContent) throws SAXException {
         try {
@@ -89,7 +88,7 @@ public final class Html {
     }
 
     /**
-     * Gets the body of this HTML document. Use this to append child nodes.
+     * Gets the body of this XHTML document. Use this to append child nodes.
      *
      * @return The body.
      */
@@ -97,6 +96,11 @@ public final class Html {
         return (Element) body;
     }
 
+    /**
+     * Gets XHTML content of the body, i.e. the content between the {@code <body></body>} element.
+     *
+     * @return The XHTML content as string.
+     */
     public String getContent() {
         if (body != null) {
             try {
@@ -105,12 +109,9 @@ public final class Html {
                 transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 
                 StringWriter writer = new StringWriter();
-                NodeList nodeList = ((Element) body).getChildNodes();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    Node node = nodeList.item(i);
-                    transformer.transform(new DOMSource(node), new StreamResult(writer));
-                }
-                return writer.toString();
+                transformer.transform(new DOMSource(((Element) body)), new StreamResult(writer));
+                String body = writer.toString();
+                return body.substring(body.indexOf(">") + 1, body.lastIndexOf("<"));
             } catch (TransformerException e) {
                 throw new RuntimeException(e);
             }

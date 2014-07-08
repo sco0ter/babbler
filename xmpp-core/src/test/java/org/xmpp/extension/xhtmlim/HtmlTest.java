@@ -51,11 +51,12 @@ public class HtmlTest extends XmlTest {
     @Test
     public void unmarshalHtml() throws XMLStreamException, JAXBException {
         String xml = "<html xmlns='http://jabber.org/protocol/xhtml-im'>\n" +
-                "    <body xmlns='http://www.w3.org/1999/xhtml'><p style='font-weight:bold'>hi!</p></body>\n" +
+                "    <body xmlns='http://www.w3.org/1999/xhtml'><p style='font-weight:bold'>hi!</p><p style='font-weight:bold'>hi!</p></body>\n" +
                 "  </html>\n";
         Html html = unmarshal(xml, Html.class);
         Assert.assertNotNull(html.getBody());
-        //Assert.assertEquals(html.getContent(), "<p style=\"font-weight:bold\">hi!</p>");
+        Assert.assertEquals(html.getBody().getChildNodes().getLength(), 2);
+        Assert.assertEquals(html.getContent(), "<p style=\"font-weight:bold\">hi!</p><p style=\"font-weight:bold\">hi!</p>");
     }
 
     @Test
@@ -86,6 +87,7 @@ public class HtmlTest extends XmlTest {
     public void marshalHtmlWithPlainText() throws JAXBException, XMLStreamException, SAXException {
         Html html = new Html("<p>test</p><p>test2</p>");
         String xml = marshal(html);
+        Assert.assertEquals(html.getContent(), "<p>test</p><p>test2</p>");
         Assert.assertEquals(xml, "<html xmlns=\"http://jabber.org/protocol/xhtml-im\"><body xmlns=\"http://www.w3.org/1999/xhtml\"><p>test</p><p>test2</p></body></html>");
     }
 }

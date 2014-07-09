@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * @author Christian Schudt
  */
-public final class Conference extends Bookmark {
+public final class ChatRoomBookmark extends Bookmark {
     @XmlElement(name = "nick")
     private String nick;
 
@@ -47,7 +47,7 @@ public final class Conference extends Bookmark {
     @XmlAttribute(name = "jid")
     private Jid room;
 
-    private Conference() {
+    private ChatRoomBookmark() {
         super(null);
     }
 
@@ -57,7 +57,7 @@ public final class Conference extends Bookmark {
      * @param name The bookmark name.
      * @param room The JID of the chat room.
      */
-    public Conference(String name, Jid room) {
+    public ChatRoomBookmark(String name, Jid room) {
         super(name);
         this.room = room;
     }
@@ -71,7 +71,7 @@ public final class Conference extends Bookmark {
      * @param password The unencrypted string for the password needed to enter a password-protected room. See also {@link #getPassword()}.
      * @param autojoin Whether the client should automatically join the conference room on login.
      */
-    public Conference(String name, Jid room, String nick, String password, boolean autojoin) {
+    public ChatRoomBookmark(String name, Jid room, String nick, String password, boolean autojoin) {
         super(name);
         this.room = room;
         this.nick = nick;
@@ -113,5 +113,26 @@ public final class Conference extends Bookmark {
      */
     public Jid getRoom() {
         return room;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ChatRoomBookmark)) {
+            return false;
+        }
+        ChatRoomBookmark other = (ChatRoomBookmark) o;
+
+        return (room == null ? other.room == null : room.equals(other.room));
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + ((room == null) ? 0 : room.hashCode());
+        return result;
     }
 }

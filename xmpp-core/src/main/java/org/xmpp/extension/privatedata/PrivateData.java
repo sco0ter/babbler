@@ -26,8 +26,6 @@ package org.xmpp.extension.privatedata;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:private} namespace.
@@ -38,11 +36,11 @@ import java.util.List;
  */
 @XmlRootElement(name = "query")
 public final class PrivateData {
+
     @XmlAnyElement(lax = true)
-    private final List<Object> privateData = new ArrayList<>();
+    private Object privateData;
 
     private PrivateData() {
-
     }
 
     /**
@@ -51,7 +49,7 @@ public final class PrivateData {
      * @param privateData The private data.
      */
     public PrivateData(Object privateData) {
-        this.privateData.add(privateData);
+        this.privateData = privateData;
     }
 
     /**
@@ -59,7 +57,7 @@ public final class PrivateData {
      *
      * @return The items.
      */
-    public List<Object> getItems() {
+    public Object getData() {
         return privateData;
     }
 }

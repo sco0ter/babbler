@@ -31,11 +31,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * An abstract base class for bookmarks.
  *
  * @author Christian Schudt
- * @see Conference
- * @see WebPage
+ * @see ChatRoomBookmark
+ * @see WebPageBookmark
  */
 @XmlTransient
-public abstract class Bookmark {
+public abstract class Bookmark implements Comparable<Bookmark> {
     @XmlAttribute(name = "name")
     private final String name;
 
@@ -50,5 +50,35 @@ public abstract class Bookmark {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Compares this bookmark by its name.
+     *
+     * @param o The other bookmark.
+     * @return The comparison result.
+     */
+    @Override
+    public int compareTo(Bookmark o) {
+        if (this == o) {
+            return 0;
+        }
+        if (o != null) {
+            if (name != null) {
+                if (o.name != null) {
+                    return name.compareTo(o.name);
+                } else {
+                    return -1;
+                }
+            } else {
+                if (o.name != null) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        } else {
+            return -1;
+        }
     }
 }

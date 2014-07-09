@@ -73,6 +73,7 @@
             <item href="xep/privacy.html" name="XEP-0016: Privacy Lists"/>
             <item href="xep/disco.html" name="XEP-0030: Service Discovery"/>
             <item href="xep/muc.html" name="XEP-0045: Multi-User Chat"/>
+            <item href="xep/bookmarks.html" name="XEP-0048: Bookmarks"/>
             <item href="xep/vcard.html" name="XEP-0054: vcard-temp"/>
             <item href="xep/pubsub.html" name="XEP-0060: Publish-Subscribe"/>
             <item href="xep/soap.html" name="XEP-0072: SOAP Over XMPP"/>

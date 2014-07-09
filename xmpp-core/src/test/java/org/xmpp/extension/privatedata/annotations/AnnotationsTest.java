@@ -59,9 +59,8 @@ public class AnnotationsTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         PrivateData privateData = iq.getExtension(PrivateData.class);
         Assert.assertNotNull(privateData);
-        Assert.assertEquals(privateData.getItems().size(), 1);
-        Assert.assertTrue(privateData.getItems().get(0) instanceof Annotation);
-        Annotation annotations = (Annotation) privateData.getItems().get(0);
+        Assert.assertTrue(privateData.getData() instanceof Annotation);
+        Annotation annotations = (Annotation) privateData.getData();
         Assert.assertEquals(annotations.getNotes().size(), 2);
         Assert.assertEquals(annotations.getNotes().get(0).getJid(), Jid.valueOf("hamlet@shakespeare.lit"));
         Assert.assertEquals(annotations.getNotes().get(0).getValue(), "Seems to be a good writer");

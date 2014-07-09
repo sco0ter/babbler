@@ -33,11 +33,11 @@ import java.net.URL;
  *
  * @author Christian Schudt
  */
-public final class WebPage extends Bookmark {
+public final class WebPageBookmark extends Bookmark {
     @XmlAttribute(name = "url")
     private URL url;
 
-    private WebPage() {
+    private WebPageBookmark() {
         super(null);
     }
 
@@ -47,7 +47,7 @@ public final class WebPage extends Bookmark {
      * @param name The bookmark name.
      * @param url  The URL of the web page.
      */
-    public WebPage(String name, URL url) {
+    public WebPageBookmark(String name, URL url) {
         super(name);
         this.url = url;
     }
@@ -59,5 +59,26 @@ public final class WebPage extends Bookmark {
      */
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof WebPageBookmark)) {
+            return false;
+        }
+        WebPageBookmark other = (WebPageBookmark) o;
+
+        return (url == null ? other.url == null : url.equals(other.url));
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + ((url == null) ? 0 : url.hashCode());
+        return result;
     }
 }

@@ -56,9 +56,8 @@ public class RosterDelimiterTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         PrivateData privateData = iq.getExtension(PrivateData.class);
         Assert.assertNotNull(privateData);
-        Assert.assertEquals(privateData.getItems().size(), 1);
-        Assert.assertTrue(privateData.getItems().get(0) instanceof RosterDelimiter);
-        RosterDelimiter rosterDelimiter = (RosterDelimiter) privateData.getItems().get(0);
+        Assert.assertTrue(privateData.getData() instanceof RosterDelimiter);
+        RosterDelimiter rosterDelimiter = (RosterDelimiter) privateData.getData();
         Assert.assertEquals(rosterDelimiter.getRosterDelimiter(), "::");
     }
 

@@ -47,8 +47,8 @@ import java.util.List;
 public final class BookmarkStorage {
 
     @XmlElements({
-            @XmlElement(name = "conference", type = Conference.class),
-            @XmlElement(name = "url", type = WebPage.class)})
+            @XmlElement(name = "conference", type = ChatRoomBookmark.class),
+            @XmlElement(name = "url", type = WebPageBookmark.class)})
     private final List<Bookmark> bookmarks = new ArrayList<>();
 
     public BookmarkStorage() {
@@ -58,8 +58,8 @@ public final class BookmarkStorage {
      * Gets the bookmarks.
      *
      * @return The bookmarks.
-     * @see Conference
-     * @see WebPage
+     * @see ChatRoomBookmark
+     * @see WebPageBookmark
      */
     public List<Bookmark> getBookmarks() {
         return bookmarks;

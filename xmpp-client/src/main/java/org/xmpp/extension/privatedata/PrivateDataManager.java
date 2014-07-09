@@ -33,7 +33,6 @@ import org.xmpp.stanza.client.IQ;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 /**
  * This class implements <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
@@ -59,14 +58,14 @@ public final class PrivateDataManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> getData(Class<T> type) throws XmppException {
+    public <T> T getData(Class<T> type) throws XmppException {
         try {
             Constructor<T> constructor = type.getDeclaredConstructor();
             constructor.setAccessible(true);
             T instance = constructor.newInstance();
             IQ result = xmppSession.query(new IQ(IQ.Type.GET, new PrivateData(instance)));
             PrivateData privateData = result.getExtension(PrivateData.class);
-            return (List<T>) privateData.getItems();
+            return (T) privateData.getData();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException("Cannot instantiate class.", e);
         } catch (NoSuchMethodException e) {

@@ -57,13 +57,13 @@ public class BookmarkStorageTest extends XmlTest {
         BookmarkStorage bookmarkStorage = unmarshal(xml, BookmarkStorage.class);
         Assert.assertNotNull(bookmarkStorage);
         Assert.assertEquals(bookmarkStorage.getBookmarks().size(), 2);
-        Conference bookmark = (Conference) bookmarkStorage.getBookmarks().get(0);
+        ChatRoomBookmark bookmark = (ChatRoomBookmark) bookmarkStorage.getBookmarks().get(0);
         Assert.assertEquals(bookmark.getName(), "Council of Oberon");
         Assert.assertTrue(bookmark.isAutojoin());
         Assert.assertEquals(bookmark.getRoom(), Jid.valueOf("council@conference.underhill.org"));
         Assert.assertEquals(bookmark.getNick(), "Puck");
 
-        WebPage bookmark2 = (WebPage) bookmarkStorage.getBookmarks().get(1);
+        WebPageBookmark bookmark2 = (WebPageBookmark) bookmarkStorage.getBookmarks().get(1);
         Assert.assertEquals(bookmark2.getName(), "Complete Works of Shakespeare");
         Assert.assertEquals(bookmark2.getUrl(), new URL("http://the-tech.mit.edu/Shakespeare/"));
     }

@@ -259,6 +259,11 @@ public final class DataForm implements Comparable<DataForm> {
         }
     }
 
+    /**
+     * Gets the layout pages for this data form.
+     *
+     * @return The pages.
+     */
     public List<Page> getPages() {
         return pages;
     }
@@ -468,6 +473,27 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
+         * Gets the validation for this field.
+         *
+         * @return The validation.
+         * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
+         */
+        public Validation getValidation() {
+            return validation;
+        }
+
+        /**
+         * Sets the validation for this field.
+         *
+         * @param validation The validation.
+         * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
+         */
+        public void setValidation(Validation validation) {
+            this.validation = validation;
+        }
+
+
+        /**
          * If the field as required in order for the form to be considered valid.
          *
          * @return True, if the field is required.
@@ -503,16 +529,6 @@ public final class DataForm implements Comparable<DataForm> {
             } else {
                 return getVar().compareTo(o.getVar());
             }
-        }
-
-        /**
-         * Gets the validation for this field.
-         *
-         * @return The validation.
-         * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
-         */
-        public Validation getValidation() {
-            return validation;
         }
 
         /**

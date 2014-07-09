@@ -29,9 +29,6 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/xdata-validate", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.data.validate;
+@XmlSchema(namespace = "http://jabber.org/protocol/xdata-validate", xmlns = {@XmlNs(prefix = "xdv", namespaceURI = "http://jabber.org/protocol/xdata-validate")}, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.data.validate;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.*;

@@ -26,6 +26,7 @@ package org.xmpp;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.soap.SOAPConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.*;
@@ -262,7 +263,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
          */
         private final String contentNamespace;
 
-        private static final Collection<String> PREFIXED_NAMESPACES = new ArrayList<>(Arrays.asList("http://www.w3.org/2003/05/soap-envelope", "http://schemas.xmlsoap.org/soap/envelope/"));
+        private static final Collection<String> PREFIXED_NAMESPACES = new ArrayList<>(Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE));
 
         private final Set<String> currentNamespaceUris = new HashSet<>();
 

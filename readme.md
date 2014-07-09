@@ -34,7 +34,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![not supported][not supported]   [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)
 * ![not supported][not supported]   [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * ![not supported][not supported]   [XEP-0071: XHTML-IM](http://xmpp.org/extensions/xep-0071.html)
-* ![not supported][not supported]   [XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)
+* ![supported][supported]           [XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)
 * ![supported][supported]           [XEP-0077: In-Band Registration](http://xmpp.org/extensions/xep-0077.html)
 * ![supported][supported]           [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
 * ![supported][supported]           [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html)

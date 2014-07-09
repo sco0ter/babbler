@@ -76,6 +76,7 @@
             <item href="xep/bookmarks.html" name="XEP-0048: Bookmarks"/>
             <item href="xep/vcard.html" name="XEP-0054: vcard-temp"/>
             <item href="xep/pubsub.html" name="XEP-0060: Publish-Subscribe"/>
+            <item href="xep/xhtmlim.html" name="XEP-0071: XHTML-IM"/>
             <item href="xep/soap.html" name="XEP-0072: SOAP Over XMPP"/>
             <item href="xep/amp.html" name="XEP-0079: Advanced Message Processing"/>
             <item href="xep/version.html" name="XEP-0092: Software Version"/>

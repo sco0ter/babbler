@@ -38,8 +38,11 @@ import org.xmpp.stanza.PresenceListener;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.Presence;
 
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -200,7 +203,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
                                             // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
                                             if (verificationString.equals(entityCapabilities.getVerificationString())) {
-                                                cache.put(new Verification(hashAlgorithm, verificationString), infoDiscovery);
+                                                cache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
                                             }
                                             jidInfos.put(presence.getFrom(), infoDiscovery);
 
@@ -268,7 +271,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
         infoDiscovery.getIdentities().addAll(serviceDiscoveryManager.getIdentities());
         infoDiscovery.getExtensions().addAll(serviceDiscoveryManager.getExtensions());
         currentVerificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
-        cache.put(new Verification(HASH_ALGORITHM, currentVerificationString), infoDiscovery);
+        cache(new Verification(HASH_ALGORITHM, currentVerificationString), infoDiscovery);
     }
 
     /**
@@ -328,6 +331,20 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
         return infoNode.getFeatures().contains(new Feature(feature));
     }
 
+    private void cache(Verification verification, InfoNode infoNode) {
+        cache.put(verification, infoNode);
+        /*
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(verification.toString() + ".xml");
+            XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(fileOutputStream);
+            XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+            xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Unable to write cache.", e);
+        }
+        */
+    }
+
     /**
      * A key for the cache (consisting of hash algorithm and verification string).
      */
@@ -362,6 +379,11 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             result = 31 * result + ((hashAlgorithm == null) ? 0 : hashAlgorithm.hashCode());
             result = 31 * result + ((verificationString == null) ? 0 : verificationString.hashCode());
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return hashAlgorithm + "_" + verificationString;
         }
     }
 }

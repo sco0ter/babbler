@@ -56,11 +56,14 @@ import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
+import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
-import org.xmpp.extension.chatstates.ChatStateManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
+import org.xmpp.extension.filetransfer.FileTransferEvent;
+import org.xmpp.extension.filetransfer.FileTransferListener;
+import org.xmpp.extension.filetransfer.FileTransferManager;
 import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationEvent;
 import org.xmpp.extension.geoloc.GeoLocationListener;
@@ -77,9 +80,6 @@ import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
-import org.xmpp.extension.stream.si.filetransfer.FileTransferEvent;
-import org.xmpp.extension.stream.si.filetransfer.FileTransferListener;
-import org.xmpp.extension.stream.si.filetransfer.FileTransferManager;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.vcard.VCard;
@@ -96,9 +96,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Proxy;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -307,14 +305,6 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
-                        fileTransferManager.addFileTransferListener(new FileTransferListener() {
-                            @Override
-                            public void fileTransferRequest(FileTransferEvent e) {
-                                e.accept();
-                            }
-                        });
-
                         AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
                         avatarManager.addAvatarChangeListener(new AvatarChangeListener() {
                             @Override
@@ -355,6 +345,32 @@ public class JavaFXApp extends Application {
 
                         SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
+
+
+                        FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                        fileTransferManager.addFileTransferListener(new FileTransferListener() {
+                            @Override
+                            public void fileTransferRequested(FileTransferEvent e) {
+                                try {
+                                    ByteStreamSession byteStreamSession = e.accept();
+                                    InputStream inputStream = byteStreamSession.getInputStream();
+
+                                    OutputStream outputStream = new FileOutputStream("test.png");
+
+                                    byte[] buffer = new byte[1024];
+                                    int len;
+                                    while ((len = inputStream.read(buffer)) != -1) {
+                                        outputStream.write(buffer, 0, len);
+                                    }
+
+                                } catch (XmppException e1) {
+                                    e1.printStackTrace();
+                                } catch (IOException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        });
+
                         try {
 
                             xmppSession.connect();
@@ -521,7 +537,7 @@ public class JavaFXApp extends Application {
                                 public void handle(ActionEvent actionEvent) {
                                     PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
                                     try {
-                                        List<Annotation> annotations = privateDataManager.getData(Annotation.class);
+                                        Annotation annotations = privateDataManager.getData(Annotation.class);
                                         int i = 0;
                                     } catch (XmppException e) {
                                         e.printStackTrace();
@@ -567,6 +583,8 @@ public class JavaFXApp extends Application {
                                     try {
                                         fileTransferManager.sendFile(file, xmppSession.getPresenceManager().getPresence(item.contact.get().getJid()).getFrom(), 10000);
                                     } catch (XmppException e) {
+                                        e.printStackTrace();
+                                    } catch (IOException e) {
                                         e.printStackTrace();
                                     }
                                 }
@@ -639,8 +657,7 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                ChatStateManager chatStateManager = xmppSession.getExtensionManager(ChatStateManager.class);
-                chatStateManager.setEnabled(true);
+
 
             }
         });

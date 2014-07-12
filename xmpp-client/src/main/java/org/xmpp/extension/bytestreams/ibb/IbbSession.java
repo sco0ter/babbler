@@ -1,0 +1,137 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package org.xmpp.extension.bytestreams.ibb;
+
+import org.xmpp.Jid;
+import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
+import org.xmpp.extension.bytestreams.ByteStreamSession;
+import org.xmpp.stanza.client.IQ;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.UUID;
+
+/**
+ * @author Christian Schudt
+ */
+final class IbbSession implements ByteStreamSession {
+
+    private final IbbOutputStream outputStream;
+
+    private final IbbInputStream inputStream;
+
+    private final Jid jid;
+
+    private final String sessionId;
+
+    private final int blockSize;
+
+    private final XmppSession xmppSession;
+
+    private int incomingSequence = 0;
+
+    private int outgoingSequence = 0;
+
+    private volatile boolean closed;
+
+    IbbSession(XmppSession xmppSession, final Jid jid, int blockSize) {
+        this(xmppSession, jid, blockSize, UUID.randomUUID().toString());
+    }
+
+    IbbSession(XmppSession xmppSession, final Jid jid, int blockSize, final String sessionId) {
+        this.outputStream = new IbbOutputStream(this, blockSize);
+        this.inputStream = new IbbInputStream(this);
+        this.jid = jid;
+        this.sessionId = sessionId;
+        this.xmppSession = xmppSession;
+        this.blockSize = blockSize;
+    }
+
+    boolean dataReceived(Data data) {
+        if (incomingSequence++ == data.getSequence()) {
+            inputStream.queue.offer(data);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void open() throws IOException {
+        IQ iq = new IQ(IQ.Type.SET, new Open(blockSize, sessionId));
+        iq.setTo(jid);
+        try {
+            xmppSession.query(iq);
+        } catch (XmppException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public OutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    @Override
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    synchronized void send(byte[] bytes) throws XmppException {
+        xmppSession.query(new IQ(jid, IQ.Type.SET, new Data(bytes, sessionId, outgoingSequence)));
+        // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2, and so on. The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.
+        if (++outgoingSequence > 65535) {
+            outgoingSequence = 0;
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (!closed) {
+            closed = true;
+            inputStream.close();
+            outputStream.close();
+            try {
+                xmppSession.query(new IQ(jid, IQ.Type.SET, new Close(sessionId)));
+            } catch (XmppException e) {
+                throw new IOException(e);
+            }
+        }
+    }
+
+    void closedByPeer() throws IOException {
+        if (!closed) {
+            closed = true;
+            inputStream.close();
+            outputStream.close();
+        }
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+}

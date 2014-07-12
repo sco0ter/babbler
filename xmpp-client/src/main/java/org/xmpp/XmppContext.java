@@ -35,6 +35,9 @@ import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.extension.blocking.BlockList;
 import org.xmpp.extension.blocking.BlockingManager;
 import org.xmpp.extension.bob.Data;
+import org.xmpp.extension.bytestreams.ibb.Close;
+import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
+import org.xmpp.extension.bytestreams.ibb.Open;
 import org.xmpp.extension.caps.EntityCapabilities;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.carbons.*;
@@ -96,13 +99,10 @@ import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.shim.HeaderManager;
 import org.xmpp.extension.shim.Headers;
+import org.xmpp.extension.si.StreamInitiation;
+import org.xmpp.extension.si.StreamInitiationManager;
+import org.xmpp.extension.si.profile.filetransfer.SIFileTransfer;
 import org.xmpp.extension.sm.StreamManagement;
-import org.xmpp.extension.stream.ibb.Close;
-import org.xmpp.extension.stream.ibb.InBandBytestreamManager;
-import org.xmpp.extension.stream.ibb.Open;
-import org.xmpp.extension.stream.si.StreamInitiation;
-import org.xmpp.extension.stream.si.filetransfer.FileTransfer;
-import org.xmpp.extension.stream.si.filetransfer.FileTransferManager;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
 import org.xmpp.extension.tune.Tune;
@@ -213,8 +213,8 @@ public abstract class XmppContext {
             registerExtension(MucUser.class, MucAdmin.class, MucOwner.class);
 
             // XEP-0047: In-Band Bytestreams
-            registerExtension(org.xmpp.extension.stream.ibb.Data.class, Open.class, Close.class);
-            registerManager(InBandBytestreamManager.class);
+            registerExtension(org.xmpp.extension.bytestreams.ibb.Data.class, Open.class, Close.class);
+            registerManager(InBandByteStreamManager.class);
 
             // XEP-0048: BookmarkStorage
             registerExtension(BookmarkStorage.class);
@@ -257,10 +257,10 @@ public abstract class XmppContext {
 
             // XEP-0095: Stream Initiation
             registerExtension(StreamInitiation.class);
+            registerManager(StreamInitiationManager.class);
 
             // XEP-0096: SI File Transfer
-            registerExtension(FileTransfer.class);
-            registerManager(FileTransferManager.class);
+            registerExtension(SIFileTransfer.class);
 
             // XEP-0107: User Mood
             registerExtension(Mood.class);

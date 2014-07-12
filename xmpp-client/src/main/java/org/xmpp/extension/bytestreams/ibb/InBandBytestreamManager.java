@@ -131,7 +131,7 @@ public class InBandByteStreamManager extends ExtensionManager {
         return ibbSession;
     }
 
-    public ByteStreamSession createInBandByteStreamSession(Jid jid, int blockSize, final String sessionId) {
+    public IbbSession createInBandByteStreamSession(Jid jid, int blockSize, final String sessionId) {
         IbbSession ibbSession = new IbbSession(xmppSession, jid, blockSize, sessionId);
         ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;

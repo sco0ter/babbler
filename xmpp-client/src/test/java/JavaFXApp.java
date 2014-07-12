@@ -56,7 +56,6 @@ import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
-import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
@@ -97,7 +96,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.Proxy;
+import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -352,9 +353,7 @@ public class JavaFXApp extends Application {
                             @Override
                             public void fileTransferRequested(FileTransferEvent e) {
                                 try {
-                                    ByteStreamSession byteStreamSession = e.accept();
-                                    InputStream inputStream = byteStreamSession.getInputStream();
-
+                                    InputStream inputStream = e.accept();
                                     OutputStream outputStream = new FileOutputStream("test.png");
 
                                     byte[] buffer = new byte[1024];
@@ -363,8 +362,6 @@ public class JavaFXApp extends Application {
                                         outputStream.write(buffer, 0, len);
                                     }
 
-                                } catch (XmppException e1) {
-                                    e1.printStackTrace();
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
                                 }
@@ -657,8 +654,12 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
-
+                FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                try {
+                    fileTransferManager.sendFile(new URL("http://i.i.cbsi.com/cnwk.1d/i/tim2/2013/10/10/20131007_Frax_fractal_002.jpg"), Jid.valueOf("222@christian-schudts-macbook-pro.local/test"));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
             }
         });
         Button btnExit = new Button("Exit");

@@ -22,19 +22,64 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
+package org.xmpp.extension.oob.iq;
 
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URL;
 
 /**
  * @author Christian Schudt
  */
-public interface FileTransferNegotiator {
+@XmlRootElement(name = "query")
+public final class OobIQ {
 
-    InputStream accept(IQ iq, String sessionId, FileTransfer fileTransfer) throws IOException;
+    @XmlElement(name = "url")
+    private URL url;
 
-    void reject(IQ iq);
+    @XmlElement(name = "desc")
+    private String description;
+
+    @XmlAttribute(name = "sid")
+    private String sessionId;
+
+    private OobIQ() {
+    }
+
+    public OobIQ(URL url) {
+        this(url, null);
+    }
+
+    public OobIQ(URL url, String description) {
+        this.url = url;
+        this.description = description;
+    }
+
+    /**
+     * Gets the URL.
+     *
+     * @return The URL.
+     */
+    public URL getUrl() {
+        return url;
+    }
+
+    /**
+     * Gets the description.
+     *
+     * @return The description.
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Gets the session id. This is used only in conjunction with stream initiation.
+     *
+     * @return The session id.
+     */
+    public String getSessionId() {
+        return sessionId;
+    }
 }

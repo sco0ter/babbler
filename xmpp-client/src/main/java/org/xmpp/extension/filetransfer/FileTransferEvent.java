@@ -25,13 +25,11 @@
 package org.xmpp.extension.filetransfer;
 
 import org.xmpp.Jid;
-import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
-import org.xmpp.extension.bytestreams.ByteStreamSession;
-import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.client.IQ;
-import org.xmpp.stanza.errors.Forbidden;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.EventObject;
 
@@ -79,7 +77,7 @@ public final class FileTransferEvent extends EventObject implements FileTransfer
     /**
      * Accepts the incoming file transfer request.
      */
-    public ByteStreamSession accept() throws XmppException {
+    public InputStream accept() throws IOException {
         return fileTransferNegotiator.accept(iq, sessionId, fileTransfer);
     }
 
@@ -87,7 +85,7 @@ public final class FileTransferEvent extends EventObject implements FileTransfer
      * Rejects the incoming file transfer request.
      */
     public void reject() {
-        xmppSession.send(iq.createError(new StanzaError(new Forbidden())));
+        fileTransferNegotiator.reject(iq);
     }
 
     @Override

@@ -22,19 +22,8 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
-
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
- * @author Christian Schudt
+ * Provides packages for both kinds of byte streams: SOCKS5 and IBB.
  */
-public interface FileTransferNegotiator {
+package org.xmpp.extension.bytestreams;
 
-    InputStream accept(IQ iq, String sessionId, FileTransfer fileTransfer) throws IOException;
-
-    void reject(IQ iq);
-}

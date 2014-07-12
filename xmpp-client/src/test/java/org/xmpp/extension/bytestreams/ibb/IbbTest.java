@@ -117,7 +117,7 @@ public class IbbTest extends BaseTest {
                     }
                 });
                 InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getExtensionManager(InBandByteStreamManager.class);
-                ByteStreamSession ibbSession = null;
+                IbbSession ibbSession = null;
                 try {
                     ibbSession = inBandBytestreamManager1.createInBandByteStreamSession(JULIET, 4096, "sid");
                     ibbSession.open();

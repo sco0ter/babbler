@@ -22,19 +22,51 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
+package org.xmpp.extension.oob.x;
 
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URL;
 
 /**
  * @author Christian Schudt
  */
-public interface FileTransferNegotiator {
+@XmlRootElement(name = "x")
+public final class OobX {
 
-    InputStream accept(IQ iq, String sessionId, FileTransfer fileTransfer) throws IOException;
+    @XmlElement(name = "url")
+    private URL url;
 
-    void reject(IQ iq);
+    @XmlElement(name = "desc")
+    private String description;
+
+    private OobX() {
+    }
+
+    public OobX(URL url) {
+        this(url, null);
+    }
+
+    public OobX(URL url, String description) {
+        this.url = url;
+        this.description = description;
+    }
+
+    /**
+     * Gets the URL.
+     *
+     * @return The URL.
+     */
+    public URL getUrl() {
+        return url;
+    }
+
+    /**
+     * Gets the description.
+     *
+     * @return The description.
+     */
+    public String getDescription() {
+        return description;
+    }
 }

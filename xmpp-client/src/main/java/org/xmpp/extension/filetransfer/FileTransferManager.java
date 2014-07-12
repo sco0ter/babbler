@@ -30,12 +30,14 @@ import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
+import org.xmpp.extension.oob.iq.OobIQ;
 import org.xmpp.extension.si.StreamInitiation;
 import org.xmpp.extension.si.StreamInitiationManager;
 import org.xmpp.extension.si.profile.filetransfer.SIFileTransfer;
 import org.xmpp.stanza.client.IQ;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.util.Set;
@@ -56,10 +58,14 @@ public final class FileTransferManager extends ExtensionManager {
 
     private final Set<FileTransferListener> fileTransferListeners = new CopyOnWriteArraySet<>();
 
-    private FileTransferManager(XmppSession xmppSession) {
+    private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession);
         this.streamInitiationManager = xmppSession.getExtensionManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
+    }
+
+    public void sendFile(URL url, Jid jid) {
+        xmppSession.send(new IQ(jid, IQ.Type.SET, new OobIQ(url)));
     }
 
     public void sendFile(File file, Jid jid, long timeout) throws XmppException, IOException {
@@ -87,8 +93,7 @@ public final class FileTransferManager extends ExtensionManager {
                 mimeType = null;
             }
 
-            ByteStreamSession byteStreamSession = streamInitiationManager.initiateStream(jid, fileTransfer, mimeType, timeout);
-            OutputStream os = byteStreamSession.getOutputStream();
+            OutputStream outputStream = streamInitiationManager.initiateStream(jid, fileTransfer, mimeType, timeout);
             InputStream inputStream;
 
             inputStream = new FileInputStream(file);
@@ -96,11 +101,11 @@ public final class FileTransferManager extends ExtensionManager {
             byte[] buffer = new byte[4096];
             int len;
             while ((len = inputStream.read(buffer)) != -1) {
-                os.write(buffer, 0, len);
+                outputStream.write(buffer, 0, len);
             }
-            os.flush();
+            outputStream.flush();
             inputStream.close();
-            os.close();
+            outputStream.close();
 
         } else {
             throw new UnsupportedOperationException("Feature not supported"); // TODO other exception!?

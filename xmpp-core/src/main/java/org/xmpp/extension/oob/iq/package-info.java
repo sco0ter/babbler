@@ -22,19 +22,16 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
-
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
- * @author Christian Schudt
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a> (jabber:iq:oob).
+ * <p>
+ * This package is for the <code>jabber:iq:oob</code> namespace.
+ * </p>
  */
-public interface FileTransferNegotiator {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "jabber:iq:oob", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.oob.iq;
 
-    InputStream accept(IQ iq, String sessionId, FileTransfer fileTransfer) throws IOException;
-
-    void reject(IQ iq);
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

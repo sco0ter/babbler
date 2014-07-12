@@ -22,17 +22,18 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.bytestreams.bytestreams;
+package org.xmpp.extension.bytestreams.socks5;
 
 import org.xmpp.Jid;
-
-import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * @author Christian Schudt
  */
-public class StreamHostUsed {
+public class StreamHost {
 
-    @XmlAttribute(name = "jid")
     private Jid jid;
+
+    private String host;
+
+    private String port;
 }

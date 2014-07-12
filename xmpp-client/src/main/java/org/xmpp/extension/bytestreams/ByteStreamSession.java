@@ -37,6 +37,4 @@ public interface ByteStreamSession extends Closeable {
     OutputStream getOutputStream();
 
     InputStream getInputStream();
-
-    void open() throws IOException;
 }

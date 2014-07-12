@@ -21,7 +21,7 @@
 * ![in development][in development] [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
 * ![supported][supported]           [XEP-0060: Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)
 * ![not supported][not supported]   [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
-* ![not supported][not supported]   [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)
+* ![in development][in development] [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)
 * ![not supported][not supported]   [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * ![supported][supported]           [XEP-0071: XHTML-IM](http://xmpp.org/extensions/xep-0071.html)
 * ![supported][supported]           [XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)

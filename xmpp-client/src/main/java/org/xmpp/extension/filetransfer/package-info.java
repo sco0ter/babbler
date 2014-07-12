@@ -22,19 +22,17 @@
  * THE SOFTWARE.
  */
 
+/**
+ * Provides an abstraction for different kinds of file transfer.
+ * <p>
+ * XMPP specifies three different methods for transferring files:
+ * </p>
+ * <ul>
+ *     <li><a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a></li>
+ *     <li><a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a></li>
+ *     <li><a href="http://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a></li>
+ * </ul>
+ *
+ */
 package org.xmpp.extension.filetransfer;
 
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-/**
- * @author Christian Schudt
- */
-public interface FileTransferNegotiator {
-
-    InputStream accept(IQ iq, String sessionId, FileTransfer fileTransfer) throws IOException;
-
-    void reject(IQ iq);
-}

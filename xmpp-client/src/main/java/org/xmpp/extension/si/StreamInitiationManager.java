@@ -25,13 +25,13 @@
 package org.xmpp.extension.si;
 
 import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.bytestreams.ByteStreamEvent;
 import org.xmpp.extension.bytestreams.ByteStreamListener;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
+import org.xmpp.extension.bytestreams.ibb.IbbSession;
 import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.featureneg.FeatureNegotiation;
@@ -44,8 +44,11 @@ import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.errors.BadRequest;
+import org.xmpp.stanza.errors.Forbidden;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -143,7 +146,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
      * @return The byte stream session which has been negotiated.
      * @throws XmppException
      */
-    public ByteStreamSession initiateStream(Jid receiver, SIFileTransfer profile, String mimeType, long timeout) throws XmppException, IOException {
+    public OutputStream initiateStream(Jid receiver, SIFileTransfer profile, String mimeType, long timeout) throws XmppException, IOException {
 
         // Create a random id for the stream session.
         String id = UUID.randomUUID().toString();
@@ -169,15 +172,15 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         if (streamMethod.equals(InBandByteStreamManager.NAMESPACE)) {
             InBandByteStreamManager inBandBytestreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
             // Create the byte stream and open it.
-            ByteStreamSession byteStreamSession = inBandBytestreamManager.createInBandByteStreamSession(receiver, 4096, id);
+            IbbSession byteStreamSession = inBandBytestreamManager.createInBandByteStreamSession(receiver, 4096, id);
             byteStreamSession.open();
-            return byteStreamSession;
+            return byteStreamSession.getOutputStream();
         }
         return null;
     }
 
     @Override
-    public ByteStreamSession accept(IQ iq, final String sessionId, FileTransfer fileTransfer) throws XmppException {
+    public InputStream accept(IQ iq, final String sessionId, FileTransfer fileTransfer) throws IOException {
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
         DataForm.Field field = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, STREAM_METHOD);
         field.getValues().add(InBandByteStreamManager.NAMESPACE);
@@ -213,15 +216,19 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         lock.lock();
         try {
             if (!byteStreamOpened.await(5, TimeUnit.SECONDS)) {
-                throw new NoResponseException("No byte stream was initiated in time.");
+                throw new IOException("No byte stream was initiated in time.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
             lock.unlock();
         }
+        return byteStreamSessions[0].getInputStream();
+    }
 
-        return byteStreamSessions[0];
+    @Override
+    public void reject(IQ iq) {
+        xmppSession.send(iq.createError(new StanzaError(new Forbidden())));
     }
 
     private interface ProfileManager {

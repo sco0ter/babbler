@@ -22,19 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.filetransfer;
-
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
- * @author Christian Schudt
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
  */
-public interface FileTransferNegotiator {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "http://jabber.org/protocol/bytestreams", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.bytestreams.socks5;
 
-    InputStream accept(IQ iq, String sessionId, FileTransfer fileTransfer) throws IOException;
-
-    void reject(IQ iq);
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

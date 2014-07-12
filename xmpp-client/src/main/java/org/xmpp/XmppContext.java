@@ -73,6 +73,9 @@ import org.xmpp.extension.muc.owner.MucOwner;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.nick.Nickname;
 import org.xmpp.extension.offline.OfflineMessage;
+import org.xmpp.extension.oob.OutOfBandFileTransferManager;
+import org.xmpp.extension.oob.iq.OobIQ;
+import org.xmpp.extension.oob.x.OobX;
 import org.xmpp.extension.ping.Ping;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privacy.Privacy;
@@ -237,6 +240,10 @@ public abstract class XmppContext {
             // XEP-0060: Publish-Subscribe
             registerExtension(PubSub.class);
             registerManager(PubSubManager.class);
+
+            // XEP-0066: Out of Band Data
+            registerExtension(OobIQ.class, OobX.class);
+            registerManager(OutOfBandFileTransferManager.class);
 
             // XEP-0077: In-Band Registration
             registerExtension(RegisterFeature.class, Registration.class);

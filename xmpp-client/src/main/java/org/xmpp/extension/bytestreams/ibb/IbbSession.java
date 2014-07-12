@@ -38,7 +38,7 @@ import java.util.UUID;
 /**
  * @author Christian Schudt
  */
-final class IbbSession implements ByteStreamSession {
+public final class IbbSession implements ByteStreamSession {
 
     private final IbbOutputStream outputStream;
 
@@ -80,7 +80,6 @@ final class IbbSession implements ByteStreamSession {
         }
     }
 
-    @Override
     public void open() throws IOException {
         IQ iq = new IQ(IQ.Type.SET, new Open(blockSize, sessionId));
         iq.setTo(jid);

@@ -22,6 +22,7 @@
  * THE SOFTWARE.
  */
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.ObjectBinding;
@@ -60,9 +61,10 @@ import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
 import org.xmpp.extension.disco.items.ItemNode;
-import org.xmpp.extension.filetransfer.FileTransferEvent;
-import org.xmpp.extension.filetransfer.FileTransferListener;
+import org.xmpp.extension.filetransfer.FileTransfer;
 import org.xmpp.extension.filetransfer.FileTransferManager;
+import org.xmpp.extension.filetransfer.FileTransferOfferEvent;
+import org.xmpp.extension.filetransfer.FileTransferOfferListener;
 import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationEvent;
 import org.xmpp.extension.geoloc.GeoLocationListener;
@@ -96,7 +98,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.security.SecureRandom;
@@ -348,19 +349,27 @@ public class JavaFXApp extends Application {
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
 
 
-                        FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
-                        fileTransferManager.addFileTransferListener(new FileTransferListener() {
+                        final FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                        fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
                             @Override
-                            public void fileTransferRequested(FileTransferEvent e) {
+                            public void fileTransferOffered(FileTransferOfferEvent e) {
                                 try {
-                                    InputStream inputStream = e.accept();
-                                    OutputStream outputStream = new FileOutputStream("test.png");
+                                    OutputStream outputStream = new FileOutputStream("test222.png");
+                                    //e.reject();
 
-                                    byte[] buffer = new byte[1024];
-                                    int len;
-                                    while ((len = inputStream.read(buffer)) != -1) {
-                                        outputStream.write(buffer, 0, len);
-                                    }
+                                    final FileTransfer fileTransfer = e.accept(outputStream);
+                                    fileTransfer.transfer();
+
+                                    AnimationTimer animationTimer = new AnimationTimer() {
+                                        @Override
+                                        public void handle(long now) {
+                                            System.out.println(fileTransfer.getProgress());
+                                            if (fileTransfer.isDone()) {
+                                                stop();
+                                            }
+                                        }
+                                    };
+                                    animationTimer.start();
 
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
@@ -578,7 +587,7 @@ public class JavaFXApp extends Application {
                                     File file = fileChooser.showOpenDialog(stage);
 
                                     try {
-                                        fileTransferManager.sendFile(file, xmppSession.getPresenceManager().getPresence(item.contact.get().getJid()).getFrom(), 10000);
+                                        fileTransferManager.offerFile(file, "", xmppSession.getPresenceManager().getPresence(item.contact.get().getJid()).getFrom(), 10000);
                                     } catch (XmppException e) {
                                         e.printStackTrace();
                                     } catch (IOException e) {
@@ -656,8 +665,22 @@ public class JavaFXApp extends Application {
             public void handle(ActionEvent actionEvent) {
                 FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
                 try {
-                    fileTransferManager.sendFile(new URL("http://i.i.cbsi.com/cnwk.1d/i/tim2/2013/10/10/20131007_Frax_fractal_002.jpg"), Jid.valueOf("222@christian-schudts-macbook-pro.local/test"));
-                } catch (MalformedURLException e) {
+                    fileTransferManager.offerFile(new URL("http://i.i.cbsi.com/cnwk.1d/i/tim2/2013/10/10/20131007_Frax_fractal_002.jpg"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
+                    if (true) return;
+                    final FileTransfer fileTransfer = fileTransferManager.offerFile(new File("test.png"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
+                    fileTransfer.transfer();
+
+                    AnimationTimer animationTimer = new AnimationTimer() {
+                        @Override
+                        public void handle(long now) {
+                            System.out.println(fileTransfer.getProgress());
+                            if (fileTransfer.isDone()) {
+                                stop();
+                            }
+                        }
+                    };
+                    animationTimer.start();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

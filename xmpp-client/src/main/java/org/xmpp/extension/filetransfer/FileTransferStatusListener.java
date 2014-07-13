@@ -24,17 +24,20 @@
 
 package org.xmpp.extension.filetransfer;
 
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.EventListener;
 
 /**
+ * A listener, which allows to listen for file transfer status changes.
+ *
  * @author Christian Schudt
  */
-public interface FileTransferNegotiator {
+public interface FileTransferStatusListener extends EventListener {
 
-    FileTransfer accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, OutputStream outputStream) throws IOException;
+    /**
+     * This method is called on when the status of the file transfer has changed.
+     *
+     * @param e The file transfer event.
+     */
+    void fileTransferStatusChanged(FileTransferStatusEvent e);
 
-    void reject(IQ iq);
 }

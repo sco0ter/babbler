@@ -104,7 +104,7 @@ import org.xmpp.extension.shim.HeaderManager;
 import org.xmpp.extension.shim.Headers;
 import org.xmpp.extension.si.StreamInitiation;
 import org.xmpp.extension.si.StreamInitiationManager;
-import org.xmpp.extension.si.profile.filetransfer.SIFileTransfer;
+import org.xmpp.extension.si.profile.filetransfer.SIFileTransferOffer;
 import org.xmpp.extension.sm.StreamManagement;
 import org.xmpp.extension.time.EntityTime;
 import org.xmpp.extension.time.EntityTimeManager;
@@ -267,7 +267,7 @@ public abstract class XmppContext {
             registerManager(StreamInitiationManager.class);
 
             // XEP-0096: SI File Transfer
-            registerExtension(SIFileTransfer.class);
+            registerExtension(SIFileTransferOffer.class);
 
             // XEP-0107: User Mood
             registerExtension(Mood.class);

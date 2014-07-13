@@ -24,17 +24,21 @@
 
 package org.xmpp.extension.filetransfer;
 
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.EventListener;
 
 /**
+ * A listener, which allows to listen for incoming file transfer offers.
+ *
  * @author Christian Schudt
+ * @see org.xmpp.extension.filetransfer.FileTransferManager#addFileTransferOfferListener(FileTransferOfferListener)
  */
-public interface FileTransferNegotiator {
+public interface FileTransferOfferListener extends EventListener {
 
-    FileTransfer accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, OutputStream outputStream) throws IOException;
+    /**
+     * This method is called on an incoming file transfer offer.
+     *
+     * @param e The file transfer event.
+     */
+    void fileTransferOffered(FileTransferOfferEvent e);
 
-    void reject(IQ iq);
 }

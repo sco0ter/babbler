@@ -36,9 +36,10 @@ import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.featureneg.FeatureNegotiation;
 import org.xmpp.extension.filetransfer.FileTransfer;
+import org.xmpp.extension.filetransfer.FileTransferOffer;
 import org.xmpp.extension.filetransfer.FileTransferManager;
 import org.xmpp.extension.filetransfer.FileTransferNegotiator;
-import org.xmpp.extension.si.profile.filetransfer.SIFileTransfer;
+import org.xmpp.extension.si.profile.filetransfer.SIFileTransferOffer;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaError;
@@ -47,7 +48,6 @@ import org.xmpp.stanza.errors.BadRequest;
 import org.xmpp.stanza.errors.Forbidden;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,14 +68,14 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     private final Map<String, ProfileManager> profileManagers = new ConcurrentHashMap<>();
 
     private StreamInitiationManager(final XmppSession xmppSession) {
-        super(xmppSession, StreamInitiation.NAMESPACE, SIFileTransfer.NAMESPACE);
+        super(xmppSession, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
 
         // Currently, there's only one profile in XMPP, namely XEP-0096 SI File Transfer.
-        profileManagers.put(SIFileTransfer.NAMESPACE, new ProfileManager() {
+        profileManagers.put(SIFileTransferOffer.NAMESPACE, new ProfileManager() {
             @Override
             public void handle(IQ iq, StreamInitiation streamInitiation) {
                 FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
-                fileTransferManager.notifyIncomingFileTransferRequest(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransfer) streamInitiation.getProfileElement(), StreamInitiationManager.this);
+                fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), StreamInitiationManager.this);
             }
         });
 
@@ -140,13 +140,13 @@ public final class StreamInitiationManager extends ExtensionManager implements F
      * Initiates a stream with another entity.
      *
      * @param receiver The receiver, i.e. the XMPP entity you want to negotiate a stream.
-     * @param profile  The profile. Currently there's only the {@link org.xmpp.extension.si.profile.filetransfer.SIFileTransfer} profile.
+     * @param profile  The profile. Currently there's only the {@link org.xmpp.extension.si.profile.filetransfer.SIFileTransferOffer} profile.
      * @param mimeType The mime type of the stream.
      * @param timeout  The timeout, which wait until the stream has been negotiated.
      * @return The byte stream session which has been negotiated.
      * @throws XmppException
      */
-    public OutputStream initiateStream(Jid receiver, SIFileTransfer profile, String mimeType, long timeout) throws XmppException, IOException {
+    public OutputStream initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) throws XmppException, IOException {
 
         // Create a random id for the stream session.
         String id = UUID.randomUUID().toString();
@@ -160,7 +160,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         dataForm.getFields().add(field);
 
         // Offer the file to the recipient and wait until it's accepted.
-        IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(id, SIFileTransfer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
+        IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(id, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
 
         // The recipient must response with a stream initiation.
         StreamInitiation streamInitiation = result.getExtension(StreamInitiation.class);
@@ -180,7 +180,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     }
 
     @Override
-    public InputStream accept(IQ iq, final String sessionId, FileTransfer fileTransfer) throws IOException {
+    public FileTransfer accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, OutputStream outputStream) throws IOException {
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
         DataForm.Field field = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, STREAM_METHOD);
         field.getValues().add(InBandByteStreamManager.NAMESPACE);
@@ -223,7 +223,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         } finally {
             lock.unlock();
         }
-        return byteStreamSessions[0].getInputStream();
+        return new FileTransfer(byteStreamSessions[0].getInputStream(), outputStream, fileTransferOffer.getSize());
     }
 
     @Override

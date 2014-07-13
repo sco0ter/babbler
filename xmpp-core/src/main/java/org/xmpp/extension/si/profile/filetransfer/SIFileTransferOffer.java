@@ -24,7 +24,7 @@
 
 package org.xmpp.extension.si.profile.filetransfer;
 
-import org.xmpp.extension.filetransfer.FileTransfer;
+import org.xmpp.extension.filetransfer.FileTransferOffer;
 import org.xmpp.extension.filetransfer.Range;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -40,7 +40,7 @@ import java.util.Date;
  * @see <a href="http://xmpp.org/extensions/xep-0096.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "file")
-public final class SIFileTransfer implements FileTransfer {
+public final class SIFileTransferOffer implements FileTransferOffer {
 
     public static final String NAMESPACE = "http://jabber.org/protocol/si/profile/file-transfer";
 
@@ -62,15 +62,15 @@ public final class SIFileTransfer implements FileTransfer {
     @XmlElement(name = "range")
     private SIRange range;
 
-    private SIFileTransfer() {
+    private SIFileTransferOffer() {
     }
 
-    public SIFileTransfer(String name, long size) {
+    public SIFileTransferOffer(String name, long size) {
         this.name = name;
         this.size = size;
     }
 
-    public SIFileTransfer(String name, long size, Date lastModified, String hash, String description, SIRange range) {
+    public SIFileTransferOffer(String name, long size, Date lastModified, String hash, String description, SIRange range) {
         this.name = name;
         this.size = size;
         this.date = lastModified;

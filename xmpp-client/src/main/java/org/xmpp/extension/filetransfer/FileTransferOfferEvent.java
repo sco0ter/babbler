@@ -25,22 +25,19 @@
 package org.xmpp.extension.filetransfer;
 
 import org.xmpp.Jid;
-import org.xmpp.XmppSession;
 import org.xmpp.stanza.client.IQ;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.EventObject;
 
 /**
  * @author Christian Schudt
  */
-public final class FileTransferEvent extends EventObject implements FileTransfer {
+public final class FileTransferOfferEvent extends EventObject implements FileTransferOffer {
 
-    private final FileTransfer fileTransfer;
-
-    private final XmppSession xmppSession;
+    private final FileTransferOffer fileTransferOffer;
 
     private final IQ iq;
 
@@ -56,29 +53,38 @@ public final class FileTransferEvent extends EventObject implements FileTransfer
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    FileTransferEvent(Object source, XmppSession xmppSession, IQ iq, String sessionId, String mimeType, FileTransfer fileTransfer, FileTransferNegotiator fileTransferNegotiator) {
+    FileTransferOfferEvent(Object source, IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, FileTransferNegotiator fileTransferNegotiator) {
         super(source);
-        this.xmppSession = xmppSession;
         this.sessionId = sessionId;
         this.iq = iq;
-        this.fileTransfer = fileTransfer;
+        this.fileTransferOffer = fileTransferOffer;
         this.mimeType = mimeType;
         this.fileTransferNegotiator = fileTransferNegotiator;
     }
 
+    /**
+     * Gets the mime type of the file.
+     *
+     * @return The mime type.
+     */
     public String getMimeType() {
         return mimeType;
     }
 
-    public Jid getRequester() {
+    /**
+     * Gets the initiator.
+     *
+     * @return The initiator.
+     */
+    public Jid getInitiator() {
         return iq.getFrom();
     }
 
     /**
      * Accepts the incoming file transfer request.
      */
-    public InputStream accept() throws IOException {
-        return fileTransferNegotiator.accept(iq, sessionId, fileTransfer);
+    public FileTransfer accept(OutputStream outputStream) throws IOException {
+        return fileTransferNegotiator.accept(iq, sessionId, fileTransferOffer, outputStream);
     }
 
     /**
@@ -90,32 +96,32 @@ public final class FileTransferEvent extends EventObject implements FileTransfer
 
     @Override
     public long getSize() {
-        return fileTransfer.getSize();
+        return fileTransferOffer.getSize();
     }
 
     @Override
     public String getName() {
-        return fileTransfer.getName();
+        return fileTransferOffer.getName();
     }
 
     @Override
     public Date getDate() {
-        return fileTransfer.getDate();
+        return fileTransferOffer.getDate();
     }
 
     @Override
     public String getHash() {
-        return fileTransfer.getHash();
+        return fileTransferOffer.getHash();
     }
 
     @Override
     public String getDescription() {
-        return fileTransfer.getDescription();
+        return fileTransferOffer.getDescription();
     }
 
     @Override
     public Range getRange() {
-        return fileTransfer.getRange();
+        return fileTransferOffer.getRange();
     }
 
     public String getSessionId() {

@@ -99,7 +99,7 @@ public final class StreamInitiation {
     }
 
     /**
-     * Gets the profile element, e.g. {@link org.xmpp.extension.si.profile.filetransfer.SIFileTransfer}.
+     * Gets the profile element, e.g. {@link org.xmpp.extension.si.profile.filetransfer.SIFileTransferOffer}.
      *
      * @return The profile element.
      */

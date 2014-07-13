@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class FileTransferTest extends XmlTest {
     protected FileTransferTest() throws JAXBException, XMLStreamException {
-        super(SIFileTransfer.class);
+        super(SIFileTransferOffer.class);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class FileTransferTest extends XmlTest {
                 "      <desc>This is a test. If this were a real file...</desc>\n" +
                 "    </file>";
 
-        SIFileTransfer fileTransfer = unmarshal(xml, SIFileTransfer.class);
+        SIFileTransferOffer fileTransfer = unmarshal(xml, SIFileTransferOffer.class);
         Assert.assertNotNull(fileTransfer);
         Assert.assertEquals(fileTransfer.getName(), "test.txt");
         Assert.assertEquals(fileTransfer.getSize(), 1022);

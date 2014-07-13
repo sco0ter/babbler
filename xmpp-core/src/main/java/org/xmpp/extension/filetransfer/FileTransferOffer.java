@@ -24,17 +24,58 @@
 
 package org.xmpp.extension.filetransfer;
 
-import org.xmpp.stanza.client.IQ;
-
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.Date;
 
 /**
+ * An interface for file transfer requests, which covers XEP-0066, XEP-0096 and XEP-0234.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a>
  */
-public interface FileTransferNegotiator {
+public interface FileTransferOffer {
 
-    FileTransfer accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, OutputStream outputStream) throws IOException;
+    /**
+     * Gets the size, in bytes, of the data to be sent.
+     *
+     * @return The size.
+     */
+    long getSize();
 
-    void reject(IQ iq);
+    /**
+     * Gets the name of the file that the Sender wishes to send.
+     *
+     * @return The file name.
+     */
+    String getName();
+
+    /**
+     * Gets the last modification time of the file.
+     *
+     * @return The date.
+     */
+    Date getDate();
+
+    /**
+     * Gets the MD5 sum of the file contents.
+     *
+     * @return The MD5 sum.
+     */
+    // TODO XEP-0300 !
+    String getHash();
+
+    /**
+     * Gets a sender-generated description of the file.
+     *
+     * @return The description.
+     */
+    String getDescription();
+
+    /**
+     * Gets the range.
+     *
+     * @return The range.
+     */
+    Range getRange();
 }

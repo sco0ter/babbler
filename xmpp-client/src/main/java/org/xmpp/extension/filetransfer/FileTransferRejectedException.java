@@ -24,57 +24,18 @@
 
 package org.xmpp.extension.filetransfer;
 
-import java.util.Date;
+import org.xmpp.XmppException;
 
 /**
- * An interface for file transfers, which covers both XEP-0096 and XEP-0234.
+ * This is generic exception when a file transfer request has been rejected.
+ * The reason for it is, that different file transfer protocols use different ways to indicate file transfer rejection:
+ * <ul>
+ * <li><a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a> uses the {@code <not-acceptable/>} stanza error</li>
+ * <li><a href="http://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a> / <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a> uses the {@code <forbidden/>} stanza error</li>
+ * <li><a href="http://xmpp.org/extensions/xep-0166.html">XEP-0166: Jingle</a> / <a href="http://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a> uses {@code action='session-terminate'} and  {@code <decline/>} to reject an offer.</li>
+ * </ul>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transferr</a>
- * @see <a href="http://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a>
  */
-public interface FileTransfer {
-
-    /**
-     * Gets the size, in bytes, of the data to be sent.
-     *
-     * @return The size.
-     */
-    long getSize();
-
-    /**
-     * Gets the name of the file that the Sender wishes to send.
-     *
-     * @return The file name.
-     */
-    String getName();
-
-    /**
-     * Gets the last modification time of the file.
-     *
-     * @return The date.
-     */
-    Date getDate();
-
-    /**
-     * Gets the MD5 sum of the file contents.
-     *
-     * @return The MD5 sum.
-     */
-    // TODO XEP-0300 !
-    String getHash();
-
-    /**
-     * Gets a sender-generated description of the file.
-     *
-     * @return The description.
-     */
-    String getDescription();
-
-    /**
-     * Gets the range.
-     *
-     * @return The range.
-     */
-    Range getRange();
+public final class FileTransferRejectedException extends XmppException {
 }

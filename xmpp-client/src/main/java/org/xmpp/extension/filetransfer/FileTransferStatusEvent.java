@@ -24,20 +24,32 @@
 
 package org.xmpp.extension.filetransfer;
 
-import java.util.EventListener;
+import java.util.EventObject;
 
 /**
- * A listener, which allows to listen for incoming file transfer requests.
- *
  * @author Christian Schudt
  */
-public interface FileTransferListener extends EventListener {
+public final class FileTransferStatusEvent extends EventObject {
+
+    private final FileTransfer.Status status;
 
     /**
-     * This method is called on an incoming file transfer request.
+     * Constructs a prototypical Event.
      *
-     * @param e The file transfer event.
+     * @param source The object on which the Event initially occurred.
+     * @throws IllegalArgumentException if source is null.
      */
-    void fileTransferRequested(FileTransferEvent e);
+    FileTransferStatusEvent(Object source, FileTransfer.Status status) {
+        super(source);
+        this.status = status;
+    }
 
+    /**
+     * Gets the file transfer status.
+     *
+     * @return The status.
+     */
+    public FileTransfer.Status getStatus() {
+        return status;
+    }
 }

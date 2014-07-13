@@ -26,10 +26,7 @@ package org.xmpp.extension.oob;
 
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.filetransfer.FileTransfer;
-import org.xmpp.extension.filetransfer.FileTransferManager;
-import org.xmpp.extension.filetransfer.FileTransferNegotiator;
-import org.xmpp.extension.filetransfer.Range;
+import org.xmpp.extension.filetransfer.*;
 import org.xmpp.extension.oob.iq.OobIQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -39,7 +36,7 @@ import org.xmpp.stanza.errors.ItemNotFound;
 import org.xmpp.stanza.errors.NotAcceptable;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.*;
 import java.util.Date;
 
@@ -85,7 +82,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
 
                                     final Date date = lastModified > 0 ? new Date(lastModified) : null;
                                     final String name = url.toString();
-                                    fileTransferManager.notifyIncomingFileTransferRequest(iq, null, mimeType, new FileTransfer() {
+                                    fileTransferManager.fileTransferOffered(iq, null, mimeType, new FileTransferOffer() {
                                         @Override
                                         public long getSize() {
                                             return length;
@@ -131,6 +128,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                             // If the recipient attempts to retrieve the file but is unable to do so, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Found condition:
                             xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
                         }
+                        e.consume();
                     }
                 }
             }
@@ -139,11 +137,25 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
     }
 
     @Override
-    public InputStream accept(IQ iq, String sessionId, FileTransfer fileTransfer) throws IOException {
+    public FileTransfer accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer, OutputStream outputStream) throws IOException {
         try {
-            URL url = new URL(fileTransfer.getName());
+            URL url = new URL(fileTransferOffer.getName());
             URLConnection urlConnection = url.openConnection();
-            return urlConnection.getInputStream();
+            final FileTransfer fileTransfer = new FileTransfer(urlConnection.getInputStream(), outputStream, fileTransferOffer.getSize());
+            fileTransfer.addFileTransferStatusListener(new FileTransferStatusListener() {
+                @Override
+                public void fileTransferStatusChanged(FileTransferStatusEvent e) {
+                    if (e.getStatus() == FileTransfer.Status.COMPLETED) {
+                        xmppSession.send(iq.createResult());
+                        fileTransfer.removeFileTransferStatusListener(this);
+                    } else if (e.getStatus() == FileTransfer.Status.CANCELED ||
+                            e.getStatus() == FileTransfer.Status.FAILED) {
+                        xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                        fileTransfer.removeFileTransferStatusListener(this);
+                    }
+                }
+            });
+            return fileTransfer;
         } catch (MalformedURLException e) {
             throw new IOException(e);
         }

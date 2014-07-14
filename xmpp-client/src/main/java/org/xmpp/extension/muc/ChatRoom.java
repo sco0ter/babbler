@@ -402,7 +402,7 @@ public final class ChatRoom {
             enterPresence.setTo(roomJid.withResource(nick));
             enterPresence.getExtensions().add(new Muc(password, history));
             this.nick = nick;
-            xmppSession.sendAndAwait(enterPresence, new StanzaFilter<Presence>() {
+            xmppSession.sendAndAwaitPresence(enterPresence, new StanzaFilter<Presence>() {
                 @Override
                 public boolean accept(Presence presence) {
                     Jid room = presence.getFrom().asBareJid();
@@ -427,7 +427,7 @@ public final class ChatRoom {
     public void changeSubject(final String subject) throws XmppException {
         Message message = new Message(roomJid, Message.Type.GROUPCHAT);
         message.setSubject(subject);
-        xmppSession.sendAndAwait(message, new StanzaFilter<Message>() {
+        xmppSession.sendAndAwaitMessage(message, new StanzaFilter<Message>() {
             @Override
             public boolean accept(Message message) {
                 return message.getSubject() != null && message.getSubject().equals(subject);
@@ -471,7 +471,7 @@ public final class ChatRoom {
         }
         final Presence changeNickNamePresence = new Presence();
         changeNickNamePresence.setTo(roomJid.withResource(newNickname));
-        xmppSession.sendAndAwait(changeNickNamePresence, new StanzaFilter<Presence>() {
+        xmppSession.sendAndAwaitPresence(changeNickNamePresence, new StanzaFilter<Presence>() {
             @Override
             public boolean accept(Presence presence) {
                 return presence.getFrom().equals(changeNickNamePresence.getTo());

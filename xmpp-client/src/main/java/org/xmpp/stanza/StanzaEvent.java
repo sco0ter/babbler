@@ -24,18 +24,22 @@
 
 package org.xmpp.stanza;
 
+import org.xmpp.stream.ClientStreamElement;
+
 import java.util.EventObject;
 
 /**
+ * An event which is triggered for inbound and outbound stanzas.
+ *
  * @author Christian Schudt
  */
-abstract class StanzaEvent<S extends Stanza> extends EventObject {
+abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extends EventObject {
 
     protected final S stanza;
 
     private final boolean incoming;
 
-    protected StanzaEvent(Object source, S stanza, boolean incoming) {
+    public StanzaEvent(Object source, S stanza, boolean incoming) {
         super(source);
         this.stanza = stanza;
         this.incoming = incoming;
@@ -48,5 +52,9 @@ abstract class StanzaEvent<S extends Stanza> extends EventObject {
      */
     public boolean isIncoming() {
         return incoming;
+    }
+
+    public S getStanza() {
+        return stanza;
     }
 }

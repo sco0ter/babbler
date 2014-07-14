@@ -24,12 +24,14 @@
 
 package org.xmpp.stanza;
 
+import org.xmpp.stream.ClientStreamElement;
+
 /**
  * A simple filter for stanzas.
  *
  * @author Christian Schudt
  */
-public interface StanzaFilter<T extends Stanza> {
+public interface StanzaFilter<T extends Stanza & ClientStreamElement> {
 
     /**
      * Checks whether the stanza is accepted by this filter.

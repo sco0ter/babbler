@@ -392,6 +392,7 @@ public class XmppSession implements Closeable {
     }
 
     private void notifyStanzaListeners(Stanza element, boolean incoming) {
+
         if (element instanceof Message) {
             MessageEvent messageEvent = new MessageEvent(this, (Message) element, incoming);
             for (MessageListener messageListener : messageListeners) {
@@ -439,110 +440,6 @@ public class XmppSession implements Closeable {
     }
 
     /**
-     * Awaits for a presence stanza to arrive. The filter determined the characteristics of the presence stanza.
-     *
-     * @param presence The presence, which is sent.
-     * @param filter   The presence filter.
-     * @return The presence stanza.
-     * @throws NoResponseException If no presence stanza has arrived in time.
-     * @throws StanzaException     If the returned presence contains a stanza error.
-     */
-    public Presence sendAndAwait(Presence presence, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
-
-        final Presence[] result = new Presence[1];
-
-        final Condition resultReceived = lock.newCondition();
-
-        final PresenceListener listener = new PresenceListener() {
-            @Override
-            public void handle(PresenceEvent e) {
-                Presence presence = e.getPresence();
-                if (e.isIncoming() && filter.accept(presence)) {
-                    lock.lock();
-                    try {
-                        result[0] = presence;
-                    } finally {
-                        resultReceived.signal();
-                        lock.unlock();
-                    }
-                }
-            }
-        };
-
-        lock.lock();
-        try {
-            addPresenceListener(listener);
-            send(presence);
-            // Wait for the stanza to arrive.
-            if (!resultReceived.await(DEFAULT_REPLY_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("Timeout reached, while waiting on a response.");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
-            removePresenceListener(listener);
-        }
-        Presence response = result[0];
-        if (response.getType() == Presence.Type.ERROR) {
-            throw new StanzaException(response);
-        }
-        return result[0];
-    }
-
-    /**
-     * Awaits for a presence stanza to arrive. The filter determined the characteristics of the presence stanza.
-     *
-     * @param message The message, which is sent.
-     * @param filter  The message filter.
-     * @return The message stanza.
-     * @throws NoResponseException If no message stanza has arrived in time.
-     * @throws StanzaException     If the returned message contains a stanza error.
-     */
-    public Message sendAndAwait(Message message, final StanzaFilter<Message> filter) throws NoResponseException, StanzaException {
-
-        final Message[] result = new Message[1];
-
-        final Condition resultReceived = lock.newCondition();
-
-        final MessageListener listener = new MessageListener() {
-            @Override
-            public void handle(MessageEvent e) {
-                Message message = e.getMessage();
-                if (e.isIncoming() && filter.accept(message)) {
-                    lock.lock();
-                    try {
-                        result[0] = message;
-                    } finally {
-                        resultReceived.signal();
-                        lock.unlock();
-                    }
-                }
-            }
-        };
-
-        lock.lock();
-        try {
-            addMessageListener(listener);
-            send(message);
-            // Wait for the stanza to arrive.
-            if (!resultReceived.await(DEFAULT_REPLY_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("Timeout reached, while waiting on a response.");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
-            removeMessageListener(listener);
-        }
-        Message response = result[0];
-        if (response.getType() == Message.Type.ERROR) {
-            throw new StanzaException(response);
-        }
-        return response;
-    }
-
-    /**
      * Sends an {@code <iq/>} stanza and waits for the response.
      * <p>
      * This method blocks until a result was received or a timeout occurred.
@@ -574,17 +471,51 @@ public class XmppSession implements Closeable {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
 
+        return sendAndAwaitIQ(iq, new StanzaFilter<IQ>() {
+            @Override
+            public boolean accept(IQ stanza) {
+                return stanza.getId() != null && stanza.getId().equals(iq.getId()) && stanza.getType() == IQ.Type.RESULT;
+            }
+        }, timeout);
+    }
+
+    /**
+     * Sends a stanza and then waits for an IQ stanza to arrive. The filter determines the characteristics of the IQ stanza.
+     *
+     * @param stanza The stanza, which is sent.
+     * @param filter The presence filter.
+     * @return The presence stanza.
+     * @throws NoResponseException If no IQ stanza has arrived in time.
+     * @throws StanzaException     If the returned IQ contains a stanza error.
+     */
+    public IQ sendAndAwaitIQ(ClientStreamElement stanza, final StanzaFilter<IQ> filter) throws NoResponseException, StanzaException {
+        return sendAndAwaitIQ(stanza, filter, DEFAULT_REPLY_TIMEOUT);
+    }
+
+    /**
+     * Sends a stanza and then waits for an IQ stanza to arrive. The filter determines the characteristics of the IQ stanza.
+     *
+     * @param stanza  The stanza, which is sent.
+     * @param filter  The presence filter.
+     * @param timeout The timeout.
+     * @return The presence stanza.
+     * @throws NoResponseException If no IQ stanza has arrived in time.
+     * @throws StanzaException     If the returned presence IQ a stanza error.
+     */
+    public IQ sendAndAwaitIQ(ClientStreamElement stanza, final StanzaFilter<IQ> filter, long timeout) throws NoResponseException, StanzaException {
+
         final IQ[] result = new IQ[1];
 
         final Condition resultReceived = lock.newCondition();
 
-        final IQListener iqListener = new IQListener() {
+        final IQListener listener = new IQListener() {
             @Override
             public void handle(IQEvent e) {
-                if (e.isIncoming() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
+                IQ iq = e.getIQ();
+                if (e.isIncoming() && filter.accept(iq)) {
                     lock.lock();
                     try {
-                        result[0] = e.getIQ();
+                        result[0] = iq;
                     } finally {
                         resultReceived.signal();
                         lock.unlock();
@@ -595,20 +526,139 @@ public class XmppSession implements Closeable {
 
         lock.lock();
         try {
-            addIQListener(iqListener);
-            send(iq);
+            addIQListener(listener);
+            send(stanza);
+            // Wait for the stanza to arrive.
             if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("Timeout reached, while waiting on an IQ response.");
+                throw new NoResponseException("Timeout reached, while waiting on a response.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
             lock.unlock();
-            removeIQListener(iqListener);
+            removeIQListener(listener);
         }
-
         IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
+            throw new StanzaException(response);
+        }
+        return result[0];
+    }
+
+
+    /**
+     * Sends a stanza and then waits for a presence stanza to arrive. The filter determines the characteristics of the presence stanza.
+     *
+     * @param stanza The stanza, which is sent.
+     * @param filter The presence filter.
+     * @return The presence stanza.
+     * @throws NoResponseException If no presence stanza has arrived in time.
+     * @throws StanzaException     If the returned presence contains a stanza error.
+     */
+    public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
+        return sendAndAwaitPresence(stanza, filter, DEFAULT_REPLY_TIMEOUT);
+    }
+
+    /**
+     * Sends a stanza and then waits for a presence stanza to arrive. The filter determines the characteristics of the presence stanza.
+     *
+     * @param stanza  The stanza, which is sent.
+     * @param filter  The presence filter.
+     * @param timeout The timeout.
+     * @return The presence stanza.
+     * @throws NoResponseException If no presence stanza has arrived in time.
+     * @throws StanzaException     If the returned presence contains a stanza error.
+     */
+    public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter, long timeout) throws NoResponseException, StanzaException {
+
+        final Presence[] result = new Presence[1];
+
+        final Condition resultReceived = lock.newCondition();
+
+        final PresenceListener listener = new PresenceListener() {
+            @Override
+            public void handle(PresenceEvent e) {
+                Presence presence = e.getPresence();
+                if (e.isIncoming() && filter.accept(presence)) {
+                    lock.lock();
+                    try {
+                        result[0] = presence;
+                    } finally {
+                        resultReceived.signal();
+                        lock.unlock();
+                    }
+                }
+            }
+        };
+
+        lock.lock();
+        try {
+            addPresenceListener(listener);
+            send(stanza);
+            // Wait for the stanza to arrive.
+            if (!resultReceived.await(DEFAULT_REPLY_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                throw new NoResponseException("Timeout reached, while waiting on a response.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
+            removePresenceListener(listener);
+        }
+        Presence response = result[0];
+        if (response.getType() == Presence.Type.ERROR) {
+            throw new StanzaException(response);
+        }
+        return result[0];
+    }
+
+    /**
+     * Sends a stanza and then waits for a message stanza to arrive. The filter determines the characteristics of the message stanza.
+     *
+     * @param stanza The stanza, which is sent.
+     * @param filter The message filter.
+     * @return The message stanza.
+     * @throws NoResponseException If no message stanza has arrived in time.
+     * @throws StanzaException     If the returned message contains a stanza error.
+     */
+    public Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws NoResponseException, StanzaException {
+
+        final Message[] result = new Message[1];
+
+        final Condition resultReceived = lock.newCondition();
+
+        final MessageListener listener = new MessageListener() {
+            @Override
+            public void handle(MessageEvent e) {
+                Message message = e.getMessage();
+                if (e.isIncoming() && filter.accept(message)) {
+                    lock.lock();
+                    try {
+                        result[0] = message;
+                    } finally {
+                        resultReceived.signal();
+                        lock.unlock();
+                    }
+                }
+            }
+        };
+
+        lock.lock();
+        try {
+            addMessageListener(listener);
+            send(stanza);
+            // Wait for the stanza to arrive.
+            if (!resultReceived.await(DEFAULT_REPLY_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                throw new NoResponseException("Timeout reached, while waiting on a response.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            lock.unlock();
+            removeMessageListener(listener);
+        }
+        Message response = result[0];
+        if (response.getType() == Message.Type.ERROR) {
             throw new StanzaException(response);
         }
         return response;

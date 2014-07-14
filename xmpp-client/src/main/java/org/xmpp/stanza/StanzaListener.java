@@ -27,12 +27,17 @@ package org.xmpp.stanza;
 import java.util.EventListener;
 
 /**
- * A listener interface
+ * A listener interface for listening for inbound and outbound stanzas.
  *
  * @author Christian Schudt
  */
 interface StanzaListener<E extends StanzaEvent> extends EventListener {
 
+    /**
+     * Handles the stanza event.
+     *
+     * @param e The stanza event.
+     */
     void handle(E e);
 }
 

@@ -57,6 +57,8 @@ import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
+import org.xmpp.extension.bytestreams.s5b.Socks5ByteStreamManager;
+import org.xmpp.extension.bytestreams.s5b.StreamHost;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
@@ -663,10 +665,10 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+
                 FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
                 try {
-                    fileTransferManager.offerFile(new URL("http://i.i.cbsi.com/cnwk.1d/i/tim2/2013/10/10/20131007_Frax_fractal_002.jpg"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
-                    if (true) return;
+                    //fileTransferManager.offerFile(new URL("http://i.i.cbsi.com/cnwk.1d/i/tim2/2013/10/10/20131007_Frax_fractal_002.jpg"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
                     final FileTransfer fileTransfer = fileTransferManager.offerFile(new File("test.png"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
                     fileTransfer.transfer();
 

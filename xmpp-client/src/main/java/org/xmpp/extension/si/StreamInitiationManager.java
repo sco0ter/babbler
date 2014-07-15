@@ -31,8 +31,8 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.bytestreams.ByteStreamEvent;
 import org.xmpp.extension.bytestreams.ByteStreamListener;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
-import org.xmpp.extension.bytestreams.ibb.IbbSession;
 import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
+import org.xmpp.extension.bytestreams.s5b.Socks5ByteStreamManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.featureneg.FeatureNegotiation;
 import org.xmpp.extension.filetransfer.FileTransfer;
@@ -63,7 +63,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
     private static final String STREAM_METHOD = "stream-method";
 
-    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList(InBandByteStreamManager.NAMESPACE));
+    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList(Socks5ByteStreamManager.NAMESPACE, InBandByteStreamManager.NAMESPACE));
 
     private final Map<String, ProfileManager> profileManagers = new ConcurrentHashMap<>();
 
@@ -76,14 +76,6 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             public void handle(IQ iq, StreamInitiation streamInitiation) {
                 FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
                 fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), StreamInitiationManager.this);
-            }
-        });
-
-        InBandByteStreamManager inBandByteStreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
-        inBandByteStreamManager.addByteStreamListener(new ByteStreamListener() {
-            @Override
-            public void byteStreamRequested(ByteStreamEvent e) {
-
             }
         });
 
@@ -149,7 +141,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     public OutputStream initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) throws XmppException, IOException {
 
         // Create a random id for the stream session.
-        String id = UUID.randomUUID().toString();
+        String sessionId = UUID.randomUUID().toString();
 
         // Offer stream methods.
         DataForm dataForm = new DataForm(DataForm.Type.FORM);
@@ -160,23 +152,27 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         dataForm.getFields().add(field);
 
         // Offer the file to the recipient and wait until it's accepted.
-        IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(id, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
+        IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
 
         // The recipient must response with a stream initiation.
         StreamInitiation streamInitiation = result.getExtension(StreamInitiation.class);
 
         FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
+        // Get the stream method which has been chosen by the recipient.
         String streamMethod = featureNegotiation.getDataForm().findField(STREAM_METHOD).getValues().get(0);
 
+        ByteStreamSession byteStreamSession;
         // Choose the stream method to be used based on the recipient's choice.
         if (streamMethod.equals(InBandByteStreamManager.NAMESPACE)) {
             InBandByteStreamManager inBandBytestreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
-            // Create the byte stream and open it.
-            IbbSession byteStreamSession = inBandBytestreamManager.createInBandByteStreamSession(receiver, 4096, id);
-            byteStreamSession.open();
-            return byteStreamSession.getOutputStream();
+            byteStreamSession = inBandBytestreamManager.initiateSession(receiver, sessionId, 4096);
+        } else if (streamMethod.equals(Socks5ByteStreamManager.NAMESPACE)) {
+            Socks5ByteStreamManager socks5ByteStreamManager = xmppSession.getExtensionManager(Socks5ByteStreamManager.class);
+            byteStreamSession = socks5ByteStreamManager.initiateSession(receiver, sessionId, socks5ByteStreamManager.discoverProxies());
+        } else {
+            throw new IOException("Receiver returned unsupported stream method.");
         }
-        return null;
+        return byteStreamSession.getOutputStream();
     }
 
     @Override

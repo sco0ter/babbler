@@ -38,6 +38,7 @@ import org.xmpp.extension.bob.Data;
 import org.xmpp.extension.bytestreams.ibb.Close;
 import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
 import org.xmpp.extension.bytestreams.ibb.Open;
+import org.xmpp.extension.bytestreams.s5b.Socks5ByteStream;
 import org.xmpp.extension.caps.EntityCapabilities;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.carbons.*;
@@ -240,6 +241,9 @@ public abstract class XmppContext {
             // XEP-0060: Publish-Subscribe
             registerExtension(PubSub.class);
             registerManager(PubSubManager.class);
+
+            // XEP-0065: SOCKS5 Bytestreams
+            registerExtension(Socks5ByteStream.class);
 
             // XEP-0066: Out of Band Data
             registerExtension(OobIQ.class, OobX.class);

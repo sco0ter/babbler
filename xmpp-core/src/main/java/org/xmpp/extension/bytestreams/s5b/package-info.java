@@ -26,9 +26,14 @@
  * Provides classes for <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/bytestreams", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.bytestreams.socks5;
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
+@XmlSchema(namespace = "http://jabber.org/protocol/bytestreams", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.bytestreams.s5b;
+
+import org.xmpp.Jid;
+import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

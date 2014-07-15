@@ -22,35 +22,41 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.bytestreams.ibb;
+package org.xmpp.extension.bytestreams.s5b;
 
 import org.xmpp.XmppSession;
 import org.xmpp.extension.bytestreams.ByteStreamEvent;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.stanza.client.IQ;
 
+import java.util.List;
+
 /**
  * @author Christian Schudt
  */
-final class IbbEvent extends ByteStreamEvent {
+final class S5bEvent extends ByteStreamEvent {
 
     private final XmppSession xmppSession;
 
     private final IQ iq;
 
-    private final Open open;
+    private final List<StreamHost> streamHosts;
 
-    public IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, Open open) {
+    public S5bEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, List<StreamHost> streamHosts) {
         super(source, sessionId);
         this.xmppSession = xmppSession;
         this.iq = iq;
-        this.open = open;
+        this.streamHosts = streamHosts;
     }
 
     @Override
     public ByteStreamSession accept() {
-        xmppSession.send(iq.createResult());
-        return xmppSession.getExtensionManager(InBandByteStreamManager.class).createSession(iq.getFrom(), open.getSessionId(), open.getBlockSize());
+        S5bSession s5bSession = xmppSession.getExtensionManager(Socks5ByteStreamManager.class).createS5bSession(iq.getFrom(), iq.getTo(), getSessionId(), streamHosts);
+        // 6.3.3 Target Acknowledges Bytestream
+        IQ result = iq.createResult();
+        result.setExtension(new Socks5ByteStream(s5bSession.getStreamHost()));
+        xmppSession.send(iq);
+        return s5bSession;
     }
 
     @Override

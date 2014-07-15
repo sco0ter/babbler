@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.bytestreams.socks5;
+package org.xmpp.extension.bytestreams.s5b;
 
 import org.xmpp.Jid;
 
@@ -31,8 +31,41 @@ import javax.xml.bind.annotation.XmlAttribute;
 /**
  * @author Christian Schudt
  */
-public class StreamHostUsed {
+public final class StreamHost {
 
     @XmlAttribute(name = "jid")
     private Jid jid;
+
+    @XmlAttribute(name = "host")
+    private String host;
+
+    @XmlAttribute(name = "port")
+    private int port = 1080;
+
+    /**
+     * Gets the IP address or DNS domain name of the StreamHost for SOCKS5 communication over TCP.
+     *
+     * @return The host.
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * Gets the JabberID of the StreamHost for communication over XMPP.
+     *
+     * @return The JID.
+     */
+    public Jid getJid() {
+        return jid;
+    }
+
+    /**
+     * Get the port on which to connect for SOCKS5 communication over TCP.
+     *
+     * @return The port.
+     */
+    public int getPort() {
+        return port;
+    }
 }

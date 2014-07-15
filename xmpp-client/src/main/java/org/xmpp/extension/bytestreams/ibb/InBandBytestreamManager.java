@@ -25,6 +25,7 @@
 package org.xmpp.extension.bytestreams.ibb;
 
 import org.xmpp.Jid;
+import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.bytestreams.ByteStreamListener;
@@ -130,15 +131,37 @@ public class InBandByteStreamManager extends ExtensionManager {
         }
         return ibbSession;
     }
-
-    public IbbSession createInBandByteStreamSession(Jid jid, int blockSize, final String sessionId) {
-        IbbSession ibbSession = new IbbSession(xmppSession, jid, blockSize, sessionId);
+    /**
+     * Creates an in-band byte stream session.
+     *
+     * @param receiver  The receiver.
+     * @param sessionId The session id.
+     * @param blockSize The block size.
+     * @return The in-band byte stream session.
+     */
+    public ByteStreamSession createSession(Jid receiver, final String sessionId, int blockSize) {
+        IbbSession ibbSession = new IbbSession(sessionId, xmppSession, receiver, blockSize);
+        ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
+        return ibbSession;
+    }
+    /**
+     * Initiates a in-band byte stream session.
+     *
+     * @param receiver  The receiver.
+     * @param sessionId The session id.
+     * @param blockSize The block size.
+     * @return The in-band byte stream session.
+     * @throws XmppException
+     */
+    public ByteStreamSession initiateSession(Jid receiver, final String sessionId, int blockSize) throws XmppException {
+        IbbSession ibbSession = new IbbSession(sessionId, xmppSession, receiver, blockSize);
+        ibbSession.open();
         ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;
     }
 
     /**
-     * Adds a IBB listener, which allows to listen for incoming IBB requests.
+     * Adds a byte stream listener, which allows to listen for incoming byte stream requests.
      *
      * @param byteStreamListener The listener.
      * @see #removeByteStreamListener(org.xmpp.extension.bytestreams.ByteStreamListener)
@@ -148,7 +171,7 @@ public class InBandByteStreamManager extends ExtensionManager {
     }
 
     /**
-     * Removes a previously added IBB listener.
+     * Removes a previously added byte stream listener.
      *
      * @param ibbListener The listener.
      * @see #addByteStreamListener(org.xmpp.extension.bytestreams.ByteStreamListener)

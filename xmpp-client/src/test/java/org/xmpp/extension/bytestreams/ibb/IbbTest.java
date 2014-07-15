@@ -26,10 +26,7 @@ package org.xmpp.extension.bytestreams.ibb;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.BaseTest;
-import org.xmpp.MockServer;
-import org.xmpp.TestXmppSession;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.bytestreams.ByteStreamEvent;
 import org.xmpp.extension.bytestreams.ByteStreamListener;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
@@ -82,10 +79,13 @@ public class IbbTest extends BaseTest {
                             @Override
                             public void run() {
 
-                                InputStream inputStream = ibbSession.getInputStream();
-                                int b;
-                                File file = new File("test1.png");
+                                InputStream inputStream = null;
                                 try {
+                                    inputStream = ibbSession.getInputStream();
+
+                                    int b;
+                                    File file = new File("test1.png");
+
 
                                     FileOutputStream outputStream = new FileOutputStream(file);
 
@@ -117,10 +117,9 @@ public class IbbTest extends BaseTest {
                     }
                 });
                 InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getExtensionManager(InBandByteStreamManager.class);
-                IbbSession ibbSession = null;
+                ByteStreamSession ibbSession = null;
                 try {
-                    ibbSession = inBandBytestreamManager1.createInBandByteStreamSession(JULIET, 4096, "sid");
-                    ibbSession.open();
+                    ibbSession = inBandBytestreamManager1.initiateSession(JULIET, "sid", 4096);
                     InputStream inputStream = new FileInputStream(new File("xmpp.png"));
                     OutputStream os = ibbSession.getOutputStream();
 
@@ -134,6 +133,8 @@ public class IbbTest extends BaseTest {
                     os.close();
 
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (XmppException e) {
                     e.printStackTrace();
                 }
             }

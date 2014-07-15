@@ -22,42 +22,24 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.bytestreams.socks5;
+package org.xmpp.extension.bytestreams.s5b;
+
+import org.xmpp.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "query")
-public class Query {
+final class StreamHostUsed {
 
-    @XmlElement(name = "streamhost")
-    private List<StreamHost> streamHosts;
+    @XmlAttribute(name = "jid")
+    Jid jid;
 
-    @XmlElement(name = "streamhost-used")
-    private StreamHostUsed streamHostUsed;
+    private StreamHostUsed() {
+    }
 
-    @XmlAttribute(name = "dstaddr")
-    private String dstaddr;
-
-    @XmlElement(name = "activate")
-    private String activate;
-
-    @XmlAttribute(name = "mode")
-    private Mode mode;
-
-    @XmlAttribute(name = "sid")
-    private String sid;
-
-    public enum Mode {
-        @XmlEnumValue("tcp")
-        TCP,
-        @XmlEnumValue("udp")
-        UDP
+    StreamHostUsed(Jid jid) {
+        this.jid = jid;
     }
 }

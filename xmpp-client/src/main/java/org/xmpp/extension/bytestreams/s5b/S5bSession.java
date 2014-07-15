@@ -22,39 +22,47 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.bytestreams.ibb;
+package org.xmpp.extension.bytestreams.s5b;
 
-import org.xmpp.XmppSession;
-import org.xmpp.extension.bytestreams.ByteStreamEvent;
+import org.xmpp.Jid;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
-import org.xmpp.stanza.client.IQ;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 
 /**
  * @author Christian Schudt
  */
-final class IbbEvent extends ByteStreamEvent {
+public final class S5bSession extends ByteStreamSession {
 
-    private final XmppSession xmppSession;
+    private final Jid streamHost;
 
-    private final IQ iq;
+    private final Socket socket;
 
-    private final Open open;
-
-    public IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, Open open) {
-        super(source, sessionId);
-        this.xmppSession = xmppSession;
-        this.iq = iq;
-        this.open = open;
+    S5bSession(String sessionId, Socket socket, Jid streamHost) {
+        super(sessionId);
+        this.socket = socket;
+        this.streamHost = streamHost;
     }
 
     @Override
-    public ByteStreamSession accept() {
-        xmppSession.send(iq.createResult());
-        return xmppSession.getExtensionManager(InBandByteStreamManager.class).createSession(iq.getFrom(), open.getSessionId(), open.getBlockSize());
+    public OutputStream getOutputStream() throws IOException {
+        return socket.getOutputStream();
     }
 
     @Override
-    public void reject() {
+    public InputStream getInputStream() throws IOException {
+        return socket.getInputStream();
+    }
 
+    @Override
+    public void close() throws IOException {
+        socket.close();
+    }
+
+    public Jid getStreamHost() {
+        return streamHost;
     }
 }

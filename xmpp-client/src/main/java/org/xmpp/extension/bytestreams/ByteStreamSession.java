@@ -32,9 +32,36 @@ import java.io.OutputStream;
 /**
  * @author Christian Schudt
  */
-public interface ByteStreamSession extends Closeable {
+public abstract class ByteStreamSession implements Closeable {
 
-    OutputStream getOutputStream();
+    private final String sessionId;
 
-    InputStream getInputStream();
+    public ByteStreamSession(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    /**
+     * Gets the output stream.
+     *
+     * @return The output stream.
+     * @throws IOException If an I/O error occurs when creating the output stream or the session is closed.
+     */
+    public abstract OutputStream getOutputStream() throws IOException;
+
+    /**
+     * Gets the input stream.
+     *
+     * @return The input stream.
+     * @throws IOException If an I/O error occurs when creating the input stream or the session is closed.
+     */
+    public abstract InputStream getInputStream() throws IOException;
+
+    /**
+     * Gets the session id for this byte stream session.
+     *
+     * @return The session id.
+     */
+    public final String getSessionId() {
+        return sessionId;
+    }
 }

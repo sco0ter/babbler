@@ -33,20 +33,17 @@ import org.xmpp.stanza.client.IQ;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
 
 /**
  * @author Christian Schudt
  */
-public final class IbbSession implements ByteStreamSession {
+public final class IbbSession extends ByteStreamSession {
 
     private final IbbOutputStream outputStream;
 
     private final IbbInputStream inputStream;
 
     private final Jid jid;
-
-    private final String sessionId;
 
     private final int blockSize;
 
@@ -58,15 +55,11 @@ public final class IbbSession implements ByteStreamSession {
 
     private volatile boolean closed;
 
-    IbbSession(XmppSession xmppSession, final Jid jid, int blockSize) {
-        this(xmppSession, jid, blockSize, UUID.randomUUID().toString());
-    }
-
-    IbbSession(XmppSession xmppSession, final Jid jid, int blockSize, final String sessionId) {
+    IbbSession(String sessionId, XmppSession xmppSession, Jid jid, int blockSize) {
+        super(sessionId);
         this.outputStream = new IbbOutputStream(this, blockSize);
         this.inputStream = new IbbInputStream(this);
         this.jid = jid;
-        this.sessionId = sessionId;
         this.xmppSession = xmppSession;
         this.blockSize = blockSize;
     }
@@ -80,28 +73,30 @@ public final class IbbSession implements ByteStreamSession {
         }
     }
 
-    public void open() throws IOException {
-        IQ iq = new IQ(IQ.Type.SET, new Open(blockSize, sessionId));
+    public void open() throws XmppException {
+        IQ iq = new IQ(IQ.Type.SET, new Open(blockSize, getSessionId()));
         iq.setTo(jid);
-        try {
-            xmppSession.query(iq);
-        } catch (XmppException e) {
-            throw new IOException(e);
-        }
+        xmppSession.query(iq);
     }
 
     @Override
-    public OutputStream getOutputStream() {
+    public OutputStream getOutputStream() throws IOException {
+        if (closed) {
+            throw new IOException("IBB session is closed.");
+        }
         return outputStream;
     }
 
     @Override
-    public InputStream getInputStream() {
+    public InputStream getInputStream() throws IOException {
+        if (closed) {
+            throw new IOException("IBB session is closed.");
+        }
         return inputStream;
     }
 
     synchronized void send(byte[] bytes) throws XmppException {
-        xmppSession.query(new IQ(jid, IQ.Type.SET, new Data(bytes, sessionId, outgoingSequence)));
+        xmppSession.query(new IQ(jid, IQ.Type.SET, new Data(bytes, getSessionId(), outgoingSequence)));
         // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2, and so on. The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.
         if (++outgoingSequence > 65535) {
             outgoingSequence = 0;
@@ -115,7 +110,7 @@ public final class IbbSession implements ByteStreamSession {
             inputStream.close();
             outputStream.close();
             try {
-                xmppSession.query(new IQ(jid, IQ.Type.SET, new Close(sessionId)));
+                xmppSession.query(new IQ(jid, IQ.Type.SET, new Close(getSessionId())));
             } catch (XmppException e) {
                 throw new IOException(e);
             }
@@ -128,9 +123,5 @@ public final class IbbSession implements ByteStreamSession {
             inputStream.close();
             outputStream.close();
         }
-    }
-
-    public String getSessionId() {
-        return sessionId;
     }
 }

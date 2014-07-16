@@ -24,6 +24,7 @@
 
 package org.xmpp.extension.bytestreams;
 
+import java.io.IOException;
 import java.util.EventObject;
 
 /**
@@ -44,11 +45,25 @@ public abstract class ByteStreamEvent extends EventObject {
         this.sessionId = sessionId;
     }
 
+    /**
+     * Gets the session id.
+     *
+     * @return The session id.
+     */
     public final String getSessionId() {
         return sessionId;
     }
 
-    public abstract ByteStreamSession accept();
+    /**
+     * Accepts the session.
+     *
+     * @return The byte stream session.
+     * @throws IOException
+     */
+    public abstract ByteStreamSession accept() throws IOException;
 
+    /**
+     * Rejects the session.
+     */
     public abstract void reject();
 }

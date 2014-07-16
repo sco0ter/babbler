@@ -32,6 +32,7 @@ import org.xmpp.extension.bytestreams.ByteStreamEvent;
 import org.xmpp.extension.bytestreams.ByteStreamListener;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
+import org.xmpp.extension.bytestreams.s5b.Socks5ByteStream;
 import org.xmpp.extension.bytestreams.s5b.Socks5ByteStreamManager;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.featureneg.FeatureNegotiation;
@@ -63,7 +64,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
     private static final String STREAM_METHOD = "stream-method";
 
-    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList(Socks5ByteStreamManager.NAMESPACE, InBandByteStreamManager.NAMESPACE));
+    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStreamManager.NAMESPACE));
 
     private final Map<String, ProfileManager> profileManagers = new ConcurrentHashMap<>();
 
@@ -166,9 +167,9 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         if (streamMethod.equals(InBandByteStreamManager.NAMESPACE)) {
             InBandByteStreamManager inBandBytestreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
             byteStreamSession = inBandBytestreamManager.initiateSession(receiver, sessionId, 4096);
-        } else if (streamMethod.equals(Socks5ByteStreamManager.NAMESPACE)) {
+        } else if (streamMethod.equals(Socks5ByteStream.NAMESPACE)) {
             Socks5ByteStreamManager socks5ByteStreamManager = xmppSession.getExtensionManager(Socks5ByteStreamManager.class);
-            byteStreamSession = socks5ByteStreamManager.initiateSession(receiver, sessionId, socks5ByteStreamManager.discoverProxies());
+            byteStreamSession = socks5ByteStreamManager.initiateSession(receiver, sessionId);
         } else {
             throw new IOException("Receiver returned unsupported stream method.");
         }
@@ -195,6 +196,8 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                     try {
                         byteStreamSessions[0] = e.accept();
                         byteStreamOpened.signalAll();
+                    } catch (IOException e1) {
+                        e1.printStackTrace(); // TODO
                     } finally {
                         inBandBytestreamManager.removeByteStreamListener(this);
                         lock.unlock();

@@ -35,7 +35,7 @@ import java.net.Socket;
 /**
  * @author Christian Schudt
  */
-public final class S5bSession extends ByteStreamSession {
+final class S5bSession extends ByteStreamSession {
 
     private final Jid streamHost;
 
@@ -62,6 +62,11 @@ public final class S5bSession extends ByteStreamSession {
         socket.close();
     }
 
+    /**
+     * Gets the used stream host for this session.
+     *
+     * @return The session.
+     */
     public Jid getStreamHost() {
         return streamHost;
     }

@@ -37,10 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/bytestreams} namespace.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "query")
 public final class Socks5ByteStream {
+
+    public static final String NAMESPACE = "http://jabber.org/protocol/bytestreams";
 
     @XmlElement(name = "streamhost")
     private List<StreamHost> streamHosts = new ArrayList<>();
@@ -60,18 +64,31 @@ public final class Socks5ByteStream {
     @XmlAttribute(name = "sid")
     private String sid;
 
+    /**
+     * Creates an empty {@code <streamhost/>} element.
+     */
     public Socks5ByteStream() {
     }
 
-    public Socks5ByteStream(Jid streamHostUsed) {
-        this.streamHostUsed = new StreamHostUsed(streamHostUsed);
-    }
-
-    public Socks5ByteStream(String sessionId, List<StreamHost> streamHosts) {
+    /**
+     * Creates a {@code <streamhost/>} element with an {@code <streamhost/>} child elements.
+     *
+     * @param sessionId   The session id.
+     * @param streamHosts The stream hosts.
+     */
+    public Socks5ByteStream(String sessionId, List<StreamHost> streamHosts, String dstaddr) {
         this.sid = sessionId;
         this.streamHosts.addAll(streamHosts);
+        this.dstaddr = dstaddr;
     }
 
+    /**
+     * Creates a {@code <streamhost/>} element with an {@code <activate/>} child element.
+     *
+     * @param sessionId The session id.
+     * @param jid       The JID.
+     * @return The query element.
+     */
     public static Socks5ByteStream activate(String sessionId, Jid jid) {
         Socks5ByteStream socks5ByteStream = new Socks5ByteStream();
         socks5ByteStream.sid = sessionId;
@@ -79,12 +96,17 @@ public final class Socks5ByteStream {
         return socks5ByteStream;
     }
 
+    /**
+     * Creates a {@code <streamhost/>} element with an {@code <streamhost-used/>} child element.
+     *
+     * @param jid The JID.
+     * @return The query element.
+     */
     public static Socks5ByteStream streamHostUsed(Jid jid) {
         Socks5ByteStream socks5ByteStream = new Socks5ByteStream();
         socks5ByteStream.streamHostUsed = new StreamHostUsed(jid);
         return socks5ByteStream;
     }
-
 
     /**
      * Creates the hexadecimal-encoded SHA-1 hash for usage in SOCKS5 negotiation.
@@ -95,7 +117,7 @@ public final class Socks5ByteStream {
      * @return The hexadecimal-encoded SHA-1 hash.
      * @see <a href="http://xmpp.org/extensions/xep-0065.html#mediated-proto-establish">6.3.2 Target Establishes SOCKS5 Connection with Proxy</a>
      */
-    static String hash(String sessionId, Jid requesterJid, Jid targetJid) {
+    public static String hash(String sessionId, Jid requesterJid, Jid targetJid) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
             messageDigest.update(sessionId.getBytes());
@@ -107,14 +129,29 @@ public final class Socks5ByteStream {
         }
     }
 
+    /**
+     * Gets the stream hosts.
+     *
+     * @return The stream hosts.
+     */
     public List<StreamHost> getStreamHosts() {
         return streamHosts;
     }
 
+    /**
+     * Gets the session id.
+     *
+     * @return The session id.
+     */
     public String getSessionId() {
         return sid;
     }
 
+    /**
+     * Gets the used stream host.
+     *
+     * @return The used stream host.
+     */
     public Jid getStreamHostUsed() {
         return streamHostUsed != null ? streamHostUsed.jid : null;
     }

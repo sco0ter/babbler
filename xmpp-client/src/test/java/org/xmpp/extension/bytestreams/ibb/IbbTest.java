@@ -73,47 +73,51 @@ public class IbbTest extends BaseTest {
                     public void byteStreamRequested(final ByteStreamEvent e) {
                         final ByteStreamSession ibbSession;
 
-                        ibbSession = e.accept();
-
-                        new Thread() {
-                            @Override
-                            public void run() {
-
-                                InputStream inputStream = null;
-                                try {
-                                    inputStream = ibbSession.getInputStream();
-
-                                    int b;
-                                    File file = new File("test1.png");
+                        try {
+                            ibbSession = e.accept();
 
 
-                                    FileOutputStream outputStream = new FileOutputStream(file);
+                            new Thread() {
+                                @Override
+                                public void run() {
 
+                                    InputStream inputStream = null;
                                     try {
-                                        while ((b = inputStream.read()) > -1) {
-                                            outputStream.write(b);
-                                        }
-                                        outputStream.flush();
-                                        outputStream.close();
-                                        inputStream.close();
+                                        inputStream = ibbSession.getInputStream();
+
+                                        int b;
+                                        File file = new File("test1.png");
+
+
+                                        FileOutputStream outputStream = new FileOutputStream(file);
 
                                         try {
-                                            lock.lock();
-                                            condition.signal();
-                                        } finally {
-                                            lock.unlock();
-                                        }
+                                            while ((b = inputStream.read()) > -1) {
+                                                outputStream.write(b);
+                                            }
+                                            outputStream.flush();
+                                            outputStream.close();
+                                            inputStream.close();
 
+                                            try {
+                                                lock.lock();
+                                                condition.signal();
+                                            } finally {
+                                                lock.unlock();
+                                            }
+
+                                        } catch (IOException e1) {
+                                            e1.printStackTrace();
+                                        }
                                     } catch (IOException e1) {
                                         e1.printStackTrace();
                                     }
-                                } catch (IOException e1) {
-                                    e1.printStackTrace();
                                 }
-                            }
 
-                        }.start();
-
+                            }.start();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
                     }
                 });
                 InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getExtensionManager(InBandByteStreamManager.class);

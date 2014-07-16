@@ -27,7 +27,7 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/bytestreams", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.bytestreams.s5b;
+@XmlSchema(namespace = Socks5ByteStream.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.bytestreams.s5b;
 
 import org.xmpp.Jid;
 import org.xmpp.JidAdapter;

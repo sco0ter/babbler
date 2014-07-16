@@ -29,6 +29,8 @@ import org.xmpp.Jid;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
+ * The {@code <streamhost/>} element.
+ *
  * @author Christian Schudt
  */
 public final class StreamHost {
@@ -41,6 +43,22 @@ public final class StreamHost {
 
     @XmlAttribute(name = "port")
     private int port = 1080;
+
+    private StreamHost() {
+    }
+
+    /**
+     * Creates a {@code <streamhost/>} element.
+     *
+     * @param jid  The JID.
+     * @param host The host address.
+     * @param port The port.
+     */
+    public StreamHost(Jid jid, String host, int port) {
+        this.jid = jid;
+        this.host = host;
+        this.port = port;
+    }
 
     /**
      * Gets the IP address or DNS domain name of the StreamHost for SOCKS5 communication over TCP.

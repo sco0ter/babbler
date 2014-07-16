@@ -27,10 +27,8 @@ package org.xmpp.extension.bytestreams.s5b;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
-import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.bytestreams.ByteStreamListener;
+import org.xmpp.extension.bytestreams.ByteStreamManager;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
-import org.xmpp.extension.bytestreams.ibb.IbbSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.disco.info.InfoNode;
@@ -38,37 +36,30 @@ import org.xmpp.extension.disco.items.Item;
 import org.xmpp.extension.disco.items.ItemNode;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
+import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.client.IQ;
+import org.xmpp.stanza.errors.BadRequest;
 
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Christian Schudt
  */
-public class Socks5ByteStreamManager extends ExtensionManager {
-
-    public static final String NAMESPACE = "http://jabber.org/protocol/bytestreams";
-
-    private static final Logger logger = Logger.getLogger(Socks5ByteStreamManager.class.getName());
-
-    final Set<ByteStreamListener> byteStreamListeners = new CopyOnWriteArraySet<>();
-
-    private final Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
+public final class Socks5ByteStreamManager extends ByteStreamManager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
+    private final LocalSocks5Server localSocks5Server;
+
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
-        super(xmppSession, NAMESPACE);
+        super(xmppSession, Socks5ByteStream.NAMESPACE);
         this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        this.localSocks5Server = new LocalSocks5Server();
 
         xmppSession.addIQListener(new IQListener() {
             @Override
@@ -78,14 +69,13 @@ public class Socks5ByteStreamManager extends ExtensionManager {
 
                     Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
                     if (socks5ByteStream != null) {
-
-                        for (ByteStreamListener byteStreamListener : byteStreamListeners) {
-                            try {
-                                byteStreamListener.byteStreamRequested(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
-                            } catch (Exception exc) {
-                                logger.log(Level.WARNING, exc.getMessage(), exc);
-                            }
+                        if (socks5ByteStream.getSessionId() == null) {
+                            // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
+                            xmppSession.send(iq.createError(new StanzaError(new BadRequest())));
+                        } else {
+                            notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
                         }
+                        e.consume();
                     }
                 }
             }
@@ -93,104 +83,13 @@ public class Socks5ByteStreamManager extends ExtensionManager {
         setEnabled(true);
     }
 
-    /**
-     * Establishes the SOCKS5 connection.
-     *
-     * @param socket    The socket.
-     * @param sessionId The session id.
-     * @param requester The requester.
-     * @param target    The target.
-     * @throws IOException If the SOCKS5 connection could not be established.
-     */
-    private static void establish(Socket socket, String sessionId, Jid requester, Jid target) throws IOException {
-
-        DataInputStream in = new DataInputStream(socket.getInputStream());
-        OutputStream out = socket.getOutputStream();
-
-        /*
-            The client connects to the server, and sends a version
-            identifier/method selection message:
-
-                   +----+----------+----------+
-                   |VER | NMETHODS | METHODS  |
-                   +----+----------+----------+
-                   | 1  |    1     | 1 to 255 |
-                   +----+----------+----------+
-         */
-
-        out.write(new byte[]{(byte) 0x05, (byte) 0x01, (byte) 0x00}); // 0x00 == NO AUTHENTICATION REQUIRED
-        out.flush();
-
-        /*
-            The server selects from one of the methods given in METHODS, and
-            sends a METHOD selection message:
-
-                         +----+--------+
-                         |VER | METHOD |
-                         +----+--------+
-                         | 1  |   1    |
-                         +----+--------+
-         */
-        byte[] response = new byte[2];
-        in.readFully(response);
-
-        // If the server supports version 5 and has accepted the no-authentication method
-        if (response[0] == (byte) 0x05 && response[1] == (byte) 0x00) {
-
-            /*
-                The SOCKS request is formed as follows:
-
-                  +----+-----+-------+------+----------+----------+
-                  |VER | CMD |  RSV  | ATYP | DST.ADDR | DST.PORT |
-                  +----+-----+-------+------+----------+----------+
-                  | 1  |  1  | X'00' |  1   | Variable |    2     |
-                  +----+-----+-------+------+----------+----------+
-
-             */
-
-            byte[] dstAddr = Socks5ByteStream.hash(sessionId, requester, target).getBytes();
-            byte[] dstPort = new byte[]{0x00, 0x00}; // The port MUST be 0 (zero).
-            byte[] requestDetails = new byte[]{
-                    (byte) 0x05, // protocol version: X'05'
-                    (byte) 0x01, // CMD: CONNECT X'01'
-                    (byte) 0x00, // RESERVED
-                    (byte) 0x03, // ATYP, Hardcoded to 3 (DOMAINNAME) in this usage
-                    (byte) dstAddr.length // The first octet of the address field contains the number of octets of name that follow
-            };
-
-            out.write(requestDetails);
-            out.write(dstAddr); // DST.ADDR
-            out.write(dstPort); // DST.PORT
-            out.flush();
-
-
-            /*
-                The server evaluates the request, and returns a reply formed as follows:
-
-                    +----+-----+-------+------+----------+----------+
-                    |VER | REP |  RSV  | ATYP | BND.ADDR | BND.PORT |
-                    +----+-----+-------+------+----------+----------+
-                    | 1  |  1  | X'00' |  1   | Variable |    2     |
-                    +----+-----+-------+------+----------+----------+
-             */
-
-            byte[] halfReply = new byte[5];
-            in.readFully(halfReply, 0, 5);
-
-            if (halfReply[1] == 0) {  // X'00' succeeded
-                byte[] hash = new byte[halfReply[4]];
-                in.readFully(hash);
-                byte[] bndPort = new byte[2];
-                in.readFully(bndPort);
-                // When replying to the Target in accordance with Section 6 of RFC 1928, the Proxy MUST set the BND.ADDR and BND.PORT to the DST.ADDR and DST.PORT values provided by the client in the connection request.
-                if (!(Arrays.equals(dstAddr, hash) && Arrays.equals(dstPort, bndPort))) {
-                    throw new IOException("Verification failed.");
-                }
-            } else {
-                throw new IOException("SOCKS5 server returned error code " + halfReply[1]);
-            }
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (enabled) {
+            localSocks5Server.start();
         } else {
-            throw new IOException("Unable to connect to SOCKS5 server.");
+            localSocks5Server.stop();
         }
     }
 
@@ -205,7 +104,7 @@ public class Socks5ByteStreamManager extends ExtensionManager {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null);
         for (Item item : itemNode.getItems()) {
             InfoNode infoNode = serviceDiscoveryManager.discoverInformation(item.getJid());
-            if (infoNode.getFeatures().contains(new Feature(NAMESPACE))) {
+            if (infoNode.getFeatures().contains(new Feature(Socks5ByteStream.NAMESPACE))) {
                 IQ result = xmppSession.query(new IQ(item.getJid(), IQ.Type.GET, new Socks5ByteStream()));
                 Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);
                 if (socks5ByteStream != null) {
@@ -216,95 +115,105 @@ public class Socks5ByteStreamManager extends ExtensionManager {
         return Collections.emptyList();
     }
 
-    public StreamHost connect(List<StreamHost> streamHosts) {
-        StreamHost streamHostUsed = null;
-        for (StreamHost streamHost : streamHosts) {
-            try {
-                Socket socket = new Socket();
-                socket.connect(new InetSocketAddress(streamHost.getHost(), streamHost.getPort()));
-                establish(socket, "1234", Jid.valueOf("juliet@example.net"), Jid.valueOf("romeo@example.net"));
-                streamHostUsed = streamHost;
-                break;
-            } catch (IOException e) {
-                // ignore, try next.
-            }
-        }
-        return streamHostUsed;
-    }
-
     /**
      * Initiates a SOCKS5 session with a target.
      *
-     * @param target      The target.
-     * @param sessionId   The session id.
-     * @param streamHosts The stream hosts.
+     * @param target    The target.
+     * @param sessionId The session id.
      * @return The SOCKS5 byte stream session.
      * @throws XmppException
      * @throws IOException
      */
-    public ByteStreamSession initiateSession(Jid target, String sessionId, List<StreamHost> streamHosts) throws XmppException, IOException {
-        // 6.3.1 Requester Initiates S5B Negotiation
-        IQ result = xmppSession.query(new IQ(target, IQ.Type.SET, new Socks5ByteStream(sessionId, streamHosts)));
+    public ByteStreamSession initiateSession(Jid target, String sessionId) throws XmppException, IOException {
 
-        // 6.3.3 Target Acknowledges Bytestream
-        Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);
-        StreamHost usedStreamHost = null;
-        for (StreamHost streamHost : streamHosts) {
-            if (socks5ByteStream.getStreamHostUsed() != null && socks5ByteStream.getStreamHostUsed().equals(streamHost.getJid())) {
-                usedStreamHost = streamHost;
-                break;
+        List<StreamHost> streamHosts = new ArrayList<>();
+
+        localSocks5Server.start();
+
+        Jid requester = xmppSession.getConnectedResource();
+
+        // First add the local SOCKS5 server to the list of stream hosts.
+        streamHosts.add(new StreamHost(requester, localSocks5Server.getAddress(), localSocks5Server.getPort()));
+
+        // Then discover proxies as alternative stream hosts.
+        XmppException proxyDiscoveryException = null;
+        try {
+            streamHosts.addAll(discoverProxies());
+        } catch (XmppException e) {
+            // If no proxies are found, ignore the exception.
+            proxyDiscoveryException = e;
+        }
+
+        if (streamHosts.isEmpty()) {
+            throw new IOException("No stream hosts found.", proxyDiscoveryException);
+        }
+
+        // Create the hash, which will identify the socket connection.
+        String hash = Socks5ByteStream.hash(sessionId, requester, target);
+        localSocks5Server.allowedAddresses.add(hash);
+
+        try {
+            // 5.3.1 Requester Initiates S5B Negotiation
+            // 6.3.1 Requester Initiates S5B Negotiation
+            IQ result = xmppSession.query(new IQ(target, IQ.Type.SET, new Socks5ByteStream(sessionId, streamHosts, hash)));
+
+            // 5.3.3 Target Acknowledges Bytestream
+            // 6.3.3 Target Acknowledges Bytestream
+            Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);
+            StreamHost usedStreamHost = null;
+            for (StreamHost streamHost : streamHosts) {
+                if (socks5ByteStream.getStreamHostUsed() != null && socks5ByteStream.getStreamHostUsed().equals(streamHost.getJid())) {
+                    usedStreamHost = streamHost;
+                    break;
+                }
             }
+
+            if (usedStreamHost == null) {
+                throw new IOException("Target did not respond with a stream host.");
+            }
+
+            Socket socket;
+            if (!usedStreamHost.getJid().equals(requester)) {
+                // 6.3.4 Requester Establishes SOCKS5 Connection with StreamHost
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(usedStreamHost.getHost(), usedStreamHost.getPort()));
+                Socks5Protocol.establishClientConnection(socket, sessionId, result.getTo(), target);
+
+                // 6.3.5 Activation of Bytestream
+                xmppSession.query(new IQ(usedStreamHost.getJid(), IQ.Type.SET, Socks5ByteStream.activate(sessionId, target)));
+            } else {
+                socket = localSocks5Server.getSocket(hash);
+            }
+            if (socket == null) {
+                throw new IOException("Not connected to stream host");
+            }
+            return new S5bSession(sessionId, socket, usedStreamHost.getJid());
+        } finally {
+            localSocks5Server.removeConnection(hash);
         }
-
-        if (usedStreamHost == null) {
-            throw new IllegalStateException("Target did not respond with a stream host.");
-        }
-
-        // 6.3.4 Requester Establishes SOCKS5 Connection with StreamHost
-        Socket socket = new Socket();
-        socket.connect(new InetSocketAddress(usedStreamHost.getHost(), usedStreamHost.getPort()));
-        establish(socket, sessionId, result.getTo(), target);
-
-        // 6.3.5 Activation of Bytestream
-        xmppSession.query(new IQ(usedStreamHost.getJid(), IQ.Type.SET, Socks5ByteStream.activate(sessionId, target)));
-
-        return new S5bSession(sessionId, socket, usedStreamHost.getJid());
     }
 
-    /**
-     * Adds a byte stream listener, which allows to listen for incoming byte stream requests.
-     *
-     * @param byteStreamListener The listener.
-     * @see #removeByteStreamListener(org.xmpp.extension.bytestreams.ByteStreamListener)
-     */
-    public void addByteStreamListener(ByteStreamListener byteStreamListener) {
-        byteStreamListeners.add(byteStreamListener);
-    }
-
-    /**
-     * Removes a previously added byte stream listener.
-     *
-     * @param ibbListener The listener.
-     * @see #addByteStreamListener(org.xmpp.extension.bytestreams.ByteStreamListener)
-     */
-    public void removeByteStreamListener(ByteStreamListener ibbListener) {
-        byteStreamListeners.remove(ibbListener);
-    }
-
-    public S5bSession createS5bSession(Jid requester, Jid target, String sessionId, List<StreamHost> streamHosts) {
+    static S5bSession createS5bSession(Jid requester, Jid target, String sessionId, List<StreamHost> streamHosts) throws IOException {
         Socket socketUsed = null;
         Jid streamHostUsed = null;
+        IOException ioException = null;
+        // If the Requester provides more than one StreamHost, the Target SHOULD try to connect to them in the order of the <streamhost/> children within the <query/> element.
         for (StreamHost streamHost : streamHosts) {
             try {
                 Socket socket = new Socket();
                 socket.connect(new InetSocketAddress(streamHost.getHost(), streamHost.getPort()));
-                establish(socket, sessionId, requester, target);
+                // If the Target is able to open a TCP socket on a StreamHost/Requester, it MUST use the SOCKS5 protocol to establish a SOCKS5 connection.
+                Socks5Protocol.establishClientConnection(socket, sessionId, requester, target);
                 socketUsed = socket;
                 streamHostUsed = streamHost.getJid();
                 break;
             } catch (IOException e) {
                 // ignore, try next.
+                ioException = e;
             }
+        }
+        if (streamHostUsed == null) {
+            throw new IOException("Unable to connect to any stream host.", ioException);
         }
         return new S5bSession(sessionId, socketUsed, streamHostUsed);
     }

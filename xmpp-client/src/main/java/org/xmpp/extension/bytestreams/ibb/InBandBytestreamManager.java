@@ -27,8 +27,8 @@ package org.xmpp.extension.bytestreams.ibb;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
-import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.bytestreams.ByteStreamListener;
+import org.xmpp.extension.bytestreams.ByteStreamManager;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * @author Christian Schudt
  */
-public class InBandByteStreamManager extends ExtensionManager {
+public class InBandByteStreamManager extends ByteStreamManager {
 
     public static final String NAMESPACE = "http://jabber.org/protocol/ibb";
 
@@ -70,10 +70,7 @@ public class InBandByteStreamManager extends ExtensionManager {
                     Data data = iq.getExtension(Data.class);
                     if (data != null) {
                         IbbSession ibbSession = getIbbSession(iq, data.getSessionId());
-                        if (ibbSession == null) {
-                            // 1. Because the session ID is unknown, the recipient returns an <item-not-found/> error with a type of 'cancel'.
-                            xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
-                        } else {
+                        if (ibbSession != null) {
                             if (ibbSession.dataReceived(data)) {
                                 xmppSession.send(iq.createResult());
                             } else {
@@ -87,14 +84,7 @@ public class InBandByteStreamManager extends ExtensionManager {
                         if (open != null) {
                             // Somebody wants to create a IBB session with me.
                             // Notify the listeners.
-                            for (ByteStreamListener byteStreamListener : byteStreamListeners) {
-                                try {
-                                    byteStreamListener.byteStreamRequested(new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, iq.getExtension(Open.class)));
-                                } catch (Exception exc) {
-                                    logger.log(Level.WARNING, exc.getMessage(), exc);
-                                }
-                            }
-                            xmppSession.send(iq.createResult());
+                            notifyByteStreamEvent(new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize()));
                             e.consume();
                         } else {
                             Close close = iq.getExtension(Close.class);
@@ -109,8 +99,6 @@ public class InBandByteStreamManager extends ExtensionManager {
                                     } finally {
                                         xmppSession.send(iq.createResult());
                                     }
-                                } else {
-                                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
                                 }
                                 e.consume();
                             }
@@ -131,6 +119,7 @@ public class InBandByteStreamManager extends ExtensionManager {
         }
         return ibbSession;
     }
+
     /**
      * Creates an in-band byte stream session.
      *
@@ -139,11 +128,12 @@ public class InBandByteStreamManager extends ExtensionManager {
      * @param blockSize The block size.
      * @return The in-band byte stream session.
      */
-    public ByteStreamSession createSession(Jid receiver, final String sessionId, int blockSize) {
+    public IbbSession createSession(Jid receiver, final String sessionId, int blockSize) {
         IbbSession ibbSession = new IbbSession(sessionId, xmppSession, receiver, blockSize);
         ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;
     }
+
     /**
      * Initiates a in-band byte stream session.
      *
@@ -154,29 +144,8 @@ public class InBandByteStreamManager extends ExtensionManager {
      * @throws XmppException
      */
     public ByteStreamSession initiateSession(Jid receiver, final String sessionId, int blockSize) throws XmppException {
-        IbbSession ibbSession = new IbbSession(sessionId, xmppSession, receiver, blockSize);
+        IbbSession ibbSession = createSession(receiver, sessionId, blockSize);
         ibbSession.open();
-        ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;
-    }
-
-    /**
-     * Adds a byte stream listener, which allows to listen for incoming byte stream requests.
-     *
-     * @param byteStreamListener The listener.
-     * @see #removeByteStreamListener(org.xmpp.extension.bytestreams.ByteStreamListener)
-     */
-    public void addByteStreamListener(ByteStreamListener byteStreamListener) {
-        byteStreamListeners.add(byteStreamListener);
-    }
-
-    /**
-     * Removes a previously added byte stream listener.
-     *
-     * @param ibbListener The listener.
-     * @see #addByteStreamListener(org.xmpp.extension.bytestreams.ByteStreamListener)
-     */
-    public void removeByteStreamListener(ByteStreamListener ibbListener) {
-        byteStreamListeners.remove(ibbListener);
     }
 }

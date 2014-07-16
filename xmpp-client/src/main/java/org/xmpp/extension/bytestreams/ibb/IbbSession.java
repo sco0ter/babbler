@@ -37,7 +37,7 @@ import java.io.OutputStream;
 /**
  * @author Christian Schudt
  */
-public final class IbbSession extends ByteStreamSession {
+final class IbbSession extends ByteStreamSession {
 
     private final IbbOutputStream outputStream;
 

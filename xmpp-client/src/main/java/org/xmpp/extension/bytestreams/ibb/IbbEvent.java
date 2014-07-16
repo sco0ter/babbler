@@ -27,7 +27,9 @@ package org.xmpp.extension.bytestreams.ibb;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.bytestreams.ByteStreamEvent;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
+import org.xmpp.stanza.StanzaError;
 import org.xmpp.stanza.client.IQ;
+import org.xmpp.stanza.errors.NotAcceptable;
 
 /**
  * @author Christian Schudt
@@ -38,23 +40,24 @@ final class IbbEvent extends ByteStreamEvent {
 
     private final IQ iq;
 
-    private final Open open;
+    private final int blockSize;
 
-    public IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, Open open) {
+    public IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, int blockSize) {
         super(source, sessionId);
         this.xmppSession = xmppSession;
         this.iq = iq;
-        this.open = open;
+        this.blockSize = blockSize;
     }
 
     @Override
     public ByteStreamSession accept() {
         xmppSession.send(iq.createResult());
-        return xmppSession.getExtensionManager(InBandByteStreamManager.class).createSession(iq.getFrom(), open.getSessionId(), open.getBlockSize());
+        return xmppSession.getExtensionManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize);
     }
 
     @Override
     public void reject() {
-
+        // If the responder supports IBB but does not wish to proceed with the session, it returns a <not-acceptable/> error.
+        xmppSession.send(iq.createError(new StanzaError(new NotAcceptable())));
     }
 }

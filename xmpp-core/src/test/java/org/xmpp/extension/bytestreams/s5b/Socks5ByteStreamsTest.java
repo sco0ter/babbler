@@ -24,7 +24,6 @@
 
 package org.xmpp.extension.bytestreams.s5b;
 
-import org.jivesoftware.smack.util.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
@@ -32,8 +31,6 @@ import org.xmpp.XmlTest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Christian Schudt

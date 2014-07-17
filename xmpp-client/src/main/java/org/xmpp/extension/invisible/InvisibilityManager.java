@@ -25,10 +25,12 @@
 package org.xmpp.extension.invisible;
 
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
+import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 
 /**
@@ -45,7 +47,8 @@ public final class InvisibilityManager extends ExtensionManager {
     /**
      * Becomes invisible.
      *
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public void becomeInvisible() throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, new Invisible()));
@@ -55,7 +58,8 @@ public final class InvisibilityManager extends ExtensionManager {
     /**
      * Becomes visible.
      *
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public void becomeVisible() throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, new Visible()));
@@ -75,7 +79,8 @@ public final class InvisibilityManager extends ExtensionManager {
      * Checks, whether invisibility is supported by the server.
      *
      * @return True, if invisibility is supported.
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public boolean isSupported() throws XmppException {
         EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);

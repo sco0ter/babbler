@@ -85,6 +85,11 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
 
     /**
      * Accepts the incoming file transfer request.
+     * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
+     *
+     * @param outputStream The output stream, to which the file will be written.
+     * @return The file transfer object.
+     * @throws IOException If the byte stream session could not be established.
      */
     public FileTransfer accept(OutputStream outputStream) throws IOException {
         return fileTransferNegotiator.accept(iq, sessionId, fileTransferOffer, protocol, outputStream);

@@ -145,7 +145,9 @@ public final class StreamInitiationManager extends ExtensionManager implements F
      * @param mimeType The mime type of the stream.
      * @param timeout  The timeout, which wait until the stream has been negotiated.
      * @return The byte stream session which has been negotiated.
-     * @throws XmppException
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
+     * @throws java.io.IOException             If an I/O error occurred during byte session establishment.
      */
     public OutputStream initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) throws XmppException, IOException {
 

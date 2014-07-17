@@ -83,6 +83,31 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         setEnabled(true);
     }
 
+    static S5bSession createS5bSession(Jid requester, Jid target, String sessionId, List<StreamHost> streamHosts) throws IOException {
+        Socket socketUsed = null;
+        Jid streamHostUsed = null;
+        IOException ioException = null;
+        // If the Requester provides more than one StreamHost, the Target SHOULD try to connect to them in the order of the <streamhost/> children within the <query/> element.
+        for (StreamHost streamHost : streamHosts) {
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(streamHost.getHost(), streamHost.getPort()));
+                // If the Target is able to open a TCP socket on a StreamHost/Requester, it MUST use the SOCKS5 protocol to establish a SOCKS5 connection.
+                Socks5Protocol.establishClientConnection(socket, sessionId, requester, target);
+                socketUsed = socket;
+                streamHostUsed = streamHost.getJid();
+                break;
+            } catch (IOException e) {
+                // ignore, try next.
+                ioException = e;
+            }
+        }
+        if (streamHostUsed == null) {
+            throw new IOException("Unable to connect to any stream host.", ioException);
+        }
+        return new S5bSession(sessionId, socketUsed, streamHostUsed);
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
@@ -97,7 +122,8 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * Discovers the SOCKS5 proxies.
      *
      * @return The proxies.
-     * @throws XmppException
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0065.html#disco">4. Discovering Proxies</a>
      */
     public List<StreamHost> discoverProxies() throws XmppException {
@@ -121,8 +147,9 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * @param target    The target.
      * @param sessionId The session id.
      * @return The SOCKS5 byte stream session.
-     * @throws XmppException
-     * @throws IOException
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
+     * @throws IOException                     If the byte stream session could not be established.
      */
     public ByteStreamSession initiateSession(Jid target, String sessionId) throws XmppException, IOException {
 
@@ -191,30 +218,5 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         } finally {
             localSocks5Server.removeConnection(hash);
         }
-    }
-
-    static S5bSession createS5bSession(Jid requester, Jid target, String sessionId, List<StreamHost> streamHosts) throws IOException {
-        Socket socketUsed = null;
-        Jid streamHostUsed = null;
-        IOException ioException = null;
-        // If the Requester provides more than one StreamHost, the Target SHOULD try to connect to them in the order of the <streamhost/> children within the <query/> element.
-        for (StreamHost streamHost : streamHosts) {
-            try {
-                Socket socket = new Socket();
-                socket.connect(new InetSocketAddress(streamHost.getHost(), streamHost.getPort()));
-                // If the Target is able to open a TCP socket on a StreamHost/Requester, it MUST use the SOCKS5 protocol to establish a SOCKS5 connection.
-                Socks5Protocol.establishClientConnection(socket, sessionId, requester, target);
-                socketUsed = socket;
-                streamHostUsed = streamHost.getJid();
-                break;
-            } catch (IOException e) {
-                // ignore, try next.
-                ioException = e;
-            }
-        }
-        if (streamHostUsed == null) {
-            throw new IOException("Unable to connect to any stream host.", ioException);
-        }
-        return new S5bSession(sessionId, socketUsed, streamHostUsed);
     }
 }

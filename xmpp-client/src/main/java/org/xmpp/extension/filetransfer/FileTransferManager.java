@@ -72,9 +72,10 @@ public final class FileTransferManager extends ExtensionManager {
      * Offers a file to another user in form of an URL. The file can be downloaded by the recipient via an HTTP GET request.
      * If this method returns without exception you can assume, that the file has been successfully downloaded by the recipient.
      *
-     * @param url       The URL of the file.
-     * @param recipient The recipient's JID (must be a full JID).
-     * @param timeout   The timeout (indicates how long to wait until the file has been downloaded).
+     * @param url         The URL of the file.
+     * @param description The description of the file.
+     * @param recipient   The recipient's JID (must be a full JID).
+     * @param timeout     The timeout (indicates how long to wait until the file has been downloaded).
      * @throws FileTransferRejectedException If the recipient rejected the file.
      * @throws StanzaException               If the user is unavailable or failed to download the file.
      * @throws NoResponseException           If the recipient did not downloaded the file within the timeout.

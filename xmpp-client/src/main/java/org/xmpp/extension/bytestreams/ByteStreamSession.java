@@ -73,6 +73,7 @@ public abstract class ByteStreamSession implements Closeable {
      *
      * @return The read timeout.
      * @see #setReadTimeout(int)
+     * @throws IOException If an I/O error occurred.
      */
     public abstract int getReadTimeout() throws IOException;
 
@@ -81,6 +82,7 @@ public abstract class ByteStreamSession implements Closeable {
      *
      * @param readTimeout The read timeout.
      * @see #getReadTimeout()
+     * @throws IOException If an I/O error occurred.
      */
     public abstract void setReadTimeout(int readTimeout) throws IOException;
 }

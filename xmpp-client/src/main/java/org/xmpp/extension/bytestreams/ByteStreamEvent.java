@@ -35,12 +35,13 @@ public abstract class ByteStreamEvent extends EventObject {
     private final String sessionId;
 
     /**
-     * Constructs a prototypical Event.
+     * Constructs a byte stream event.
      *
-     * @param source The object on which the Event initially occurred.
+     * @param source    The object on which the Event initially occurred.
+     * @param sessionId The session id.
      * @throws IllegalArgumentException if source is null.
      */
-    public ByteStreamEvent(Object source, String sessionId) {
+    protected ByteStreamEvent(Object source, String sessionId) {
         super(source);
         this.sessionId = sessionId;
     }
@@ -58,7 +59,7 @@ public abstract class ByteStreamEvent extends EventObject {
      * Accepts the session.
      *
      * @return The byte stream session.
-     * @throws IOException
+     * @throws IOException If the byte stream session could not be established.
      */
     public abstract ByteStreamSession accept() throws IOException;
 

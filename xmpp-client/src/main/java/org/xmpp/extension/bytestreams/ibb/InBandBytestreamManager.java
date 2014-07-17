@@ -25,6 +25,7 @@
 package org.xmpp.extension.bytestreams.ibb;
 
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.bytestreams.ByteStreamManager;
@@ -164,7 +165,8 @@ public final class InBandByteStreamManager extends ByteStreamManager {
      * @param sessionId The session id.
      * @param blockSize The block size.
      * @return The in-band byte stream session.
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public ByteStreamSession initiateSession(Jid receiver, final String sessionId, int blockSize) throws XmppException {
         if (blockSize > 65535) {

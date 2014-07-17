@@ -75,6 +75,7 @@ public final class Socks5ByteStream {
      *
      * @param sessionId   The session id.
      * @param streamHosts The stream hosts.
+     * @param dstaddr     The destination address (i.e. the hash).
      */
     public Socks5ByteStream(String sessionId, List<StreamHost> streamHosts, String dstaddr) {
         this.sid = sessionId;

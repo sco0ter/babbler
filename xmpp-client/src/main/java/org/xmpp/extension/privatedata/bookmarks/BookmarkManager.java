@@ -25,10 +25,12 @@
 package org.xmpp.extension.privatedata.bookmarks;
 
 import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
+import org.xmpp.stanza.StanzaException;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,7 +56,8 @@ public final class BookmarkManager extends ExtensionManager {
      * Gets a sorted collection of chat room bookmarks.
      *
      * @return The chat room bookmarks.
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public Collection<ChatRoomBookmark> getChatRoomBookmarks() throws XmppException {
         return getBookmarks(ChatRoomBookmark.class);
@@ -64,7 +67,8 @@ public final class BookmarkManager extends ExtensionManager {
      * Gets a sorted collection of web page bookmarks.
      *
      * @return The web page bookmarks.
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public Collection<WebPageBookmark> getWebPageBookmarks() throws XmppException {
         return getBookmarks(WebPageBookmark.class);
@@ -74,7 +78,8 @@ public final class BookmarkManager extends ExtensionManager {
      * Adds a bookmark.
      *
      * @param bookmark The bookmark.
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public void addBookmark(Bookmark bookmark) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
@@ -87,7 +92,8 @@ public final class BookmarkManager extends ExtensionManager {
      * Removes a chat room bookmark.
      *
      * @param chatRoom The chat room.
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public void removeChatRoomBookmark(Jid chatRoom) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
@@ -99,7 +105,8 @@ public final class BookmarkManager extends ExtensionManager {
      * Removes a web page bookmark.
      *
      * @param webPage The web page.
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public void removeWebPageBookmark(URL webPage) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);

@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @author Christian Schudt
  */
 final class IbbInputStream extends InputStream {
-    final BlockingQueue<Data> queue = new LinkedBlockingQueue<>();
+    final BlockingQueue<InBandByteStream.Data> queue = new LinkedBlockingQueue<>();
 
     private final IbbSession ibbSession;
 
@@ -54,7 +54,7 @@ final class IbbInputStream extends InputStream {
         // If the buffer is empty, retrieve the next data packet and load it into the buffer.
         if (n == 0) {
             try {
-                Data data = null;
+                InBandByteStream.Data data = null;
                 while (data == null) {
                     // If the stream has been closed and there's no more data to process, return -1.
                     if (closed && queue.isEmpty()) {

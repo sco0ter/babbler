@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class IbbTest extends XmlTest {
     protected IbbTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Open.class, Data.class, Close.class);
+        super(IQ.class, InBandByteStream.class);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class IbbTest extends XmlTest {
                 "</iq>\n";
 
         IQ iq = unmarshal(xml, IQ.class);
-        Data data = iq.getExtension(Data.class);
+        InBandByteStream.Data data = iq.getExtension(InBandByteStream.Data.class);
         Assert.assertNotNull(data);
         Assert.assertEquals(data.getSequence(), 1);
         Assert.assertEquals(data.getSessionId(), "i781hf64");
@@ -76,11 +76,11 @@ public class IbbTest extends XmlTest {
                 "</iq>\n";
 
         IQ iq = unmarshal(xml, IQ.class);
-        Open open = iq.getExtension(Open.class);
+        InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
         Assert.assertNotNull(open);
         Assert.assertEquals((int) open.getBlockSize(), 4096);
         Assert.assertEquals(open.getSessionId(), "i781hf64");
-        Assert.assertEquals(open.getStanzaType(), Open.StanzaType.IQ);
+        Assert.assertEquals(open.getStanzaType(), InBandByteStream.Open.StanzaType.IQ);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class IbbTest extends XmlTest {
                 "  <close xmlns='http://jabber.org/protocol/ibb' sid='i781hf64'/>\n" +
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
-        Close close = iq.getExtension(Close.class);
+        InBandByteStream.Close close = iq.getExtension(InBandByteStream.Close.class);
         Assert.assertNotNull(close);
         Assert.assertEquals(close.getSessionId(), "i781hf64");
     }

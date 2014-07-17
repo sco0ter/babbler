@@ -58,6 +58,6 @@ final class IbbEvent extends ByteStreamEvent {
     @Override
     public void reject() {
         // If the responder supports IBB but does not wish to proceed with the session, it returns a <not-acceptable/> error.
-        xmppSession.send(iq.createError(new StanzaError(new NotAcceptable())));
+        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new NotAcceptable())));
     }
 }

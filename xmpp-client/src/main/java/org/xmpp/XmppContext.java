@@ -35,9 +35,8 @@ import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.extension.blocking.BlockList;
 import org.xmpp.extension.blocking.BlockingManager;
 import org.xmpp.extension.bob.Data;
-import org.xmpp.extension.bytestreams.ibb.Close;
+import org.xmpp.extension.bytestreams.ibb.InBandByteStream;
 import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
-import org.xmpp.extension.bytestreams.ibb.Open;
 import org.xmpp.extension.bytestreams.s5b.Socks5ByteStream;
 import org.xmpp.extension.caps.EntityCapabilities;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
@@ -217,7 +216,7 @@ public abstract class XmppContext {
             registerExtension(MucUser.class, MucAdmin.class, MucOwner.class);
 
             // XEP-0047: In-Band Bytestreams
-            registerExtension(org.xmpp.extension.bytestreams.ibb.Data.class, Open.class, Close.class);
+            registerExtension(InBandByteStream.class);
             registerManager(InBandByteStreamManager.class);
 
             // XEP-0048: BookmarkStorage

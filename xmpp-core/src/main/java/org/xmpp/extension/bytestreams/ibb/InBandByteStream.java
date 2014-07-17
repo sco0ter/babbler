@@ -68,7 +68,7 @@ public final class InBandByteStream {
          * Creates the {@code <open/>} element.
          *
          * @param blockSize The block size.
-         * @param sessionId The session id
+         * @param sessionId The session id.
          */
         public Open(int blockSize, String sessionId) {
             this.blockSize = blockSize;
@@ -144,7 +144,7 @@ public final class InBandByteStream {
         }
 
         /**
-         * Creates a new data element.
+         * Creates the {@code <data/>} element.
          *
          * @param bytes The bytes.
          * @param sid   The session id.
@@ -199,10 +199,20 @@ public final class InBandByteStream {
         private Close() {
         }
 
-        public Close(String sid) {
-            this.sid = sid;
+        /**
+         * Creates the {@code <close/>} element.
+         *
+         * @param sessionId The session id.
+         */
+        public Close(String sessionId) {
+            this.sid = sessionId;
         }
 
+        /**
+         * Gets the session id.
+         *
+         * @return The session id.
+         */
         public String getSessionId() {
             return sid;
         }

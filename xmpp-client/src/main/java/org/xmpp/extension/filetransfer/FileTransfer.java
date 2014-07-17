@@ -149,16 +149,21 @@ public final class FileTransfer {
                     if (bytesTransferred != length) {
                         updateStatus(Status.FAILED);
                     }
-
-                    inputStream.close();
-                    outputStream.flush();
-                    outputStream.close();
                 } catch (IOException e) {
                     exception = e;
                     updateStatus(Status.FAILED);
                 } finally {
-                    if (status == Status.IN_PROGRESS) {
-                        updateStatus(Status.COMPLETED);
+                    // Close the stream
+                    try {
+                        inputStream.close();
+                        outputStream.close();
+                    } catch (IOException e) {
+                        exception = e;
+                        updateStatus(Status.FAILED);
+                    } finally {
+                        if (status == Status.IN_PROGRESS) {
+                            updateStatus(Status.COMPLETED);
+                        }
                     }
                 }
             }

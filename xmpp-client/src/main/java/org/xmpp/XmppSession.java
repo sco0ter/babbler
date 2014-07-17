@@ -474,7 +474,7 @@ public class XmppSession implements Closeable {
         return sendAndAwaitIQ(iq, new StanzaFilter<IQ>() {
             @Override
             public boolean accept(IQ stanza) {
-                return stanza.getId() != null && stanza.getId().equals(iq.getId()) && stanza.getType() == IQ.Type.RESULT;
+                return stanza.getId() != null && stanza.getId().equals(iq.getId()) && (stanza.getType() == IQ.Type.RESULT || stanza.getType() == IQ.Type.ERROR);
             }
         }, timeout);
     }

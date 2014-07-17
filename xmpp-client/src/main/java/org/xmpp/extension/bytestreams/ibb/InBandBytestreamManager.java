@@ -158,7 +158,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
     }
 
     /**
-     * Initiates a in-band byte stream session.
+     * Initiates an in-band byte stream session.
      *
      * @param receiver  The receiver.
      * @param sessionId The session id.

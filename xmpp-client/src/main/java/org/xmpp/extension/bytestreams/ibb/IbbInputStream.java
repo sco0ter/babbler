@@ -26,6 +26,7 @@ package org.xmpp.extension.bytestreams.ibb;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +38,8 @@ final class IbbInputStream extends InputStream {
     final BlockingQueue<InBandByteStream.Data> queue = new LinkedBlockingQueue<>();
 
     private final IbbSession ibbSession;
+
+    int readTimeout;
 
     private byte[] buffer;
 
@@ -54,14 +57,28 @@ final class IbbInputStream extends InputStream {
         // If the buffer is empty, retrieve the next data packet and load it into the buffer.
         if (n == 0) {
             try {
+                if (closed) {
+                    return -1;
+                }
                 InBandByteStream.Data data = null;
-                while (data == null) {
-                    // If the stream has been closed and there's no more data to process, return -1.
-                    if (closed && queue.isEmpty()) {
-                        return -1;
+                if (readTimeout <= 0) {
+                    while (data == null) {
+                        // If the stream has been closed and there's no more data to process, return -1.
+                        if (closed && queue.isEmpty()) {
+                            return -1;
+                        }
+                        // Let's see, if there's some data for me.
+                        data = queue.poll(1, TimeUnit.SECONDS);
                     }
-                    // Let's see, if there's some data for me.
-                    data = queue.poll(2, TimeUnit.SECONDS);
+                } else {
+                    data = queue.poll(readTimeout, TimeUnit.MILLISECONDS);
+                    if (data == null) {
+                        if (closed) {
+                            return -1;
+                        } else {
+                            throw new SocketTimeoutException();
+                        }
+                    }
                 }
                 // Assign the new buffer.
                 buffer = data.getBytes();

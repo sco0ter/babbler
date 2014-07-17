@@ -34,7 +34,7 @@ import java.io.OutputStream;
  */
 public interface FileTransferNegotiator {
 
-    FileTransfer accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, OutputStream outputStream) throws IOException;
+    FileTransfer accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException;
 
     void reject(IQ iq);
 }

@@ -82,7 +82,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
 
                                     final Date date = lastModified > 0 ? new Date(lastModified) : null;
                                     final String name = url.toString();
-                                    fileTransferManager.fileTransferOffered(iq, null, mimeType, new FileTransferOffer() {
+                                    fileTransferManager.fileTransferOffered(iq, null, mimeType, null, new FileTransferOffer() {
                                         @Override
                                         public long getSize() {
                                             return length;
@@ -137,7 +137,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
     }
 
     @Override
-    public FileTransfer accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer, OutputStream outputStream) throws IOException {
+    public FileTransfer accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
         try {
             URL url = new URL(fileTransferOffer.getName());
             URLConnection urlConnection = url.openConnection();

@@ -62,6 +62,16 @@ final class S5bSession extends ByteStreamSession {
         socket.close();
     }
 
+    @Override
+    public int getReadTimeout() throws IOException {
+        return socket.getSoTimeout();
+    }
+
+    @Override
+    public void setReadTimeout(int readTimeout) throws IOException {
+        this.socket.getSoTimeout();
+    }
+
     /**
      * Gets the used stream host for this session.
      *

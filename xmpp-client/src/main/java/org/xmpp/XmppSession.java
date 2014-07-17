@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  */
 public class XmppSession implements Closeable {
 
-    private static final long DEFAULT_REPLY_TIMEOUT = 20000;
+    private static final int DEFAULT_REPLY_TIMEOUT = 5000;
 
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
@@ -1170,6 +1170,15 @@ public class XmppSession implements Closeable {
         } finally {
             lock.unlock();
         }
+    }
+
+    /**
+     * Gets the default timeout for synchronous operations.
+     *
+     * @return The default timeout.
+     */
+    public final int getDefaultTimeout() {
+        return DEFAULT_REPLY_TIMEOUT;
     }
 
     /**

@@ -147,8 +147,8 @@ public final class FileTransferManager extends ExtensionManager {
         throw new UnsupportedOperationException("Feature not supported"); // TODO other exception!?
     }
 
-    public void fileTransferOffered(IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, FileTransferNegotiator fileTransferNegotiator) {
-        FileTransferOfferEvent fileTransferRequestEvent = new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, fileTransferNegotiator);
+    public void fileTransferOffered(IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, Object protocol, FileTransferNegotiator fileTransferNegotiator) {
+        FileTransferOfferEvent fileTransferRequestEvent = new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator);
         for (FileTransferOfferListener fileTransferOfferListener : fileTransferOfferListeners) {
             try {
                 fileTransferOfferListener.fileTransferOffered(fileTransferRequestEvent);

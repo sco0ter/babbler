@@ -47,19 +47,22 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
 
     private final FileTransferNegotiator fileTransferNegotiator;
 
+    private final Object protocol;
+
     /**
      * Constructs a prototypical Event.
      *
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    FileTransferOfferEvent(Object source, IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, FileTransferNegotiator fileTransferNegotiator) {
+    FileTransferOfferEvent(Object source, IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, Object protocol, FileTransferNegotiator fileTransferNegotiator) {
         super(source);
         this.sessionId = sessionId;
         this.iq = iq;
         this.fileTransferOffer = fileTransferOffer;
         this.mimeType = mimeType;
         this.fileTransferNegotiator = fileTransferNegotiator;
+        this.protocol = protocol;
     }
 
     /**
@@ -84,7 +87,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
      * Accepts the incoming file transfer request.
      */
     public FileTransfer accept(OutputStream outputStream) throws IOException {
-        return fileTransferNegotiator.accept(iq, sessionId, fileTransferOffer, outputStream);
+        return fileTransferNegotiator.accept(iq, sessionId, fileTransferOffer, protocol, outputStream);
     }
 
     /**

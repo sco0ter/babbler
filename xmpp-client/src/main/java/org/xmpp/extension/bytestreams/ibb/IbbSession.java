@@ -98,6 +98,16 @@ final class IbbSession extends ByteStreamSession {
         return inputStream;
     }
 
+    @Override
+    public int getReadTimeout() {
+        return inputStream.readTimeout;
+    }
+
+    @Override
+    public void setReadTimeout(int readTimeout) {
+        inputStream.readTimeout = readTimeout;
+    }
+
     synchronized void send(byte[] bytes) throws XmppException {
         xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Data(bytes, getSessionId(), outgoingSequence)));
         // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2, and so on. The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.

@@ -31,6 +31,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.bytestreams.ByteStreamEvent;
 import org.xmpp.extension.bytestreams.ByteStreamListener;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
+import org.xmpp.extension.bytestreams.ibb.InBandByteStream;
 import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
 import org.xmpp.extension.bytestreams.s5b.Socks5ByteStream;
 import org.xmpp.extension.bytestreams.s5b.Socks5ByteStreamManager;
@@ -64,19 +65,26 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
     private static final String STREAM_METHOD = "stream-method";
 
-    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStreamManager.NAMESPACE));
+    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
 
     private final Map<String, ProfileManager> profileManagers = new ConcurrentHashMap<>();
 
+    private final InBandByteStreamManager inBandByteStreamManager;
+
+    private final Socks5ByteStreamManager socks5ByteStreamManager;
+
     private StreamInitiationManager(final XmppSession xmppSession) {
         super(xmppSession, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
+
+        inBandByteStreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
+        socks5ByteStreamManager = xmppSession.getExtensionManager(Socks5ByteStreamManager.class);
 
         // Currently, there's only one profile in XMPP, namely XEP-0096 SI File Transfer.
         profileManagers.put(SIFileTransferOffer.NAMESPACE, new ProfileManager() {
             @Override
             public void handle(IQ iq, StreamInitiation streamInitiation) {
                 FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
-                fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), StreamInitiationManager.this);
+                fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
             }
         });
 
@@ -164,65 +172,91 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
         ByteStreamSession byteStreamSession;
         // Choose the stream method to be used based on the recipient's choice.
-        if (streamMethod.equals(InBandByteStreamManager.NAMESPACE)) {
-            InBandByteStreamManager inBandBytestreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
-            byteStreamSession = inBandBytestreamManager.initiateSession(receiver, sessionId, 4096);
-        } else if (streamMethod.equals(Socks5ByteStream.NAMESPACE)) {
-            Socks5ByteStreamManager socks5ByteStreamManager = xmppSession.getExtensionManager(Socks5ByteStreamManager.class);
-            byteStreamSession = socks5ByteStreamManager.initiateSession(receiver, sessionId);
-        } else {
-            throw new IOException("Receiver returned unsupported stream method.");
+        switch (streamMethod) {
+            case Socks5ByteStream.NAMESPACE:
+                try {
+                    byteStreamSession = socks5ByteStreamManager.initiateSession(receiver, sessionId);
+                } catch (Exception e) {
+                    // As fallback, if SOCKS5 negotiation failed, try IBB.
+                    byteStreamSession = inBandByteStreamManager.initiateSession(receiver, sessionId, 4096);
+                }
+                break;
+            case InBandByteStream.NAMESPACE:
+                byteStreamSession = inBandByteStreamManager.initiateSession(receiver, sessionId, 4096);
+                break;
+            default:
+                throw new IOException("Receiver returned unsupported stream method.");
         }
         return byteStreamSession.getOutputStream();
     }
 
     @Override
-    public FileTransfer accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, OutputStream outputStream) throws IOException {
+    public FileTransfer accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
+        StreamInitiation streamInitiation = (StreamInitiation) protocol;
+        DataForm.Field field = streamInitiation.getFeatureNegotiation().getDataForm().findField(STREAM_METHOD);
+        final List<String> offeredStreamMethods = new ArrayList<>();
+        for (DataForm.Option option : field.getOptions()) {
+            offeredStreamMethods.add(option.getValue());
+        }
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        DataForm.Field field = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, STREAM_METHOD);
-        field.getValues().add(InBandByteStreamManager.NAMESPACE);
-        dataForm.getFields().add(field);
-        StreamInitiation streamInitiation = new StreamInitiation(new FeatureNegotiation(dataForm));
+        DataForm.Field fieldReply = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, STREAM_METHOD);
+        offeredStreamMethods.retainAll(supportedStreamMethod);
+        fieldReply.getValues().addAll(offeredStreamMethods);
+        dataForm.getFields().add(fieldReply);
+        StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 
-        final InBandByteStreamManager inBandBytestreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
-        final ByteStreamSession[] byteStreamSessions = new ByteStreamSession[1];
         final Lock lock = new ReentrantLock();
         final Condition byteStreamOpened = lock.newCondition();
-        inBandBytestreamManager.addByteStreamListener(new ByteStreamListener() {
+        final ByteStreamSession[] byteStreamSessions = new ByteStreamSession[1];
+
+        final List<Exception> negotiationExceptions = new ArrayList<>();
+        // Before we reply with the chosen stream method, we
+        // register a byte stream listener, because we expect the initiator to open a byte stream with us.
+        ByteStreamListener byteStreamListener = new ByteStreamListener() {
             @Override
             public void byteStreamRequested(ByteStreamEvent e) {
                 if (sessionId.equals(e.getSessionId())) {
                     lock.lock();
                     try {
+                        // Auto-accept the incoming stream
                         byteStreamSessions[0] = e.accept();
-                        byteStreamOpened.signalAll();
-                    } catch (IOException e1) {
-                        e1.printStackTrace(); // TODO
+                        // If no exception occurred during stream method negotiation, notify the waiting thread.
+                        byteStreamOpened.signal();
+                    } catch (Exception e1) {
+                        negotiationExceptions.add(e1);
                     } finally {
-                        inBandBytestreamManager.removeByteStreamListener(this);
                         lock.unlock();
                     }
                 }
             }
-        });
+        };
 
-        // Send the stream initiation result.
-        IQ result = iq.createResult();
-        result.setExtension(streamInitiation);
-        xmppSession.send(result);
-
-        // And then wait until the peer opens the stream.
-        lock.lock();
         try {
-            if (!byteStreamOpened.await(5, TimeUnit.SECONDS)) {
-                throw new IOException("No byte stream was initiated in time.");
+            socks5ByteStreamManager.addByteStreamListener(byteStreamListener);
+            inBandByteStreamManager.addByteStreamListener(byteStreamListener);
+
+            // Send the stream initiation result.
+            IQ result = iq.createResult();
+            result.setExtension(siResponse);
+            xmppSession.send(result);
+
+            // And then wait until the peer opens the stream.
+            lock.lock();
+            try {
+                if (!byteStreamOpened.await(xmppSession.getDefaultTimeout(), TimeUnit.MILLISECONDS)) {
+                    throw new IOException("No byte stream could be negotiated in time.", negotiationExceptions.isEmpty() ? null : negotiationExceptions.get(0));
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            byteStreamSessions[0].setReadTimeout(xmppSession.getDefaultTimeout());
+            return new FileTransfer(byteStreamSessions[0].getInputStream(), outputStream, fileTransferOffer.getSize());
         } finally {
-            lock.unlock();
+            inBandByteStreamManager.removeByteStreamListener(byteStreamListener);
+            socks5ByteStreamManager.removeByteStreamListener(byteStreamListener);
         }
-        return new FileTransfer(byteStreamSessions[0].getInputStream(), outputStream, fileTransferOffer.getSize());
     }
 
     @Override

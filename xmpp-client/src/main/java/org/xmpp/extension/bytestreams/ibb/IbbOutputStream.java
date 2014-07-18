@@ -59,7 +59,9 @@ final class IbbOutputStream extends OutputStream {
     @Override
     public synchronized void flush() throws IOException {
         super.flush();
-
+        if (closed) {
+            throw new IOException("Stream is closed.");
+        }
         // If the buffer is empty, there's nothing to do.
         if (n == 0) {
             return;
@@ -76,9 +78,9 @@ final class IbbOutputStream extends OutputStream {
     @Override
     public void close() throws IOException {
         if (!closed) {
-            closed = true;
             super.close();
             flush();
+            closed = true;
             ibbSession.close();
         }
     }

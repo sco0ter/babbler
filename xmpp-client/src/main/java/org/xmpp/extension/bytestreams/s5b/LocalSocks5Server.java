@@ -35,9 +35,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * A local SOCKS5 server which runs as a singleton on the local machine on port 1080 (default SOCKS port).
+ *
  * @author Christian Schudt
  */
-final class LocalSocks5Server {
+enum LocalSocks5Server {
+
+    INSTANCE;
 
     private static final int DEFAULT_PORT = 1080;
 
@@ -82,6 +86,9 @@ final class LocalSocks5Server {
         }
     }
 
+    /**
+     * Stops the server.
+     */
     public synchronized void stop() {
         try {
             // This will close the socket and interrupts the accept() method.
@@ -110,6 +117,12 @@ final class LocalSocks5Server {
         return InetAddress.getLocalHost().getHostAddress();
     }
 
+    /**
+     * Gets the socket for the destination address.
+     *
+     * @param hash The destination address.
+     * @return The socket.
+     */
     public Socket getSocket(String hash) {
         return socketMap.remove(hash);
     }

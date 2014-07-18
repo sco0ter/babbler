@@ -24,6 +24,7 @@
 
 package org.xmpp;
 
+import org.xmpp.extension.vcard.VCard;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.Stanza;
@@ -31,6 +32,12 @@ import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stream.ClientStreamElement;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.concurrent.Executor;
@@ -49,7 +56,17 @@ public class TestXmppSession extends XmppSession {
     public TestXmppSession(Jid jid, MockServer mockServer) {
         super(null);
         connectedResource = jid;
+        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
+
+        XMLStreamWriter xmlStreamWriter = null;
+        try {
+            xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(System.out), true);
+
+        } catch (XMLStreamException e) {
+        }
+        final XMLStreamWriter finalXmlStreamWriter = xmlStreamWriter;
         activeConnection = new Connection("hostname", 5222, Proxy.NO_PROXY) {
+
             @Override
             protected void restartStream() {
 
@@ -57,7 +74,13 @@ public class TestXmppSession extends XmppSession {
 
             @Override
             public void send(ClientStreamElement clientStreamElement) {
-
+                try {
+                    TestXmppSession.this.getMarshaller().marshal(clientStreamElement, finalXmlStreamWriter);
+                } catch (JAXBException e) {
+                    e.printStackTrace();
+                } finally {
+                    System.out.println();
+                }
             }
 
             @Override

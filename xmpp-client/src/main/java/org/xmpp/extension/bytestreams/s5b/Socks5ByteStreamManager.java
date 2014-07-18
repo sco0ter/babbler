@@ -59,7 +59,8 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession, Socks5ByteStream.NAMESPACE);
         this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-        this.localSocks5Server = new LocalSocks5Server();
+
+        this.localSocks5Server = LocalSocks5Server.INSTANCE;
 
         xmppSession.addIQListener(new IQListener() {
             @Override

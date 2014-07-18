@@ -276,9 +276,9 @@ public final class StanzaError {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(condition.toString());
+        sb.append(condition);
         sb.append("  -  (");
-        sb.append(type.toString());
+        sb.append(type);
         sb.append(")");
 
         if (text != null) {
@@ -288,7 +288,7 @@ public final class StanzaError {
 
         if (extension != null) {
             sb.append("\n        ");
-            sb.append(extension.toString());
+            sb.append(extension);
         }
         return sb.toString();
     }

@@ -32,8 +32,14 @@ import org.xmpp.extension.bytestreams.ByteStreamListener;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
+import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.errors.NotAcceptable;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -57,13 +63,45 @@ public class IbbTest extends BaseTest {
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
     }
 
-    //@Test
+    @Test
+    public void testIbbSessionRejection() {
+        MockServer mockServer = new MockServer();
+        final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        final XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+        InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getExtensionManager(InBandByteStreamManager.class);
+        inBandBytestreamManager2.addByteStreamListener(new ByteStreamListener() {
+            @Override
+            public void byteStreamRequested(final ByteStreamEvent e) {
+                e.reject();
+            }
+        });
+
+        InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getExtensionManager(InBandByteStreamManager.class);
+        boolean rejected = false;
+        try {
+            inBandBytestreamManager1.initiateSession(JULIET, UUID.randomUUID().toString(), 4096);
+        } catch (XmppException e) {
+            if (e instanceof StanzaException) {
+                if (((StanzaException) e).getStanza().getError().getCondition() instanceof NotAcceptable) {
+                    rejected = true;
+                }
+            }
+        }
+
+        if (!rejected) {
+            Assert.fail("Should have been rejected");
+        }
+    }
+
+    @Test
     public void testInBandBytestreamManager() throws IOException {
         MockServer mockServer = new MockServer();
         final Lock lock = new ReentrantLock();
         final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         final XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
         final Condition condition = lock.newCondition();
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
         new Thread() {
             @Override
             public void run() {
@@ -76,69 +114,49 @@ public class IbbTest extends BaseTest {
                         try {
                             ibbSession = e.accept();
 
-
                             new Thread() {
                                 @Override
                                 public void run() {
 
-                                    InputStream inputStream = null;
+                                    InputStream inputStream;
                                     try {
                                         inputStream = ibbSession.getInputStream();
 
                                         int b;
-                                        File file = new File("test1.png");
-
-
-                                        FileOutputStream outputStream = new FileOutputStream(file);
-
-                                        try {
-                                            while ((b = inputStream.read()) > -1) {
-                                                outputStream.write(b);
-                                            }
-                                            outputStream.flush();
-                                            outputStream.close();
-                                            inputStream.close();
-
-                                            try {
-                                                lock.lock();
-                                                condition.signal();
-                                            } finally {
-                                                lock.unlock();
-                                            }
-
-                                        } catch (IOException e1) {
-                                            e1.printStackTrace();
+                                        while ((b = inputStream.read()) > -1) {
+                                            outputStream.write(b);
                                         }
+                                        outputStream.flush();
+                                        outputStream.close();
+                                        inputStream.close();
+
                                     } catch (IOException e1) {
                                         e1.printStackTrace();
+                                    } finally {
+                                        try {
+                                            lock.lock();
+                                            condition.signal();
+                                        } finally {
+                                            lock.unlock();
+                                        }
                                     }
                                 }
-
                             }.start();
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
                     }
                 });
+
                 InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getExtensionManager(InBandByteStreamManager.class);
-                ByteStreamSession ibbSession = null;
+                ByteStreamSession ibbSession;
                 try {
                     ibbSession = inBandBytestreamManager1.initiateSession(JULIET, "sid", 4096);
-                    InputStream inputStream = new FileInputStream(new File("xmpp.png"));
                     OutputStream os = ibbSession.getOutputStream();
-
-                    byte[] buffer = new byte[4096];
-                    int len;
-                    while ((len = inputStream.read(buffer)) != -1) {
-                        os.write(buffer, 0, len);
-                    }
+                    os.write(new byte[]{1, 2, 3, 4});
                     os.flush();
-                    inputStream.close();
                     os.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (XmppException e) {
+                } catch (IOException | XmppException e) {
                     e.printStackTrace();
                 }
             }
@@ -153,6 +171,6 @@ public class IbbTest extends BaseTest {
         } finally {
             lock.unlock();
         }
-        int i = 0;
+        Assert.assertEquals(outputStream.toByteArray(), new byte[]{1, 2, 3, 4});
     }
 }

@@ -24,6 +24,9 @@
 
 package org.xmpp.extension.jingle;
 
+import org.xmpp.XmppSession;
+import org.xmpp.stanza.client.IQ;
+
 import java.util.EventObject;
 
 /**
@@ -33,6 +36,13 @@ import java.util.EventObject;
  */
 public final class JingleEvent extends EventObject {
 
+    private final String sessionId;
+
+    private final IQ iq;
+
+    private final XmppSession xmppSession;
+
+    private final Jingle jingle;
 
     /**
      * Constructs a Jingle event.
@@ -40,15 +50,31 @@ public final class JingleEvent extends EventObject {
      * @param source The object on which the event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    JingleEvent(Object source) {
+    JingleEvent(Object source, XmppSession xmppSession, IQ iq, String sessionId, Jingle jingle) {
         super(source);
+        this.xmppSession = xmppSession;
+        this.iq = iq;
+        this.sessionId = sessionId;
+        this.jingle = jingle;
     }
 
     public JingleSession accept() {
+        xmppSession.send(iq.createResult());
         return null;
     }
 
+    /**
+     * Rejects the Jingle session.
+     */
     public void reject() {
+        xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.Decline()))));
+    }
 
+    public Jingle getJingle() {
+        return jingle;
+    }
+
+    public String getSessionId() {
+        return sessionId;
     }
 }

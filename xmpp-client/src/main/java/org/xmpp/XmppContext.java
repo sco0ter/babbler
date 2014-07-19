@@ -59,7 +59,7 @@ import org.xmpp.extension.httpbind.Body;
 import org.xmpp.extension.invisible.Invisible;
 import org.xmpp.extension.invisible.Visible;
 import org.xmpp.extension.jingle.Jingle;
-import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransport;
+import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransportMethod;
 import org.xmpp.extension.json.Json;
 import org.xmpp.extension.last.LastActivity;
 import org.xmpp.extension.last.LastActivityManager;
@@ -323,7 +323,7 @@ public abstract class XmppContext {
             registerExtension(Nickname.class);
 
             // XEP-0176: Jingle ICE-UDP Transport Method
-            registerExtension(IceUdpTransport.class);
+            registerExtension(IceUdpTransportMethod.class);
 
             // XEP-0184: Message Delivery Receipts
             registerManager(MessageDeliveryReceiptsManager.class);

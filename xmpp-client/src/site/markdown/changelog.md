@@ -5,14 +5,18 @@
 
 ### New Features
 
+* Added support for [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
+* Added support for [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
+* Added support for [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)
 * Added support for [XEP-0071: XHTML-IM](http://xmpp.org/extensions/xep-0071.html)
 * Added support for [XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)
+* Added support for [XEP-0095: Stream Initiation](http://xmpp.org/extensions/xep-0095.html)
+* Added support for [XEP-0096: SI File Transfer](http://xmpp.org/extensions/xep-0096.html)
 
 ### Improvements
 
 * `BookmarkManager` added for more convenient management of bookmarks.
 * `Comparable` interface implemented for bookmarks.
-
 
 
 ## Version 0.2.0 (2014-07-06)

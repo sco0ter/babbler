@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
 import org.xmpp.XmlTest;
-import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransport;
+import org.xmpp.extension.jingle.apps.rtp.Rtp;
+import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransportMethod;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class JingleTest extends XmlTest {
     protected JingleTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Jingle.class, IceUdpTransport.class);
+        super(IQ.class, Jingle.class, IceUdpTransportMethod.class, Rtp.class);
     }
 
     @Test
@@ -175,5 +176,15 @@ public class JingleTest extends XmlTest {
         Assert.assertEquals(jingle.getContents().size(), 1);
         Assert.assertEquals(jingle.getContents().get(0).getCreator(), Jingle.Content.Creator.INITIATOR);
         Assert.assertEquals(jingle.getContents().get(0).getName(), "voice");
+        Assert.assertTrue(jingle.getContents().get(0).getApplicationFormat() instanceof Rtp);
+        Assert.assertTrue(jingle.getContents().get(0).getTransportMethod() instanceof IceUdpTransportMethod);
+    }
+
+    @Test
+    public void marshalJingleSessionTerminate() throws XMLStreamException, JAXBException {
+        Jingle jingle = new Jingle("a73sjjvkla37jfea", Jingle.Action.SESSION_TERMINATE);
+        jingle.setReason(new Jingle.Reason(new Jingle.Reason.Decline()));
+        String xml = marshal(jingle);
+        Assert.assertEquals(xml, "<jingle xmlns=\"urn:xmpp:jingle:1\" action=\"session-terminate\" sid=\"a73sjjvkla37jfea\"><reason><decline></decline></reason></jingle>");
     }
 }

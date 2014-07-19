@@ -2,6 +2,7 @@ package org.xmpp.extension.jingle.apps.filetransfer;
 
 import org.xmpp.extension.filetransfer.FileTransferOffer;
 import org.xmpp.extension.filetransfer.Range;
+import org.xmpp.extension.jingle.apps.ApplicationFormat;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -14,7 +15,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "description")
-public final class JingleFileTransfer {
+public final class JingleFileTransfer extends ApplicationFormat {
 
     @XmlElementWrapper(name = "offer")
     @XmlElement(name = "file")

@@ -36,9 +36,9 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class IceUdpTransportTest extends XmlTest {
-    protected IceUdpTransportTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Jingle.class, IceUdpTransport.class);
+public class IceUdpTransportMethodTest extends XmlTest {
+    protected IceUdpTransportMethodTest() throws JAXBException, XMLStreamException {
+        super(IQ.class, Jingle.class, IceUdpTransportMethod.class);
     }
 
     @Test
@@ -93,8 +93,8 @@ public class IceUdpTransportTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         Jingle jingle = iq.getExtension(Jingle.class);
         Assert.assertNotNull(jingle);
-        Assert.assertEquals(jingle.getContents().get(0).getTransports().size(), 1);
-        IceUdpTransport iceUdpTransport = (IceUdpTransport) jingle.getContents().get(0).getTransports().get(0);
+        Assert.assertTrue(jingle.getContents().get(0).getTransportMethod() instanceof IceUdpTransportMethod);
+        IceUdpTransportMethod iceUdpTransport = (IceUdpTransportMethod) jingle.getContents().get(0).getTransportMethod();
         Assert.assertNotNull(iceUdpTransport);
         Assert.assertEquals(iceUdpTransport.getPassword(), "asd88fgpdd777uzjYhagZg");
         Assert.assertEquals(iceUdpTransport.getUserFragment(), "8hhy");

@@ -22,52 +22,16 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.jingle.transports.ibb;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
+package org.xmpp.extension.jingle.apps;
 
 /**
+ * An abstract base class for Jingle application formats. It is defined as:
+ * <blockquote>
+ * <p>The data format of the content type being established, which formally declares one purpose of the session (e.g., "audio" or "video"). This is the 'what' of the session (i.e., the bits to be transferred), such as the acceptable codecs when establishing a voice conversation. In Jingle XML syntax the application format is the namespace of the {@code <description/>} element.</p>
+ * </blockquote>
+ *
  * @author Christian Schudt
+ * @see org.xmpp.extension.jingle.Jingle.Content#getApplicationFormat()
  */
-@XmlRootElement(name = "transport")
-public final class InBandBytestreamsTransport {
-
-    @XmlAttribute(name = "block-size")
-    private Integer blockSize;
-
-    @XmlAttribute
-    private String sid;
-
-    @XmlAttribute
-    private StanzaType stanza;
-
-    public InBandBytestreamsTransport() {
-
-    }
-
-    public InBandBytestreamsTransport(int blockSize, String sid) {
-        this.blockSize = blockSize;
-        this.sid = sid;
-    }
-
-    public Integer getBlockSize() {
-        return blockSize;
-    }
-
-    public String getSessionId() {
-        return sid;
-    }
-
-    public StanzaType getStanzaType() {
-        return stanza;
-    }
-
-    public enum StanzaType {
-        @XmlEnumValue("iq")
-        IQ,
-        @XmlEnumValue("message")
-        MESSAGE
-    }
+public abstract class ApplicationFormat {
 }

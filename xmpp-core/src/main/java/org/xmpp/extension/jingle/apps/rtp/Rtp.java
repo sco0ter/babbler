@@ -24,6 +24,7 @@
 
 package org.xmpp.extension.jingle.apps.rtp;
 
+import org.xmpp.extension.jingle.apps.ApplicationFormat;
 import org.xmpp.extension.jingle.apps.rtp.errors.CryptoRequired;
 import org.xmpp.extension.jingle.apps.rtp.errors.InvalidCrypto;
 import org.xmpp.extension.jingle.apps.rtp.info.*;
@@ -42,7 +43,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "description")
 @XmlSeeAlso({InvalidCrypto.class, CryptoRequired.class, Active.class, Hold.class, Unhold.class, Mute.class, Unmute.class, Ringing.class})
-public final class Rtp {
+public final class Rtp extends ApplicationFormat {
 
     private Rtp() {
     }

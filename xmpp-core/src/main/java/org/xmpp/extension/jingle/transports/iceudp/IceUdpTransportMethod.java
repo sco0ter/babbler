@@ -24,7 +24,7 @@
 
 package org.xmpp.extension.jingle.transports.iceudp;
 
-import org.xmpp.extension.jingle.transports.Transport;
+import org.xmpp.extension.jingle.transports.TransportMethod;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -36,7 +36,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "transport")
-public final class IceUdpTransport extends Transport {
+public final class IceUdpTransportMethod extends TransportMethod {
 
     @XmlElement(name = "candidate")
     private final List<Candidate> candidates = new ArrayList<>();

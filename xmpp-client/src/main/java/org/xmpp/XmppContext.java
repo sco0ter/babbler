@@ -59,7 +59,10 @@ import org.xmpp.extension.httpbind.Body;
 import org.xmpp.extension.invisible.Invisible;
 import org.xmpp.extension.invisible.Visible;
 import org.xmpp.extension.jingle.Jingle;
+import org.xmpp.extension.jingle.apps.rtp.Rtp;
+import org.xmpp.extension.jingle.transports.ibb.InBandBytestreamsTransportMethod;
 import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransportMethod;
+import org.xmpp.extension.jingle.transports.s5b.S5bTransportMethod;
 import org.xmpp.extension.json.Json;
 import org.xmpp.extension.last.LastActivity;
 import org.xmpp.extension.last.LastActivityManager;
@@ -319,6 +322,9 @@ public abstract class XmppContext {
             // XEP-0166: Jingle
             registerExtension(Jingle.class);
 
+            // XEP-0167: Jingle RTP Sessions
+            registerExtension(Rtp.class);
+
             // XEP-0172: User Nickname
             registerExtension(Nickname.class);
 
@@ -362,6 +368,12 @@ public abstract class XmppContext {
 
             // XEP-0249: Direct MUC Invitations
             registerExtension(DirectInvitation.class);
+
+            // XEP-0260: Jingle SOCKS5 Bytestreams Transport Method
+            registerExtension(S5bTransportMethod.class);
+
+            // XEP-0261: Jingle In-Band Bytestreams Transport Method
+            registerExtension(InBandBytestreamsTransportMethod.class);
 
             // XEP-0280: Message Carbons
             registerExtension(Enable.class, Disable.class, Private.class, org.xmpp.extension.carbons.Received.class, Sent.class);

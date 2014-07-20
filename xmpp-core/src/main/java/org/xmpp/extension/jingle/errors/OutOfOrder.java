@@ -37,6 +37,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "out-of-order")
 public final class OutOfOrder extends JingleError {
-    private OutOfOrder() {
-    }
 }

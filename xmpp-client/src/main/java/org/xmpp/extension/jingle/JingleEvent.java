@@ -24,6 +24,7 @@
 
 package org.xmpp.extension.jingle;
 
+import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.stanza.client.IQ;
 
@@ -50,15 +51,15 @@ public final class JingleEvent extends EventObject {
      * @param source The object on which the event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    JingleEvent(Object source, XmppSession xmppSession, IQ iq, String sessionId, Jingle jingle) {
+    JingleEvent(Object source, XmppSession xmppSession, IQ iq, Jingle jingle) {
         super(source);
         this.xmppSession = xmppSession;
         this.iq = iq;
-        this.sessionId = sessionId;
+        this.sessionId = jingle.getSessionId();
         this.jingle = jingle;
     }
 
-    public JingleSession accept() {
+    public JingleSession accept() throws XmppException{
         xmppSession.send(iq.createResult());
         return null;
     }
@@ -67,6 +68,7 @@ public final class JingleEvent extends EventObject {
      * Rejects the Jingle session.
      */
     public void reject() {
+        // Another reason for terminating the session is that the terminating party wishes to formally decline the session; in this case, the recommended condition is <decline/>.
         xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.Decline()))));
     }
 

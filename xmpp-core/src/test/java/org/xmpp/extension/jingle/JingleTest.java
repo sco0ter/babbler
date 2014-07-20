@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import org.xmpp.Jid;
 import org.xmpp.XmlTest;
 import org.xmpp.extension.jingle.apps.rtp.Rtp;
+import org.xmpp.extension.jingle.apps.rtp.info.Ringing;
 import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransportMethod;
 import org.xmpp.stanza.client.IQ;
 
@@ -40,7 +41,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class JingleTest extends XmlTest {
     protected JingleTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Jingle.class, IceUdpTransportMethod.class, Rtp.class);
+        super(IQ.class, Jingle.class, IceUdpTransportMethod.class, Rtp.class, Ringing.class);
     }
 
     @Test
@@ -185,5 +186,25 @@ public class JingleTest extends XmlTest {
         Jingle jingle = new Jingle("a73sjjvkla37jfea", Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.Decline()));
         String xml = marshal(jingle);
         Assert.assertEquals(xml, "<jingle xmlns=\"urn:xmpp:jingle:1\" action=\"session-terminate\" sid=\"a73sjjvkla37jfea\"><reason><decline></decline></reason></jingle>");
+    }
+
+    @Test
+    public void unmarshalJingleSessionInfo() throws JAXBException, XMLStreamException {
+        String xml = "<iq from='juliet@capulet.lit/balcony'\n" +
+                "    id='hq7rg186'\n" +
+                "    to='romeo@montague.lit/orchard'\n" +
+                "    type='set'>\n" +
+                "  <jingle xmlns='urn:xmpp:jingle:1'\n" +
+                "          action='session-info'\n" +
+                "          sid='a73sjjvkla37jfea'>\n" +
+                "    <ringing xmlns='urn:xmpp:jingle:apps:rtp:info:1'/>\n" +
+                "  </jingle>\n" +
+                "</iq>\n";
+
+        IQ iq = unmarshal(xml, IQ.class);
+        Jingle jingle = iq.getExtension(Jingle.class);
+        Assert.assertNotNull(jingle);
+        Assert.assertNotNull(jingle.getPayload());
+        Assert.assertTrue(jingle.getPayload() instanceof Ringing);
     }
 }

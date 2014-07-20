@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.XmlTest;
 import org.xmpp.extension.jingle.Jingle;
+import org.xmpp.extension.jingle.apps.rtp.Rtp;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class IceUdpTransportMethodTest extends XmlTest {
     protected IceUdpTransportMethodTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Jingle.class, IceUdpTransportMethod.class);
+        super(IQ.class, Jingle.class, Rtp.class, IceUdpTransportMethod.class);
     }
 
     @Test

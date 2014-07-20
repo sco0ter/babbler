@@ -37,6 +37,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unsupported-info")
 public final class UnsupportedInfo extends JingleError {
-    private UnsupportedInfo() {
-    }
 }

@@ -37,6 +37,4 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unknown-session")
 public final class UnknownSession extends JingleError {
-    private UnknownSession() {
-    }
 }

@@ -22,21 +22,10 @@
  * THE SOFTWARE.
  */
 
+package org.xmpp.extension.jingle.transports;
+
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0260.html">XEP-0260: Jingle SOCKS5 Bytestreams Transport Method</a>.
- * <p>
- * It defines a Jingle transport method that results in sending data via the SOCKS5 Bytestreams (S5B) protocol defined in XEP-0065. Essentially this transport method reuses XEP-0065 semantics for sending the data and defines native Jingle methods for starting and ending an S5B session.
- * </p>
+ * @author Christian Schudt
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "urn:xmpp:jingle:transports:s5b:1", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.jingle.transports.s5b;
-
-import org.xmpp.Jid;
-import org.xmpp.JidAdapter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+public abstract class TransportManager {
+}

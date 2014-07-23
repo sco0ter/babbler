@@ -59,7 +59,7 @@ public final class JingleEvent extends EventObject {
         this.jingle = jingle;
     }
 
-    public JingleSession accept() throws XmppException{
+    public JingleSession accept() throws XmppException {
         xmppSession.send(iq.createResult());
         return null;
     }

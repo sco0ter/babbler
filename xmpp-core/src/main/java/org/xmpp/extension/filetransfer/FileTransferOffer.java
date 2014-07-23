@@ -24,7 +24,10 @@
 
 package org.xmpp.extension.filetransfer;
 
+import org.xmpp.extension.hashes.Hash;
+
 import java.util.Date;
+import java.util.List;
 
 /**
  * An interface for file transfer requests, which covers XEP-0066, XEP-0096 and XEP-0234.
@@ -58,12 +61,11 @@ public interface FileTransferOffer {
     Date getDate();
 
     /**
-     * Gets the MD5 sum of the file contents.
+     * Gets the hashes of the file contents.
      *
-     * @return The MD5 sum.
+     * @return The hashes.
      */
-    // TODO XEP-0300 !
-    String getHash();
+    List<Hash> getHashes();
 
     /**
      * Gets a sender-generated description of the file.

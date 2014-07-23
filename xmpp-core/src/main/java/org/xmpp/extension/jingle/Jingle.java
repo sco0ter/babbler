@@ -30,7 +30,6 @@ import org.xmpp.extension.jingle.transports.TransportMethod;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -63,17 +62,34 @@ public final class Jingle {
     private Jingle() {
     }
 
-    public Jingle(String sessionId, Action action, Jid initiator, Content... contents) {
-        this.sessionId = sessionId;
-        this.action = action;
-        this.initiator = initiator;
-        this.contents.addAll(Arrays.asList(contents));
-    }
-
     public Jingle(String sessionId, Action action, Reason reason) {
         this.sessionId = sessionId;
         this.action = action;
         this.reason = reason;
+    }
+
+    public Jingle(String sessionId, Action action, Object payload) {
+        this.sessionId = sessionId;
+        this.action = action;
+        this.payload = payload;
+    }
+
+    public static Jingle initiator(Jid initiator, String sessionId, Action action, List<Content> contents) {
+        Jingle jingle = new Jingle();
+        jingle.sessionId = sessionId;
+        jingle.action = action;
+        jingle.initiator = initiator;
+        jingle.contents.addAll(contents);
+        return jingle;
+    }
+
+    public static Jingle responder(Jid responder, String sessionId, Action action, List<Content> contents) {
+        Jingle jingle = new Jingle();
+        jingle.sessionId = sessionId;
+        jingle.action = action;
+        jingle.responder = responder;
+        jingle.contents.addAll(contents);
+        return jingle;
     }
 
     /**

@@ -26,11 +26,16 @@ package org.xmpp.extension.si.profile.filetransfer;
 
 import org.xmpp.extension.filetransfer.FileTransferOffer;
 import org.xmpp.extension.filetransfer.Range;
+import org.xmpp.extension.hashes.Hash;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * The implementation of the file transfer profile, i.e. the {@code <file/>} element.
@@ -111,8 +116,13 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The MD5 sum.
      */
-    public String getHash() {
-        return hash;
+    public List<Hash> getHashes() {
+        if (hash != null) {
+            // XEP-0096 seem to be hex encoded, while XEP-300 are base64 encoded. Convert from hex to byte array.
+            return Arrays.asList(new Hash(new BigInteger(hash, 16).toByteArray(), "md5"));
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**

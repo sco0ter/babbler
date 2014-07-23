@@ -27,7 +27,9 @@ package org.xmpp.extension.jingle.apps.filetransfer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.XmlTest;
-import org.xmpp.extension.jingle.apps.rtp.Rtp;
+import org.xmpp.extension.hashes.Hash;
+import org.xmpp.extension.jingle.Jingle;
+import org.xmpp.extension.jingle.transports.s5b.S5bTransportMethod;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -37,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class JingleFileTransferTest extends XmlTest {
     protected JingleFileTransferTest() throws JAXBException, XMLStreamException {
-        super(JingleFileTransfer.class);
+        super(Hash.class, Jingle.class, JingleFileTransfer.class, S5bTransportMethod.class);
     }
 
     @Test
@@ -60,5 +62,59 @@ public class JingleFileTransferTest extends XmlTest {
         Assert.assertEquals(fileTransfer.getOffers().get(0).getDescription(), "This is a test. If this were a real file...");
         Assert.assertEquals(fileTransfer.getOffers().get(0).getName(), "test.txt");
         Assert.assertEquals(fileTransfer.getOffers().get(0).getSize(), 1022);
+    }
+
+    @Test
+    public void unmarshalJingleFileTransferAbort() throws XMLStreamException, JAXBException {
+        String xml = "<jingle xmlns='urn:xmpp:jingle:1'\n" +
+                "          action='session-info'\n" +
+                "          initiator='romeo@montague.lit/orchard'\n" +
+                "          sid='a73sjjvkla37jfea'>\n" +
+                "    <abort xmlns='urn:xmpp:jingle:apps:file-transfer:3'>\n" +
+                "      <file>\n" +
+                "        <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
+                "      </file>\n" +
+                "    </abort>\n" +
+                "  </jingle>\n";
+
+        Jingle jingle = unmarshal(xml, Jingle.class);
+        Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Abort);
+        Assert.assertEquals(((JingleFileTransfer.Abort) jingle.getPayload()).getFile().getHashes().size(), 1);
+    }
+
+    @Test
+    public void unmarshalJingleFileTransferReceived() throws XMLStreamException, JAXBException {
+        String xml = "<jingle xmlns='urn:xmpp:jingle:1'\n" +
+                "          action='session-info'\n" +
+                "          initiator='romeo@montague.lit/orchard'\n" +
+                "          sid='a73sjjvkla37jfea'>\n" +
+                "    <received xmlns='urn:xmpp:jingle:apps:file-transfer:3'>\n" +
+                "      <file>\n" +
+                "        <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>a749930852c69ae5d2141d3766b1552d</hash>\n" +
+                "      </file>\n" +
+                "    </received>\n" +
+                "  </jingle>\n";
+
+        Jingle jingle = unmarshal(xml, Jingle.class);
+        Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Received);
+        Assert.assertEquals(((JingleFileTransfer.Received) jingle.getPayload()).getFile().getHashes().size(), 1);
+    }
+
+    @Test
+    public void unmarshalJingleFileTransferChecksum() throws XMLStreamException, JAXBException {
+        String xml = "<jingle xmlns='urn:xmpp:jingle:1'\n" +
+                "          action='session-info'\n" +
+                "          initiator='romeo@montague.lit/orchard'\n" +
+                "          sid='a73sjjvkla37jfea'>\n" +
+                "    <checksum xmlns='urn:xmpp:jingle:apps:file-transfer:3'>\n" +
+                "      <file>\n" +
+                "        <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
+                "      </file>\n" +
+                "    </checksum>\n" +
+                "  </jingle>\n";
+
+        Jingle jingle = unmarshal(xml, Jingle.class);
+        Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Checksum);
+        Assert.assertEquals(((JingleFileTransfer.Checksum) jingle.getPayload()).getFile().getHashes().size(), 1);
     }
 }

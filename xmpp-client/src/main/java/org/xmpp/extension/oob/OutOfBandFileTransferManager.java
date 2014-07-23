@@ -27,6 +27,7 @@ package org.xmpp.extension.oob;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.filetransfer.*;
+import org.xmpp.extension.hashes.Hash;
 import org.xmpp.extension.oob.iq.OobIQ;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -38,7 +39,9 @@ import org.xmpp.stanza.errors.NotAcceptable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.*;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -99,8 +102,8 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                                         }
 
                                         @Override
-                                        public String getHash() {
-                                            return null;
+                                        public List<Hash> getHashes() {
+                                            return Collections.emptyList();
                                         }
 
                                         @Override

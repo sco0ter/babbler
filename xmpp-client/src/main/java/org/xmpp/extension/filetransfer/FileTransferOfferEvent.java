@@ -25,12 +25,14 @@
 package org.xmpp.extension.filetransfer;
 
 import org.xmpp.Jid;
+import org.xmpp.extension.hashes.Hash;
 import org.xmpp.stanza.client.IQ;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.EventObject;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -118,8 +120,8 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     @Override
-    public String getHash() {
-        return fileTransferOffer.getHash();
+    public List<Hash> getHashes() {
+        return fileTransferOffer.getHashes();
     }
 
     @Override

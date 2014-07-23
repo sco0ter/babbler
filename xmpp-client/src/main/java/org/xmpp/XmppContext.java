@@ -55,6 +55,8 @@ import org.xmpp.extension.forward.Forwarded;
 import org.xmpp.extension.forward.StanzaForwardingManager;
 import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationManager;
+import org.xmpp.extension.hashes.Hash;
+import org.xmpp.extension.hashes.HashManager;
 import org.xmpp.extension.httpbind.Body;
 import org.xmpp.extension.invisible.Invisible;
 import org.xmpp.extension.invisible.Visible;
@@ -382,6 +384,10 @@ public abstract class XmppContext {
             // XEP-0297: Stanza Forwarding
             registerExtension(Forwarded.class);
             registerManager(StanzaForwardingManager.class);
+
+            // XEP-0300: Use of Cryptographic Hash Functions in XMPP
+            registerExtension(Hash.class);
+            registerManager(HashManager.class);
 
             // XEP-0301: In-Band Real Time Text
             registerExtension(RealTimeText.class);

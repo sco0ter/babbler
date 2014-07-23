@@ -982,10 +982,10 @@ public class XmppSession implements Closeable {
                         Constructor<T> constructor = clazz.getDeclaredConstructor(XmppSession.class);
                         constructor.setAccessible(true);
                         instance = constructor.newInstance(this);
+                        instances.put(clazz, instance);
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                         throw new IllegalArgumentException(e);
                     }
-                    instances.put(clazz, instance);
                 }
             }
         }

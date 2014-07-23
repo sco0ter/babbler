@@ -28,6 +28,7 @@ import org.xmpp.XmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -40,13 +41,13 @@ public abstract class ExtensionManager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private final Collection<String> features;
+    protected final Collection<String> features;
 
     private volatile boolean enabled;
 
     protected ExtensionManager(XmppSession xmppSession, String... features) {
         this.xmppSession = xmppSession;
-        this.features = Arrays.asList(features);
+        this.features = new ArrayList<>(Arrays.asList(features));
 
         if (this instanceof ServiceDiscoveryManager) {
             serviceDiscoveryManager = (ServiceDiscoveryManager) this;

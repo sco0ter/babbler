@@ -24,8 +24,11 @@
 
 package org.xmpp.extension.shim;
 
+import org.xmpp.extension.time.EntityTime;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Date;
 
 /**
  * A header element which hold stanza header information or internet metadata.
@@ -55,6 +58,28 @@ public final class Header {
     public Header(String name, String value) {
         this.name = name;
         this.value = value;
+    }
+
+    /**
+     * Creates a header with a start date.
+     *
+     * @param date The start date.
+     * @return The header.
+     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     */
+    public static Header start(Date date) {
+        return new Header("Start", EntityTime.toUtcString(date));
+    }
+
+    /**
+     * Creates a header with a stop date.
+     *
+     * @param date The stop date.
+     * @return The header.
+     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     */
+    public static Header stop(Date date) {
+        return new Header("Stop", EntityTime.toUtcString(date));
     }
 
     /**

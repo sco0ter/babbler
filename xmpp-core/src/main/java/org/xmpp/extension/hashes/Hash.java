@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlValue;
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0300.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "hash")
 public final class Hash {

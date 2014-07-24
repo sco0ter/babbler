@@ -65,6 +65,32 @@ public final class EntityTime {
     }
 
     /**
+     * Converts a string representation of a date to {@link java.util.Date}.
+     *
+     * @param v The string value of the date.
+     * @throws java.lang.IllegalArgumentException If the string value does not conform to XEP-0082.
+     * @see <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>
+     */
+    public static Date toUtcDate(String v) {
+        Calendar calendar = DatatypeConverter.parseDateTime(v);
+        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return calendar.getTime();
+    }
+
+    /**
+     * Converts a date to its UTC string representation.
+     *
+     * @param date The date.
+     * @see <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>
+     */
+    public static String toUtcString(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return DatatypeConverter.printDateTime(calendar);
+    }
+
+    /**
      * Gets the entity's time zone.
      *
      * @return The time zone.
@@ -89,17 +115,12 @@ public final class EntityTime {
 
         @Override
         public Date unmarshal(String v) throws Exception {
-            Calendar calendar = DatatypeConverter.parseDateTime(v);
-            calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return calendar.getTime();
+            return toUtcDate(v);
         }
 
         @Override
         public String marshal(Date v) throws Exception {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(v);
-            calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-            return DatatypeConverter.printDateTime(calendar);
+            return toUtcString(v);
         }
     }
 }

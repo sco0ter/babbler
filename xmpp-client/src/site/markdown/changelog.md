@@ -17,7 +17,8 @@
 
 * `BookmarkManager` added for more convenient management of bookmarks.
 * `Comparable` interface implemented for bookmarks.
-
+* Minor improvement in BOSH logic regarding overactivity and updated BOSH version to 1.11.
+* Stream errors now have their own `StreamError` class and no longer derive `Exception` due to some JAXB problems.
 
 ## Version 0.2.0 (2014-07-06)
 

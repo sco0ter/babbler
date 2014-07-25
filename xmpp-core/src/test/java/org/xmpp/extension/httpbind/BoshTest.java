@@ -71,7 +71,7 @@ public class BoshTest extends XmlTest {
                 "      xmlns='http://jabber.org/protocol/httpbind'/>";
         Body body = unmarshal(xml, Body.class);
         Assert.assertEquals(body.getType(), Body.Type.TERMINATE);
-        Assert.assertEquals(body.getCondition(), Body.Condition.BAD_REQEST);
+        Assert.assertEquals(body.getCondition(), Body.Condition.BAD_REQUEST);
     }
 
     @Test

@@ -65,13 +65,13 @@ public final class Socks5ByteStream {
     private String sid;
 
     /**
-     * Creates an empty {@code <streamhost/>} element.
+     * Creates an empty {@code <query/>} element.
      */
     public Socks5ByteStream() {
     }
 
     /**
-     * Creates a {@code <streamhost/>} element with an {@code <streamhost/>} child elements.
+     * Creates a {@code <query/>} element with an {@code <streamhost/>} child elements.
      *
      * @param sessionId   The session id.
      * @param streamHosts The stream hosts.
@@ -84,7 +84,7 @@ public final class Socks5ByteStream {
     }
 
     /**
-     * Creates a {@code <streamhost/>} element with an {@code <activate/>} child element.
+     * Creates a {@code <query/>} element with an {@code <activate/>} child element.
      *
      * @param sessionId The session id.
      * @param jid       The JID.
@@ -98,7 +98,7 @@ public final class Socks5ByteStream {
     }
 
     /**
-     * Creates a {@code <streamhost/>} element with an {@code <streamhost-used/>} child element.
+     * Creates a {@code <query/>} element with an {@code <streamhost-used/>} child element.
      *
      * @param jid The JID.
      * @return The query element.

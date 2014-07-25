@@ -495,7 +495,7 @@ public final class Body {
      * @see #getVersion()
      */
     public void setVersion(String version) {
-        this.version = version;
+        this.ver = version;
     }
 
     public Short getWait() {
@@ -574,77 +574,71 @@ public final class Body {
          * The format of an HTTP header or binding element received from the client is unacceptable (e.g., syntax error).
          */
         @XmlEnumValue(value = "bad-request")
-        BAD_REQEST("bad-request"),
+        BAD_REQUEST,
         /**
          * The target domain specified in the 'to' attribute or the target host or port specified in the 'route' attribute is no longer serviced by the connection manager.
          */
         @XmlEnumValue(value = "host-gone")
-        HOST_GONE("host-gone"),
+        HOST_GONE,
         /**
          * The target domain specified in the 'to' attribute or the target host or port specified in the 'route' attribute is unknown to the connection manager.
          */
         @XmlEnumValue(value = "host-unknown")
-        HOST_UNKNOWN("host-unknown"),
+        HOST_UNKNOWN,
         /**
          * The initialization element lacks a 'to' or 'route' attribute (or the attribute has no value) but the connection manager requires one.
          */
         @XmlEnumValue(value = "improper-addressing")
-        IMPROPER_ADDRESSING("improper-addressing"),
+        IMPROPER_ADDRESSING,
         /**
          * The connection manager has experienced an internal error that prevents it from servicing the request.
          */
         @XmlEnumValue(value = "internal-server-error")
-        INTERNAL_SERVER_ERROR("internal-server-error"),
+        INTERNAL_SERVER_ERROR,
         /**
          * (1) 'sid' is not valid, (2) 'stream' is not valid, (3) 'rid' is larger than the upper limit of the expected window, (4) connection manager is unable to resend response, (5) 'key' sequence is invalid.
          */
         @XmlEnumValue(value = "item-not-found")
-        ITEM_NOT_FOUND("item-not-found"),
+        ITEM_NOT_FOUND,
         /**
          * Another request being processed at the same time as this request caused the session to terminate.
          */
         @XmlEnumValue(value = "other-request")
-        OTHER_REQUEST("other-request"),
+        OTHER_REQUEST,
         /**
          * The client has broken the session rules (polling too frequently, requesting too frequently, sending too many simultaneous requests).
          */
         @XmlEnumValue(value = "policy-violation")
-        POLICY_VIOLATION("policy-violation"),
+        POLICY_VIOLATION,
         /**
          * The connection manager was unable to connect to, or unable to connect securely to, or has lost its connection to, the server.
          */
         @XmlEnumValue(value = "remote-connection-failed")
-        REMOTE_CONNECTION_FAILED("remote-connection-failed"),
+        REMOTE_CONNECTION_FAILED,
         /**
          * Encapsulates an error in the protocol being transported.
          */
         @XmlEnumValue(value = "remote-stream-error")
-        REMOTE_STREAM_ERROR("remote-stream-error"),
+        REMOTE_STREAM_ERROR,
         /**
          * The connection manager does not operate at this URI (e.g., the connection manager accepts only SSL or TLS connections at some https: URI rather than the http: URI requested by the client). The client can try POSTing to the URI in the content of the {@code <uri/>} child element.
          */
         @XmlEnumValue(value = "see-other-uri")
-        SEE_OTHER_URI("see-other-uri"),
+        SEE_OTHER_URI,
         /**
          * The connection manager is being shut down. All active HTTP sessions are being terminated. No new sessions can be created.
          */
         @XmlEnumValue(value = "system-shutdown")
-        SYSTEM_SHUTDOWN("system-shutdown"),
+        SYSTEM_SHUTDOWN,
         /**
          * The error is not one of those defined herein; the connection manager SHOULD include application-specific information in the content of the {@code <body/>} wrapper.
          */
         @XmlEnumValue(value = "undefined-condition")
-        UNDEFINED_CONDITION("undefined-condition");
-
-        private final String xmlValue;
-
-        private Condition(String xmlValue) {
-            this.xmlValue = xmlValue;
-        }
+        UNDEFINED_CONDITION;
 
         @Override
         public String toString() {
-            return xmlValue;
+            return this.name().toLowerCase().replace("_", "-");
         }
     }
 

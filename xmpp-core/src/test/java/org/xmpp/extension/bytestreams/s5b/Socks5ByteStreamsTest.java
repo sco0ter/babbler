@@ -28,6 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
 import org.xmpp.XmlTest;
+import org.xmpp.stanza.AbstractIQ;
+import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -37,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class Socks5ByteStreamsTest extends XmlTest {
     protected Socks5ByteStreamsTest() throws JAXBException, XMLStreamException {
-        super(Socks5ByteStream.class);
+        super(IQ.class, Socks5ByteStream.class);
     }
 
     @Test
@@ -55,5 +57,11 @@ public class Socks5ByteStreamsTest extends XmlTest {
         Assert.assertEquals(data.getStreamHosts().get(0).getHost(), "24.24.24.1");
         Assert.assertEquals(data.getStreamHosts().get(0).getJid(), Jid.valueOf("streamer.example.com"));
         Assert.assertEquals(data.getStreamHosts().get(0).getPort(), 7625);
+    }
+
+    @Test
+    public void marshalStreamHostUsed() throws XMLStreamException, JAXBException {
+        String xml = marshal(Socks5ByteStream.streamHostUsed(Jid.valueOf("test")));
+        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/bytestreams\"><streamhost-used jid=\"test\"></streamhost-used></query>");
     }
 }

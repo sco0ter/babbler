@@ -108,6 +108,11 @@ public final class TcpConnection extends Connection {
      */
     @Override
     public synchronized void connect() throws IOException {
+
+        if (getXmppSession() == null) {
+            throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
+        }
+
         int port = getPort() == 0 ? 5222 : getPort();
 
         this.socket = new Socket(getProxy());

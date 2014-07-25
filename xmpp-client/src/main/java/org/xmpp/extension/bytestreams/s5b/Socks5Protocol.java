@@ -24,8 +24,6 @@
 
 package org.xmpp.extension.bytestreams.s5b;
 
-import org.xmpp.Jid;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,13 +46,11 @@ final class Socks5Protocol {
     /**
      * Establishes a SOCKS5 client connection.
      *
-     * @param socket    The socket.
-     * @param sessionId The session id.
-     * @param requester The requester.
-     * @param target    The target.
+     * @param socket             The socket.
+     * @param destinationAddress The destination address.
      * @throws java.io.IOException If the SOCKS5 connection could not be established.
      */
-    static void establishClientConnection(Socket socket, String sessionId, Jid requester, Jid target) throws IOException {
+    static void establishClientConnection(Socket socket, String destinationAddress, int destinationPort) throws IOException {
 
         DataInputStream inputStream = new DataInputStream(socket.getInputStream());
         OutputStream outputStream = socket.getOutputStream();
@@ -100,8 +96,8 @@ final class Socks5Protocol {
 
              */
 
-            byte[] dstAddr = Socks5ByteStream.hash(sessionId, requester, target).getBytes();
-            byte[] dstPort = new byte[]{0x00, 0x00}; // The port MUST be 0 (zero).
+            byte[] dstAddr = destinationAddress.getBytes();
+            byte[] dstPort = new byte[]{(byte) (destinationPort >>> 8), (byte) destinationPort};
             byte[] requestDetails = new byte[]{
                     (byte) 0x05, // protocol version: X'05'
                     (byte) 0x01, // CMD: CONNECT X'01'

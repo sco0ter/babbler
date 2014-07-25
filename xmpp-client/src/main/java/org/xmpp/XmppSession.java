@@ -825,6 +825,9 @@ public class XmppSession implements Closeable {
         } catch (Exception e) {
             // Revert status
             updateStatus(Status.CONNECTED);
+            if (exception != null) {
+                e.initCause(exception);
+            }
             throw e;
         }
         updateStatus(Status.AUTHENTICATED);
@@ -844,6 +847,9 @@ public class XmppSession implements Closeable {
         } catch (Exception e) {
             // Revert status
             updateStatus(Status.CONNECTED);
+            if (exception != null) {
+                e.initCause(exception);
+            }
             throw e;
         }
         updateStatus(Status.AUTHENTICATED);
@@ -929,8 +935,8 @@ public class XmppSession implements Closeable {
             });
         } else if (element instanceof Features) {
             featuresManager.processFeatures((Features) element);
-        } else if (element instanceof StreamException) {
-            throw (StreamException) element;
+        } else if (element instanceof StreamError) {
+            throw new StreamException((StreamError) element);
         } else {
             // Let's see, if the element is known to any feature negotiator.
             return featuresManager.processElement(element);
@@ -944,7 +950,7 @@ public class XmppSession implements Closeable {
      * This method will close the stream.
      * </p>
      *
-     * @param e The exception. If an unrecoverable XMPP stream error occurred, the exception is a {@link org.xmpp.stream.StreamException}.
+     * @param e The exception. If an unrecoverable XMPP stream error occurred, the exception is a {@link org.xmpp.stream.StreamError}.
      */
     public final void notifyException(Exception e) {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.

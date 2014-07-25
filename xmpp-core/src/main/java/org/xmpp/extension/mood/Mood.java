@@ -607,7 +607,10 @@ public final class Mood {
     private static abstract class AbstractValue {
 
         @XmlTransient
-        private final Value value;
+        private Value value;
+
+        private AbstractValue() {
+        }
 
         private AbstractValue(Value value) {
             this.value = value;

@@ -63,7 +63,6 @@ public final class Activity {
     private Activity() {
     }
 
-
     /**
      * Creates an activity with a category.
      *
@@ -143,10 +142,13 @@ public final class Activity {
     static abstract class AbstractCategory {
 
         @XmlTransient
-        private final Category category;
+        private Category category;
 
         @XmlElementRef
         private SpecificActivity specificActivity;
+
+        private AbstractCategory() {
+        }
 
         private AbstractCategory(Category category) {
             this.category = category;

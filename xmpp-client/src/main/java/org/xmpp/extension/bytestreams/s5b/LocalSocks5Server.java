@@ -33,55 +33,62 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A local SOCKS5 server which runs as a singleton on the local machine on port 1080 (default SOCKS port).
  *
  * @author Christian Schudt
  */
-enum LocalSocks5Server {
+class LocalSocks5Server {
 
-    INSTANCE;
+    private static final Logger logger = Logger.getLogger(LocalSocks5Server.class.getName());
 
-    private static final int DEFAULT_PORT = 1080;
+    private int port = 1080; // The default port for SOCKS5.
 
     List<String> allowedAddresses = new CopyOnWriteArrayList<>();
 
-    private ServerSocket serverSocket;
+    private volatile ServerSocket serverSocket;
 
     private Map<String, Socket> socketMap = new ConcurrentHashMap<>();
 
     /**
      * Starts the local SOCKS5 server.
      */
-    public synchronized void start() {
+    public void start() {
         if (serverSocket == null) {
-            try {
-                serverSocket = new ServerSocket(DEFAULT_PORT);
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (serverSocket != null) {
-                            Socket socket = null;
-                            try {
-                                socket = serverSocket.accept();
-                                socketMap.put(Socks5Protocol.establishServerConnection(socket, allowedAddresses), socket);
-                            } catch (IOException e) {
-                                if (socket != null) {
+            // Use double-checked locking idiom.
+            synchronized (this) {
+                if (serverSocket == null) {
+                    try {
+                        serverSocket = new ServerSocket(getPort());
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                while (serverSocket != null) {
+                                    Socket socket = null;
                                     try {
-                                        socket.close();
-                                    } catch (IOException e1) {
-                                        // Ignore
+                                        socket = serverSocket.accept();
+                                        socketMap.put(Socks5Protocol.establishServerConnection(socket, allowedAddresses), socket);
+                                    } catch (IOException e) {
+                                        if (socket != null) {
+                                            try {
+                                                socket.close();
+                                            } catch (IOException e1) {
+                                                logger.log(Level.WARNING, e.getMessage(), e);
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
+                        });
+                        thread.setDaemon(true);
+                        thread.start();
+                    } catch (IOException e) {
+                        logger.log(Level.WARNING, e.getMessage(), e);
                     }
-                });
-                thread.setDaemon(true);
-                thread.start();
-            } catch (IOException e) {
-                e.printStackTrace();
+                }
             }
         }
     }
@@ -90,22 +97,33 @@ enum LocalSocks5Server {
      * Stops the server.
      */
     public synchronized void stop() {
-        try {
-            // This will close the socket and interrupts the accept() method.
-            serverSocket.close();
-            serverSocket = null;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (serverSocket != null) {
+            try {
+                // This will close the socket and interrupts the accept() method.
+                serverSocket.close();
+                serverSocket = null;
+            } catch (IOException e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
         }
     }
 
     /**
-     * Gets the port.
+     * Gets the port. If no port has been set, the default port (1080) is returned.
      *
      * @return The port.
      */
-    public synchronized int getPort() {
-        return serverSocket != null ? serverSocket.getLocalPort() : DEFAULT_PORT;
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Sets the port this local server will run on.
+     *
+     * @param port The port.
+     */
+    public void setPort(int port) {
+        this.port = port;
     }
 
     /**
@@ -120,15 +138,15 @@ enum LocalSocks5Server {
     /**
      * Gets the socket for the destination address.
      *
-     * @param hash The destination address.
+     * @param destinationAddress The destination address.
      * @return The socket.
      */
-    public Socket getSocket(String hash) {
-        return socketMap.remove(hash);
+    public Socket getSocket(String destinationAddress) {
+        return socketMap.remove(destinationAddress);
     }
 
-    void removeConnection(String hash) {
-        allowedAddresses.remove(hash);
-        socketMap.remove(hash);
+    void removeConnection(String destinationAddress) {
+        allowedAddresses.remove(destinationAddress);
+        socketMap.remove(destinationAddress);
     }
 }

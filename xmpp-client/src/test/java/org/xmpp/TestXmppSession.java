@@ -24,6 +24,7 @@
 
 package org.xmpp;
 
+import org.xmpp.extension.bytestreams.s5b.Socks5ByteStreamManager;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -56,6 +57,8 @@ public class TestXmppSession extends XmppSession {
     public TestXmppSession(Jid jid, MockServer mockServer) {
         super(null);
         connectedResource = jid;
+        getExtensionManager(Socks5ByteStreamManager.class).setLocalHostEnabled(false);
+
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
 
         XMLStreamWriter xmlStreamWriter = null;

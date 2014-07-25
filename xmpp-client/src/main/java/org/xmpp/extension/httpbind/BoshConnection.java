@@ -86,12 +86,7 @@ public final class BoshConnection extends Connection {
     /**
      * The executor, which will execute HTTP requests.
      */
-    private final ExecutorService requestExecutor;
-
-    /**
-     * The executor, which will handle responses from HTTP request.
-     */
-    private final ExecutorService responseExecutor;
+    private final ExecutorService httpBindExecutor;
 
     /**
      * The optional route.
@@ -226,20 +221,10 @@ public final class BoshConnection extends Connection {
 
         // Threads created by this thread pool, will be used to do simultaneous requests.
         // Even in the unusual case, where the connection manager allows for more requests, two are enough.
-        requestExecutor = Executors.newFixedThreadPool(2, new ThreadFactory() {
+        httpBindExecutor = Executors.newFixedThreadPool(2, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r, "XMPP BOSH request thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
-
-        // The responses should be handled by a single thread.
-        responseExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "XMPP BOSH response thread");
                 thread.setDaemon(true);
                 return thread;
             }
@@ -262,7 +247,7 @@ public final class BoshConnection extends Connection {
             switch (httpCode) {
                 case HttpURLConnection.HTTP_BAD_REQUEST:
                     // Superseded by bad-request
-                    throw new BoshException(Body.Condition.BAD_REQEST);
+                    throw new BoshException(Body.Condition.BAD_REQUEST);
                 case HttpURLConnection.HTTP_FORBIDDEN:
                     // Superseded by policy-violation
                     throw new BoshException(Body.Condition.POLICY_VIOLATION);
@@ -309,6 +294,11 @@ public final class BoshConnection extends Connection {
 
     @Override
     public synchronized void connect() throws IOException {
+
+        if (getXmppSession() == null) {
+            throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
+        }
+
         // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
         if (url == null) {
             if (file == null) {
@@ -341,7 +331,7 @@ public final class BoshConnection extends Connection {
         Body body = new Body();
         body.setTo(getXmppSession().getXmppServiceDomain());
         body.setLanguage(Locale.getDefault().getLanguage());
-        body.setVersion("1.10");
+        body.setVersion("1.11");
         body.setWait(wait);
         body.setHold((byte) 1);
         body.setRoute(route);
@@ -446,27 +436,17 @@ public final class BoshConnection extends Connection {
      */
     @Override
     public synchronized void close() throws IOException {
-        if (!requestExecutor.isShutdown()) {
+        if (!httpBindExecutor.isShutdown()) {
             // Terminate the BOSH session.
             Body body = new Body();
             body.setType(Body.Type.TERMINATE);
             sendNewRequest(body, true);
 
             // and then shut it down.
-            requestExecutor.shutdown();
+            httpBindExecutor.shutdown();
             try {
                 // Wait shortly, until the "terminate" body has been sent.
-                requestExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        // Then shutdown the response executor.
-        if (!responseExecutor.isShutdown()) {
-            responseExecutor.shutdown();
-            try {
-                // Wait shortly, if the connection manager responds with a <body type='terminate' xmlns='http://jabber.org/protocol/httpbind'/>.
-                responseExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
+                httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
@@ -480,13 +460,9 @@ public final class BoshConnection extends Connection {
      * @see <a href="https://conversejs.org/docs/html/#prebinding-and-single-session-support">https://conversejs.org/docs/html/#prebinding-and-single-session-support</a>
      */
     public synchronized long detach() {
-        if (!requestExecutor.isShutdown()) {
-            requestExecutor.shutdown();
+        if (!httpBindExecutor.isShutdown()) {
+            httpBindExecutor.shutdown();
         }
-        if (!responseExecutor.isShutdown()) {
-            responseExecutor.shutdown();
-        }
-
         // Return the latest and greatest rid.
         return rid.get();
     }
@@ -516,27 +492,30 @@ public final class BoshConnection extends Connection {
      * @param addElements True, if waiting elements should be added to the body; false if an empty body shall be sent.
      */
     private void sendNewRequest(final Body body, final boolean addElements) {
-
-        // Make sure, no two threads access this block, in order to ensure that requestCount and requestExecutor.isShutdown() don't return inconsistent values.
-        synchronized (requestExecutor) {
-            if (!requestExecutor.isShutdown()) {
-                requestExecutor.execute(new Runnable() {
+        // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
+        synchronized (httpBindExecutor) {
+            if (!httpBindExecutor.isShutdown()) {
+                httpBindExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        int httpResponseCode = 0;
                         // Open a HTTP connection.
                         HttpURLConnection httpConnection = null;
                         try {
-                            synchronized (requestExecutor) {
-                                requestCount++;
-
-                                // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and isn't an unacknowledged body isn't resent).
+                            synchronized (httpBindExecutor) {
+                                // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
                                 if (addElements) {
-                                    for (Object object : queue) {
-                                        body.getWrappedObjects().add(object);
-                                    }
+                                    body.getWrappedObjects().addAll(queue);
                                     queue.clear();
                                 }
+
+                                // Prevent overactivity.
+                                // If we are already holding a request and want to send another empty request, which is not a terminate or pause request, return. It wouldn't add any value anyway.
+                                // Also return, if we would send a non-terminate message and the connection is already closed.
+                                if (body.getType() != Body.Type.TERMINATE && (httpBindExecutor.isShutdown() || requestCount == 1 && body.getWrappedObjects().isEmpty() && body.getPause() == null)) {
+                                    return;
+                                }
+
+                                requestCount++;
 
                                 // Increment the request id.
                                 body.setRid(rid.getAndIncrement());
@@ -551,7 +530,7 @@ public final class BoshConnection extends Connection {
                                 }
 
                                 httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-                                //httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+                                httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
                                 // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
@@ -575,15 +554,15 @@ public final class BoshConnection extends Connection {
                                     if (logger.isLoggable(Level.FINE)) {
                                         logger.fine("--> " + new String(byteArrayOutputStreamRequest.toByteArray()));
                                     }
+
                                 } finally {
                                     if (xmlStreamWriter != null) {
                                         xmlStreamWriter.close();
                                     }
                                 }
                             }
-
                             // Wait for the response
-                            if ((httpResponseCode = httpConnection.getResponseCode()) == HttpURLConnection.HTTP_OK) {
+                            if ((httpConnection.getResponseCode()) == HttpURLConnection.HTTP_OK) {
                                 // This is for logging only.
                                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                                 XMLEventReader xmlEventReader = null;
@@ -595,28 +574,18 @@ public final class BoshConnection extends Connection {
                                         XMLEvent xmlEvent = xmlEventReader.peek();
 
                                         // Parse the <body/> element.
-                                        synchronized (responseExecutor) {
-                                            if (xmlEvent.isStartElement()) {
+                                        if (xmlEvent.isStartElement()) {
+                                            synchronized (httpBindExecutor) {
                                                 final JAXBElement<Body> element = getXmppSession().getUnmarshaller().unmarshal(xmlEventReader, Body.class);
                                                 if (logger.isLoggable(Level.FINE)) {
                                                     logger.fine("<-- " + new String(byteArrayOutputStream.toByteArray()));
                                                 }
+
                                                 byteArrayOutputStream.reset();
-                                                if (!responseExecutor.isShutdown()) {
-                                                    responseExecutor.execute(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            try {
-                                                                unpackBody(element.getValue(), body.getRid());
-                                                            } catch (Exception e) {
-                                                                getXmppSession().notifyException(e);
-                                                            }
-                                                        }
-                                                    });
-                                                }
-                                            } else {
-                                                xmlEventReader.next();
+                                                unpackBody(element.getValue(), body.getRid());
                                             }
+                                        } else {
+                                            xmlEventReader.next();
                                         }
                                     }
                                 } finally {
@@ -627,17 +596,19 @@ public final class BoshConnection extends Connection {
                             } else {
                                 handleCode(httpConnection.getResponseCode());
                             }
+
+                            synchronized (httpBindExecutor) {
+                                // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
+                                if (--requestCount == 0) {
+                                    sendNewRequest(new Body(), true);
+                                }
+                            }
+
                         } catch (Exception e) {
                             getXmppSession().notifyException(e);
                         } finally {
                             if (httpConnection != null) {
                                 httpConnection.disconnect();
-                            }
-                            synchronized (requestExecutor) {
-                                // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
-                                if (--requestCount == 0 && httpResponseCode == HttpURLConnection.HTTP_OK) {
-                                    sendNewRequest(new Body(), true);
-                                }
                             }
                         }
                     }
@@ -647,6 +618,7 @@ public final class BoshConnection extends Connection {
     }
 
     /**
+     * Gets the route.
      * <blockquote>
      * <p>A connection manager MAY be configured to enable sessions with more than one server in different domains. When requesting a session with such a "proxy" connection manager, a client SHOULD include a 'route' attribute that specifies the protocol, hostname, and port of the server with which it wants to communicate, formatted as "proto:host:port" (e.g., "xmpp:example.com:9999").</p>
      * </blockquote>

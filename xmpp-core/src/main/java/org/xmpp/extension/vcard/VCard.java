@@ -1071,6 +1071,10 @@ public final class VCard {
         @XmlElement(name = "LINE")
         private List<String> line;
 
+        private AddressLabel() {
+            this(false, false, true, true, true, true);
+        }
+
         /**
          * Creates a default address label for an international, postal, parcel and work address.
          *
@@ -2170,16 +2174,22 @@ public final class VCard {
 
         @Override
         public Date unmarshal(final String v) throws Exception {
-            Calendar calendar = DatatypeConverter.parseDate(v);
-            return calendar.getTime();
+            if (v != null) {
+                Calendar calendar = DatatypeConverter.parseDate(v);
+                return calendar.getTime();
+            }
+            return null;
         }
 
         @Override
         public String marshal(final Date v) throws Exception {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-            calendar.setTime(v);
-            return DatatypeConverter.printDate(calendar);
+            if (v != null) {
+                Calendar calendar = new GregorianCalendar();
+                calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+                calendar.setTime(v);
+                return DatatypeConverter.printDate(calendar);
+            }
+            return null;
         }
     }
 

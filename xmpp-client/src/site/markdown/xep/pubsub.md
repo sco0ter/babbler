@@ -84,7 +84,7 @@ pubSubNode.subscribe();
 If you are no longer interested in receiving event notifications, you can unsubscribe from it again.
 
 ```java
-pubSubNode.subscribe();
+pubSubNode.unsubscribe();
 ```
 
 ### Listening for PubSub Events

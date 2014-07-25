@@ -127,7 +127,7 @@ import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 import org.xmpp.stream.Features;
-import org.xmpp.stream.StreamException;
+import org.xmpp.stream.StreamError;
 import org.xmpp.tls.StartTls;
 
 import java.util.*;
@@ -148,7 +148,7 @@ public abstract class XmppContext {
     private final Set<Class<? extends ExtensionManager>> managers = new HashSet<>();
 
     protected XmppContext() {
-        core.addAll(Arrays.asList(Features.class, StreamException.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class));
+        core.addAll(Arrays.asList(Features.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class));
     }
 
     public static XmppContext getDefault() {

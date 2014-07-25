@@ -133,7 +133,7 @@ final class XmppStreamWriter {
                 }
                 byteArrayOutputStream = new ByteArrayOutputStream();
                 BranchedOutputStream branchedOutputStream = new BranchedOutputStream(outputStream, byteArrayOutputStream);
-                xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(branchedOutputStream);
+                xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(branchedOutputStream, "UTF-8");
 
                 prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream), true);
             }

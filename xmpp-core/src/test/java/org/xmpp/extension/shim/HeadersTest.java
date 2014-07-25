@@ -31,6 +31,7 @@ import org.xmpp.stanza.client.Message;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Date;
 
 /**
  * @author Christian Schudt
@@ -60,5 +61,19 @@ public class HeadersTest extends XmlTest {
         Assert.assertEquals(headers.getHeaders().get(0).getValue(), "123456789@capulet.com");
         Assert.assertEquals(headers.getHeaders().get(1).getName(), "Keywords");
         Assert.assertEquals(headers.getHeaders().get(1).getValue(), "shakespeare,<xmpp/>");
+    }
+
+    @Test
+    public void marshalDateTimePeriods() throws XMLStreamException, JAXBException {
+
+        String xmlStart = marshal(new Headers(Header.start(new Date())));
+        Assert.assertTrue(xmlStart.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">"));
+
+        String xmlStop = marshal(new Headers(Header.stop(new Date())));
+        Assert.assertTrue(xmlStop.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Stop\">"));
+
+        String xmlPeriod = marshal(Headers.timePeriod(new Date(), new Date()));
+        Assert.assertTrue(xmlPeriod.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">"));
+        Assert.assertTrue(xmlPeriod.contains("<header name=\"Stop\">"));
     }
 }

@@ -1,4 +1,4 @@
-# Supported XEPs
+    # Supported XEPs
 ---
 
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final' that are applicable to XMPP clients)*

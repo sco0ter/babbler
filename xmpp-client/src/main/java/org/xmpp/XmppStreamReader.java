@@ -82,7 +82,7 @@ final class XmppStreamReader {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
                     InputStream xmppInputStream = new BranchedInputStream(inputStream, byteArrayOutputStream);
-                    XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream);
+                    XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream, "UTF-8");
 
                     while (!doRestart && xmlEventReader.hasNext()) {
                         XMLEvent xmlEvent = xmlEventReader.peek();

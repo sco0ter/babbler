@@ -547,7 +547,7 @@ public final class BoshConnection extends Connection {
                                 // Branch the stream, so that its output can also be logged.
                                 try (OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest)) {
                                     // Create the writer for this connection.
-                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream), true);
+                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream, "UTF-8"), true);
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     getXmppSession().getMarshaller().marshal(body, xmlStreamWriter);
 

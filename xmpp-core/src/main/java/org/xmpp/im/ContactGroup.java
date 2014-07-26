@@ -90,6 +90,16 @@ public final class ContactGroup implements Comparable<ContactGroup> {
         return contacts;
     }
 
+    /**
+     * Gets the parent group.
+     *
+     * @return The parent group or null, if it has no parent.
+     */
+    public ContactGroup getParentGroup() {
+        return parentGroup;
+    }
+
+
     @Override
     public int compareTo(ContactGroup o) {
         if (this == o) {

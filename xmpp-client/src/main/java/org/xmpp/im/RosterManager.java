@@ -389,6 +389,128 @@ public final class RosterManager {
     }
 
     /**
+     * Renames a contact group.
+     *
+     * @param contactGroup The contact group.
+     * @param name         The new name.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public synchronized void renameContactGroup(ContactGroup contactGroup, String name) throws XmppException {
+        // Make this method synchronized so that roster pushes (which will occur during this method) don't mess up with this logic here (because the ContactGroup objects are reused and modified).
+        int depth = -1;
+        // Determine the depth of this group.
+        ContactGroup parentGroup = contactGroup;
+        do {
+            parentGroup = parentGroup.getParentGroup();
+            depth++;
+        } while (parentGroup != null);
+        replaceGroupName(contactGroup, name, depth);
+    }
+
+    /**
+     * If the group delimiter is still set, it replaces the group name at the index.
+     *
+     * @param contactGroup The contact group.
+     * @param name         The new group name,
+     * @param index        The index of the group name.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    private void replaceGroupName(ContactGroup contactGroup, String name, int index) throws XmppException {
+        // Update each contact in this group with the new group name.
+        String newName = name;
+        if (groupDelimiter != null) {
+            String[] groups = contactGroup.getFullName().split(groupDelimiter);
+            if (index < groups.length) {
+                groups[index] = name;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < groups.length - 1; i++) {
+                sb.append(groups[i]);
+                sb.append(groupDelimiter);
+            }
+            sb.append(groups[groups.length - 1]);
+            newName = sb.toString();
+        }
+
+        for (Contact contact : contactGroup.getContacts()) {
+            List<String> newGroups = new ArrayList<>(contact.getGroups());
+            newGroups.remove(contactGroup.getFullName());
+            newGroups.add(newName);
+            // Only do a roster update, if the groups have really changed.
+            if (!contact.getGroups().equals(newGroups)) {
+                updateContact(new Contact(contact.getJid(), contact.getName(), newGroups));
+            }
+        }
+        for (ContactGroup subGroup : contactGroup.getGroups()) {
+            replaceGroupName(subGroup, name, index);
+        }
+    }
+
+    /**
+     * Removes a contact group. If the group has sub groups, all sub groups are removed as well.
+     * All contacts in this group and all sub groups are moved to the parent group (if present) or to no group at all.
+     *
+     * @param contactGroup The contact group.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
+     */
+    public synchronized void removeContactGroup(ContactGroup contactGroup) throws XmppException {
+        Collection<Contact> allContacts = collectAllContactsInGroup(contactGroup);
+        if (contactGroup.getParentGroup() != null) {
+            for (Contact contact : allContacts) {
+                updateContact(new Contact(contact.getJid(), contact.getName(), contactGroup.getParentGroup().getFullName()));
+            }
+        } else {
+            for (Contact contact : allContacts) {
+                updateContact(new Contact(contact.getJid(), contact.getName()));
+            }
+        }
+    }
+
+    /**
+     * Recursively collects all contacts in all (sub-) groups of a group.
+     *
+     * @param contactGroup The contact group.
+     * @return All contacts.
+     */
+    private static Collection<Contact> collectAllContactsInGroup(ContactGroup contactGroup) {
+        Collection<Contact> contacts = new ArrayList<>();
+        // First, add all contact from this group.
+        for (Contact contact : contactGroup.getContacts()) {
+            addContactIfNotExists(contact, contacts);
+        }
+        // Then add all contacts from the subgroups
+        Collection<Contact> contactsInSubGroups = new ArrayList<>();
+        for (ContactGroup subGroup : contactGroup.getGroups()) {
+            contactsInSubGroups.addAll(collectAllContactsInGroup(subGroup));
+        }
+        for (Contact contact : contactsInSubGroups) {
+            addContactIfNotExists(contact, contacts);
+        }
+        return contacts;
+    }
+
+    /**
+     * Adds a contact to the list, if its JID isn't contained in the list.
+     *
+     * @param contact  The contact.
+     * @param contacts The contacts.
+     */
+    private static void addContactIfNotExists(Contact contact, Collection<Contact> contacts) {
+        boolean contactExists = false;
+        for (Contact c : contacts) {
+            if (c.getJid().equals(contact.getJid())) {
+                contactExists = true;
+            }
+        }
+        if (!contactExists) {
+            contacts.add(contact);
+        }
+    }
+
+    /**
      * Gets the group delimiter.
      *
      * @return The group delimiter.

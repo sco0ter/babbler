@@ -236,7 +236,7 @@ public final class Contact implements Comparable<Contact> {
                 && (subscription == null ? other.subscription == null : subscription.equals(other.subscription))
                 && (approved == null ? other.approved == null : approved.equals(other.approved))
                 && (ask == null ? other.ask == null : ask.equals(other.ask))
-                && (group == null ? other.group == null : (group.containsAll(other.group) && other.group.containsAll(group)));
+                && (group.containsAll(other.group) && other.group.containsAll(group));
     }
 
     @Override
@@ -247,7 +247,7 @@ public final class Contact implements Comparable<Contact> {
         result = 31 * result + ((subscription == null) ? 0 : subscription.hashCode());
         result = 31 * result + ((approved == null) ? 0 : approved.hashCode());
         result = 31 * result + ((ask == null) ? 0 : ask.hashCode());
-        result = 31 * result + ((group == null) ? 0 : group.hashCode());
+        result = 31 * result + group.hashCode();
         return result;
     }
 

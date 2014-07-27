@@ -826,9 +826,13 @@ public class XmppSession implements Closeable {
             if (exception != null) {
                 e.initCause(exception);
             }
-            LoginException loginException = new LoginException("Login failed");
-            loginException.initCause(exception);
-            throw loginException;
+            if (e instanceof LoginException) {
+                throw (LoginException) e;
+            } else {
+                LoginException loginException = new LoginException("Login failed");
+                loginException.initCause(e);
+                throw loginException;
+            }
         }
         updateStatus(Status.AUTHENTICATED);
     }

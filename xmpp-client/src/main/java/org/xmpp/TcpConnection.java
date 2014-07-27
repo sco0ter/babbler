@@ -33,6 +33,8 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -151,9 +153,12 @@ public final class TcpConnection extends Connection {
     protected void secureConnection() throws IOException {
         socket = getXmppSession().getSecurityManager().getSSLContext().getSocketFactory().createSocket(
                 socket,
-                socket.getInetAddress().getHostAddress(),
+                getXmppSession().getDomain(),
                 socket.getPort(),
                 true);
+        SSLParameters sslParameters = ((SSLSocket) socket).getSSLParameters();
+        sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
+        ((SSLSocket) socket).setSSLParameters(sslParameters);
         inputStream = socket.getInputStream();
         outputStream = socket.getOutputStream();
         isSecure = true;

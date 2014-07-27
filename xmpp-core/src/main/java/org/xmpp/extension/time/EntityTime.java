@@ -68,6 +68,7 @@ public final class EntityTime {
      * Converts a string representation of a date to {@link java.util.Date}.
      *
      * @param v The string value of the date.
+     * @return The date in UTC.
      * @throws java.lang.IllegalArgumentException If the string value does not conform to XEP-0082.
      * @see <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>
      */
@@ -81,6 +82,7 @@ public final class EntityTime {
      * Converts a date to its UTC string representation.
      *
      * @param date The date.
+     * @return The date in UTC as string.
      * @see <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>
      */
     public static String toUtcString(Date date) {

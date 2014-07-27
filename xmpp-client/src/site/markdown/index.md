@@ -13,8 +13,6 @@ It supports most of the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc
 
 On this site you learn about some general design considerations, a brief user guide and API documentation.
 
-You know what the different workflows are, and you should have a pretty good grasp of fundamental Git usage. In this section, you’ll learn about a few common patterns for contributing to a project.
-
 ## Design Philosophy
 
 While designing the library I had the following design goals in mind:

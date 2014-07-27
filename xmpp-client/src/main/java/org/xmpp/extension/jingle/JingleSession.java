@@ -88,6 +88,8 @@ public final class JingleSession {
     /**
      * Initiates the session.
      *
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#protocol-initiate">6.2 Initiation</a>
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-initiate">7.2.10 session-initiate</a>
      */
@@ -106,6 +108,8 @@ public final class JingleSession {
      * Accepts the session. You must at least provide one content element.
      *
      * @param contents The contents.
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-acceptance">6.5 Acceptance</a>
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-accept">7.2.8 session-accept</a>
      */
@@ -138,6 +142,8 @@ public final class JingleSession {
      * Terminates the Jingle session.
      *
      * @param reason The reason for termination.
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-terminate">6.7 Termination</a>
      */
     public void terminate(Jingle.Reason reason) throws XmppException {
@@ -157,7 +163,8 @@ public final class JingleSession {
     /**
      * @param contentName     The content name.
      * @param transportMethod The replaced transport method.
-     * @throws XmppException
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-transport-replace">7.2.15 transport-replace</a>
      */
     public void replaceTransport(String contentName, TransportMethod transportMethod) throws XmppException {
@@ -179,7 +186,8 @@ public final class JingleSession {
      * Sends a session info.
      *
      * @param object The session info payload.
-     * @throws XmppException
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-info">7.2.9 session-info</a>
      */
     public void sendSessionInfo(Object object) throws XmppException {

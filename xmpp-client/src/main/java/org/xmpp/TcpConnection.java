@@ -208,6 +208,7 @@ public final class TcpConnection extends Connection {
      *
      * @param xmppServiceDomain The fully qualified domain name.
      * @throws IOException If no connection could be established to a resolved host.
+     * @return If the connection could be established.
      */
     boolean connectWithXmppServiceDomain(String xmppServiceDomain) throws IOException {
 

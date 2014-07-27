@@ -120,9 +120,7 @@ public final class TcpConnection extends Connection {
         if (getHostname() != null && !getHostname().isEmpty()) {
             socket.connect(new InetSocketAddress(getHostname(), getPort()));
         } else if (getXmppSession().getDomain() != null) {
-            try {
-                connectWithXmppServiceDomain(getXmppSession().getDomain());
-            } catch (NamingException e) {
+            if (!connectWithXmppServiceDomain(getXmppSession().getDomain())) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
                 socket.connect(new InetSocketAddress(InetAddress.getByName(getXmppSession().getDomain()), port));
             }
@@ -204,10 +202,9 @@ public final class TcpConnection extends Connection {
      * See also <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      *
      * @param xmppServiceDomain The fully qualified domain name.
-     * @throws NamingException If the initial context could not be built.
-     * @throws IOException     If no connection could be established to a resolved host.
+     * @throws IOException If no connection could be established to a resolved host.
      */
-    void connectWithXmppServiceDomain(String xmppServiceDomain) throws NamingException, IOException {
+    boolean connectWithXmppServiceDomain(String xmppServiceDomain) throws IOException {
 
         // 1. The initiating entity constructs a DNS SRV query whose inputs are:
         //
@@ -221,54 +218,60 @@ public final class TcpConnection extends Connection {
         Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
         env.put(Context.PROVIDER_URL, "dns:");
+        try {
+            DirContext ctx = new InitialDirContext(env);
 
-        DirContext ctx = new InitialDirContext(env);
+            Attributes attributes = ctx.getAttributes(query, new String[]{"SRV"});
+            Attribute srvAttribute = attributes.get("SRV");
+            List<DnsResourceRecord> dnsSrvRecords = new ArrayList<>();
 
-        Attributes attributes = ctx.getAttributes(query, new String[]{"SRV"});
-        Attribute srvAttribute = attributes.get("SRV");
-        List<DnsResourceRecord> dnsSrvRecords = new ArrayList<>();
-
-        // 3. If a response is received, it will contain one or more combinations of a port and FDQN, each of which is weighted and prioritized as described in [DNS-SRV].
-        NamingEnumeration<?> srvRecords = srvAttribute.getAll();
-        while (srvRecords.hasMore()) {
-            String srvRecord = (String) srvRecords.next();
-            if (srvRecord != null) {
-                // (However, if the result of the SRV lookup is a single resource record with a Target of ".", i.e., the root domain, then the initiating entity MUST abort SRV processing at this point because according to [DNS-SRV] such a Target "means that the service is decidedly not available at this domain".)
-                if (srvRecord.equals(".")) {
-                    return;
+            // 3. If a response is received, it will contain one or more combinations of a port and FDQN, each of which is weighted and prioritized as described in [DNS-SRV].
+            if (srvAttribute != null) {
+                NamingEnumeration<?> srvRecords = srvAttribute.getAll();
+                while (srvRecords.hasMore()) {
+                    String srvRecord = (String) srvRecords.next();
+                    if (srvRecord != null) {
+                        // (However, if the result of the SRV lookup is a single resource record with a Target of ".", i.e., the root domain, then the initiating entity MUST abort SRV processing at this point because according to [DNS-SRV] such a Target "means that the service is decidedly not available at this domain".)
+                        if (srvRecord.equals(".")) {
+                            return false;
+                        }
+                        dnsSrvRecords.add(new DnsResourceRecord(srvRecord));
+                    }
                 }
-                dnsSrvRecords.add(new DnsResourceRecord(srvRecord));
-            }
-        }
 
-        // Sort the entries, so that the best one is tried first.
-        Collections.sort(dnsSrvRecords, new Comparator<DnsResourceRecord>() {
-            @Override
-            public int compare(DnsResourceRecord o1, DnsResourceRecord o2) {
-                int result = Integer.compare(o1.priority, o2.priority);
-                if (result == 0) {
-                    result = Integer.compare(o2.weight, o1.weight);
+                // Sort the entries, so that the best one is tried first.
+                Collections.sort(dnsSrvRecords, new Comparator<DnsResourceRecord>() {
+                    @Override
+                    public int compare(DnsResourceRecord o1, DnsResourceRecord o2) {
+                        int result = Integer.compare(o1.priority, o2.priority);
+                        if (result == 0) {
+                            result = Integer.compare(o2.weight, o1.weight);
+                        }
+                        return result;
+                    }
+                });
+
+                for (DnsResourceRecord dnsResourceRecord : dnsSrvRecords) {
+                    try {
+                        // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
+                        InetAddress inetAddress = InetAddress.getByName(dnsResourceRecord.target);
+                        // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
+                        // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
+                        socket.connect(new InetSocketAddress(inetAddress, dnsResourceRecord.port));
+                        return true;
+                    } catch (IOException e) {
+                        // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
+                    }
                 }
-                return result;
+                // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP connection using the data received in the response, it SHOULD NOT attempt the fallback process described in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
+                if (dnsSrvRecords.size() > 0) {
+                    throw new IOException("Could not connect to any host.");
+                }
             }
-        });
-
-        for (DnsResourceRecord dnsResourceRecord : dnsSrvRecords) {
-            try {
-                // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
-                InetAddress inetAddress = InetAddress.getByName(dnsResourceRecord.target);
-                // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
-                // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
-                socket.connect(new InetSocketAddress(inetAddress, dnsResourceRecord.port));
-                return;
-            } catch (IOException e) {
-                // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
-            }
+        } catch (NamingException e) {
+            return false;
         }
-        // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP connection using the data received in the response, it SHOULD NOT attempt the fallback process described in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
-        if (dnsSrvRecords.size() > 0) {
-            throw new IOException("Could not connect to any host.");
-        }
+        return false;
     }
 
     /**

@@ -65,6 +65,8 @@ final class XmppStreamWriter {
 
     private ByteArrayOutputStream byteArrayOutputStream;
 
+    private volatile boolean streamOpened;
+
     public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession) throws XMLStreamException, IOException {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = XMLOutputFactory.newFactory();
@@ -136,6 +138,7 @@ final class XmppStreamWriter {
                 xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(branchedOutputStream, "UTF-8");
 
                 prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream), true);
+                streamOpened = false;
             }
         }
     }
@@ -173,7 +176,7 @@ final class XmppStreamWriter {
                             xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
                             xmlStreamWriter.writeStartElement("stream", "stream", "http://etherx.jabber.org/streams");
                             xmlStreamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", Locale.getDefault().getLanguage());
-                            if (xmppSession.getXmppServiceDomain() != null) {
+                            if (xmppSession.getXmppServiceDomain() != null && !xmppSession.getXmppServiceDomain().isEmpty()) {
                                 xmlStreamWriter.writeAttribute("to", xmppSession.getXmppServiceDomain());
                             }
                             if (from != null) {
@@ -188,6 +191,7 @@ final class XmppStreamWriter {
                                 logger.fine("-->  " + new String(byteArrayOutputStream.toByteArray()));
                             }
                             byteArrayOutputStream.reset();
+                            streamOpened = true;
                         } catch (XMLStreamException e) {
                             xmppSession.notifyException(e);
                         }
@@ -202,17 +206,20 @@ final class XmppStreamWriter {
             @Override
             public void run() {
                 synchronized (xmlOutputFactory) {
-                    // Close the stream.
-                    try {
-                        xmlStreamWriter.writeEndElement();
-                        xmlStreamWriter.flush();
-                        if (logger.isLoggable(Level.FINE)) {
-                            logger.fine("-->  " + new String(byteArrayOutputStream.toByteArray()));
+                    if (streamOpened) {
+                        // Close the stream.
+                        try {
+                            xmlStreamWriter.writeEndElement();
+                            xmlStreamWriter.flush();
+                            if (logger.isLoggable(Level.FINE)) {
+                                logger.fine("-->  " + new String(byteArrayOutputStream.toByteArray()));
+                            }
+                            byteArrayOutputStream.reset();
+                            xmlStreamWriter.close();
+                            streamOpened = false;
+                        } catch (XMLStreamException e) {
+                            xmppSession.notifyException(e);
                         }
-                        byteArrayOutputStream.reset();
-                        xmlStreamWriter.close();
-                    } catch (XMLStreamException e) {
-                        xmppSession.notifyException(e);
                     }
                 }
             }

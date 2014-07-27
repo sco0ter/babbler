@@ -47,7 +47,6 @@ import javax.security.auth.login.AccountLockedException;
 import javax.security.auth.login.CredentialExpiredException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
-import javax.security.sasl.SaslException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -725,7 +724,9 @@ public class XmppSession implements Closeable {
         } catch (NoResponseException e) {
             throw new IOException(e);
         }
-
+        if (exception != null) {
+            throw new IOException(exception);
+        }
         updateStatus(Status.CONNECTED);
     }
 
@@ -809,13 +810,10 @@ public class XmppSession implements Closeable {
         if (getStatus() != Status.CONNECTED) {
             throw new IllegalStateException("You must be connected to the server before trying to login.");
         }
+        exception = null;
         try {
-            try {
-                updateStatus(Status.AUTHENTICATING);
-                authenticationManager.authenticate(new Jid(user, getDomain()).toString(), user, password, null);
-            } catch (SaslException e) {
-                throw new LoginException(e.getMessage());
-            }
+            updateStatus(Status.AUTHENTICATING);
+            authenticationManager.authenticate(new Jid(user, getDomain()).toString(), user, password, null);
 
             bindResource(resource);
 
@@ -828,7 +826,9 @@ public class XmppSession implements Closeable {
             if (exception != null) {
                 e.initCause(exception);
             }
-            throw e;
+            LoginException loginException = new LoginException("Login failed");
+            loginException.initCause(exception);
+            throw loginException;
         }
         updateStatus(Status.AUTHENTICATED);
     }
@@ -955,9 +955,6 @@ public class XmppSession implements Closeable {
     public final void notifyException(Exception e) {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
         exception = e;
-        if (status != Status.CLOSING && status != Status.CLOSED) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
         // Release a potential waiting thread.
         lock.lock();
         try {

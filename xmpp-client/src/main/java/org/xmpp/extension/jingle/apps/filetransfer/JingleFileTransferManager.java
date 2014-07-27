@@ -29,9 +29,17 @@ import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.bytestreams.ByteStreamSession;
+import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
 import org.xmpp.extension.filetransfer.FileTransferRejectedException;
 import org.xmpp.extension.jingle.*;
+import org.xmpp.extension.jingle.transports.TransportMethod;
+import org.xmpp.extension.jingle.transports.ibb.InBandBytestreamsTransportMethod;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -49,10 +57,15 @@ public final class JingleFileTransferManager extends ExtensionManager {
         jingleManager = xmppSession.getExtensionManager(JingleManager.class);
     }
 
-    public JingleFileTransferSession initFileTransferSession(final Jid responder, long timeout) throws XmppException {
-        JingleFileTransfer jingleFileTransfer = new JingleFileTransfer();
+    public JingleFileTransferSession initiateFileTransferSession(final Jid responder, File file, String description, long timeout) throws XmppException, IOException {
+        JingleFileTransfer.File jingleFile = new JingleFileTransfer.File(file.getName(), file.length(), new Date(file.lastModified()), null, description);
+        JingleFileTransfer jingleFileTransfer = JingleFileTransfer.offer(jingleFile);
 
-        Jingle.Content content = new Jingle.Content("a-file-offer", Jingle.Content.Creator.INITIATOR, jingleFileTransfer, null);
+
+        String ibbSessionId = UUID.randomUUID().toString();
+        InBandBytestreamsTransportMethod ibbTransportMethod = new InBandBytestreamsTransportMethod(ibbSessionId, 4096);
+
+        Jingle.Content content = new Jingle.Content("a-file-offer", Jingle.Content.Creator.INITIATOR, jingleFileTransfer, ibbTransportMethod);
         final JingleSession jingleSession = jingleManager.createSession(responder, content);
 
         final Lock lock = new ReentrantLock();
@@ -86,12 +99,14 @@ public final class JingleFileTransferManager extends ExtensionManager {
         } finally {
             lock.unlock();
         }
-
-        if (response[0].getAction() == Jingle.Action.SESSION_TERMINATE) {
+        Jingle jingle = response[0];
+        if (jingle.getAction() == Jingle.Action.SESSION_TERMINATE) {
             throw new FileTransferRejectedException();
         }
-        if (response[0].getAction() == Jingle.Action.SESSION_ACCEPT) {
-            // TODO negotiate transport
+        if (jingle.getAction() == Jingle.Action.SESSION_ACCEPT) {
+            // TODO respect responders transport method.
+            InBandByteStreamManager inBandByteStreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
+            inBandByteStreamManager.initiateSession(responder, ibbSessionId, 4096);
         }
         return new JingleFileTransferSession(jingleSession);
     }

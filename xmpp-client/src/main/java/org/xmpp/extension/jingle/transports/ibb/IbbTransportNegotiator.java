@@ -22,10 +22,33 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.jingle.transports;
+package org.xmpp.extension.jingle.transports.ibb;
+
+import org.xmpp.extension.jingle.JingleSession;
+import org.xmpp.extension.jingle.transports.TransportMethod;
+import org.xmpp.extension.jingle.transports.TransportNegotiator;
 
 /**
  * @author Christian Schudt
  */
-public abstract class TransportManager {
+public class IbbTransportNegotiator extends TransportNegotiator<InBandBytestreamsTransportMethod> {
+
+    private TransportMethod currentTransport = null;
+
+    IbbTransportNegotiator(JingleSession jingleSession) {
+        super(jingleSession);
+    }
+
+    public boolean replaceTransport(InBandBytestreamsTransportMethod transport) {
+        if (currentTransport == null) {
+            throw new IllegalStateException("No transport has been set yet, therefore no transport can be replaced.");
+        }
+
+        if (transport.getBlockSize() <= 65535) {
+            currentTransport = transport;
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

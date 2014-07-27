@@ -27,6 +27,7 @@ package org.xmpp.extension.jingle;
 import org.xmpp.Jid;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
+import org.xmpp.extension.jingle.transports.TransportMethod;
 import org.xmpp.stanza.client.IQ;
 
 import java.util.ArrayList;
@@ -60,15 +61,19 @@ public final class JingleSession {
     // Therefore it is the responsibility of the recipient to maintain a local copy of the current content definition(s).
     private final List<Jingle.Content> contents;
 
-    private State state;
+    private State state = State.INITIAL;
 
     JingleSession(String sessionId, Jid peer, boolean createdLocally, XmppSession xmppSession, JingleManager jingleManager, Jingle.Content... contents) {
+        this(sessionId, peer, createdLocally, xmppSession, jingleManager, Arrays.asList(contents));
+    }
+
+    JingleSession(String sessionId, Jid peer, boolean createdLocally, XmppSession xmppSession, JingleManager jingleManager, List<Jingle.Content> contents) {
         this.sessionId = sessionId;
         this.xmppSession = xmppSession;
         this.peer = peer;
         this.jingleManager = jingleManager;
         this.createdLocally = createdLocally;
-        this.contents = new ArrayList<>(Arrays.asList(contents));
+        this.contents = new ArrayList<>(contents);
     }
 
     /**
@@ -147,6 +152,27 @@ public final class JingleSession {
         } finally {
             jingleManager.removeSession(sessionId);
         }
+    }
+
+    /**
+     * @param contentName     The content name.
+     * @param transportMethod The replaced transport method.
+     * @throws XmppException
+     * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-transport-replace">7.2.15 transport-replace</a>
+     */
+    public void replaceTransport(String contentName, TransportMethod transportMethod) throws XmppException {
+        Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
+        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE, Arrays.asList(content))));
+    }
+
+    public void acceptTransport(String contentName, TransportMethod transportMethod) throws XmppException {
+        Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
+        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT, Arrays.asList(content))));
+    }
+
+    public void rejectTransport(String contentName, TransportMethod transportMethod) throws XmppException {
+        Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
+        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Arrays.asList(content))));
     }
 
     /**

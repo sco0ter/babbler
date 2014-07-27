@@ -61,6 +61,7 @@ import org.xmpp.extension.httpbind.Body;
 import org.xmpp.extension.invisible.Invisible;
 import org.xmpp.extension.invisible.Visible;
 import org.xmpp.extension.jingle.Jingle;
+import org.xmpp.extension.jingle.apps.filetransfer.JingleFileTransfer;
 import org.xmpp.extension.jingle.apps.rtp.Rtp;
 import org.xmpp.extension.jingle.transports.ibb.InBandBytestreamsTransportMethod;
 import org.xmpp.extension.jingle.transports.iceudp.IceUdpTransportMethod;
@@ -367,6 +368,9 @@ public abstract class XmppContext {
 
             // XEP-0231: Bits of Binary
             registerExtension(Data.class);
+
+            // XEP-0234: Jingle File Transfer
+            registerExtension(JingleFileTransfer.class);
 
             // XEP-0249: Direct MUC Invitations
             registerExtension(DirectInvitation.class);

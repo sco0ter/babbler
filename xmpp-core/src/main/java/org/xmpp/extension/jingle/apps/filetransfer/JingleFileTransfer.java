@@ -59,6 +59,21 @@ public final class JingleFileTransfer extends ApplicationFormat {
         @XmlElement(name = "size")
         private long size;
 
+        private File() {
+        }
+
+        public File(String name, long size) {
+            this.name = name;
+            this.size = size;
+        }
+
+        public File(String name, long size, Date lastModified, String hash, String description) {
+            this.name = name;
+            this.size = size;
+            this.date = lastModified;
+            this.description = description;
+        }
+
         @Override
         public long getSize() {
             return size;

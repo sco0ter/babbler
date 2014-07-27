@@ -187,7 +187,7 @@ public final class TcpConnection extends Connection {
             xmppStreamWriter.openStream(null);
             xmppStreamReader.startReading(inputStream);
         } catch (XMLStreamException | IOException e) {
-            e.printStackTrace();
+            getXmppSession().notifyException(e);
         }
     }
 

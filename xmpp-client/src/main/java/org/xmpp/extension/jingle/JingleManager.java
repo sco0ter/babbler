@@ -43,13 +43,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
 public final class JingleManager extends ExtensionManager {
 
+    private static final Logger logger = Logger.getLogger(JingleManager.class.getName());
+
     private final Set<Class<? extends ApplicationFormat>> supportedApplicationFormats = new HashSet<>();
+
+    private final Set<JingleListener> jingleListeners = new CopyOnWriteArraySet<>();
 
     private Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
 
@@ -124,8 +131,10 @@ public final class JingleManager extends ExtensionManager {
                                         // Terminate the session with <unsupported-transports/>.
                                         xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedTransports()))));
                                     } else {
-                                        // Everything is fine, notify the listeners.
-                                        //notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                                        // Everything is fine, create the session and notify the listeners.
+                                        JingleSession jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
+                                        jingleSessionMap.put(jingle.getSessionId(), jingleSession);
+                                        notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                                     }
                                 }
                             }
@@ -171,5 +180,41 @@ public final class JingleManager extends ExtensionManager {
 
     void removeSession(String sessionId) {
         jingleSessionMap.remove(sessionId);
+    }
+
+    /**
+     * Adds a Jingle listener, which allows to listen for Jingle events.
+     *
+     * @param jingleListener The listener.
+     * @see #removeJingleListener(JingleListener)
+     */
+    public final void addJingleListener(JingleListener jingleListener) {
+        jingleListeners.add(jingleListener);
+    }
+
+    /**
+     * Removes a previously added Jingle listener.
+     *
+     * @param jingleListener The listener.
+     * @see #addJingleListener(JingleListener)
+     */
+    public final void removeJingleListener(JingleListener jingleListener) {
+        jingleListeners.remove(jingleListener);
+    }
+
+
+    /**
+     * Notifies the Jingle listeners.
+     *
+     * @param jingleEvent The Jingle event.
+     */
+    void notifyJingleListeners(JingleEvent jingleEvent) {
+        for (JingleListener jingleListener : jingleListeners) {
+            try {
+                jingleListener.jingleReceived(jingleEvent);
+            } catch (Exception exc) {
+                logger.log(Level.WARNING, exc.getMessage(), exc);
+            }
+        }
     }
 }

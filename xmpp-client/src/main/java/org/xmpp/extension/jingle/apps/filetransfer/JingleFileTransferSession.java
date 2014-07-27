@@ -28,6 +28,9 @@ import org.xmpp.XmppException;
 import org.xmpp.extension.jingle.Jingle;
 import org.xmpp.extension.jingle.JingleSession;
 
+import java.io.File;
+import java.util.Date;
+
 /**
  * @author Christian Schudt
  */
@@ -49,5 +52,8 @@ public final class JingleFileTransferSession {
 
     public void communicateHash() throws XmppException {
         jingleSession.sendSessionInfo(new JingleFileTransfer.Checksum(null));
+    }
+
+    public void offer(File file, String description) throws XmppException {
     }
 }

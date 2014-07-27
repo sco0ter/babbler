@@ -22,53 +22,17 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.jingle.transports.ibb;
+package org.xmpp.extension.jingle.transports;
 
-import org.xmpp.extension.jingle.transports.TransportMethod;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.xmpp.extension.jingle.JingleSession;
 
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "transport")
-public final class InBandBytestreamsTransportMethod extends TransportMethod {
+public abstract class TransportNegotiator<T extends TransportMethod> {
+    protected final JingleSession jingleSession;
 
-    @XmlAttribute(name = "block-size")
-    private Integer blockSize;
-
-    @XmlAttribute
-    private String sid;
-
-    @XmlAttribute
-    private StanzaType stanza;
-
-    private InBandBytestreamsTransportMethod() {
-    }
-
-    public InBandBytestreamsTransportMethod(String sid, int blockSize) {
-        this.sid = sid;
-        this.blockSize = blockSize;
-    }
-
-    public Integer getBlockSize() {
-        return blockSize;
-    }
-
-    public String getSessionId() {
-        return sid;
-    }
-
-    public StanzaType getStanzaType() {
-        return stanza;
-    }
-
-    public enum StanzaType {
-        @XmlEnumValue("iq")
-        IQ,
-        @XmlEnumValue("message")
-        MESSAGE
+    protected TransportNegotiator(JingleSession jingleSession) {
+        this.jingleSession = jingleSession;
     }
 }

@@ -159,25 +159,6 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smack-core</artifactId>
-            <version>4.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smack-extensions</artifactId>
-            <version>4.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.igniterealtime.smack</groupId>
-            <artifactId>smack-tcp</artifactId>
-            <version>4.0.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>6.8.1</version>

@@ -24,9 +24,7 @@
 
 package org.xmpp.extension.geoloc;
 
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.pubsub.Item;
 import org.xmpp.extension.pubsub.PubSubManager;
@@ -55,6 +53,15 @@ public final class GeoLocationManager extends ExtensionManager {
 
     private GeoLocationManager(XmppSession xmppSession) {
         super(xmppSession, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    geoLocationListeners.clear();
+                }
+            }
+        });
 
         xmppSession.addMessageListener(new MessageListener() {
             @Override

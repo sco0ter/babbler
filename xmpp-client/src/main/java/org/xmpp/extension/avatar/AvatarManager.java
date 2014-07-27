@@ -71,6 +71,7 @@ public final class AvatarManager extends ExtensionManager {
                 if (e.getStatus() == XmppSession.Status.CLOSED) {
                     avatarChangeListeners.clear();
                     avatars.clear();
+                    userAvatars.clear();
                 }
             }
         });

@@ -96,6 +96,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             public void statusChanged(ConnectionEvent e) {
                 if (e.getStatus() == XmppSession.Status.CLOSED) {
                     messageDeliveredListeners.clear();
+                    messageFilters.clear();
                 }
             }
         });

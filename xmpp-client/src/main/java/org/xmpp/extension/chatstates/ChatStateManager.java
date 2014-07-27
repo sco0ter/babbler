@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.chatstates;
 
+import org.xmpp.ConnectionEvent;
+import org.xmpp.ConnectionListener;
 import org.xmpp.Jid;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
@@ -67,6 +69,18 @@ public final class ChatStateManager extends ExtensionManager {
 
     private ChatStateManager(final XmppSession xmppSession) {
         super(xmppSession, "http://jabber.org/protocol/chatstates");
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    chatStateListeners.clear();
+                    chatSessionMap.clear();
+                    contactSupportsChatStateNotifications.clear();
+                }
+            }
+        });
+
         xmppSession.getChatManager().addChatSessionListener(new ChatSessionListener() {
             @Override
             public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {

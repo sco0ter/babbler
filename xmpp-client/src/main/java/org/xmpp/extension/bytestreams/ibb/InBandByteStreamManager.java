@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.bytestreams.ibb;
 
-import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.bytestreams.ByteStreamManager;
 import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.stanza.*;
@@ -56,6 +53,15 @@ public final class InBandByteStreamManager extends ByteStreamManager {
 
     private InBandByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession, InBandByteStream.NAMESPACE);
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    ibbSessionMap.clear();
+                }
+            }
+        });
 
         xmppSession.addIQListener(new IQListener() {
             @Override

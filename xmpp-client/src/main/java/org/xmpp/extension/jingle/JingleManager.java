@@ -24,9 +24,7 @@
 
 package org.xmpp.extension.jingle;
 
-import org.xmpp.Jid;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.jingle.apps.ApplicationFormat;
 import org.xmpp.extension.jingle.apps.filetransfer.JingleFileTransfer;
@@ -64,6 +62,16 @@ public final class JingleManager extends ExtensionManager {
         super(xmppSession);
 
         supportedApplicationFormats.add(JingleFileTransfer.class);
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    jingleListeners.clear();
+                    jingleSessionMap.clear();
+                }
+            }
+        });
 
         xmppSession.addIQListener(new IQListener() {
             @Override

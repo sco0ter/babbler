@@ -24,6 +24,8 @@
 
 package org.xmpp.extension.bytestreams;
 
+import org.xmpp.ConnectionEvent;
+import org.xmpp.ConnectionListener;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 
@@ -43,6 +45,15 @@ public abstract class ByteStreamManager extends ExtensionManager {
 
     protected ByteStreamManager(XmppSession xmppSession, String... features) {
         super(xmppSession, features);
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    byteStreamListeners.clear();
+                }
+            }
+        });
     }
 
     /**

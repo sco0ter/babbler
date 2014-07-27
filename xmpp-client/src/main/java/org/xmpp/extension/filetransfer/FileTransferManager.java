@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.filetransfer;
 
-import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.oob.iq.OobIQ;
@@ -64,6 +61,14 @@ public final class FileTransferManager extends ExtensionManager {
 
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession);
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    fileTransferOfferListeners.clear();
+                }
+            }
+        });
         this.streamInitiationManager = xmppSession.getExtensionManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
     }

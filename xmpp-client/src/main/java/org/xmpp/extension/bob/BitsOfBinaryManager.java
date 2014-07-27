@@ -24,10 +24,7 @@
 
 package org.xmpp.extension.bob;
 
-import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
@@ -48,6 +45,15 @@ class BitsOfBinaryManager extends ExtensionManager {
 
     private BitsOfBinaryManager(final XmppSession xmppSession) {
         super(xmppSession, "urn:xmpp:bob");
+
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    dataCache.clear();
+                }
+            }
+        });
 
         xmppSession.addIQListener(new IQListener() {
             @Override

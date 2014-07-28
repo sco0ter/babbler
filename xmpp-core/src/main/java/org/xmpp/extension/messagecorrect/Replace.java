@@ -60,4 +60,9 @@ public final class Replace {
     public String getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

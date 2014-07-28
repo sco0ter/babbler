@@ -81,4 +81,9 @@ public final class WebPageBookmark extends Bookmark {
         result = 31 * result + ((url == null) ? 0 : url.hashCode());
         return result;
     }
+
+    @Override
+    public String toString() {
+        return getName() + ": " + (url != null ? url.toString() : "");
+    }
 }

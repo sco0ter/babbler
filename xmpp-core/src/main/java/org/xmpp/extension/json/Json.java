@@ -50,4 +50,9 @@ public final class Json {
     public String getValue() {
         return json;
     }
+
+    @Override
+    public String toString() {
+        return json;
+    }
 }

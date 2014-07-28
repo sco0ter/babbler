@@ -82,4 +82,18 @@ public final class ChatService {
     public ChatRoom createRoom(String room) {
         return new ChatRoom(null, new Jid(room, serviceAddress.getDomain()), xmppSession);
     }
+
+    /**
+     * Gets the service address.
+     *
+     * @return The service address.
+     */
+    public Jid getAddress() {
+        return serviceAddress;
+    }
+
+    @Override
+    public String toString() {
+        return serviceAddress.toString();
+    }
 }

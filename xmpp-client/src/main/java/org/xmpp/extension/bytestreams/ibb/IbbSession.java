@@ -141,4 +141,9 @@ final class IbbSession extends ByteStreamSession {
             outputStream.close();
         }
     }
+
+    @Override
+    public String toString() {
+        return "In-Band Bytestream Session: " + getSessionId();
+    }
 }

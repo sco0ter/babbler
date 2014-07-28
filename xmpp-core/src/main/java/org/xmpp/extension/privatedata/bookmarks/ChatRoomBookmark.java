@@ -135,4 +135,9 @@ public final class ChatRoomBookmark extends Bookmark {
         result = 31 * result + ((room == null) ? 0 : room.hashCode());
         return result;
     }
+
+    @Override
+    public String toString() {
+        return getName() + ": " + (room != null ? room.toString() : "");
+    }
 }

@@ -121,6 +121,11 @@ public final class Privacy {
         return privacyLists;
     }
 
+    @Override
+    public String toString() {
+        return privacyLists.toString();
+    }
+
     private static final class Active {
         @XmlAttribute(name = "name")
         private String name;

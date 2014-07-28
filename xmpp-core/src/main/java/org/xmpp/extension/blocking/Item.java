@@ -50,5 +50,10 @@ public final class Item {
     public Jid getJid() {
         return jid;
     }
+
+    @Override
+    public String toString() {
+        return jid.toString();
+    }
 }
 

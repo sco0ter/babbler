@@ -69,4 +69,9 @@ public final class OobX {
     public String getDescription() {
         return description;
     }
+
+    @Override
+    public String toString() {
+        return url != null ? url.toString() : null;
+    }
 }

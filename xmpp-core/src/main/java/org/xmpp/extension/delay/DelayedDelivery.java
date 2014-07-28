@@ -116,4 +116,9 @@ public final class DelayedDelivery {
     public String getReason() {
         return reason;
     }
+
+    @Override
+    public String toString() {
+        return stamp.toString();
+    }
 }

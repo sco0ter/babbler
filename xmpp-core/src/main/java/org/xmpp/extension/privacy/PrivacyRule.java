@@ -330,6 +330,25 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
         return o != null ? Long.compare(order, o.order) : -1;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(action.name().toLowerCase());
+        sb.append(", ");
+        sb.append(order);
+
+        if (type != null) {
+            sb.append(", ");
+            sb.append(type.name().toLowerCase());
+        }
+        if (value != null) {
+            sb.append(", ");
+            sb.append(value);
+        }
+
+        return sb.toString();
+    }
+
     /**
      * Defines the type of communication which should be allowed of denied.
      */

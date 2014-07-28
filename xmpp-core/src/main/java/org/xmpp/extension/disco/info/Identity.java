@@ -222,5 +222,10 @@ public final class Identity implements Comparable<Identity> {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Category: " + category + " / Type: " + type;
+    }
 }
 

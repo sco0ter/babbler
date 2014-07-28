@@ -60,4 +60,9 @@ public final class PrivateData {
     public Object getData() {
         return privateData;
     }
+
+    @Override
+    public String toString() {
+        return privateData != null ? privateData.toString() : super.toString();
+    }
 }

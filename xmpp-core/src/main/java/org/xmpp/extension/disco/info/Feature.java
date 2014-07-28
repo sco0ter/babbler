@@ -112,4 +112,9 @@ public final class Feature implements Comparable<Feature> {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return var;
+    }
 }

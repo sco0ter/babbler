@@ -81,4 +81,9 @@ public final class LastActivity {
     public String getStatus() {
         return status;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(seconds) + " seconds";
+    }
 }

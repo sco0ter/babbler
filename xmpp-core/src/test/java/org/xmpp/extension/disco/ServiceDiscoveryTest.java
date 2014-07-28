@@ -99,7 +99,7 @@ public class ServiceDiscoveryTest extends XmlTest {
                 "    from='catalog.shakespeare.lit'\n" +
                 "    to='romeo@montague.net/orchard'\n" +
                 "    id='items2'>\n" +
-                "  <query xmlns='http://jabber.org/protocol/disco#items'>\n" +
+                "  <query xmlns='http://jabber.org/protocol/disco#items' node='http://jabber.org/protocol/tune'>\n" +
                 "    <item jid='catalog.shakespeare.lit'\n" +
                 "          node='books'\n" +
                 "          name='Books by and about Shakespeare'/>\n" +

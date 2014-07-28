@@ -74,4 +74,9 @@ public final class Reachability {
         result = 31 * result + ((addresses == null) ? 0 : addresses.hashCode());
         return result;
     }
+
+    @Override
+    public String toString() {
+        return addresses.toString();
+    }
 }

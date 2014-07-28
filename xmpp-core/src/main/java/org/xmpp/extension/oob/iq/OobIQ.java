@@ -56,6 +56,12 @@ public final class OobIQ {
         this.description = description;
     }
 
+    public OobIQ(URL url, String description, String sessionId) {
+        this.url = url;
+        this.description = description;
+        this.sessionId = sessionId;
+    }
+
     /**
      * Gets the URL.
      *
@@ -81,5 +87,10 @@ public final class OobIQ {
      */
     public String getSessionId() {
         return sessionId;
+    }
+
+    @Override
+    public String toString() {
+        return url != null ? url.toString() : null;
     }
 }

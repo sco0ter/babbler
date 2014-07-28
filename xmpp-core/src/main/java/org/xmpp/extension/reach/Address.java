@@ -89,6 +89,11 @@ public final class Address {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return uri != null ? uri.toString() : super.toString();
+    }
+
     public static final class Description {
 
         @XmlValue
@@ -147,6 +152,11 @@ public final class Address {
             result = 31 * result + ((value == null) ? 0 : value.hashCode());
             result = 31 * result + ((language == null) ? 0 : language.hashCode());
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return value;
         }
     }
 }

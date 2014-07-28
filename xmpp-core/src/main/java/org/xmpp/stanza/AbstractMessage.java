@@ -319,6 +319,11 @@ public abstract class AbstractMessage extends Stanza {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return getBody();
+    }
+
     /**
      * Represents a {@code <message/>} 'type' attribute.
      * <blockquote>

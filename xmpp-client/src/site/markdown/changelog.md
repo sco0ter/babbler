@@ -20,12 +20,13 @@
 * Fixed Man-in-the-Middle vulnerability / Added Hostname Verification. [Read more about it](http://tersesystems.com/2014/03/23/fixing-hostname-verification/).
 * `BookmarkManager` added for more convenient management of bookmarks.
 * `Comparable` interface implemented for bookmarks.
-* Improved BOSH logic with regards to overactivity. Also updated BOSH version to 1.11.
+* Improved BOSH logic with regard to overactivity. Also updated BOSH version to 1.11.
 * Stream errors now have their own `StreamError` class and no longer derive from `Exception` due to some JAXB problems.
 * Enhanced `RosterManager` API to easily rename or remove (nested) roster groups.
 * Added helper methods to facilitate use of [XEP-0149: Time Periods](http://xmpp.org/extensions/xep-0149.html)
 * Set encoding for the XMPP stream to UTF-8.
 * Made connection establishment a little bit more robust.
+* toString() method implemented on many objects.
 * More documentation added.
 
 ## Version 0.2.0 (2014-07-06)

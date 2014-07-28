@@ -148,5 +148,10 @@ public final class Annotation {
         public Jid getJid() {
             return jid;
         }
+
+        @Override
+        public String toString() {
+            return value;
+        }
     }
 }

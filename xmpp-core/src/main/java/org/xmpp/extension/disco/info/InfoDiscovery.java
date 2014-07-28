@@ -118,4 +118,9 @@ public final class InfoDiscovery implements InfoNode {
     public List<DataForm> getExtensions() {
         return extensions;
     }
+
+    @Override
+    public String toString() {
+        return "Identity: " + identities + "; Features: " + features;
+    }
 }

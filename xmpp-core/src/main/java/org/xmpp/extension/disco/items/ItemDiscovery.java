@@ -62,7 +62,7 @@ public final class ItemDiscovery implements ItemNode {
     }
 
     /**
-     * Creates an item discovery element with a node attribute.
+     * Creates an item discovery element with nodes.
      *
      * @param items The items.
      */
@@ -89,5 +89,20 @@ public final class ItemDiscovery implements ItemNode {
     @Override
     public String getNode() {
         return node;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (node != null) {
+            sb.append(node);
+        }
+        if (items != null) {
+            if (!sb.toString().isEmpty()) {
+                sb.append(": ");
+            }
+            sb.append(items.toString());
+        }
+        return sb.toString();
     }
 }

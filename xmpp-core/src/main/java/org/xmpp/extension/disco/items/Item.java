@@ -25,10 +25,8 @@
 package org.xmpp.extension.disco.items;
 
 import org.xmpp.Jid;
-import org.xmpp.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * The implementation of the {@code <item/>} element in the {@code http://jabber.org/protocol/disco#item} namespace, used for item discovery.
@@ -36,7 +34,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author Christian Schudt
  */
 public final class Item {
-    @XmlJavaTypeAdapter(JidAdapter.class)
+
     @XmlAttribute
     private Jid jid;
 
@@ -79,5 +77,21 @@ public final class Item {
      */
     public String getNode() {
         return node;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(jid.toString());
+        if (node != null) {
+            sb.append(" / ");
+            sb.append(node);
+        }
+        if (name != null) {
+            sb.append(" (");
+            sb.append(name);
+            sb.append(")");
+        }
+        return sb.toString();
     }
 }

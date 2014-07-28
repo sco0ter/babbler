@@ -26,9 +26,9 @@ support for [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.
 
 By enabling an extension, support for it will be automatically advertised by [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html).
 
-All so-called extension managers are therefore derived from ```org.xmpp.extension.ExtensionManager``` (which provides the enabling/disabling logic).
+All so-called extension managers are therefore derived from `org.xmpp.extension.ExtensionManager` (which provides the enabling/disabling logic).
 
-To get an extension manager for a specific extension, you use the ```getExtensionManager``` method of the ```XmppSession```.
+To get an extension manager for a specific extension, you use the `getExtensionManager` method of the `XmppSession`.
 
 **Examples:**
 

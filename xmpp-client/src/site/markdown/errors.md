@@ -1,20 +1,20 @@
 # Exceptions and XMPP Errors
 ---
 
-There is one abstract ```org.xmpp.XmppException``` for most kind of exceptions, which are related to XMPP.
+There is one abstract `org.xmpp.XmppException` for most kind of exceptions, which are related to XMPP.
 
 For now, there are three subclasses of it:
 
-* org.xmpp.stream.StreamException for [Stream Errors][Stream Errors].
-* org.xmpp.stanza.StanzaException for [Stanza Errors][Stanza Errors].
-* org.xmpp.NoResponseException for IQ queries, which didn\'t receive a response.
+* `org.xmpp.stream.StreamException`  for [Stream Errors][Stream Errors].
+* `org.xmpp.stanza.StanzaException` for [Stanza Errors][Stanza Errors].
+* `org.xmpp.NoResponseException` for IQ queries, which didn\'t receive a response.
 
 
 ## Dealing with Stream Errors
 
 XMPP Stream Errors are unrecoverable, which means the session will get disconnected after they have occurred.
 
-Here's an example how to react with stream errors.
+Here's an example how to react to stream errors.
 
 ```java
 xmppSession.addConnectionListener(new ConnectionListener() {

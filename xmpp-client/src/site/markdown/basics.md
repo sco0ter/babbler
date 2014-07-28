@@ -3,7 +3,7 @@
 
 ## Creating an XMPP Session
 
-The first thing you want to do in order to connect to a XMPP server is creating a ```XmppSession``` object:
+The first thing you want to do in order to connect to a XMPP server is creating a `XmppSession` object:
 
 ```java
 XmppSession xmppSession = new XmppSession("xmppDomain");
@@ -14,7 +14,7 @@ A session to a XMPP server can be established in two ways:
 1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
 2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
 
-By default, the ```XmppSession``` instance will try to connect to the domain with a TCP connection first (port 5222) during the connection process.
+By default, the `XmppSession` instance will try to connect to the domain with a TCP connection first (port 5222) during the connection process.
 If the connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually BOSH).
 The hostname and port is determined by doing a DNS lookup.
 

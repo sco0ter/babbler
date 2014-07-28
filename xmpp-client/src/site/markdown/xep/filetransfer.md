@@ -47,9 +47,66 @@ Only if the SOCKS5 negotiation fails on both sides, the parties would fallback t
 
 ## The File Transfer API
 
+All three approaches will be abstracted behind one File Transfer API:
+
+![File Transfer API](../FileTransfer.png)
+
+Note that Jingle File Transfer is not yet implemented and that the following API should still be understood as preliminary and experimental!
+
+### Offering a File
+
+The following code sample will offer a file to another user. Make sure you use a full JID!
+
+The `offerFile` method blocks until the file transfer has been accepted or rejected, but maximal 60 seconds (last parameter).
+
+If accepted, you can transfer the file.
 
 ```java
-...
+try {
+    FileTransfer fileTransfer = fileTransferManager.offerFile(new File("test.png"), "Description", Jid.valueOf("juliet@exampl.net/balcony"), 60000);
+    fileTransfer.transfer();
+} catch (FileTransferRejectedException e) {
+    // The user rejected the file transfer.
+} catch (XmppException e) {
+    // ...
+}
+```
+
+### Listening for File Transfer Offers
+
+```java
+FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
+    @Override
+    public void fileTransferOffered(FileTransferOfferEvent e) {
+        try {
+            OutputStream outputStream = new FileOutputStream("test.png");
+
+            final FileTransfer fileTransfer = e.accept(outputStream);
+            fileTransfer.transfer();
+
+        } catch (IOException e1) {
+            // ...
+        }
+    }
+});
+```
+
+### Monitoring the Progress
+
+If you are using JavaFX, you could use the `AnimationTimer` class to periodically ask the `fileTransfer` object for the progress:
+
+```java
+AnimationTimer animationTimer = new AnimationTimer() {
+    @Override
+    public void handle(long now) {
+        System.out.println(fileTransfer.getProgress());
+        if (fileTransfer.isDone()) {
+            stop();
+        }
+    }
+};
+animationTimer.start();
 ```
 
 [In-Band Bytestreams]: http://xmpp.org/extensions/xep-0047.html "XEP-0047: In-Band Bytestreams"

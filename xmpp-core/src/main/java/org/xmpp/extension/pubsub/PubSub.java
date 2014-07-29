@@ -578,7 +578,7 @@ public final class PubSub {
         }
     }
 
-    static final class Options {
+    private static final class Options {
         @XmlAttribute(name = "node")
         private String node;
 
@@ -778,7 +778,7 @@ public final class PubSub {
         private Date expiry;
 
         @XmlElement(name = "subscribe-options")
-        private Options options;
+        private SubscribeOptions options;
 
         @Override
         public String getSubId() {
@@ -810,8 +810,7 @@ public final class PubSub {
             return options != null;
         }
 
-        @XmlType(name = "subscription-options")
-        private static final class Options {
+        private static final class SubscribeOptions {
 
             @XmlElement(name = "required")
             private String required;

@@ -145,7 +145,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
     private List<Affiliation> getAffiliations() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withAffiliations()));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withAffiliations()));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getAffiliations();
     }
@@ -159,7 +159,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      */
     private DataForm getDefaultSubscriptionOptions() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSub.withDefault()));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withDefault()));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getDefault().getDataForm();
     }
@@ -173,7 +173,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
      */
     private DataForm getDefaultNodeConfiguration() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, PubSubOwner.withDefault()));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSubOwner.withDefault()));
         PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
         return pubSubOwner.getConfigurationForm();
     }

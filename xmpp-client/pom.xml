@@ -114,7 +114,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <finalName>Babbler-${project.version}</finalName>
+                    <finalName>babbler-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <!-- http://jira.codehaus.org/browse/MASSEMBLY-352 -->
                     <attach>false</attach>

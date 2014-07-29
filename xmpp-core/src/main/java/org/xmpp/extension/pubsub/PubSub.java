@@ -578,7 +578,7 @@ public final class PubSub {
         }
     }
 
-    private static final class Options {
+    static final class Options {
         @XmlAttribute(name = "node")
         private String node;
 

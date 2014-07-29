@@ -99,4 +99,9 @@ public final class Header {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return name + ": " + value;
+    }
 }

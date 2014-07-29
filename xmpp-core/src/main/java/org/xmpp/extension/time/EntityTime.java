@@ -110,6 +110,19 @@ public final class EntityTime {
         return utc;
     }
 
+    @Override
+    public String toString() {
+        if (utc != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(utc);
+            if (tzo != null) {
+                calendar.setTimeZone(tzo);
+            }
+            return calendar.getTime().toString();
+        }
+        return super.toString();
+    }
+
     /**
      * Converts a date to its UTC representation.
      */

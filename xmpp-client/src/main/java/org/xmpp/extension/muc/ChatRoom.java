@@ -935,4 +935,19 @@ public final class ChatRoom {
         IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
         xmppSession.query(iq);
     }
+
+
+    /**
+     * Gets the room address.
+     *
+     * @return The room address.
+     */
+    public Jid getAddress() {
+        return roomJid;
+    }
+
+    @Override
+    public String toString() {
+        return roomJid.toString();
+    }
 }

@@ -78,4 +78,9 @@ public final class Headers {
     public List<Header> getHeaders() {
         return headers;
     }
+
+    @Override
+    public String toString() {
+        return headers.toString();
+    }
 }

@@ -58,4 +58,9 @@ public final class RosterDelimiter {
     public String getRosterDelimiter() {
         return rosterDelimiter;
     }
+
+    @Override
+    public String toString() {
+        return rosterDelimiter;
+    }
 }

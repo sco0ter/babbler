@@ -80,4 +80,9 @@ final class S5bSession extends ByteStreamSession {
     public Jid getStreamHost() {
         return streamHost;
     }
+
+    @Override
+    public String toString() {
+        return "SOCKS5 Bytestream Session: " + getSessionId();
+    }
 }

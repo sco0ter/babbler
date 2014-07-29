@@ -244,4 +244,9 @@ public final class EntityCapabilities extends Feature {
     public int getPriority() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return ver;
+    }
 }

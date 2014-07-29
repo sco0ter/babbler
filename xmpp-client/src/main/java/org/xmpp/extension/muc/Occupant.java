@@ -196,4 +196,9 @@ public final class Occupant implements Comparable<Occupant> {
             return -1;
         }
     }
+
+    @Override
+    public String toString() {
+        return nick;
+    }
 }

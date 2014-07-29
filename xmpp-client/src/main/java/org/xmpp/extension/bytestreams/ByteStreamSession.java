@@ -30,8 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- *
- *
  * @author Christian Schudt
  */
 public abstract class ByteStreamSession implements Closeable {
@@ -72,8 +70,8 @@ public abstract class ByteStreamSession implements Closeable {
      * The default timeout is 0, i.e. infinite. Read operations will therefore block forever, unless the session is closed.
      *
      * @return The read timeout.
-     * @see #setReadTimeout(int)
      * @throws IOException If an I/O error occurred.
+     * @see #setReadTimeout(int)
      */
     public abstract int getReadTimeout() throws IOException;
 
@@ -81,8 +79,8 @@ public abstract class ByteStreamSession implements Closeable {
      * Sets the timeout (in milliseconds).
      *
      * @param readTimeout The read timeout.
-     * @see #getReadTimeout()
      * @throws IOException If an I/O error occurred.
+     * @see #getReadTimeout()
      */
     public abstract void setReadTimeout(int readTimeout) throws IOException;
 }

@@ -72,4 +72,9 @@ public final class Nickname {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

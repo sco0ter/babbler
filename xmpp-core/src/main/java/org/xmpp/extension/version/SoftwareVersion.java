@@ -106,4 +106,25 @@ public final class SoftwareVersion {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (name != null) {
+            sb.append(name);
+        }
+        if (version != null) {
+            if (!sb.toString().isEmpty()) {
+                sb.append(" ");
+            }
+            sb.append(version);
+        }
+        if (os != null) {
+            if (!sb.toString().isEmpty()) {
+                sb.append(", ");
+            }
+            sb.append(os);
+        }
+        return sb.toString();
+    }
 }

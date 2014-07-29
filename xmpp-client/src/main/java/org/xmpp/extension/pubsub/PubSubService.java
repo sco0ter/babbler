@@ -177,4 +177,18 @@ public final class PubSubService {
         PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
         return pubSubOwner.getConfigurationForm();
     }
+
+    /**
+     * Gets the service address.
+     *
+     * @return The service address.
+     */
+    public Jid getAddress() {
+        return service;
+    }
+
+    @Override
+    public String toString() {
+        return service.toString();
+    }
 }

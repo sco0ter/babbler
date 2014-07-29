@@ -25,16 +25,38 @@
 package org.xmpp.extension.pubsub;
 
 /**
+ * Represents an item within a publish-subscribe node.
+ *
  * @author Christian Schudt
  */
 public interface Item {
 
+    /**
+     * Gets the payload.
+     *
+     * @return The payload.
+     */
     Object getPayload();
 
+    /**
+     * Gets the item id.
+     *
+     * @return The item id.
+     */
     String getId();
 
+    /**
+     * Gets the associated node id.
+     *
+     * @return The node id.
+     */
     String getNode();
 
+    /**
+     * Gets the publisher.
+     *
+     * @return The publisher.
+     */
     String getPublisher();
 
 }

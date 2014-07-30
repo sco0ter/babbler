@@ -143,7 +143,7 @@ public class PubSubSubscriberUseCasesTest extends XmlTest {
 
     @Test
     public void marshalUnsubscribe() throws JAXBException, XMLStreamException {
-        PubSub pubSub = PubSub.withUnsubscribe("node6", Jid.valueOf("francisco@denmark.lit"));
+        PubSub pubSub = PubSub.withUnsubscribe("node6", Jid.valueOf("francisco@denmark.lit"), null);
         String xml = marshal(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><unsubscribe jid=\"francisco@denmark.lit\" node=\"node6\"></unsubscribe></pubsub>");
     }

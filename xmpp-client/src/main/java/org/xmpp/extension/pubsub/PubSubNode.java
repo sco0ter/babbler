@@ -186,7 +186,19 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
     public void unsubscribe() throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withUnsubscribe(nodeId, xmppSession.getConnectedResource().asBareJid())));
+        this.unsubscribe(null);
+    }
+
+    /**
+     * Unsubscribes from this node.
+     *
+     * @param subscriptionId The subscription id.
+     * @throws org.xmpp.stanza.StanzaException If the entity returned a stanza error.
+     * @throws org.xmpp.NoResponseException    If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
+     */
+    public void unsubscribe(String subscriptionId) throws XmppException {
+        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withUnsubscribe(nodeId, xmppSession.getConnectedResource().asBareJid(), subscriptionId)));
     }
 
     /**

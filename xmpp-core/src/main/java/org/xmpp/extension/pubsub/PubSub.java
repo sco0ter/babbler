@@ -331,13 +331,14 @@ public final class PubSub {
      * }
      * </pre>
      *
-     * @param node The node.
-     * @param jid  The JID.
+     * @param node           The node.
+     * @param jid            The JID.
+     * @param subscriptionId The subscription id.
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
-    public static PubSub withUnsubscribe(String node, Jid jid) {
-        return new PubSub(new Unsubscribe(node, jid));
+    public static PubSub withUnsubscribe(String node, Jid jid, String subscriptionId) {
+        return new PubSub(new Unsubscribe(node, jid, subscriptionId));
     }
 
     /**
@@ -846,12 +847,16 @@ public final class PubSub {
         @XmlAttribute(name = "jid")
         private Jid jid;
 
+        @XmlAttribute(name = "subid")
+        private String subid;
+
         private Unsubscribe() {
         }
 
-        private Unsubscribe(String node, Jid jid) {
+        private Unsubscribe(String node, Jid jid, String subid) {
             super(node);
             this.jid = jid;
+            this.subid = subid;
         }
     }
 

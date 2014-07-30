@@ -275,6 +275,26 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
         return result;
     }
 
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (type != null) {
+            String sType = type.name();
+            sb.append(sType.substring(0, 1)).append(sType.substring(1).toLowerCase()).append(" ");
+        }
+        sb.append("Presence");
+        if (show != null) {
+            sb.append(" ").append(show.name());
+        }
+        sb.append(super.toString());
+
+        String status = getStatus();
+        if (status != null) {
+            sb.append(": ").append(status);
+        }
+        return sb.toString();
+    }
+
     /**
      * Represents a {@code <presence/>} {@code <show/>} element.
      * <blockquote>
@@ -283,7 +303,6 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      * <p>If no {@code <show/>} element is provided, the entity is assumed to be online and available.</p>
      * </blockquote>
      */
-    @XmlEnum
     public enum Show {
         /**
          * The entity or resource is actively interested in chatting.
@@ -317,7 +336,6 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      * <p>If a user and contact are associated with different XMPP servers, those servers also use a special presence stanza of type "probe" in order to determine the availability of the entity on the peer server.</p>
      * </blockquote>
      */
-    @XmlEnum
     @XmlType(name = "presenceType")
     public enum Type {
         /**
@@ -364,8 +382,6 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      * <p>The OPTIONAL {@code <status/>} element contains human-readable XML character data specifying a natural-language description of an entity's availability. It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no 'type' attribute.</p>
      * </blockquote>
      */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlRootElement(name = "status")
     public static final class Status {
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
         private String language;

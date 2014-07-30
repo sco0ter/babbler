@@ -612,7 +612,6 @@ public final class PubSub {
         private final List<AffiliationInfo> affiliations = new ArrayList<>();
 
         private AffiliationsElement() {
-
         }
 
         private AffiliationsElement(String node) {

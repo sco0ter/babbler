@@ -29,6 +29,7 @@ import org.xmpp.extension.blocking.errors.Blocked;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,12 +44,17 @@ import java.util.List;
 public final class BlockList {
 
     @XmlElement(name = "item")
-    private List<Item> items;
+    private final List<Item> items = new ArrayList<>();
 
     public BlockList() {
     }
 
     public List<Item> getItems() {
         return items;
+    }
+
+    @Override
+    public String toString() {
+        return items.toString();
     }
 }

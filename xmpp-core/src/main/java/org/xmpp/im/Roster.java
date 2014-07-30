@@ -66,4 +66,9 @@ public final class Roster {
     public List<Contact> getContacts() {
         return item;
     }
+
+    @Override
+    public String toString() {
+        return item.toString();
+    }
 }

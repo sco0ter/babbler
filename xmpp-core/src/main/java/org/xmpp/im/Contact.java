@@ -304,7 +304,11 @@ public final class Contact implements Comparable<Contact> {
 
     @Override
     public String toString() {
-        return name;
+        StringBuilder sb = new StringBuilder(jid.toString());
+        if (name != null) {
+            sb.append(" (").append(name).append(")");
+        }
+        return sb.toString();
     }
 
     /**

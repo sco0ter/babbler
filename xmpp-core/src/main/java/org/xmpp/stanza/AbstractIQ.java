@@ -153,6 +153,15 @@ public abstract class AbstractIQ extends Stanza {
         return null;
     }
 
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder("IQ");
+        if (type != null) {
+            sb.append("-").append(type.name().toLowerCase());
+        }
+        return sb.append(super.toString()).toString();
+    }
+
     /**
      * Sets the extension.
      *
@@ -165,7 +174,6 @@ public abstract class AbstractIQ extends Stanza {
     /**
      * Represents a {@code <iq/>} 'type' attribute.
      */
-    @XmlEnum
     @XmlType(name = "iqType")
     public enum Type {
         /**

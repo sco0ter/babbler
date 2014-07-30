@@ -320,8 +320,19 @@ public abstract class AbstractMessage extends Stanza {
     }
 
     @Override
-    public String toString() {
-        return getBody();
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (type != null) {
+            String sType = type.name();
+            sb.append(sType.substring(0, 1)).append(sType.substring(1).toLowerCase()).append(" ");
+        }
+        sb.append("Message");
+        sb.append(super.toString());
+        String body = getBody();
+        if (body != null) {
+            sb.append(": ").append(body);
+        }
+        return sb.toString();
     }
 
     /**
@@ -331,7 +342,6 @@ public abstract class AbstractMessage extends Stanza {
      * <p>Common uses of the message stanza in instant messaging applications include: single messages; messages sent in the context of a one-to-one chat session; messages sent in the context of a multi-user chat room; alerts, notifications, or other information to which no reply is expected; and errors. These uses are differentiated via the 'type' attribute.</p>
      * </blockquote>
      */
-    @XmlEnum
     @XmlType(name = "messageType")
     public enum Type {
         /**
@@ -527,7 +537,6 @@ public abstract class AbstractMessage extends Stanza {
      * <p>The primary use of the XMPP {@code <thread/>} element is to uniquely identify a conversation thread or "chat session" between two entities instantiated by {@code <message/>} stanzas of type 'chat'. However, the XMPP {@code <thread/>} element MAY also be used to uniquely identify an analogous thread between two entities instantiated by {@code <message/>} stanzas of type 'headline' or 'normal', or among multiple entities in the context of a multi-user chat room instantiated by {@code <message/>} stanzas of type 'groupchat'. It MAY also be used for {@code <message/>} stanzas not related to a human conversation, such as a game session or an interaction between plugins. The {@code <thread/>} element is not used to identify individual messages, only conversations or messaging sessions.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "thread")
     private static final class Thread {
 
         @XmlAttribute(name = "parent")

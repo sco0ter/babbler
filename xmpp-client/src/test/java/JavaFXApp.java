@@ -57,8 +57,6 @@ import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
-import org.xmpp.extension.bytestreams.s5b.Socks5ByteStreamManager;
-import org.xmpp.extension.bytestreams.s5b.StreamHost;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.InfoNode;
@@ -72,6 +70,8 @@ import org.xmpp.extension.geoloc.GeoLocationEvent;
 import org.xmpp.extension.geoloc.GeoLocationListener;
 import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
+import org.xmpp.extension.jingle.apps.filetransfer.JingleFileTransferManager;
+import org.xmpp.extension.jingle.apps.filetransfer.JingleFileTransferSession;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
 import org.xmpp.extension.ping.PingManager;
@@ -95,13 +95,11 @@ import org.xmpp.stanza.client.Presence;
 import org.xmpp.stanza.errors.ServiceUnavailable;
 
 import javax.imageio.ImageIO;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Proxy;
-import java.net.URL;
+import java.net.Socket;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -665,6 +663,16 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                JingleFileTransferManager jingleFileTransferManager = xmppSession.getExtensionManager(JingleFileTransferManager.class);
+                try {
+                    JingleFileTransferSession jingleFileTransferSession = jingleFileTransferManager.initiateFileTransferSession(Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), new File("test.png"), "", 60000);
+
+                } catch (XmppException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
                 FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
                 try {
@@ -685,6 +693,7 @@ public class JavaFXApp extends Application {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
         });
         Button btnExit = new Button("Exit");

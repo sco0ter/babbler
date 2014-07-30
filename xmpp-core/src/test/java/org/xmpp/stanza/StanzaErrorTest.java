@@ -488,9 +488,10 @@ public class StanzaErrorTest extends XmlTest {
 
     @Test
     public void marshalCondition() throws JAXBException, XMLStreamException {
-        String xml = "<error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error>";
+        String xml = "<iq id=\"1\" type=\"error\"><error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error></iq>";
         StanzaError error = new StanzaError(new UnexpectedRequest());
-        String marshalledXml = marshal(error);
-        Assert.assertEquals(marshalledXml, xml);
+        IQ iq = new IQ("1", AbstractIQ.Type.ERROR);
+        iq.setError(error);
+        Assert.assertEquals(marshal(iq), xml);
     }
 }

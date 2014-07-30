@@ -26,6 +26,7 @@ package org.xmpp.extension.blocking;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,13 +39,13 @@ import java.util.List;
 @XmlRootElement(name = "unblock")
 public final class Unblock {
     @XmlElement(name = "item")
-    private List<Item> items;
+    private final List<Item> items = new ArrayList<>();
 
     /**
      * @param items The unblocked items.
      */
     public Unblock(List<Item> items) {
-        this.items = items;
+        this.items.addAll(items);
     }
 
     private Unblock() {
@@ -57,5 +58,10 @@ public final class Unblock {
      */
     public List<Item> getItems() {
         return items;
+    }
+
+    @Override
+    public String toString() {
+        return items.toString();
     }
 }

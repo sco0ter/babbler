@@ -26,10 +26,7 @@
  * Provides <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> ({@linkplain org.xmpp.stanza.AbstractMessage}, {@linkplain org.xmpp.stanza.AbstractPresence} and {@linkplain org.xmpp.stanza.AbstractIQ}).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-//@XmlSchema(namespace = "jabber:client", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.stanza;
-
-        package org.xmpp.stanza;
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class) package org.xmpp.stanza;
 
 import org.xmpp.Jid;
 import org.xmpp.JidAdapter;

@@ -40,8 +40,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,10 +62,23 @@ public final class AvatarManager extends ExtensionManager {
 
     private final Map<Jid, byte[]> userAvatars = new ConcurrentHashMap<>();
 
+    private final Map<Jid, Lock> requestingAvatarLocks = new ConcurrentHashMap<>();
+
     private final Set<AvatarChangeListener> avatarChangeListeners = new CopyOnWriteArraySet<>();
+
+    private final Executor avatarRequester;
 
     private AvatarManager(final XmppSession xmppSession) {
         super(xmppSession);
+
+        avatarRequester = Executors.newSingleThreadExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r, "Avatar Request Thread");
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
         xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
@@ -82,39 +96,43 @@ public final class AvatarManager extends ExtensionManager {
                 // If vCard base avatars are enabled.
                 if (vCardManager != null && vCardManager.isEnabled()) {
                     final Presence presence = e.getPresence();
-                    AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
+                    final AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
                     // If the presence has a avatar update information.
                     if (e.isIncoming() && presence.getExtension(MucUser.class) == null && avatarUpdate != null && avatarUpdate.getHash() != null) {
-                        synchronized (avatars) {
-                            // Check, if we already know this avatar.
-                            Avatar avatar = avatars.get(avatarUpdate.getHash());
-                            // If the hash is unknown.
-                            Jid contact = presence.getFrom().asBareJid();
-                            if (avatar == null) {
-                                try {
-                                    // Get the avatar for this user.
-                                    avatar = getAvatar(contact);
-                                } catch (XmppException e1) {
-                                    logger.log(Level.WARNING, e1.getMessage(), e1);
-                                }
-                            }
-                            // If the avatar was either known before or could be successfully retrieved from the vCard.
-                            if (avatar != null) {
-                                byte[] hash = userAvatars.get(contact);
-                                // Compare the old hash and the new hash. If both are different notify listeners.
-                                if (!Arrays.equals(hash, avatarUpdate.getHash())) {
-                                    for (AvatarChangeListener avatarChangeListener : avatarChangeListeners) {
-                                        try {
-                                            avatarChangeListener.avatarChanged(new AvatarChangeEvent(AvatarManager.this, contact, avatar));
-                                        } catch (Exception e1) {
-                                            logger.log(Level.WARNING, e1.getMessage(), e1);
-                                        }
+                        avatarRequester.execute(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                // Check, if we already know this avatar.
+                                Avatar avatar = avatars.get(avatarUpdate.getHash());
+                                // If the hash is unknown.
+                                Jid contact = presence.getFrom().asBareJid();
+                                if (avatar == null) {
+                                    try {
+                                        // Get the avatar for this user.
+                                        avatar = getAvatar(contact);
+                                    } catch (XmppException e1) {
+                                        logger.log(Level.WARNING, e1.getMessage(), e1);
                                     }
-                                    // Then store the new hash for that user.
-                                    userAvatars.put(contact, avatarUpdate.getHash());
+                                }
+                                // If the avatar was either known before or could be successfully retrieved from the vCard.
+                                if (avatar != null) {
+                                    byte[] hash = userAvatars.get(contact);
+                                    // Compare the old hash and the new hash. If both are different notify listeners.
+                                    if (!Arrays.equals(hash, avatarUpdate.getHash())) {
+                                        for (AvatarChangeListener avatarChangeListener : avatarChangeListeners) {
+                                            try {
+                                                avatarChangeListener.avatarChanged(new AvatarChangeEvent(AvatarManager.this, contact, avatar));
+                                            } catch (Exception e1) {
+                                                logger.log(Level.WARNING, e1.getMessage(), e1);
+                                            }
+                                        }
+                                        // Then store the new hash for that user.
+                                        userAvatars.put(contact, avatarUpdate.getHash());
+                                    }
                                 }
                             }
-                        }
+                        });
                     } else if (!e.isIncoming() && vCardManager.isEnabled() && presence.isAvailable() && presence.getTo() == null) {
                         // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
 
@@ -123,7 +141,7 @@ public final class AvatarManager extends ExtensionManager {
                         byte[] myHash = userAvatars.get(me);
                         if (myHash == null) {
                             // Load my own avatar in order to advertise an image.
-                            new Thread() {
+                            avatarRequester.execute(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
@@ -140,7 +158,7 @@ public final class AvatarManager extends ExtensionManager {
                                         logger.log(Level.WARNING, e1.getMessage(), e1);
                                     }
                                 }
-                            }.start();
+                            });
                             // Append an empty element, to indicate, we are not yet ready (vCard is being loaded).
                             presence.getExtensions().add(new AvatarUpdate());
                         } else {
@@ -191,7 +209,15 @@ public final class AvatarManager extends ExtensionManager {
         } else {
             user = xmppSession.getConnectedResource().asBareJid();
         }
-        synchronized (avatars) {
+
+        Lock lock = new ReentrantLock();
+        Lock existingLock = requestingAvatarLocks.putIfAbsent(user, lock);
+        if (existingLock != null) {
+            lock = existingLock;
+        }
+
+        lock.lock();
+        try {
             // Let's see, if there's a stored image already.
             byte[] hash = userAvatars.get(user);
             if (hash != null) {
@@ -222,8 +248,11 @@ public final class AvatarManager extends ExtensionManager {
                 userAvatars.put(user, hash);
                 avatars.put(hash, avatar);
             }
+            return avatar;
+        } finally {
+            lock.unlock();
+            requestingAvatarLocks.remove(user);
         }
-        return avatar;
     }
 
     /**

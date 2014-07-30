@@ -88,39 +88,36 @@ public final class ChatStateManager extends ExtensionManager {
                 chatSession.addMessageListener(new MessageListener() {
                     @Override
                     public void handle(MessageEvent e) {
-                        Message message = e.getMessage();
-                        if (!e.isIncoming()) {
-                            // In the absence of explicit discovery or negotiation, the User MAY implicitly request and discover the use of chat state notifications in a one-to-one chat session by adhering to the following business rules:
-                            // 1. If the User desires chat state notifications, the message(s) that it sends to the Contact before receiving a reply MUST contain a chat state notification extension, which SHOULD be <active/>.
-                            if (!contactSupportsChatStateNotifications.containsKey(message.getTo()) && contactSupportsChatStateNotifications.get(message.getTo())
-                                    && message.getExtension(Active.class) == null
-                                    && message.getExtension(Composing.class) == null
-                                    && message.getExtension(Gone.class) == null
-                                    && message.getExtension(Inactive.class) == null
-                                    && message.getExtension(Paused.class) == null) {
+                        if (isEnabled()) {
+                            Message message = e.getMessage();
+                            if (!e.isIncoming()) {
+                                // In the absence of explicit discovery or negotiation, the User MAY implicitly request and discover the use of chat state notifications in a one-to-one chat session by adhering to the following business rules:
+                                // 1. If the User desires chat state notifications, the message(s) that it sends to the Contact before receiving a reply MUST contain a chat state notification extension, which SHOULD be <active/>.
+                                if (!contactSupportsChatStateNotifications.containsKey(message.getTo()) && contactSupportsChatStateNotifications.get(message.getTo())
+                                        && message.getExtension(Active.class) == null
+                                        && message.getExtension(Composing.class) == null
+                                        && message.getExtension(Gone.class) == null
+                                        && message.getExtension(Inactive.class) == null
+                                        && message.getExtension(Paused.class) == null) {
 
-                                message.getExtensions().add(new Active());
+                                    message.getExtensions().add(new Active());
+                                    notifyChatStateListeners(chatSession, ChatState.ACTIVE, !e.isIncoming());
+                                }
+                            }
+
+                            if (message.getExtension(Active.class) != null) {
                                 notifyChatStateListeners(chatSession, ChatState.ACTIVE, !e.isIncoming());
+                            } else if (message.getExtension(Composing.class) != null) {
+                                notifyChatStateListeners(chatSession, ChatState.COMPOSING, !e.isIncoming());
+                            } else if (message.getExtension(Gone.class) != null) {
+                                notifyChatStateListeners(chatSession, ChatState.GONE, !e.isIncoming());
+                                //connection.getChatManager().destroyChatSession(chatSession);
+                            } else if (message.getExtension(Inactive.class) != null) {
+                                notifyChatStateListeners(chatSession, ChatState.INACTIVE, !e.isIncoming());
+                            } else if (message.getExtension(Paused.class) != null) {
+                                notifyChatStateListeners(chatSession, ChatState.PAUSED, !e.isIncoming());
                             }
                         }
-
-                        if (message.getExtension(Active.class) != null) {
-                            notifyChatStateListeners(chatSession, ChatState.ACTIVE, !e.isIncoming());
-                        } else if (message.getExtension(Composing.class) != null) {
-                            notifyChatStateListeners(chatSession, ChatState.COMPOSING, !e.isIncoming());
-                        } else if (message.getExtension(Gone.class) != null) {
-                            notifyChatStateListeners(chatSession, ChatState.GONE, !e.isIncoming());
-                            //connection.getChatManager().destroyChatSession(chatSession);
-                        } else if (message.getExtension(Inactive.class) != null) {
-                            notifyChatStateListeners(chatSession, ChatState.INACTIVE, !e.isIncoming());
-                        } else if (message.getExtension(Paused.class) != null) {
-                            notifyChatStateListeners(chatSession, ChatState.PAUSED, !e.isIncoming());
-                        } else if (!e.isIncoming()) {
-                            // For outgoing messages, automatically add an <active/> state, if there's no other state.
-                            message.getExtensions().add(new Active());
-                            notifyChatStateListeners(chatSession, ChatState.ACTIVE, !e.isIncoming());
-                        }
-
                     }
                 });
             }

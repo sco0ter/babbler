@@ -182,13 +182,9 @@ public final class TcpConnection extends Connection {
 
     @Override
     protected void restartStream() {
-        try {
-            xmppStreamWriter.reset(outputStream);
-            xmppStreamWriter.openStream(null);
-            xmppStreamReader.startReading(inputStream);
-        } catch (XMLStreamException | IOException e) {
-            getXmppSession().notifyException(e);
-        }
+        xmppStreamWriter.reset(outputStream);
+        xmppStreamWriter.openStream(null);
+        xmppStreamReader.startReading(inputStream);
     }
 
     @Override
@@ -207,8 +203,8 @@ public final class TcpConnection extends Connection {
      * See also <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      *
      * @param xmppServiceDomain The fully qualified domain name.
-     * @throws IOException If no connection could be established to a resolved host.
      * @return If the connection could be established.
+     * @throws IOException If no connection could be established to a resolved host.
      */
     boolean connectWithXmppServiceDomain(String xmppServiceDomain) throws IOException {
 

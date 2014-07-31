@@ -37,9 +37,7 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -130,8 +128,8 @@ public final class TcpConnection extends Connection {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
         }
 
-        outputStream = socket.getOutputStream();
-        inputStream = socket.getInputStream();
+        outputStream = new BufferedOutputStream(socket.getOutputStream());
+        inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         try {
             xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession());
@@ -159,8 +157,8 @@ public final class TcpConnection extends Connection {
         SSLParameters sslParameters = ((SSLSocket) socket).getSSLParameters();
         sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
         ((SSLSocket) socket).setSSLParameters(sslParameters);
-        inputStream = socket.getInputStream();
-        outputStream = socket.getOutputStream();
+        outputStream = new BufferedOutputStream(socket.getOutputStream());
+        inputStream = new BufferedInputStream(socket.getInputStream());
         isSecure = true;
     }
 

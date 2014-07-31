@@ -138,7 +138,7 @@ final class XmppStreamWriter {
                         BranchedOutputStream branchedOutputStream = new BranchedOutputStream(outputStream, byteArrayOutputStream);
                         xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(branchedOutputStream, "UTF-8");
 
-                        prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream), true);
+                        prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream, "UTF-8"), true);
                         streamOpened = false;
                     }
                 } catch (Exception e) {

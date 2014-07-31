@@ -329,7 +329,9 @@ public final class BoshConnection extends Connection {
 
         // Create initial request.
         Body body = new Body();
-        body.setTo(getXmppSession().getXmppServiceDomain());
+        if (getXmppSession().getXmppServiceDomain() != null && !getXmppSession().getXmppServiceDomain().isEmpty()) {
+            body.setTo(getXmppSession().getXmppServiceDomain());
+        }
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setVersion("1.11");
         body.setWait(wait);
@@ -569,7 +571,7 @@ public final class BoshConnection extends Connection {
                                 // Branch the stream so that its input can be logged.
                                 try (InputStream inputStream = XmppUtils.createBranchedInputStream(httpConnection.getInputStream(), byteArrayOutputStream)) {
                                     // Read the response.
-                                    xmlEventReader = xmlInputFactory.createXMLEventReader(inputStream);
+                                    xmlEventReader = xmlInputFactory.createXMLEventReader(inputStream, "UTF-8");
                                     while (xmlEventReader.hasNext()) {
                                         XMLEvent xmlEvent = xmlEventReader.peek();
 

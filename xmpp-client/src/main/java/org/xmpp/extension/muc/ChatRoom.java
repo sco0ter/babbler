@@ -107,30 +107,32 @@ public final class ChatRoom {
         messageListener = new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
-
-                if (e.isIncoming()) {
-                    Message message = e.getMessage();
-                    if (message.getFrom().asBareJid().equals(roomJid)) {
-                        if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
-                            // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
-                            if (message.getSubject() != null && message.getBody() == null) {
-                                Date date;
-                                DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                                if (delayedDelivery != null) {
-                                    date = delayedDelivery.getTimeStamp();
+                // Do not synchronize on ChatRoom.this, but on the messageListener instead, in order to not block the enter method, but to keep the incoming messages in order.
+                synchronized (messageListener) {
+                    if (e.isIncoming()) {
+                        Message message = e.getMessage();
+                        if (message.getFrom().asBareJid().equals(roomJid)) {
+                            if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
+                                // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
+                                if (message.getSubject() != null && message.getBody() == null) {
+                                    Date date;
+                                    DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
+                                    if (delayedDelivery != null) {
+                                        date = delayedDelivery.getTimeStamp();
+                                    } else {
+                                        date = new Date();
+                                    }
+                                    notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), delayedDelivery != null, date));
                                 } else {
-                                    date = new Date();
+                                    notifyMessageListeners(new MessageEvent(ChatRoom.this, message, true));
                                 }
-                                notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), delayedDelivery != null, date));
                             } else {
-                                notifyMessageListeners(new MessageEvent(ChatRoom.this, message, true));
-                            }
-                        } else {
-                            MucUser mucUser = message.getExtension(MucUser.class);
-                            if (mucUser != null) {
-                                Decline decline = mucUser.getDecline();
-                                if (decline != null) {
-                                    notifyInvitationDeclineListeners(new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
+                                MucUser mucUser = message.getExtension(MucUser.class);
+                                if (mucUser != null) {
+                                    Decline decline = mucUser.getDecline();
+                                    if (decline != null) {
+                                        notifyInvitationDeclineListeners(new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
+                                    }
                                 }
                             }
                         }

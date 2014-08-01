@@ -62,7 +62,7 @@ public final class AvatarManager extends ExtensionManager {
 
     private final Map<Jid, byte[]> userAvatars = new ConcurrentHashMap<>();
 
-    private final Map<Jid, Lock> requestingAvatarLocks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Jid, Lock> requestingAvatarLocks = new ConcurrentHashMap<>();
 
     private final Set<AvatarChangeListener> avatarChangeListeners = new CopyOnWriteArraySet<>();
 

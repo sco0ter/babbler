@@ -26,6 +26,8 @@
 * Added helper methods to facilitate use of [XEP-0149: Time Periods](http://xmpp.org/extensions/xep-0149.html)
 * Set encoding for the XMPP stream to UTF-8.
 * Made connection establishment a little bit more robust.
+* Increased performance by using buffered streams.
+* Improved logic for vCard based avatars.
 * toString() method implemented on many objects.
 * More documentation added.
 

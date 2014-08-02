@@ -30,6 +30,7 @@ import org.xmpp.BaseTest;
 import org.xmpp.MockServer;
 import org.xmpp.TestXmppSession;
 import org.xmpp.XmppException;
+import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
 import org.xmpp.extension.vcard.VCardManager;
@@ -89,7 +90,7 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInAwayPresence() {
         final TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getExtensionManager(VCardManager.class).setEnabled(false);
+        xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
@@ -104,7 +105,7 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInXAPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getExtensionManager(VCardManager.class).setEnabled(false);
+        xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
@@ -118,7 +119,7 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInChatPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getExtensionManager(VCardManager.class).setEnabled(false);
+        xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
@@ -131,7 +132,7 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInDndPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getExtensionManager(VCardManager.class).setEnabled(false);
+        xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {
@@ -144,7 +145,7 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInInitialPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getExtensionManager(VCardManager.class).setEnabled(false);
+        xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
             public void handle(PresenceEvent e) {

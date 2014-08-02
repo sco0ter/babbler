@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "x")
 public final class AvatarUpdate {
     @XmlElement(name = "photo")
-    private byte[] hash;
+    private String hash;
 
     /**
      * Creates an empty avatar update element to indicate, we are not yet ready to advertise an image.
@@ -50,16 +50,16 @@ public final class AvatarUpdate {
      *
      * @param hash The hash.
      */
-    public AvatarUpdate(byte[] hash) {
+    public AvatarUpdate(String hash) {
         this.hash = hash;
     }
 
     /**
-     * Gets the SHA-1 hash value of the avatar.
+     * Gets the SHA-1 hash value of the avatar (hex encoded).
      *
      * @return The hash.
      */
-    public byte[] getHash() {
+    public String getHash() {
         return hash;
     }
 }

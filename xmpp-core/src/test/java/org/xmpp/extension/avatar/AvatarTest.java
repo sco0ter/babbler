@@ -42,7 +42,7 @@ public class AvatarTest extends XmlTest {
 
     @Test
     public void marshalVCardUpdateWithEmptyPhotoElement() throws JAXBException, XMLStreamException {
-        AvatarUpdate avatarUpdate = new AvatarUpdate(new byte[0]);
+        AvatarUpdate avatarUpdate = new AvatarUpdate("");
         String xml = marshal(avatarUpdate);
         Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"><photo></photo></x>", xml);
     }

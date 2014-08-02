@@ -26,6 +26,7 @@ package org.xmpp.extension.vcard;
 
 import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stanza.client.Presence;
@@ -40,20 +41,9 @@ import org.xmpp.stanza.client.Presence;
  */
 public final class VCardManager extends ExtensionManager {
 
-    private volatile VCard myVCard;
-
     private VCardManager(final XmppSession xmppSession) {
         super(xmppSession, VCard.NAMESPACE);
         setEnabled(true);
-
-        xmppSession.addConnectionListener(new ConnectionListener() {
-            @Override
-            public void statusChanged(ConnectionEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    myVCard = null;
-                }
-            }
-        });
     }
 
     /**
@@ -64,13 +54,8 @@ public final class VCardManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public VCard getVCard() throws XmppException {
-        if (myVCard != null) {
-            return myVCard;
-        }
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
-        myVCard = result.getExtension(VCard.class);
-
-        return myVCard;
+        return result.getExtension(VCard.class);
     }
 
     /**
@@ -86,9 +71,10 @@ public final class VCardManager extends ExtensionManager {
         }
         // Update the vCard
         xmppSession.query(new IQ(IQ.Type.SET, vCard));
-        myVCard = vCard;
+
         // Then inform about the update by sending a presence. The avatar manager will add the update extension.
-        if (isEnabled() && vCard.getPhoto() != null) {
+        AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+        if (isEnabled() && vCard.getPhoto() != null && avatarManager.isEnabled()) {
             Presence presence = xmppSession.getPresenceManager().getLastSentPresence();
             if (presence == null) {
                 presence = new Presence();

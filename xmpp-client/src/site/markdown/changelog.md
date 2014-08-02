@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-## Version 0.3.0-SNAPSHOT
+## Version 0.3.0 (2014-08-02)
 
 ### New Features
 

@@ -885,7 +885,7 @@ public final class PubSub {
 
     static final class ItemElement implements Item {
 
-        @XmlAnyElement
+        @XmlAnyElement(lax = true)
         private Object object;
 
         @XmlAttribute(name = "id")

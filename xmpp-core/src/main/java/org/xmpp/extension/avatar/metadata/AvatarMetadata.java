@@ -26,6 +26,7 @@ package org.xmpp.extension.avatar.metadata;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,6 +42,9 @@ import java.util.List;
 @XmlRootElement(name = "metadata")
 public final class AvatarMetadata {
 
+    public static final String NAMESPACE = "urn:xmpp:avatar:metadata";
+
+    @XmlElement(name = "info")
     private List<Info> infoList = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
@@ -51,6 +55,15 @@ public final class AvatarMetadata {
 
     public AvatarMetadata(List<Info> infoList) {
         this.infoList = infoList;
+    }
+
+    /**
+     * Gets the info list.
+     *
+     * @return The info list.
+     */
+    public List<Info> getInfoList() {
+        return infoList;
     }
 
     /**

@@ -102,7 +102,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                 Socket socket = new Socket();
                 socket.connect(new InetSocketAddress(streamHost.getHost(), streamHost.getPort()));
                 // If the Target is able to open a TCP socket on a StreamHost/Requester, it MUST use the SOCKS5 protocol to establish a SOCKS5 connection.
-                Socks5Protocol.establishClientConnection(socket, Socks5ByteStream.hash(sessionId, requester, target), 0);
+                Socks5Protocol.establishClientConnection(socket, XmppUtils.hash((sessionId + requester.toEscapedString() + target.toEscapedString()).getBytes()), 0);
                 socketUsed = socket;
                 streamHostUsed = streamHost.getJid();
                 break;
@@ -242,7 +242,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         Jid requester = xmppSession.getConnectedResource();
 
         // Create the hash, which will identify the socket connection.
-        String hash = Socks5ByteStream.hash(sessionId, requester, target);
+        String hash = XmppUtils.hash((sessionId + requester.toEscapedString() + target.toEscapedString()).getBytes());
         localSocks5Server.allowedAddresses.add(hash);
 
         try {

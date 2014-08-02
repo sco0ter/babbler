@@ -26,18 +26,20 @@ package org.xmpp.extension.avatar;
 
 import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
+import org.xmpp.extension.avatar.data.AvatarData;
+import org.xmpp.extension.avatar.metadata.AvatarMetadata;
 import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.extension.muc.user.MucUser;
+import org.xmpp.extension.pubsub.Item;
+import org.xmpp.extension.pubsub.PubSubManager;
+import org.xmpp.extension.pubsub.PubSubService;
+import org.xmpp.extension.pubsub.event.Event;
 import org.xmpp.extension.vcard.VCard;
 import org.xmpp.extension.vcard.VCardManager;
-import org.xmpp.stanza.PresenceEvent;
-import org.xmpp.stanza.PresenceListener;
-import org.xmpp.stanza.StanzaException;
+import org.xmpp.stanza.*;
+import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -72,7 +74,7 @@ public final class AvatarManager extends ExtensionManager {
     private final Set<String> nonConformingResources = Collections.synchronizedSet(new HashSet<String>());
 
     private AvatarManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
         vCardManager = xmppSession.getExtensionManager(VCardManager.class);
 
@@ -142,9 +144,8 @@ public final class AvatarManager extends ExtensionManager {
                             } else {
                                 contact = presence.getFrom().asBareJid();
                             }
-
                             // If the user sends the same hash as we already know, it's the same avatar. Therefore do nothing.
-                            if (!avatarUpdate.getHash().equals(userHashes.get(contact))) {
+                            if (!avatarUpdate.getHash().equals(userHashes.put(contact, avatarUpdate.getHash()))) {
                                 // When the recipient's client receives the hash of the avatar image, it SHOULD check the hash to determine if it already has a cached copy of that avatar image.
                                 Avatar avatar = CACHED_AVATARS.get(avatarUpdate.getHash());
                                 if (avatar != null) {
@@ -204,6 +205,37 @@ public final class AvatarManager extends ExtensionManager {
                 }
             }
         });
+
+        xmppSession.addMessageListener(new MessageListener() {
+            @Override
+            public void handle(MessageEvent e) {
+                if (e.isIncoming()) {
+                    Message message = e.getMessage();
+                    Event event = message.getExtension(Event.class);
+                    if (event != null) {
+                        for (Item item : event.getItems()) {
+                            if (item.getPayload() instanceof AvatarMetadata) {
+                                AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
+                                PubSubService personalEventingService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
+
+                                try {
+                                    List<Item> items = personalEventingService.getNode(AvatarData.NAMESPACE).getItems(item.getId());
+                                    if (!items.isEmpty()) {
+                                        Item i = items.get(0);
+                                        if (i.getPayload() instanceof AvatarData) {
+                                            AvatarData avatarData = (AvatarData) i.getPayload();
+                                            notifyListeners(message.getFrom().asBareJid(), new Avatar(item.getId(), avatarData.getData()));
+                                        }
+                                    }
+                                } catch (XmppException e1) {
+                                    logger.log(Level.WARNING, e1.getMessage(), e1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
         setEnabled(true);
     }
 
@@ -219,19 +251,6 @@ public final class AvatarManager extends ExtensionManager {
         xmppSession.send(presence);
     }
 
-    private String getHash(byte[] photo) {
-        MessageDigest messageDigest;
-        try {
-            messageDigest = MessageDigest.getInstance("sha-1");
-            messageDigest.reset();
-            messageDigest.update(photo);
-            return new BigInteger(1, messageDigest.digest()).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-        }
-        return null;
-    }
-
     private void notifyListeners(Jid contact, Avatar avatar) {
 
         for (AvatarChangeListener avatarChangeListener : avatarChangeListeners) {
@@ -244,7 +263,7 @@ public final class AvatarManager extends ExtensionManager {
     }
 
     private Avatar getAvatarByVCard(Jid contact) throws XmppException {
-        Avatar avatar = new Avatar(null, null);
+        Avatar avatar = null;
 
         Lock lock = new ReentrantLock();
         Lock existingLock = requestingAvatarLocks.putIfAbsent(contact, lock);
@@ -257,11 +276,13 @@ public final class AvatarManager extends ExtensionManager {
             // Let's see, if there's a stored image already.
             String hash = userHashes.get(contact);
             if (hash != null) {
-                return CACHED_AVATARS.get(hash);
-            } else {
-                // If there's no avatar for that user, load it.
+                avatar = CACHED_AVATARS.get(hash);
+            }
+            if (avatar == null) {
+                // If there's no avatar for that user, create an empty avatar and load it.
+                avatar = new Avatar(null, new byte[0]);
+                hash = XmppUtils.hash(avatar.getImageData());
                 VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
-                hash = ""; // Indicates the user has no photo.
 
                 // Load the vCard for that user
                 VCard vCard;
@@ -274,14 +295,16 @@ public final class AvatarManager extends ExtensionManager {
                     // And check if it has a photo.
                     VCard.Image image = vCard.getPhoto();
                     if (image != null && image.getValue() != null) {
-                        hash = getHash(image.getValue());
+                        hash = XmppUtils.hash(image.getValue());
                         if (hash != null) {
                             avatar = new Avatar(image.getType(), image.getValue());
                         }
                     }
                 }
                 userHashes.put(contact, hash);
-                CACHED_AVATARS.put(hash, avatar);
+                if (!Arrays.equals(avatar.getImageData(), new byte[0])) {
+                    CACHED_AVATARS.put(hash, avatar);
+                }
             }
             return avatar;
         } finally {
@@ -302,6 +325,18 @@ public final class AvatarManager extends ExtensionManager {
         return getAvatarByVCard(contact.asBareJid());
     }
 
+    public void publishToPersonalEventingService(Avatar avatar) throws XmppException {
+
+        PubSubService personalEventingService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
+
+        String itemId = XmppUtils.hash(avatar.getImageData());
+        personalEventingService.getNode(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar.getImageData()));
+
+        List<AvatarMetadata.Info> infoList = new ArrayList<>();
+        infoList.add(new AvatarMetadata.Info(avatar.getImageData().length, itemId, avatar.getType()));
+        personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(infoList));
+    }
+
     /**
      * Publishes an avatar to your VCard.
      *
@@ -319,7 +354,7 @@ public final class AvatarManager extends ExtensionManager {
                 // If either there is avatar yet, or the old avatar is different from the new one: update
                 vCard.setPhoto(new VCard.Image(avatar.getType(), avatar.getImageData()));
                 vCardManager.setVCard(vCard);
-                userHashes.put(xmppSession.getConnectedResource(), getHash(avatar.getImageData()));
+                userHashes.put(xmppSession.getConnectedResource(), XmppUtils.hash(avatar.getImageData()));
             }
         } else {
 

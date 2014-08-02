@@ -26,7 +26,7 @@
  * Provides classes for <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:avatar:metadata", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.avatar.metadata;
+@XmlSchema(namespace = AvatarMetadata.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.avatar.metadata;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

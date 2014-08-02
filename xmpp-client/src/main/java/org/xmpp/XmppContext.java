@@ -31,6 +31,8 @@ import org.xmpp.extension.address.Addresses;
 import org.xmpp.extension.attention.Attention;
 import org.xmpp.extension.attention.AttentionManager;
 import org.xmpp.extension.avatar.AvatarManager;
+import org.xmpp.extension.avatar.data.AvatarData;
+import org.xmpp.extension.avatar.metadata.AvatarMetadata;
 import org.xmpp.extension.avatar.vcard.AvatarUpdate;
 import org.xmpp.extension.blocking.BlockList;
 import org.xmpp.extension.blocking.BlockingManager;
@@ -263,6 +265,9 @@ public abstract class XmppContext {
 
             // XEP-0083: Nested Roster Groups
             registerExtension(RosterDelimiter.class);
+
+            // XEP-0084: User Avatar
+            registerExtension(AvatarData.class, AvatarMetadata.class);
 
             // XEP-0085: Chat State Notifications
             registerExtension(Active.class, Composing.class, Gone.class, Inactive.class, Paused.class);

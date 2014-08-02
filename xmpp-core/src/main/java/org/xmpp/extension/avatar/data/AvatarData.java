@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "data")
 public final class AvatarData {
 
+    public static final String NAMESPACE = "urn:xmpp:avatar:data";
+
     @XmlValue
     private byte[] data;
 

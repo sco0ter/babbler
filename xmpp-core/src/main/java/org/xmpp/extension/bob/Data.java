@@ -24,12 +24,11 @@
 
 package org.xmpp.extension.bob;
 
+import org.xmpp.XmppUtils;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * The implementation of the {@code <data/>} element in the {@code urn:xmpp:bob} namespace.
@@ -103,13 +102,7 @@ public final class Data {
      * @return The content id.
      */
     static String createContendId(byte[] data) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-            messageDigest.reset();
-            return "sha1+" + new BigInteger(1, messageDigest.digest(data)).toString(16) + "@bob.xmpp.org";
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        return "sha1+" + XmppUtils.hash(data) + "@bob.xmpp.org";
     }
 
     /**

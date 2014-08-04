@@ -40,6 +40,7 @@ import org.xmpp.stanza.*;
 import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -209,22 +210,39 @@ public final class AvatarManager extends ExtensionManager {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handle(MessageEvent e) {
-                if (e.isIncoming()) {
+                if (e.isIncoming() && isEnabled()) {
                     Message message = e.getMessage();
                     Event event = message.getExtension(Event.class);
                     if (event != null) {
                         for (Item item : event.getItems()) {
                             if (item.getPayload() instanceof AvatarMetadata) {
                                 AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
-                                PubSubService personalEventingService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
+                                PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
 
                                 try {
-                                    List<Item> items = personalEventingService.getNode(AvatarData.NAMESPACE).getItems(item.getId());
-                                    if (!items.isEmpty()) {
-                                        Item i = items.get(0);
-                                        if (i.getPayload() instanceof AvatarData) {
-                                            AvatarData avatarData = (AvatarData) i.getPayload();
-                                            notifyListeners(message.getFrom().asBareJid(), new Avatar(item.getId(), avatarData.getData()));
+                                    AvatarCache avatarCache = AvatarCache.INSTANCE;
+                                    byte[] imageData = null;
+                                    try {
+                                        imageData = avatarCache.load(item.getId());
+                                    } catch (IOException e1) {
+                                        logger.log(Level.WARNING, e1.getMessage(), e1);
+                                    }
+                                    if (imageData != null) {
+                                        notifyListeners(message.getFrom().asBareJid(), new Avatar(item.getId(), imageData));
+                                    } else {
+                                        List<Item> items = pubSubService.getNode(AvatarData.NAMESPACE).getItems(item.getId());
+                                        if (!items.isEmpty()) {
+                                            Item i = items.get(0);
+                                            if (i.getPayload() instanceof AvatarData) {
+                                                AvatarData avatarData = (AvatarData) i.getPayload();
+                                                try {
+                                                    avatarCache.store(item.getId(), avatarData.getData());
+                                                } catch (IOException e1) {
+                                                    logger.log(Level.WARNING, e1.getMessage(), e1);
+                                                }
+
+                                                notifyListeners(message.getFrom().asBareJid(), new Avatar(item.getId(), avatarData.getData()));
+                                            }
                                         }
                                     }
                                 } catch (XmppException e1) {

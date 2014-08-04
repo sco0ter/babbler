@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
 import org.xmpp.XmlTest;
+import org.xmpp.extension.avatar.data.AvatarData;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
 public class PubSubSubscriberUseCasesTest extends XmlTest {
 
     protected PubSubSubscriberUseCasesTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, PubSub.class);
+        super(IQ.class, PubSub.class, AvatarData.class);
     }
 
     @Test
@@ -234,82 +235,27 @@ public class PubSubSubscriberUseCasesTest extends XmlTest {
 
     @Test
     public void unmarshalPubSubItems() throws XMLStreamException, JAXBException {
-        String xml = "<iq type='result'\n" +
-                "    from='pubsub.shakespeare.lit'\n" +
-                "    to='francisco@denmark.lit/barracks'\n" +
-                "    id='items1'>\n" +
+        String xml = "<iq type='result' \n" +
+                "    from='juliet@capulet.lit' \n" +
+                "    to='romeo@montague.lit/home' \n" +
+                "    id='retrieve1'>\n" +
                 "  <pubsub xmlns='http://jabber.org/protocol/pubsub'>\n" +
-                "    <items node='princely_musings'>\n" +
-                "      <item id='368866411b877c30064a5f62b917cffe'>\n" +
-                "        <entry xmlns='http://www.w3.org/2005/Atom'>\n" +
-                "          <title>The Uses of This World</title>\n" +
-                "          <summary>\n" +
-                "O, that this too too solid flesh would melt\n" +
-                "Thaw and resolve itself into a dew!\n" +
-                "          </summary>\n" +
-                "          <link rel='alternate' type='text/html'\n" +
-                "                href='http://denmark.lit/2003/12/13/atom03'/>\n" +
-                "          <id>tag:denmark.lit,2003:entry-32396</id>\n" +
-                "          <published>2003-12-12T17:47:23Z</published>\n" +
-                "          <updated>2003-12-12T17:47:23Z</updated>\n" +
-                "        </entry>\n" +
-                "      </item>\n" +
-                "      <item id='3300659945416e274474e469a1f0154c'>\n" +
-                "        <entry xmlns='http://www.w3.org/2005/Atom'>\n" +
-                "          <title>Ghostly Encounters</title>\n" +
-                "          <summary>\n" +
-                "O all you host of heaven! O earth! what else?\n" +
-                "And shall I couple hell? O, fie! Hold, hold, my heart;\n" +
-                "And you, my sinews, grow not instant old,\n" +
-                "But bear me stiffly up. Remember thee!\n" +
-                "          </summary>\n" +
-                "          <link rel='alternate' type='text/html'\n" +
-                "                href='http://denmark.lit/2003/12/13/atom03'/>\n" +
-                "          <id>tag:denmark.lit,2003:entry-32396</id>\n" +
-                "          <published>2003-12-12T23:21:34Z</published>\n" +
-                "          <updated>2003-12-12T23:21:34Z</updated>\n" +
-                "        </entry>\n" +
-                "      </item>\n" +
-                "      <item id='4e30f35051b7b8b42abe083742187228'>\n" +
-                "        <entry xmlns='http://www.w3.org/2005/Atom'>\n" +
-                "          <title>Alone</title>\n" +
-                "          <summary>\n" +
-                "Now I am alone.\n" +
-                "O, what a rogue and peasant slave am I!\n" +
-                "          </summary>\n" +
-                "          <link rel='alternate' type='text/html'\n" +
-                "                href='http://denmark.lit/2003/12/13/atom03'/>\n" +
-                "          <id>tag:denmark.lit,2003:entry-32396</id>\n" +
-                "          <published>2003-12-13T11:09:53Z</published>\n" +
-                "          <updated>2003-12-13T11:09:53Z</updated>\n" +
-                "        </entry>\n" +
-                "      </item>\n" +
-                "      <item id='ae890ac52d0df67ed7cfdf51b644e901'>\n" +
-                "        <entry xmlns='http://www.w3.org/2005/Atom'>\n" +
-                "          <title>Soliloquy</title>\n" +
-                "          <summary>\n" +
-                "To be, or not to be: that is the question:\n" +
-                "Whether 'tis nobler in the mind to suffer\n" +
-                "The slings and arrows of outrageous fortune,\n" +
-                "Or to take arms against a sea of troubles,\n" +
-                "And by opposing end them?\n" +
-                "          </summary>\n" +
-                "          <link rel='alternate' type='text/html'\n" +
-                "                href='http://denmark.lit/2003/12/13/atom03'/>\n" +
-                "          <id>tag:denmark.lit,2003:entry-32397</id>\n" +
-                "          <published>2003-12-13T18:30:02Z</published>\n" +
-                "          <updated>2003-12-13T18:30:02Z</updated>\n" +
-                "        </entry>\n" +
+                "    <items node='urn:xmpp:avatar:data'>\n" +
+                "      <item id='111f4b3c50d7b0df729d299bc6f8e9ef9066971f'>\n" +
+                "        <data xmlns='urn:xmpp:avatar:data'>\n" +
+                "          qANQR1DBwU4DX7jmYZnncm...\n" +
+                "        </data>\n" +
                 "      </item>\n" +
                 "    </items>\n" +
                 "  </pubsub>\n" +
-                "</iq>\n";
+                "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
         PubSub pubSub = iq.getExtension(PubSub.class);
         Assert.assertNotNull(pubSub);
         Assert.assertNotNull(pubSub.getItems());
-        Assert.assertEquals(pubSub.getItems().size(), 4);
-        Assert.assertEquals(pubSub.getItems().get(0).getId(), "368866411b877c30064a5f62b917cffe");
+        Assert.assertEquals(pubSub.getItems().size(), 1);
+        Assert.assertEquals(pubSub.getItems().get(0).getId(), "111f4b3c50d7b0df729d299bc6f8e9ef9066971f");
+        Assert.assertTrue(pubSub.getItems().get(0).getPayload() instanceof AvatarData);
     }
 
     @Test

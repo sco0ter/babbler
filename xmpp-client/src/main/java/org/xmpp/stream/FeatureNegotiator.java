@@ -24,6 +24,8 @@
 
 package org.xmpp.stream;
 
+import org.xmpp.Manager;
+
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
@@ -37,7 +39,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public abstract class FeatureNegotiator {
+public abstract class FeatureNegotiator extends Manager {
 
     private static final Logger logger = Logger.getLogger(FeatureNegotiator.class.getName());
 
@@ -129,14 +131,6 @@ public abstract class FeatureNegotiator {
      */
     public final Class<? extends Feature> getFeatureClass() {
         return featureClass;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     /**

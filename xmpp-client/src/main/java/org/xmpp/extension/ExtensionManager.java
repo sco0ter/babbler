@@ -24,6 +24,7 @@
 
 package org.xmpp.extension;
 
+import org.xmpp.Manager;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
@@ -35,15 +36,13 @@ import java.util.Collection;
 /**
  * @author Christian Schudt
  */
-public abstract class ExtensionManager {
+public abstract class ExtensionManager extends Manager {
 
     protected final XmppSession xmppSession;
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     protected final Collection<String> features;
-
-    private volatile boolean enabled;
 
     protected ExtensionManager(XmppSession xmppSession, String... features) {
         this.xmppSession = xmppSession;
@@ -57,22 +56,14 @@ public abstract class ExtensionManager {
     }
 
     /**
-     * Gets the value, whether this extension is enabled or not.
-     *
-     * @return True, if the extension is enabled.
-     * @see #setEnabled(boolean)
-     */
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    /**
      * Enables or disables support for the extension.
      *
      * @param enabled True, if support for the managed extension should be enabled; otherwise false.
      * @see #isEnabled()
      */
+    @Override
     public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
         if (serviceDiscoveryManager != null) {
             for (String namespace : features) {
                 if (enabled) {
@@ -82,6 +73,5 @@ public abstract class ExtensionManager {
                 }
             }
         }
-        this.enabled = enabled;
     }
 }

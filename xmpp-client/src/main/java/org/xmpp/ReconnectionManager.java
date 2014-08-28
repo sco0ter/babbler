@@ -26,22 +26,34 @@ package org.xmpp;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
+import java.util.concurrent.*;
+import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
-final class ReconnectionManager {
+public final class ReconnectionManager extends Manager {
 
-    private final Random random = new Random();
+    private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
 
     private final ScheduledExecutorService scheduledExecutorService;
 
+    private ReconnectionStrategy reconnectionStrategy;
+
+    private final XmppSession xmppSession;
+
+    private volatile ScheduledFuture<?> scheduledFuture;
+
+    private volatile Date nextReconnectionAttempt;
+
     ReconnectionManager(final XmppSession xmppSession) {
+        this.xmppSession = xmppSession;
+        this.reconnectionStrategy = new TruncatedBinaryExponentialBackOffStrategy(60, 5);
+
+        // Enable by default.
+        setEnabled(true);
+
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -54,22 +66,18 @@ final class ReconnectionManager {
         xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
-                // Reconnect if we were logged in and an exception has occurred.
                 switch (e.getStatus()) {
                     case DISCONNECTED:
+                        // Reconnect if we were logged in and an exception has occurred.
                         if (e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
-                            int randomInt = random.nextInt(60);
-
-                            scheduledExecutorService.schedule(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        xmppSession.reconnect();
-                                    } catch (IOException | LoginException e1) {
-                                        e1.printStackTrace();
-                                    }
-                                }
-                            }, 10, TimeUnit.SECONDS);
+                            scheduleReconnection(0);
+                        }
+                        break;
+                    case CONNECTED:
+                        if (scheduledFuture != null) {
+                            // Cancel / unschedule any scheduled reconnection task, if the connection is established (e.g. manually) before the next reconnection attempt.
+                            scheduledFuture.cancel(false);
+                            nextReconnectionAttempt = null;
                         }
                         break;
                     case CLOSED:
@@ -78,5 +86,45 @@ final class ReconnectionManager {
                 }
             }
         });
+    }
+
+    private void scheduleReconnection(final int attempt) {
+        if (isEnabled()) {
+            int seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
+            nextReconnectionAttempt = new Date(System.currentTimeMillis() + seconds * 1000);
+            System.out.println("Reconnecting in: " + seconds);
+            scheduledFuture = scheduledExecutorService.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        xmppSession.reconnect();
+                    } catch (IOException | LoginException e1) {
+                        scheduleReconnection(attempt + 1);
+                    }
+                }
+            }, seconds, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Gets the reconnection strategy.
+     *
+     * @return The reconnection strategy.
+     */
+    public ReconnectionStrategy getReconnectionStrategy() {
+        return reconnectionStrategy;
+    }
+
+    /**
+     * Sets the reconnection strategy.
+     *
+     * @param reconnectionStrategy The reconnection strategy.
+     */
+    public void setReconnectionStrategy(ReconnectionStrategy reconnectionStrategy) {
+        this.reconnectionStrategy = reconnectionStrategy;
+    }
+
+    public Date getNextReconnectionAttempt() {
+        return nextReconnectionAttempt;
     }
 }

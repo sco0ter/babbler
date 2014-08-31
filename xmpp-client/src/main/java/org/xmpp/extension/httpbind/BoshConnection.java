@@ -320,6 +320,7 @@ public final class BoshConnection extends Connection {
         }
 
         sessionId = null;
+        requestCount = 0;
 
         // Set the initial request id with a large random number.
         // The largest possible number for a RID is (2^53)-1

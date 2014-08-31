@@ -39,9 +39,9 @@ public final class ReconnectionManager extends Manager {
 
     private final ScheduledExecutorService scheduledExecutorService;
 
-    private ReconnectionStrategy reconnectionStrategy;
-
     private final XmppSession xmppSession;
+
+    private ReconnectionStrategy reconnectionStrategy;
 
     private volatile ScheduledFuture<?> scheduledFuture;
 
@@ -68,8 +68,8 @@ public final class ReconnectionManager extends Manager {
             public void statusChanged(ConnectionEvent e) {
                 switch (e.getStatus()) {
                     case DISCONNECTED:
-                        // Reconnect if we were logged in and an exception has occurred.
-                        if (e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
+                        // Reconnect if we were connected or logged in and an exception has occurred.
+                        if (e.getOldStatus() == XmppSession.Status.CONNECTED || e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
                             scheduleReconnection(0);
                         }
                         break;

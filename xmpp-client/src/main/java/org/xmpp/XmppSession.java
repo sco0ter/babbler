@@ -155,6 +155,8 @@ public class XmppSession implements Closeable {
      */
     private Thread shutdownHook;
 
+    private boolean wasLoggedIn;
+
     /**
      * Creates a connection with the specified XMPP domain through a proxy.
      *
@@ -670,16 +672,20 @@ public class XmppSession implements Closeable {
      * @throws LoginException If an exception occurred while logging in.
      */
     public final synchronized void reconnect() throws IOException, LoginException {
-        connect();
-        try {
-            updateStatus(Status.AUTHENTICATING);
-            getAuthenticationManager().reAuthenticate();
-            bindResource(resource);
-        } catch (Exception e) {
-            updateStatus(Status.DISCONNECTED);
-            throw e;
+        if (status == Status.DISCONNECTED) {
+            connect();
+            if (wasLoggedIn) {
+                try {
+                    updateStatus(Status.AUTHENTICATING);
+                    getAuthenticationManager().reAuthenticate();
+                    bindResource(resource);
+                } catch (Exception e) {
+                    updateStatus(Status.DISCONNECTED);
+                    throw e;
+                }
+                updateStatus(Status.AUTHENTICATED);
+            }
         }
-        updateStatus(Status.AUTHENTICATED);
     }
 
     /**
@@ -1121,6 +1127,9 @@ public class XmppSession implements Closeable {
         }
         if (status == Status.CLOSED) {
             connectionListeners.clear();
+        }
+        if (status == Status.AUTHENTICATED) {
+            wasLoggedIn = true;
         }
     }
 

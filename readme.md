@@ -30,7 +30,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![supported][supported]           [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
 * ![in development][in development] [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
 * ![supported][supported]           [XEP-0060: Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)
-* ![in development][in development] [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
+* ![supported][supported]           [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
 * ![supported][supported]           [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)
 * ![not supported][not supported]   [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * ![supported][supported]           [XEP-0071: XHTML-IM](http://xmpp.org/extensions/xep-0071.html)
@@ -94,19 +94,23 @@ Since this project is quite young, the API might change. Comments on the API are
 
 Supported experimental XEPs:
 
+* ![supported][supported]           [XEP-0186: Invisible Command](http://xmpp.org/extensions/xep-0186.html)
 * ![supported][supported]           [XEP-0280: Message Carbons](http://xmpp.org/extensions/xep-0280.html)
+* ![supported][supported]           [XEP-0300: Use of Cryptographic Hash Functions in XMPP](http://xmpp.org/extensions/xep-0300.html)
 * ![supported][supported]           [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
 
 
 Additionally following informational XEP documents are respected:
 
+* ![supported][supported]           [XEP-0068: Field Standardization for Data Forms](http://xmpp.org/extensions/xep-0068.html)
 * ![supported][supported]           [XEP-0082: XMPP Date and Time Profiles](http://xmpp.org/extensions/xep-0082.html)
 * ![supported][supported]           [XEP-0083: Nested Roster Groups](http://xmpp.org/extensions/xep-0083.html)
-* ![supported][supported]           [XEP-0128: Service Discovery Extensions](http://xmpp.org/extensions/xep-0128.html)
 * ![supported][supported]           [XEP-0126: Invisibility](http://xmpp.org/extensions/xep-0126.html)
+* ![supported][supported]           [XEP-0128: Service Discovery Extensions](http://xmpp.org/extensions/xep-0128.html)
+* ![supported][supported]           [XEP-0149: Time Periods](http://xmpp.org/extensions/xep-0149.html)
 * ![supported][supported]           [XEP-0170: Recommended Order of Stream Feature Negotiation](http://xmpp.org/extensions/xep-0170.html)
+* ![supported][supported]           [XEP-0175: Best Practices for Use of SASL ANONYMOUS](http://xmpp.org/extensions/xep-0175.html)
 * ![supported][supported]           [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
-
 
 
 # License
@@ -273,6 +277,6 @@ try (XmppSession xmppSession = new XmppSession("domain")) {
 }
 ```
 
-[supported]: /sco0ter/babbler/raw/tip/supported.png "Is supported"
-[not supported]: /sco0ter/babbler/raw/tip/notsupported.png "Is not supported"
-[in development]: /sco0ter/babbler/raw/tip/development.png "Is in development or planned"
+[supported]: /sco0ter/babbler/raw/master/supported.png "Is supported"
+[not supported]: /sco0ter/babbler/raw/master/notsupported.png "Is not supported"
+[in development]: /sco0ter/babbler/raw/master/development.png "Is in development or planned"

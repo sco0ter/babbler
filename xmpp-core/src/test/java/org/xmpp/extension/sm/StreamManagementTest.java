@@ -1,0 +1,123 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package org.xmpp.extension.sm;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.xmpp.XmlTest;
+import org.xmpp.stanza.errors.UnexpectedRequest;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+/**
+ * @author Christian Schudt
+ */
+public class StreamManagementTest extends XmlTest {
+    protected StreamManagementTest() throws JAXBException, XMLStreamException {
+        super(StreamManagement.class, UnexpectedRequest.class);
+    }
+
+    @Test
+    public void unmarshalFeature() throws XMLStreamException, JAXBException {
+        String xml = "<sm xmlns='urn:xmpp:sm:3'/>";
+        StreamManagement feature = unmarshal(xml, StreamManagement.class);
+        Assert.assertNotNull(feature);
+    }
+
+
+    @Test
+    public void marshalEnable() throws JAXBException, XMLStreamException {
+        Enable enable = new Enable();
+        String xml = marshal(enable);
+        Assert.assertEquals("<enable xmlns=\"urn:xmpp:sm:3\"></enable>", xml);
+    }
+
+    @Test
+    public void marshalEnableWithResume() throws JAXBException, XMLStreamException {
+        Enable enable = new Enable(true, 23);
+        String xml = marshal(enable);
+        Assert.assertEquals("<enable xmlns=\"urn:xmpp:sm:3\" resume=\"true\" max=\"23\"></enable>", xml);
+    }
+
+    @Test
+    public void unmarshalEnabled() throws XMLStreamException, JAXBException {
+        String xml = "<enabled xmlns='urn:xmpp:sm:3' id='some-long-sm-id' resume='true' max='23' location='domain'/>";
+        Enabled enabled = unmarshal(xml, Enabled.class);
+        Assert.assertNotNull(enabled);
+        Assert.assertEquals(enabled.getId(), "some-long-sm-id");
+        Assert.assertTrue(enabled.isResume());
+        Assert.assertEquals(enabled.getLocation(), "domain");
+        Assert.assertEquals(enabled.getMax(), (Integer) 23);
+    }
+
+    @Test
+    public void unmarshalFailed() throws XMLStreamException, JAXBException {
+        String xml = "<failed xmlns='urn:xmpp:sm:3'>\n" +
+                "     <unexpected-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>\n" +
+                "   </failed>";
+        Failed failed = unmarshal(xml, Failed.class);
+        Assert.assertNotNull(failed);
+        Assert.assertTrue(failed.getError() instanceof UnexpectedRequest);
+    }
+
+    @Test
+    public void marshalAnswer() throws JAXBException, XMLStreamException {
+        Answer answer = new Answer(1);
+        String xml = marshal(answer);
+        Assert.assertEquals("<a xmlns=\"urn:xmpp:sm:3\" h=\"1\"></a>", xml);
+    }
+
+    @Test
+    public void marshalRequest() throws JAXBException, XMLStreamException {
+        Request request = new Request();
+        String xml = marshal(request);
+        Assert.assertEquals("<r xmlns=\"urn:xmpp:sm:3\"></r>", xml);
+    }
+
+    @Test
+    public void unmarshalResume() throws XMLStreamException, JAXBException {
+        String xml = "<resume xmlns='urn:xmpp:sm:3' \n" +
+                "            h='2'\n" +
+                "            previd='some-long-sm-id'/>\n";
+
+        Resume resume = unmarshal(xml, Resume.class);
+        Assert.assertNotNull(resume);
+        Assert.assertEquals(resume.getPreviousId(), "some-long-sm-id");
+        Assert.assertEquals(resume.getLastHandledStanza(), 2);
+    }
+
+    @Test
+    public void unmarshalResumed() throws XMLStreamException, JAXBException {
+        String xml = "<resumed xmlns='urn:xmpp:sm:3' \n" +
+                "            h='2'\n" +
+                "            previd='some-long-sm-id'/>\n";
+
+        Resumed resumed = unmarshal(xml, Resumed.class);
+        Assert.assertNotNull(resumed);
+        Assert.assertEquals(resumed.getPreviousId(), "some-long-sm-id");
+        Assert.assertEquals(resumed.getLastHandledStanza(), 2);
+    }
+}

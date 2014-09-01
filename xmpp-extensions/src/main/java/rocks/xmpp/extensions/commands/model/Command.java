@@ -24,47 +24,145 @@
 
 package rocks.xmpp.extensions.commands.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
+
+import rocks.xmpp.extensions.data.model.DataForm;
+
+import javax.xml.bind.annotation.*;
 
 /**
  * @author Christian Schudt
  */
+@XmlRootElement(name = "command")
 public final class Command {
+
+    public static final String NAMESPACE = "http://jabber.org/protocol/commands";
 
     @XmlAttribute(name = "action")
     private Action action;
 
+    @XmlAttribute(name = "node")
     private String node;
 
+    @XmlAttribute(name = "sessionid")
     private String sessionId;
 
     @XmlAttribute(name = "status")
     private Status status;
 
+    @XmlElement(name = "actions")
+    private Actions actions;
+
+    @XmlElementRef
+    private DataForm dataForm;
+
+    public Command() {
+    }
+
+    public Command(String node, Action action) {
+        this.node = node;
+        this.action = action;
+    }
+
+    public Command(String node, Action action, String sessionId, DataForm dataForm) {
+        this.node = node;
+        this.action = action;
+        this.sessionId = sessionId;
+        this.dataForm = dataForm;
+    }
+
+    public DataForm getDataForm() {
+        return dataForm;
+    }
+
+    public Action getAction() {
+        return action;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public Actions getActions() {
+        return actions;
+    }
 
     public enum Action {
+        /**
+         * The command should be canceled.
+         */
         @XmlEnumValue("cancel")
         CANCEL,
+        /**
+         * The command should be completed (if possible).
+         */
         @XmlEnumValue("complete")
         COMPLETE,
+        /**
+         * The command should be executed or continue to be executed. This is the default value.
+         */
         @XmlEnumValue("execute")
         EXECUTE,
+        /**
+         * The command should progress to the next stage of execution.
+         */
         @XmlEnumValue("next")
         NEXT,
+        /**
+         * The command should be digress to the previous stage of execution.
+         */
         @XmlEnumValue("prev")
         PREV
     }
 
-
     public enum Status {
 
+        /**
+         * The command has been canceled. The command session has ended.
+         */
         @XmlEnumValue("canceled")
         CANCELED,
+        /**
+         * The command has completed. The command session has ended.
+         */
         @XmlEnumValue("completed")
         COMPLETED,
+        /**
+         * The command is being executed.
+         */
         @XmlEnumValue("executing")
         EXECUTING
+    }
+
+    public static final class Actions {
+
+        @XmlElement(name = "prev")
+        private String prev;
+
+        @XmlElement(name = "next")
+        private String next;
+
+        @XmlElement(name = "complete")
+        private String complete;
+
+        @XmlAttribute(name = "execute")
+        private Action action;
+
+        /**
+         * Gets the default action.
+         *
+         * @return The default action.
+         */
+        public Action getAction() {
+            return action;
+        }
     }
 }
 

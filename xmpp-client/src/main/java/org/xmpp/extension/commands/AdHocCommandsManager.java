@@ -122,10 +122,13 @@ public class AdHocCommandsManager extends ExtensionManager {
         }
     }
 
-    public List<String> getCommands() throws XmppException {
+    public List<AdHocCommand> getCommands() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, Command.NAMESPACE);
-        List<String> commands = new ArrayList<>();
-        return null;
+        List<AdHocCommand> commands = new ArrayList<>();
+        for (Item item : itemNode.getItems()) {
+            commands.add(new AdHocCommand(serviceDiscoveryManager, xmppSession, item.getName(), item.getNode()));
+        }
+        return commands;
     }
 
     /**

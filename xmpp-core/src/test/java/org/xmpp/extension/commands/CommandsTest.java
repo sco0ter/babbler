@@ -120,4 +120,23 @@ public class CommandsTest extends XmlTest {
         Assert.assertEquals(command.getStatus(), Command.Status.EXECUTING);
         Assert.assertNotNull(command.getActions());
     }
+
+    @Test
+    public void unmarshalError() throws XMLStreamException, JAXBException {
+        String xml = "<iq type='error' from='responder@domain' to='requester@domain/resource' id='exec1'>\n" +
+                "  <command xmlns='http://jabber.org/protocol/commands'\n" +
+                "           node='list'\n" +
+                "           action='execute'\n" +
+                "           xml:lang='fr-ca'/>\n" +
+                "  <error type='modify' code='400'>\n" +
+                "    <bad-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>\n" +
+                "    <bad-locale xmlns='http://jabber.org/protocol/commands'/>\n" +
+                "  </error>\n" +
+                "</iq>\n";
+
+        IQ iq = unmarshal(xml, IQ.class);
+        Command command = iq.getExtension(Command.class);
+        Assert.assertNotNull(command);
+        Assert.assertTrue(iq.getError().getExtension() instanceof Command.BadLocale);
+    }
 }

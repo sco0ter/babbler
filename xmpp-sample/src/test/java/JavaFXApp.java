@@ -60,6 +60,7 @@ import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.extension.caps.EntityCapabilitiesManager;
+import org.xmpp.extension.commands.AdHocCommand;
 import org.xmpp.extension.commands.AdHocCommandsManager;
 import org.xmpp.extension.commands.Command;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -680,6 +681,7 @@ public class JavaFXApp extends Application {
 
 
                 try {
+
                     // Get the avatar manager
                     AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
 
@@ -698,7 +700,7 @@ public class JavaFXApp extends Application {
                         //avatarManager.publishAvatar(bufferedImage);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+
                 }
 
 

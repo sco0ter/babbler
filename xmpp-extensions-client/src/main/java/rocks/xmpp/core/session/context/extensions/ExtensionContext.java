@@ -74,6 +74,8 @@ import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandBytestreamsTransp
 import rocks.xmpp.extensions.jingle.transports.iceudp.model.IceUdpTransportMethod;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 import rocks.xmpp.extensions.json.model.Json;
+import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
+import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 import rocks.xmpp.extensions.last.LastActivityManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
 import rocks.xmpp.extensions.messagecorrect.MessageCorrectionManager;
@@ -270,6 +272,9 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0167: Jingle RTP Sessions
                 Extension.of(Rtp.NAMESPACE, null, false, Rtp.class),
+
+                // XEP-0171: Language Translation
+                Extension.of(LanguageTranslation.class),
 
                 // XEP-0172: User Nickname
                 Extension.of(Nickname.class),

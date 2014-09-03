@@ -61,3 +61,18 @@ This is a list of various issues which have occurred while reading through and i
 
 1. One node per namespace dead link (#approach-onenode) in 1.2
 2. Typo: "there there"
+
+## XEP-0171: Language Translation
+
+1.
+<xs:element ref='source' use='required‘/>
+
+==> The examples and written text say, it’s not required.
+
+2.
+<xs:attribute name='dictionary' type='xs:string' use='required'/>
+
+==> This is not required as per the text and examples.
+
+a error
+

@@ -819,7 +819,7 @@ public class XmppSession implements Closeable {
         exception = null;
         try {
             updateStatus(Status.AUTHENTICATING);
-            authenticationManager.authenticate(new Jid(user, getDomain()).toString(), user, password, null);
+            authenticationManager.authenticate(null, user, password, null);
 
             bindResource(resource);
 

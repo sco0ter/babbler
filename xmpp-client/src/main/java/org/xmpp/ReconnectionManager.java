@@ -92,7 +92,6 @@ public final class ReconnectionManager extends Manager {
         if (isEnabled()) {
             int seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
             nextReconnectionAttempt = new Date(System.currentTimeMillis() + seconds * 1000);
-            System.out.println("Reconnecting in: " + seconds);
             scheduledFuture = scheduledExecutorService.schedule(new Runnable() {
                 @Override
                 public void run() {

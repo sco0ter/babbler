@@ -974,7 +974,6 @@ public class XmppSession implements Closeable {
         }
         synchronized (this) {
             if (status == Status.AUTHENTICATED || status == Status.AUTHENTICATING || status == Status.CONNECTED || status == Status.CONNECTING) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
                 updateStatus(Status.DISCONNECTED, e);
             }
         }

@@ -138,7 +138,7 @@ public class XmppSession implements Closeable {
     /**
      * Holds the connection state.
      */
-    private volatile Status status = Status.CLOSED;
+    private volatile Status status = Status.INITIAL;
 
     /**
      * The resource, which the user requested during resource binding. This value is stored, so that it can be reused during reconnection.
@@ -694,7 +694,10 @@ public class XmppSession implements Closeable {
      * @throws IOException If anything went wrong, e.g. the host was not found.
      */
     public synchronized void connect() throws IOException {
-        if (status != Status.CLOSED && status != Status.DISCONNECTED) {
+        if (status == Status.CLOSED) {
+            throw new IllegalStateException("Session is already closed. Create a new one.");
+        }
+        if (status != Status.INITIAL && status != Status.DISCONNECTED) {
             throw new IllegalStateException("Already connected.");
         }
         // Should either be CLOSED or DISCONNECTED
@@ -1203,6 +1206,10 @@ public class XmppSession implements Closeable {
      * Represents the connection status.
      */
     public enum Status {
+        /**
+         * The session is initial state.
+         */
+        INITIAL,
         /**
          * The session is currently negotiating features.
          */

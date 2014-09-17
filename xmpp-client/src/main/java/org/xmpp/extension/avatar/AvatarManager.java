@@ -68,7 +68,7 @@ public final class AvatarManager extends ExtensionManager {
 
     private final Set<AvatarChangeListener> avatarChangeListeners = new CopyOnWriteArraySet<>();
 
-    private final Executor avatarRequester;
+    private final ExecutorService avatarRequester;
 
     private final VCardManager vCardManager;
 
@@ -93,6 +93,7 @@ public final class AvatarManager extends ExtensionManager {
                 if (e.getStatus() == XmppSession.Status.CLOSED) {
                     avatarChangeListeners.clear();
                     userHashes.clear();
+                    avatarRequester.shutdown();
                 }
             }
         });

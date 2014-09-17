@@ -121,7 +121,7 @@ public class XmppSession implements Closeable {
 
     private final List<Connection> connections = new ArrayList<>();
 
-    Executor stanzaListenerExecutor;
+    ExecutorService stanzaListenerExecutor;
 
     /**
      * The user, which is assigned by the server after resource binding.
@@ -751,6 +751,8 @@ public class XmppSession implements Closeable {
         if (shutdownHook != null) {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
         }
+
+        stanzaListenerExecutor.shutdown();
 
         if (activeConnection != null) {
             activeConnection.close();

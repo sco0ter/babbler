@@ -28,7 +28,6 @@ import org.xmpp.Manager;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Logger;
 
 /**
  * A base class to negotiate features.
@@ -41,13 +40,9 @@ import java.util.logging.Logger;
  */
 public abstract class FeatureNegotiator extends Manager {
 
-    private static final Logger logger = Logger.getLogger(FeatureNegotiator.class.getName());
-
     private final Set<FeatureListener> featureListeners = new CopyOnWriteArraySet<>();
 
     private final Class<? extends Feature> featureClass;
-
-    private boolean enabled = true;
 
     /**
      * Constructs a feature negotiator.
@@ -56,6 +51,7 @@ public abstract class FeatureNegotiator extends Manager {
      */
     public FeatureNegotiator(Class<? extends Feature> featureClass) {
         this.featureClass = featureClass;
+        setEnabled(true);
     }
 
     /**

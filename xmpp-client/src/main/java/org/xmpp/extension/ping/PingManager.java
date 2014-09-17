@@ -24,15 +24,16 @@
 
 package org.xmpp.extension.ping;
 
-import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
+import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
+
+import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class implements the application-level ping mechanism as specified in <a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
@@ -46,6 +47,12 @@ import org.xmpp.stanza.client.IQ;
  * @author Christian Schudt
  */
 public final class PingManager extends ExtensionManager {
+
+    private static final Logger logger = Logger.getLogger(PingManager.class.getName());
+
+    private final ScheduledExecutorService scheduledExecutorService;
+
+    private volatile ScheduledFuture<?> nextPing;
 
     /**
      * Creates the ping manager.
@@ -64,6 +71,42 @@ public final class PingManager extends ExtensionManager {
                 }
             }
         });
+        xmppSession.addConnectionListener(new ConnectionListener() {
+            @Override
+            public void statusChanged(ConnectionEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    // Shutdown the ping executor service and cancel the next ping.
+                    if (nextPing != null) {
+                        nextPing.cancel(false);
+                    }
+                    nextPing = null;
+                    scheduledExecutorService.shutdown();
+                }
+            }
+        });
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r, "XMPP Scheduled Ping Thread");
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
+
+        scheduledExecutorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                    try {
+                        pingServer();
+                    } catch (XmppException e) {
+                        logger.log(Level.WARNING, "Pinging server failed.", e);
+                    }
+                }
+                nextPing = scheduledExecutorService.schedule(this, 10, TimeUnit.MINUTES);
+            }
+        }, 10, TimeUnit.MINUTES);
+
         setEnabled(true);
     }
 

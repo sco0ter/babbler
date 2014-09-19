@@ -46,6 +46,7 @@ public abstract class Manager {
     /**
      * Enables or disables this manager.
      *
+     * @param enabled If the manager gets enabled.
      * @see #isEnabled()
      */
     public void setEnabled(boolean enabled) {

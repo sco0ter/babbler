@@ -360,7 +360,8 @@ public final class AvatarManager extends ExtensionManager {
      * Publishes an avatar to your VCard.
      *
      * @param avatar The avatar.
-     * @throws XmppException
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
     public void publishAvatar(Avatar avatar) throws XmppException {

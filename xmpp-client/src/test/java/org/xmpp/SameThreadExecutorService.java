@@ -22,27 +22,47 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.rpc;
+package org.xmpp;
 
-import org.xmpp.Jid;
-
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.*;
 
 /**
- * Handles an incoming remote procedure call.
- *
  * @author Christian Schudt
- * @see RpcManager#setRpcHandler(RpcHandler)
  */
-public interface RpcHandler {
+public final class SameThreadExecutorService extends AbstractExecutorService {
 
-    /**
-     * Processes the remote procedure call.
-     *
-     * @param methodName The method name.
-     * @param parameters The parameter list.
-     * @return The result.
-     * @throws RpcException If this exception is thrown, an application-level error (fault) is returned in the XML-RPC structure.
-     */
-    Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException;
+    private boolean terminated;
+
+    @Override
+    public void shutdown() {
+        terminated = true;
+    }
+
+    @Override
+    public boolean isShutdown() {
+        return terminated;
+    }
+
+    @Override
+    public boolean isTerminated() {
+        return terminated;
+    }
+
+    @Override
+    public boolean awaitTermination(long theTimeout, TimeUnit theUnit) throws InterruptedException {
+        shutdown(); // TODO ok to call shutdown? what if the client never called shutdown???
+        return terminated;
+    }
+
+    @Override
+    public List<Runnable> shutdownNow() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void execute(Runnable theCommand) {
+        theCommand.run();
+    }
 }

@@ -29,12 +29,12 @@ import org.testng.annotations.Test;
 import org.xmpp.*;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
-import org.xmpp.stanza.StanzaError;
-import org.xmpp.stanza.StanzaException;
-import org.xmpp.stanza.client.IQ;
-import org.xmpp.stanza.errors.Forbidden;
 
 import java.util.List;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Christian Schudt
@@ -62,10 +62,11 @@ public class RpcManagerTest extends BaseTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
+        rpcManager.executorService = new SameThreadExecutorService();
         rpcManager.setEnabled(true);
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override
-            public Value process(String methodName, List<Value> parameters) throws StanzaException, RpcException {
+            public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
                 if (methodName.equals("square")) {
                     return new Value(parameters.get(0).getAsInteger() * parameters.get(0).getAsInteger());
                 }
@@ -86,9 +87,12 @@ public class RpcManagerTest extends BaseTest {
 
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);
+
+        rpcManager.executorService = new SameThreadExecutorService();
+
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override
-            public Value process(String methodName, List<Value> parameters) throws StanzaException, RpcException {
+            public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
                 if (methodName.equals("fault")) {
                     throw new RpcException(2, "faulty");
                 }
@@ -106,33 +110,33 @@ public class RpcManagerTest extends BaseTest {
         Assert.fail("RpcException expected.");
     }
 
-    @Test
-    public void testStanzaException() throws XmppException, RpcException {
-        MockServer mockServer = new MockServer();
-
-        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
-
-        RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
-        rpcManager.setEnabled(true);
-        rpcManager.setRpcHandler(new RpcHandler() {
-            @Override
-            public Value process(String methodName, List<Value> parameters) throws StanzaException, RpcException {
-                if (methodName.equals("fault")) {
-                    IQ iq = new IQ(IQ.Type.ERROR);
-                    iq.setError(new StanzaError(new Forbidden()));
-                    throw new StanzaException(iq);
-                }
-                return null;
-            }
-        });
-
-        try {
-            xmppSession2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
-        } catch (StanzaException e) {
-            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Forbidden);
-            return;
-        }
-        Assert.fail("StanzaException expected.");
-    }
+//    @Test
+//    public void testStanzaException() throws XmppException, RpcException {
+//        MockServer mockServer = new MockServer();
+//
+//        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+//        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+//
+//        RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
+//        rpcManager.setEnabled(true);
+//        rpcManager.setRpcHandler(new RpcHandler() {
+//            @Override
+//            public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
+//                if (methodName.equals("fault")) {
+//                    IQ iq = new IQ(IQ.Type.ERROR);
+//                    iq.setError(new StanzaError(new Forbidden()));
+//                    throw new StanzaException(iq);
+//                }
+//                return null;
+//            }
+//        });
+//
+//        try {
+//            xmppSession2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
+//        } catch (StanzaException e) {
+//            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Forbidden);
+//            return;
+//        }
+//        Assert.fail("StanzaException expected.");
+//    }
 }

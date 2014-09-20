@@ -70,8 +70,6 @@ import org.xmpp.extension.geoloc.GeoLocationEvent;
 import org.xmpp.extension.geoloc.GeoLocationListener;
 import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
-import org.xmpp.extension.jingle.apps.filetransfer.JingleFileTransferManager;
-import org.xmpp.extension.jingle.apps.filetransfer.JingleFileTransferSession;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.last.LastActivityStrategy;
 import org.xmpp.extension.ping.PingManager;
@@ -81,6 +79,10 @@ import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;
 import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
+import org.xmpp.extension.rpc.RpcException;
+import org.xmpp.extension.rpc.RpcHandler;
+import org.xmpp.extension.rpc.RpcManager;
+import org.xmpp.extension.rpc.Value;
 import org.xmpp.extension.search.Search;
 import org.xmpp.extension.search.SearchManager;
 import org.xmpp.extension.time.EntityTime;
@@ -95,11 +97,12 @@ import org.xmpp.stanza.client.Presence;
 import org.xmpp.stanza.errors.ServiceUnavailable;
 
 import javax.imageio.ImageIO;
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Proxy;
-import java.net.Socket;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -304,6 +307,21 @@ public class JavaFXApp extends Application {
                                         xmppSession.getPresenceManager().denySubscription(e.getPresence().getFrom());
                                     }
                                 }
+                            }
+                        });
+
+                        RpcManager rpcManager = xmppSession.getExtensionManager(RpcManager.class);
+                        rpcManager.setRpcHandler(new RpcHandler() {
+                            @Override
+                            public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
+                                if (methodName.equals("examples.getStateName")) {
+                                    if (!parameters.isEmpty()) {
+                                        if (parameters.get(0).getAsInteger() == 6) {
+                                            return new Value("Colorado");
+                                        }
+                                    }
+                                }
+                                throw new RpcException(123, "Invalid method name or parameter.");
                             }
                         });
 
@@ -663,36 +681,49 @@ public class JavaFXApp extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                JingleFileTransferManager jingleFileTransferManager = xmppSession.getExtensionManager(JingleFileTransferManager.class);
-                try {
-                    JingleFileTransferSession jingleFileTransferSession = jingleFileTransferManager.initiateFileTransferSession(Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), new File("test.png"), "", 60000);
 
+                RpcManager rpcManager = xmppSession.getExtensionManager(RpcManager.class);
+                try {
+                    Value response = rpcManager.call(Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), "examples.getStateName", new Value(6));
+                    System.out.println(response.getAsString());
                 } catch (XmppException e) {
                     e.printStackTrace();
-                } catch (IOException e) {
+                    // E.g. a StanzaException, if the responder does not support the protocol or an internal-server-error has occurred.
+                } catch (RpcException e) {
                     e.printStackTrace();
+                    // If the responder responded with an application level XML-RPC fault.
                 }
 
-
-                FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
-                try {
-                    //fileTransferManager.offerFile(new URL("http://i.i.cbsi.com/cnwk.1d/i/tim2/2013/10/10/20131007_Frax_fractal_002.jpg"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
-                    final FileTransfer fileTransfer = fileTransferManager.offerFile(new File("test.png"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
-                    fileTransfer.transfer();
-
-                    AnimationTimer animationTimer = new AnimationTimer() {
-                        @Override
-                        public void handle(long now) {
-                            System.out.println(fileTransfer.getProgress());
-                            if (fileTransfer.isDone()) {
-                                stop();
-                            }
-                        }
-                    };
-                    animationTimer.start();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                JingleFileTransferManager jingleFileTransferManager = xmppSession.getExtensionManager(JingleFileTransferManager.class);
+//                try {
+//                    JingleFileTransferSession jingleFileTransferSession = jingleFileTransferManager.initiateFileTransferSession(Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), new File("test.png"), "", 60000);
+//
+//                } catch (XmppException e) {
+//                    e.printStackTrace();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//
+//                FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+//                try {
+//                    //fileTransferManager.offerFile(new URL("http://i.i.cbsi.com/cnwk.1d/i/tim2/2013/10/10/20131007_Frax_fractal_002.jpg"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
+//                    final FileTransfer fileTransfer = fileTransferManager.offerFile(new File("test.png"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
+//                    fileTransfer.transfer();
+//
+//                    AnimationTimer animationTimer = new AnimationTimer() {
+//                        @Override
+//                        public void handle(long now) {
+//                            System.out.println(fileTransfer.getProgress());
+//                            if (fileTransfer.isDone()) {
+//                                stop();
+//                            }
+//                        }
+//                    };
+//                    animationTimer.start();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
 
             }
         });

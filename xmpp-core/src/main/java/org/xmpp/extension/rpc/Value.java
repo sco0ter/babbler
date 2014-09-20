@@ -200,10 +200,8 @@ public final class Value {
         if (value instanceof ArrayType) {
             ArrayType arrayType = (ArrayType) value;
             List<Value> result = new ArrayList<>();
-            if (arrayType.values != null) {
-                for (Value value : arrayType.values) {
-                    result.add(value);
-                }
+            for (Value value : arrayType.values) {
+                result.add(value);
             }
             return result;
         }
@@ -219,10 +217,8 @@ public final class Value {
         if (value instanceof StructType) {
             StructType structType = (StructType) value;
             Map<String, Value> result = new HashMap<>();
-            if (structType.values != null) {
-                for (StructType.MemberType member : structType.values) {
-                    result.put(member.name, member.value);
-                }
+            for (StructType.MemberType member : structType.values) {
+                result.put(member.name, member.value);
             }
             return result;
         }

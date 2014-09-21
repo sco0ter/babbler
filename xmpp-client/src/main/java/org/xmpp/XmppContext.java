@@ -59,6 +59,7 @@ import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.hashes.Hash;
 import org.xmpp.extension.hashes.HashManager;
+import org.xmpp.extension.httpauth.ConfirmationRequest;
 import org.xmpp.extension.httpbind.Body;
 import org.xmpp.extension.invisible.Invisible;
 import org.xmpp.extension.invisible.Visible;
@@ -255,6 +256,9 @@ public abstract class XmppContext {
             // XEP-0066: Out of Band Data
             registerExtension(OobIQ.class, OobX.class);
             registerManager(OutOfBandFileTransferManager.class);
+
+            // XEP-0070: Verifying HTTP Requests via XMPP
+            registerExtension(ConfirmationRequest.class);
 
             // XEP-0077: In-Band Registration
             registerExtension(RegisterFeature.class, Registration.class);

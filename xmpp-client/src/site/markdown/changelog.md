@@ -1,6 +1,20 @@
 # Changelog
 ---
 
+## Version 0.4.0
+
+## New Features
+
+* Added support for [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html]
+* Added support for [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html]
+
+## Improvements
+
+* Reconnection logic improved.
+* Periodically ping the server (XEP-0199) to allow for a more stable connection.
+* Added more documentation.
+
+
 ## Version 0.3.0 (2014-08-02)
 
 ### New Features

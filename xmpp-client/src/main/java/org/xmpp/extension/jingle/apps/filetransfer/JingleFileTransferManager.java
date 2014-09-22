@@ -59,7 +59,7 @@ public final class JingleFileTransferManager extends ExtensionManager {
 
     public JingleFileTransferSession initiateFileTransferSession(final Jid responder, File file, String description, long timeout) throws XmppException, IOException {
         JingleFileTransfer.File jingleFile = new JingleFileTransfer.File(file.getName(), file.length(), new Date(file.lastModified()), null, description);
-        JingleFileTransfer jingleFileTransfer = JingleFileTransfer.offer(jingleFile);
+        JingleFileTransfer jingleFileTransfer = new JingleFileTransfer(jingleFile);
 
 
         String ibbSessionId = UUID.randomUUID().toString();

@@ -44,60 +44,24 @@ public class JingleFileTransferTest extends XmlTest {
 
     @Test
     public void unmarshalJingleFileTransfer() throws XMLStreamException, JAXBException {
-        String xml = "<description xmlns='urn:xmpp:jingle:apps:file-transfer:3'>\n" +
-                "        <offer>\n" +
-                "          <file>\n" +
-                "            <date>1969-07-21T02:56:15Z</date>\n" +
-                "            <desc>This is a test. If this were a real file...</desc>\n" +
-                "            <name>test.txt</name>\n" +
-                "            <range/>\n" +
-                "            <size>1022</size>\n" +
-                "            <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
-                "          </file>\n" +
-                "        </offer>\n" +
+        String xml = "<description xmlns='urn:xmpp:jingle:apps:file-transfer:4'>\n" +
+                "        <file>\n" +
+                "          <date>1969-07-21T02:56:15Z</date>\n" +
+                "          <desc>This is a test. If this were a real file...</desc>\n" +
+                "          <media-type>text/plain</media-type>\n" +
+                "          <name>test.txt</name>\n" +
+                "          <range/>\n" +
+                "          <size>1022</size>\n" +
+                "          <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
+                "        </file>\n" +
                 "      </description>\n";
 
         JingleFileTransfer fileTransfer = unmarshal(xml, JingleFileTransfer.class);
-        Assert.assertEquals(fileTransfer.getOffers().size(), 1);
-        Assert.assertEquals(fileTransfer.getOffers().get(0).getDescription(), "This is a test. If this were a real file...");
-        Assert.assertEquals(fileTransfer.getOffers().get(0).getName(), "test.txt");
-        Assert.assertEquals(fileTransfer.getOffers().get(0).getSize(), 1022);
-    }
-
-    @Test
-    public void unmarshalJingleFileTransferAbort() throws XMLStreamException, JAXBException {
-        String xml = "<jingle xmlns='urn:xmpp:jingle:1'\n" +
-                "          action='session-info'\n" +
-                "          initiator='romeo@montague.lit/orchard'\n" +
-                "          sid='a73sjjvkla37jfea'>\n" +
-                "    <abort xmlns='urn:xmpp:jingle:apps:file-transfer:3'>\n" +
-                "      <file>\n" +
-                "        <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
-                "      </file>\n" +
-                "    </abort>\n" +
-                "  </jingle>\n";
-
-        Jingle jingle = unmarshal(xml, Jingle.class);
-        Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Abort);
-        Assert.assertEquals(((JingleFileTransfer.Abort) jingle.getPayload()).getFile().getHashes().size(), 1);
-    }
-
-    @Test
-    public void unmarshalJingleFileTransferReceived() throws XMLStreamException, JAXBException {
-        String xml = "<jingle xmlns='urn:xmpp:jingle:1'\n" +
-                "          action='session-info'\n" +
-                "          initiator='romeo@montague.lit/orchard'\n" +
-                "          sid='a73sjjvkla37jfea'>\n" +
-                "    <received xmlns='urn:xmpp:jingle:apps:file-transfer:3'>\n" +
-                "      <file>\n" +
-                "        <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>a749930852c69ae5d2141d3766b1552d</hash>\n" +
-                "      </file>\n" +
-                "    </received>\n" +
-                "  </jingle>\n";
-
-        Jingle jingle = unmarshal(xml, Jingle.class);
-        Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Received);
-        Assert.assertEquals(((JingleFileTransfer.Received) jingle.getPayload()).getFile().getHashes().size(), 1);
+        Assert.assertNotNull(fileTransfer.getFile());
+        Assert.assertEquals(fileTransfer.getFile().getDescription(), "This is a test. If this were a real file...");
+        Assert.assertEquals(fileTransfer.getFile().getMediaType(), "text/plain");
+        Assert.assertEquals(fileTransfer.getFile().getName(), "test.txt");
+        Assert.assertEquals(fileTransfer.getFile().getSize(), 1022);
     }
 
     @Test
@@ -106,7 +70,7 @@ public class JingleFileTransferTest extends XmlTest {
                 "          action='session-info'\n" +
                 "          initiator='romeo@montague.lit/orchard'\n" +
                 "          sid='a73sjjvkla37jfea'>\n" +
-                "    <checksum xmlns='urn:xmpp:jingle:apps:file-transfer:3'>\n" +
+                "    <checksum xmlns='urn:xmpp:jingle:apps:file-transfer:4'>\n" +
                 "      <file>\n" +
                 "        <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
                 "      </file>\n" +

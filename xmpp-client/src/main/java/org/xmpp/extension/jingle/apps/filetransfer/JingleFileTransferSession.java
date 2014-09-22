@@ -29,7 +29,6 @@ import org.xmpp.extension.jingle.Jingle;
 import org.xmpp.extension.jingle.JingleSession;
 
 import java.io.File;
-import java.util.Date;
 
 /**
  * @author Christian Schudt
@@ -44,10 +43,6 @@ public final class JingleFileTransferSession {
 
     public void accept(Jingle.Content... contents) throws XmppException {
         jingleSession.accept(contents);
-    }
-
-    public void abort() throws XmppException {
-        jingleSession.sendSessionInfo(new JingleFileTransfer.Abort(null));
     }
 
     public void communicateHash() throws XmppException {

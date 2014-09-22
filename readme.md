@@ -10,6 +10,7 @@ It supports the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc6120.htm
 
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 
+|
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
 | Build Status                | [![Build Status](https://drone.io/bitbucket.org/sco0ter/babbler/status.png)](https://drone.io/bitbucket.org/sco0ter/babbler/latest)         |
 

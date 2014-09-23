@@ -28,11 +28,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.xmpp</groupId>
-        <artifactId>xmpp-stack</artifactId>
+        <groupId>rocks.xmpp</groupId>
+        <artifactId>root</artifactId>
         <version>0.4.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-core</artifactId>
+    <name>XMPP core library</name>
+    <description>Contains classes which are useful for client and server implementations</description>
     <build>
         <plugins>
             <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->

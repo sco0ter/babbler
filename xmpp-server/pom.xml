@@ -28,18 +28,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.xmpp</groupId>
-        <artifactId>xmpp-stack</artifactId>
+        <groupId>rocks.xmpp</groupId>
+        <artifactId>root</artifactId>
         <version>0.4.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-server</artifactId>
+    <name>XMPP server library</name>
     <build>
         <plugins>
             <!-- Skip site generation -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.3</version>
+                <version>3.4</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
@@ -54,7 +55,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.xmpp</groupId>
+            <groupId>rocks.xmpp</groupId>
             <artifactId>xmpp-core</artifactId>
             <version>${project.version}</version>
         </dependency>

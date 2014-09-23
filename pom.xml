@@ -28,32 +28,94 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.xmpp</groupId>
-    <artifactId>xmpp-stack</artifactId>
+    <groupId>rocks.xmpp</groupId>
+    <artifactId>root</artifactId>
     <version>0.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <name>XMPP.rocks</name>
+    <description>The root pom</description>
+
+    <!-- Project Site -->
+    <url>http://xmpp.rocks</url>
+
+    <!-- Licenses -->
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license</url>
+        </license>
+    </licenses>
+
+    <!-- Developers -->
+    <developers>
+        <developer>
+            <name>Christian Schudt</name>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+01:00</timezone>
+        </developer>
+    </developers>
+
+    <!-- Developers -->
+    <organization>
+        <name>XMPP.rocks</name>
+        <url>http://xmpp.rocks</url>
+    </organization>
+
+    <!-- Issue Management -->
+    <issueManagement>
+        <system>Bitbucket</system>
+        <url>https://bitbucket.org/sco0ter/babbler/issues</url>
+    </issueManagement>
+
+    <!-- Continuous Integration Management -->
+    <ciManagement>
+        <system>drone.io</system>
+        <url>https://drone.io/bitbucket.org/sco0ter/babbler</url>
+    </ciManagement>
+
+    <!-- Mailing Lists -->
+    <mailingLists>
+    </mailingLists>
+
+    <!-- Source Control Management -->
+    <scm>
+        <url>https://bitbucket.org/sco0ter/babbler/src</url>
+        <connection>scm:git:git@bitbucket.org:sco0ter/babbler.git</connection>
+        <developerConnection>scm:git:git@bitbucket.org:sco0ter/babbler.git</developerConnection>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
-    <organization>
-        <name>${project.name}</name>
-        <url>https://bitbucket.org/sco0ter/babbler</url>
-    </organization>
-    <scm>
-        <url>https://bitbucket.org/sco0ter/babbler/</url>
-    </scm>
+
     <inceptionYear>2014</inceptionYear>
+
     <modules>
         <module>xmpp-core</module>
         <module>xmpp-client</module>
         <module>xmpp-server</module>
     </modules>
-    <url>/</url>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
+
+            <!-- Do not generate a site for the root project -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -63,6 +125,8 @@
                 </configuration>
             </plugin>
         </plugins>
+
+
         <pluginManagement>
             <plugins>
                 <!-- Use doxia-module-markdown for mvn site -->
@@ -90,4 +154,71 @@
         </pluginManagement>
     </build>
 
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- Deployment -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.4</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+
+                    <!-- Generate sources jar -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.3</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Generate JavaDoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Sign the artifacts -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

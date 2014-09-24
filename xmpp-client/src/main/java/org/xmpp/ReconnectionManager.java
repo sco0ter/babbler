@@ -24,18 +24,36 @@
 
 package org.xmpp;
 
+import org.xmpp.stream.StreamException;
+import org.xmpp.stream.errors.Conflict;
+
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.*;
-import java.util.logging.Logger;
 
 /**
+ * If the connection goes down, this class automatically reconnects, if the user was authenticated.
+ * <p>
+ * Reconnection is not performed, if the user got disconnected due to an {@code <conflict/>} stream error.
+ * </p>
+ * The default reconnection strategy is a so called truncated binary exponential back off (as proposed by the XMPP specification),
+ * which means that the first reconnection attempt is performed X seconds after the disconnect, where X is between 0 and 60.<br>
+ * The second attempt chooses a random number between 0 and 180.<br>
+ * The third attempt chooses a random number between 0 and 420.<br>
+ * The forth attempt chooses a random number between 0 and 900.<br>
+ * The fifth attempt chooses a random number between 0 and 1860.<br>
+ * <p>
+ * Generally speaking it is <code>2^attempt * 60</code> seconds.
+ * <p>
+ * You can also {@linkplain #setReconnectionStrategy(ReconnectionStrategy) set} your own reconnection strategy.
+ * </p>
+ * Use {@link #getNextReconnectionAttempt()} if you want to find out, when the next reconnection attempt will happen.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
  */
 public final class ReconnectionManager extends Manager {
-
-    private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
 
     private final ScheduledExecutorService scheduledExecutorService;
 
@@ -57,7 +75,7 @@ public final class ReconnectionManager extends Manager {
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
+                Thread thread = new Thread(r, "XMPP Reconnection Thread");
                 thread.setDaemon(true);
                 return thread;
             }
@@ -68,24 +86,32 @@ public final class ReconnectionManager extends Manager {
             public void statusChanged(ConnectionEvent e) {
                 switch (e.getStatus()) {
                     case DISCONNECTED:
-                        // Reconnect if we were connected or logged in and an exception has occurred.
-                        if (e.getOldStatus() == XmppSession.Status.CONNECTED || e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
+                        // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
+                        if ((!(e.getException() instanceof StreamException) || !(((StreamException) e.getException()).getStreamError().getCondition() instanceof Conflict)) && e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
                             scheduleReconnection(0);
                         }
                         break;
                     case CONNECTED:
-                        if (scheduledFuture != null) {
-                            // Cancel / unschedule any scheduled reconnection task, if the connection is established (e.g. manually) before the next reconnection attempt.
-                            scheduledFuture.cancel(false);
-                            nextReconnectionAttempt = null;
-                        }
+                        cancel();
                         break;
                     case CLOSED:
+                        cancel();
                         scheduledExecutorService.shutdown();
                         break;
                 }
             }
         });
+    }
+
+    /**
+     * Cancels the next reconnection attempt.
+     */
+    private void cancel() {
+        if (scheduledFuture != null) {
+            // Cancel / unschedule any scheduled reconnection task, if the connection is established (e.g. manually) before the next reconnection attempt.
+            scheduledFuture.cancel(false);
+            nextReconnectionAttempt = null;
+        }
     }
 
     private void scheduleReconnection(final int attempt) {
@@ -123,6 +149,11 @@ public final class ReconnectionManager extends Manager {
         this.reconnectionStrategy = reconnectionStrategy;
     }
 
+    /**
+     * Gets the date of the next reconnection attempt.
+     *
+     * @return The next reconnection attempt or null if there is none.
+     */
     public Date getNextReconnectionAttempt() {
         return nextReconnectionAttempt;
     }

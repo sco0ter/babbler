@@ -2,17 +2,17 @@
 
 It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 700+ unit tests).
 
-You can find some more information [here](http://babbler-xmpp.blogspot.de/).
-
-[HERE'S THE PROJECT SITE WITH DOCUMENTATION.](http://sco0ter.bitbucket.org/babbler/)
-
-It supports the core specifications ([RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html)), short of optional features like Roster Versioning.
+It supports the core specifications [RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html), (short of optional features like [Roster Versioning](http://xmpp.org/rfcs/rfc6121.html#roster-versioning)), as well as many [extensions](http://xmpp.org/xmpp-protocols/xmpp-extensions/).
 
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 
+# Project Links
 |
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| Blog                        | [blog.xmpp.rocks](http://blog.xmpp.rocks)]                                                                                                  |
+| Documentation               | [docs.xmpp.rocks](http://docs.xmpp.rocks)]                                                                                                  |
 | Build Status                | [![Build Status](https://drone.io/bitbucket.org/sco0ter/babbler/status.png)](https://drone.io/bitbucket.org/sco0ter/babbler/latest)         |
+
 
 # Supported Extensions
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final' that are applicable to XMPP clients)*

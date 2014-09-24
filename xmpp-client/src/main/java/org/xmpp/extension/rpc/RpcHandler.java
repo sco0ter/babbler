@@ -39,6 +39,7 @@ public interface RpcHandler {
     /**
      * Processes the remote procedure call.
      *
+     * @param requester  The requester.
      * @param methodName The method name.
      * @param parameters The parameter list.
      * @return The result.

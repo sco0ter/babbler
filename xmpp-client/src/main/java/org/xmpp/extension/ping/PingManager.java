@@ -93,7 +93,7 @@ public final class PingManager extends ExtensionManager {
             }
         });
 
-        scheduledExecutorService.schedule(new Runnable() {
+        nextPing = scheduledExecutorService.schedule(new Runnable() {
             @Override
             public void run() {
                 if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {

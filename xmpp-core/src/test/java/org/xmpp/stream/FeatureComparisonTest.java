@@ -24,7 +24,7 @@
 
 package org.xmpp.stream;
 
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.bind.Bind;
 import org.xmpp.extension.compress.feature.Compression;

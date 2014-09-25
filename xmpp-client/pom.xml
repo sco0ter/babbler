@@ -80,7 +80,7 @@
                     <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
                     <includeDependencySources>true</includeDependencySources>
                     <dependencySourceIncludes>
-                        <dependencySourceInclude>org.xmpp:xmpp-core</dependencySourceInclude>
+                        <dependencySourceInclude>rocks.xmpp:xmpp-core</dependencySourceInclude>
                     </dependencySourceIncludes>
                     <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
                     <nodeprecated>true</nodeprecated>
@@ -139,7 +139,7 @@
                             <finalName>Babbler-${project.version}</finalName>
                             <includeDependencySources>true</includeDependencySources>
                             <dependencySourceIncludes>
-                                <dependencySourceInclude>org.xmpp:xmpp-core</dependencySourceInclude>
+                                <dependencySourceInclude>rocks.xmpp:xmpp-core</dependencySourceInclude>
                             </dependencySourceIncludes>
                             <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
                             <nodeprecated>true</nodeprecated>

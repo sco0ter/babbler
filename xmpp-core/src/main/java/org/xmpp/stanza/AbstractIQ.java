@@ -172,6 +172,24 @@ public abstract class AbstractIQ extends Stanza {
     }
 
     /**
+     * Returns if this is a request IQ, i.e. of type get or set.
+     *
+     * @return True if this is a get or set IQ.
+     */
+    public final boolean isRequest() {
+        return type == Type.GET || type == Type.SET;
+    }
+
+    /**
+     * Returns true, if this IQ is a response (either a positive result or an error).
+     *
+     * @return If this is a result or error IQ.
+     */
+    public final boolean isResponse() {
+        return type == Type.RESULT || type == Type.ERROR;
+    }
+
+    /**
      * Represents a {@code <iq/>} 'type' attribute.
      */
     @XmlType(name = "iqType")

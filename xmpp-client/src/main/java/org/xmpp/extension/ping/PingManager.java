@@ -93,20 +93,6 @@ public final class PingManager extends ExtensionManager {
             }
         });
 
-        nextPing = scheduledExecutorService.schedule(new Runnable() {
-            @Override
-            public void run() {
-                if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                    try {
-                        pingServer();
-                    } catch (XmppException e) {
-                        logger.log(Level.WARNING, "Pinging server failed.", e);
-                    }
-                }
-                nextPing = scheduledExecutorService.schedule(this, 10, TimeUnit.MINUTES);
-            }
-        }, 10, TimeUnit.MINUTES);
-
         setEnabled(true);
     }
 
@@ -129,5 +115,31 @@ public final class PingManager extends ExtensionManager {
      */
     public void pingServer() throws XmppException {
         ping(null);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        boolean wasEnabled = isEnabled();
+        super.setEnabled(enabled);
+
+        if (enabled && !wasEnabled) {
+            nextPing = scheduledExecutorService.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                        try {
+                            pingServer();
+                        } catch (XmppException e) {
+                            logger.log(Level.WARNING, "Pinging server failed.", e);
+                        }
+                    }
+                    nextPing = scheduledExecutorService.schedule(this, 10, TimeUnit.MINUTES);
+                }
+            }, 10, TimeUnit.MINUTES);
+        } else if (!enabled && wasEnabled) {
+            if (nextPing != null) {
+                nextPing.cancel(false);
+            }
+        }
     }
 }

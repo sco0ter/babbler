@@ -157,4 +157,12 @@ public final class ReconnectionManager extends Manager {
     public Date getNextReconnectionAttempt() {
         return nextReconnectionAttempt;
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (!enabled) {
+            cancel();
+        }
+    }
 }

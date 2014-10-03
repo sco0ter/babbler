@@ -9,8 +9,8 @@ Since this project is quite young, the API might change. Comments on the API are
 # Project Links
 |
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| Blog                        | [blog.xmpp.rocks](http://blog.xmpp.rocks)]                                                                                                  |
-| Documentation               | [docs.xmpp.rocks](http://docs.xmpp.rocks)]                                                                                                  |
+| Blog                        | [blog.xmpp.rocks](http://blog.xmpp.rocks)                                                                                                  |
+| Documentation               | [docs.xmpp.rocks](http://docs.xmpp.rocks)                                                                                                  |
 | Build Status                | [![Build Status](https://drone.io/bitbucket.org/sco0ter/babbler/status.png)](https://drone.io/bitbucket.org/sco0ter/babbler/latest)         |
 
 

@@ -24,16 +24,21 @@
 
 package org.xmpp;
 
+import org.xmpp.debug.XmppDebugger;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -56,9 +61,17 @@ final class XmppStreamReader {
 
     private final XMLInputFactory xmlInputFactory;
 
-    public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession) throws JAXBException {
+    private final XMLOutputFactory xmlOutputFactory;
+
+    private final XmppDebugger debugger;
+
+    private final boolean debugEnabled;
+
+    public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) throws JAXBException {
         this.connection = connection;
         this.xmppSession = xmppSession;
+        this.debugger = xmppSession.getConfiguration().getDebugger();
+        this.debugEnabled = xmppSession.getConfiguration().isDebugMode();
 
         executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
@@ -69,6 +82,7 @@ final class XmppStreamReader {
             }
         });
         this.xmlInputFactory = XMLInputFactory.newFactory();
+        this.xmlOutputFactory = xmlOutputFactory;
     }
 
     void startReading(final InputStream inputStream) {
@@ -77,13 +91,20 @@ final class XmppStreamReader {
             @Override
             public void run() {
                 boolean doRestart = false;
+
                 try {
 
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    InputStream xmppInputStream;
+                    ByteArrayOutputStream byteArrayOutputStream = null;
+                    if (debugEnabled && debugger != null) {
+                        byteArrayOutputStream = new ByteArrayOutputStream();
+                        xmppInputStream = debugger.createInputStream(XmppUtils.createBranchedInputStream(inputStream, byteArrayOutputStream));
+                    } else {
+                        xmppInputStream = inputStream;
+                    }
 
-                    InputStream xmppInputStream = new BranchedInputStream(inputStream, byteArrayOutputStream);
                     XMLEventReader xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream, "UTF-8");
-
+                    boolean isFirstPass = true;
                     while (!doRestart && xmlEventReader.hasNext()) {
                         XMLEvent xmlEvent = xmlEventReader.peek();
 
@@ -98,20 +119,44 @@ final class XmppStreamReader {
                                 if (fromAttribute != null) {
                                     xmppSession.setXmppServiceDomain(fromAttribute.getValue());
                                 }
+
                                 xmlEventReader.next();
                             } else {
                                 Object object = xmppSession.getUnmarshaller().unmarshal(xmlEventReader);
-                                if (logger.isLoggable(Level.FINE)) {
-                                    logger.fine("<--  " + new String(byteArrayOutputStream.toByteArray()));
+
+                                if (debugEnabled && debugger != null) {
+                                    if (isFirstPass) {
+                                        // If it's the first pass, include the stream header with the <features/>, which are both in the byteArrayOutputStream at this point.
+                                        debugger.readStanza(byteArrayOutputStream.toString(), object);
+                                    } else {
+                                        // Otherwise marshal the incoming stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
+                                        StringWriter stringWriter = new StringWriter();
+                                        XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
+                                        synchronized (xmlOutputFactory) {
+                                            xmppSession.getMarshaller().marshal(object, xmlStreamWriter);
+                                        }
+                                        debugger.readStanza(stringWriter.toString(), object);
+                                    }
                                 }
-                                byteArrayOutputStream.reset();
+                                isFirstPass = false;
                                 doRestart = xmppSession.handleElement(object);
                             }
                         } else {
                             xmlEventReader.next();
                         }
-
+                        if (!isFirstPass && byteArrayOutputStream != null) {
+                            // Avoid that the stream grows to the size of the whole XMPP stream.
+                            byteArrayOutputStream.reset();
+                        }
+                        if (xmlEvent.getEventType() == XMLEvent.END_ELEMENT) {
+                            // The stream gets closed with </stream:stream>
+                            if (debugEnabled && debugger != null) {
+                                QName qName = xmlEvent.asEndElement().getName();
+                                debugger.readStanza("</" + qName.getPrefix() + ":" + qName.getLocalPart() + ">", null);
+                            }
+                        }
                     }
+
                     xmlEventReader.close();
                 } catch (Exception e) {
                     xmppSession.notifyException(e);

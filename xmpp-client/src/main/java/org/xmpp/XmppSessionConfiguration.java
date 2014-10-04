@@ -25,6 +25,7 @@
 package org.xmpp;
 
 import org.xmpp.bind.Bind;
+import org.xmpp.debug.XmppDebugger;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.activity.Activity;
 import org.xmpp.extension.address.Addresses;
@@ -130,6 +131,7 @@ import org.xmpp.tls.StartTls;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -147,6 +149,12 @@ import java.util.HashSet;
  * @see org.xmpp.XmppSession#XmppSession(String, XmppSessionConfiguration, Connection...)
  */
 public final class XmppSessionConfiguration {
+
+    private static final boolean IS_DEBUG_MODE;
+
+    static {
+        IS_DEBUG_MODE = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");
+    }
 
     private static final Class<?>[] defaultContext = new Class[]{
             // Core classes
@@ -352,12 +360,17 @@ public final class XmppSessionConfiguration {
 
     private final JAXBContext jaxbContext;
 
+    private XmppDebugger xmppDebugger;
+
+    private boolean debugMode;
+
     /**
      * Creates a configuration for an {@link org.xmpp.XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
      * @param classes The classes to be bound to the JAXBContext.
      */
     public XmppSessionConfiguration(Class<?>... classes) {
+        this.debugMode = IS_DEBUG_MODE;
 
         // These are the manager classes which are loaded immediately, when the XmppSession is initialized,
         // Typically the add listeners to the session, e.g. to automatically reply.
@@ -434,4 +447,49 @@ public final class XmppSessionConfiguration {
     public Collection<Class<? extends ExtensionManager>> getInitialExtensionManagers() {
         return initialExtensionManagers;
     }
+
+    /**
+     * Gets the current debugger for this session. If no debugger was set, the default debugger is the {@link org.xmpp.debug.ConsoleDebugger}.
+     *
+     * @return The debugger.
+     * @see #setDebugger(org.xmpp.debug.XmppDebugger)
+     * @see #setDebugMode(boolean)
+     */
+    public final XmppDebugger getDebugger() {
+        return xmppDebugger;
+    }
+
+    /**
+     * Sets the debugger for this session.
+     *
+     * @param xmppDebugger The debugger.
+     * @see #getDebugger()
+     * @see #setDebugMode(boolean)
+     */
+    public final void setDebugger(XmppDebugger xmppDebugger) {
+        this.xmppDebugger = xmppDebugger;
+    }
+
+    /**
+     * Indicates, whether this session is in debug mode. By default every session is in debug mode, if the JVM was started in debug mode.
+     *
+     * @return True, if this session is in debug mode.
+     * @see #setDebugMode(boolean)
+     * @see #getDebugger()
+     */
+    public final boolean isDebugMode() {
+        return debugMode;
+    }
+
+    /**
+     * Sets, if debug mode is enabled for this session.
+     *
+     * @param debugMode If this session is in debug mode.
+     * @see #isDebugMode()
+     * @see #setDebugger(org.xmpp.debug.XmppDebugger)
+     */
+    public final void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+    }
+
 }

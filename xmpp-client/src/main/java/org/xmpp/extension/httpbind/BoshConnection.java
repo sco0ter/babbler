@@ -27,6 +27,7 @@ package org.xmpp.extension.httpbind;
 import org.xmpp.Connection;
 import org.xmpp.XmppSession;
 import org.xmpp.XmppUtils;
+import org.xmpp.debug.XmppDebugger;
 import org.xmpp.stream.ClientStreamElement;
 
 import javax.naming.Context;
@@ -53,7 +54,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -131,6 +131,10 @@ public final class BoshConnection extends Connection {
      * True, if the connection manager sends acknowledgments.
      */
     private volatile boolean usingAcknowledgments;
+
+    private XmppDebugger debugger;
+
+    private boolean debugEnabled;
 
     /**
      * Creates a BOSH connection on the basis of the XMPP service domain.
@@ -341,6 +345,9 @@ public final class BoshConnection extends Connection {
         body.setAck(1L);
         body.setXmppVersion("1.0");
 
+        debugger = getXmppSession().getConfiguration().getDebugger();
+        debugEnabled = getXmppSession().getConfiguration().isDebugMode();
+
         // Send the initial request.
         sendNewRequest(body, false);
     }
@@ -547,17 +554,24 @@ public final class BoshConnection extends Connection {
                                 ByteArrayOutputStream byteArrayOutputStreamRequest = new ByteArrayOutputStream();
 
                                 XMLStreamWriter xmlStreamWriter = null;
-                                // Branch the stream, so that its output can also be logged.
-                                try (OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest)) {
+
+                                try {
+                                    // Branch the stream, so that its output can also be logged.
+                                    OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest);
+                                    OutputStream xmppOutputStream;
+                                    if (debugger != null && debugEnabled) {
+                                        xmppOutputStream = debugger.createOutputStream(branchedOutputStream);
+                                    } else {
+                                        xmppOutputStream = branchedOutputStream;
+                                    }
                                     // Create the writer for this connection.
-                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(branchedOutputStream, "UTF-8"), true);
+                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8"), true);
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     getXmppSession().getMarshaller().marshal(body, xmlStreamWriter);
 
-                                    if (logger.isLoggable(Level.FINE)) {
-                                        logger.fine("--> " + new String(byteArrayOutputStreamRequest.toByteArray()));
+                                    if (debugger != null && debugEnabled) {
+                                        debugger.writeStanza(byteArrayOutputStreamRequest.toString(), body);
                                     }
-
                                 } finally {
                                     if (xmlStreamWriter != null) {
                                         xmlStreamWriter.close();
@@ -569,10 +583,18 @@ public final class BoshConnection extends Connection {
                                 // This is for logging only.
                                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                                 XMLEventReader xmlEventReader = null;
+
                                 // Branch the stream so that its input can be logged.
-                                try (InputStream inputStream = XmppUtils.createBranchedInputStream(httpConnection.getInputStream(), byteArrayOutputStream)) {
+                                InputStream inputStream = XmppUtils.createBranchedInputStream(httpConnection.getInputStream(), byteArrayOutputStream);
+                                InputStream xmppInputStream;
+                                if (debugger != null && debugEnabled) {
+                                    xmppInputStream = debugger.createInputStream(inputStream);
+                                } else {
+                                    xmppInputStream = inputStream;
+                                }
+                                try {
                                     // Read the response.
-                                    xmlEventReader = xmlInputFactory.createXMLEventReader(inputStream, "UTF-8");
+                                    xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream, "UTF-8");
                                     while (xmlEventReader.hasNext()) {
                                         XMLEvent xmlEvent = xmlEventReader.peek();
 
@@ -580,11 +602,9 @@ public final class BoshConnection extends Connection {
                                         if (xmlEvent.isStartElement()) {
                                             synchronized (httpBindExecutor) {
                                                 final JAXBElement<Body> element = getXmppSession().getUnmarshaller().unmarshal(xmlEventReader, Body.class);
-                                                if (logger.isLoggable(Level.FINE)) {
-                                                    logger.fine("<-- " + new String(byteArrayOutputStream.toByteArray()));
+                                                if (debugger != null) {
+                                                    debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
                                                 }
-
-                                                byteArrayOutputStream.reset();
                                                 unpackBody(element.getValue(), body.getRid());
                                             }
                                         } else {

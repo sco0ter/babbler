@@ -25,6 +25,8 @@
 package org.xmpp;
 
 import org.xmpp.bind.Bind;
+import org.xmpp.debug.ConsoleDebugger;
+import org.xmpp.debug.XmppDebugger;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.compress.CompressionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -122,6 +124,8 @@ public class XmppSession implements Closeable {
 
     private final List<Connection> connections = new ArrayList<>();
 
+    private final XmppSessionConfiguration configuration;
+
     ExecutorService stanzaListenerExecutor;
 
     /**
@@ -130,6 +134,8 @@ public class XmppSession implements Closeable {
     volatile Jid connectedResource;
 
     Connection usedConnection;
+
+    private XmppDebugger xmppDebugger;
 
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
@@ -170,6 +176,7 @@ public class XmppSession implements Closeable {
 
     public XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, Connection... connection) {
         this.xmppServiceDomain = xmppServiceDomain;
+        this.configuration = configuration;
         this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -288,6 +295,15 @@ public class XmppSession implements Closeable {
         for (Connection con : connections) {
             con.setXmppSession(this);
         }
+
+        if (configuration.isDebugMode()) {
+            if (configuration.getDebugger() == null) {
+                xmppDebugger = new ConsoleDebugger();
+            } else {
+                xmppDebugger = configuration.getDebugger();
+            }
+            xmppDebugger.initialize(this);
+        }
     }
 
     /**
@@ -300,6 +316,7 @@ public class XmppSession implements Closeable {
     @Deprecated
     public XmppSession(String xmppServiceDomain, XmppContext xmppContext, Connection... connection) {
         this.xmppServiceDomain = xmppServiceDomain;
+        this.configuration = XmppSessionConfiguration.getDefault();
         this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -687,7 +704,6 @@ public class XmppSession implements Closeable {
         return result[0];
     }
 
-
     /**
      * Sends a stanza and then waits for a presence stanza to arrive. The filter determines the characteristics of the presence stanza.
      *
@@ -841,7 +857,8 @@ public class XmppSession implements Closeable {
         if (status != Status.INITIAL && status != Status.DISCONNECTED) {
             throw new IllegalStateException("Already connected.");
         }
-        // Should either be CLOSED or DISCONNECTED
+
+        // Should either be INITIAL or DISCONNECTED
         Status previousStatus = status;
         updateStatus(Status.CONNECTING);
         // Reset
@@ -875,6 +892,7 @@ public class XmppSession implements Closeable {
             throw new IOException(e);
         }
         if (exception != null) {
+            updateStatus(Status.INITIAL);
             throw new IOException(exception);
         }
         updateStatus(Status.CONNECTED);
@@ -896,12 +914,13 @@ public class XmppSession implements Closeable {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
         }
 
-        stanzaListenerExecutor.shutdown();
-
         if (usedConnection != null) {
             usedConnection.close();
             usedConnection = null;
         }
+
+        stanzaListenerExecutor.shutdown();
+
         updateStatus(Status.CLOSED);
     }
 
@@ -911,6 +930,10 @@ public class XmppSession implements Closeable {
      * @param element The XML element.
      */
     public void send(ClientStreamElement element) {
+
+        if (!isConnected()) {
+            throw new IllegalStateException(String.format("Session is not connected to server"));
+        }
         if (element instanceof Stanza) {
             notifyStanzaListeners((Stanza) element, false);
         }
@@ -1254,7 +1277,7 @@ public class XmppSession implements Closeable {
         return status;
     }
 
-    private void updateStatus(Status status) {
+    void updateStatus(Status status) {
         updateStatus(status, null);
     }
 
@@ -1334,6 +1357,7 @@ public class XmppSession implements Closeable {
         }
     }
 
+
     /**
      * Gets the default timeout for synchronous operations.
      *
@@ -1341,6 +1365,20 @@ public class XmppSession implements Closeable {
      */
     public final int getDefaultTimeout() {
         return DEFAULT_REPLY_TIMEOUT;
+    }
+
+    /**
+     * Indicates, whether the session is connected.
+     *
+     * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link Status#AUTHENTICATING}.
+     * @see #getStatus()
+     */
+    public boolean isConnected() {
+        return status == Status.CONNECTED || status == Status.AUTHENTICATED || status == Status.AUTHENTICATING;
+    }
+
+    public XmppSessionConfiguration getConfiguration() {
+        return configuration;
     }
 
     /**
@@ -1368,7 +1406,7 @@ public class XmppSession implements Closeable {
          */
         AUTHENTICATED,
         /**
-         * The session has been temporarily disconnect by an exception.
+         * The session has been temporarily disconnected by an exception.
          */
         DISCONNECTED,
         /**

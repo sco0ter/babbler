@@ -37,6 +37,7 @@ import javax.net.SocketFactory;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.net.InetAddress;
@@ -145,8 +146,9 @@ public final class TcpConnection extends Connection {
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
+        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
         try {
-            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession());
+            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory);
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }
@@ -154,7 +156,7 @@ public final class TcpConnection extends Connection {
 
         // Start reading from the input stream.
         try {
-            xmppStreamReader = new XmppStreamReader(this, this.getXmppSession());
+            xmppStreamReader = new XmppStreamReader(this, this.getXmppSession(), xmlOutputFactory);
         } catch (JAXBException e) {
             throw new IOException(e);
         }

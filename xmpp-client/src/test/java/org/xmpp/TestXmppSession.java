@@ -95,6 +95,9 @@ public class TestXmppSession extends XmppSession {
         stanzaListenerExecutor = new SameThreadExecutorService();
         this.mockServer = mockServer;
         mockServer.registerConnection(this);
+
+        // Auto-connect
+        updateStatus(Status.CONNECTED);
     }
 
     @Override

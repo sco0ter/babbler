@@ -71,7 +71,6 @@ import org.xmpp.extension.geoloc.GeoLocationListener;
 import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
-import org.xmpp.extension.last.LastActivityStrategy;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
 import org.xmpp.extension.privatedata.annotations.Annotation;
@@ -140,17 +139,6 @@ public class JavaFXApp extends Application {
         txtPassword.setPromptText("Password");
         final CheckBox useBosh = new CheckBox();
         useBosh.setText("Use BOSH");
-
-        for (int i = 0; i < 1; i++) {
-            XmppSession xmppSession1 = new TestXmppSession();
-            xmppSession1.getExtensionManager(LastActivityManager.class).setLastActivityStrategy(new LastActivityStrategy() {
-                @Override
-                public Date getLastActivity() {
-                    return null;
-                }
-            });
-            xmppSession1.close();
-        }
 
         ComboBox<Presence.Show> comboBox = new ComboBox<>();
         comboBox.setItems(FXCollections.<Presence.Show>observableList(Arrays.asList(Presence.Show.CHAT, Presence.Show.AWAY, Presence.Show.XA, Presence.Show.DND)));
@@ -797,7 +785,10 @@ public class JavaFXApp extends Application {
                     if (contactItem.avatar.get() != null) {
                         try {
                             BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(contactItem.avatar.get()));
-                            return SwingFXUtils.toFXImage(bufferedImage, null);
+                            if (bufferedImage != null) {
+                                return SwingFXUtils.toFXImage(bufferedImage, null);
+                            }
+                            return null;
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

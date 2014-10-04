@@ -312,7 +312,7 @@ public final class BoshConnection extends Connection {
                 } catch (NamingException e) {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 80 as default.
-                    url = new URL("http", getXmppSession().getXmppServiceDomain(), 80, file);
+                    url = new URL("http", getXmppSession().getXmppServiceDomain(), 5280, file);
                 }
             } else {
                 throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");

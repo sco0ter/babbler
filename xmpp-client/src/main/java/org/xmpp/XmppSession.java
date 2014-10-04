@@ -29,6 +29,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.compress.CompressionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
+import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.im.ChatManager;
 import org.xmpp.im.PresenceManager;
 import org.xmpp.im.RosterManager;
@@ -128,7 +129,17 @@ public class XmppSession implements Closeable {
      */
     volatile Jid connectedResource;
 
-    Connection activeConnection;
+    Connection usedConnection;
+
+    /**
+     * Gets the used connection. If you have configured more than one connection (e.g. a {@link org.xmpp.TcpConnection} and a {@link org.xmpp.extension.httpbind.BoshConnection}, one of them might fail to connect.
+     * This method returns the connection, which was eventually used to establish the XMPP session.
+     *
+     * @return The used connection.
+     */
+    public Connection getUsedConnection() {
+        return usedConnection;
+    }
 
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
@@ -224,7 +235,7 @@ public class XmppSession implements Closeable {
             @Override
             public void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception {
                 if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
-                    activeConnection.secureConnection();
+                    usedConnection.secureConnection();
                 }
             }
         });
@@ -278,7 +289,7 @@ public class XmppSession implements Closeable {
             @Override
             public void negotiationStatusChanged(FeatureEvent featureEvent) {
                 if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
-                    activeConnection.compressStream();
+                    usedConnection.compressStream();
                 }
             }
         });
@@ -287,9 +298,16 @@ public class XmppSession implements Closeable {
         // Every connection supports XEP-106 JID Escaping.
         getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
 
-        for (Connection con : connection) {
+        if (connection.length == 0) {
+            // Add two fallback connections. Host and port will be determined by the XMPP domain via SRV lookup.
+            connections.add(new TcpConnection(null, 0));
+            connections.add(new BoshConnection(null, 0));
+        } else {
+            connections.addAll(Arrays.asList(connection));
+        }
+
+        for (Connection con : connections) {
             con.setXmppSession(this);
-            connections.add(con);
         }
     }
 
@@ -710,7 +728,7 @@ public class XmppSession implements Closeable {
         while (connectionIterator.hasNext()) {
             Connection connection = connectionIterator.next();
             try {
-                activeConnection = connection;
+                usedConnection = connection;
                 connection.connect();
                 break;
             } catch (IOException e) {
@@ -757,9 +775,9 @@ public class XmppSession implements Closeable {
 
         stanzaListenerExecutor.shutdown();
 
-        if (activeConnection != null) {
-            activeConnection.close();
-            activeConnection = null;
+        if (usedConnection != null) {
+            usedConnection.close();
+            usedConnection = null;
         }
         updateStatus(Status.CLOSED);
     }
@@ -773,8 +791,8 @@ public class XmppSession implements Closeable {
         if (element instanceof Stanza) {
             notifyStanzaListeners((Stanza) element, false);
         }
-        if (activeConnection != null) {
-            activeConnection.send(element);
+        if (usedConnection != null) {
+            usedConnection.send(element);
         } else {
             throw new IllegalStateException("No connection established.");
         }

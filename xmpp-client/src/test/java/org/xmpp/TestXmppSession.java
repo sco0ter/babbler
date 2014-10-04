@@ -64,7 +64,7 @@ public class TestXmppSession extends XmppSession {
         } catch (XMLStreamException e) {
         }
         final XMLStreamWriter finalXmlStreamWriter = xmlStreamWriter;
-        activeConnection = new Connection("hostname", 5222, Proxy.NO_PROXY) {
+        usedConnection = new Connection("hostname", 5222, Proxy.NO_PROXY) {
 
             @Override
             protected void restartStream() {

@@ -33,6 +33,7 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.xml.bind.JAXBException;
@@ -68,6 +69,8 @@ public final class TcpConnection extends Connection {
 
     private OutputStream outputStream;
 
+    private SocketFactory socketFactory;
+
     /**
      * True, if the connection is secured by TLS or SSL.
      */
@@ -96,6 +99,19 @@ public final class TcpConnection extends Connection {
     }
 
     /**
+     * Creates a default connection to a given hostname and port.
+     *
+     * @param hostname      The hostname.
+     * @param port          The port.
+     * @param socketFactory A custom socket factory.
+     * @see #TcpConnection(String, int)
+     */
+    public TcpConnection(String hostname, int port, SocketFactory socketFactory) {
+        super(hostname, port, Proxy.NO_PROXY);
+        this.socketFactory = socketFactory;
+    }
+
+    /**
      * Connects to the specified XMPP server using a socket connection.
      * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppSession#login(String, String)} method.
      * <p>If only a XMPP service domain has been specified, it is tried to resolve the FQDN via SRV lookup.<br>
@@ -115,14 +131,12 @@ public final class TcpConnection extends Connection {
 
         int port = getPort() == 0 ? 5222 : getPort();
 
-        this.socket = new Socket(getProxy());
-
         if (getHostname() != null && !getHostname().isEmpty()) {
-            socket.connect(new InetSocketAddress(getHostname(), getPort()));
+            connectToSocket(InetAddress.getByName(getHostname()), port, getProxy());
         } else if (getXmppSession().getDomain() != null) {
             if (!connectWithXmppServiceDomain(getXmppSession().getDomain())) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                socket.connect(new InetSocketAddress(InetAddress.getByName(getXmppSession().getDomain()), port));
+                connectToSocket(InetAddress.getByName(getXmppSession().getDomain()), port, getProxy());
             }
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
@@ -145,6 +159,19 @@ public final class TcpConnection extends Connection {
             throw new IOException(e);
         }
         xmppStreamReader.startReading(inputStream);
+    }
+
+    private void connectToSocket(InetAddress inetAddress, int port, Proxy proxy) throws IOException {
+        if (socketFactory == null) {
+            if (proxy != null) {
+                socket = new Socket(proxy);
+            } else {
+                socket = new Socket();
+            }
+            socket.connect(new InetSocketAddress(inetAddress, port));
+        } else {
+            socket = socketFactory.createSocket(inetAddress, port);
+        }
     }
 
     @Override
@@ -257,7 +284,9 @@ public final class TcpConnection extends Connection {
                         InetAddress inetAddress = InetAddress.getByName(dnsResourceRecord.target);
                         // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
                         // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
-                        socket.connect(new InetSocketAddress(inetAddress, dnsResourceRecord.port));
+                        connectToSocket(inetAddress, dnsResourceRecord.port, getProxy());
+                        this.port = dnsResourceRecord.port;
+                        this.hostname = inetAddress.getHostName();
                         return true;
                     } catch (IOException e) {
                         // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].

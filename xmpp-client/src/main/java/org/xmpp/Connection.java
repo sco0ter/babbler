@@ -42,9 +42,9 @@ public abstract class Connection implements Closeable {
      */
     private final Proxy proxy;
 
-    private final String hostname;
+    protected String hostname;
 
-    private final int port;
+    protected int port;
 
     private XmppSession xmppSession;
 

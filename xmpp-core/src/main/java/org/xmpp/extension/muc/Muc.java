@@ -24,8 +24,13 @@
 
 package org.xmpp.extension.muc;
 
+import org.xmpp.extension.muc.admin.MucAdmin;
+import org.xmpp.extension.muc.owner.MucOwner;
+import org.xmpp.extension.muc.user.MucUser;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc} namespace, which allows to enter a room.
@@ -35,6 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-muc">XML Schema</a>
  */
 @XmlRootElement(name = "x")
+@XmlSeeAlso({MucUser.class, MucAdmin.class, MucOwner.class})
 public final class Muc {
 
     static final String NAMESPACE = "http://jabber.org/protocol/muc";

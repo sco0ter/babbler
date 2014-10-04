@@ -132,16 +132,6 @@ public class XmppSession implements Closeable {
     Connection usedConnection;
 
     /**
-     * Gets the used connection. If you have configured more than one connection (e.g. a {@link org.xmpp.TcpConnection} and a {@link org.xmpp.extension.httpbind.BoshConnection}, one of them might fail to connect.
-     * This method returns the connection, which was eventually used to establish the XMPP session.
-     *
-     * @return The used connection.
-     */
-    public Connection getUsedConnection() {
-        return usedConnection;
-    }
-
-    /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
      */
     private volatile String xmppServiceDomain;
@@ -175,7 +165,129 @@ public class XmppSession implements Closeable {
      * @param connection        The connections. The session can have alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
      */
     public XmppSession(String xmppServiceDomain, Connection... connection) {
-        this(xmppServiceDomain, XmppContext.getDefault(), connection);
+        this(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connection);
+    }
+
+    public XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, Connection... connection) {
+        this.xmppServiceDomain = xmppServiceDomain;
+        this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
+
+        try {
+            // Create the marshaller and unmarshaller, which will be used for this connection.
+            unmarshaller = configuration.getJAXBContext().createUnmarshaller();
+            marshaller = configuration.getJAXBContext().createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+
+        } catch (JAXBException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+        for (Class<? extends ExtensionManager> cls : configuration.getInitialExtensionManagers()) {
+            // Initialize the managers.
+            getExtensionManager(cls);
+        }
+
+        // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
+        shutdownHook = new Thread() {
+            @Override
+            public void run() {
+                shutdownHook = null;
+                try {
+                    if (status == Status.CONNECTED) {
+                        close();
+                    }
+                } catch (IOException e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
+        };
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+        securityManager = new SecurityManager(this, new FeatureListener() {
+            @Override
+            public void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception {
+                if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
+                    usedConnection.secureConnection();
+                }
+            }
+        });
+
+        reconnectionManager = new ReconnectionManager(this);
+        featuresManager = new FeaturesManager(this);
+        chatManager = new ChatManager(this);
+        authenticationManager = new AuthenticationManager(this, lock);
+        authenticationManager.addFeatureListener(new FeatureListener() {
+            @Override
+            public void negotiationStatusChanged(FeatureEvent featureEvent) {
+                if (featureEvent.getStatus() == FeatureNegotiator.Status.INCOMPLETE && featureEvent.getElement() instanceof Mechanisms) {
+                    // Release the waiting thread.
+                    lock.lock();
+                    try {
+                        streamNegotiatedUntilSasl.signal();
+                    } finally {
+                        lock.unlock();
+                    }
+                }
+            }
+        });
+        rosterManager = new RosterManager(this);
+        presenceManager = new PresenceManager(this);
+
+        streamNegotiatedUntilSasl = lock.newCondition();
+        streamNegotiatedUntilResourceBinding = lock.newCondition();
+
+        featuresManager.addFeatureNegotiator(securityManager);
+        featuresManager.addFeatureNegotiator(authenticationManager);
+        featuresManager.addFeatureNegotiator(new FeatureNegotiator(Bind.class) {
+            @Override
+            public Status processNegotiation(Object element) throws Exception {
+                lock.lock();
+                try {
+                    streamNegotiatedUntilResourceBinding.signalAll();
+                } finally {
+                    lock.unlock();
+                }
+                // Resource binding will be negotiated manually
+                return Status.INCOMPLETE;
+            }
+
+            @Override
+            public boolean canProcess(Object element) {
+                return false;
+            }
+        });
+
+        compressionManager = new CompressionManager(this, new FeatureListener() {
+            @Override
+            public void negotiationStatusChanged(FeatureEvent featureEvent) {
+                if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
+                    usedConnection.compressStream();
+                }
+            }
+        });
+        featuresManager.addFeatureNegotiator(compressionManager);
+
+        // Every connection supports XEP-106 JID Escaping.
+        getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
+
+        if (connection.length == 0) {
+            // Add two fallback connections. Host and port will be determined by the XMPP domain via SRV lookup.
+            connections.add(new TcpConnection(null, 0));
+            connections.add(new BoshConnection(null, 0));
+        } else {
+            connections.addAll(Arrays.asList(connection));
+        }
+
+        for (Connection con : connections) {
+            con.setXmppSession(this);
+        }
     }
 
     /**
@@ -185,6 +297,7 @@ public class XmppSession implements Closeable {
      * @param xmppContext       The XMPP context.
      * @param connection        The connections. The session can have alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
      */
+    @Deprecated
     public XmppSession(String xmppServiceDomain, XmppContext xmppContext, Connection... connection) {
         this.xmppServiceDomain = xmppServiceDomain;
         this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -309,6 +422,16 @@ public class XmppSession implements Closeable {
         for (Connection con : connections) {
             con.setXmppSession(this);
         }
+    }
+
+    /**
+     * Gets the used connection. If you have configured more than one connection (e.g. a {@link org.xmpp.TcpConnection} and a {@link org.xmpp.extension.httpbind.BoshConnection}, one of them might fail to connect.
+     * This method returns the connection, which was eventually used to establish the XMPP session.
+     *
+     * @return The used connection.
+     */
+    public Connection getUsedConnection() {
+        return usedConnection;
     }
 
     /**

@@ -410,7 +410,7 @@ public final class XmppSessionConfiguration {
     public static XmppSessionConfiguration getDefault() {
         // Use double-checked locking idiom
         if (defaultConfiguration == null) {
-            synchronized (XmppContext.class) {
+            synchronized (XmppSessionConfiguration.class) {
                 if (defaultConfiguration == null) {
                     defaultConfiguration = new XmppSessionConfiguration();
                 }
@@ -425,7 +425,7 @@ public final class XmppSessionConfiguration {
      * @param configuration The default configuration.
      */
     public static void setDefault(XmppSessionConfiguration configuration) {
-        synchronized (XmppContext.class) {
+        synchronized (XmppSessionConfiguration.class) {
             defaultConfiguration = configuration;
         }
     }

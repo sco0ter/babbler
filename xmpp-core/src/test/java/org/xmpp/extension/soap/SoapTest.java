@@ -113,7 +113,7 @@ public class SoapTest extends XmlTest {
         }
     }
 
-    //@Test
+    @Test
     public void marshalSoap() throws SOAPException, JAXBException, XMLStreamException {
         MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
         SOAPMessage soapMessage = messageFactory.createMessage();
@@ -135,6 +135,6 @@ public class SoapTest extends XmlTest {
         message.getExtensions().add(envelope);
         String xml = marshal(message);
 
-        System.out.println(xml);
+        Assert.assertEquals(xml, "<message to=\"juliet@example.net\"><env:Envelope xmlns:p=\"http://travelcompany.example.org/reservation/travel\" xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"><env:Header></env:Header><env:Body><p:departing>New York</p:departing><p:arriving>Los Angeles</p:arriving></env:Body></env:Envelope></message>");
     }
 }

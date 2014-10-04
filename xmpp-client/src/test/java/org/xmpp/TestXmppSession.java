@@ -32,10 +32,7 @@ import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 import org.xmpp.stream.ClientStreamElement;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.net.Proxy;
 
@@ -57,13 +54,13 @@ public class TestXmppSession extends XmppSession {
 
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
 
-        XMLStreamWriter xmlStreamWriter = null;
-        try {
-            xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(System.out), true);
-
-        } catch (XMLStreamException e) {
-        }
-        final XMLStreamWriter finalXmlStreamWriter = xmlStreamWriter;
+//        XMLStreamWriter xmlStreamWriter = null;
+//        try {
+//            xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(System.out), true);
+//
+//        } catch (XMLStreamException e) {
+//        }
+//        final XMLStreamWriter finalXmlStreamWriter = xmlStreamWriter;
         usedConnection = new Connection("hostname", 5222, Proxy.NO_PROXY) {
 
             @Override
@@ -73,13 +70,11 @@ public class TestXmppSession extends XmppSession {
 
             @Override
             public void send(ClientStreamElement clientStreamElement) {
-                try {
-                    TestXmppSession.this.getMarshaller().marshal(clientStreamElement, finalXmlStreamWriter);
-                } catch (JAXBException e) {
-                    e.printStackTrace();
-                } finally {
-                    System.out.println();
-                }
+//                try {
+//                    TestXmppSession.this.getMarshaller().marshal(clientStreamElement, finalXmlStreamWriter);
+//                } catch (JAXBException e) {
+//                    e.printStackTrace();
+//                }
             }
 
             @Override

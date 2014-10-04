@@ -1,3 +1,27 @@
+<!--
+  ~ The MIT License (MIT)
+  ~
+  ~ Copyright (c) 2014 Christian Schudt
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in
+  ~ all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  ~ THE SOFTWARE.
+  -->
+
 <mxfile userAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:29.0) Gecko/20100101 Firefox/29.0" type="device">
     <diagram>
         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

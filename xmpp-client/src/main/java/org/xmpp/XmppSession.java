@@ -931,7 +931,7 @@ public class XmppSession implements Closeable {
      */
     public void send(ClientStreamElement element) {
 
-        if (!isConnected()) {
+        if (!isConnected() && status != Status.CONNECTING) {
             throw new IllegalStateException(String.format("Session is not connected to server"));
         }
         if (element instanceof Stanza) {

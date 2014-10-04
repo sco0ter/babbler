@@ -310,13 +310,13 @@ public final class BoshConnection extends Connection {
             }
             if (getHostname() != null) {
                 url = new URL("http", getHostname(), getPort(), file);
-            } else if (getXmppSession().getXmppServiceDomain() != null) {
+            } else if (getXmppSession().getDomain() != null) {
                 try {
-                    url = new URL(findBoshUrl(getXmppSession().getXmppServiceDomain()));
+                    url = new URL(findBoshUrl(getXmppSession().getDomain()));
                 } catch (NamingException e) {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 80 as default.
-                    url = new URL("http", getXmppSession().getXmppServiceDomain(), 5280, file);
+                    url = new URL("http", getXmppSession().getDomain(), 5280, file);
                 }
             } else {
                 throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
@@ -334,8 +334,8 @@ public final class BoshConnection extends Connection {
 
         // Create initial request.
         Body body = new Body();
-        if (getXmppSession().getXmppServiceDomain() != null && !getXmppSession().getXmppServiceDomain().isEmpty()) {
-            body.setTo(getXmppSession().getXmppServiceDomain());
+        if (getXmppSession().getDomain() != null && !getXmppSession().getDomain().isEmpty()) {
+            body.setTo(getXmppSession().getDomain());
         }
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setVersion("1.11");
@@ -425,7 +425,7 @@ public final class BoshConnection extends Connection {
     protected void restartStream() {
         Body body = new Body();
         body.setRestart(true);
-        body.setTo(getXmppSession().getXmppServiceDomain());
+        body.setTo(getXmppSession().getDomain());
         body.setLanguage(Locale.getDefault().getLanguage());
         body.setSid(getSessionId());
         sendNewRequest(body, false);

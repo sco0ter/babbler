@@ -152,7 +152,7 @@ public final class VisualDebugger implements XmppDebugger {
                             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DebugView.fxml"));
                             TabPane debugView = fxmlLoader.load();
                             debugController = fxmlLoader.getController();
-                            final Tab tab = new Tab(xmppSession.getXmppServiceDomain());
+                            final Tab tab = new Tab(xmppSession.getDomain());
                             tab.setContent(debugView);
                             tab.textProperty().bind(title);
                             connectionListenerMap.put(tab, connectionListener);

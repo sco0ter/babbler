@@ -84,6 +84,6 @@ public final class InvisibilityManager extends ExtensionManager {
      */
     public boolean isSupported() throws XmppException {
         EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
-        return entityCapabilitiesManager.isSupported(Invisible.NAMESPACE, Jid.valueOf(xmppSession.getXmppServiceDomain()));
+        return entityCapabilitiesManager.isSupported(Invisible.NAMESPACE, Jid.valueOf(xmppSession.getDomain()));
     }
 }

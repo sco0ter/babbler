@@ -455,7 +455,9 @@ public class XmppSession implements Closeable {
      * Gets the XMPP service domain.
      *
      * @return The XMPP service domain.
+     * @deprecated Use {@link #getDomain()} instead.
      */
+    @Deprecated
     public String getXmppServiceDomain() {
         return xmppServiceDomain;
     }

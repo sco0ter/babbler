@@ -40,7 +40,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.7</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -67,7 +66,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -102,7 +100,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
                 <executions>
                     <execution>
                         <id>Make assembly</id>
@@ -120,39 +117,6 @@
                     <attach>false</attach>
                     <descriptorId>jar-with-dependencies</descriptorId>
                 </configuration>
-            </plugin>
-
-            <!-- Construct the JavaDoc -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>Construct JavaDoc</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <quiet>true</quiet>
-                            <finalName>Babbler-${project.version}</finalName>
-                            <includeDependencySources>true</includeDependencySources>
-                            <dependencySourceIncludes>
-                                <dependencySourceInclude>rocks.xmpp:xmpp-core</dependencySourceInclude>
-                            </dependencySourceIncludes>
-                            <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
-                            <nodeprecated>true</nodeprecated>
-                            <nodeprecatedlist>true</nodeprecatedlist>
-                            <author>false</author>
-                            <notimestamp>true</notimestamp>
-                            <doctitle>${project.name} ${project.version}</doctitle>
-                            <windowtitle>${project.name} ${project.version}</windowtitle>
-                            <docfilessubdirs>true</docfilessubdirs>
-                            <show>public</show>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
 

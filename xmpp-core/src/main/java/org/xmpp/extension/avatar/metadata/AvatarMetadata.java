@@ -50,7 +50,7 @@ public final class AvatarMetadata {
     @XmlAnyElement(lax = true)
     private Object pointer;
 
-    private AvatarMetadata() {
+    public AvatarMetadata() {
     }
 
     public AvatarMetadata(List<Info> infoList) {

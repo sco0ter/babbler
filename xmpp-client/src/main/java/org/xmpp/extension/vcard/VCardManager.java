@@ -24,7 +24,10 @@
 
 package org.xmpp.extension.vcard;
 
-import org.xmpp.*;
+import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.avatar.AvatarManager;
 import org.xmpp.stanza.StanzaException;
@@ -74,7 +77,7 @@ public final class VCardManager extends ExtensionManager {
 
         // Then inform about the update by sending a presence. The avatar manager will add the update extension.
         AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
-        if (isEnabled() && vCard.getPhoto() != null && avatarManager.isEnabled()) {
+        if (isEnabled() && avatarManager.isEnabled()) {
             Presence presence = xmppSession.getPresenceManager().getLastSentPresence();
             if (presence == null) {
                 presence = new Presence();

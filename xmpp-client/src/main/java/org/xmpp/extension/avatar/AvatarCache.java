@@ -24,65 +24,14 @@
 
 package org.xmpp.extension.avatar;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.Iterator;
+import java.io.IOException;
 
 /**
  * @author Christian Schudt
  */
-public enum AvatarCache {
+public interface AvatarCache {
 
-    INSTANCE;
+    byte[] load(final String hash) throws IOException;
 
-    private File cacheDirectory = new File(System.getProperty("user.dir"), "avatars");
-
-    public void setCacheDirectory(File file) {
-        this.cacheDirectory = file;
-    }
-
-    public void store(String hash, byte[] imageData) throws IOException {
-        ImageInputStream iis = null;
-        iis = ImageIO.createImageInputStream(new ByteArrayInputStream(imageData));
-        Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-        if (readers.hasNext()) {
-            ImageReader reader = readers.next();
-            String format = reader.getFormatName();
-            boolean exists = cacheDirectory.exists();
-            if (!exists) {
-                exists = cacheDirectory.mkdir();
-            }
-            if (exists) {
-                ImageIO.write(ImageIO.read(iis), format, new File(cacheDirectory, hash + "." + format));
-            }
-        }
-    }
-
-    public byte[] load(final String hash) throws IOException {
-        File dir = new File(cacheDirectory, ".");
-        File[] files = dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith(hash);
-            }
-        });
-        if (files != null && files.length > 0) {
-            ByteArrayOutputStream baos = null;
-            try {
-                BufferedImage originalImage = ImageIO.read(files[0]);
-                baos = new ByteArrayOutputStream();
-                ImageIO.write(originalImage, "png", baos);
-                baos.flush();
-                return baos.toByteArray();
-            } finally {
-                if (baos != null) {
-                    baos.close();
-                }
-            }
-        }
-        return null;
-    }
+    void store(String hash, byte[] imageData) throws IOException;
 }

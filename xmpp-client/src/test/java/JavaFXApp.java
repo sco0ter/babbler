@@ -657,9 +657,15 @@ public class JavaFXApp extends Application {
         btnClose.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+
                 try {
-                    xmppSession.close();
-                    contactItems.clear();
+                    // Get the avatar manager
+                    AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+
+                    avatarManager.publishAvatar(null);
+
+                    //xmppSession.close();
+                    //contactItems.clear();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -670,17 +676,29 @@ public class JavaFXApp extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
 
-                RpcManager rpcManager = xmppSession.getExtensionManager(RpcManager.class);
+
                 try {
-                    Value response = rpcManager.call(Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), "examples.getStateName", new Value(6));
-                    System.out.println(response.getAsString());
-                } catch (XmppException e) {
+                    // Get the avatar manager
+                    AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+
+                    avatarManager.publishAvatar(null);
+
+                    // Choose a file with JavaFX file dialog.
+                    FileChooser fileChooser = new FileChooser();
+                    File file = fileChooser.showOpenDialog(null);
+
+                    // If the user has chosen a file
+                    if (file != null) {
+                        // Read the file as image.
+                        BufferedImage bufferedImage = ImageIO.read(file);
+
+                        // Publish the image as your avatar.
+                        avatarManager.publishAvatar(bufferedImage);
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
-                    // E.g. a StanzaException, if the responder does not support the protocol or an internal-server-error has occurred.
-                } catch (RpcException e) {
-                    e.printStackTrace();
-                    // If the responder responded with an application level XML-RPC fault.
                 }
+
 
 //                JingleFileTransferManager jingleFileTransferManager = xmppSession.getExtensionManager(JingleFileTransferManager.class);
 //                try {

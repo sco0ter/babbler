@@ -70,6 +70,7 @@
         </menu>
         <menu name="Extension Guide">
             <item href="xep/filetransfer.html" name="File Transfer"/>
+            <item href="xep/avatar.html" name="Avatars"/>
             <item href="xep/rpc.html" name="XEP-0009: Jabber-RPC"/>
             <item href="xep/last.html" name="XEP-0012: Last Activity"/>
             <item href="xep/privacy.html" name="XEP-0016: Privacy Lists"/>

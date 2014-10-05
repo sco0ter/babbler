@@ -1,70 +1,43 @@
 # Debugging XMPP Traffic
 ---
 
-XMPP traffic is logged with `java.util.logging` (JUL) on log level "FINE".
+## Default Debugger
 
-It can be a little bit tricky to make it work, therefore here\'s a brief advice.
+By default, XMPP traffic is printed to `System.out`, if you start your application in debug mode and do not configure anything else.
 
-Most likely you have to "get" the logger for "org.xmpp" before initializing it. This is a little bit strange, but appearently JUL works like this.
-
-Then you have to set the log level of the "org.xmpp" logger to Level.FINE.
-
-Resetting the log manager first is probably also a good idea. This will remove any registered default handler.
-
-Further JUL configuration depends on what you want. If you want to just log to the console, you have to add a ConsoleHandler with log level FINE because the default ConsoleHandler only logs to WARN.
-(That\'s why we removed it with the reset method, because otherwise we would have two console handlers).
-
-Here\'s an example, which you can use, e.g. in your main() method.
+You can disable or enable it with the following code:
 
 ```java
-
-private static final Logger XMPP_LOGGER = Logger.getLogger("org.xmpp");
-
-private void initializeLogging() {
-    LogManager.getLogManager().reset();
-
-    final Logger logger = Logger.getLogger("org.xmpp");
-    logger.setLevel(Level.FINE);
-
-    Logger globalLogger = Logger.getLogger("");
-    Handler consoleHandler = new ConsoleHandler();
-    consoleHandler.setLevel(Level.FINE);
-    consoleHandler.setFormatter(new LogFormatter());
-    globalLogger.addHandler(consoleHandler);
-}
+XmppSessionConfiguration configuration = new XmppSessionConfiguration();
+configuration.setDebugMode(false);
+XmppSessionConfiguration.setDefault(configuration);
 ```
+(Setting the configuration as default for all sessions)
 
-Here\'s an optional formatter class, which logs XMPP traffic in only one row. The default formatter uses two rows per log, which makes it less readable.
 
 ```java
-public class LogFormatter extends SimpleFormatter {
-    @Override
-    public String format(LogRecord record) {
-        StringBuilder sb = new StringBuilder();
-        DateFormat dateFormat = DateFormat.getDateTimeInstance();
-        Date resultDate = new Date(record.getMillis());
-        sb.append(dateFormat.format(resultDate));
-        sb.append(" ");
-        sb.append(record.getLevel());
-        sb.append("  ");
-        sb.append(formatMessage(record));
-        if (record.getThrown() != null) {
-            record.getThrown().printStackTrace();
-        }
-        sb.append("\n");
-        return sb.toString();
-    }
-}
+XmppSessionConfiguration configuration = new XmppSessionConfiguration();
+configuration.setDebugMode(false);
+XmppSession xmppSession = new XmppSession(domain, configuration);
+```
+(or passing it to each session)
+
+## Custom Debugger
+
+You can also configure the `XmppSession` to use a custom debugger by passing your own implementation of `XmppDebugger` to the configuration:
+
+```java
+configuration.setDebugger(new MyDebugger());
 ```
 
-XMPP traffic is then logged in the console as follows (outgoing and incoming):
+## Visual Debugger
 
-```
-> Mar 21, 2014 9:08:20 PM FINE  -->  <?xml version="1.0" encoding="UTF-8"?><stream:stream xml:lang="en" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams">
+There's already an advanced visual debugger implementation in the xmpp-debug project:
 
-> Mar 21, 2014 9:08:21 PM FINE  <--  <?xml version='1.0' ?><stream:stream from='chat.facebook.com' id='1' version='1.0' xmlns:stream='http://etherx.jabber.org/streams' xmlns='jabber:client' xml:lang='en'><stream:features><starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/><mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'><mechanism>X-FACEBOOK-PLATFORM</mechanism><mechanism>PLAIN</mechanism></mechanisms></stream:features>
+![Visual Debugger](VisualDebugger.png)
 
-> Mar 21, 2014 9:08:21 PM FINE  -->  <starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls"></starttls>
+You can use it like that:
 
-> Mar 21, 2014 9:08:21 PM FINE  <--  <proceed xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>
+```java
+configuration.setDebugger(new VisualDebugger());
 ```

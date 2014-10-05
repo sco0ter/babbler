@@ -25,8 +25,6 @@
 package org.xmpp;
 
 import org.xmpp.bind.Bind;
-import org.xmpp.debug.ConsoleDebugger;
-import org.xmpp.debug.XmppDebugger;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.compress.CompressionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
@@ -134,8 +132,6 @@ public class XmppSession implements Closeable {
     volatile Jid connectedResource;
 
     Connection usedConnection;
-
-    private XmppDebugger xmppDebugger;
 
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
@@ -296,13 +292,8 @@ public class XmppSession implements Closeable {
             con.setXmppSession(this);
         }
 
-        if (configuration.isDebugMode()) {
-            if (configuration.getDebugger() == null) {
-                xmppDebugger = new ConsoleDebugger();
-            } else {
-                xmppDebugger = configuration.getDebugger();
-            }
-            xmppDebugger.initialize(this);
+        if (configuration.isDebugMode() && configuration.getDebugger() != null) {
+            configuration.getDebugger().initialize(this);
         }
     }
 

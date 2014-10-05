@@ -53,13 +53,19 @@ public class Product {
 }
 ```
 
-Then you have to register that class **before** creating the session. (That is because the session creates the JAXB context in its constructor, it can\'t be modified later):
+Then you have to create a configuration for the session.
 
 ```java
-XmppContext.getDefault().registerExtension(Product.class);
+XmppSessionConfiguration configuration = new XmppSessionConfiguration(Product.class);
 ```
 
-*(This is the current approach for registering custom extensions. The idea is that you can later have different contexts you can choose from, e.g. a minimal \'core\' context, an \'advanced\' context or a \'jingle\' context. I am still not sure, if this has any benefit (e.g. for performance). Comments appreciated.)*
+This will create the `JAXBContext` with your class (in addition to all other XMPP classes).
+
+Then create the session with that configuration:
+
+```java
+XmppSession xmppSession = new XmppSession("domain", configuration);
+```
 
 You can then simply send a message with that extension:
 

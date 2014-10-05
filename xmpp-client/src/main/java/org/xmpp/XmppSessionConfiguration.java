@@ -25,6 +25,7 @@
 package org.xmpp;
 
 import org.xmpp.bind.Bind;
+import org.xmpp.debug.ConsoleDebugger;
 import org.xmpp.debug.XmppDebugger;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.activity.Activity;
@@ -371,6 +372,7 @@ public final class XmppSessionConfiguration {
      */
     public XmppSessionConfiguration(Class<?>... classes) {
         this.debugMode = IS_DEBUG_MODE;
+        this.xmppDebugger = new ConsoleDebugger();
 
         // These are the manager classes which are loaded immediately, when the XmppSession is initialized,
         // Typically the add listeners to the session, e.g. to automatically reply.

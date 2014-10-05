@@ -25,8 +25,6 @@
 package org.xmpp.debug;
 
 import org.xmpp.XmppSession;
-import org.xmpp.XmppUtils;
-import org.xmpp.stanza.client.Presence;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,11 +50,11 @@ public final class ConsoleDebugger implements XmppDebugger {
 
     @Override
     public OutputStream createOutputStream(OutputStream outputStream) {
-        return outputStream;//XmppUtils.createBranchedOutputStream(outputStream, System.out);
+        return outputStream;
     }
 
     @Override
     public InputStream createInputStream(InputStream inputStream) {
-        return inputStream;//XmppUtils.createBranchedInputStream(inputStream, System.out);
+        return inputStream;
     }
 }

@@ -446,7 +446,7 @@ public final class BoshConnection extends Connection {
      */
     @Override
     public synchronized void close() throws IOException {
-        if (!httpBindExecutor.isShutdown()) {
+        if (!httpBindExecutor.isShutdown() && sessionId != null) {
             // Terminate the BOSH session.
             Body body = new Body();
             body.setType(Body.Type.TERMINATE);

@@ -861,8 +861,8 @@ public class XmppSession implements Closeable {
         while (connectionIterator.hasNext()) {
             Connection connection = connectionIterator.next();
             try {
-                usedConnection = connection;
                 connection.connect();
+                usedConnection = connection;
                 break;
             } catch (IOException e) {
                 if (connectionIterator.hasNext()) {

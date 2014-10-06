@@ -217,12 +217,18 @@ public final class TcpConnection extends Connection {
     @Override
     public synchronized void close() throws IOException {
         // This call closes the stream and waits until everything has been sent to the server.
-        xmppStreamWriter.shutdown();
+        if (xmppStreamWriter != null) {
+            xmppStreamWriter.shutdown();
+        }
         // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
-        xmppStreamReader.shutdown();
+        if (xmppStreamReader != null) {
+            xmppStreamReader.shutdown();
+        }
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also statusChanged the stream by sending </stream:stream>.
         // Now close the socket.
-        socket.close();
+        if (socket != null) {
+            socket.close();
+        }
     }
 
     /**

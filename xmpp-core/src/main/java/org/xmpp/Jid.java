@@ -24,6 +24,7 @@
 
 package org.xmpp;
 
+import java.io.Serializable;
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.Locale;
@@ -61,7 +62,7 @@ import java.util.regex.Pattern;
  *
  * @author Christian Schudt
  */
-public final class Jid implements Comparable<Jid> {
+public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
 
     /**
      * Escapes all disallowed characters and also backslash, when followed by a defined hex code for escaping. See 4. Business Rules.
@@ -74,7 +75,6 @@ public final class Jid implements Comparable<Jid> {
      * Every character, which is not a letter, number, punctuation, symbol character, marker character or space, as well as 0340 and 0341 (
      */
     private static final Pattern PROHIBITED_CHARACTERS = Pattern.compile("[^\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\s]|[\u0340\u0341]");
-
 
     private static final String DOMAIN_PART = "((?:(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+)";
 
@@ -94,6 +94,8 @@ public final class Jid implements Comparable<Jid> {
      * Caches the unescaped JIDs.
      */
     private static final LruCache<String, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
+
+    private static final long serialVersionUID = -3824234106101731424L;
 
     private final String escapedLocal;
 
@@ -447,6 +449,21 @@ public final class Jid implements Comparable<Jid> {
      */
     public String toEscapedString() {
         return toString(escapedLocal, domain, resource);
+    }
+
+    @Override
+    public int length() {
+        return toString().length();
+    }
+
+    @Override
+    public char charAt(int index) {
+        return toString().charAt(index);
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return toString().subSequence(start, end);
     }
 
     /**

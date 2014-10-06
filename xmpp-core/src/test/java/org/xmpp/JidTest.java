@@ -29,6 +29,7 @@ import gnu.inet.encoding.StringprepException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -586,4 +587,20 @@ public class JidTest {
     }
 
 
+    @Test
+    public void testSerialization() throws IOException, ClassNotFoundException {
+
+        Jid jid = Jid.valueOf("local@domain/resource");
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(byteArrayOutputStream);
+        out.writeObject(jid);
+
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+
+        ObjectInputStream in = new ObjectInputStream(byteArrayInputStream);
+        Jid readJid = (Jid) in.readObject();
+        Assert.assertNotNull(readJid);
+        Assert.assertEquals(readJid, jid);
+    }
 }

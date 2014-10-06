@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -50,11 +51,11 @@ public final class AvatarMetadata {
     @XmlAnyElement(lax = true)
     private Object pointer;
 
-    public AvatarMetadata() {
+    private AvatarMetadata() {
     }
 
-    public AvatarMetadata(List<Info> infoList) {
-        this.infoList = infoList;
+    public AvatarMetadata(Info... info) {
+        this.infoList = Arrays.asList(info);
     }
 
     /**
@@ -74,9 +75,6 @@ public final class AvatarMetadata {
         @XmlAttribute(name = "bytes")
         private Integer bytes;
 
-        @XmlAttribute(name = "height")
-        private Short height;
-
         @XmlAttribute(name = "id")
         private String id;
 
@@ -87,7 +85,10 @@ public final class AvatarMetadata {
         private URL url;
 
         @XmlAttribute(name = "width")
-        private Short width;
+        private Integer width;
+
+        @XmlAttribute(name = "height")
+        private Integer height;
 
         public Info() {
 
@@ -99,7 +100,7 @@ public final class AvatarMetadata {
             this.type = type;
         }
 
-        private Info(int bytes, String id, String type, short width, short height, URL url) {
+        public Info(int bytes, String id, String type, Integer width, Integer height, URL url) {
             this.bytes = bytes;
             this.id = id;
             this.type = type;
@@ -128,25 +129,6 @@ public final class AvatarMetadata {
             this.bytes = bytes;
         }
 
-        /**
-         * Gets the height of the image in pixels.
-         *
-         * @return The height.
-         * @see #setHeight(Short)
-         */
-        public Short getHeight() {
-            return height;
-        }
-
-        /**
-         * Sets The height of the image in pixels.
-         *
-         * @param height The height.
-         * @see #getHeight()
-         */
-        public void setHeight(Short height) {
-            this.height = height;
-        }
 
         /**
          * Gets a hash of the image data for the specified content-type, where the hash is produced in accordance with the SHA-1 algorithm as specified in RFC 3174 [11] (with binary output).
@@ -212,9 +194,9 @@ public final class AvatarMetadata {
          * Gets the width of the image in pixels.
          *
          * @return The width.
-         * @see #setWidth(Short)
+         * @see #setWidth(Integer)
          */
-        public Short getWidth() {
+        public Integer getWidth() {
             return width;
         }
 
@@ -224,8 +206,28 @@ public final class AvatarMetadata {
          * @param width The width.
          * @see #getWidth()
          */
-        public void setWidth(Short width) {
+        public void setWidth(Integer width) {
             this.width = width;
+        }
+
+        /**
+         * Gets the height of the image in pixels.
+         *
+         * @return The height.
+         * @see #setHeight(Integer)
+         */
+        public Integer getHeight() {
+            return height;
+        }
+
+        /**
+         * Sets The height of the image in pixels.
+         *
+         * @param height The height.
+         * @see #getHeight()
+         */
+        public void setHeight(Integer height) {
+            this.height = height;
         }
     }
 }

@@ -662,7 +662,7 @@ public class JavaFXApp extends Application {
                     // Get the avatar manager
                     AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
 
-                    avatarManager.publishAvatar(null);
+                    //avatarManager.publishAvatar(null);
 
                     //xmppSession.close();
                     //contactItems.clear();
@@ -681,7 +681,7 @@ public class JavaFXApp extends Application {
                     // Get the avatar manager
                     AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
 
-                    avatarManager.publishAvatar(null);
+                    //avatarManager.publishAvatar(null);
 
                     // Choose a file with JavaFX file dialog.
                     FileChooser fileChooser = new FileChooser();

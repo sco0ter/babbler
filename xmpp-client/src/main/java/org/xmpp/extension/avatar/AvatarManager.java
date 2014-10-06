@@ -41,9 +41,15 @@ import org.xmpp.stanza.client.Message;
 import org.xmpp.stanza.client.Presence;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
@@ -228,7 +234,6 @@ public final class AvatarManager extends ExtensionManager {
                         for (Item item : event.getItems()) {
                             if (item.getPayload() instanceof AvatarMetadata) {
                                 AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
-                                PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
 
                                 // Empty avatar
                                 if (avatarMetadata.getInfoList().isEmpty()) {
@@ -239,17 +244,72 @@ public final class AvatarManager extends ExtensionManager {
                                         if (imageData != null) {
                                             notifyListeners(message.getFrom().asBareJid(), new Avatar(item.getId(), imageData));
                                         } else {
-                                            List<Item> items = pubSubService.getNode(AvatarData.NAMESPACE).getItems(item.getId());
-                                            if (!items.isEmpty()) {
-                                                Item i = items.get(0);
-                                                if (i.getPayload() instanceof AvatarData) {
-                                                    AvatarData avatarData = (AvatarData) i.getPayload();
-                                                    storeToCache(item.getId(), avatarData.getData());
-                                                    notifyListeners(message.getFrom().asBareJid(), new Avatar(item.getId(), avatarData.getData()));
+                                            // Determine the best info
+                                            AvatarMetadata.Info chosenInfo = null;
+                                            // Check if there's an avatar, which is stored in PubSub node (and therfore must be in PNG format).
+                                            for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
+                                                if (info.getUrl() == null) {
+                                                    chosenInfo = info;
+                                                }
+                                            }
+
+                                            // If only URLs are available, choose the first URL.
+                                            if (chosenInfo == null) {
+                                                for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
+                                                    if (info.getUrl() != null) {
+                                                        chosenInfo = info;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            if (chosenInfo != null && chosenInfo.getUrl() != null) {
+                                                URLConnection urlConnection = chosenInfo.getUrl().openConnection();
+                                                String type = urlConnection.getContentType();
+                                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                                // Read file.
+                                                try (InputStream in = urlConnection.getInputStream()) {
+                                                    byte data[] = new byte[4096];
+                                                    int n;
+                                                    while ((n = in.read(data, 0, 4096)) != -1) {
+                                                        baos.write(data, 0, n);
+                                                    }
+                                                }
+//                                                String itemId = XmppUtils.hash(baos.toByteArray());
+//
+//                                                // If the image is no PNG image, create an PNG image, in order to determine the itemId.
+//                                                if (!"image/png".equals(type)) {
+//                                                    ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+//                                                    try {
+//                                                        ImageIO.write(bufferedImage, "png", pngOutputStream);
+//                                                    } catch (IOException e) {
+//                                                        // Writing to byte array should not cause any trouble.
+//                                                        throw new RuntimeException(e);
+//                                                    }
+//                                                    itemId = XmppUtils.hash(pngOutputStream.toByteArray());
+//                                                } else {
+//                                                    // Otherwise the itemId is equal to the hash value of the image.
+//                                                    itemId = hash;
+//                                                }
+//
+//                                                storeToCache(itemId, baos);
+//                                                notifyListeners(message.getFrom().asBareJid(), new Avatar(type, avatarData.getData()));
+
+                                            } else {
+                                                PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
+
+                                                List<Item> items = pubSubService.getNode(AvatarData.NAMESPACE).getItems(item.getId());
+                                                if (!items.isEmpty()) {
+                                                    Item i = items.get(0);
+                                                    if (i.getPayload() instanceof AvatarData) {
+                                                        AvatarData avatarData = (AvatarData) i.getPayload();
+                                                        storeToCache(item.getId(), avatarData.getData());
+                                                        notifyListeners(message.getFrom().asBareJid(), new Avatar(item.getId(), avatarData.getData()));
+                                                    }
                                                 }
                                             }
                                         }
-                                    } catch (XmppException e1) {
+                                    } catch (XmppException | IOException e1) {
                                         logger.log(Level.WARNING, e1.getMessage(), e1);
                                     }
                                 }
@@ -350,10 +410,10 @@ public final class AvatarManager extends ExtensionManager {
         return null;
     }
 
-    private synchronized void storeToCache(String hash, byte[] imageData) {
+    private synchronized void storeToCache(String hash, byte[] image) {
         if (avatarCache != null) {
             try {
-                avatarCache.store(hash, imageData);
+                avatarCache.store(hash, image);
             } catch (IOException e1) {
                 logger.log(Level.WARNING, e1.getMessage(), e1);
             }
@@ -383,6 +443,7 @@ public final class AvatarManager extends ExtensionManager {
     public void publishAvatar(RenderedImage image) throws XmppException {
 
         if (image != null) {
+            // When publishing the avatar data to the data node, the publisher MUST ensure that the value of the pubsub ItemID is a SHA-1 hash of the data for the "image/png" content-type
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             try {
                 ImageIO.write(image, "png", byteArrayOutputStream);
@@ -396,11 +457,60 @@ public final class AvatarManager extends ExtensionManager {
             Avatar avatar = new Avatar("png", imageData);
             String hash = XmppUtils.hash(avatar.getImageData());
             publishToVCard(avatar, hash);
-            publishToPersonalEventingService(avatar, hash);
+            publishToPersonalEventingService(avatar, hash, new AvatarMetadata.Info(avatar.getImageData().length, hash, avatar.getType()));
         } else {
             publishToVCard(null, null);
-            publishToPersonalEventingService(null, null);
+            publishToPersonalEventingService(null, null, null);
         }
+    }
+
+    /**
+     * Publishes an avatar at an URL.
+     *
+     * @param url The URL to the avatar.
+     */
+    public void publishAvatar(URL url) throws IOException, XmppException, URISyntaxException {
+        URLConnection urlConnection = url.openConnection();
+
+        // Get content type.
+        String type = urlConnection.getContentType();
+        Integer width;
+        Integer height;
+        String itemId;
+        String hash;
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // Read file.
+        try (InputStream in = urlConnection.getInputStream()) {
+            byte data[] = new byte[4096];
+            int n;
+            while ((n = in.read(data, 0, 4096)) != -1) {
+                baos.write(data, 0, n);
+            }
+
+            // Read as image, to obtain width and height
+            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(baos.toByteArray()));
+            width = bufferedImage.getWidth();
+            height = bufferedImage.getHeight();
+            hash = XmppUtils.hash(baos.toByteArray());
+
+            // If the image is no PNG image, create an PNG image, in order to determine the itemId.
+            if (!"image/png".equals(type)) {
+                ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+                try {
+                    ImageIO.write(bufferedImage, "png", pngOutputStream);
+                } catch (IOException e) {
+                    // Writing to byte array should not cause any trouble.
+                    throw new RuntimeException(e);
+                }
+                itemId = XmppUtils.hash(pngOutputStream.toByteArray());
+            } else {
+                // Otherwise the itemId is equal to the hash value of the image.
+                itemId = hash;
+            }
+        }
+        Avatar avatar = new Avatar(type, baos.toByteArray());
+        publishToPersonalEventingService(avatar, itemId, new AvatarMetadata.Info(baos.size(), itemId, type, width, height, url));
     }
 
     /**
@@ -439,15 +549,17 @@ public final class AvatarManager extends ExtensionManager {
      * @param avatar The avatar or null, if the avatar is reset.
      * @throws XmppException
      */
-    private void publishToPersonalEventingService(Avatar avatar, String hash) throws XmppException {
+    private void publishToPersonalEventingService(Avatar avatar, String itemId, AvatarMetadata.Info info) throws XmppException {
         PubSubService personalEventingService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
         if (avatar != null) {
-            personalEventingService.getNode(AvatarData.NAMESPACE).publish(hash, new AvatarData(avatar.getImageData()));
-            List<AvatarMetadata.Info> infoList = new ArrayList<>();
-            infoList.add(new AvatarMetadata.Info(avatar.getImageData().length, hash, avatar.getType()));
-            personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(hash, new AvatarMetadata(infoList));
+            if (info.getUrl() == null) {
+                // Publish image.
+                personalEventingService.getNode(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar.getImageData()));
+            }
+            // Publish meta data.
+            personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(info));
         } else {
-            personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(hash, new AvatarMetadata());
+            personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata());
         }
     }
 

@@ -52,7 +52,7 @@ final class XmppStreamWriter {
 
     private final Marshaller marshaller;
 
-    private final ScheduledExecutorService keepAliveExecutor;
+    private ScheduledExecutorService keepAliveExecutor;
 
     private final XmppDebugger debugger;
 
@@ -68,7 +68,7 @@ final class XmppStreamWriter {
 
     private volatile boolean streamOpened;
 
-    public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) throws XMLStreamException, IOException {
+    public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory, int keepAliveInterval) throws XMLStreamException, IOException {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.getMarshaller();
@@ -84,33 +84,35 @@ final class XmppStreamWriter {
             }
         });
 
-        keepAliveExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "XMPP KeepAlive Thread");
-                thread.setDaemon(true);
-                return thread;
+        if (keepAliveInterval > 0) {
+            keepAliveExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread thread = new Thread(r, "XMPP KeepAlive Thread");
+                    thread.setDaemon(true);
+                    return thread;
 
-            }
-        });
-        keepAliveExecutor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                if (xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                xmlStreamWriter.writeCharacters(" ");
-                                xmlStreamWriter.flush();
-                            } catch (XMLStreamException e) {
-                                xmppSession.notifyException(e);
-                            }
-                        }
-                    });
                 }
-            }
-        }, 0, 20, TimeUnit.SECONDS);
+            });
+            keepAliveExecutor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    if (xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    xmlStreamWriter.writeCharacters(" ");
+                                    xmlStreamWriter.flush();
+                                } catch (XMLStreamException e) {
+                                    xmppSession.notifyException(e);
+                                }
+                            }
+                        });
+                    }
+                }
+            }, 0, keepAliveInterval, TimeUnit.SECONDS);
+        }
 
         reset(outputStream);
     }
@@ -248,12 +250,16 @@ final class XmppStreamWriter {
             // Send the closing stream tag.
             closeStream();
             // Shutdown the executor
-            keepAliveExecutor.shutdown();
+            if (keepAliveExecutor !=null) {
+                keepAliveExecutor.shutdown();
+            }
             executor.shutdown();
 
             // Wait for termination after shutdown.
             try {
-                keepAliveExecutor.awaitTermination(100, TimeUnit.MILLISECONDS);
+                if (keepAliveExecutor != null) {
+                    keepAliveExecutor.awaitTermination(100, TimeUnit.MILLISECONDS);
+                }
                 executor.awaitTermination(250, TimeUnit.MILLISECONDS);
 
             } catch (InterruptedException e) {

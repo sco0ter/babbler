@@ -50,10 +50,19 @@ import java.util.zip.InflaterInputStream;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
+ * <p>
+ * Unless specified otherwise, this connection sends a whitespace keep-alive every 60 seconds.
+ * </p>
+ * If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
  */
 public final class TcpConnection extends Connection {
+
+    private final SocketFactory socketFactory;
+
+    private final int keepAliveInterval;
 
     /**
      * The stream id, which is assigned by the server.
@@ -69,8 +78,6 @@ public final class TcpConnection extends Connection {
     private InputStream inputStream;
 
     private OutputStream outputStream;
-
-    private SocketFactory socketFactory;
 
     /**
      * True, if the connection is secured by TLS or SSL.
@@ -96,7 +103,7 @@ public final class TcpConnection extends Connection {
      * @see #TcpConnection(String, int)
      */
     public TcpConnection(String hostname, int port, Proxy proxy) {
-        super(hostname, port, proxy);
+        this(hostname, port, proxy, 60, null);
     }
 
     /**
@@ -108,8 +115,48 @@ public final class TcpConnection extends Connection {
      * @see #TcpConnection(String, int)
      */
     public TcpConnection(String hostname, int port, SocketFactory socketFactory) {
-        super(hostname, port, Proxy.NO_PROXY);
+        this(hostname, port, Proxy.NO_PROXY, 60, socketFactory);
+    }
+
+    /**
+     * Creates a default connection to a given hostname and port.
+     *
+     * @param hostname          The hostname.
+     * @param port              The port.
+     * @param keepAliveInterval The whitespace keep-alive interval in seconds. If this is negative, no whitespace will be sent.
+     * @see #TcpConnection(String, int)
+     */
+    public TcpConnection(String hostname, int port, int keepAliveInterval) {
+        this(hostname, port, Proxy.NO_PROXY, keepAliveInterval, null);
+    }
+
+    /**
+     * Creates a default connection to a given hostname and port.
+     *
+     * @param hostname          The hostname.
+     * @param port              The port.
+     * @param keepAliveInterval The whitespace keep-alive interval in seconds. If this is negative, no whitespace will be sent.
+     * @param socketFactory     A custom socket factory.
+     * @see #TcpConnection(String, int)
+     */
+    public TcpConnection(String hostname, int port, int keepAliveInterval, SocketFactory socketFactory) {
+        this(hostname, port, Proxy.NO_PROXY, keepAliveInterval, socketFactory);
+    }
+
+    /**
+     * Creates a default connection to a given hostname and port.
+     *
+     * @param hostname          The hostname.
+     * @param port              The port.
+     * @param keepAliveInterval The whitespace keep-alive interval in seconds. If this is negative, no whitespace will be sent.
+     * @param socketFactory     A custom socket factory.
+     * @param proxy             The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
+     * @see #TcpConnection(String, int)
+     */
+    public TcpConnection(String hostname, int port, Proxy proxy, int keepAliveInterval, SocketFactory socketFactory) {
+        super(hostname, port, proxy);
         this.socketFactory = socketFactory;
+        this.keepAliveInterval = keepAliveInterval;
     }
 
     /**
@@ -148,7 +195,7 @@ public final class TcpConnection extends Connection {
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
         try {
-            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory);
+            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory, keepAliveInterval);
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }

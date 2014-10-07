@@ -35,6 +35,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -128,12 +129,14 @@ public final class VisualDebugger implements XmppDebugger {
                     @Override
                     public void run() {
                         try {
-                            Font.loadFont(getClass().getResource("Inconsolata.otf").toExternalForm(), 12);
+                            Font.loadFont(getClass().getResource("Inconsolata.ttf").toExternalForm(), 12);
                             if (stage == null) {
                                 tabPane = new TabPane();
                                 Scene scene = new Scene(tabPane, 800, 600);
                                 scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
                                 stage = new Stage();
+                                stage.setTitle("XMPP Viewer");
+                                stage.getIcons().addAll(new Image(getClass().getResource("xmpp.png").toExternalForm()));
                                 stage.setOnHidden(new EventHandler<WindowEvent>() {
                                     @Override
                                     public void handle(WindowEvent event) {

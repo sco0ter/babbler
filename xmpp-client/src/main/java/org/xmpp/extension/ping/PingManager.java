@@ -24,14 +24,23 @@
 
 package org.xmpp.extension.ping;
 
-import org.xmpp.*;
+import org.xmpp.ConnectionEvent;
+import org.xmpp.ConnectionListener;
+import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.stanza.IQEvent;
 import org.xmpp.stanza.IQListener;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.IQ;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,6 +63,8 @@ public final class PingManager extends ExtensionManager {
 
     private volatile ScheduledFuture<?> nextPing;
 
+    private long pingInterval = 900; // 15 minutes
+
     /**
      * Creates the ping manager.
      *
@@ -71,16 +82,19 @@ public final class PingManager extends ExtensionManager {
                 }
             }
         });
+
         xmppSession.addConnectionListener(new ConnectionListener() {
             @Override
             public void statusChanged(ConnectionEvent e) {
                 if (e.getStatus() == XmppSession.Status.CLOSED) {
                     // Shutdown the ping executor service and cancel the next ping.
-                    if (nextPing != null) {
-                        nextPing.cancel(false);
+                    synchronized (PingManager.this) {
+                        if (nextPing != null) {
+                            nextPing.cancel(false);
+                        }
+                        nextPing = null;
+                        scheduledExecutorService.shutdown();
                     }
-                    nextPing = null;
-                    scheduledExecutorService.shutdown();
                 }
             }
         });
@@ -117,12 +131,48 @@ public final class PingManager extends ExtensionManager {
         ping(null);
     }
 
+    /**
+     * Gets the ping interval in seconds. The default ping interval is 900 seconds (15 minutes).
+     *
+     * @return The ping interval in seconds.
+     * @see #setPingInterval(long)
+     */
+    public synchronized long getPingInterval() {
+        return pingInterval;
+    }
+
+    /**
+     * Sets the automatic ping interval in seconds. Any scheduled future ping is canceled and a new ping is scheduled after the specified interval.
+     *
+     * @param pingInterval The ping interval in seconds.
+     * @see #getPingInterval()
+     */
+    public synchronized void setPingInterval(long pingInterval) {
+        this.pingInterval = pingInterval;
+        if (nextPing != null) {
+            nextPing.cancel(false);
+        }
+        startPinging();
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         boolean wasEnabled = isEnabled();
         super.setEnabled(enabled);
 
         if (enabled && !wasEnabled) {
+            startPinging();
+        } else if (!enabled && wasEnabled) {
+            synchronized (this) {
+                if (nextPing != null) {
+                    nextPing.cancel(false);
+                }
+            }
+        }
+    }
+
+    private synchronized void startPinging() {
+        if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
             nextPing = scheduledExecutorService.schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -133,13 +183,9 @@ public final class PingManager extends ExtensionManager {
                             logger.log(Level.WARNING, "Pinging server failed.", e);
                         }
                     }
-                    nextPing = scheduledExecutorService.schedule(this, 10, TimeUnit.MINUTES);
+                    nextPing = scheduledExecutorService.schedule(this, pingInterval, TimeUnit.SECONDS);
                 }
-            }, 10, TimeUnit.MINUTES);
-        } else if (!enabled && wasEnabled) {
-            if (nextPing != null) {
-                nextPing.cancel(false);
-            }
+            }, pingInterval, TimeUnit.SECONDS);
         }
     }
 }

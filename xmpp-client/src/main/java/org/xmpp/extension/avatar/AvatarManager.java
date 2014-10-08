@@ -308,7 +308,7 @@ public final class AvatarManager extends ExtensionManager {
                 }
             }
         });
-        setEnabled(true);
+        setEnabled(false);
     }
 
     private void resetHash() {

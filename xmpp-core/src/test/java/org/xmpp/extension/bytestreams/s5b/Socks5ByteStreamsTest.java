@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.Jid;
 import org.xmpp.XmlTest;
-import org.xmpp.stanza.AbstractIQ;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;

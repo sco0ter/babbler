@@ -109,6 +109,47 @@ public final class RosterManager {
     }
 
     /**
+     * Recursively collects all contacts in all (sub-) groups of a group.
+     *
+     * @param contactGroup The contact group.
+     * @return All contacts.
+     */
+    private static Collection<Contact> collectAllContactsInGroup(ContactGroup contactGroup) {
+        Collection<Contact> contacts = new ArrayList<>();
+        // First, add all contact from this group.
+        for (Contact contact : contactGroup.getContacts()) {
+            addContactIfNotExists(contact, contacts);
+        }
+        // Then add all contacts from the subgroups
+        Collection<Contact> contactsInSubGroups = new ArrayList<>();
+        for (ContactGroup subGroup : contactGroup.getGroups()) {
+            contactsInSubGroups.addAll(collectAllContactsInGroup(subGroup));
+        }
+        for (Contact contact : contactsInSubGroups) {
+            addContactIfNotExists(contact, contacts);
+        }
+        return contacts;
+    }
+
+    /**
+     * Adds a contact to the list, if its JID isn't contained in the list.
+     *
+     * @param contact  The contact.
+     * @param contacts The contacts.
+     */
+    private static void addContactIfNotExists(Contact contact, Collection<Contact> contacts) {
+        boolean contactExists = false;
+        for (Contact c : contacts) {
+            if (c.getJid().equals(contact.getJid())) {
+                contactExists = true;
+            }
+        }
+        if (!contactExists) {
+            contacts.add(contact);
+        }
+    }
+
+    /**
      * Gets the contacts.
      *
      * @return The contacts.
@@ -466,47 +507,6 @@ public final class RosterManager {
             for (Contact contact : allContacts) {
                 updateContact(new Contact(contact.getJid(), contact.getName()));
             }
-        }
-    }
-
-    /**
-     * Recursively collects all contacts in all (sub-) groups of a group.
-     *
-     * @param contactGroup The contact group.
-     * @return All contacts.
-     */
-    private static Collection<Contact> collectAllContactsInGroup(ContactGroup contactGroup) {
-        Collection<Contact> contacts = new ArrayList<>();
-        // First, add all contact from this group.
-        for (Contact contact : contactGroup.getContacts()) {
-            addContactIfNotExists(contact, contacts);
-        }
-        // Then add all contacts from the subgroups
-        Collection<Contact> contactsInSubGroups = new ArrayList<>();
-        for (ContactGroup subGroup : contactGroup.getGroups()) {
-            contactsInSubGroups.addAll(collectAllContactsInGroup(subGroup));
-        }
-        for (Contact contact : contactsInSubGroups) {
-            addContactIfNotExists(contact, contacts);
-        }
-        return contacts;
-    }
-
-    /**
-     * Adds a contact to the list, if its JID isn't contained in the list.
-     *
-     * @param contact  The contact.
-     * @param contacts The contacts.
-     */
-    private static void addContactIfNotExists(Contact contact, Collection<Contact> contacts) {
-        boolean contactExists = false;
-        for (Contact c : contacts) {
-            if (c.getJid().equals(contact.getJid())) {
-                contactExists = true;
-            }
-        }
-        if (!contactExists) {
-            contacts.add(contact);
         }
     }
 

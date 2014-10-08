@@ -38,11 +38,8 @@ import org.xmpp.stanza.PresenceListener;
 import org.xmpp.stanza.StanzaException;
 import org.xmpp.stanza.client.Presence;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.FileOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;

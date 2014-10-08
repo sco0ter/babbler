@@ -29,11 +29,9 @@ import org.xmpp.NoResponseException;
 import org.xmpp.XmppException;
 import org.xmpp.XmppSession;
 import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.bytestreams.ByteStreamSession;
 import org.xmpp.extension.bytestreams.ibb.InBandByteStreamManager;
 import org.xmpp.extension.filetransfer.FileTransferRejectedException;
 import org.xmpp.extension.jingle.*;
-import org.xmpp.extension.jingle.transports.TransportMethod;
 import org.xmpp.extension.jingle.transports.ibb.InBandBytestreamsTransportMethod;
 
 import java.io.File;

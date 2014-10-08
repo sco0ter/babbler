@@ -26,7 +26,8 @@ package org.xmpp;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Christian Schudt

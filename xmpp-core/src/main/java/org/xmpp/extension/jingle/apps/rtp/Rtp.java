@@ -45,6 +45,21 @@ import java.util.List;
 @XmlSeeAlso({InvalidCrypto.class, CryptoRequired.class, Active.class, Hold.class, Unhold.class, Mute.class, Unmute.class, Ringing.class})
 public final class Rtp extends ApplicationFormat {
 
+    @XmlAttribute(name = "media")
+    private String media;
+
+    @XmlAttribute(name = "ssrc")
+    private String ssrc;
+
+    @XmlElement(name = "payload-type")
+    private List<PayloadType> payloadTypes = new ArrayList<>();
+
+    @XmlElement(name = "encryption")
+    private Encryption encryption;
+
+    @XmlElement(name = "bandwidth")
+    private Bandwidth bandwidth;
+
     private Rtp() {
     }
 
@@ -67,21 +82,6 @@ public final class Rtp extends ApplicationFormat {
         this.bandwidth = bandwidth;
         this.encryption = encryption;
     }
-
-    @XmlAttribute(name = "media")
-    private String media;
-
-    @XmlAttribute(name = "ssrc")
-    private String ssrc;
-
-    @XmlElement(name = "payload-type")
-    private List<PayloadType> payloadTypes = new ArrayList<>();
-
-    @XmlElement(name = "encryption")
-    private Encryption encryption;
-
-    @XmlElement(name = "bandwidth")
-    private Bandwidth bandwidth;
 
     /**
      * Gets the media, such as "audio" or "video".
@@ -150,15 +150,6 @@ public final class Rtp extends ApplicationFormat {
      */
     public static final class Crypto {
 
-        private Crypto() {
-        }
-
-        public Crypto(String cryptoSuite, String keyParams, String tag) {
-            this.cryptoSuite = cryptoSuite;
-            this.keyParams = keyParams;
-            this.tag = tag;
-        }
-
         @XmlAttribute(name = "crypto-suite")
         private String cryptoSuite;
 
@@ -170,6 +161,15 @@ public final class Rtp extends ApplicationFormat {
 
         @XmlAttribute(name = "tag")
         private String tag;
+
+        private Crypto() {
+        }
+
+        public Crypto(String cryptoSuite, String keyParams, String tag) {
+            this.cryptoSuite = cryptoSuite;
+            this.keyParams = keyParams;
+            this.tag = tag;
+        }
 
         public String getCryptoSuite() {
             return cryptoSuite;
@@ -193,6 +193,9 @@ public final class Rtp extends ApplicationFormat {
      */
     public static final class Bandwidth {
 
+        @XmlAttribute(name = "type")
+        private String type;
+
         private Bandwidth() {
         }
 
@@ -204,9 +207,6 @@ public final class Rtp extends ApplicationFormat {
         public Bandwidth(String type) {
             this.type = type;
         }
-
-        @XmlAttribute(name = "type")
-        private String type;
 
         /**
          * Gets the type.
@@ -222,6 +222,27 @@ public final class Rtp extends ApplicationFormat {
      * The payload type which specifies an encoding that can be used for the RTP stream.
      */
     public static final class PayloadType {
+
+        @XmlElement(name = "parameter")
+        private List<Parameter> parameters = new ArrayList<>();
+
+        @XmlAttribute(name = "channels")
+        private int channels = 1;
+
+        @XmlAttribute(name = "clockrate")
+        private long clockrate;
+
+        @XmlAttribute(name = "id")
+        private int id;
+
+        @XmlAttribute(name = "maxptime")
+        private long maxptime;
+
+        @XmlAttribute(name = "name")
+        private String name;
+
+        @XmlAttribute(name = "ptime")
+        private long ptime;
 
         private PayloadType() {
         }
@@ -253,27 +274,6 @@ public final class Rtp extends ApplicationFormat {
             this.maxptime = maxPacketTime;
             this.name = name;
         }
-
-        @XmlElement(name = "parameter")
-        private List<Parameter> parameters = new ArrayList<>();
-
-        @XmlAttribute(name = "channels")
-        private int channels = 1;
-
-        @XmlAttribute(name = "clockrate")
-        private long clockrate;
-
-        @XmlAttribute(name = "id")
-        private int id;
-
-        @XmlAttribute(name = "maxptime")
-        private long maxptime;
-
-        @XmlAttribute(name = "name")
-        private String name;
-
-        @XmlAttribute(name = "ptime")
-        private long ptime;
 
         /**
          * Gets the appropriate subtype of the MIME type.
@@ -343,6 +343,12 @@ public final class Rtp extends ApplicationFormat {
          */
         public static final class Parameter {
 
+            @XmlAttribute(name = "name")
+            private String name;
+
+            @XmlAttribute(name = "value")
+            private String value;
+
             private Parameter() {
             }
 
@@ -356,12 +362,6 @@ public final class Rtp extends ApplicationFormat {
                 this.name = name;
                 this.value = value;
             }
-
-            @XmlAttribute(name = "name")
-            private String name;
-
-            @XmlAttribute(name = "value")
-            private String value;
 
             /**
              * Gets the parameter name.

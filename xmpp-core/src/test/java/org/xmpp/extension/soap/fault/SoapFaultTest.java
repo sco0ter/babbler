@@ -27,7 +27,6 @@ package org.xmpp.extension.soap.fault;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.XmlTest;
-import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

@@ -54,6 +54,10 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
 
     private final LocalSocks5Server localSocks5Server;
 
+    private boolean localHostEnabled;
+
+    private int port;
+
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession, Socks5ByteStream.NAMESPACE);
         this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
@@ -117,9 +121,14 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         return new S5bSession(sessionId, socketUsed, streamHostUsed);
     }
 
-    private boolean localHostEnabled;
-
-    private int port;
+    /**
+     * Indicates whether the local host is enabled.
+     *
+     * @return If enabled.
+     */
+    public boolean isLocalHostEnabled() {
+        return localHostEnabled;
+    }
 
     /**
      * Enables or disables the use of a local SOCKS5 host.
@@ -131,15 +140,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         if (!enabled) {
             localSocks5Server.stop();
         }
-    }
-
-    /**
-     * Indicates whether the local host is enabled.
-     *
-     * @return If enabled.
-     */
-    public boolean isLocalHostEnabled() {
-        return localHostEnabled;
     }
 
     /**

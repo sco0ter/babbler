@@ -45,9 +45,9 @@ class LocalSocks5Server {
 
     private static final Logger logger = Logger.getLogger(LocalSocks5Server.class.getName());
 
-    private int port = 1080; // The default port for SOCKS5.
-
     List<String> allowedAddresses = new CopyOnWriteArrayList<>();
+
+    private int port = 1080; // The default port for SOCKS5.
 
     private volatile ServerSocket serverSocket;
 

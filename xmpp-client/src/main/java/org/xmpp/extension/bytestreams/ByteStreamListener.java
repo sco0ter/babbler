@@ -24,8 +24,6 @@
 
 package org.xmpp.extension.bytestreams;
 
-import org.xmpp.XmppException;
-
 import java.util.EventListener;
 
 /**

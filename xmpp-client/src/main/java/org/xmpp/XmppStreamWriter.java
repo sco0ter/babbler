@@ -52,11 +52,11 @@ final class XmppStreamWriter {
 
     private final Marshaller marshaller;
 
-    private ScheduledExecutorService keepAliveExecutor;
-
     private final XmppDebugger debugger;
 
     private final boolean debugEnabled;
+
+    private ScheduledExecutorService keepAliveExecutor;
 
     private volatile XMLStreamWriter prefixFreeCanonicalizationWriter;
 
@@ -250,7 +250,7 @@ final class XmppStreamWriter {
             // Send the closing stream tag.
             closeStream();
             // Shutdown the executor
-            if (keepAliveExecutor !=null) {
+            if (keepAliveExecutor != null) {
                 keepAliveExecutor.shutdown();
             }
             executor.shutdown();

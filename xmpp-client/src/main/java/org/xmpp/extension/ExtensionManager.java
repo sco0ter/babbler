@@ -40,9 +40,9 @@ public abstract class ExtensionManager extends Manager {
 
     protected final XmppSession xmppSession;
 
-    private final ServiceDiscoveryManager serviceDiscoveryManager;
-
     protected final Collection<String> features;
+
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     protected ExtensionManager(XmppSession xmppSession, String... features) {
         this.xmppSession = xmppSession;

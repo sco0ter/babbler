@@ -257,13 +257,13 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
      */
     private static class ContentNamespaceContext implements NamespaceContext {
 
+        private static final Collection<String> PREFIXED_NAMESPACES = new ArrayList<>(Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE));
+
         /**
          * This is the default content namespace.
          * See also <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-content">http://xmpp.org/rfcs/rfc6120.html#streams-ns-content</a>
          */
         private final String contentNamespace;
-
-        private static final Collection<String> PREFIXED_NAMESPACES = new ArrayList<>(Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE));
 
         private final Set<String> currentNamespaceUris = new HashSet<>();
 

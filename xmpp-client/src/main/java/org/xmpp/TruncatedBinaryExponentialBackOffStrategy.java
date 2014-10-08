@@ -31,15 +31,15 @@ import java.util.Random;
  */
 final class TruncatedBinaryExponentialBackOffStrategy implements ReconnectionStrategy {
 
+    private static final Random RANDOM = new Random();
+
     private final int slotTime;
 
     private final int ceiling;
 
-    private static final Random RANDOM = new Random();
-
     /**
      * @param slotTime The slot time (in seconds), usually 60.
-     * @param ceiling The ceiling, i.e. when the time is truncated. E.g. if the ceiling is 5
+     * @param ceiling  The ceiling, i.e. when the time is truncated. E.g. if the ceiling is 5
      */
     public TruncatedBinaryExponentialBackOffStrategy(int slotTime, int ceiling) {
         this.slotTime = slotTime;

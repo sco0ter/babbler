@@ -39,9 +39,9 @@ import java.util.UUID;
  */
 public final class S5bTransportNegotiator extends TransportNegotiator<S5bTransportMethod> {
 
-    private XmppSession xmppSession;
-
     private final Socks5ByteStreamManager socks5ByteStreamManager;
+
+    private XmppSession xmppSession;
 
     protected S5bTransportNegotiator(JingleSession jingleSession, XmppSession xmppSession) {
         super(jingleSession);

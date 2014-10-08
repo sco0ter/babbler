@@ -30,7 +30,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import org.xmpp.XmlTest;
-import org.xmpp.extension.version.SoftwareVersion;
 import org.xmpp.stanza.client.IQ;
 
 import javax.xml.bind.JAXBException;

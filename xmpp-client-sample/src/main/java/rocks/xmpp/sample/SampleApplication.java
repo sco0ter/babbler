@@ -24,16 +24,21 @@
 
 package rocks.xmpp.sample;
 
-import org.xmpp.TcpConnection;
+import org.xmpp.TcpConnectionConfiguration;
 import org.xmpp.XmppSession;
 import org.xmpp.XmppSessionConfiguration;
+import org.xmpp.debug.ConsoleDebugger;
 import org.xmpp.debug.VisualDebugger;
+import org.xmpp.extension.httpbind.BoshConnection;
+import org.xmpp.extension.httpbind.BoshConnectionConfiguration;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 import org.xmpp.stanza.client.Presence;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.concurrent.Executors;
 
 /**
@@ -48,13 +53,23 @@ public class SampleApplication {
             public void run() {
                 try {
 
-                    XmppSessionConfiguration configuration = new XmppSessionConfiguration();
-                    // Enable debugging, so that we see something.
-                    configuration.setDebugMode(true);
-                    // Set the graphical debugger
-                    configuration.setDebugger(new VisualDebugger());
+                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                            .hostname("localhost")
+                            .port(5222)
+                            .build();
 
-                    XmppSession xmppSession = new XmppSession(null, configuration, new TcpConnection("localhost", 5222));
+                    BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
+                            .hostname("localhost")
+                            .port(7070)
+                            .file("/http-bind/")
+                            .build();
+
+                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                            .debugger(new VisualDebugger())
+                            .defaultResponseTimeout(5000)
+                            .build();
+
+                    XmppSession xmppSession = new XmppSession("localhost", configuration, boshConnectionConfiguration);
 
                     // Disable security only for testing, because of less hassle with keystore.
                     xmppSession.getSecurityManager().setEnabled(false);
@@ -72,7 +87,7 @@ public class SampleApplication {
                     // Connect
                     xmppSession.connect();
                     // Login
-                    xmppSession.login("111", "111", "test");
+                    xmppSession.login("admin", "admin", "xmpp");
                     // Send initial presence
                     xmppSession.send(new Presence());
                 } catch (IOException | LoginException e) {

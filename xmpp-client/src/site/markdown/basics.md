@@ -1,44 +1,59 @@
 # Getting Started
 ---
 
-## Creating an XMPP Session
+## Establishing an XMPP Session
 
-The first thing you want to do in order to connect to a XMPP server is creating a `XmppSession` object:
+The first thing you want to do in order to connect to an XMPP server is creating a `XmppSession` object:
 
 ```java
-XmppSession xmppSession = new XmppSession("xmppDomain");
+XmppSession xmppSession = new XmppSession("domain");
 ```
 
-A session to a XMPP server can be established in two ways:
+The `XmppSession` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+
+A session to an XMPP server can be established in at least two ways:
 
 1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
 2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
 
-By default, the `XmppSession` instance will try to connect to the domain with a TCP connection first (port 5222) during the connection process.
+By default, the `XmppSession` will try to establish a connection via TCP first during the connection process.
 If the connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually BOSH).
 The hostname and port is determined by doing a DNS lookup.
 
-You can also configure the connections manually and specify concrete connection instances instead (e.g. if you want to use another port or want to use a proxy):
+### Configuring the Connections
+
+You can also configure different connection methods manually (e.g. if you want to use another port or want to use a proxy).
+
+In order to create immutable and reusable configuration objects (which could be reused by multiple sessions) and to avoid huge constructors, the Builder Pattern is used to create custom configurations:
 
 ```java
-Connection tcpConnection = new TcpConnection("hostname", 5222);
+TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+    .hostname("localhost")
+    .port(5222)
+    .proxy(Proxy.NO_PROXY)        // Proxy for the TCP connection
+    .keepAliveInterval(20)        // Whitespace keep-alive interval
+    .socketFactory(socketFactory) // Custom socket factory
+    .build();
 ```
-
-If you also want to use a BOSH connection with a HTTP proxy, use the following class:
+Here's another example how to configure a BOSH connection (which would connect to the URL `http://domain:5280/http-bind/` over a HTTP proxy server):
 
 ```java
-Connection boshConnection = new BoshConnection("hostname", 80, new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxyServer", 3128)));
+BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
+    .hostname("domain")
+    .port(5280)
+    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("hostname", 3128)))
+    .file("/http-bind/")
+    .wait(60)  // BOSH connection manager should wait maximal 60 seconds before responding to a request.
+    .build();
 ```
 
-Then create the session with both connections:
+Now let's pass them to the session to tell it that it should use them:
 
 ```java
-XmppSession xmppSession = new XmppSession("hostname", tcpConnection, boshConnection);
+XmppSession xmppSession = new XmppSession("domain", tcpConfiguration, boshConfiguration);
 ```
 
-During connecting, the session will try both connections in order, until a connection is established.
-
-The ```XmppSession``` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+During connecting, the session will try all configured connections in order, until a connection is established.
 
 Here\'s an overview over the relation between the session and connections:
 
@@ -52,8 +67,7 @@ Before connecting to a server, you should configure your XMPP session.
 You might want to do one of the following:
 
 * Adding event listeners in order to listen for incoming messages, roster and presence changes or to modify outgoing messages.
-* Setting up a custom SSL
-* Enable stream compression ([XEP-0138](http://xmpp.org/extensions/xep-0138.html))
+* Setting up a custom SSL context
 * Configuring extensions, e.g.
     * Enable or disable certain extensions
     * Setting an identity for the connection (Service Discovery)
@@ -121,7 +135,7 @@ try {
 
 ## Establishing a Presence Session
 
-After you are connected, authenticated and have bound a resource, you should now establish a presence session, by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
+After you are connected, authenticated and have bound a resource, you should now establish a [presence session](http://xmpp.org/rfcs/rfc6121.html#presence-fundamentals), by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
 
 ```java
 xmppSession.send(new Presence());

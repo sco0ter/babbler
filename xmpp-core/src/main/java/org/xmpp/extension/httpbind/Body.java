@@ -152,7 +152,7 @@ public final class Body {
     private String ver;
 
     @XmlAttribute
-    private Short wait;
+    private Integer wait;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private String lang;
@@ -498,11 +498,11 @@ public final class Body {
         this.ver = version;
     }
 
-    public Short getWait() {
+    public Integer getWait() {
         return wait;
     }
 
-    public void setWait(Short wait) {
+    public void setWait(Integer wait) {
         this.wait = wait;
     }
 

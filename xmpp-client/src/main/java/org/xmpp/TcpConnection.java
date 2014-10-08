@@ -33,7 +33,6 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.xml.bind.JAXBException;
@@ -60,9 +59,7 @@ import java.util.zip.InflaterInputStream;
  */
 public final class TcpConnection extends Connection {
 
-    private final SocketFactory socketFactory;
-
-    private final int keepAliveInterval;
+    private final TcpConnectionConfiguration tcpConnectionConfiguration;
 
     /**
      * The stream id, which is assigned by the server.
@@ -79,84 +76,9 @@ public final class TcpConnection extends Connection {
 
     private OutputStream outputStream;
 
-    /**
-     * True, if the connection is secured by TLS or SSL.
-     */
-    private volatile boolean isSecure;
-
-    /**
-     * Creates a default connection to a given hostname and port.
-     *
-     * @param hostname The hostname.
-     * @param port     The port.
-     */
-    public TcpConnection(String hostname, int port) {
-        this(hostname, port, Proxy.NO_PROXY);
-    }
-
-    /**
-     * Creates a default connection to a given hostname and port.
-     *
-     * @param hostname The hostname.
-     * @param port     The port.
-     * @param proxy    The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
-     * @see #TcpConnection(String, int)
-     */
-    public TcpConnection(String hostname, int port, Proxy proxy) {
-        this(hostname, port, proxy, 60, null);
-    }
-
-    /**
-     * Creates a default connection to a given hostname and port.
-     *
-     * @param hostname      The hostname.
-     * @param port          The port.
-     * @param socketFactory A custom socket factory.
-     * @see #TcpConnection(String, int)
-     */
-    public TcpConnection(String hostname, int port, SocketFactory socketFactory) {
-        this(hostname, port, Proxy.NO_PROXY, 60, socketFactory);
-    }
-
-    /**
-     * Creates a default connection to a given hostname and port.
-     *
-     * @param hostname          The hostname.
-     * @param port              The port.
-     * @param keepAliveInterval The whitespace keep-alive interval in seconds. If this is negative, no whitespace will be sent.
-     * @see #TcpConnection(String, int)
-     */
-    public TcpConnection(String hostname, int port, int keepAliveInterval) {
-        this(hostname, port, Proxy.NO_PROXY, keepAliveInterval, null);
-    }
-
-    /**
-     * Creates a default connection to a given hostname and port.
-     *
-     * @param hostname          The hostname.
-     * @param port              The port.
-     * @param keepAliveInterval The whitespace keep-alive interval in seconds. If this is negative, no whitespace will be sent.
-     * @param socketFactory     A custom socket factory.
-     * @see #TcpConnection(String, int)
-     */
-    public TcpConnection(String hostname, int port, int keepAliveInterval, SocketFactory socketFactory) {
-        this(hostname, port, Proxy.NO_PROXY, keepAliveInterval, socketFactory);
-    }
-
-    /**
-     * Creates a default connection to a given hostname and port.
-     *
-     * @param hostname          The hostname.
-     * @param port              The port.
-     * @param keepAliveInterval The whitespace keep-alive interval in seconds. If this is negative, no whitespace will be sent.
-     * @param socketFactory     A custom socket factory.
-     * @param proxy             The proxy, whose type should be {@link java.net.Proxy.Type#SOCKS}
-     * @see #TcpConnection(String, int)
-     */
-    public TcpConnection(String hostname, int port, Proxy proxy, int keepAliveInterval, SocketFactory socketFactory) {
-        super(hostname, port, proxy);
-        this.socketFactory = socketFactory;
-        this.keepAliveInterval = keepAliveInterval;
+    TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
+        super(xmppSession, configuration);
+        this.tcpConnectionConfiguration = configuration;
     }
 
     /**
@@ -168,7 +90,7 @@ public final class TcpConnection extends Connection {
      * If a proxy has been specified, the connection is established through this proxy.<br>
      * </p>
      *
-     * @throws IOException If the underlying socket threw an exception.
+     * @throws IOException If the underlying socket throws an exception.
      */
     @Override
     public synchronized void connect() throws IOException {
@@ -177,14 +99,12 @@ public final class TcpConnection extends Connection {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
         }
 
-        int port = getPort() == 0 ? 5222 : getPort();
-
         if (getHostname() != null && !getHostname().isEmpty()) {
-            connectToSocket(InetAddress.getByName(getHostname()), port, getProxy());
+            connectToSocket(InetAddress.getByName(getHostname()), getPort(), getProxy());
         } else if (getXmppSession().getDomain() != null) {
             if (!connectWithXmppServiceDomain(getXmppSession().getDomain())) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                connectToSocket(InetAddress.getByName(getXmppSession().getDomain()), port, getProxy());
+                connectToSocket(InetAddress.getByName(getXmppSession().getDomain()), getPort(), getProxy());
             }
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
@@ -195,7 +115,7 @@ public final class TcpConnection extends Connection {
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
         try {
-            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory, keepAliveInterval);
+            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory, tcpConnectionConfiguration.getKeepAliveInterval());
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }
@@ -211,7 +131,7 @@ public final class TcpConnection extends Connection {
     }
 
     private void connectToSocket(InetAddress inetAddress, int port, Proxy proxy) throws IOException {
-        if (socketFactory == null) {
+        if (tcpConnectionConfiguration.getSocketFactory() == null) {
             if (proxy != null) {
                 socket = new Socket(proxy);
             } else {
@@ -219,7 +139,7 @@ public final class TcpConnection extends Connection {
             }
             socket.connect(new InetSocketAddress(inetAddress, port));
         } else {
-            socket = socketFactory.createSocket(inetAddress, port);
+            socket = tcpConnectionConfiguration.getSocketFactory().createSocket(inetAddress, port);
         }
     }
 
@@ -235,7 +155,6 @@ public final class TcpConnection extends Connection {
         ((SSLSocket) socket).setSSLParameters(sslParameters);
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
-        isSecure = true;
     }
 
     @Override
@@ -286,7 +205,7 @@ public final class TcpConnection extends Connection {
      * @return If the connection could be established.
      * @throws IOException If no connection could be established to a resolved host.
      */
-    boolean connectWithXmppServiceDomain(String xmppServiceDomain) throws IOException {
+    private boolean connectWithXmppServiceDomain(String xmppServiceDomain) throws IOException {
 
         // 1. The initiating entity constructs a DNS SRV query whose inputs are:
         //
@@ -361,7 +280,7 @@ public final class TcpConnection extends Connection {
     /**
      * http://tools.ietf.org/html/rfc2782
      */
-    static final class DnsResourceRecord {
+    private static final class DnsResourceRecord {
 
         /**
          * The priority of this target host.  A client MUST attempt to

@@ -54,8 +54,6 @@ final class XmppStreamWriter {
 
     private final XmppDebugger debugger;
 
-    private final boolean debugEnabled;
-
     private ScheduledExecutorService keepAliveExecutor;
 
     private volatile XMLStreamWriter prefixFreeCanonicalizationWriter;
@@ -72,8 +70,7 @@ final class XmppStreamWriter {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.getMarshaller();
-        debugger = xmppSession.getConfiguration().getDebugger();
-        debugEnabled = xmppSession.getConfiguration().isDebugMode();
+        this.debugger = xmppSession.getConfiguration().getDebugger();
 
         executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
@@ -140,7 +137,7 @@ final class XmppStreamWriter {
 
                         OutputStream xmppOutputStream;
 
-                        if (debugger != null && debugEnabled) {
+                        if (debugger != null) {
                             byteArrayOutputStream = new ByteArrayOutputStream();
                             xmppOutputStream = debugger.createOutputStream(XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream));
                         } else {
@@ -168,7 +165,7 @@ final class XmppStreamWriter {
                             marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                         }
                         prefixFreeCanonicalizationWriter.flush();
-                        if (debugger != null && debugEnabled) {
+                        if (debugger != null) {
                             debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), clientStreamElement);
                             byteArrayOutputStream.reset();
                         }
@@ -201,7 +198,7 @@ final class XmppStreamWriter {
                         xmlStreamWriter.writeNamespace("stream", "http://etherx.jabber.org/streams");
                         xmlStreamWriter.writeCharacters("");
                         xmlStreamWriter.flush();
-                        if (debugger != null && debugEnabled) {
+                        if (debugger != null) {
                             debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), null);
                             byteArrayOutputStream.reset();
                         }
@@ -223,7 +220,7 @@ final class XmppStreamWriter {
                     try {
                         xmlStreamWriter.writeEndElement();
                         xmlStreamWriter.flush();
-                        if (debugger != null && debugEnabled) {
+                        if (debugger != null) {
                             debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), null);
                             byteArrayOutputStream.reset();
                         }

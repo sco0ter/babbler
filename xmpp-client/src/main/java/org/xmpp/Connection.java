@@ -51,6 +51,18 @@ public abstract class Connection implements Closeable {
     /**
      * Creates a connection to the specified host and port through a proxy.
      *
+     * @param connectionConfiguration The connection configuration.
+     */
+    protected Connection(XmppSession xmppSession, ConnectionConfiguration connectionConfiguration) {
+        this.xmppSession = xmppSession;
+        this.hostname = connectionConfiguration.getHostname();
+        this.port = connectionConfiguration.getPort();
+        this.proxy = connectionConfiguration.getProxy();
+    }
+
+    /**
+     * Creates a connection to the specified host and port through a proxy.
+     *
      * @param hostname The host, which is used to establish the connection.
      * @param port     The port, which is used to establish the connection.
      * @param proxy    The proxy.
@@ -66,7 +78,7 @@ public abstract class Connection implements Closeable {
      *
      * @return The XMPP session.
      */
-    public XmppSession getXmppSession() {
+    public final XmppSession getXmppSession() {
         return xmppSession;
     }
 
@@ -75,7 +87,8 @@ public abstract class Connection implements Closeable {
      *
      * @param xmppSession The XMPP session.
      */
-    public void setXmppSession(XmppSession xmppSession) {
+    @Deprecated
+    public final void initialize(XmppSession xmppSession) {
         this.xmppSession = xmppSession;
     }
 

@@ -56,7 +56,9 @@ public class Product {
 Then you have to create a configuration for the session.
 
 ```java
-XmppSessionConfiguration configuration = new XmppSessionConfiguration(Product.class);
+XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+    .extensions(Product.class)
+    .build();
 ```
 
 This will create the `JAXBContext` with your class (in addition to all other XMPP classes).

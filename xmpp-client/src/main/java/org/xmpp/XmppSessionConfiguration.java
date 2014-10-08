@@ -25,7 +25,6 @@
 package org.xmpp;
 
 import org.xmpp.bind.Bind;
-import org.xmpp.debug.ConsoleDebugger;
 import org.xmpp.debug.XmppDebugger;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.activity.Activity;
@@ -132,7 +131,6 @@ import org.xmpp.tls.StartTls;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -141,21 +139,16 @@ import java.util.HashSet;
  * A configuration for an {@link org.xmpp.XmppSession}.
  * <p>
  * Most importantly it allows you to introduce custom extensions to your {@link org.xmpp.XmppSession}, simply by passing your JAXB annotated classes to the constructor of this class
- * and then {@linkplain org.xmpp.XmppSession#XmppSession(String, XmppSessionConfiguration, Connection...) use this configuration for the session}.
+ * and then {@linkplain org.xmpp.XmppSession#XmppSession(String, XmppSessionConfiguration, ConnectionConfiguration...) use this configuration for the session}.
  * </p>
  * Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
  * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).
  *
  * @author Christian Schudt
- * @see org.xmpp.XmppSession#XmppSession(String, XmppSessionConfiguration, Connection...)
+ * @see org.xmpp.XmppSession#XmppSession(String, XmppSessionConfiguration, ConnectionConfiguration...)
  */
 public final class XmppSessionConfiguration {
 
-    private static final boolean IS_DEBUG_MODE;
-
-    static {
-        IS_DEBUG_MODE = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp");
-    }
 
     private static final Class<?>[] defaultContext = new Class[]{
             // Core classes
@@ -363,16 +356,16 @@ public final class XmppSessionConfiguration {
 
     private XmppDebugger xmppDebugger;
 
-    private boolean debugMode;
+    private int defaultResponseTimeout;
 
     /**
      * Creates a configuration for an {@link org.xmpp.XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
-     * @param classes The classes to be bound to the JAXBContext.
+     * @param builder The builder.
      */
-    public XmppSessionConfiguration(Class<?>... classes) {
-        this.debugMode = IS_DEBUG_MODE;
-        this.xmppDebugger = new ConsoleDebugger();
+    private XmppSessionConfiguration(Builder builder) {
+        this.xmppDebugger = builder.xmppDebugger;
+        this.defaultResponseTimeout = builder.defaultResponseTimeout;
 
         // These are the manager classes which are loaded immediately, when the XmppSession is initialized,
         // Typically the add listeners to the session, e.g. to automatically reply.
@@ -394,8 +387,8 @@ public final class XmppSessionConfiguration {
                 EntityTimeManager.class,
                 HashManager.class));
 
-        Class<?>[] classesToBeBound = Arrays.copyOf(defaultContext, defaultContext.length + classes.length);
-        System.arraycopy(classes, 0, classesToBeBound, defaultContext.length, classes.length);
+        Class<?>[] classesToBeBound = Arrays.copyOf(defaultContext, defaultContext.length + builder.extensions.length);
+        System.arraycopy(builder.extensions, 0, classesToBeBound, defaultContext.length, builder.extensions.length);
 
         try {
             jaxbContext = JAXBContext.newInstance(classesToBeBound);
@@ -414,7 +407,9 @@ public final class XmppSessionConfiguration {
         if (defaultConfiguration == null) {
             synchronized (XmppSessionConfiguration.class) {
                 if (defaultConfiguration == null) {
-                    defaultConfiguration = new XmppSessionConfiguration();
+                    defaultConfiguration = XmppSessionConfiguration.builder()
+                            .defaultResponseTimeout(5000)
+                            .build();
                 }
             }
         }
@@ -433,11 +428,20 @@ public final class XmppSessionConfiguration {
     }
 
     /**
+     * Creates a builder for this class.
+     *
+     * @return The builder.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Gets the JAXB context.
      *
      * @return The JAXB context.
      */
-    public JAXBContext getJAXBContext() {
+    JAXBContext getJAXBContext() {
         return jaxbContext;
     }
 
@@ -446,7 +450,7 @@ public final class XmppSessionConfiguration {
      *
      * @return The initial extension managers.
      */
-    public Collection<Class<? extends ExtensionManager>> getInitialExtensionManagers() {
+    Collection<Class<? extends ExtensionManager>> getInitialExtensionManagers() {
         return initialExtensionManagers;
     }
 
@@ -454,44 +458,74 @@ public final class XmppSessionConfiguration {
      * Gets the current debugger for this session. If no debugger was set, the default debugger is the {@link org.xmpp.debug.ConsoleDebugger}.
      *
      * @return The debugger.
-     * @see #setDebugger(org.xmpp.debug.XmppDebugger)
-     * @see #setDebugMode(boolean)
      */
     public final XmppDebugger getDebugger() {
         return xmppDebugger;
     }
 
     /**
-     * Sets the debugger for this session.
+     * Gets the response timeout.
      *
-     * @param xmppDebugger The debugger.
-     * @see #getDebugger()
-     * @see #setDebugMode(boolean)
+     * @return The response timeout.
      */
-    public final void setDebugger(XmppDebugger xmppDebugger) {
-        this.xmppDebugger = xmppDebugger;
+    public int getDefaultResponseTimeout() {
+        return defaultResponseTimeout;
     }
 
     /**
-     * Indicates, whether this session is in debug mode. By default every session is in debug mode, if the JVM was started in debug mode.
-     *
-     * @return True, if this session is in debug mode.
-     * @see #setDebugMode(boolean)
-     * @see #getDebugger()
+     * A builder to create an {@link org.xmpp.XmppSessionConfiguration} instance.
      */
-    public final boolean isDebugMode() {
-        return debugMode;
-    }
+    public static final class Builder {
 
-    /**
-     * Sets, if debug mode is enabled for this session.
-     *
-     * @param debugMode If this session is in debug mode.
-     * @see #isDebugMode()
-     * @see #setDebugger(org.xmpp.debug.XmppDebugger)
-     */
-    public final void setDebugMode(boolean debugMode) {
-        this.debugMode = debugMode;
-    }
+        private XmppDebugger xmppDebugger;
 
+        private Class<?>[] extensions = new Class[0];
+
+        private int defaultResponseTimeout;
+
+        private Builder() {
+        }
+
+        /**
+         * Sets the debugger.
+         *
+         * @param xmppDebugger The debugger or null, if you don't want to use a debugger.
+         * @return The debugger.
+         */
+        public Builder debugger(XmppDebugger xmppDebugger) {
+            this.xmppDebugger = xmppDebugger;
+            return this;
+        }
+
+        /**
+         * Sets custom extensions, which are used to build the {@link javax.xml.bind.JAXBContext}.
+         *
+         * @param extensions The custom extensions.
+         * @return The builder.
+         */
+        public Builder extensions(Class<?>... extensions) {
+            this.extensions = extensions;
+            return this;
+        }
+
+        /**
+         * Sets the default response timeout for synchronous calls, usually IQ calls.
+         *
+         * @param defaultResponseTimeout The default response timeout.
+         * @return The builder.
+         */
+        public Builder defaultResponseTimeout(int defaultResponseTimeout) {
+            this.defaultResponseTimeout = defaultResponseTimeout;
+            return this;
+        }
+
+        /**
+         * Builds the configuration.
+         *
+         * @return The configuration.
+         */
+        public XmppSessionConfiguration build() {
+            return new XmppSessionConfiguration(this);
+        }
+    }
 }

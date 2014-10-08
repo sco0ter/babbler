@@ -52,7 +52,10 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.xmpp.*;
+import org.xmpp.Jid;
+import org.xmpp.NoResponseException;
+import org.xmpp.XmppException;
+import org.xmpp.XmppSession;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
@@ -68,7 +71,6 @@ import org.xmpp.extension.geoloc.GeoLocation;
 import org.xmpp.extension.geoloc.GeoLocationEvent;
 import org.xmpp.extension.geoloc.GeoLocationListener;
 import org.xmpp.extension.geoloc.GeoLocationManager;
-import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
@@ -100,7 +102,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.Proxy;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -192,11 +193,11 @@ public class JavaFXApp extends Application {
                     public void run() {
 
 
-                        if (!useBosh.isSelected()) {
-                            xmppSession = new XmppSession(txtDomain.getText(), new TcpConnection(txtServer.getText(), Integer.parseInt(txtPort.getText()), Proxy.NO_PROXY));
-                        } else {
-                            xmppSession = new XmppSession(txtDomain.getText(), new BoshConnection(txtServer.getText(), Integer.parseInt(txtPort.getText())));
-                        }
+//                        if (!useBosh.isSelected()) {
+//                            xmppSession = new XmppSession(txtDomain.getText(), new TcpConnection(txtServer.getText(), Integer.parseInt(txtPort.getText()), Proxy.NO_PROXY));
+//                        } else {
+//                            xmppSession = new XmppSession(txtDomain.getText(), new BoshConnection(txtServer.getText(), Integer.parseInt(txtPort.getText())));
+//                        }
                         try {
                             SSLContext sslContext = SSLContext.getInstance("TLS");
                             sslContext.init(null, new TrustManager[]{

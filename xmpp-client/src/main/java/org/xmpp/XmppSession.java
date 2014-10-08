@@ -29,7 +29,7 @@ import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.compress.CompressionManager;
 import org.xmpp.extension.disco.ServiceDiscoveryManager;
 import org.xmpp.extension.disco.info.Feature;
-import org.xmpp.extension.httpbind.BoshConnection;
+import org.xmpp.extension.httpbind.BoshConnectionConfiguration;
 import org.xmpp.im.ChatManager;
 import org.xmpp.im.PresenceManager;
 import org.xmpp.im.RosterManager;
@@ -48,7 +48,6 @@ import javax.security.auth.login.AccountLockedException;
 import javax.security.auth.login.CredentialExpiredException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -70,8 +69,6 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 public class XmppSession implements Closeable {
-
-    private static final int DEFAULT_REPLY_TIMEOUT = 5000;
 
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
@@ -161,16 +158,21 @@ public class XmppSession implements Closeable {
     private boolean wasLoggedIn;
 
     /**
-     * Creates a connection with the specified XMPP domain through a proxy.
+     * Creates a session with the specified service domain, by using the default configuration.
      *
-     * @param xmppServiceDomain The XMPP service domain, which is used to lookup up the actual host via a DNS lookup.
-     * @param connection        The connections. The session can have alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
+     * @param xmppServiceDomain The service domain.
      */
-    public XmppSession(String xmppServiceDomain, Connection... connection) {
-        this(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connection);
+    public XmppSession(String xmppServiceDomain, ConnectionConfiguration... connectionConfigurations) {
+        this(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
     }
 
-    public XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, Connection... connection) {
+    /**
+     * Creates a session with the specified service domain by using a configuration.
+     *
+     * @param xmppServiceDomain The service domain.
+     * @param configuration     The configuration.
+     */
+    public XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         this.xmppServiceDomain = xmppServiceDomain;
         this.configuration = configuration;
         this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -280,177 +282,23 @@ public class XmppSession implements Closeable {
         // Every connection supports XEP-106 JID Escaping.
         getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
 
-        if (connection.length == 0) {
+        if (connectionConfigurations.length == 0) {
             // Add two fallback connections. Host and port will be determined by the XMPP domain via SRV lookup.
-            connections.add(new TcpConnection(null, 0));
-            connections.add(new BoshConnection(null, 0));
+            connections.add(TcpConnectionConfiguration.getDefault().createConnection(this));
+            connections.add(BoshConnectionConfiguration.getDefault().createConnection(this));
         } else {
-            connections.addAll(Arrays.asList(connection));
+            for (ConnectionConfiguration connectionConfiguration : connectionConfigurations) {
+                connections.add(connectionConfiguration.createConnection(this));
+            }
         }
 
-        for (Connection con : connections) {
-            con.setXmppSession(this);
-        }
-
-        if (configuration.isDebugMode() && configuration.getDebugger() != null) {
+        if (configuration.getDebugger() != null) {
             configuration.getDebugger().initialize(this);
         }
     }
 
-    /**
-     * Creates a connection to the specified host and port.
-     *
-     * @param xmppServiceDomain The XMPP service domain, which is used as value in the 'to' attribute of the opening stream.
-     * @param xmppContext       The XMPP context.
-     * @param connection        The connections. The session can have alternative connection methods, which are used during the connection process (e.g. a BOSH connection).
-     */
-    @Deprecated
-    public XmppSession(String xmppServiceDomain, XmppContext xmppContext, Connection... connection) {
-        this.xmppServiceDomain = xmppServiceDomain;
-        this.configuration = XmppSessionConfiguration.getDefault();
-        this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
-
-        try {
-            // Create the JAXB context, the marshaller and unmarshaller, which will be used for this connection.
-            Class[] newContext = new Class[xmppContext.getExtensions().size()];
-            xmppContext.getExtensions().toArray(newContext);
-
-            JAXBContext jaxbContext = JAXBContext.newInstance(newContext);
-            unmarshaller = jaxbContext.createUnmarshaller();
-            marshaller = jaxbContext.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-
-        } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-        for (Class<? extends ExtensionManager> cls : xmppContext.getExtensionManagers()) {
-            // Initialize the managers.
-            getExtensionManager(cls);
-        }
-
-        // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
-        shutdownHook = new Thread() {
-            @Override
-            public void run() {
-                shutdownHook = null;
-                try {
-                    if (status == Status.CONNECTED) {
-                        close();
-                    }
-                } catch (IOException e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
-                }
-            }
-        };
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
-
-        securityManager = new SecurityManager(this, new FeatureListener() {
-            @Override
-            public void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception {
-                if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
-                    usedConnection.secureConnection();
-                }
-            }
-        });
-
-        reconnectionManager = new ReconnectionManager(this);
-        featuresManager = new FeaturesManager(this);
-        chatManager = new ChatManager(this);
-        authenticationManager = new AuthenticationManager(this, lock);
-        authenticationManager.addFeatureListener(new FeatureListener() {
-            @Override
-            public void negotiationStatusChanged(FeatureEvent featureEvent) {
-                if (featureEvent.getStatus() == FeatureNegotiator.Status.INCOMPLETE && featureEvent.getElement() instanceof Mechanisms) {
-                    // Release the waiting thread.
-                    lock.lock();
-                    try {
-                        streamNegotiatedUntilSasl.signal();
-                    } finally {
-                        lock.unlock();
-                    }
-                }
-            }
-        });
-        rosterManager = new RosterManager(this);
-        presenceManager = new PresenceManager(this);
-
-        streamNegotiatedUntilSasl = lock.newCondition();
-        streamNegotiatedUntilResourceBinding = lock.newCondition();
-
-        featuresManager.addFeatureNegotiator(securityManager);
-        featuresManager.addFeatureNegotiator(authenticationManager);
-        featuresManager.addFeatureNegotiator(new FeatureNegotiator(Bind.class) {
-            @Override
-            public Status processNegotiation(Object element) throws Exception {
-                lock.lock();
-                try {
-                    streamNegotiatedUntilResourceBinding.signalAll();
-                } finally {
-                    lock.unlock();
-                }
-                // Resource binding will be negotiated manually
-                return Status.INCOMPLETE;
-            }
-
-            @Override
-            public boolean canProcess(Object element) {
-                return false;
-            }
-        });
-
-        compressionManager = new CompressionManager(this, new FeatureListener() {
-            @Override
-            public void negotiationStatusChanged(FeatureEvent featureEvent) {
-                if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
-                    usedConnection.compressStream();
-                }
-            }
-        });
-        featuresManager.addFeatureNegotiator(compressionManager);
-
-        // Every connection supports XEP-106 JID Escaping.
-        getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
-
-        if (connection.length == 0) {
-            // Add two fallback connections. Host and port will be determined by the XMPP domain via SRV lookup.
-            connections.add(new TcpConnection(null, 0));
-            connections.add(new BoshConnection(null, 0));
-        } else {
-            connections.addAll(Arrays.asList(connection));
-        }
-
-        for (Connection con : connections) {
-            con.setXmppSession(this);
-        }
-    }
-
-    /**
-     * Gets the used connection. If you have configured more than one connection (e.g. a {@link org.xmpp.TcpConnection} and a {@link org.xmpp.extension.httpbind.BoshConnection}, one of them might fail to connect.
-     * This method returns the connection, which was eventually used to establish the XMPP session.
-     *
-     * @return The used connection.
-     */
     public Connection getUsedConnection() {
         return usedConnection;
-    }
-
-    /**
-     * Gets the XMPP service domain.
-     *
-     * @return The XMPP service domain.
-     * @deprecated Use {@link #getDomain()} instead.
-     */
-    @Deprecated
-    public String getXmppServiceDomain() {
-        return xmppServiceDomain;
     }
 
     /**
@@ -603,7 +451,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException If the entity did not respond.
      */
     public IQ query(IQ iq) throws XmppException {
-        return query(iq, DEFAULT_REPLY_TIMEOUT);
+        return query(iq, configuration.getDefaultResponseTimeout());
     }
 
     /**
@@ -641,7 +489,7 @@ public class XmppSession implements Closeable {
      * @throws StanzaException     If the returned IQ contains a stanza error.
      */
     public IQ sendAndAwaitIQ(ClientStreamElement stanza, final StanzaFilter<IQ> filter) throws NoResponseException, StanzaException {
-        return sendAndAwaitIQ(stanza, filter, DEFAULT_REPLY_TIMEOUT);
+        return sendAndAwaitIQ(stanza, filter, configuration.getDefaultResponseTimeout());
     }
 
     /**
@@ -707,7 +555,7 @@ public class XmppSession implements Closeable {
      * @throws StanzaException     If the returned presence contains a stanza error.
      */
     public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
-        return sendAndAwaitPresence(stanza, filter, DEFAULT_REPLY_TIMEOUT);
+        return sendAndAwaitPresence(stanza, filter, configuration.getDefaultResponseTimeout());
     }
 
     /**
@@ -747,7 +595,7 @@ public class XmppSession implements Closeable {
             addPresenceListener(listener);
             send(stanza);
             // Wait for the stanza to arrive.
-            if (!resultReceived.await(DEFAULT_REPLY_TIMEOUT, TimeUnit.MILLISECONDS)) {
+            if (!resultReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
             }
         } catch (InterruptedException e) {
@@ -799,7 +647,7 @@ public class XmppSession implements Closeable {
             addMessageListener(listener);
             send(stanza);
             // Wait for the stanza to arrive.
-            if (!resultReceived.await(DEFAULT_REPLY_TIMEOUT, TimeUnit.MILLISECONDS)) {
+            if (!resultReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
             }
         } catch (InterruptedException e) {
@@ -1357,7 +1205,7 @@ public class XmppSession implements Closeable {
      * @return The default timeout.
      */
     public final int getDefaultTimeout() {
-        return DEFAULT_REPLY_TIMEOUT;
+        return configuration.getDefaultResponseTimeout();
     }
 
     /**
@@ -1372,6 +1220,10 @@ public class XmppSession implements Closeable {
 
     public XmppSessionConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public Connection getActiveConnection() {
+        return usedConnection;
     }
 
     /**

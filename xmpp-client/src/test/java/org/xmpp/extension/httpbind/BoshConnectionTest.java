@@ -26,6 +26,7 @@ package org.xmpp.extension.httpbind;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.xmpp.TestXmppSession;
 
 /**
  * @author Christian Schudt
@@ -35,7 +36,7 @@ public class BoshConnectionTest {
     @Test
     public void testInsertionOrder() {
 
-        BoshConnection boshConnection = new BoshConnection("", 5280);
+        BoshConnection boshConnection = new BoshConnection(new TestXmppSession(), BoshConnectionConfiguration.getDefault());
 
         Body body1 = new Body();
         boshConnection.unacknowledgedRequests.put(1L, body1);

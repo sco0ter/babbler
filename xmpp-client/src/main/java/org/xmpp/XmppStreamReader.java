@@ -65,13 +65,10 @@ final class XmppStreamReader {
 
     private final XmppDebugger debugger;
 
-    private final boolean debugEnabled;
-
     public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) throws JAXBException {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getConfiguration().getDebugger();
-        this.debugEnabled = xmppSession.getConfiguration().isDebugMode();
 
         executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
@@ -96,7 +93,7 @@ final class XmppStreamReader {
 
                     InputStream xmppInputStream;
                     ByteArrayOutputStream byteArrayOutputStream = null;
-                    if (debugEnabled && debugger != null) {
+                    if (debugger != null) {
                         byteArrayOutputStream = new ByteArrayOutputStream();
                         xmppInputStream = debugger.createInputStream(XmppUtils.createBranchedInputStream(inputStream, byteArrayOutputStream));
                     } else {
@@ -124,7 +121,7 @@ final class XmppStreamReader {
                             } else {
                                 Object object = xmppSession.getUnmarshaller().unmarshal(xmlEventReader);
 
-                                if (debugEnabled && debugger != null) {
+                                if (debugger != null) {
                                     if (isFirstPass) {
                                         // If it's the first pass, include the stream header with the <features/>, which are both in the byteArrayOutputStream at this point.
                                         debugger.readStanza(byteArrayOutputStream.toString(), object);
@@ -150,7 +147,7 @@ final class XmppStreamReader {
                         }
                         if (xmlEvent.getEventType() == XMLEvent.END_ELEMENT) {
                             // The stream gets closed with </stream:stream>
-                            if (debugEnabled && debugger != null) {
+                            if (debugger != null) {
                                 QName qName = xmlEvent.asEndElement().getName();
                                 debugger.readStanza("</" + qName.getPrefix() + ":" + qName.getLocalPart() + ">", null);
                             }

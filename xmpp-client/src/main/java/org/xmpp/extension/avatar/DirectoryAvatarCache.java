@@ -24,67 +24,119 @@
 
 package org.xmpp.extension.avatar;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
  */
-public enum DirectoryAvatarCache implements AvatarCache {
+final class DirectoryAvatarCache implements Map<String, byte[]> {
 
-    INSTANCE;
+    private final File cacheDirectory;
 
-    private File cacheDirectory = new File(System.getProperty("user.dir"), "avatars");
-
-    public void setCacheDirectory(File file) {
-        this.cacheDirectory = file;
+    public DirectoryAvatarCache(File cacheDirectory) {
+        this.cacheDirectory = cacheDirectory;
     }
 
     @Override
-    public void store(String hash, byte[] imageData) throws IOException {
-        ImageInputStream iis = null;
-        iis = ImageIO.createImageInputStream(new ByteArrayInputStream(imageData));
-        Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-        if (readers.hasNext()) {
-            ImageReader reader = readers.next();
-            String format = reader.getFormatName();
-            boolean exists = cacheDirectory.exists();
-            if (!exists) {
-                exists = cacheDirectory.mkdir();
-            }
-            if (exists) {
-                ImageIO.write(ImageIO.read(iis), format, new File(cacheDirectory, hash + "." + format));
-            }
-        }
+    public int size() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public byte[] load(final String hash) throws IOException {
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public byte[] get(final Object key) {
         File dir = new File(cacheDirectory, ".");
         File[] files = dir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.startsWith(hash);
+                return name.startsWith(key.toString());
             }
         });
         if (files != null && files.length > 0) {
-            ByteArrayOutputStream baos = null;
-            try {
-                BufferedImage originalImage = ImageIO.read(files[0]);
-                baos = new ByteArrayOutputStream();
-                ImageIO.write(originalImage, "png", baos);
-                baos.flush();
-                return baos.toByteArray();
-            } finally {
-                if (baos != null) {
-                    baos.close();
+            File file = files[0];
+            try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                byte[] data = new byte[(int) file.length()];
+                if (fileInputStream.read(data, 0, data.length) > -1) {
+                    return data;
                 }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
         return null;
+    }
+
+    @Override
+    public byte[] put(String hash, byte[] imageData) {
+        boolean exists = cacheDirectory.exists();
+        if (!exists) {
+            exists = cacheDirectory.mkdir();
+        }
+        File file = new File(cacheDirectory, hash + ".avatar");
+        if (file.exists()) {
+            try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                byte[] data = new byte[(int) file.length()];
+                if (fileInputStream.read(data, 0, data.length) > -1) {
+                    return data;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (exists) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                fileOutputStream.write(imageData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public byte[] remove(Object key) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ? extends byte[]> m) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<String> keySet() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Collection<byte[]> values() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<Entry<String, byte[]>> entrySet() {
+        throw new UnsupportedOperationException();
     }
 }

@@ -29,13 +29,14 @@ import org.xmpp.Jid;
 import java.util.EventObject;
 
 /**
+ * The avatar change event to notify about avatar updates.
+ *
  * @author Christian Schudt
  */
 public final class AvatarChangeEvent extends EventObject {
     private final Jid contact;
 
-    private final Avatar avatar;
-
+    private final byte[] avatar;
 
     /**
      * Constructs a prototypical Event.
@@ -43,13 +44,13 @@ public final class AvatarChangeEvent extends EventObject {
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    AvatarChangeEvent(AvatarManager source, Jid contact, Avatar avatar) {
+    AvatarChangeEvent(AvatarManager source, Jid contact, byte[] avatar) {
         super(source);
         this.contact = contact;
         this.avatar = avatar;
     }
 
-    public Avatar getAvatar() {
+    public byte[] getAvatar() {
         return avatar;
     }
 

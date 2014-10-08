@@ -53,7 +53,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.xmpp.*;
-import org.xmpp.extension.avatar.Avatar;
 import org.xmpp.extension.avatar.AvatarChangeEvent;
 import org.xmpp.extension.avatar.AvatarChangeListener;
 import org.xmpp.extension.avatar.AvatarManager;
@@ -325,7 +324,7 @@ public class JavaFXApp extends Application {
                                         if (contact != null) {
                                             ContactItem contactItem = contactMap.get(contact);
                                             if (contactItem != null) {
-                                                contactItem.avatar.set(e.getAvatar().getImageData());
+                                                contactItem.avatar.set(e.getAvatar());
                                             }
                                         }
                                     }
@@ -418,9 +417,9 @@ public class JavaFXApp extends Application {
                         if (item != null) {
                             final Jid user = item.contact.get().getJid();
                             if (item.avatar.get() == null) {
-                                final Task<Avatar> task = new Task<Avatar>() {
+                                final Task<byte[]> task = new Task<byte[]>() {
                                     @Override
-                                    protected Avatar call() throws Exception {
+                                    protected byte[] call() throws Exception {
                                         AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
                                         return avatarManager.getAvatar(user);
                                     }
@@ -430,9 +429,9 @@ public class JavaFXApp extends Application {
                                     public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State state, Worker.State state2) {
                                         switch (state2) {
                                             case SUCCEEDED:
-                                                Avatar avatar = task.getValue();
+                                                byte[] avatar = task.getValue();
                                                 if (avatar != null) {
-                                                    item.avatar.set(avatar.getImageData());
+                                                    item.avatar.set(avatar);
                                                 }
                                         }
                                     }
@@ -690,10 +689,10 @@ public class JavaFXApp extends Application {
                     // If the user has chosen a file
                     if (file != null) {
                         // Read the file as image.
-                        BufferedImage bufferedImage = ImageIO.read(file);
+                        //BufferedImage bufferedImage = ImageIO.read(file);
 
                         // Publish the image as your avatar.
-                        avatarManager.publishAvatar(bufferedImage);
+                        //avatarManager.publishAvatar(bufferedImage);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

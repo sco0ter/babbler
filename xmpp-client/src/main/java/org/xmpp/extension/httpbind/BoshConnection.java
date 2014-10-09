@@ -602,7 +602,7 @@ public final class BoshConnection extends Connection {
                                         if (xmlEvent.isStartElement()) {
                                             synchronized (httpBindExecutor) {
                                                 final JAXBElement<Body> element = getXmppSession().getUnmarshaller().unmarshal(xmlEventReader, Body.class);
-                                                if (debugger != null) {
+                                                if (debugger != null && debugEnabled) {
                                                     debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
                                                 }
                                                 unpackBody(element.getValue(), body.getRid());

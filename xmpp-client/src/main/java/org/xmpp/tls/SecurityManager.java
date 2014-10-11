@@ -92,10 +92,12 @@ public final class SecurityManager extends FeatureNegotiator {
         return element instanceof Proceed || element instanceof Failure;
     }
 
+    @Deprecated
     public SSLContext getSSLContext() {
         return sslContext;
     }
 
+    @Deprecated
     public void setSSLContext(SSLContext sslContext) {
         this.sslContext = sslContext;
     }

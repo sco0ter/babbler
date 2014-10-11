@@ -29,6 +29,7 @@ import org.xmpp.stream.ClientStreamElement;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.Proxy;
+import java.security.cert.CertificateException;
 
 /**
  * The base connection class which provides hostname, port and proxy information.
@@ -149,6 +150,6 @@ public abstract class Connection implements Closeable {
      *
      * @throws IOException If an error occurs during TLS negotiation.
      */
-    protected void secureConnection() throws IOException {
+    protected void secureConnection() throws IOException, CertificateException {
     }
 }

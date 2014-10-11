@@ -33,6 +33,7 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.xml.bind.JAXBException;
@@ -43,6 +44,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
+import java.security.cert.CertificateException;
 import java.util.*;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -144,15 +146,31 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    protected void secureConnection() throws IOException {
-        socket = getXmppSession().getSecurityManager().getSSLContext().getSocketFactory().createSocket(
+    protected void secureConnection() throws IOException, CertificateException {
+        socket = tcpConnectionConfiguration.getSSLContext().getSocketFactory().createSocket(
                 socket,
                 getXmppSession().getDomain(),
                 socket.getPort(),
                 true);
-        SSLParameters sslParameters = ((SSLSocket) socket).getSSLParameters();
-        sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
-        ((SSLSocket) socket).setSSLParameters(sslParameters);
+
+        SSLSocket sslSocket = (SSLSocket) socket;
+        HostnameVerifier verifier = tcpConnectionConfiguration.getHostnameVerifier();
+
+        // See
+        // http://op-co.de/blog/posts/java_sslsocket_mitm/
+        // http://tersesystems.com/2014/03/23/fixing-hostname-verification/
+
+        // If no hostname verifier has been set, use the default one, which is used by HTTPS, too.
+        if (verifier == null) {
+            SSLParameters sslParameters = sslSocket.getSSLParameters();
+            sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
+            sslSocket.setSSLParameters(sslParameters);
+        } else {
+            sslSocket.startHandshake();
+            if (!verifier.verify(getXmppSession().getDomain(), sslSocket.getSession())) {
+                throw new CertificateException("Server failed to authenticate as " + getXmppSession().getDomain());
+            }
+        }
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
     }

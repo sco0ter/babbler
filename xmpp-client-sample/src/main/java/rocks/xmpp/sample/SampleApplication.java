@@ -27,18 +27,20 @@ package rocks.xmpp.sample;
 import org.xmpp.TcpConnectionConfiguration;
 import org.xmpp.XmppSession;
 import org.xmpp.XmppSessionConfiguration;
-import org.xmpp.debug.ConsoleDebugger;
 import org.xmpp.debug.VisualDebugger;
-import org.xmpp.extension.httpbind.BoshConnection;
 import org.xmpp.extension.httpbind.BoshConnectionConfiguration;
 import org.xmpp.stanza.MessageEvent;
 import org.xmpp.stanza.MessageListener;
 import org.xmpp.stanza.client.Presence;
 
+import javax.net.ssl.*;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.Executors;
 
 /**
@@ -53,14 +55,41 @@ public class SampleApplication {
             public void run() {
                 try {
 
+                    SSLContext sslContext = SSLContext.getInstance("TLS");
+                    sslContext.init(null, new TrustManager[]{
+                            new X509TrustManager() {
+                                @Override
+                                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                                }
+
+                                @Override
+                                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                                }
+
+                                @Override
+                                public X509Certificate[] getAcceptedIssuers() {
+                                    return new X509Certificate[0];
+                                }
+                            }
+                    }, new SecureRandom());
+
                     TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .hostname("localhost")
                             .port(5222)
+                            .sslContext(sslContext)
                             .build();
+
 
                     BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(7070)
+                            .port(7443)
+                            .secure(true)
+                            .sslContext(sslContext)
+                            .hostnameVerifier(new HostnameVerifier() {
+                                @Override
+                                public boolean verify(String s, SSLSession sslSession) {
+                                    return true;
+                                }
+                            })
                             .file("/http-bind/")
                             .build();
 
@@ -91,6 +120,10 @@ public class SampleApplication {
                     // Send initial presence
                     xmppSession.send(new Presence());
                 } catch (IOException | LoginException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (KeyManagementException e) {
                     e.printStackTrace();
                 }
             }

@@ -24,6 +24,8 @@
 
 package org.xmpp;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import java.net.Proxy;
 
 /**
@@ -39,13 +41,19 @@ public abstract class ConnectionConfiguration {
 
     private final Proxy proxy;
 
-    //private final SSLContext sslContext;
+    private final boolean secure;
+
+    private final SSLContext sslContext;
+
+    private HostnameVerifier hostnameVerifier;
 
     protected ConnectionConfiguration(Builder builder) {
         this.hostname = builder.hostname;
         this.port = builder.port;
         this.proxy = builder.proxy;
-        //this.sslContext = builder.sslContext;
+        this.secure = builder.secure;
+        this.sslContext = builder.sslContext;
+        this.hostnameVerifier = builder.hostnameVerifier;
     }
 
     /**
@@ -83,14 +91,32 @@ public abstract class ConnectionConfiguration {
         return proxy;
     }
 
-//    /**
-//     * Gets the SSL context.
-//     *
-//     * @return The SSL context.
-//     */
-//    public final SSLContext getSSLContext() {
-//        return sslContext;
-//    }
+    /**
+     * Indicates whether the connection is secured by SSL.
+     *
+     * @return If the connection is to be secured.
+     */
+    public boolean isSecure() {
+        return secure;
+    }
+
+    /**
+     * Gets the SSL context.
+     *
+     * @return The SSL context.
+     */
+    public final SSLContext getSSLContext() {
+        return sslContext;
+    }
+
+    /**
+     * Gets the hostname verifier.
+     *
+     * @return The hostname verifier.
+     */
+    public HostnameVerifier getHostnameVerifier() {
+        return hostnameVerifier;
+    }
 
     /**
      * An abstract builder class for building immutable configuration objects.
@@ -105,7 +131,11 @@ public abstract class ConnectionConfiguration {
 
         private Proxy proxy;
 
-        //private SSLContext sslContext;
+        private boolean secure;
+
+        private SSLContext sslContext;
+
+        private HostnameVerifier hostnameVerifier;
 
         protected Builder() {
         }
@@ -150,16 +180,39 @@ public abstract class ConnectionConfiguration {
             return self();
         }
 
-//        /**
-//         * Sets the SSL context, used to secure the connection.
-//         *
-//         * @param sslContext The SSL context.
-//         * @return The builder.
-//         */
-//        public final T sslContext(SSLContext sslContext) {
-//            this.sslContext = sslContext;
-//            return self();
-//        }
+        /**
+         * Sets whether the connection is secured via SSL.
+         *
+         * @param secure If the connection is secured via SSL.
+         * @return The builder.
+         */
+        public final T secure(boolean secure) {
+            this.secure = secure;
+            return self();
+        }
+
+        /**
+         * Sets a custom SSL context, used to secure the connection.
+         *
+         * @param sslContext The SSL context.
+         * @return The builder.
+         */
+        public final T sslContext(SSLContext sslContext) {
+            this.sslContext = sslContext;
+            return self();
+        }
+
+        /**
+         * Sets an optional hostname verifier, used to verify the hostname in the certificate presented by the server.
+         * If no verifier is set, the hostname is verified nonetheless using the default.
+         *
+         * @param hostnameVerifier The hostname verifier.
+         * @return The builder.
+         */
+        public final T hostnameVerifier(HostnameVerifier hostnameVerifier) {
+            this.hostnameVerifier = hostnameVerifier;
+            return self();
+        }
 
         /**
          * Builds the connection configuration.

@@ -37,6 +37,7 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -204,9 +205,10 @@ public final class BoshConnection extends Connection {
         }
 
         if (url == null) {
+            String protocol = boshConnectionConfiguration.isSecure() ? "https" : "http";
             // If a hostname has been configured, use it to connect.
             if (getHostname() != null) {
-                url = new URL("http", getHostname(), getPort(), boshConnectionConfiguration.getFile());
+                url = new URL(protocol, getHostname(), getPort(), boshConnectionConfiguration.getFile());
             } else if (getXmppSession().getDomain() != null) {
                 // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
                 String resolvedUrl = findBoshUrl(getXmppSession().getDomain());
@@ -215,7 +217,7 @@ public final class BoshConnection extends Connection {
                 } else {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    url = new URL("http", getXmppSession().getDomain(), boshConnectionConfiguration.getPort(), boshConnectionConfiguration.getFile());
+                    url = new URL(protocol, getXmppSession().getDomain(), getPort(), boshConnectionConfiguration.getFile());
                 }
             } else {
                 throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
@@ -445,6 +447,16 @@ public final class BoshConnection extends Connection {
                                 } else {
                                     httpConnection = (HttpURLConnection) url.openConnection();
                                 }
+
+                                if (httpConnection instanceof HttpsURLConnection) {
+                                    if (boshConnectionConfiguration.getSSLContext() != null) {
+                                        ((HttpsURLConnection) httpConnection).setSSLSocketFactory(boshConnectionConfiguration.getSSLContext().getSocketFactory());
+                                    }
+                                    if (boshConnectionConfiguration.getHostnameVerifier() != null) {
+                                        ((HttpsURLConnection) httpConnection).setHostnameVerifier(boshConnectionConfiguration.getHostnameVerifier());
+                                    }
+                                }
+
                                 httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");

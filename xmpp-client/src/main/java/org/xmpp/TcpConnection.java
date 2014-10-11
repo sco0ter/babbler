@@ -81,6 +81,7 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
+        xmppSession.getSecurityManager().setEnabled(tcpConnectionConfiguration.isSecure());
     }
 
     /**

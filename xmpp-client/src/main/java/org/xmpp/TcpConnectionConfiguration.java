@@ -115,6 +115,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
         private Builder() {
             // default values.
+            secure(true);
             port(5222);
             keepAliveInterval(30);
         }

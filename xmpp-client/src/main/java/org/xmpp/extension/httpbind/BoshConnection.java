@@ -90,6 +90,8 @@ public final class BoshConnection extends Connection {
 
     private final BoshConnectionConfiguration boshConnectionConfiguration;
 
+    private final XmppDebugger debugger;
+
     /**
      *
      */
@@ -110,14 +112,13 @@ public final class BoshConnection extends Connection {
      */
     private volatile boolean usingAcknowledgments;
 
-    private XmppDebugger debugger;
-
     private URL url;
 
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.boshConnectionConfiguration = configuration;
         this.debugger = getXmppSession().getConfiguration().getDebugger();
+        xmppSession.getSecurityManager().setEnabled(configuration.isSecure());
 
         // Threads created by this thread pool, will be used to do simultaneous requests.
         // Even in the unusual case, where the connection manager allows for more requests, two are enough.

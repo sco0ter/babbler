@@ -60,6 +60,20 @@ Here\'s an overview over the relation between the session and connections:
 ![Architecture](XmppSession.png)
 
 
+#### Securing the Connection
+
+You can set a custom `SSLContext` or disable the use of SSL altogether by configuring it like this:
+
+```java
+TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+    .secure(true)          // Default value is true
+    .sslContext(sslContext)
+    .hostnameVerifier(hostnameVerifier)
+    .build();
+```
+
+Note that the use of a custom `HostnameVerifier` is possible but not recommended in most cases, since the built-in logic to verify the host name does a good job.
+
 ## Preparing the Session
 
 Before connecting to a server, you should configure your XMPP session.
@@ -77,8 +91,6 @@ You might want to do one of the following:
 Here are some examples:
 
 ```java
-// Setting a custom SSL context
-xmppSession.getSecurityManager().setSSLContext(sslContext);
 // Listen for presence changes
 xmppSession.addPresenceListener(new PresenceListener() {
     @Override

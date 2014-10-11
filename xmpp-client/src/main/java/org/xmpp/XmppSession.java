@@ -160,7 +160,8 @@ public class XmppSession implements Closeable {
     /**
      * Creates a session with the specified service domain, by using the default configuration.
      *
-     * @param xmppServiceDomain The service domain.
+     * @param xmppServiceDomain        The service domain.
+     * @param connectionConfigurations The connection configurations.
      */
     public XmppSession(String xmppServiceDomain, ConnectionConfiguration... connectionConfigurations) {
         this(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
@@ -169,8 +170,9 @@ public class XmppSession implements Closeable {
     /**
      * Creates a session with the specified service domain by using a configuration.
      *
-     * @param xmppServiceDomain The service domain.
-     * @param configuration     The configuration.
+     * @param xmppServiceDomain        The service domain.
+     * @param configuration            The configuration.
+     * @param connectionConfigurations The connection configurations.
      */
     public XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         this.xmppServiceDomain = xmppServiceDomain;

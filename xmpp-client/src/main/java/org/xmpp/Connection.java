@@ -148,7 +148,8 @@ public abstract class Connection implements Closeable {
     /**
      * Secures the connection, i.e. negotiates TLS.
      *
-     * @throws IOException If an error occurs during TLS negotiation.
+     * @throws IOException                             If an error occurs during TLS negotiation.
+     * @throws java.security.cert.CertificateException If the hostname could not be verified.
      */
     protected void secureConnection() throws IOException, CertificateException {
     }

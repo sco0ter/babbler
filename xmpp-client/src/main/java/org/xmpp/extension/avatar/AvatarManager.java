@@ -469,6 +469,8 @@ public final class AvatarManager extends ExtensionManager {
      * Publishes an avatar to the personal eventing service.
      *
      * @param avatar The avatar or null, if the avatar is reset.
+     * @param itemId The item id.
+     * @param info   The info element.
      * @throws XmppException If an XMPP exception occurs.
      */
     private void publishToPersonalEventingService(byte[] avatar, String itemId, AvatarMetadata.Info info) throws XmppException {

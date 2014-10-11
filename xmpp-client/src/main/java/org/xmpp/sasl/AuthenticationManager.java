@@ -261,7 +261,7 @@ public final class AuthenticationManager extends FeatureNegotiator {
                 } else if (authenticationFailure.getCondition() instanceof Failure.CredentialsExpired) {
                     throw new CredentialExpiredException(failureText);
                 } else {
-                    throw new LoginException(saslClient.getMechanismName() + " authentication failed with condition: " + authenticationFailure.getCondition().getClass().getSimpleName());
+                    throw new LoginException(saslClient.getMechanismName() + " authentication failed with condition: " + (authenticationFailure.getCondition() != null ? authenticationFailure.getCondition().getClass().getSimpleName() : "unknown"));
                 }
             } else {
                 throw new LoginException(saslClient.getMechanismName() + " authentication failed for an unknown reason, but probably due to timeout.");

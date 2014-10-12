@@ -590,4 +590,120 @@ public final class GeoLocation {
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Geolocation: ");
+        if (accuracy != null) {
+            sb.append("Accuracy: ");
+            sb.append(accuracy);
+            sb.append("; ");
+        }
+        if (altitude != null) {
+            sb.append("Altitude: ");
+            sb.append(altitude);
+            sb.append("; ");
+        }
+        if (area != null) {
+            sb.append("Area: ");
+            sb.append(area);
+            sb.append("; ");
+        }
+        if (bearing != null) {
+            sb.append("Bearing: ");
+            sb.append(bearing);
+            sb.append("; ");
+        }
+        if (building != null) {
+            sb.append("Building: ");
+            sb.append(building);
+            sb.append("; ");
+        }
+        if (country != null) {
+            sb.append("Country: ");
+            sb.append(country);
+            sb.append("; ");
+        }
+        if (countryCode != null) {
+            sb.append("Country Code: ");
+            sb.append(countryCode);
+            sb.append("; ");
+        }
+        if (datum != null) {
+            sb.append("Datum: ");
+            sb.append(datum);
+            sb.append("; ");
+        }
+        if (description != null) {
+            sb.append("Description: ");
+            sb.append(description);
+            sb.append("; ");
+        }
+        if (floor != null) {
+            sb.append("Floor: ");
+            sb.append(floor);
+            sb.append("; ");
+        }
+        if (latitude != null) {
+            sb.append("Latitude: ");
+            sb.append(latitude);
+            sb.append("; ");
+        }
+        if (locality != null) {
+            sb.append("Locality: ");
+            sb.append(locality);
+            sb.append("; ");
+        }
+        if (longitude != null) {
+            sb.append("Longitude: ");
+            sb.append(longitude);
+            sb.append("; ");
+        }
+        if (postalCode != null) {
+            sb.append("Postal Code: ");
+            sb.append(postalCode);
+            sb.append("; ");
+        }
+        if (region != null) {
+            sb.append("Region: ");
+            sb.append(region);
+            sb.append("; ");
+        }
+        if (room != null) {
+            sb.append("Room: ");
+            sb.append(room);
+            sb.append("; ");
+        }
+        if (speed != null) {
+            sb.append("Speed: ");
+            sb.append(speed);
+            sb.append("; ");
+        }
+        if (street != null) {
+            sb.append("Street: ");
+            sb.append(street);
+            sb.append("; ");
+        }
+        if (text != null) {
+            sb.append("Text: ");
+            sb.append(text);
+            sb.append("; ");
+        }
+        if (timestamp != null) {
+            sb.append("Timestamp: ");
+            sb.append(timestamp);
+            sb.append("; ");
+        }
+        if (timeZone != null) {
+            sb.append("Time Zone: ");
+            sb.append(timeZone.getDisplayName());
+            sb.append("; ");
+        }
+        if (uri != null) {
+            sb.append("URI: ");
+            sb.append(uri);
+            sb.append("; ");
+        }
+        return sb.substring(0, sb.length() - 2);
+    }
 }

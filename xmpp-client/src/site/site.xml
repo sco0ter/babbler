@@ -82,6 +82,7 @@
             <item href="xep/xhtmlim.html" name="XEP-0071: XHTML-IM"/>
             <item href="xep/soap.html" name="XEP-0072: SOAP Over XMPP"/>
             <item href="xep/amp.html" name="XEP-0079: Advanced Message Processing"/>
+            <item href="xep/geoloc.html" name="XEP-0080: User Location"/>
             <item href="xep/version.html" name="XEP-0092: Software Version"/>
             <item href="xep/caps.html" name="XEP-0115: Entity Capabilities"/>
             <item href="xep/rosterx.html" name="XEP-0144: Roster Item Exchange"/>

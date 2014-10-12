@@ -27,10 +27,17 @@ package org.xmpp.extension.geoloc;
 import java.util.EventListener;
 
 /**
+ * A listener which allows to listen for geo location updates.
+ *
  * @author Christian Schudt
+ * @see org.xmpp.extension.geoloc.GeoLocationManager#addGeoLocationListener(GeoLocationListener)
  */
 public interface GeoLocationListener extends EventListener {
 
+    /**
+     * Called when a geo location has been updated.
+     *
+     * @param e The geo location event.
+     */
     void geoLocationUpdated(GeoLocationEvent e);
-
 }

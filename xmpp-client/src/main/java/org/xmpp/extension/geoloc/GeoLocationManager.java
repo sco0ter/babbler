@@ -41,15 +41,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Manages the publishing of user location and the notification of it.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
  */
 public final class GeoLocationManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(GeoLocationManager.class.getName());
 
     private final Set<GeoLocationListener> geoLocationListeners = new CopyOnWriteArraySet<>();
-
-    private PubSubService pepService;
 
     private GeoLocationManager(XmppSession xmppSession) {
         super(xmppSession, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
@@ -97,8 +98,8 @@ public final class GeoLocationManager extends ExtensionManager {
      * @throws NoResponseException If the entity did not respond.
      */
     public void publish(GeoLocation geoLocation) throws XmppException {
-        pepService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
-        //pepService.publish(GeoLocation.NAMESPACE, geoLocation);
+        PubSubService pepService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
+        pepService.getNode(GeoLocation.NAMESPACE).publish(geoLocation);
     }
 
     /**

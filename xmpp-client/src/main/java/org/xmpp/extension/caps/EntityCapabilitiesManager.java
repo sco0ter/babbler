@@ -103,8 +103,15 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                         // Resend presence. This manager will add the caps extension later.
                         PresenceManager presenceManager = xmppSession.getPresenceManager();
                         Presence lastPresence = presenceManager.getLastSentPresence();
-                        lastPresence.getExtensions().clear();
-                        xmppSession.send(lastPresence);
+                        Presence presence = new Presence();
+                        presence.setError(lastPresence.getError());
+                        presence.setFrom(lastPresence.getFrom());
+                        presence.setPriority(lastPresence.getPriority());
+                        presence.setLanguage(lastPresence.getLanguage());
+                        presence.setShow(lastPresence.getShow());
+                        presence.setStatus(lastPresence.getStatus());
+                        presence.setTo(lastPresence.getTo());
+                        xmppSession.send(presence);
                     }
                 }
             }

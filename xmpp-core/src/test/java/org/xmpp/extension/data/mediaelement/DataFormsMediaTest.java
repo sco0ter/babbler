@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.data.media;
+package org.xmpp.extension.data.mediaelement;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

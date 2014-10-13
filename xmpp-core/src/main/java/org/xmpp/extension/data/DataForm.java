@@ -25,7 +25,7 @@
 package org.xmpp.extension.data;
 
 import org.xmpp.extension.data.layout.Page;
-import org.xmpp.extension.data.media.Media;
+import org.xmpp.extension.data.mediaelement.Media;
 import org.xmpp.extension.data.validate.Validation;
 
 import javax.xml.bind.annotation.*;
@@ -436,7 +436,7 @@ public final class DataForm implements Comparable<DataForm> {
          * Gets the media element.
          *
          * @return The media element.
-         * @see #setMedia(org.xmpp.extension.data.media.Media)
+         * @see #setMedia(org.xmpp.extension.data.mediaelement.Media)
          */
         public Media getMedia() {
             return media;

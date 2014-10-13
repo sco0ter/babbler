@@ -50,7 +50,7 @@ import org.xmpp.extension.chatstates.*;
 import org.xmpp.extension.compress.Compress;
 import org.xmpp.extension.data.DataForm;
 import org.xmpp.extension.data.layout.Page;
-import org.xmpp.extension.data.media.Media;
+import org.xmpp.extension.data.mediaelement.Media;
 import org.xmpp.extension.data.validate.Validation;
 import org.xmpp.extension.delay.DelayedDelivery;
 import org.xmpp.extension.disco.info.InfoDiscovery;

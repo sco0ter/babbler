@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.data.media;
+package org.xmpp.extension.data.mediaelement;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

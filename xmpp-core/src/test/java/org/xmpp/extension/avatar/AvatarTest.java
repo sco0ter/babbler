@@ -27,7 +27,7 @@ package org.xmpp.extension.avatar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.XmlTest;
-import org.xmpp.extension.avatar.vcard.AvatarUpdate;
+import org.xmpp.extension.vcard.avatar.AvatarUpdate;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

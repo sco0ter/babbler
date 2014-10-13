@@ -22,21 +22,44 @@
  * THE SOFTWARE.
  */
 
+package org.xmpp.extension.vcard.avatar;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048: Bookmarks</a>.
- * <p>
- * It defines an XML data format for use by XMPP clients in storing bookmarks to mult-user chatrooms and web pages. The chatroom bookmarking function includes the ability to auto-join rooms on login.
- * </p>
+ * The implementation of the {@code <x/>} element in the {@code vcard-temp:x:update} namespace.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0153.html#schema">XML Schema</a>
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "storage:bookmarks", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatedata.bookmarks;
+@XmlRootElement(name = "x")
+public final class AvatarUpdate {
+    @XmlElement(name = "photo")
+    private String hash;
 
-import org.xmpp.Jid;
-import org.xmpp.JidAdapter;
+    /**
+     * Creates an empty avatar update element to indicate, we are not yet ready to advertise an image.
+     */
+    public AvatarUpdate() {
+    }
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+    /**
+     * Creates an avatar update element with a hash value.
+     *
+     * @param hash The hash.
+     */
+    public AvatarUpdate(String hash) {
+        this.hash = hash;
+    }
+
+    /**
+     * Gets the SHA-1 hash value of the avatar (hex encoded).
+     *
+     * @return The hash.
+     */
+    public String getHash() {
+        return hash;
+    }
+}

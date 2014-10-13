@@ -28,7 +28,7 @@ import org.xmpp.*;
 import org.xmpp.extension.ExtensionManager;
 import org.xmpp.extension.avatar.data.AvatarData;
 import org.xmpp.extension.avatar.metadata.AvatarMetadata;
-import org.xmpp.extension.avatar.vcard.AvatarUpdate;
+import org.xmpp.extension.vcard.avatar.AvatarUpdate;
 import org.xmpp.extension.muc.user.MucUser;
 import org.xmpp.extension.pubsub.Item;
 import org.xmpp.extension.pubsub.PubSubManager;

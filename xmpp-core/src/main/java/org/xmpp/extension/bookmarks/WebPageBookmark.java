@@ -22,63 +22,68 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.privatedata.bookmarks;
+package org.xmpp.extension.bookmarks;
+
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
+import java.net.URL;
 
 /**
- * An abstract base class for bookmarks.
+ * A web page bookmark.
  *
  * @author Christian Schudt
- * @see ChatRoomBookmark
- * @see WebPageBookmark
  */
-@XmlTransient
-public abstract class Bookmark implements Comparable<Bookmark> {
-    @XmlAttribute(name = "name")
-    private final String name;
+public final class WebPageBookmark extends Bookmark {
+    @XmlAttribute(name = "url")
+    private URL url;
 
-    protected Bookmark(String name) {
-        this.name = name;
+    private WebPageBookmark() {
+        super(null);
     }
 
     /**
-     * Gets a friendly name for the bookmark.
+     * Creates a web page bookmark.
      *
-     * @return The name.
+     * @param name The bookmark name.
+     * @param url  The URL of the web page.
      */
-    public String getName() {
-        return name;
+    public WebPageBookmark(String name, URL url) {
+        super(name);
+        this.url = url;
     }
 
     /**
-     * Compares this bookmark by its name.
+     * Gets the URL of the web page.
      *
-     * @param o The other bookmark.
-     * @return The comparison result.
+     * @return The URL.
      */
+    public URL getUrl() {
+        return url;
+    }
+
     @Override
-    public int compareTo(Bookmark o) {
-        if (this == o) {
-            return 0;
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
         }
-        if (o != null) {
-            if (name != null) {
-                if (o.name != null) {
-                    return name.compareTo(o.name);
-                } else {
-                    return -1;
-                }
-            } else {
-                if (o.name != null) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        } else {
-            return -1;
+        if (!(o instanceof WebPageBookmark)) {
+            return false;
         }
+        WebPageBookmark other = (WebPageBookmark) o;
+
+        return (url == null ? other.url == null : url.equals(other.url));
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + ((url == null) ? 0 : url.hashCode());
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return getName() + ": " + (url != null ? url.toString() : "");
     }
 }

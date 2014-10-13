@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.privatedata.bookmarks;
+package org.xmpp.extension.bookmarks;
 
 import org.xmpp.Jid;
 

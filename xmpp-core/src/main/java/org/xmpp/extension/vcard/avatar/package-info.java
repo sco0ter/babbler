@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "vcard-temp:x:update", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.avatar.vcard;
+@XmlSchema(namespace = "vcard-temp:x:update", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.vcard.avatar;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

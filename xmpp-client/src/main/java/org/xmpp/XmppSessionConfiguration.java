@@ -407,9 +407,7 @@ public final class XmppSessionConfiguration {
         if (defaultConfiguration == null) {
             synchronized (XmppSessionConfiguration.class) {
                 if (defaultConfiguration == null) {
-                    defaultConfiguration = XmppSessionConfiguration.builder()
-                            .defaultResponseTimeout(5000)
-                            .build();
+                    defaultConfiguration = XmppSessionConfiguration.builder().build();
                 }
             }
         }
@@ -484,6 +482,7 @@ public final class XmppSessionConfiguration {
         private int defaultResponseTimeout;
 
         private Builder() {
+            defaultResponseTimeout(5000);
         }
 
         /**

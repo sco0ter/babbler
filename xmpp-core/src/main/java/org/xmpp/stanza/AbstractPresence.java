@@ -26,8 +26,8 @@ package org.xmpp.stanza;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The implementation of the {@code <presence/>} element.
@@ -46,10 +46,10 @@ import java.util.List;
 public abstract class AbstractPresence extends Stanza implements Comparable<AbstractPresence> {
 
     @XmlAnyElement(lax = true)
-    private final List<Object> extensions = new ArrayList<>();
+    private final List<Object> extensions = new CopyOnWriteArrayList<>();
 
     @XmlElement
-    private final List<Status> status = new ArrayList<>();
+    private final List<Status> status = new CopyOnWriteArrayList<>();
 
     @XmlElement
     private Byte priority;

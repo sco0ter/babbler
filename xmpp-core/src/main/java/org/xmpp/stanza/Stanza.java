@@ -207,7 +207,7 @@ public abstract class Stanza {
      * @param error  The error.
      * @see #createError(StanzaError)
      */
-    protected void createError(Stanza stanza, StanzaError error) {
+    protected final void createError(Stanza stanza, StanzaError error) {
         stanza.setId(id);
         stanza.setError(error);
         // The entity that returns an error stanza MAY pass along its JID to the sender of the generated stanza (e.g., for diagnostic or tracking purposes) through the addition of a 'by' attribute to the <error/> child element.

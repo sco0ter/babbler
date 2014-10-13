@@ -28,8 +28,8 @@ import org.xmpp.Jid;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The implementation of the {@code <message/>} element.
@@ -44,13 +44,13 @@ import java.util.List;
 public abstract class AbstractMessage extends Stanza {
 
     @XmlElement(name = "body")
-    private final List<Body> body = new ArrayList<>();
+    private final List<Body> body = new CopyOnWriteArrayList<>();
 
     @XmlElement(name = "subject")
-    private final List<Subject> subject = new ArrayList<>();
+    private final List<Subject> subject = new CopyOnWriteArrayList<>();
 
     @XmlAnyElement(lax = true)
-    private final List<Object> extensions = new ArrayList<>();
+    private final List<Object> extensions = new CopyOnWriteArrayList<>();
 
     @XmlAttribute
     private Type type;
@@ -105,7 +105,7 @@ public abstract class AbstractMessage extends Stanza {
      * @return The bodies.
      * @see #getBody()
      */
-    public List<Body> getBodies() {
+    public final List<Body> getBodies() {
         return body;
     }
 
@@ -124,7 +124,7 @@ public abstract class AbstractMessage extends Stanza {
      * @see #getBodies()
      * @see #setBody(String)
      */
-    public String getBody() {
+    public final String getBody() {
         for (Body body : this.body) {
             if (body.getLanguage() == null || body.getLanguage().isEmpty()) {
                 return body.getText();
@@ -142,7 +142,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param body The body text.
      * @see #getBody()
      */
-    public void setBody(String body) {
+    public final void setBody(String body) {
         if (body != null) {
             for (Body b : this.body) {
                 if (b.getLanguage() == null || b.getLanguage().isEmpty()) {
@@ -166,7 +166,7 @@ public abstract class AbstractMessage extends Stanza {
      * @return The subjects.
      * @see #getSubject()
      */
-    public List<Subject> getSubjects() {
+    public final List<Subject> getSubjects() {
         return subject;
     }
 
@@ -183,7 +183,7 @@ public abstract class AbstractMessage extends Stanza {
      * @see #getSubjects()
      * @see #setSubject(String)
      */
-    public String getSubject() {
+    public final String getSubject() {
         for (Subject subject : this.subject) {
             if (subject.getLanguage() == null || subject.getLanguage().isEmpty()) {
                 return subject.getText();
@@ -201,7 +201,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param subject The subject text.
      * @see #getSubject()
      */
-    public void setSubject(String subject) {
+    public final void setSubject(String subject) {
         if (subject != null) {
             for (Subject s : this.subject) {
                 if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
@@ -225,7 +225,7 @@ public abstract class AbstractMessage extends Stanza {
      * @return The message type.
      * @see #setType(Type)
      */
-    public Type getType() {
+    public final Type getType() {
         return type;
     }
 
@@ -235,7 +235,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param type The message type.
      * @see #getType()
      */
-    public void setType(Type type) {
+    public final void setType(Type type) {
         this.type = type;
     }
 
@@ -249,7 +249,7 @@ public abstract class AbstractMessage extends Stanza {
      * @return The thread.
      * @see #setThread(String)
      */
-    public String getThread() {
+    public final String getThread() {
         if (thread != null) {
             return thread.value;
         }
@@ -262,7 +262,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param thread The thread.
      * @see #getThread()
      */
-    public void setThread(String thread) {
+    public final void setThread(String thread) {
         if (this.thread == null) {
             this.thread = new Thread();
         }
@@ -279,7 +279,7 @@ public abstract class AbstractMessage extends Stanza {
      * @return The parent thread.
      * @see #setParentThread(String)
      */
-    public String getParentThread() {
+    public final String getParentThread() {
         if (thread != null) {
             return thread.parent;
         }
@@ -292,7 +292,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param parent The parent thread.
      * @see #getParentThread()
      */
-    public void setParentThread(String parent) {
+    public final void setParentThread(String parent) {
         if (this.thread == null) {
             this.thread = new Thread();
         }
@@ -304,7 +304,7 @@ public abstract class AbstractMessage extends Stanza {
      *
      * @return The extensions.
      */
-    public List<Object> getExtensions() {
+    public final List<Object> getExtensions() {
         return extensions;
     }
 
@@ -379,7 +379,7 @@ public abstract class AbstractMessage extends Stanza {
      * <p>There are no attributes defined for the {@code <body/>} element, with the exception of the 'xml:lang' attribute. Multiple instances of the {@code <body/>} element MAY be included in a message stanza for the purpose of providing alternate versions of the same body, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
      * </blockquote>
      */
-    public static class Body {
+    public static final class Body {
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
         private String language;
 

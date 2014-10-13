@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "storage:rosternotes", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatedata.annotations;
+@XmlSchema(namespace = "storage:rosternotes", elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.privatedata.rosternotes;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

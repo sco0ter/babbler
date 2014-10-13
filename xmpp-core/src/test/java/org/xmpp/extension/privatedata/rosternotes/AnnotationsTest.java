@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.privatedata.annotations;
+package org.xmpp.extension.privatedata.rosternotes;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

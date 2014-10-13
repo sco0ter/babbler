@@ -74,7 +74,7 @@ import org.xmpp.extension.geoloc.GeoLocationManager;
 import org.xmpp.extension.last.LastActivityManager;
 import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privatedata.PrivateDataManager;
-import org.xmpp.extension.privatedata.annotations.Annotation;
+import org.xmpp.extension.privatedata.rosternotes.Annotation;
 import org.xmpp.extension.pubsub.PubSubManager;
 import org.xmpp.extension.receipts.MessageDeliveredEvent;
 import org.xmpp.extension.receipts.MessageDeliveredListener;

@@ -90,7 +90,7 @@ import org.xmpp.extension.ping.PingManager;
 import org.xmpp.extension.privacy.Privacy;
 import org.xmpp.extension.privatedata.PrivateData;
 import org.xmpp.extension.privatedata.PrivateDataManager;
-import org.xmpp.extension.privatedata.annotations.Annotation;
+import org.xmpp.extension.privatedata.rosternotes.Annotation;
 import org.xmpp.extension.bookmarks.BookmarkStorage;
 import org.xmpp.extension.privatedata.rosterdelimiter.RosterDelimiter;
 import org.xmpp.extension.pubsub.PubSub;

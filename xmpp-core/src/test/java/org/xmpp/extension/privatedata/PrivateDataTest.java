@@ -27,7 +27,7 @@ package org.xmpp.extension.privatedata;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.xmpp.XmlTest;
-import org.xmpp.extension.privatedata.annotations.Annotation;
+import org.xmpp.extension.privatedata.rosternotes.Annotation;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

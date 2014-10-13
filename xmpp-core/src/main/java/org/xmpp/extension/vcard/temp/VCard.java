@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.vcard;
+package org.xmpp.extension.vcard.temp;
 
 import org.xmpp.Jid;
 import org.xmpp.JidAdapter;
@@ -252,7 +252,7 @@ public final class VCard {
      * Gets the name.
      *
      * @return The name.
-     * @see #setName(org.xmpp.extension.vcard.VCard.Name)
+     * @see #setName(VCard.Name)
      */
     public Name getName() {
         return name;
@@ -292,7 +292,7 @@ public final class VCard {
      * Gets the photo.
      *
      * @return Either a URL to a photo or a base64 encoded photo.
-     * @see #setPhoto(org.xmpp.extension.vcard.VCard.Image)
+     * @see #setPhoto(VCard.Image)
      */
     public Image getPhoto() {
         return photo;
@@ -371,7 +371,7 @@ public final class VCard {
      * Gets the organization.
      *
      * @return The organization.
-     * @see #setOrganization(org.xmpp.extension.vcard.VCard.Organization)
+     * @see #setOrganization(VCard.Organization)
      */
     public Organization getOrganization() {
         return organization;
@@ -499,7 +499,7 @@ public final class VCard {
      * Gets information related to the global positioning of the object the vCard represents.
      *
      * @return The geo location.
-     * @see #setGeo(org.xmpp.extension.vcard.VCard.Geo)
+     * @see #setGeo(VCard.Geo)
      */
     public Geo getGeo() {
         return geo;
@@ -579,7 +579,7 @@ public final class VCard {
      * Gets the logo.
      *
      * @return Either an URL to an image or a base64 encoded image.
-     * @see #setLogo(org.xmpp.extension.vcard.VCard.Image)
+     * @see #setLogo(VCard.Image)
      */
     public Image getLogo() {
         return logo;
@@ -733,7 +733,7 @@ public final class VCard {
      * Gets the authentication credential or encryption key.
      *
      * @return The key.
-     * @see #setKey(org.xmpp.extension.vcard.VCard.Key)
+     * @see #setKey(VCard.Key)
      */
     public Key getKey() {
         return key;

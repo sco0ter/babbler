@@ -22,35 +22,22 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.avatar;
+package org.xmpp.extension.vcard.temp;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import org.xmpp.XmlTest;
-import org.xmpp.extension.vcard.avatar.AvatarUpdate;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author Christian Schudt
  */
-public class AvatarTest extends XmlTest {
-    protected AvatarTest() throws JAXBException, XMLStreamException {
-        super(AvatarUpdate.class);
+final class BooleanAdapter extends XmlAdapter<String, Boolean> {
+
+    @Override
+    public Boolean unmarshal(String v) throws Exception {
+        return v != null;
     }
 
-    @Test
-    public void marshalVCardUpdateWithEmptyPhotoElement() throws JAXBException, XMLStreamException {
-        AvatarUpdate avatarUpdate = new AvatarUpdate("");
-        String xml = marshal(avatarUpdate);
-        Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"><photo></photo></x>", xml);
-    }
-
-    @Test
-    public void marshalVCardUpdateWithNoPhotoElement() throws JAXBException, XMLStreamException {
-        AvatarUpdate avatarUpdate = new AvatarUpdate();
-        String xml = marshal(avatarUpdate);
-        Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"></x>", xml);
+    @Override
+    public String marshal(Boolean v) throws Exception {
+        return (v != null && v) ? "" : null;
     }
 }

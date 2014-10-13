@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.vcard;
+package org.xmpp.extension.vcard.temp;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

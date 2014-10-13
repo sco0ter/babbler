@@ -22,18 +22,34 @@
  * THE SOFTWARE.
  */
 
-/**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>.
- * <p>
- * It provides canonical documentation of the vCard-XML format currently in use within the Jabber community.
- * </p>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Boolean.class, value = BooleanAdapter.class)
-@XmlSchema(namespace = VCard.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package org.xmpp.extension.vcard;
+package org.xmpp.extension.vcard.avatar;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.xmpp.XmlTest;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+/**
+ * @author Christian Schudt
+ */
+public class AvatarTest extends XmlTest {
+    protected AvatarTest() throws JAXBException, XMLStreamException {
+        super(AvatarUpdate.class);
+    }
+
+    @Test
+    public void marshalVCardUpdateWithEmptyPhotoElement() throws JAXBException, XMLStreamException {
+        AvatarUpdate avatarUpdate = new AvatarUpdate("");
+        String xml = marshal(avatarUpdate);
+        Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"><photo></photo></x>", xml);
+    }
+
+    @Test
+    public void marshalVCardUpdateWithNoPhotoElement() throws JAXBException, XMLStreamException {
+        AvatarUpdate avatarUpdate = new AvatarUpdate();
+        String xml = marshal(avatarUpdate);
+        Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"></x>", xml);
+    }
+}

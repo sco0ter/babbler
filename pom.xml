@@ -33,8 +33,8 @@
     <version>0.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>XMPP.rocks</name>
-    <description>The root pom</description>
+    <name>XMPP.rocks - An XMPP Stack</name>
+    <description>An XMPP stack</description>
 
     <prerequisites>
         <maven>3.0.4</maven>
@@ -101,10 +101,12 @@
 
     <modules>
         <module>xmpp-core</module>
-        <module>xmpp-client</module>
-        <module>xmpp-client-sample</module>
-        <module>xmpp-server</module>
+        <module>xmpp-core-client</module>
+        <module>xmpp-extensions</module>
+        <module>xmpp-extensions-client</module>
         <module>xmpp-debug</module>
+        <module>xmpp-sample</module>
+        <module>xmpp-documentation</module>
     </modules>
 
     <distributionManagement>
@@ -190,6 +192,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>2.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.5</version>
                 </plugin>
             </plugins>
         </pluginManagement>

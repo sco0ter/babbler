@@ -1,0 +1,141 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package rocks.xmpp.extensions.time.model;
+
+import javax.xml.bind.DatatypeConverter;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+/**
+ * The implementation of the {@code <time/>} element in the {@code urn:xmpp:time} namespace.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0202.html#schema">XML Schema</a>
+ */
+@XmlRootElement(name = "time")
+public final class EntityTime {
+
+    public static final String NAMESPACE = "urn:xmpp:time";
+
+    @XmlJavaTypeAdapter(TimeZoneAdapter.class)
+    @XmlElement(name = "tzo")
+    private TimeZone tzo;
+
+    @XmlJavaTypeAdapter(UTCDateAdapter.class)
+    @XmlElement(name = "utc")
+    private Date utc;
+
+    /**
+     * Creates a empty entity time element for requesting entity time.
+     */
+    public EntityTime() {
+    }
+
+    public EntityTime(TimeZone timeZone, Date date) {
+        this.tzo = timeZone;
+        this.utc = date;
+    }
+
+    /**
+     * Converts a string representation of a date to {@link java.util.Date}.
+     *
+     * @param v The string value of the date.
+     * @return The date in UTC.
+     * @throws java.lang.IllegalArgumentException If the string value does not conform to XEP-0082.
+     * @see <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>
+     */
+    public static Date toUtcDate(String v) {
+        Calendar calendar = DatatypeConverter.parseDateTime(v);
+        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return calendar.getTime();
+    }
+
+    /**
+     * Converts a date to its UTC string representation.
+     *
+     * @param date The date.
+     * @return The date in UTC as string.
+     * @see <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>
+     */
+    public static String toUtcString(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return DatatypeConverter.printDateTime(calendar);
+    }
+
+    /**
+     * Gets the entity's time zone.
+     *
+     * @return The time zone.
+     */
+    public TimeZone getTimezone() {
+        return tzo;
+    }
+
+    /**
+     * Gets the entity's date.
+     *
+     * @return The date.
+     */
+    public Date getDate() {
+        return utc;
+    }
+
+    @Override
+    public String toString() {
+        if (utc != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(utc);
+            if (tzo != null) {
+                calendar.setTimeZone(tzo);
+            }
+            return calendar.getTime().toString();
+        }
+        return super.toString();
+    }
+
+    /**
+     * Converts a date to its UTC representation.
+     */
+    private static class UTCDateAdapter extends XmlAdapter<String, Date> {
+
+        @Override
+        public Date unmarshal(String v) throws Exception {
+            return toUtcDate(v);
+        }
+
+        @Override
+        public String marshal(Date v) throws Exception {
+            return toUtcString(v);
+        }
+    }
+}

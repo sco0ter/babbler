@@ -33,8 +33,8 @@
         <version>0.4.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-core</artifactId>
-    <name>XMPP core library</name>
-    <description>Contains classes which are useful for client and server implementations</description>
+    <name>XMPP Core Library</name>
+    <description>Contains XMPP core classes which are useful for client and server implementations</description>
     <build>
         <plugins>
             <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
@@ -57,6 +57,20 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+
+            <!-- Create test jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
     </build>

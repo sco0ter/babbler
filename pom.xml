@@ -30,7 +30,7 @@
 
     <groupId>rocks.xmpp</groupId>
     <artifactId>root</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.4.0-beta</version>
     <packaging>pom</packaging>
 
     <name>XMPP.rocks - An XMPP Stack</name>
@@ -138,6 +138,9 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>2.1</version>
                 <inherited>false</inherited>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
                 <executions>
                     <execution>
                         <id>display-plugin-updates</id>
@@ -147,8 +150,28 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
 
+            <!-- Do not deploy the root pom and also disable deployment via maven-deploy-plugin -->
+            <!-- We are using nexus-staging-maven-plugin for deployment -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <!-- Do not deploy the root pom -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <inherited>false</inherited>
+                <configuration>
+                    <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                </configuration>
+            </plugin>
+
+        </plugins>
 
         <pluginManagement>
             <plugins>
@@ -198,6 +221,17 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.5</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.4</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -218,19 +252,6 @@
             <id>release</id>
             <build>
                 <plugins>
-                    <!-- Deployment -->
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.4</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-
                     <!-- Generate sources jar -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

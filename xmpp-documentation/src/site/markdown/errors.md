@@ -1,13 +1,13 @@
 # Exceptions and XMPP Errors
 ---
 
-There is one abstract `org.xmpp.XmppException` for most kind of exceptions, which are related to XMPP.
+There is one abstract `XmppException` for most kind of exceptions, which are related to XMPP.
 
 For now, there are three subclasses of it:
 
-* `org.xmpp.stream.StreamException`  for [Stream Errors][Stream Errors].
-* `org.xmpp.stanza.StanzaException` for [Stanza Errors][Stanza Errors].
-* `org.xmpp.NoResponseException` for IQ queries, which didn\'t receive a response.
+* `StreamException`  for [Stream Errors][Stream Errors].
+* `StanzaException` for [Stanza Errors][Stanza Errors].
+* `NoResponseException` for IQ queries, which didn\'t receive a response.
 
 
 ## Dealing with Stream Errors
@@ -17,9 +17,9 @@ XMPP Stream Errors are unrecoverable, which means the session will get disconnec
 Here's an example how to react to stream errors.
 
 ```java
-xmppSession.addConnectionListener(new ConnectionListener() {
+xmppSession.addSessionStatusListener(new SessionStatusListener() {
     @Override
-    public void sessionStatusChanged(ConnectionEvent e) {
+    public void sessionStatusChanged(SessionStatusEvent e) {
         if (e.getException() instanceof StreamException) {
             StreamException streamException = (StreamException) e.getException();
             if (streamException.getStreamError().getCondition() instanceof SystemShutdown) {
@@ -34,7 +34,7 @@ xmppSession.addConnectionListener(new ConnectionListener() {
 
 Most stanza errors are returned in response to an IQ-get or IQ-set query.
 
-For querying another XMPP entity, there\'s a `query` method on the `org.xmpp.XmppSession` class, which queries another entity for information and which is used by most methods.
+For querying another XMPP entity, there\'s a `query` method on the `XmppSession` class, which queries another entity for information and which is used by most methods.
 
 Now two things can happen:
 

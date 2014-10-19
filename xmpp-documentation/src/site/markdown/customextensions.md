@@ -53,13 +53,22 @@ public class Product {
 }
 ```
 
-Then you have to create a configuration for the session.
+Then you have to create a configuration for the session. If you only use core functionality, you have to extend the `CoreContext` class by your extension:
 
 ```java
 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-    .extensions(Product.class)
+    .context(new CoreContext(Product.class))
     .build();
 ```
+
+If you want to use all XEP extensions as well as your extension, you have to extend the `ExtensionContext`:
+
+```java
+XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+    .context(new ExtensionContext(Product.class))
+    .build();
+```
+
 
 This will create the `JAXBContext` with your class (in addition to all other XMPP classes).
 

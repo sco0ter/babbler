@@ -34,7 +34,7 @@
     <packaging>pom</packaging>
 
     <name>XMPP.rocks - An XMPP Stack</name>
-    <description>An XMPP stack</description>
+    <description>An XMPP Stack</description>
 
     <prerequisites>
         <maven>3.0.4</maven>

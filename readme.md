@@ -42,7 +42,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![supported][supported]           [XEP-0077: In-Band Registration](http://xmpp.org/extensions/xep-0077.html)
 * ![supported][supported]           [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
 * ![supported][supported]           [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html)
-* ![in development][in development] [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
+* ![supported][supported]           [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
 * ![supported][supported]           [XEP-0085: Chat State Notifications](http://xmpp.org/extensions/xep-0085.html)
 * ![supported][supported]           [XEP-0092: Software Version](http://xmpp.org/extensions/xep-0092.html)
 * ![supported][supported]           [XEP-0095: Stream Initiation](http://xmpp.org/extensions/xep-0095.html)
@@ -116,7 +116,6 @@ Additionally following informational XEP documents are respected:
 * ![supported][supported]           [XEP-0175: Best Practices for Use of SASL ANONYMOUS](http://xmpp.org/extensions/xep-0175.html)
 * ![supported][supported]           [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
 
-
 # License
 
 This project is licensed under [MIT License](http://opensource.org/licenses/MIT).
@@ -124,44 +123,78 @@ This project is licensed under [MIT License](http://opensource.org/licenses/MIT)
 # Getting Started
 ---
 
-## Creating an XMPP Session
+## Establishing an XMPP Session
 
-The first thing you want to do in order to connect to a XMPP server is creating a ```XmppSession``` object:
+The first thing you want to do in order to connect to an XMPP server is creating a `XmppSession` object:
 
 ```java
-XmppSession xmppSession = new XmppSession("xmppDomain");
+XmppSession xmppSession = new XmppSession("domain");
 ```
 
-A session to a XMPP server can be established in two ways:
+The `XmppSession` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+
+A session to an XMPP server can be established in at least two ways:
 
 1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
 2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
 
-By default, the ```XmppSession``` instance will try to connect to the domain with a TCP connection first (port 5222) during the connection process.
+By default, the `XmppSession` will try to establish a connection via TCP first during the connection process.
 If the connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually BOSH).
 The hostname and port is determined by doing a DNS lookup.
 
-You can also configure the connections manually and specify concrete connection instances instead (e.g. if you want to use another port or want to use a proxy):
+### Configuring the Connections
+
+You can also configure different connection methods manually (e.g. if you want to use another port or want to use a proxy).
+
+In order to create immutable and reusable configuration objects (which could be reused by multiple sessions) and to avoid huge constructors, the Builder Pattern is used to create custom configurations:
 
 ```java
-Connection tcpConnection = new TcpConnection("hostname", 5222);
+TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+    .hostname("localhost")
+    .port(5222)
+    .proxy(Proxy.NO_PROXY)        // Proxy for the TCP connection
+    .keepAliveInterval(20)        // Whitespace keep-alive interval
+    .socketFactory(socketFactory) // Custom socket factory
+    .build();
 ```
-
-If you also want to use a BOSH connection with a HTTP proxy, use the following class:
+Here's another example how to configure a BOSH connection (which would connect to the URL `http://domain:5280/http-bind/` over a HTTP proxy server):
 
 ```java
-Connection boshConnection = new BoshConnection("hostname", 80, new Proxy(Proxy.Type.HTTP, new InetSocketAddress("proxyServer", 3128)));
+BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
+    .hostname("domain")
+    .port(5280)
+    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("hostname", 3128)))
+    .file("/http-bind/")
+    .wait(60)  // BOSH connection manager should wait maximal 60 seconds before responding to a request.
+    .build();
 ```
 
-Then create the session with both connections:
+Now let's pass them to the session to tell it that it should use them:
 
 ```java
-XmppSession xmppSession = new XmppSession("hostname", tcpConnection, boshConnection);
+XmppSession xmppSession = new XmppSession("domain", tcpConfiguration, boshConfiguration);
 ```
 
-During connecting, the session will try both connections in order, until a connection is established.
+During connecting, the session will try all configured connections in order, until a connection is established.
 
-The ```XmppSession``` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+Here\'s an overview over the relation between the session and connections:
+
+![Architecture](XmppSession.png)
+
+
+#### Securing the Connection
+
+You can set a custom `SSLContext` or disable the use of SSL altogether by configuring it like this:
+
+```java
+TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+    .secure(true)          // Default value is true
+    .sslContext(sslContext)
+    .hostnameVerifier(hostnameVerifier)
+    .build();
+```
+
+Note that the use of a custom `HostnameVerifier` is possible but not recommended in most cases, since the built-in logic to verify the host name does a good job.
 
 ## Preparing the Session
 
@@ -170,8 +203,7 @@ Before connecting to a server, you should configure your XMPP session.
 You might want to do one of the following:
 
 * Adding event listeners in order to listen for incoming messages, roster and presence changes or to modify outgoing messages.
-* Setting up a custom SSL
-* Enable stream compression ([XEP-0138](http://xmpp.org/extensions/xep-0138.html))
+* Setting up a custom SSL context
 * Configuring extensions, e.g.
     * Enable or disable certain extensions
     * Setting an identity for the connection (Service Discovery)
@@ -181,8 +213,6 @@ You might want to do one of the following:
 Here are some examples:
 
 ```java
-// Setting a custom SSL context
-xmppSession.getSecurityManager().setSSLContext(sslContext);
 // Listen for presence changes
 xmppSession.addPresenceListener(new PresenceListener() {
     @Override
@@ -227,7 +257,7 @@ Connecting involves opening the initial XMPP stream header and negotiate any fea
 
 ## Authenticating and Binding a Resource
 
-After connecting, you have to authenticate and bind a resource, in order to become a "connected resource". Both steps are understood as "login":
+After connecting, you have to authenticate and bind a resource, in order to become a \"connected resource\". Both steps are understood as \"login\":
 
 ```java
 try {
@@ -239,13 +269,13 @@ try {
 
 ## Establishing a Presence Session
 
-After you are connected, authenticated and have bound a resource, you should now establish a presence session, by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
+After you are connected, authenticated and have bound a resource, you should now establish a [presence session](http://xmpp.org/rfcs/rfc6121.html#presence-fundamentals), by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
 
 ```java
 xmppSession.send(new Presence());
 ```
 
-You are now an "available resource" (you will appear online to your contacts) and can now start sending messages.
+You are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
 
 ## Sending a Message
 
@@ -257,7 +287,7 @@ xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHA
 
 ## Changing Availability
 
-If you want to change your presence availability, just send a new presence with a "show" value.
+If you want to change your presence availability, just send a new presence with a \"show\" value.
 
 ```java
 xmppSession.send(new Presence(Presence.Show.AWAY));

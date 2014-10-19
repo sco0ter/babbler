@@ -24,9 +24,7 @@
 
 package rocks.xmpp.core.sample;
 
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.session.*;
 import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
@@ -79,7 +77,6 @@ public class SampleApplication {
                     TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                             .port(5222)
                             .sslContext(sslContext)
-                            .compressionMethod(CompressionMethod.ZLIB)
                             .secure(true)
                             .build();
 
@@ -105,7 +102,7 @@ public class SampleApplication {
                             .defaultResponseTimeout(5000)
                             .build();
 
-                    XmppSession xmppSession = new XmppSession("jabber.se", configuration, tcpConfiguration);
+                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
 
                     // Listen for incoming messages.
                     xmppSession.addMessageListener(new MessageListener() {
@@ -120,7 +117,7 @@ public class SampleApplication {
                     // Connect
                     xmppSession.connect();
                     // Login
-                    xmppSession.login("nethome", "baBBler86", "xmpp");
+                    xmppSession.login("admin", "admin", "xmpp");
                     // Send initial presence
                     xmppSession.send(new Presence());
                 } catch (IOException | LoginException | NoSuchAlgorithmException | KeyManagementException e) {

@@ -30,7 +30,7 @@
 
     <groupId>rocks.xmpp</groupId>
     <artifactId>root</artifactId>
-    <version>0.4.0-beta</version>
+    <version>0.4.0-beta.1</version>
     <packaging>pom</packaging>
 
     <name>XMPP.rocks - An XMPP Stack</name>
@@ -139,6 +139,7 @@
                 <version>2.1</version>
                 <inherited>false</inherited>
                 <configuration>
+                    <newVersion>0.4.0-beta.1</newVersion>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
                 <executions>
@@ -161,14 +162,10 @@
                 </configuration>
             </plugin>
 
-            <!-- Do not deploy the root pom -->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <inherited>false</inherited>
-                <configuration>
-                    <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-                </configuration>
             </plugin>
 
         </plugins>

@@ -28,10 +28,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:rpc} namespace.
@@ -43,6 +40,9 @@ import java.util.Map;
 @XmlRootElement(name = "query")
 public final class Rpc {
 
+    /**
+     * jabber:iq:rpc
+     */
     public static final String NAMESPACE = "jabber:iq:rpc";
 
     @XmlElement(name = "methodCall")
@@ -52,29 +52,57 @@ public final class Rpc {
     private MethodResponse methodResponse;
 
     private Rpc() {
-
     }
 
+    /**
+     * Creates a method call with a list of parameters.
+     *
+     * @param methodName The method name.
+     * @param parameters The parameters.
+     */
     public Rpc(String methodName, Value... parameters) {
         this.methodCall = new MethodCall(methodName, parameters);
     }
 
+    /**
+     * Creates a method response.
+     *
+     * @param value The return value.
+     */
     public Rpc(Value value) {
         this.methodResponse = new MethodResponse(value);
     }
 
+    /**
+     * Creates a method response with a fault.
+     *
+     * @param fault The fault.
+     */
     public Rpc(MethodResponse.Fault fault) {
         this.methodResponse = new MethodResponse(fault);
     }
 
+    /**
+     * Gets the method call.
+     *
+     * @return The method call.
+     */
     public MethodCall getMethodCall() {
         return methodCall;
     }
 
+    /**
+     * Gets the method response.
+     *
+     * @return The method response.
+     */
     public MethodResponse getMethodResponse() {
         return methodResponse;
     }
 
+    /**
+     * The implementation of a RPC method call.
+     */
     @XmlType(propOrder = {"methodName", "parameters"})
     public static final class MethodCall {
 
@@ -86,27 +114,41 @@ public final class Rpc {
         private String methodName;
 
         private MethodCall() {
-
         }
 
-        public MethodCall(String methodName, Value... parameters) {
+        MethodCall(String methodName, Value... parameters) {
             this.methodName = methodName;
             for (Value value : parameters) {
                 this.parameters.add(new Parameter(value));
             }
         }
 
+        /**
+         * Gets the method name.
+         *
+         * @return The method name.
+         */
         public String getMethodName() {
             return methodName;
         }
 
-        public List<Parameter> getParameters() {
-            return parameters;
+        /**
+         * Gets the parameters.
+         *
+         * @return The parameters.
+         */
+        public List<Value> getParameters() {
+            List<Value> values = new ArrayList<>();
+            for (Parameter parameter : parameters) {
+                values.add(parameter.getValue());
+            }
+            return Collections.unmodifiableList(values);
         }
-
-
     }
 
+    /**
+     * The implementation of a method response.
+     */
     public static final class MethodResponse {
         @XmlElementWrapper(name = "params")
         @XmlElement(name = "param")
@@ -126,6 +168,11 @@ public final class Rpc {
             this.fault = fault;
         }
 
+        /**
+         * Gets the response value.
+         *
+         * @return The response value.
+         */
         public Value getResponse() {
             if (!parameters.isEmpty()) {
                 return parameters.get(0).getValue();
@@ -133,10 +180,18 @@ public final class Rpc {
             return null;
         }
 
+        /**
+         * Gets the fault.
+         *
+         * @return The fault.
+         */
         public Fault getFault() {
             return fault;
         }
 
+        /**
+         * The implementation of a RPC fault.
+         */
         public static final class Fault {
             @XmlElement(name = "value")
             private Value value;
@@ -144,6 +199,10 @@ public final class Rpc {
             private Fault() {
             }
 
+            /**
+             * @param faultCode   The fault code.
+             * @param faultString The fault string.
+             */
             public Fault(int faultCode, String faultString) {
                 Map<String, Value> faultMap = new LinkedHashMap<>();
                 faultMap.put("faultCode", new Value(faultCode));
@@ -151,6 +210,11 @@ public final class Rpc {
                 this.value = new Value(faultMap);
             }
 
+            /**
+             * Gets the fault code.
+             *
+             * @return The fault code.
+             */
             public int getFaultCode() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();
@@ -165,6 +229,11 @@ public final class Rpc {
                 return 0;
             }
 
+            /**
+             * Gets the fault string.
+             *
+             * @return The fault string.
+             */
             public String getFaultString() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();

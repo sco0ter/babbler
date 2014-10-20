@@ -76,10 +76,10 @@ public class RpcMethodCallTest extends XmlTest {
         Assert.assertNotNull(rpc);
         Assert.assertEquals(rpc.getMethodCall().getMethodName(), "examples.getStateName");
         Assert.assertEquals(rpc.getMethodCall().getParameters().size(), 4);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(0).getValue().getAsInteger(), (Integer) 6);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(1).getValue().getAsBoolean(), Boolean.FALSE);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(2).getValue().getAsArray().get(0).getAsBoolean(), Boolean.TRUE);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(3).getValue().getAsMap().get("key").getAsBoolean(), Boolean.TRUE);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().get(0).getAsInteger(), (Integer) 6);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().get(1).getAsBoolean(), Boolean.FALSE);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().get(2).getAsArray().get(0).getAsBoolean(), Boolean.TRUE);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().get(3).getAsMap().get("key").getAsBoolean(), Boolean.TRUE);
     }
 
     @Test

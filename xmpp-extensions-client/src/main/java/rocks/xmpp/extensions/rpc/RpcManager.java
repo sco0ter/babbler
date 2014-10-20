@@ -35,7 +35,6 @@ import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.InternalServerError;
-import rocks.xmpp.extensions.rpc.model.Parameter;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 
@@ -91,8 +90,8 @@ public final class RpcManager extends ExtensionManager {
                             if (rpcHandler != null) {
                                 final Rpc.MethodCall methodCall = rpc.getMethodCall();
                                 final List<Value> parameters = new ArrayList<>();
-                                for (Parameter parameter : methodCall.getParameters()) {
-                                    parameters.add(parameter.getValue());
+                                for (Value parameter : methodCall.getParameters()) {
+                                    parameters.add(parameter);
                                 }
                                 executorService.execute(new Runnable() {
                                     @Override

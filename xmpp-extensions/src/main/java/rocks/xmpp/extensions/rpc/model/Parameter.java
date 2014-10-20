@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 /**
  * @author Christian Schudt
  */
-public final class Parameter {
+final class Parameter {
 
     @XmlElement(name = "value")
     private Value value;

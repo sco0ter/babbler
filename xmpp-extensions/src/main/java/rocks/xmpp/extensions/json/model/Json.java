@@ -47,6 +47,11 @@ public final class Json {
         this.json = json;
     }
 
+    /**
+     * Gets the JSON value.
+     *
+     * @return The JSON value.
+     */
     public String getValue() {
         return json;
     }

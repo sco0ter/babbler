@@ -134,11 +134,11 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-specific">2.5 Removing Specific Messages</a>
      */
     public void removeMessages(String... ids) throws XmppException {
-        OfflineMessage offlineMessage = new OfflineMessage();
+        List<OfflineMessage.Item> items = new ArrayList<>();
         for (String id : ids) {
-            offlineMessage.getItems().add(new OfflineMessage.Item(id, OfflineMessage.Item.Action.REMOVE));
+            items.add(new OfflineMessage.Item(id, OfflineMessage.Item.Action.REMOVE));
         }
-        xmppSession.query(new IQ(IQ.Type.SET, offlineMessage));
+        xmppSession.query(new IQ(IQ.Type.SET, new OfflineMessage(items)));
     }
 
     /**

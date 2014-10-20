@@ -36,5 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public final class Attention {
 
+    /**
+     * urn:xmpp:attention:0
+     */
     public static final String NAMESPACE = "urn:xmpp:attention:0";
 }

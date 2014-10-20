@@ -36,5 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public final class Request {
 
+    /**
+     * urn:xmpp:receipts
+     */
     public static final String NAMESPACE = "urn:xmpp:receipts";
 }

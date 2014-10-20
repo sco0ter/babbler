@@ -35,6 +35,7 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -129,13 +130,13 @@ public final class PrivacyListManager extends ExtensionManager {
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy()));
         Privacy privacy = result.getExtension(Privacy.class);
 
-        List<PrivacyList> privacyLists = privacy.getPrivacyLists();
-        for (PrivacyList privacyList : privacyLists) {
+        List<PrivacyList> privacyLists = new ArrayList<>();
+        for (PrivacyList privacyList : privacy.getPrivacyLists()) {
             if (privacyList.getName() != null && privacyList.getName().equals(privacy.getDefaultName())) {
-                privacyList.isDefault = true;
+                privacyLists.add(privacyList.asDefault());
             }
             if (privacyList.getName() != null && privacyList.getName().equals(privacy.getActiveName())) {
-                privacyList.isActive = true;
+                privacyLists.add(privacyList.asActive());
             }
         }
         return privacyLists;

@@ -28,6 +28,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,6 +56,10 @@ public final class BookmarkStorage {
     public BookmarkStorage() {
     }
 
+    public BookmarkStorage(Collection<Bookmark> bookmarks) {
+        this.bookmarks.addAll(bookmarks);
+    }
+
     /**
      * Gets the bookmarks.
      *
@@ -62,6 +68,6 @@ public final class BookmarkStorage {
      * @see WebPageBookmark
      */
     public List<Bookmark> getBookmarks() {
-        return bookmarks;
+        return Collections.unmodifiableList(bookmarks);
     }
 }

@@ -22,13 +22,12 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.jingle.apps.rtp.info;
+package rocks.xmpp.extensions.jingle.apps.rtp.model.info;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
-import rocks.xmpp.extensions.jingle.apps.rtp.model.info.*;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

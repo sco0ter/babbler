@@ -36,5 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "enable")
 public final class Enable {
 
+    /**
+     * urn:xmpp:carbons:2
+     */
     public static final String NAMESPACE = "urn:xmpp:carbons:2";
 }

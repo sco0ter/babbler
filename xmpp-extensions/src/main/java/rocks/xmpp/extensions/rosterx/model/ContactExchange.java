@@ -45,6 +45,9 @@ import java.util.List;
 @XmlRootElement(name = "x")
 public final class ContactExchange {
 
+    /**
+     * http://jabber.org/protocol/rosterx
+     */
     public static final String NAMESPACE = "http://jabber.org/protocol/rosterx";
 
     @XmlElement(name = "item")

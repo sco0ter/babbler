@@ -27,10 +27,15 @@ package rocks.xmpp.extensions.invisible.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * The implementation of the {@code <invisible/>} element in the {@code urn:xmpp:invisible:0} namespace.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "invisible")
 public final class Invisible {
 
+    /**
+     * urn:xmpp:invisible:0
+     */
     public static final String NAMESPACE = "urn:xmpp:invisible:0";
 }

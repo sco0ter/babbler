@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
  * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
  */
-public final class Item {
+final class Item {
 
     @XmlAttribute(name = "jid")
     private Jid jid;

@@ -24,9 +24,12 @@
 
 package rocks.xmpp.extensions.blocking.model;
 
+import rocks.xmpp.core.Jid;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,9 +45,13 @@ public final class Unblock {
     private final List<Item> items = new ArrayList<>();
 
     /**
-     * @param items The unblocked items.
+     * @param unblockedItems The unblocked items.
      */
-    public Unblock(List<Item> items) {
+    public Unblock(List<Jid> unblockedItems) {
+        List<Item> items = new ArrayList<>();
+        for (Jid item : unblockedItems) {
+            items.add(new Item(item));
+        }
         this.items.addAll(items);
     }
 
@@ -56,8 +63,12 @@ public final class Unblock {
      *
      * @return The unblocked items.
      */
-    public List<Item> getItems() {
-        return items;
+    public List<Jid> getItems() {
+        List<Jid> jids = new ArrayList<>();
+        for (Item item : items) {
+            jids.add(item.getJid());
+        }
+        return Collections.unmodifiableList(jids);
     }
 
     @Override

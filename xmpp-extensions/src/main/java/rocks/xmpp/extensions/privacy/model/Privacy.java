@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -118,7 +119,7 @@ public final class Privacy {
      * @return The privacy lists.
      */
     public List<PrivacyList> getPrivacyLists() {
-        return privacyLists;
+        return Collections.unmodifiableList(privacyLists);
     }
 
     @Override

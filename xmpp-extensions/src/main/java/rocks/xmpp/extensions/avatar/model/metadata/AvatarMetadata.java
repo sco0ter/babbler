@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,10 +44,13 @@ import java.util.List;
 @XmlRootElement(name = "metadata")
 public final class AvatarMetadata {
 
+    /**
+     * urn:xmpp:avatar:metadata
+     */
     public static final String NAMESPACE = "urn:xmpp:avatar:metadata";
 
     @XmlElement(name = "info")
-    private List<Info> infoList = new ArrayList<>();
+    private final List<Info> infoList = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
     private Object pointer;
@@ -55,7 +59,7 @@ public final class AvatarMetadata {
     }
 
     public AvatarMetadata(Info... info) {
-        this.infoList = Arrays.asList(info);
+        this.infoList.addAll(Arrays.asList(info));
     }
 
     /**
@@ -64,7 +68,7 @@ public final class AvatarMetadata {
      * @return The info list.
      */
     public List<Info> getInfoList() {
-        return infoList;
+        return Collections.unmodifiableList(infoList);
     }
 
     /**

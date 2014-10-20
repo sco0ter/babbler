@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.*;
 public final class InBandByteStream {
 
     /**
-     * The IBB namespace <code>http://jabber.org/protocol/ibb</code>.
+     * http://jabber.org/protocol/ibb.
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/ibb";
 

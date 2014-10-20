@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlValue;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,7 +65,7 @@ public final class Address {
     }
 
     public List<Description> getDescriptions() {
-        return descriptions;
+        return Collections.unmodifiableList(descriptions);
     }
 
     @Override
@@ -94,6 +95,9 @@ public final class Address {
         return uri != null ? uri.toString() : super.toString();
     }
 
+    /**
+     * The description of the address.
+     */
     public static final class Description {
 
         @XmlValue

@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,16 +48,21 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     @XmlElement(name = "item")
     private final List<PrivacyRule> items = new ArrayList<>();
 
-    @XmlTransient
-    public boolean isActive;
-
-    @XmlTransient
-    public boolean isDefault;
-
     @XmlAttribute(name = "name")
     private String name;
 
+    @XmlTransient
+    private boolean isActive;
+
+    @XmlTransient
+    private boolean isDefault;
+
     private PrivacyList() {
+    }
+
+    public PrivacyList(String name, List<PrivacyRule> items) {
+        this.name = name;
+        this.items.addAll(items);
     }
 
     /**
@@ -86,17 +93,18 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-jid">3.2.1 Becoming Visible by JID</a>
      */
     public static PrivacyList createInvisibilityListExceptForUsers(String listName, Jid... jids) {
-        PrivacyList privacyList = new PrivacyList(listName);
+        List<PrivacyRule> rules = new ArrayList<>();
         long order = 1;
         for (Jid jid : jids) {
             PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order++, jid);
             privacyRule.setFilterPresenceOut(true);
-            privacyList.getPrivacyRules().add(privacyRule);
+            rules.add(privacyRule);
         }
         PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order);
         privacyRule.setFilterPresenceOut(true);
-        privacyList.getPrivacyRules().add(privacyRule);
-        return privacyList;
+        rules.add(privacyRule);
+
+        return new PrivacyList(listName, rules);
     }
 
     /**
@@ -109,17 +117,17 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-roster">3.2.2 Becoming Visible by Roster Group</a>
      */
     public static PrivacyList createInvisibilityListExceptForGroups(String listName, String... groups) {
-        PrivacyList privacyList = new PrivacyList(listName);
+        List<PrivacyRule> rules = new ArrayList<>();
         long order = 1;
         for (String group : groups) {
             PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order++, group);
             privacyRule.setFilterPresenceOut(true);
-            privacyList.getPrivacyRules().add(privacyRule);
+            rules.add(privacyRule);
         }
         PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order);
         privacyRule.setFilterPresenceOut(true);
-        privacyList.getPrivacyRules().add(privacyRule);
-        return privacyList;
+        rules.add(privacyRule);
+        return new PrivacyList(listName, rules);
     }
 
     /**
@@ -132,17 +140,17 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-jid">3.4.1 Becoming Invisible by JID</a>
      */
     public static PrivacyList createInvisibilityListForUsers(String listName, Jid... jids) {
-        PrivacyList privacyList = new PrivacyList(listName);
+        List<PrivacyRule> rules = new ArrayList<>();
         long order = 1;
         for (Jid jid : jids) {
             PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order++, jid);
             privacyRule.setFilterPresenceOut(true);
-            privacyList.getPrivacyRules().add(privacyRule);
+            rules.add(privacyRule);
         }
         PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order);
         privacyRule.setFilterPresenceOut(true);
-        privacyList.getPrivacyRules().add(privacyRule);
-        return privacyList;
+        rules.add(privacyRule);
+        return new PrivacyList(listName, rules);
     }
 
     /**
@@ -155,17 +163,17 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-roster">3.4.2 Becoming Invisible by Roster Group</a>
      */
     public static PrivacyList createInvisibilityListForGroups(String listName, String... groups) {
-        PrivacyList privacyList = new PrivacyList(listName);
+        List<PrivacyRule> rules = new ArrayList<>();
         long order = 1;
         for (String group : groups) {
             PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order++, group);
             privacyRule.setFilterPresenceOut(true);
-            privacyList.getPrivacyRules().add(privacyRule);
+            rules.add(privacyRule);
         }
         PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order);
         privacyRule.setFilterPresenceOut(true);
-        privacyList.getPrivacyRules().add(privacyRule);
-        return privacyList;
+        rules.add(privacyRule);
+        return new PrivacyList(listName, rules);
     }
 
     /**
@@ -174,7 +182,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @return The privacy rules.
      */
     public List<PrivacyRule> getPrivacyRules() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     /**
@@ -202,6 +210,24 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      */
     public boolean isActive() {
         return isActive;
+    }
+
+    /**
+     * @return
+     */
+    public PrivacyList asActive() {
+        PrivacyList privacyList = new PrivacyList(name, items);
+        privacyList.isActive = true;
+        return privacyList;
+    }
+
+    /**
+     * @return
+     */
+    public PrivacyList asDefault() {
+        PrivacyList privacyList = new PrivacyList(name, items);
+        privacyList.isDefault = true;
+        return privacyList;
     }
 
     /**

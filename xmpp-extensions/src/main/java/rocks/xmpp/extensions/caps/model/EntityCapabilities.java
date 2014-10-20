@@ -47,6 +47,9 @@ import java.util.List;
 @XmlRootElement(name = "c")
 public final class EntityCapabilities extends StreamFeature {
 
+    /**
+     * http://jabber.org/protocol/caps
+     */
     public static final String NAMESPACE = "http://jabber.org/protocol/caps";
 
     /**

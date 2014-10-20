@@ -71,7 +71,7 @@ public final class WebPageBookmark extends Bookmark {
         }
         WebPageBookmark other = (WebPageBookmark) o;
 
-        return (url == null ? other.url == null : url.equals(other.url));
+        return url == null ? other.url == null : url.equals(other.url);
 
     }
 

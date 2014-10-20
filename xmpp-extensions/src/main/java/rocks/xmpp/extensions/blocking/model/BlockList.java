@@ -24,12 +24,14 @@
 
 package rocks.xmpp.extensions.blocking.model;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.blocking.model.errors.Blocked;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,8 +51,17 @@ public final class BlockList {
     public BlockList() {
     }
 
-    public List<Item> getItems() {
-        return items;
+    /**
+     * Gets the items.
+     *
+     * @return The items.
+     */
+    public List<Jid> getItems() {
+        List<Jid> jids = new ArrayList<>();
+        for (Item item : items) {
+            jids.add(item.getJid());
+        }
+        return Collections.unmodifiableList(jids);
     }
 
     @Override

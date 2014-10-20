@@ -151,85 +151,36 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * Gets the type.
      *
      * @return The type.
-     * @see #setType(PrivacyRule.Type)
      */
     public Type getType() {
         return type;
     }
 
     /**
-     * Sets the type.
-     *
-     * @param type The type.
-     * @see #getType()
-     */
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    /**
      * Sets the action to perform (either allow or deny).
      *
      * @return The action.
-     * @see #setAction(PrivacyRule.Action)
      */
     public Action getAction() {
         return action;
     }
 
     /**
-     * Sets the action to perform (either allow or deny).
-     *
-     * @param action The action.
-     * @see #getAction()
-     */
-    public void setAction(Action action) {
-        this.action = action;
-    }
-
-    /**
      * Gets the value.
      *
      * @return The value.
-     * @see #setValue(String)
      */
     public String getValue() {
         return value;
     }
 
     /**
-     * Sets the value.
-     * <ul>
-     * <li>If the type is {@link Type#JID}, then the value must be a valid JID.</li>
-     * <li>If the type is {@link Type#GROUP}, then the value should be the name of a group in the user's roster.</li>
-     * <li>If the type is {@link Type#SUBSCRIPTION}, then the value must be one of "both", "to", "from", or "none".</li>
-     * </ul>
-     *
-     * @param value The value.
-     * @see #getValue()
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
      * Gets the order in which privacy items are processed by the server.
      *
      * @return The order.
-     * @see #setOrder(int)
      */
     public long getOrder() {
         return order;
-    }
-
-    /**
-     * Gets the order in which privacy items are processed by the server.
-     *
-     * @param order The order.
-     * @see #getOrder()
-     */
-    public void setOrder(int order) {
-        this.order = order;
     }
 
     /**

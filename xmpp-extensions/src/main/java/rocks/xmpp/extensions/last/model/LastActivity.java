@@ -39,6 +39,9 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "query")
 public final class LastActivity {
 
+    /**
+     * jabber:iq:last
+     */
     public static final String NAMESPACE = "jabber:iq:last";
 
     @XmlAttribute

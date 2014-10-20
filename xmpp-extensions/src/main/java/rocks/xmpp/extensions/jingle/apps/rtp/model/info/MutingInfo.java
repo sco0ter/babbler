@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Christian Schudt
  */
 @XmlTransient
-public abstract class MutingInfo {
+abstract class MutingInfo {
 
     @XmlAttribute(name = "creator")
     private Creator creator;

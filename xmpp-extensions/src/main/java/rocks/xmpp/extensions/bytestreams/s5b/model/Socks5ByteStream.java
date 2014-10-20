@@ -34,6 +34,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,10 +45,13 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class Socks5ByteStream {
 
+    /**
+     * http://jabber.org/protocol/bytestreams
+     */
     public static final String NAMESPACE = "http://jabber.org/protocol/bytestreams";
 
     @XmlElement(name = "streamhost")
-    private List<StreamHost> streamHosts = new ArrayList<>();
+    private final List<StreamHost> streamHosts = new ArrayList<>();
 
     @XmlElement(name = "streamhost-used")
     private StreamHostUsed streamHostUsed;
@@ -136,7 +140,7 @@ public final class Socks5ByteStream {
      * @return The stream hosts.
      */
     public List<StreamHost> getStreamHosts() {
-        return streamHosts;
+        return Collections.unmodifiableList(streamHosts);
     }
 
     /**

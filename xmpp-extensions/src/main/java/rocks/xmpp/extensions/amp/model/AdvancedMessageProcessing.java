@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +48,9 @@ import java.util.List;
 @XmlSeeAlso({FailedRules.class, UnsupportedActions.class, UnsupportedConditions.class, InvalidRules.class, AdvancedMessageProcessingFeature.class})
 public final class AdvancedMessageProcessing {
 
+    @XmlElement(name = "rule")
+    private final List<Rule> rules = new ArrayList<>();
+
     @XmlAttribute(name = "from")
     private Jid from;
 
@@ -59,9 +63,6 @@ public final class AdvancedMessageProcessing {
     @XmlAttribute(name = "to")
     private Jid to;
 
-    @XmlElement(name = "rule")
-    private List<Rule> rules = new ArrayList<>();
-
     private AdvancedMessageProcessing() {
     }
 
@@ -71,7 +72,7 @@ public final class AdvancedMessageProcessing {
      * @param rules The rules.
      */
     public AdvancedMessageProcessing(Rule... rules) {
-        this.rules = Arrays.asList(rules);
+        this.rules.addAll(Arrays.asList(rules));
     }
 
     /**
@@ -80,7 +81,7 @@ public final class AdvancedMessageProcessing {
      * @param rules The rules.
      */
     public AdvancedMessageProcessing(List<Rule> rules) {
-        this.rules = rules;
+        this.rules.addAll(rules);
     }
 
     /**
@@ -90,7 +91,7 @@ public final class AdvancedMessageProcessing {
      * @param perHop The per-hop attribute.
      */
     public AdvancedMessageProcessing(List<Rule> rules, boolean perHop) {
-        this.rules = rules;
+        this.rules.addAll(rules);
         this.perHop = perHop;
     }
 
@@ -103,7 +104,7 @@ public final class AdvancedMessageProcessing {
      * @param to     The to attribute.
      */
     public AdvancedMessageProcessing(List<Rule> rules, Rule.Action status, Jid from, Jid to) {
-        this.rules = rules;
+        this.rules.addAll(rules);
         this.status = status;
         this.from = from;
         this.to = to;
@@ -115,7 +116,7 @@ public final class AdvancedMessageProcessing {
      * @return The rules.
      */
     public List<Rule> getRules() {
-        return rules;
+        return Collections.unmodifiableList(rules);
     }
 
     /**

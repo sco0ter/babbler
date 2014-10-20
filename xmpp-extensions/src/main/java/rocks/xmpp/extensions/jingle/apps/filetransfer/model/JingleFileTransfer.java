@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -110,7 +111,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
 
         @Override
         public List<Hash> getHashes() {
-            return hashes;
+            return Collections.unmodifiableList(hashes);
         }
 
         @Override

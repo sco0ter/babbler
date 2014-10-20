@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.reach.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,17 +43,22 @@ public final class Reachability {
     public static final String NAMESPACE = "urn:xmpp:reach:0";
 
     @XmlElement(name = "addr")
-    private List<Address> addresses = new ArrayList<>();
+    private final List<Address> addresses = new ArrayList<>();
 
     public Reachability(List<Address> addresses) {
-        this.addresses = addresses;
+        this.addresses.addAll(addresses);
     }
 
     public Reachability() {
     }
 
+    /**
+     * Gets the addresses.
+     *
+     * @return The addresses.
+     */
     public List<Address> getAddresses() {
-        return addresses;
+        return Collections.unmodifiableList(addresses);
     }
 
     @Override

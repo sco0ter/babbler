@@ -35,7 +35,6 @@ import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
-import rocks.xmpp.extensions.blocking.model.Item;
 import rocks.xmpp.extensions.blocking.model.Unblock;
 
 import java.util.*;
@@ -82,9 +81,9 @@ public final class BlockingManager extends ExtensionManager {
                     synchronized (blockedContacts) {
                         if (block != null) {
                             List<Jid> pushedContacts = new ArrayList<>();
-                            for (Item item : block.getItems()) {
-                                blockedContacts.add(item.getJid());
-                                pushedContacts.add(item.getJid());
+                            for (Jid item : block.getItems()) {
+                                blockedContacts.add(item);
+                                pushedContacts.add(item);
                             }
                             xmppSession.send(iq.createResult());
                             e.consume();
@@ -98,9 +97,9 @@ public final class BlockingManager extends ExtensionManager {
                                     pushedContacts.addAll(blockedContacts);
                                     blockedContacts.clear();
                                 } else {
-                                    for (Item item : unblock.getItems()) {
-                                        blockedContacts.remove(item.getJid());
-                                        pushedContacts.add(item.getJid());
+                                    for (Jid item : unblock.getItems()) {
+                                        blockedContacts.remove(item);
+                                        pushedContacts.add(item);
                                     }
                                 }
                                 xmppSession.send(iq.createResult());
@@ -157,8 +156,8 @@ public final class BlockingManager extends ExtensionManager {
             IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
             BlockList blockList = result.getExtension(BlockList.class);
             if (blockList != null) {
-                for (Item item : blockList.getItems()) {
-                    blockedContacts.add(item.getJid());
+                for (Jid item : blockList.getItems()) {
+                    blockedContacts.add(item);
                 }
             }
             return blockedContacts;
@@ -174,10 +173,8 @@ public final class BlockingManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
      */
     public void blockContact(Jid... jids) throws XmppException {
-        List<Item> items = new ArrayList<>();
-        for (Jid jid : jids) {
-            items.add(new Item(jid));
-        }
+        List<Jid> items = new ArrayList<>();
+        Collections.addAll(items, jids);
         xmppSession.query(new IQ(IQ.Type.SET, new Block(items)));
     }
 
@@ -191,10 +188,8 @@ public final class BlockingManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblockall">3.5 User Unblocks All Contacts</a>
      */
     public void unblockContact(Jid... jids) throws XmppException {
-        List<Item> items = new ArrayList<>();
-        for (Jid jid : jids) {
-            items.add(new Item(jid));
-        }
+        List<Jid> items = new ArrayList<>();
+        Collections.addAll(items, jids);
         xmppSession.query(new IQ(IQ.Type.SET, new Unblock(items)));
     }
 }

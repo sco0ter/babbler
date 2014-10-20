@@ -25,8 +25,7 @@
 package rocks.xmpp.extensions.offline.model;
 
 import javax.xml.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * The implementation of the {@code <offline/>} element in the {@code http://jabber.org/protocol/offline} namespace.
@@ -38,6 +37,9 @@ import java.util.List;
 @XmlRootElement(name = "offline")
 public final class OfflineMessage {
 
+    /**
+     * http://jabber.org/protocol/offline
+     */
     public static final String NAMESPACE = "http://jabber.org/protocol/offline";
 
     @XmlElement(name = "item")
@@ -52,8 +54,12 @@ public final class OfflineMessage {
     public OfflineMessage() {
     }
 
-    public OfflineMessage(Item item) {
-        items.add(item);
+    public OfflineMessage(Item... item) {
+        items.addAll(Arrays.asList(item));
+    }
+
+    public OfflineMessage(Collection<Item> items) {
+        this.items.addAll(items);
     }
 
     public OfflineMessage(boolean fetch, boolean purge) {
@@ -79,7 +85,7 @@ public final class OfflineMessage {
      * @return The items.
      */
     public List<Item> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     public static final class Item {

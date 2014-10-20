@@ -85,9 +85,10 @@ public final class BookmarkManager extends ExtensionManager {
      */
     public void addBookmark(Bookmark bookmark) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        bookmarkStorage.getBookmarks().remove(bookmark);
-        bookmarkStorage.getBookmarks().add(bookmark);
-        privateDataManager.storeData(bookmarkStorage);
+        List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
+        bookmarks.remove(bookmark);
+        bookmarks.add(bookmark);
+        privateDataManager.storeData(new BookmarkStorage(bookmarks));
     }
 
     /**
@@ -99,8 +100,9 @@ public final class BookmarkManager extends ExtensionManager {
      */
     public void removeChatRoomBookmark(Jid chatRoom) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        bookmarkStorage.getBookmarks().remove(new ChatRoomBookmark("", chatRoom));
-        privateDataManager.storeData(bookmarkStorage);
+        List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
+        bookmarks.remove(new ChatRoomBookmark("", chatRoom));
+        privateDataManager.storeData(new BookmarkStorage(bookmarks));
     }
 
     /**
@@ -112,8 +114,9 @@ public final class BookmarkManager extends ExtensionManager {
      */
     public void removeWebPageBookmark(URL webPage) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        bookmarkStorage.getBookmarks().remove(new WebPageBookmark("", webPage));
-        privateDataManager.storeData(bookmarkStorage);
+        List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
+        bookmarks.remove(new WebPageBookmark("", webPage));
+        privateDataManager.storeData(new BookmarkStorage(bookmarks));
     }
 
     @SuppressWarnings("unchecked")

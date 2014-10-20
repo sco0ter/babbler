@@ -31,7 +31,6 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
-import rocks.xmpp.extensions.blocking.model.Item;
 import rocks.xmpp.extensions.blocking.model.Unblock;
 
 import javax.xml.bind.JAXBException;
@@ -58,15 +57,15 @@ public class BlockingTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         BlockList blockList = iq.getExtension(BlockList.class);
         Assert.assertEquals(blockList.getItems().size(), 2);
-        Assert.assertEquals(blockList.getItems().get(0).getJid(), Jid.valueOf("romeo@montague.net"));
-        Assert.assertEquals(blockList.getItems().get(1).getJid(), Jid.valueOf("iago@shakespeare.lit"));
+        Assert.assertEquals(blockList.getItems().get(0), Jid.valueOf("romeo@montague.net"));
+        Assert.assertEquals(blockList.getItems().get(1), Jid.valueOf("iago@shakespeare.lit"));
         Assert.assertNotNull(blockList);
     }
 
     @Test
     public void marshalBlock() throws JAXBException, XMLStreamException {
-        List<Item> items = new ArrayList<>();
-        items.add(new Item(Jid.valueOf("romeo@montague.net")));
+        List<Jid> items = new ArrayList<>();
+        items.add(Jid.valueOf("romeo@montague.net"));
         IQ iq = new IQ("1", IQ.Type.SET, new Block(items));
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"set\"><block xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></block></iq>");
@@ -74,8 +73,8 @@ public class BlockingTest extends XmlTest {
 
     @Test
     public void marshalUnblock() throws JAXBException, XMLStreamException {
-        List<Item> items = new ArrayList<>();
-        items.add(new Item(Jid.valueOf("romeo@montague.net")));
+        List<Jid> items = new ArrayList<>();
+        items.add(Jid.valueOf("romeo@montague.net"));
         IQ iq = new IQ("1", IQ.Type.SET, new Unblock(items));
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"set\"><unblock xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></unblock></iq>");

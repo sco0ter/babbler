@@ -125,7 +125,7 @@ public final class ChatRoomBookmark extends Bookmark {
         }
         ChatRoomBookmark other = (ChatRoomBookmark) o;
 
-        return (room == null ? other.room == null : room.equals(other.room));
+        return room == null ? other.room == null : room.equals(other.room);
 
     }
 

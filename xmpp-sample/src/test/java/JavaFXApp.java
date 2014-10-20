@@ -479,8 +479,7 @@ public class JavaFXApp extends Application {
                                 public void handle(ActionEvent actionEvent) {
                                     SearchManager searchManager = xmppSession.getExtensionManager(SearchManager.class);
                                     try {
-                                        Search search = new Search();
-                                        search.setFirst("22*");
+                                        Search search = new Search("22*", null, null, null);
                                         searchManager.discoverSearchFields(new Jid("search.dev"));
                                         Search result = searchManager.search(search, new Jid("search.dev"));
                                         for (Search.Item item : result.getItems()) {

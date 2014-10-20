@@ -26,10 +26,7 @@ package rocks.xmpp.extensions.shim.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * The implementation of the {@code <headers/>} element in the {@code http://jabber.org/protocol/shim} namespace.
@@ -42,16 +39,19 @@ import java.util.List;
 @XmlRootElement(name = "headers")
 public final class Headers {
 
+    /**
+     * http://jabber.org/protocol/shim
+     */
     public static final String NAMESPACE = "http://jabber.org/protocol/shim";
 
     @XmlElement(name = "header")
-    private List<Header> headers = new ArrayList<>();
+    private final List<Header> headers = new ArrayList<>();
 
     private Headers() {
     }
 
     public Headers(Header... headers) {
-        this.headers = Arrays.asList(headers);
+        this.headers.addAll(Arrays.asList(headers));
     }
 
     /**
@@ -76,7 +76,7 @@ public final class Headers {
      * @return The headers.
      */
     public List<Header> getHeaders() {
-        return headers;
+        return Collections.unmodifiableList(headers);
     }
 
     @Override

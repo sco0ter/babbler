@@ -119,7 +119,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
     public List<Hash> getHashes() {
         if (hash != null) {
             // XEP-0096 seem to be hex encoded, while XEP-300 are base64 encoded. Convert from hex to byte array.
-            return Arrays.asList(new Hash(new BigInteger(hash, 16).toByteArray(), "md5"));
+            return Collections.unmodifiableList(Arrays.asList(new Hash(new BigInteger(hash, 16).toByteArray(), "md5")));
         } else {
             return Collections.emptyList();
         }

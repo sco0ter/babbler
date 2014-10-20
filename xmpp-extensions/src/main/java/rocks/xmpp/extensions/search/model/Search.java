@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.rsm.model.ResultSet;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -119,80 +120,36 @@ public final class Search {
      * Gets the first name.
      *
      * @return The first name.
-     * @see #setFirst(String)
      */
     public String getFirst() {
         return first;
     }
 
     /**
-     * Sets the first name.
-     *
-     * @param first The first name.
-     * @see #getFirst()
-     */
-    public void setFirst(String first) {
-        this.first = first;
-    }
-
-    /**
      * Gets the last name.
      *
      * @return The last name.
-     * @see #setLast(String)
      */
     public String getLast() {
         return last;
     }
 
     /**
-     * Sets the last name.
-     *
-     * @param last The last name.
-     * @see #getLast()
-     */
-    public void setLast(String last) {
-        this.last = last;
-    }
-
-    /**
      * Gets the nick name.
      *
      * @return The nick name.
-     * @see #setNick(String)
      */
     public String getNick() {
         return nick;
     }
 
     /**
-     * Sets the nick name.
-     *
-     * @param nick The nick name.
-     * @see #getNick()
-     */
-    public void setNick(String nick) {
-        this.nick = nick;
-    }
-
-    /**
      * Gets the email address.
      *
      * @return The email address.
-     * @see #setEmail(String)
      */
     public String getEmail() {
         return email;
-    }
-
-    /**
-     * Sets the email address.
-     *
-     * @param email The email address.
-     * @see #getEmail()
-     */
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     /**
@@ -201,7 +158,7 @@ public final class Search {
      * @return The items.
      */
     public List<Item> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     /**
@@ -228,22 +185,10 @@ public final class Search {
     }
 
     /**
-     * Sets the result set information.
-     *
-     * @param resultSet The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
-     */
-    public void setResultSet(ResultSet resultSet) {
-        this.resultSet = resultSet;
-    }
-
-    /**
      * The implementation of a search result item.
      */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    public static class Item {
+    public static final class Item {
 
-        @XmlJavaTypeAdapter(JidAdapter.class)
         @XmlAttribute(name = "jid")
         private Jid jid;
 

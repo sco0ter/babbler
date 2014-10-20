@@ -29,9 +29,14 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = "jabber:iq:search", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.search.model;
+
+import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

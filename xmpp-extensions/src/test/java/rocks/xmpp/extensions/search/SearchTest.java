@@ -87,8 +87,7 @@ public class SearchTest extends XmlTest {
 
     @Test
     public void marshalSearchRequest() throws JAXBException, XMLStreamException {
-        Search search = new Search();
-        search.setLast("Capulet");
+        Search search = new Search(null, "Capulet", null, null);
         String xml = marshal(search);
         Assert.assertEquals("<query xmlns=\"jabber:iq:search\"><last>Capulet</last></query>", xml);
     }

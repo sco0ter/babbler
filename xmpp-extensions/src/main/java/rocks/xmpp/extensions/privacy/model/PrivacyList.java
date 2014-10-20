@@ -30,7 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -213,7 +212,10 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     }
 
     /**
-     * @return
+     * Gets the privacy list marked as active list.
+     *
+     * @return The list as active list.
+     * @see #isActive()
      */
     public PrivacyList asActive() {
         PrivacyList privacyList = new PrivacyList(name, items);
@@ -222,7 +224,10 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     }
 
     /**
-     * @return
+     * Gets the privacy list marked as default list.
+     *
+     * @return The privacy list as default list.
+     * @see #isDefault()
      */
     public PrivacyList asDefault() {
         PrivacyList privacyList = new PrivacyList(name, items);

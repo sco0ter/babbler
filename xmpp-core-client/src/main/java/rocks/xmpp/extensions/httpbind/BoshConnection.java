@@ -222,6 +222,8 @@ public final class BoshConnection extends Connection {
                     // If the URL could not be resolved, use the domain name and port 5280 as default.
                     url = new URL(protocol, getXmppSession().getDomain(), getPort(), boshConnectionConfiguration.getFile());
                 }
+                port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
+                hostname = url.getHost();
             } else {
                 throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
             }

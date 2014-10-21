@@ -115,6 +115,8 @@ public final class BoshConnection extends Connection {
 
     private URL url;
 
+    private volatile boolean streamRestartsSupported;
+
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.boshConnectionConfiguration = configuration;
@@ -274,6 +276,7 @@ public final class BoshConnection extends Connection {
             if (body.getFrom() != null) {
                 getXmppSession().setXmppServiceDomain(body.getFrom().getDomain());
             }
+            streamRestartsSupported = body.getRestartLogic() != null && body.getRestartLogic();
         }
 
         highestReceivedRid = body.getRid() != null ? body.getRid() : rid;
@@ -292,7 +295,9 @@ public final class BoshConnection extends Connection {
 
         if (body.getWrappedObjects() != null) {
             for (Object wrappedObject : body.getWrappedObjects()) {
-                getXmppSession().handleElement(wrappedObject);
+                if (getXmppSession().handleElement(wrappedObject) && streamRestartsSupported) {
+                    restartStream();
+                }
             }
         }
     }

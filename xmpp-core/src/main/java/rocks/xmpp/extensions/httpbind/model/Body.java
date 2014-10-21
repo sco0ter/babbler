@@ -157,13 +157,13 @@ public final class Body {
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private String lang;
 
-    @XmlAttribute(namespace = "urn:xmpp:xbosh")
+    @XmlAttribute(name = "version", namespace = "urn:xmpp:xbosh")
     private String version;
 
-    @XmlAttribute(namespace = "urn:xmpp:xbosh")
+    @XmlAttribute(name = "restartlogic", namespace = "urn:xmpp:xbosh")
     private Boolean restartLogic;
 
-    @XmlAttribute(namespace = "urn:xmpp:xbosh")
+    @XmlAttribute(name = "restart", namespace = "urn:xmpp:xbosh")
     private Boolean restart;
 
     public Body(Object wrappedObject) {

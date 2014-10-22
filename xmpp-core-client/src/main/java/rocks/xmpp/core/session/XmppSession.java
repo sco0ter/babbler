@@ -31,7 +31,13 @@ import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.sasl.AuthenticationManager;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.*;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.StanzaException;
@@ -63,8 +69,18 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -195,7 +211,6 @@ public class XmppSession implements Closeable {
             unmarshaller = configuration.getJAXBContext().createUnmarshaller();
             marshaller = configuration.getJAXBContext().createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-
         } catch (JAXBException e) {
             throw new IllegalArgumentException(e);
         }
@@ -831,7 +846,11 @@ public class XmppSession implements Closeable {
             // Revert status
             updateStatus(Status.CONNECTED);
             if (exception != null) {
-                e.initCause(exception);
+                Throwable ex = e;
+                while (ex.getCause() != null) {
+                    ex = e.getCause();
+                }
+                ex.initCause(exception);
             }
             if (e instanceof LoginException) {
                 throw (LoginException) e;
@@ -859,7 +878,11 @@ public class XmppSession implements Closeable {
             // Revert status
             updateStatus(Status.CONNECTED);
             if (exception != null) {
-                e.initCause(exception);
+                Throwable ex = e;
+                while (ex.getCause() != null) {
+                    ex = e.getCause();
+                }
+                ex.initCause(exception);
             }
             throw e;
         }
@@ -1170,7 +1193,6 @@ public class XmppSession implements Closeable {
             lock.unlock();
         }
     }
-
 
     /**
      * Gets the default timeout for synchronous operations.

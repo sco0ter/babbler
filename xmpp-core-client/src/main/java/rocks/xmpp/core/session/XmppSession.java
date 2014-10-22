@@ -705,6 +705,8 @@ public class XmppSession implements Closeable {
             throw new IllegalStateException("Already connected.");
         }
 
+        Status oldStatus = status;
+
         // Should either be INITIAL or DISCONNECTED
         Status previousStatus = status;
         updateStatus(Status.CONNECTING);
@@ -739,7 +741,7 @@ public class XmppSession implements Closeable {
             throw new IOException(e);
         }
         if (exception != null) {
-            updateStatus(Status.INITIAL);
+            updateStatus(oldStatus);
             throw new IOException(exception);
         }
         updateStatus(Status.CONNECTED);

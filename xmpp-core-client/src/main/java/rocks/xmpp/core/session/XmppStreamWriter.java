@@ -72,7 +72,7 @@ final class XmppStreamWriter {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.getMarshaller();
-        this.debugger = xmppSession.getConfiguration().getDebugger();
+        this.debugger = xmppSession.getDebugger();
 
         executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override

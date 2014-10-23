@@ -98,7 +98,7 @@ public class SampleApplication {
                     Class<?>[] extensions = new Class<?>[0];
                     Arrays.asList(extensions, XmppSession.class);
                     XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(new VisualDebugger())
+                            .debugger(VisualDebugger.class)
                             .defaultResponseTimeout(5000)
                             .build();
 

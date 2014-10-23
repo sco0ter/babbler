@@ -53,7 +53,7 @@ public class GeolocationPublisher {
                             .build();
 
                     XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(new VisualDebugger())
+                            .debugger(VisualDebugger.class)
                             .defaultResponseTimeout(5000)
                             .build();
 

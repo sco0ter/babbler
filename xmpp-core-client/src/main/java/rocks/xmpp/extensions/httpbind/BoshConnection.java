@@ -120,7 +120,7 @@ public final class BoshConnection extends Connection {
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.boshConnectionConfiguration = configuration;
-        this.debugger = getXmppSession().getConfiguration().getDebugger();
+        this.debugger = getXmppSession().getDebugger();
 
         // Threads created by this thread pool, will be used to do simultaneous requests.
         // Even in the unusual case, where the connection manager allows for more requests, two are enough.

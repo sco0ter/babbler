@@ -69,7 +69,7 @@ final class XmppStreamReader {
     public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) throws JAXBException {
         this.connection = connection;
         this.xmppSession = xmppSession;
-        this.debugger = xmppSession.getConfiguration().getDebugger();
+        this.debugger = xmppSession.getDebugger();
 
         executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override

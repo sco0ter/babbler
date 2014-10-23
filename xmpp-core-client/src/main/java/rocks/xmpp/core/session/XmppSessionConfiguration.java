@@ -52,7 +52,7 @@ public final class XmppSessionConfiguration {
 
     private final JAXBContext jaxbContext;
 
-    private XmppDebugger xmppDebugger;
+    private Class<? extends XmppDebugger> xmppDebugger;
 
     private int defaultResponseTimeout;
 
@@ -149,7 +149,7 @@ public final class XmppSessionConfiguration {
      *
      * @return The debugger.
      */
-    public final XmppDebugger getDebugger() {
+    public final Class<? extends XmppDebugger> getDebugger() {
         return xmppDebugger;
     }
 
@@ -167,7 +167,7 @@ public final class XmppSessionConfiguration {
      */
     public static final class Builder {
 
-        private XmppDebugger xmppDebugger;
+        private Class<? extends XmppDebugger> xmppDebugger;
 
         private CoreContext context;
 
@@ -183,7 +183,7 @@ public final class XmppSessionConfiguration {
          * @param xmppDebugger The debugger or null, if you don't want to use a debugger.
          * @return The debugger.
          */
-        public Builder debugger(XmppDebugger xmppDebugger) {
+        public Builder debugger(Class<? extends XmppDebugger> xmppDebugger) {
             this.xmppDebugger = xmppDebugger;
             return this;
         }

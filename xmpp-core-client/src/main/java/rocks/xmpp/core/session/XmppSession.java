@@ -30,14 +30,9 @@ import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.sasl.AuthenticationManager;
 import rocks.xmpp.core.sasl.model.Mechanisms;
+import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
-import rocks.xmpp.core.stanza.StanzaFilter;
+import rocks.xmpp.core.stanza.*;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.StanzaException;
@@ -69,18 +64,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -176,6 +161,8 @@ public class XmppSession implements Closeable {
     private Thread shutdownHook;
 
     private boolean wasLoggedIn;
+
+    private XmppDebugger debugger;
 
     /**
      * Creates a session with the specified service domain, by using the default configuration.
@@ -283,6 +270,15 @@ public class XmppSession implements Closeable {
         // Every connection supports XEP-106 JID Escaping.
         getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
 
+        if (configuration.getDebugger() != null) {
+            try {
+                this.debugger = configuration.getDebugger().newInstance();
+                this.debugger.initialize(this);
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         if (connectionConfigurations.length == 0) {
             // Add two fallback connections. Host and port will be determined by the XMPP domain via SRV lookup.
             connections.add(TcpConnectionConfiguration.getDefault().createConnection(this));
@@ -291,10 +287,6 @@ public class XmppSession implements Closeable {
             for (ConnectionConfiguration connectionConfiguration : connectionConfigurations) {
                 connections.add(connectionConfiguration.createConnection(this));
             }
-        }
-
-        if (configuration.getDebugger() != null) {
-            configuration.getDebugger().initialize(this);
         }
     }
 
@@ -1217,6 +1209,10 @@ public class XmppSession implements Closeable {
 
     public XmppSessionConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public XmppDebugger getDebugger() {
+        return debugger;
     }
 
     /**

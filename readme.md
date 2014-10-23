@@ -1,4 +1,4 @@
-**Babbler** is a young [XMPP](http://xmpp.org) client library for Java SE 7 based on JAXB as XML processing technology.
+**Babbler** is a young [XMPP](http://xmpp.org) client library for Java SE 7 based on [JAXB](http://docs.oracle.com/javase/tutorial/jaxb/intro/index.html) as XML processing technology.
 
 It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 700+ unit tests).
 
@@ -177,10 +177,6 @@ XmppSession xmppSession = new XmppSession("domain", tcpConfiguration, boshConfig
 ```
 
 During connecting, the session will try all configured connections in order, until a connection is established.
-
-Here\'s an overview over the relation between the session and connections:
-
-![Architecture](XmppSession.png)
 
 
 #### Securing the Connection

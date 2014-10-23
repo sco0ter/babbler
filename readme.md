@@ -15,6 +15,22 @@ Since this project is quite young, the API might change. Comments on the API are
 | Latest Version in Maven Central | [![Maven Central](http://img.shields.io/maven-central/v/rocks.xmpp/xmpp-core-client.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/rocks.xmpp/xmpp-core-client)  |
 | License                         | [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://bitbucket.org/sco0ter/babbler/src/master/LICENSE.txt)                                              |
 
+
+# Maven Dependency
+
+```xml
+<dependency>
+    <groupId>rocks.xmpp</groupId>
+    <artifactId>xmpp-core-client</artifactId>
+    <version>0.4.0-beta.1</version>
+</dependency>
+<dependency>
+    <groupId>rocks.xmpp</groupId>
+    <artifactId>xmpp-extensions-client</artifactId>
+    <version>0.4.0-beta.1</version>
+</dependency>
+```
+
 # Supported Extensions
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final' that are applicable to XMPP clients)*
 

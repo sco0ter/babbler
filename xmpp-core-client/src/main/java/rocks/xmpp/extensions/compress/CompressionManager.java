@@ -25,8 +25,8 @@
 package rocks.xmpp.extensions.compress;
 
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.FeatureListener;
-import rocks.xmpp.core.stream.FeatureNegotiator;
+import rocks.xmpp.core.stream.StreamFeatureListener;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.extensions.compress.model.Compress;
 import rocks.xmpp.extensions.compress.model.Compressed;
 import rocks.xmpp.extensions.compress.model.CompressionMethod;
@@ -43,16 +43,16 @@ import rocks.xmpp.extensions.compress.model.feature.Compression;
  *
  * @author Christian Schudt
  */
-public final class CompressionManager extends FeatureNegotiator {
+public final class CompressionManager extends StreamFeatureNegotiator {
 
     private final XmppSession xmppSession;
 
     // Currently only support zlib compression.
     private final CompressionMethod method;
 
-    public CompressionManager(XmppSession xmppSession, FeatureListener featureListener, CompressionMethod compressionMethod) {
+    public CompressionManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, CompressionMethod compressionMethod) {
         super(Compression.class);
-        addFeatureListener(featureListener);
+        addFeatureListener(streamFeatureListener);
         this.xmppSession = xmppSession;
         this.method = compressionMethod;
     }

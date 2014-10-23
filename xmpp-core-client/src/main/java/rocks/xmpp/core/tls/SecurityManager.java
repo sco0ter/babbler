@@ -25,8 +25,8 @@
 package rocks.xmpp.core.tls;
 
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.FeatureListener;
-import rocks.xmpp.core.stream.FeatureNegotiator;
+import rocks.xmpp.core.stream.StreamFeatureListener;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -37,16 +37,16 @@ import rocks.xmpp.core.tls.model.StartTls;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
  */
-public final class SecurityManager extends FeatureNegotiator {
+public final class SecurityManager extends StreamFeatureNegotiator {
 
     private final XmppSession xmppSession;
 
     private final boolean isSecure;
 
-    public SecurityManager(XmppSession xmppSession, FeatureListener featureListener, boolean isSecure) {
+    public SecurityManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, boolean isSecure) {
         super(StartTls.class);
         this.isSecure = isSecure;
-        addFeatureListener(featureListener);
+        addFeatureListener(streamFeatureListener);
         if (xmppSession == null) {
             throw new IllegalArgumentException("connection must not be null.");
         }

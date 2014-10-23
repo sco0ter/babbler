@@ -40,10 +40,10 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
-import rocks.xmpp.core.stream.FeatureEvent;
-import rocks.xmpp.core.stream.FeatureListener;
-import rocks.xmpp.core.stream.FeatureNegotiator;
-import rocks.xmpp.core.stream.FeaturesManager;
+import rocks.xmpp.core.stream.StreamFeatureEvent;
+import rocks.xmpp.core.stream.StreamFeatureListener;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamException;
@@ -108,7 +108,7 @@ public class XmppSession implements Closeable {
 
     private final PresenceManager presenceManager;
 
-    private final FeaturesManager featuresManager;
+    private final StreamFeaturesManager streamFeaturesManager;
 
     private final ChatManager chatManager;
 
@@ -224,13 +224,13 @@ public class XmppSession implements Closeable {
         Runtime.getRuntime().addShutdownHook(shutdownHook);
 
         reconnectionManager = new ReconnectionManager(this);
-        featuresManager = new FeaturesManager(this);
+        streamFeaturesManager = new StreamFeaturesManager(this);
         chatManager = new ChatManager(this);
         authenticationManager = new AuthenticationManager(this, lock);
-        authenticationManager.addFeatureListener(new FeatureListener() {
+        authenticationManager.addFeatureListener(new StreamFeatureListener() {
             @Override
-            public void negotiationStatusChanged(FeatureEvent featureEvent) {
-                if (featureEvent.getStatus() == FeatureNegotiator.Status.INCOMPLETE && featureEvent.getElement() instanceof Mechanisms) {
+            public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) {
+                if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.INCOMPLETE && streamFeatureEvent.getElement() instanceof Mechanisms) {
                     // Release the waiting thread.
                     lock.lock();
                     try {
@@ -247,8 +247,8 @@ public class XmppSession implements Closeable {
         streamNegotiatedUntilSasl = lock.newCondition();
         streamNegotiatedUntilResourceBinding = lock.newCondition();
 
-        featuresManager.addFeatureNegotiator(authenticationManager);
-        featuresManager.addFeatureNegotiator(new FeatureNegotiator(Bind.class) {
+        streamFeaturesManager.addFeatureNegotiator(authenticationManager);
+        streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(Bind.class) {
             @Override
             public Status processNegotiation(Object element) throws Exception {
                 lock.lock();
@@ -893,7 +893,7 @@ public class XmppSession implements Closeable {
         this.resource = resource;
 
         // Then wait until the bind feature is received, if it hasn't yet.
-        if (!featuresManager.getFeatures().containsKey(Bind.class)) {
+        if (!streamFeaturesManager.getFeatures().containsKey(Bind.class)) {
             lock.lock();
             try {
                 if (!streamNegotiatedUntilResourceBinding.await(5, TimeUnit.SECONDS)) {
@@ -926,7 +926,7 @@ public class XmppSession implements Closeable {
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
-        if (featuresManager.getFeatures().containsKey(Session.class)) {
+        if (streamFeaturesManager.getFeatures().containsKey(Session.class)) {
             try {
                 query(new IQ(IQ.Type.SET, new Session()));
             } catch (StanzaException e) {
@@ -962,12 +962,12 @@ public class XmppSession implements Closeable {
                 }
             });
         } else if (element instanceof StreamFeatures) {
-            featuresManager.processFeatures((StreamFeatures) element);
+            streamFeaturesManager.processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {
             throw new StreamException((StreamError) element);
         } else {
             // Let's see, if the element is known to any feature negotiator.
-            return featuresManager.processElement(element);
+            return streamFeaturesManager.processElement(element);
         }
         return false;
     }
@@ -1064,8 +1064,8 @@ public class XmppSession implements Closeable {
      *
      * @return The features manager.
      */
-    public final FeaturesManager getFeaturesManager() {
-        return featuresManager;
+    public final StreamFeaturesManager getStreamFeaturesManager() {
+        return streamFeaturesManager;
     }
 
     /**

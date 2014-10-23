@@ -54,7 +54,7 @@ public final class RegistrationManager extends ExtensionManager {
      */
     public boolean isRegistrationSupported() throws XmppException {
         // server returns a stream header to the client and MAY announce support for in-band registration by including the relevant stream feature.
-        boolean isSupported = xmppSession.getFeaturesManager().getFeatures().containsKey(RegisterFeature.class);
+        boolean isSupported = xmppSession.getStreamFeaturesManager().getFeatures().containsKey(RegisterFeature.class);
 
         // Since the stream feature is only optional, discover the server features, too.
         if (!isSupported) {

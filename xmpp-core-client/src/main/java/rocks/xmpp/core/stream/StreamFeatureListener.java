@@ -31,13 +31,13 @@ import java.util.EventListener;
  *
  * @author Christian Schudt
  */
-public interface FeatureListener extends EventListener {
+public interface StreamFeatureListener extends EventListener {
 
     /**
      * Fired whenever the status of a feature negotiation has changed.
      *
-     * @param featureEvent The feature event.
+     * @param streamFeatureEvent The feature event.
      * @throws Exception If any exception occurred during handling of the event.
      */
-    void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception;
+    void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) throws Exception;
 }

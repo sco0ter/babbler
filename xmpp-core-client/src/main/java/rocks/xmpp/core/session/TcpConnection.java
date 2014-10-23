@@ -24,9 +24,9 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.stream.FeatureEvent;
-import rocks.xmpp.core.stream.FeatureListener;
-import rocks.xmpp.core.stream.FeatureNegotiator;
+import rocks.xmpp.core.stream.StreamFeatureEvent;
+import rocks.xmpp.core.stream.StreamFeatureListener;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
 
@@ -88,19 +88,19 @@ public final class TcpConnection extends Connection {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
 
-        xmppSession.getFeaturesManager().addFeatureNegotiator(new rocks.xmpp.core.tls.SecurityManager(xmppSession, new FeatureListener() {
+        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new rocks.xmpp.core.tls.SecurityManager(xmppSession, new StreamFeatureListener() {
             @Override
-            public void negotiationStatusChanged(FeatureEvent featureEvent) throws Exception {
-                if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
+            public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) throws Exception {
+                if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.SUCCESS) {
                     secureConnection();
                 }
             }
         }, configuration.isSecure()));
 
-        xmppSession.getFeaturesManager().addFeatureNegotiator(new CompressionManager(xmppSession, new FeatureListener() {
+        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new CompressionManager(xmppSession, new StreamFeatureListener() {
             @Override
-            public void negotiationStatusChanged(FeatureEvent featureEvent) {
-                if (featureEvent.getStatus() == FeatureNegotiator.Status.SUCCESS) {
+            public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) {
+                if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.SUCCESS) {
                     compressStream();
                 }
             }

@@ -26,7 +26,7 @@ package rocks.xmpp.core.sasl;
 
 import rocks.xmpp.core.sasl.model.*;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.FeatureNegotiator;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 
 import javax.security.auth.callback.*;
 import javax.security.auth.login.AccountLockedException;
@@ -50,7 +50,7 @@ import java.util.concurrent.locks.Lock;
  *
  * @author Christian Schudt
  */
-public final class AuthenticationManager extends FeatureNegotiator {
+public final class AuthenticationManager extends StreamFeatureNegotiator {
 
     static {
         // The SunSASL Provider only supports: "PLAIN", "CRAM-MD5", "DIGEST-MD5", "GSSAPI", "EXTERNAL".

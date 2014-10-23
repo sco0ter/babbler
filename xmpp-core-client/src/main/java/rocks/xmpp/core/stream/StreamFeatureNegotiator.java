@@ -34,13 +34,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * <p>
  * Classes which extend from this class are responsible to negotiate a single feature.
  * </p>
- * Feature negotiators are registered with the {@link FeaturesManager#addFeatureNegotiator(FeatureNegotiator)} method.
+ * Feature negotiators are registered with the {@link StreamFeaturesManager#addFeatureNegotiator(StreamFeatureNegotiator)} method.
  *
  * @author Christian Schudt
  */
-public abstract class FeatureNegotiator {
+public abstract class StreamFeatureNegotiator {
 
-    private final Set<FeatureListener> featureListeners = new CopyOnWriteArraySet<>();
+    private final Set<StreamFeatureListener> streamFeatureListeners = new CopyOnWriteArraySet<>();
 
     private final Class<? extends StreamFeature> featureClass;
 
@@ -49,28 +49,28 @@ public abstract class FeatureNegotiator {
      *
      * @param featureClass The feature class, which represents the feature, which will be negotiated.
      */
-    public FeatureNegotiator(Class<? extends StreamFeature> featureClass) {
+    public StreamFeatureNegotiator(Class<? extends StreamFeature> featureClass) {
         this.featureClass = featureClass;
     }
 
     /**
      * Adds a feature listener, which will get notified about feature negotiation status changes.
      *
-     * @param featureListener The feature listener.
-     * @see #removeFeatureListener(FeatureListener)
+     * @param streamFeatureListener The feature listener.
+     * @see #removeFeatureListener(StreamFeatureListener)
      */
-    public final void addFeatureListener(FeatureListener featureListener) {
-        featureListeners.add(featureListener);
+    public final void addFeatureListener(StreamFeatureListener streamFeatureListener) {
+        streamFeatureListeners.add(streamFeatureListener);
     }
 
     /**
      * Removes a previously added feature listener.
      *
-     * @param featureListener The feature listener.
-     * @see #addFeatureListener(FeatureListener)
+     * @param streamFeatureListener The feature listener.
+     * @see #addFeatureListener(StreamFeatureListener)
      */
-    public final void removeFeatureListener(FeatureListener featureListener) {
-        featureListeners.remove(featureListener);
+    public final void removeFeatureListener(StreamFeatureListener streamFeatureListener) {
+        streamFeatureListeners.remove(streamFeatureListener);
     }
 
     /**
@@ -84,8 +84,8 @@ public abstract class FeatureNegotiator {
         if (status == null) {
             throw new IllegalArgumentException("status must not be null");
         }
-        for (FeatureListener featureListener : featureListeners) {
-            featureListener.negotiationStatusChanged(new FeatureEvent(this, status, element));
+        for (StreamFeatureListener streamFeatureListener : streamFeatureListeners) {
+            streamFeatureListener.negotiationStatusChanged(new StreamFeatureEvent(this, status, element));
         }
     }
 

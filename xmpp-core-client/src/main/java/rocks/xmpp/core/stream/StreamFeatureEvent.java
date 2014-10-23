@@ -34,11 +34,11 @@ import java.util.EventObject;
  * </p>
  *
  * @author Christian Schudt
- * @see FeatureNegotiator
- * @see FeatureListener
+ * @see StreamFeatureNegotiator
+ * @see StreamFeatureListener
  */
-public final class FeatureEvent extends EventObject {
-    private final FeatureNegotiator.Status status;
+public final class StreamFeatureEvent extends EventObject {
+    private final StreamFeatureNegotiator.Status status;
 
     private final Object element;
 
@@ -48,7 +48,7 @@ public final class FeatureEvent extends EventObject {
      * @param source The feature negotiator on which the event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    FeatureEvent(FeatureNegotiator source, FeatureNegotiator.Status status, Object element) {
+    StreamFeatureEvent(StreamFeatureNegotiator source, StreamFeatureNegotiator.Status status, Object element) {
         super(source);
         this.status = status;
         this.element = element;
@@ -59,7 +59,7 @@ public final class FeatureEvent extends EventObject {
      *
      * @return The negotiation status.
      */
-    public FeatureNegotiator.Status getStatus() {
+    public StreamFeatureNegotiator.Status getStatus() {
         return status;
     }
 

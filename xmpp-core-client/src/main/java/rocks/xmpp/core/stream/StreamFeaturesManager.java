@@ -39,13 +39,13 @@ import java.util.*;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation">4.3.  Stream Negotiation</a></cite></p>
  * <p>Because the receiving entity for a stream acts as a gatekeeper to the domains it services, it imposes certain conditions for connecting as a client or as a peer server. At a minimum, the initiating entity needs to authenticate with the receiving entity before it is allowed to send stanzas to the receiving entity (for client-to-server streams this means using SASL as described under Section 6). However, the receiving entity can consider conditions other than authentication to be mandatory-to-negotiate, such as encryption using TLS as described under Section 5. The receiving entity informs the initiating entity about such conditions by communicating "stream features": the set of particular protocol interactions that the initiating entity needs to complete before the receiving entity will accept XML stanzas from the initiating entity, as well as any protocol interactions that are voluntary-to-negotiate but that might improve the handling of an XML stream (e.g., establishment of application-layer compression as described in [XEP-0138]).</p>
  * </blockquote>
- * <p>Each feature is associated with a {@linkplain FeatureNegotiator feature negotiator}, which negotiates the particular feature.</p>
+ * <p>Each feature is associated with a {@linkplain StreamFeatureNegotiator feature negotiator}, which negotiates the particular feature.</p>
  * <p>This class manages these negotiators, receives XML elements and delegates them to the responsible feature negotiator for further processing.</p>
  * <p>It negotiates the stream by sequentially negotiating each stream feature.</p>
  *
  * @author Christian Schudt
  */
-public final class FeaturesManager {
+public final class StreamFeaturesManager {
 
     /**
      * The features which have been advertised by the server.
@@ -62,14 +62,14 @@ public final class FeaturesManager {
     /**
      * The feature negotiators, which are responsible to negotiate each individual feature.
      */
-    private final List<FeatureNegotiator> featureNegotiators = new ArrayList<>();
+    private final List<StreamFeatureNegotiator> streamFeatureNegotiators = new ArrayList<>();
 
     /**
      * Creates a feature manager.
      *
      * @param xmppSession The connection, features will be negotiated for.
      */
-    public FeaturesManager(XmppSession xmppSession) {
+    public StreamFeaturesManager(XmppSession xmppSession) {
 
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
@@ -83,7 +83,7 @@ public final class FeaturesManager {
                         break;
                     // If the connection is closed, clear everything.
                     case CLOSED:
-                        featureNegotiators.clear();
+                        streamFeatureNegotiators.clear();
                         featuresToNegotiate.clear();
                         negotiatedFeatures.clear();
                         features.clear();
@@ -105,10 +105,10 @@ public final class FeaturesManager {
     /**
      * Adds a new feature negotiator, which is responsible for negotiating an individual feature.
      *
-     * @param featureNegotiator The feature negotiator, which is responsible for the feature.
+     * @param streamFeatureNegotiator The feature negotiator, which is responsible for the feature.
      */
-    public void addFeatureNegotiator(FeatureNegotiator featureNegotiator) {
-        featureNegotiators.add(featureNegotiator);
+    public void addFeatureNegotiator(StreamFeatureNegotiator streamFeatureNegotiator) {
+        streamFeatureNegotiators.add(streamFeatureNegotiator);
     }
 
     /**
@@ -154,14 +154,14 @@ public final class FeaturesManager {
      */
     public boolean processElement(Object element) throws Exception {
         // Check if the element is known to any feature negotiator.
-        for (FeatureNegotiator featureNegotiator : featureNegotiators) {
-            if (featureNegotiator.getFeatureClass() == element || featureNegotiator.canProcess(element)) {
-                FeatureNegotiator.Status status = featureNegotiator.processNegotiation(element);
-                negotiatedFeatures.add(featureNegotiator.getFeatureClass());
+        for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
+            if (streamFeatureNegotiator.getFeatureClass() == element || streamFeatureNegotiator.canProcess(element)) {
+                StreamFeatureNegotiator.Status status = streamFeatureNegotiator.processNegotiation(element);
+                negotiatedFeatures.add(streamFeatureNegotiator.getFeatureClass());
                 // If the feature has been successfully negotiated.
-                if (status == FeatureNegotiator.Status.SUCCESS || status == FeatureNegotiator.Status.IGNORE) {
+                if (status == StreamFeatureNegotiator.Status.SUCCESS || status == StreamFeatureNegotiator.Status.IGNORE) {
                     // Check if the feature expects a restart now.
-                    if (featureNegotiator.needsRestart()) {
+                    if (streamFeatureNegotiator.needsRestart()) {
                         return true;
                     } else {
                         // If no restart is required, negotiate the next feature.
@@ -184,10 +184,10 @@ public final class FeaturesManager {
 
             if (!negotiatedFeatures.contains(advertisedFeature.getClass())) {
                 // See if there's a feature negotiator associated with the feature.
-                for (FeatureNegotiator featureNegotiator : featureNegotiators) {
-                    if (featureNegotiator.getFeatureClass() == advertisedFeature.getClass()) {
+                for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
+                    if (streamFeatureNegotiator.getFeatureClass() == advertisedFeature.getClass()) {
                         // If feature negotiation is incomplete, return and wait until it is completed.
-                        if (featureNegotiator.processNegotiation(advertisedFeature) == FeatureNegotiator.Status.INCOMPLETE) {
+                        if (streamFeatureNegotiator.processNegotiation(advertisedFeature) == StreamFeatureNegotiator.Status.INCOMPLETE) {
                             return;
                         }
                     }

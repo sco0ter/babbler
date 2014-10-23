@@ -22,12 +22,14 @@
  * THE SOFTWARE.
  */
 
-package org.xmpp.extension.commands;
+package rocks.xmpp.extensions.commands;
+
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import org.xmpp.XmlTest;
-import org.xmpp.stanza.client.IQ;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.extensions.commands.model.Command;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

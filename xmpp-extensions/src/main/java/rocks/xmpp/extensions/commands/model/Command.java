@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.commands.model;
 
-
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import javax.xml.bind.annotation.*;
@@ -33,6 +32,7 @@ import javax.xml.bind.annotation.*;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "command")
+@XmlSeeAlso({Command.MalformedAction.class, Command.BadAction.class, Command.BadLocale.class, Command.BadPayload.class, Command.BadSessionId.class, Command.SessionExpired.class})
 public final class Command {
 
     public static final String NAMESPACE = "http://jabber.org/protocol/commands";
@@ -163,6 +163,48 @@ public final class Command {
         public Action getAction() {
             return action;
         }
+    }
+
+    /**
+     * The responding JID does not understand the specified action.
+     */
+    @XmlRootElement(name = "malformed-action")
+    public static final class MalformedAction {
+    }
+
+    /**
+     * The responding JID cannot accept the specified action.
+     */
+    @XmlRootElement(name = "bad-action")
+    public static final class BadAction {
+    }
+
+    /**
+     * The responding JID cannot accept the specified language/locale.
+     */
+    @XmlRootElement(name = "bad-locale")
+    public static final class BadLocale {
+    }
+
+    /**
+     * The responding JID cannot accept the specified payload (e.g. the data form did not provide one or more required fields).
+     */
+    @XmlRootElement(name = "bad-payload")
+    public static final class BadPayload {
+    }
+
+    /**
+     * The responding JID cannot accept the specified sessionid.
+     */
+    @XmlRootElement(name = "bad-sessionid")
+    public static final class BadSessionId {
+    }
+
+    /**
+     * The requesting JID specified a sessionid that is no longer active (either because it was completed, canceled, or timed out).
+     */
+    @XmlRootElement(name = "session-expired")
+    public static final class SessionExpired {
     }
 }
 

@@ -22,16 +22,36 @@
  * THE SOFTWARE.
  */
 
-/**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0050.html">XEP-0050: Ad-Hoc Commands</a>.
- * <p>
- * It defines an XMPP protocol extension for advertising and executing application-specific commands, such as those related to a configuration workflow. Typically the commands contain data forms (XEP-0004) in order to structure the information exchange.
- * </p>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Command.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.commands.model;
+package rocks.xmpp.extensions.commands;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.InfoNode;
+
+/**
+ * @author Christian Schudt
+ */
+public final class AdHocCommand {
+
+
+    private ServiceDiscoveryManager serviceDiscoveryManager;
+
+    private XmppSession xmppSession;
+
+    private String name;
+
+    private String node;
+
+    public AdHocCommand(ServiceDiscoveryManager serviceDiscoveryManager, XmppSession xmppSession, String name, String node) {
+        this.name = name;
+        this.node = node;
+        this.xmppSession = xmppSession;
+        this.serviceDiscoveryManager = serviceDiscoveryManager;
+    }
+
+    public InfoNode getInfo() throws XmppException, XmppException {
+        return serviceDiscoveryManager.discoverInformation(null, node);
+    }
+}

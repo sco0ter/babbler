@@ -52,52 +52,56 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import org.xmpp.Jid;
-import org.xmpp.NoResponseException;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
-import org.xmpp.extension.avatar.AvatarChangeEvent;
-import org.xmpp.extension.avatar.AvatarChangeListener;
-import org.xmpp.extension.avatar.AvatarManager;
-import org.xmpp.extension.caps.EntityCapabilitiesManager;
-import org.xmpp.extension.commands.AdHocCommand;
-import org.xmpp.extension.commands.AdHocCommandsManager;
-import org.xmpp.extension.commands.Command;
-import org.xmpp.extension.disco.ServiceDiscoveryManager;
-import org.xmpp.extension.disco.info.InfoNode;
-import org.xmpp.extension.disco.items.ItemNode;
-import org.xmpp.extension.filetransfer.FileTransfer;
-import org.xmpp.extension.filetransfer.FileTransferManager;
-import org.xmpp.extension.filetransfer.FileTransferOfferEvent;
-import org.xmpp.extension.filetransfer.FileTransferOfferListener;
-import org.xmpp.extension.geoloc.GeoLocation;
-import org.xmpp.extension.geoloc.GeoLocationEvent;
-import org.xmpp.extension.geoloc.GeoLocationListener;
-import org.xmpp.extension.geoloc.GeoLocationManager;
-import org.xmpp.extension.last.LastActivityManager;
-import org.xmpp.extension.ping.PingManager;
-import org.xmpp.extension.privatedata.PrivateDataManager;
-import org.xmpp.extension.privatedata.rosternotes.Annotation;
-import org.xmpp.extension.pubsub.PubSubManager;
-import org.xmpp.extension.receipts.MessageDeliveredEvent;
-import org.xmpp.extension.receipts.MessageDeliveredListener;
-import org.xmpp.extension.receipts.MessageDeliveryReceiptsManager;
-import org.xmpp.extension.rpc.RpcException;
-import org.xmpp.extension.rpc.RpcHandler;
-import org.xmpp.extension.rpc.RpcManager;
-import org.xmpp.extension.rpc.Value;
-import org.xmpp.extension.search.Search;
-import org.xmpp.extension.search.SearchManager;
-import org.xmpp.extension.time.EntityTime;
-import org.xmpp.extension.time.EntityTimeManager;
-import org.xmpp.extension.vcard.temp.VCard;
-import org.xmpp.extension.vcard.temp.VCardManager;
-import org.xmpp.extension.version.SoftwareVersion;
-import org.xmpp.extension.version.SoftwareVersionManager;
-import org.xmpp.im.*;
-import org.xmpp.stanza.*;
-import org.xmpp.stanza.client.Presence;
-import org.xmpp.stanza.errors.ServiceUnavailable;
+import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.roster.RosterEvent;
+import rocks.xmpp.core.roster.RosterListener;
+import rocks.xmpp.core.roster.model.Contact;
+import rocks.xmpp.core.session.*;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
+import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
+import rocks.xmpp.extensions.avatar.AvatarChangeEvent;
+import rocks.xmpp.extensions.avatar.AvatarChangeListener;
+import rocks.xmpp.extensions.avatar.AvatarManager;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.extensions.filetransfer.FileTransfer;
+import rocks.xmpp.extensions.filetransfer.FileTransferManager;
+import rocks.xmpp.extensions.filetransfer.FileTransferOfferEvent;
+import rocks.xmpp.extensions.filetransfer.FileTransferOfferListener;
+import rocks.xmpp.extensions.geoloc.GeoLocationEvent;
+import rocks.xmpp.extensions.geoloc.GeoLocationListener;
+import rocks.xmpp.extensions.geoloc.GeoLocationManager;
+import rocks.xmpp.extensions.geoloc.model.GeoLocation;
+import rocks.xmpp.extensions.last.LastActivityManager;
+import rocks.xmpp.extensions.ping.PingManager;
+import rocks.xmpp.extensions.privatedata.PrivateDataManager;
+import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
+import rocks.xmpp.extensions.pubsub.PubSubManager;
+import rocks.xmpp.extensions.receipts.MessageDeliveredEvent;
+import rocks.xmpp.extensions.receipts.MessageDeliveredListener;
+import rocks.xmpp.extensions.receipts.MessageDeliveryReceiptsManager;
+import rocks.xmpp.extensions.rpc.RpcException;
+import rocks.xmpp.extensions.rpc.RpcHandler;
+import rocks.xmpp.extensions.rpc.RpcManager;
+import rocks.xmpp.extensions.rpc.model.Value;
+import rocks.xmpp.extensions.search.SearchManager;
+import rocks.xmpp.extensions.search.model.Search;
+import rocks.xmpp.extensions.time.EntityTimeManager;
+import rocks.xmpp.extensions.time.model.EntityTime;
+import rocks.xmpp.extensions.vcard.temp.VCardManager;
+import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import rocks.xmpp.extensions.version.SoftwareVersionManager;
+import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
@@ -679,9 +683,7 @@ public class JavaFXApp extends Application {
             public void handle(ActionEvent actionEvent) {
 
 
-
                 try {
-
                     // Get the avatar manager
                     AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
 
@@ -700,7 +702,7 @@ public class JavaFXApp extends Application {
                         //avatarManager.publishAvatar(bufferedImage);
                     }
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
 
 
@@ -734,7 +736,6 @@ public class JavaFXApp extends Application {
 //                } catch (Exception e) {
 //                    e.printStackTrace();
 //                }
-
 
             }
         });

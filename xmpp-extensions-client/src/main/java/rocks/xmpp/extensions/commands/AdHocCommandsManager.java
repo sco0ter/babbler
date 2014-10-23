@@ -1,21 +1,47 @@
-package org.xmpp.extension.commands;
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
-import org.xmpp.Jid;
-import org.xmpp.XmppException;
-import org.xmpp.XmppSession;
-import org.xmpp.extension.ExtensionManager;
-import org.xmpp.extension.data.DataForm;
-import org.xmpp.extension.disco.ServiceDiscoveryManager;
-import org.xmpp.extension.disco.info.Feature;
-import org.xmpp.extension.disco.info.Identity;
-import org.xmpp.extension.disco.info.InfoNode;
-import org.xmpp.extension.disco.items.Item;
-import org.xmpp.extension.disco.items.ItemNode;
-import org.xmpp.stanza.IQEvent;
-import org.xmpp.stanza.IQListener;
-import org.xmpp.stanza.StanzaError;
-import org.xmpp.stanza.client.IQ;
-import org.xmpp.stanza.errors.ItemNotFound;
+package rocks.xmpp.extensions.commands;
+
+
+import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
+import rocks.xmpp.extensions.commands.model.Command;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.Feature;
+import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.disco.model.items.ItemNode;
 
 import java.util.*;
 

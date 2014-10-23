@@ -49,7 +49,7 @@ import java.util.List;
 public final class OutOfBandFileTransferManager extends ExtensionManager implements FileTransferNegotiator {
 
     private OutOfBandFileTransferManager(final XmppSession xmppSession) {
-        super(xmppSession, "jabber:iq:oob", " jabber:x:oob");
+        super(xmppSession, "jabber:iq:oob", "jabber:x:oob");
 
         final FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
 

@@ -27,7 +27,13 @@ package rocks.xmpp.extensions.httpbind;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.httpbind.model.Body;
+
+import javax.security.auth.login.LoginException;
+import java.io.IOException;
 
 /**
  * @author Christian Schudt
@@ -39,19 +45,19 @@ public class BoshConnectionTest {
 
         BoshConnection boshConnection = new BoshConnection(new TestXmppSession(), BoshConnectionConfiguration.getDefault());
 
-        Body body1 = new Body();
+        Body body1 = Body.builder().build();
         boshConnection.unacknowledgedRequests.put(1L, body1);
 
-        Body body2 = new Body();
+        Body body2 = Body.builder().build();
         boshConnection.unacknowledgedRequests.put(2L, body2);
 
-        Body body3 = new Body();
+        Body body3 = Body.builder().build();
         boshConnection.unacknowledgedRequests.put(3L, body3);
 
-        Body body4 = new Body();
+        Body body4 = Body.builder().build();
         boshConnection.unacknowledgedRequests.put(4L, body4);
 
-        Body body5 = new Body();
+        Body body5 = Body.builder().build();
         boshConnection.unacknowledgedRequests.put(5L, body5);
 
         int i = 0;

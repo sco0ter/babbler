@@ -30,6 +30,8 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,11 +45,13 @@ import java.util.List;
 @XmlRootElement
 public final class Body {
 
-    @XmlElement
-    private URI uri;
+    static final String XBOSH_NAMESPACE = "urn:xmpp:xbosh";
 
     @XmlAnyElement(lax = true)
-    private List<Object> wrappedObjects = new ArrayList<>();
+    private final List<Object> wrappedObjects = new ArrayList<>();
+
+    @XmlElement
+    private URI uri;
 
     /**
      * The connection manager MAY include an 'accept' attribute in the session creation response element, to specify a space-separated list of the content encodings it can decompress. After receiving a session creation response with an 'accept' attribute, clients MAY include an HTTP Content-Encoding header in subsequent requests (indicating one of the encodings specified in the 'accept' attribute) and compress the bodies of the requests accordingly.
@@ -157,25 +161,50 @@ public final class Body {
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private String lang;
 
-    @XmlAttribute(name = "version", namespace = "urn:xmpp:xbosh")
+    @XmlAttribute(name = "version", namespace = XBOSH_NAMESPACE)
     private String version;
 
-    @XmlAttribute(name = "restartlogic", namespace = "urn:xmpp:xbosh")
+    @XmlAttribute(name = "restartlogic", namespace = XBOSH_NAMESPACE)
     private Boolean restartLogic;
 
-    @XmlAttribute(name = "restart", namespace = "urn:xmpp:xbosh")
+    @XmlAttribute(name = "restart", namespace = XBOSH_NAMESPACE)
     private Boolean restart;
 
-    public Body(Object wrappedObject) {
-        this.wrappedObjects = new ArrayList<>();
-        this.wrappedObjects.add(wrappedObject);
+    private Body() {
     }
 
-    public Body() {
+    private Body(Builder builder) {
+        this.ack = builder.ack;
+        this.hold = builder.hold;
+        this.wrappedObjects.addAll(builder.wrappedObjects);
+        this.lang = builder.language;
+        this.restart = builder.restart;
+        this.rid = builder.requestId;
+        this.route = builder.route;
+        this.sid = builder.sessionId;
+        this.type = builder.type;
+        this.ver = builder.version;
+        this.version = builder.xmppVersion;
+        this.to = builder.to;
+        this.wait = builder.wait;
     }
 
+    /**
+     * Creates a builder for the body element.
+     *
+     * @return The body.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Gets an unmodifiable list of wrapped objects.
+     *
+     * @return The wrapped objects.
+     */
     public List<Object> getWrappedObjects() {
-        return wrappedObjects;
+        return Collections.unmodifiableList(wrappedObjects);
     }
 
     /**
@@ -211,15 +240,6 @@ public final class Body {
     }
 
     /**
-     * Sets the 'ack' value. The client only sets it to value 1.
-     *
-     * @param ack The ack value.
-     */
-    public void setAck(Long ack) {
-        this.ack = ack;
-    }
-
-    /**
      * <blockquote>
      * <p>The connection manager MAY inform the client which encodings it can convert by setting the optional 'charsets' attribute in the session creation response element to a space-separated list of encodings.</p>
      * </blockquote>
@@ -242,16 +262,9 @@ public final class Body {
     }
 
     /**
-     * @param from The 'from' attribute.
-     * @see #getFrom()
-     */
-    public void setFrom(Jid from) {
-        this.from = from;
-    }
-
-    /**
      * <blockquote>
      * <p>This attribute informs the client about the maximum number of requests the connection manager will keep waiting at any one time during the session. This value MUST NOT be greater than the value specified by the client in the session request.</p>
+     * <p>The client SHOULD set the 'hold' attribute to a value of "1".</p>
      * </blockquote>
      *
      * @return The 'hold' attribute.
@@ -260,27 +273,12 @@ public final class Body {
         return hold;
     }
 
-    /**
-     * <blockquote>
-     * <p>The client SHOULD set the 'hold' attribute to a value of "1".</p>
-     * </blockquote>
-     *
-     * @param hold The 'hold' attribute.
-     */
-    public void setHold(Byte hold) {
-        this.hold = hold;
-    }
-
     public Short getInactivity() {
         return inactivity;
     }
 
     public String getKey() {
         return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     /**
@@ -298,10 +296,6 @@ public final class Body {
         return newkey;
     }
 
-    public void setNewKey(String newKey) {
-        this.newkey = newKey;
-    }
-
     /**
      * <blockquote>
      * <p>If a client encounters an exceptional temporary situation during which it will be unable to send requests to the connection manager for a period of time greater than the maximum inactivity period (e.g., while a runtime environment changes from one web page to another), and if the connection manager included a 'maxpause' attribute in its Session Creation Response, then the client MAY request a temporary increase to the maximum inactivity period by including a 'pause' attribute in a request.</p>
@@ -311,14 +305,6 @@ public final class Body {
      */
     public Short getPause() {
         return pause;
-    }
-
-    /**
-     * @param pause The 'pause' attribute value.
-     * @see #getPause()
-     */
-    public void setPause(Short pause) {
-        this.pause = pause;
     }
 
     /**
@@ -345,14 +331,6 @@ public final class Body {
     }
 
     /**
-     * @param report The 'report' attribute value.
-     * @see #getReport()
-     */
-    public void setReport(Integer report) {
-        this.report = report;
-    }
-
-    /**
      * <blockquote>
      * <p>This attribute enables the connection manager to limit the number of simultaneous requests the client makes (see Overactivity and Polling Sessions). The RECOMMENDED values are either "2" or one more than the value of the 'hold' attribute specified in the session request.</p>
      * </blockquote>
@@ -361,14 +339,6 @@ public final class Body {
      */
     public Byte getRequests() {
         return requests;
-    }
-
-    /**
-     * @param requests The 'requests' attribute value.
-     * @see #getRequests()
-     */
-    public void setRequests(Byte requests) {
-        this.requests = requests;
     }
 
     /**
@@ -383,14 +353,6 @@ public final class Body {
     }
 
     /**
-     * @param rid The 'rid' attribute value.
-     * @see #getRid()
-     */
-    public void setRid(Long rid) {
-        this.rid = rid;
-    }
-
-    /**
      * <blockquote>
      * <p>A connection manager MAY be configured to enable sessions with more than one server in different domains. When requesting a session with such a "proxy" connection manager, a client SHOULD include a 'route' attribute that specifies the protocol, hostname, and port of the server with which it wants to communicate, formatted as "proto:host:port" (e.g., "xmpp:example.com:9999").</p>
      * </blockquote>
@@ -399,14 +361,6 @@ public final class Body {
      */
     public String getRoute() {
         return route;
-    }
-
-    /**
-     * @param route The 'route' attribute value.
-     * @see #getRoute()
-     */
-    public void setRoute(String route) {
-        this.route = route;
     }
 
     /**
@@ -421,14 +375,6 @@ public final class Body {
     }
 
     /**
-     * @param sid The 'route' attribute value.
-     * @see #getSid()
-     */
-    public void setSid(String sid) {
-        this.sid = sid;
-    }
-
-    /**
      * <blockquote>
      * <p>If a connection manager supports the multi-streams feature, it MUST include a 'stream' attribute in its Session Creation Response. If a client does not receive the 'stream' attribute then it MUST assume that the connection manager does not support the feature.</p>
      * </blockquote>
@@ -440,14 +386,6 @@ public final class Body {
     }
 
     /**
-     * @param stream The 'stream' attribute value.
-     * @see #getStream()
-     */
-    public void setStream(String stream) {
-        this.stream = stream;
-    }
-
-    /**
      * @return The 'time' attribute value.
      * @see #getReport()
      */
@@ -455,28 +393,12 @@ public final class Body {
         return time;
     }
 
-    /**
-     * @param time The 'time' attribute value.
-     * @see #getTime()
-     */
-    public void setTime(Short time) {
-        this.time = time;
-    }
-
     public String getTo() {
         return to;
     }
 
-    public void setTo(String to) {
-        this.to = to;
-    }
-
     public Type getType() {
         return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 
     /**
@@ -502,56 +424,24 @@ public final class Body {
         return wait;
     }
 
-    public void setWait(Integer wait) {
-        this.wait = wait;
-    }
-
     public String getLanguage() {
         return lang;
-    }
-
-    public void setLanguage(String language) {
-        this.lang = language;
     }
 
     public Condition getCondition() {
         return condition;
     }
 
-    public void setCondition(Condition condition) {
-        this.condition = condition;
-    }
-
     public String getXmppVersion() {
         return version;
-    }
-
-    public void setXmppVersion(String xmppVersion) {
-        this.version = xmppVersion;
     }
 
     public Boolean getRestartLogic() {
         return restartLogic;
     }
 
-    public void setRestartLogic(Boolean restartLogic) {
-        this.restartLogic = restartLogic;
-    }
-
     public Boolean getRestart() {
         return restart;
-    }
-
-    public void setRestart(Boolean restart) {
-        this.restart = restart;
-    }
-
-    /**
-     * @return The content.
-     * @see #setContent(String)
-     */
-    public String getContent() {
-        return content;
     }
 
     /**
@@ -559,10 +449,10 @@ public final class Body {
      * <p>Some clients are constrained to only accept HTTP responses with specific Content-Types (e.g., "text/html"). The {@code <body/>} element of the first request MAY possess a 'content' attribute. This specifies the value of the HTTP Content-Type header that MUST appear in all the connection manager's responses during the session. If the client request does not possess a 'content' attribute, then the HTTP Content-Type header of responses MUST be "text/xml; charset=utf-8".</p>
      * </blockquote>
      *
-     * @param content The content.
+     * @return The content.
      */
-    public void setContent(String content) {
-        this.content = content;
+    public String getContent() {
+        return content;
     }
 
     /**
@@ -657,5 +547,193 @@ public final class Body {
          */
         @XmlEnumValue(value = "terminate")
         TERMINATE
+    }
+
+    /**
+     * A builder for the body element.
+     */
+    public static final class Builder {
+
+        private final List<Object> wrappedObjects = new ArrayList<>();
+
+        private Type type;
+
+        private String to;
+
+        private String language;
+
+        private String version;
+
+        private Integer wait;
+
+        private Byte hold;
+
+        private String route;
+
+        private Long ack;
+
+        private String xmppVersion;
+
+        private String sessionId;
+
+        private Long requestId;
+
+        private Boolean restart;
+
+        private Builder() {
+        }
+
+        /**
+         * Sets the 'type' attribute of the body.
+         *
+         * @param type The 'type' attribute.
+         * @return The builder.
+         */
+        public Builder type(Type type) {
+            this.type = type;
+            return this;
+        }
+
+        /**
+         * Sets the 'to' attribute of the body.
+         *
+         * @param to The 'to' attribute.
+         * @return The builder.
+         */
+        public Builder to(String to) {
+            this.to = to;
+            return this;
+        }
+
+        /**
+         * Sets the 'lang' attribute of the body.
+         *
+         * @param language The 'lang' attribute.
+         * @return The builder.
+         */
+        public Builder language(String language) {
+            this.language = language;
+            return this;
+        }
+
+        /**
+         * Sets the 'ver' attribute of the body.
+         *
+         * @param version The 'ver' attribute.
+         * @return The builder.
+         */
+        public Builder version(String version) {
+            this.version = version;
+            return this;
+        }
+
+        /**
+         * Sets the 'wait' attribute of the body.
+         *
+         * @param wait The 'wait' attribute.
+         * @return The builder.
+         */
+        public Builder wait(int wait) {
+            this.wait = wait;
+            return this;
+        }
+
+        /**
+         * Sets the 'hold' attribute of the body.
+         *
+         * @param hold The 'hold' attribute.
+         * @return The builder.
+         */
+        public Builder hold(byte hold) {
+            this.hold = hold;
+            return this;
+        }
+
+        /**
+         * Sets the 'route' attribute of the body.
+         *
+         * @param route The 'route' attribute.
+         * @return The builder.
+         */
+        public Builder route(String route) {
+            this.route = route;
+            return this;
+        }
+
+        /**
+         * Sets the 'ack' attribute of the body.
+         *
+         * @param ack The 'ack' attribute.
+         * @return The builder.
+         */
+        public Builder ack(long ack) {
+            this.ack = ack;
+            return this;
+        }
+
+        /**
+         * Sets the 'version' attribute of the body.
+         *
+         * @param xmppVersion The 'version' attribute.
+         * @return The builder.
+         */
+        public Builder xmppVersion(String xmppVersion) {
+            this.xmppVersion = xmppVersion;
+            return this;
+        }
+
+        /**
+         * Sets the 'sid' attribute of the body.
+         *
+         * @param sessionId The 'sid' attribute.
+         * @return The builder.
+         */
+        public Builder sessionId(String sessionId) {
+            this.sessionId = sessionId;
+            return this;
+        }
+
+        /**
+         * Sets the 'restart' attribute of the body.
+         *
+         * @param restart The 'restart' attribute.
+         * @return The builder.
+         */
+        public Builder restart(boolean restart) {
+            this.restart = restart;
+            return this;
+        }
+
+        /**
+         * Sets the 'rid' attribute of the body.
+         *
+         * @param requestId The 'rid' attribute.
+         * @return The builder.
+         */
+        public Builder requestId(long requestId) {
+            this.requestId = requestId;
+            return this;
+        }
+
+        /**
+         * Sets the wrapped objects of the body, i.e. the payload.
+         *
+         * @param objects The wrapped objects.
+         * @return The builder.
+         */
+        public Builder wrappedObjects(Collection<Object> objects) {
+            this.wrappedObjects.clear();
+            this.wrappedObjects.addAll(objects);
+            return this;
+        }
+
+        /**
+         * Builds the body.
+         *
+         * @return The body.
+         */
+        public Body build() {
+            return new Body(this);
+        }
     }
 }

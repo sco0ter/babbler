@@ -35,6 +35,7 @@ import rocks.xmpp.extensions.httpbind.model.Body;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Arrays;
 
 /**
  * @author Christian Schudt
@@ -180,11 +181,11 @@ public class BoshTest extends XmlTest {
 
     @Test
     public void marshalBodyWithMultipleStanzas() throws XMLStreamException, JAXBException {
-        Body body = new Body();
         IQ iq = new IQ("1", IQ.Type.GET);
         iq.setExtension(new Roster());
-        body.getWrappedObjects().add(iq);
-        body.getWrappedObjects().add(new Presence());
+        Body body = Body.builder()
+                .wrappedObjects(Arrays.<Object>asList(iq, new Presence())).build();
+
         Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\"><iq xmlns=\"jabber:client\" id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"></query></iq><presence xmlns=\"jabber:client\"></presence></body>");
     }
 }

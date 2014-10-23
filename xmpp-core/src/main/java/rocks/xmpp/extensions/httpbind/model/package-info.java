@@ -25,16 +25,16 @@
 /**
  * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a> and <a href="http://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>.
  * <p>
- * XEP-124 defines a transport protocol that emulates the semantics of a long-lived, bidirectional TCP connection between two entities (such as a client and a server) by efficiently using multiple synchronous HTTP request/response pairs without requiring the use of frequent polling or chunked responses.
+ * XEP-0124 defines a transport protocol that emulates the semantics of a long-lived, bidirectional TCP connection between two entities (such as a client and a server) by efficiently using multiple synchronous HTTP request/response pairs without requiring the use of frequent polling or chunked responses.
  * </p>
  * <p>
- * XEP-206 defines how the Bidirectional-streams Over Synchronous HTTP (BOSH) technology can be used to transport XMPP stanzas. The result is an HTTP binding for XMPP communications that is useful in situations where a device or client is unable to maintain a long-lived TCP connection to an XMPP server.
+ * XEP-0206 defines how the Bidirectional-streams Over Synchronous HTTP (BOSH) technology can be used to transport XMPP stanzas. The result is an HTTP binding for XMPP communications that is useful in situations where a device or client is unable to maintain a long-lived TCP connection to an XMPP server.
  * </p>
  */
 // Some server BOSH implementations require the prefix to be "xmpp" for namespace "urn:xmpp:xbosh"
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/httpbind", elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = "urn:xmpp:xbosh")}) package rocks.xmpp.extensions.httpbind.model;
+@XmlSchema(namespace = "http://jabber.org/protocol/httpbind", elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = Body.XBOSH_NAMESPACE)}) package rocks.xmpp.extensions.httpbind.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;

@@ -78,7 +78,7 @@ public final class BoshConnection extends Connection {
      * A queue of objects, which will wait for the next request available to be send to the server in one {@code <body/>} element.
      * Every time a new request is made, this queue is cleared.
      */
-    private final Queue<Object> queue = new ConcurrentLinkedQueue<>();
+    //private final Queue<Object> queue = new ConcurrentLinkedQueue<>();
 
     /**
      * The executor, which will execute HTTP requests.
@@ -94,6 +94,11 @@ public final class BoshConnection extends Connection {
     private final XmppDebugger debugger;
 
     /**
+     * The current request count, i.e. the current number of simultaneous requests.
+     */
+    private int requestCount;
+
+    /**
      *
      */
     private volatile long highestReceivedRid;
@@ -104,18 +109,11 @@ public final class BoshConnection extends Connection {
     private volatile String sessionId;
 
     /**
-     * The current request count, i.e. the current number of simultaneous requests.
-     */
-    private volatile byte requestCount;
-
-    /**
      * True, if the connection manager sends acknowledgments.
      */
     private volatile boolean usingAcknowledgments;
 
-    private URL url;
-
-    private volatile boolean streamRestartsSupported;
+    private volatile URL url;
 
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
@@ -239,20 +237,21 @@ public final class BoshConnection extends Connection {
         rid.set(new BigInteger(52, new Random()).longValue());
 
         // Create initial request.
-        Body body = new Body();
+        Body.Builder body = Body.builder()
+                .requestId(rid.getAndIncrement())
+                .language(Locale.getDefault().getLanguage())
+                .version("1.11")
+                .wait(boshConnectionConfiguration.getWait())
+                .hold((byte) 1)
+                .route(boshConnectionConfiguration.getRoute())
+                .ack(1L)
+                .xmppVersion("1.0");
         if (getXmppSession().getDomain() != null && !getXmppSession().getDomain().isEmpty()) {
-            body.setTo(getXmppSession().getDomain());
+            body.to(getXmppSession().getDomain());
         }
-        body.setLanguage(Locale.getDefault().getLanguage());
-        body.setVersion("1.11");
-        body.setWait(boshConnectionConfiguration.getWait());
-        body.setHold((byte) 1);
-        body.setRoute(boshConnectionConfiguration.getRoute());
-        body.setAck(1L);
-        body.setXmppVersion("1.0");
 
         // Send the initial request.
-        sendNewRequest(body, false);
+        sendNewRequest(body.build());
     }
 
     /**
@@ -278,7 +277,6 @@ public final class BoshConnection extends Connection {
             if (body.getFrom() != null) {
                 getXmppSession().setXmppServiceDomain(body.getFrom().getDomain());
             }
-            streamRestartsSupported = body.getRestartLogic() != null && body.getRestartLogic();
         }
 
         highestReceivedRid = body.getRid() != null ? body.getRid() : rid;
@@ -291,15 +289,13 @@ public final class BoshConnection extends Connection {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting a 'type' attribute of the <body/> element to "error". These errors do not imply that the HTTP session is terminated.
             // If it decides to recover from the error, then the client MUST repeat the HTTP request that resulted in the error, as well as all the preceding HTTP requests that have not received responses. The content of these requests MUST be identical to the <body/> elements of the original requests. This enables the connection manager to recover a session after the previous request was lost due to a communication failure.
             for (Body unacknowledgedRequest : unacknowledgedRequests.values()) {
-                sendNewRequest(unacknowledgedRequest, false);
+                sendNewRequest(unacknowledgedRequest);
             }
         }
 
-        if (body.getWrappedObjects() != null) {
-            for (Object wrappedObject : body.getWrappedObjects()) {
-                if (getXmppSession().handleElement(wrappedObject) && streamRestartsSupported) {
-                    restartStream();
-                }
+        for (Object wrappedObject : body.getWrappedObjects()) {
+            if (getXmppSession().handleElement(wrappedObject)) {
+                restartStream();
             }
         }
     }
@@ -319,12 +315,18 @@ public final class BoshConnection extends Connection {
      */
     @Override
     protected void restartStream() {
-        Body body = new Body();
-        body.setRestart(true);
-        body.setTo(getXmppSession().getDomain());
-        body.setLanguage(Locale.getDefault().getLanguage());
-        body.setSid(getSessionId());
-        sendNewRequest(body, false);
+        Body.Builder bodyBuilder = Body.builder()
+                .restart(true)
+                .to(getXmppSession().getDomain())
+                .language(Locale.getDefault().getLanguage())
+                .sessionId(getSessionId())
+                .requestId(rid.getAndIncrement());
+        // Acknowledge the highest received rid.
+        // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
+        if (!unacknowledgedRequests.isEmpty()) {
+            bodyBuilder.ack(highestReceivedRid);
+        }
+        sendNewRequest(bodyBuilder.build());
     }
 
     /**
@@ -345,9 +347,12 @@ public final class BoshConnection extends Connection {
         synchronized (httpBindExecutor) {
             if (!httpBindExecutor.isShutdown() && sessionId != null) {
                 // Terminate the BOSH session.
-                Body body = new Body();
-                body.setType(Body.Type.TERMINATE);
-                sendNewRequest(body, true);
+                Body.Builder body = Body.builder()
+                        .requestId(rid.getAndIncrement())
+                        .sessionId(getSessionId())
+                        .type(Body.Type.TERMINATE);
+                //.wrappedObjects(queue);
+                sendNewRequest(body.build());
 
                 // and then shut it down.
                 httpBindExecutor.shutdown();
@@ -379,8 +384,17 @@ public final class BoshConnection extends Connection {
 
     @Override
     public void send(ClientStreamElement element) {
-        queue.add(element);
-        sendNewRequest(new Body(), true);
+        // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
+        Body.Builder bodyBuilder = Body.builder()
+                .wrappedObjects(Arrays.<Object>asList(element))
+                .requestId(rid.getAndIncrement())
+                .sessionId(getSessionId());
+        // Acknowledge the highest received rid.
+        // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
+        if (!unacknowledgedRequests.isEmpty()) {
+            bodyBuilder.ack(highestReceivedRid);
+        }
+        sendNewRequest(bodyBuilder.build());
     }
 
     /**
@@ -398,43 +412,24 @@ public final class BoshConnection extends Connection {
      * If there are currently more requests than allowed by the server, the waiting elements will be send as soon one of the requests return.
      * </p>
      *
-     * @param body        The wrapper body element.
-     * @param addElements True, if waiting elements should be added to the body; false if an empty body shall be sent.
+     * @param body The wrapper body element.
      */
-    private void sendNewRequest(final Body body, final boolean addElements) {
+    private void sendNewRequest(final Body body) {
+
         // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
         synchronized (httpBindExecutor) {
             if (!httpBindExecutor.isShutdown()) {
                 httpBindExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
+
                         // Open a HTTP connection.
                         HttpURLConnection httpConnection = null;
                         try {
+                            // Synchronize the requests, so that nearly parallel requests are still sent in the same order (to prevent <item-not-found/> errors).
                             synchronized (httpBindExecutor) {
-                                // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
-                                if (addElements) {
-                                    body.getWrappedObjects().addAll(queue);
-                                    queue.clear();
-                                }
-
-                                // Prevent overactivity.
-                                // If we are already holding a request and want to send another empty request, which is not a terminate or pause request, return. It wouldn't add any value anyway.
-                                // Also return, if we would send a non-terminate message and the connection is already closed.
-                                if (body.getType() != Body.Type.TERMINATE && (httpBindExecutor.isShutdown() || requestCount == 1 && body.getWrappedObjects().isEmpty() && body.getPause() == null)) {
-                                    return;
-                                }
-
                                 requestCount++;
 
-                                // Increment the request id.
-                                body.setRid(rid.getAndIncrement());
-                                body.setSid(getSessionId());
-
-                                // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
-                                if (!unacknowledgedRequests.isEmpty()) {
-                                    body.setAck(highestReceivedRid);
-                                }
                                 if (usingAcknowledgments) {
                                     unacknowledgedRequests.put(body.getRid(), body);
                                 }
@@ -471,6 +466,7 @@ public final class BoshConnection extends Connection {
                                 XMLStreamWriter xmlStreamWriter = null;
 
                                 try {
+
                                     // Branch the stream, so that its output can also be logged.
                                     OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest);
                                     OutputStream xmppOutputStream;
@@ -481,6 +477,7 @@ public final class BoshConnection extends Connection {
                                     }
                                     // Create the writer for this connection.
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8"), true);
+
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     getXmppSession().getMarshaller().marshal(body, xmlStreamWriter);
 
@@ -535,13 +532,24 @@ public final class BoshConnection extends Connection {
                                 handleCode(httpConnection.getResponseCode());
                             }
 
+                            // Wait shortly before sending the long polling request.
+                            // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
+                            Thread.sleep(10);
+
                             synchronized (httpBindExecutor) {
                                 // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
                                 if (--requestCount == 0) {
-                                    sendNewRequest(new Body(), true);
+                                    Body.Builder bodyBuilder = Body.builder()
+                                            .requestId(rid.getAndIncrement())
+                                            .sessionId(getSessionId());
+                                    // Acknowledge the highest received rid.
+                                    // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
+                                    if (!unacknowledgedRequests.isEmpty()) {
+                                        bodyBuilder.ack(highestReceivedRid);
+                                    }
+                                    sendNewRequest(bodyBuilder.build());
                                 }
                             }
-
                         } catch (Exception e) {
                             getXmppSession().notifyException(e);
                         } finally {

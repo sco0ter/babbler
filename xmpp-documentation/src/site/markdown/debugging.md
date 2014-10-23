@@ -7,7 +7,7 @@ There's a built-in default debugger, which prints XMPP communication to the cons
 
 ```java
 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-    .debugger(new ConsoleDebugger())
+    .debugger(ConsoleDebugger.class)
     .build();
 XmppSession xmppSession = new XmppSession("domain", configuration);
 ```
@@ -22,7 +22,7 @@ If you have the corresponding jar file on your classpath, you can use it like th
 
 ```java
 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-    .debugger(new VisualDebugger())
+    .debugger(VisualDebugger.class)
     .build();
 XmppSession xmppSession = new XmppSession("domain", configuration);
 ```

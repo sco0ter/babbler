@@ -830,7 +830,6 @@ public class XmppSession implements Closeable {
         try {
             updateStatus(Status.AUTHENTICATING);
             authenticationManager.authenticate(null, user, password, null);
-
             bindResource(resource);
 
             if (getRosterManager().isRetrieveRosterOnLogin()) {
@@ -896,7 +895,8 @@ public class XmppSession implements Closeable {
         if (!streamFeaturesManager.getFeatures().containsKey(Bind.class)) {
             lock.lock();
             try {
-                if (!streamNegotiatedUntilResourceBinding.await(5, TimeUnit.SECONDS)) {
+                // Double check Bind feature. Theoretically it could be put in the features list after checking for the first time, which would lead to a dead lock here.
+                if (!streamFeaturesManager.getFeatures().containsKey(Bind.class) && !streamNegotiatedUntilResourceBinding.await(5, TimeUnit.SECONDS)) {
                     throw new LoginException("Timeout reached during resource binding.");
                 }
             } catch (InterruptedException e) {

@@ -32,6 +32,7 @@ import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages the various features, which are advertised during stream negotiation.
@@ -50,7 +51,7 @@ public final class StreamFeaturesManager {
     /**
      * The features which have been advertised by the server.
      */
-    private final Map<Class<? extends StreamFeature>, StreamFeature> features = new HashMap<>();
+    private final Map<Class<? extends StreamFeature>, StreamFeature> features = new ConcurrentHashMap<>();
 
     /**
      * The list of features, which the server advertised and have not yet been negotiated.
@@ -99,7 +100,7 @@ public final class StreamFeaturesManager {
      * @return The features.
      */
     public Map<Class<? extends StreamFeature>, StreamFeature> getFeatures() {
-        return features;
+        return Collections.unmodifiableMap(features);
     }
 
     /**

@@ -45,11 +45,14 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
 
     private final String route;
 
+    private final boolean useKeySequence;
+
     private BoshConnectionConfiguration(Builder builder) {
         super(builder);
         this.wait = builder.wait;
         this.file = builder.file;
         this.route = builder.route;
+        this.useKeySequence = builder.useKeySequence;
     }
 
     /**
@@ -122,6 +125,15 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
     }
 
     /**
+     * If the connection is secured via a key sequence mechanism.
+     *
+     * @return If the connection is secured via a key sequence mechanism.
+     */
+    public boolean isUseKeySequence() {
+        return useKeySequence;
+    }
+
+    /**
      * A builder to create a {@link rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration} instance.
      */
     public static final class Builder extends ConnectionConfiguration.Builder<Builder> {
@@ -131,6 +143,8 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
         private String file;
 
         private String route;
+
+        private boolean useKeySequence;
 
         private Builder() {
             // default values
@@ -174,6 +188,18 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
             return this;
         }
 
+        /**
+         * Indicates whether a key sequencing mechanism is used to secure a connection.
+         * Note that if the connection is already secured via HTTPS, it is not necessary to use this mechanism.
+         *
+         * @param useKeySequence If a key sequence should be used.
+         * @return The builder.
+         * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys">15. Protecting Insecure Sessions</a>
+         */
+        public Builder useKeySequence(boolean useKeySequence) {
+            this.useKeySequence = useKeySequence;
+            return this;
+        }
 
         @Override
         protected Builder self() {

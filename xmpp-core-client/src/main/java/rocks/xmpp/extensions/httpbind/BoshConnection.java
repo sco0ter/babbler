@@ -53,6 +53,9 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -92,6 +95,8 @@ public final class BoshConnection extends Connection {
     private final BoshConnectionConfiguration boshConnectionConfiguration;
 
     private final XmppDebugger debugger;
+
+    private final Deque<String> keySequence = new LinkedList<>();
 
     /**
      * The current request count, i.e. the current number of simultaneous requests.
@@ -198,6 +203,34 @@ public final class BoshConnection extends Connection {
         return null;
     }
 
+    /**
+     * Generates a key sequence.
+     *
+     * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys-generate">15.3 Generating the Key Sequence</a>
+     */
+    private void generateKeySequence() {
+        keySequence.clear();
+        try {
+            // K(1) = hex(SHA-1(seed))
+            // K(2) = hex(SHA-1(K(1)))
+            // ...
+            // K(n) = hex(SHA-1(K(n-1)))
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            Random random = new SecureRandom();
+            // Generate a high random value "n"
+            int n = 256 + random.nextInt(32768 - 256);
+            // Generate a random seed value.
+            String kn = UUID.randomUUID().toString();
+            for (int i = 0; i < n; i++) {
+                kn = String.format("%040x", new BigInteger(1, digest.digest(kn.getBytes())));
+                keySequence.add(kn);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public synchronized void connect() throws IOException {
 
@@ -246,6 +279,14 @@ public final class BoshConnection extends Connection {
                 .route(boshConnectionConfiguration.getRoute())
                 .ack(1L)
                 .xmppVersion("1.0");
+
+        if (boshConnectionConfiguration.isUseKeySequence()) {
+            synchronized (keySequence) {
+                generateKeySequence();
+                body.newKey(keySequence.removeLast());
+            }
+        }
+
         if (getXmppSession().getDomain() != null && !getXmppSession().getDomain().isEmpty()) {
             body.to(getXmppSession().getDomain());
         }
@@ -321,6 +362,9 @@ public final class BoshConnection extends Connection {
                 .language(Locale.getDefault().getLanguage())
                 .sessionId(getSessionId())
                 .requestId(rid.getAndIncrement());
+
+        appendKey(bodyBuilder);
+
         // Acknowledge the highest received rid.
         // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
         if (!unacknowledgedRequests.isEmpty()) {
@@ -347,12 +391,14 @@ public final class BoshConnection extends Connection {
         synchronized (httpBindExecutor) {
             if (!httpBindExecutor.isShutdown() && sessionId != null) {
                 // Terminate the BOSH session.
-                Body.Builder body = Body.builder()
+                Body.Builder bodyBuilder = Body.builder()
                         .requestId(rid.getAndIncrement())
                         .sessionId(getSessionId())
                         .type(Body.Type.TERMINATE);
-                //.wrappedObjects(queue);
-                sendNewRequest(body.build());
+
+                appendKey(bodyBuilder);
+
+                sendNewRequest(bodyBuilder.build());
 
                 // and then shut it down.
                 httpBindExecutor.shutdown();
@@ -389,12 +435,36 @@ public final class BoshConnection extends Connection {
                 .wrappedObjects(Arrays.<Object>asList(element))
                 .requestId(rid.getAndIncrement())
                 .sessionId(getSessionId());
+
+        appendKey(bodyBuilder);
+
         // Acknowledge the highest received rid.
         // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
         if (!unacknowledgedRequests.isEmpty()) {
             bodyBuilder.ack(highestReceivedRid);
         }
         sendNewRequest(bodyBuilder.build());
+    }
+
+    /**
+     * Appends a key attribute to the body and generates a new key sequence if the old one is empty.
+     *
+     * @param bodyBuilder The builder.
+     * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys-use">15.4 Use of Keys</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys-switch">15.5 Switching to Another Key Sequence</a>
+     */
+    private void appendKey(Body.Builder bodyBuilder) {
+        if (boshConnectionConfiguration.isUseKeySequence()) {
+            synchronized (keySequence) {
+                if (!keySequence.isEmpty()) {
+                    bodyBuilder.key(keySequence.removeLast());
+                    if (keySequence.isEmpty()) {
+                        generateKeySequence();
+                        bodyBuilder.newKey(keySequence.removeLast());
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -534,7 +604,7 @@ public final class BoshConnection extends Connection {
 
                             // Wait shortly before sending the long polling request.
                             // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
-                            Thread.sleep(10);
+                            Thread.sleep(100);
 
                             synchronized (httpBindExecutor) {
                                 // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
@@ -542,6 +612,9 @@ public final class BoshConnection extends Connection {
                                     Body.Builder bodyBuilder = Body.builder()
                                             .requestId(rid.getAndIncrement())
                                             .sessionId(getSessionId());
+
+                                    appendKey(bodyBuilder);
+
                                     // Acknowledge the highest received rid.
                                     // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
                                     if (!unacknowledgedRequests.isEmpty()) {

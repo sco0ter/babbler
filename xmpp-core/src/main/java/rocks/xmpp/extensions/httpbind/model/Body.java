@@ -187,6 +187,8 @@ public final class Body {
         this.version = builder.xmppVersion;
         this.to = builder.to;
         this.wait = builder.wait;
+        this.newkey = builder.newKey;
+        this.key = builder.key;
     }
 
     /**
@@ -556,6 +558,8 @@ public final class Body {
 
         private final List<Object> wrappedObjects = new ArrayList<>();
 
+        public String key;
+
         private Type type;
 
         private String to;
@@ -579,6 +583,8 @@ public final class Body {
         private Long requestId;
 
         private Boolean restart;
+
+        private String newKey;
 
         private Builder() {
         }
@@ -724,6 +730,28 @@ public final class Body {
         public Builder wrappedObjects(Collection<Object> objects) {
             this.wrappedObjects.clear();
             this.wrappedObjects.addAll(objects);
+            return this;
+        }
+
+        /**
+         * Sets the 'newkey' attribute of the body.
+         *
+         * @param newKey The 'newkey' attribute.
+         * @return The builder.
+         */
+        public Builder newKey(String newKey) {
+            this.newKey = newKey;
+            return this;
+        }
+
+        /**
+         * Sets the 'key' attribute of the body.
+         *
+         * @param key The 'key' attribute.
+         * @return The builder.
+         */
+        public Builder key(String key) {
+            this.key = key;
             return this;
         }
 

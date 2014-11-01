@@ -184,7 +184,7 @@ public class XmppSession implements Closeable {
     public XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         this.xmppServiceDomain = xmppServiceDomain;
         this.configuration = configuration;
-        this.stanzaListenerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+        this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);

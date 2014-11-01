@@ -47,6 +47,9 @@ import java.nio.file.NoSuchFileException;
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,6 +66,15 @@ public final class FileTransferManager extends ExtensionManager {
 
     private final Set<FileTransferOfferListener> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
 
+    private final ExecutorService fileTransferOfferExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r, "File Transfer Offer Thread");
+            thread.setDaemon(true);
+            return thread;
+        }
+    });
+
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession);
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
@@ -70,6 +82,7 @@ public final class FileTransferManager extends ExtensionManager {
             public void sessionStatusChanged(SessionStatusEvent e) {
                 if (e.getStatus() == XmppSession.Status.CLOSED) {
                     fileTransferOfferListeners.clear();
+                    fileTransferOfferExecutor.shutdown();
                 }
             }
         });
@@ -157,15 +170,20 @@ public final class FileTransferManager extends ExtensionManager {
         throw new UnsupportedOperationException("Feature not supported"); // TODO other exception!?
     }
 
-    public void fileTransferOffered(IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, Object protocol, FileTransferNegotiator fileTransferNegotiator) {
-        FileTransferOfferEvent fileTransferRequestEvent = new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator);
-        for (FileTransferOfferListener fileTransferOfferListener : fileTransferOfferListeners) {
-            try {
-                fileTransferOfferListener.fileTransferOffered(fileTransferRequestEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
+    public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {
+        fileTransferOfferExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                FileTransferOfferEvent fileTransferRequestEvent = new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator);
+                for (FileTransferOfferListener fileTransferOfferListener : fileTransferOfferListeners) {
+                    try {
+                        fileTransferOfferListener.fileTransferOffered(fileTransferRequestEvent);
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, e.getMessage(), e);
+                    }
+                }
             }
-        }
+        });
     }
 
     /**

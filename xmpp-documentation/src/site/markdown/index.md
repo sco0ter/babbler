@@ -23,7 +23,7 @@ On this site you learn about some general design considerations, a brief user gu
     * PubSub / PEP
     * Entity Capabilities
     * BOSH
-* **Compact library**, no dependencies, one core package: **org.xmpp**
+* **Compact library**, no dependencies, one core package: **rocks.xmpp**
 * [JAXB][JAXB] (XML binding) in the background, in order to make it **robust**, **easy to use** and easy to extend (e.g. writing custom protocol extensions)
 * **Event-driven design** by using the [Java Event Model](http://en.wikibooks.org/wiki/Java_Programming/Event_Handling)
 * Good documentation

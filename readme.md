@@ -22,12 +22,12 @@ Since this project is quite young, the API might change. Comments on the API are
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.4.0-beta.1</version>
+    <version>0.4.0</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.4.0-beta.1</version>
+    <version>0.4.0</version>
 </dependency>
 ```
 

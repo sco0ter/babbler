@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-## Version 0.4.0
+## Version 0.4.0 (2014-11-01)
 
 ## New Features
 
@@ -17,9 +17,9 @@
 * More options to configure a connection (e.g. to set a `SocketFactory`, a keep-alive ping interval, etc...)
 * Reconnection logic improved.
 * Improvements for BOSH connection:
-** Allow secure HTTPS connection
-** Provide ability to use a [key sequencing mechanism](http://xmpp.org/extensions/xep-0124.html#keys).
-** minor improvements and tests with ejabberd server.
+    * Allow secure HTTPS connection
+    * Provide ability to use a [key sequencing mechanism](http://xmpp.org/extensions/xep-0124.html#keys).
+    * minor improvements and tests with ejabberd server.
 * Periodically ping the server (XEP-0199) to allow for a more stable connection.
 * Added `isRequest()` and `isResponse()` method to IQ
 * Bug fix in authentication logic, which prevented successful authentication on ejabberd server.

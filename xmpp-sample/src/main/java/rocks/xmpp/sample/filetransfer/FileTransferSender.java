@@ -22,26 +22,26 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.sample.muc;
+package rocks.xmpp.sample.filetransfer;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
-import rocks.xmpp.extensions.muc.*;
+import rocks.xmpp.extensions.filetransfer.FileTransfer;
+import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt
  */
-public class MucSampleUser1 {
+public class FileTransferSender {
 
     public static void main(String[] args) throws IOException, LoginException {
 
@@ -65,23 +65,13 @@ public class MucSampleUser1 {
                     // Connect
                     xmppSession.connect();
                     // Login
-                    xmppSession.login("111", "111", "muc");
+                    xmppSession.login("111", "111", "filetransfer");
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-                    MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
-                    ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference." + xmppSession.getDomain()));
-                    ChatRoom chatRoom = chatService.createRoom("test");
-                    chatRoom.addOccupantListener(new OccupantListener() {
-                        @Override
-                        public void occupantChanged(OccupantEvent e) {
-                            if (e.getType() == OccupantEvent.Type.ENTERED) {
-                                System.out.println(e.getOccupant() + " has entered the room");
-                            }
-                        }
-                    });
-                    chatRoom.enter("user1");
-                    chatRoom.sendMessage("Hello World!");
+                    FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                    FileTransfer fileTransfer = fileTransferManager.offerFile(new File("info.png"), "Description", new Jid("222", xmppSession.getDomain(), "filetransfer"), 5000);
+                    fileTransfer.transfer();
 
                 } catch (Exception e) {
                     e.printStackTrace();

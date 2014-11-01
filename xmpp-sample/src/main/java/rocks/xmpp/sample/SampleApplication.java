@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.sample;
+package rocks.xmpp.sample;
 
 import rocks.xmpp.core.session.*;
 import rocks.xmpp.core.session.context.CoreContext;
@@ -77,15 +77,15 @@ public class SampleApplication {
                     TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                             .port(5222)
                             .sslContext(sslContext)
-                            .secure(true)
+                            .secure(false)
                             .build();
 
 
                     BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(7443)
-                            .secure(true)
-                            .sslContext(sslContext)
+                            .port(5280)
+                            //.secure(true)
+                            //.sslContext(sslContext)
                             .hostnameVerifier(new HostnameVerifier() {
                                 @Override
                                 public boolean verify(String s, SSLSession sslSession) {

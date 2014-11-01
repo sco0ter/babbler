@@ -22,20 +22,28 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.sample.geolocation;
+package rocks.xmpp.sample.filetransfer;
 
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.debug.gui.VisualDebugger;
+import rocks.xmpp.extensions.filetransfer.FileTransfer;
+import rocks.xmpp.extensions.filetransfer.FileTransferManager;
+import rocks.xmpp.extensions.filetransfer.FileTransferOfferEvent;
+import rocks.xmpp.extensions.filetransfer.FileTransferOfferListener;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt
  */
-public class GeolocationReceiver {
+public class FileTransferReceiver {
 
     public static void main(String[] args) throws IOException, LoginException {
 
@@ -43,31 +51,40 @@ public class GeolocationReceiver {
             @Override
             public void run() {
                 try {
+
                     TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                             .port(5222)
                             .secure(false)
                             .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", tcpConfiguration);
+                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                            .debugger(VisualDebugger.class)
+                            .defaultResponseTimeout(5000)
+                            .build();
+
+                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
 
                     // Connect
                     xmppSession.connect();
                     // Login
-                    xmppSession.login("222", "222", "geolocation");
-
-//                    GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
-//                    geoLocationManager.setEnabled(true);
-//                    geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
-//                        @Override
-//                        public void geoLocationUpdated(GeoLocationEvent e) {
-//                            System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());
-//                        }
-//                    });
-
+                    xmppSession.login("222", "222", "filetransfer");
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-                } catch (IOException | LoginException e) {
+                    FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                    fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
+                        @Override
+                        public void fileTransferOffered(FileTransferOfferEvent e) {
+                            try {
+                                FileTransfer fileTransfer = e.accept(new FileOutputStream(new File("test.png")));
+                                fileTransfer.transfer();
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    });
+
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

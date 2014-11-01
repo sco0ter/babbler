@@ -22,15 +22,11 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.sample.geolocation;
+package rocks.xmpp.sample.geolocation;
 
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.debug.gui.VisualDebugger;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -39,7 +35,7 @@ import java.util.concurrent.Executors;
 /**
  * @author Christian Schudt
  */
-public class GeolocationPublisher {
+public class GeolocationReceiver {
 
     public static void main(String[] args) throws IOException, LoginException {
 
@@ -52,32 +48,24 @@ public class GeolocationPublisher {
                             .secure(false)
                             .build();
 
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(VisualDebugger.class)
-                            .defaultResponseTimeout(5000)
-                            .build();
-
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
-
-                    // Listen for incoming messages.
-                    xmppSession.addMessageListener(new MessageListener() {
-                        @Override
-                        public void handle(MessageEvent e) {
-                            if (e.isIncoming()) {
-                                System.out.println(e.getMessage());
-                            }
-                        }
-                    });
+                    XmppSession xmppSession = new XmppSession("localhost", tcpConfiguration);
 
                     // Connect
                     xmppSession.connect();
                     // Login
-                    xmppSession.login("111", "111", "geolocation");
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                    xmppSession.login("222", "222", "geolocation");
 
 //                    GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
-//                    geoLocationManager.publish(new GeoLocation(123, 321));
+//                    geoLocationManager.setEnabled(true);
+//                    geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
+//                        @Override
+//                        public void geoLocationUpdated(GeoLocationEvent e) {
+//                            System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());
+//                        }
+//                    });
+
+                    // Send initial presence
+                    xmppSession.send(new Presence());
 
                 } catch (IOException | LoginException e) {
                     e.printStackTrace();

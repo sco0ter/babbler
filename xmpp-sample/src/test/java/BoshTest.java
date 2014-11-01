@@ -28,14 +28,13 @@ import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.security.auth.login.LoginException;
-import java.io.IOException;
 
 /**
  * @author Christian Schudt
  */
 public class BoshTest {
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws LoginException {
 
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 //.debugger(VisualDebugger.class)
@@ -46,18 +45,21 @@ public class BoshTest {
                 .hostname("localhost")
                 .port(7070)
                 .file("/http-bind/")
+                //.useKeySequence(true)
                 .build();
 
         long start = System.currentTimeMillis();
 
-        for (int i = 0; i < 100; i++) {
-            XmppSession xmppSession = new XmppSession("localhost", boshConnectionConfiguration);
-
+        for (int i = 0; i < 500; i++) {
+            XmppSession xmppSession = new XmppSession("christihudtsmbp.fritz.box", boshConnectionConfiguration);
+            System.out.println(i);
             try {
                 xmppSession.connect();
                 xmppSession.login("admin", "admin", null);
-                xmppSession.getRosterManager().requestRoster();
-            } catch (IOException | LoginException e) {
+                //xmppSession.send(new Presence());
+                //xmppSession.getRosterManager().requestRoster();
+                xmppSession.close();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

@@ -34,7 +34,7 @@ import java.util.EventObject;
  *
  * @author Christian Schudt
  */
-abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extends EventObject {
+public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extends EventObject {
 
     protected final S stanza;
 

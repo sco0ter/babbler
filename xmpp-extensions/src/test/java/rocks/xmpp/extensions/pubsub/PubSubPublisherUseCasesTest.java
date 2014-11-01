@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 import javax.xml.bind.JAXBException;
@@ -47,6 +48,13 @@ public class PubSubPublisherUseCasesTest extends XmlTest {
         PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null);
         String xml = marshal(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish></pubsub>");
+    }
+
+    @Test
+    public void marshalPublishWithOptions() throws JAXBException, XMLStreamException {
+        PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null, new DataForm(DataForm.Type.SUBMIT));
+        String xml = marshal(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish><publish-options><x xmlns=\"jabber:x:data\" type=\"submit\"></x></publish-options></pubsub>");
     }
 
     @Test

@@ -53,6 +53,9 @@ import java.util.List;
 })
 public final class PubSub {
 
+    /**
+     * http://jabber.org/protocol/pubsub
+     */
     public static final String NAMESPACE = "http://jabber.org/protocol/pubsub";
 
     @XmlElement(name = "create")
@@ -79,6 +82,9 @@ public final class PubSub {
     })
     private PubSubChildElement type;
 
+    @XmlElement(name = "publish-options")
+    private PublishOptions publishOptions;
+
     private PubSub() {
     }
 
@@ -98,6 +104,11 @@ public final class PubSub {
 
     private PubSub(PubSubChildElement pubSubChildElement) {
         this.type = pubSubChildElement;
+    }
+
+    private PubSub(Publish publish, PublishOptions publishOptions) {
+        this.type = publish;
+        this.publishOptions = publishOptions;
     }
 
     private PubSub(Configure configure) {
@@ -468,6 +479,10 @@ public final class PubSub {
         return new PubSub(new Publish(node, new ItemElement(id, item)));
     }
 
+    public static PubSub withPublish(String node, String id, Object item, DataForm options) {
+        return new PubSub(new Publish(node, new ItemElement(id, item)), new PublishOptions(options));
+    }
+
     /**
      * Creates a pubsub element with a {@code <retract/>} child element.
      * <p><b>Sample:</b></p>
@@ -553,6 +568,10 @@ public final class PubSub {
             return subscribe.getNode();
         }
         return null;
+    }
+
+    public DataForm getPublishOptions() {
+        return publishOptions != null ? publishOptions.getDataForm() : null;
     }
 
     private static final class Create extends PubSubChildElement {
@@ -736,6 +755,24 @@ public final class PubSub {
             return item;
         }
     }
+
+    private static final class PublishOptions extends PubSubChildElement {
+
+        @XmlElementRef
+        private DataForm dataForm;
+
+        private PublishOptions() {
+        }
+
+        public PublishOptions(DataForm dataForm) {
+            this.dataForm = dataForm;
+        }
+
+        public DataForm getDataForm() {
+            return dataForm;
+        }
+    }
+
 
     private static final class Retract extends PubSubChildElement {
 

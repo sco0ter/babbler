@@ -78,20 +78,22 @@ public final class BlockingManager extends ExtensionManager {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
                     Block block = iq.getExtension(Block.class);
-                    synchronized (blockedContacts) {
-                        if (block != null) {
-                            List<Jid> pushedContacts = new ArrayList<>();
+                    if (block != null) {
+                        List<Jid> pushedContacts = new ArrayList<>();
+                        synchronized (blockedContacts) {
                             for (Jid item : block.getItems()) {
                                 blockedContacts.add(item);
                                 pushedContacts.add(item);
                             }
-                            xmppSession.send(iq.createResult());
-                            e.consume();
-                            notifyListeners(pushedContacts, Collections.<Jid>emptyList());
-                        } else {
-                            Unblock unblock = iq.getExtension(Unblock.class);
-                            if (unblock != null) {
-                                List<Jid> pushedContacts = new ArrayList<>();
+                        }
+                        xmppSession.send(iq.createResult());
+                        e.consume();
+                        notifyListeners(pushedContacts, Collections.<Jid>emptyList());
+                    } else {
+                        Unblock unblock = iq.getExtension(Unblock.class);
+                        if (unblock != null) {
+                            List<Jid> pushedContacts = new ArrayList<>();
+                            synchronized (blockedContacts) {
                                 if (unblock.getItems().isEmpty()) {
                                     // Empty means, the user has unblocked communications with all contacts.
                                     pushedContacts.addAll(blockedContacts);
@@ -102,10 +104,10 @@ public final class BlockingManager extends ExtensionManager {
                                         pushedContacts.add(item);
                                     }
                                 }
-                                xmppSession.send(iq.createResult());
-                                e.consume();
-                                notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
                             }
+                            xmppSession.send(iq.createResult());
+                            e.consume();
+                            notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
                         }
                     }
                 }

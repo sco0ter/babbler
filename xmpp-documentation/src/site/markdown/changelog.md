@@ -8,6 +8,7 @@
 * Added support for [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * Added support for [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
 * Added visual debugger.
+* First version available on Maven Central.
 
 ## Improvements
 
@@ -15,10 +16,13 @@
 * Improved package structure.
 * More options to configure a connection (e.g. to set a `SocketFactory`, a keep-alive ping interval, etc...)
 * Reconnection logic improved.
-* Allow to use a secure BOSH connection over HTTPS.
+* Improvements for BOSH connection:
+** Allow secure HTTPS connection
+** Provide ability to use a [key sequencing mechanism](http://xmpp.org/extensions/xep-0124.html#keys).
+** minor improvements and tests with ejabberd server.
 * Periodically ping the server (XEP-0199) to allow for a more stable connection.
 * Added `isRequest()` and `isResponse()` method to IQ
-* Bug fix in authentication logic, which prevented successful authentication on some servers.
+* Bug fix in authentication logic, which prevented successful authentication on ejabberd server.
 * Various minor bug fixes (e.g. stuff like `NullPointerException`).
 * Added more documentation.
 

@@ -437,7 +437,6 @@ public final class DataForm implements Comparable<DataForm> {
          * @param values The values.
          * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
-        @Deprecated
         public Field(Type type, String var, String... values) {
             this.type = type;
             this.var = var;

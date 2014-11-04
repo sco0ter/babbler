@@ -344,9 +344,6 @@ public final class DataForm implements Comparable<DataForm> {
     @XmlRootElement(name = "field")
     public static final class Field implements Comparable<Field> {
 
-        @XmlElement(name = "option")
-        private final List<Option> options = new ArrayList<>();
-
         @XmlElement(name = "desc")
         private String description;
 
@@ -358,6 +355,9 @@ public final class DataForm implements Comparable<DataForm> {
 
         @XmlElement(name = "value")
         private List<String> values = new ArrayList<>();
+
+        @XmlElement(name = "option")
+        private List<Option> options = new ArrayList<>();
 
         @XmlElementRef
         private Media media;
@@ -409,6 +409,21 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
+         * Creates a field.
+         *
+         * @param type   The field type.
+         * @param var    The unique identifier for the field.
+         * @param label  The label.
+         * @param values The values.
+         */
+        public Field(Type type, String var, String label, String... values) {
+            this.type = type;
+            this.var = var;
+            this.label = label;
+            this.values.addAll(Arrays.asList(values));
+        }
+
+        /**
          * Gets the field type.
          *
          * @return The field type.
@@ -421,7 +436,9 @@ public final class DataForm implements Comparable<DataForm> {
          * Sets the field type.
          *
          * @param type The type.
+         * @deprecated Use constructor to set the type.
          */
+        @Deprecated
         public void setType(Type type) {
             this.type = type;
         }
@@ -441,7 +458,9 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param var The var attribute.
          * @see #getVar()
+         * @deprecated Use constructor to set the type.
          */
+        @Deprecated
         public void setVar(String var) {
             this.var = var;
         }
@@ -461,7 +480,9 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param label The label.
          * @see #getLabel()
+         * @deprecated Use constructor to set the type.
          */
+        @Deprecated
         public void setLabel(String label) {
             this.label = label;
         }

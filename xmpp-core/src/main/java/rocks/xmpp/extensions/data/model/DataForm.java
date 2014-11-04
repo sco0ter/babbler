@@ -31,6 +31,7 @@ import rocks.xmpp.extensions.data.validate.model.Validation;
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -106,8 +107,46 @@ public final class DataForm implements Comparable<DataForm> {
         this.instructions.addAll(Arrays.asList(instructions));
     }
 
+    /**
+     * Parses a value as boolean. Positive values as per XEP-0004 are "1" and "true".
+     *
+     * @param value The value.
+     * @return The parsed boolean value.
+     */
     public static boolean parseBoolean(String value) {
         return Boolean.parseBoolean(value) || "1".equals(value);
+    }
+
+    /**
+     * Gets the value for a specific field.
+     *
+     * @param var The field name.
+     * @return The value or null, if the field does not exist.
+     */
+    public String getValue(String var) {
+        List<String> values = getValues(var);
+        return values.isEmpty() ? null : values.get(0);
+    }
+
+    /**
+     * Gets the values for a specific field.
+     *
+     * @param var The field name.
+     * @return The values.
+     */
+    public List<String> getValues(String var) {
+        Field field = findField(var);
+        return field == null || field.getValues().isEmpty() ? Collections.<String>emptyList() : field.getValues();
+    }
+
+    /**
+     * Gets the value as boolean.
+     *
+     * @param var The field name.
+     * @return The value as boolean.
+     */
+    public boolean getValueAsBoolean(String var) {
+        return parseBoolean(getValue(var));
     }
 
     /**
@@ -237,6 +276,7 @@ public final class DataForm implements Comparable<DataForm> {
         return null;
     }
 
+
     /**
      * Compares this data form with another data form.
      * Data forms which have a "FORM_TYPE" field are are listed first in a collection.
@@ -344,6 +384,18 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
+         * Creates a field of type boolean.
+         *
+         * @param var   The field name.
+         * @param value The value.
+         */
+        public Field(String var, boolean value) {
+            this.type = Type.BOOLEAN;
+            this.var = var;
+            this.values.add(value ? "1" : "0");
+        }
+
+        /**
          * Creates a field.
          *
          * @param type   The field type.
@@ -353,7 +405,7 @@ public final class DataForm implements Comparable<DataForm> {
         public Field(Type type, String var, String... values) {
             this.type = type;
             this.var = var;
-            this.values = new ArrayList<>(Arrays.asList(values));
+            this.values.addAll(Arrays.asList(values));
         }
 
         /**

@@ -95,6 +95,9 @@ public class DataFormsTest extends XmlTest {
                 "             var='invitelist'>\n" +
                 "        <desc>Tell all your friends about your new bot!</desc>\n" +
                 "      </field>\n" +
+                "      <field type='boolean' var='test'>\n" +
+                "        <value>1</value>\n" +
+                "      </field>\n" +
                 "    </x>\n";
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
@@ -104,7 +107,7 @@ public class DataFormsTest extends XmlTest {
         Assert.assertEquals(dataForm.getTitle(), "Bot Configuration");
         Assert.assertEquals(dataForm.getInstructions().get(0), "Fill out this form to configure your new bot!");
 
-        Assert.assertEquals(dataForm.getFields().size(), 12);
+        Assert.assertEquals(dataForm.getFields().size(), 13);
         Assert.assertEquals(dataForm.getFields().get(0).getValues().get(0), "jabber:bot");
         Assert.assertEquals(dataForm.getFields().get(0).getType(), DataForm.Field.Type.HIDDEN);
         Assert.assertEquals(dataForm.getFields().get(0).getVar(), "FORM_TYPE");
@@ -177,5 +180,18 @@ public class DataFormsTest extends XmlTest {
         Assert.assertEquals(dataForm.getFields().get(11).getLabel(), "People to invite");
 
         Assert.assertNotNull(dataForm.findField("FORM_TYPE"));
+        Assert.assertEquals(dataForm.getValue("maxsubs"), "20");
+        Assert.assertTrue(dataForm.getValueAsBoolean("test"));
+        Assert.assertNull(dataForm.getValue("...."));
+        Assert.assertFalse(dataForm.getValueAsBoolean("maxsubs"));
+    }
+
+    @Test
+    public void marshalBooleanField() throws JAXBException, XMLStreamException {
+        DataForm.Field field = new DataForm.Field("test", true);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
+        dataForm.getFields().add(field);
+        String xml = marshal(dataForm);
+        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"boolean\" var=\"test\"><value>1</value></field></x>");
     }
 }

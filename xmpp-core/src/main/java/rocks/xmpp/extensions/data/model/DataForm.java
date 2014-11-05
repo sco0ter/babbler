@@ -29,10 +29,7 @@ import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;
 
 import javax.xml.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:data} namespace, which represents data forms.
@@ -402,6 +399,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @param var    The unique identifier for the field.
          * @param values The values.
          */
+        @Deprecated
         public Field(Type type, String var, String... values) {
             this.type = type;
             this.var = var;
@@ -413,14 +411,27 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param type   The field type.
          * @param var    The unique identifier for the field.
+         * @param values The values.
+         */
+        public Field(Type type, String var, Collection<String> values) {
+            this.type = type;
+            this.var = var;
+            this.values.addAll(values);
+        }
+
+        /**
+         * Creates a field.
+         *
+         * @param type   The field type.
+         * @param var    The unique identifier for the field.
          * @param label  The label.
          * @param values The values.
          */
-        public Field(Type type, String var, String label, String... values) {
+        public Field(Type type, String var, String label, Collection<String> values) {
             this.type = type;
             this.var = var;
             this.label = label;
-            this.values.addAll(Arrays.asList(values));
+            this.values.addAll(values);
         }
 
         /**

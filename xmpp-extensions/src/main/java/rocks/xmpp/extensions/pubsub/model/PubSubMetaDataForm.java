@@ -27,11 +27,19 @@ package rocks.xmpp.extensions.pubsub.model;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
+ * Represents meta data for a pubsub node.
+ * <p>
+ * Meta data are represented by a data form. This class acts as a wrapper for a data form and provides convenient methods to retrieve meta data from standardized fields of a data form.
+ * </p>
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-metadata">16.4.3 pubsub#meta-data FORM_TYPE</a>
  */
 public final class PubSubMetaDataForm {
 
@@ -89,51 +97,305 @@ public final class PubSubMetaDataForm {
 
     private final DataForm dataForm;
 
+    /**
+     * Creates a node meta data form.
+     *
+     * @param dataForm The underlying data form.
+     */
     public PubSubMetaDataForm(DataForm dataForm) {
         this.dataForm = dataForm;
     }
 
+    /**
+     * Creates the builder to build a meta data form.
+     *
+     * @return The builder.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Gets the underlying data form.
+     *
+     * @return The underlying data form.
+     */
+    public DataForm getDataForm() {
+        return dataForm;
+    }
+
+    /**
+     * Gets the contacts.
+     *
+     * @return The contacts.
+     */
     public List<Jid> getContacts() {
-        return null;
+        return dataForm.findValuesAsJid(CONTACT);
     }
 
-    public void setContacts(List<Jid> contacts) {
-
-    }
-
+    /**
+     * Gets the creation date.
+     *
+     * @return The creation date.
+     */
     public Date getCreationDate() {
-        return null;
+        return dataForm.findValueAsDate(CREATION_DATE);
     }
 
+    /**
+     * Gets the creator.
+     *
+     * @return The creator.
+     */
     public Jid getCreator() {
-        return null;
+        return dataForm.findValueAsJid(CREATOR);
     }
 
+    /**
+     * Gets the description.
+     *
+     * @return The description.
+     */
     public String getDescription() {
-        return null;
+        return dataForm.findValue(DESCRIPTION);
     }
 
+    /**
+     * Gets the language.
+     *
+     * @return The language.
+     */
     public String getLanguage() {
-        return null;
+        return dataForm.findValue(LANGUAGE);
     }
 
-    public int getNumberOfSubscribers() {
-        return 0;
+    /**
+     * Gets the number of subscribers.
+     *
+     * @return The subscribers.
+     */
+    public Integer getNumberOfSubscribers() {
+        return dataForm.findValueAsInteger(NUM_SUBSCRIBERS);
     }
 
+    /**
+     * Gets the owners.
+     *
+     * @return The owners.
+     */
     public List<Jid> getOwners() {
-        return null;
+        return dataForm.findValuesAsJid(OWNER);
     }
 
+    /**
+     * Gets the publishers.
+     *
+     * @return The publishers.
+     */
     public List<Jid> getPublishers() {
-        return null;
+        return dataForm.findValuesAsJid(PUBLISHER);
     }
 
+    /**
+     * Gets the title.
+     *
+     * @return The title.
+     */
     public String getTitle() {
-        return null;
+        return dataForm.findValue(TITLE);
     }
 
-    public String getType() {
-        return null;
+    /**
+     * Gets the payload type of the node.
+     *
+     * @return The payload type.
+     */
+    public String getPayloadType() {
+        return dataForm.findValue(TYPE);
+    }
+
+    /**
+     * A builder class to build the meta data form. If not provided the default data form type is {@link rocks.xmpp.extensions.data.model.DataForm.Type#RESULT}.
+     */
+    public static final class Builder extends DataForm.Builder<Builder> {
+        private List<Jid> contacts;
+
+        private Date creationDate;
+
+        private Jid creator;
+
+        private String description;
+
+        private String language;
+
+        private Integer numberOfSubscribers;
+
+        private List<Jid> owners;
+
+        private List<Jid> publishers;
+
+        private String title;
+
+        private String payloadType;
+
+        private Builder() {
+        }
+
+        /**
+         * The JIDs of those to contact with questions.
+         *
+         * @param contacts The contacts.
+         * @return The builder.
+         */
+        public Builder contacts(List<Jid> contacts) {
+            this.contacts = contacts;
+            return this;
+        }
+
+        /**
+         * The datetime when the node was created.
+         *
+         * @param creationDate The creation date.
+         * @return The builder.
+         */
+        public Builder creationDate(Date creationDate) {
+            this.creationDate = creationDate;
+            return this;
+        }
+
+        /**
+         * The JID of the node creator.
+         *
+         * @param creator The creator.
+         * @return The builder.
+         */
+        public Builder creator(Jid creator) {
+            this.creator = creator;
+            return this;
+        }
+
+        /**
+         * A description of the node.
+         *
+         * @param description The description.
+         * @return The builder.
+         */
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        /**
+         * The default language of the node.
+         *
+         * @param language The language.
+         * @return The builder.
+         */
+        public Builder language(String language) {
+            this.language = language;
+            return this;
+        }
+
+        /**
+         * The number of subscribers to the node.
+         *
+         * @param numberOfSubscribers The number of subscribers to the node.
+         * @return The builder.
+         */
+        public Builder numberOfSubscribers(int numberOfSubscribers) {
+            this.numberOfSubscribers = numberOfSubscribers;
+            return this;
+        }
+
+        /**
+         * The JIDs of those with an affiliation of owner.
+         *
+         * @param owners The owners.
+         * @return The builder.
+         */
+        public Builder owners(List<Jid> owners) {
+            this.owners = owners;
+            return this;
+        }
+
+        /**
+         * The JIDs of those with an affiliation of publisher.
+         *
+         * @param publishers The publishers.
+         * @return The builder.
+         */
+        public Builder publishers(List<Jid> publishers) {
+            this.publishers = publishers;
+            return this;
+        }
+
+        /**
+         * The name of the node.
+         *
+         * @param title The title.
+         * @return The builder.
+         */
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        /**
+         * The payload type.
+         *
+         * @param payloadType The payload type.
+         * @return The builder.
+         */
+        public Builder payloadType(String payloadType) {
+            this.payloadType = payloadType;
+            return this;
+        }
+
+        /**
+         * Builds the meta data form.
+         *
+         * @return The meta data form.
+         */
+        public PubSubMetaDataForm build() {
+            List<DataForm.Field> fields = new ArrayList<>();
+
+            if (contacts != null && !contacts.isEmpty()) {
+                fields.add(DataForm.Field.builder().var(CONTACT).valuesJid(contacts).build());
+            }
+            if (creationDate != null) {
+                fields.add(DataForm.Field.builder().var(CREATION_DATE).value(creationDate).build());
+            }
+            if (creator != null) {
+                fields.add(DataForm.Field.builder().var(CREATOR).value(creator).build());
+            }
+            if (description != null) {
+                fields.add(DataForm.Field.builder().var(DESCRIPTION).value(description).build());
+            }
+            if (language != null) {
+                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language).type(DataForm.Field.Type.LIST_SINGLE).build());
+            }
+            if (numberOfSubscribers != null) {
+                fields.add(DataForm.Field.builder().var(NUM_SUBSCRIBERS).value(numberOfSubscribers).build());
+            }
+            if (owners != null) {
+                fields.add(DataForm.Field.builder().var(OWNER).valuesJid(owners).build());
+            }
+            if (publishers != null) {
+                fields.add(DataForm.Field.builder().var(PUBLISHER).valuesJid(publishers).build());
+            }
+            if (title != null) {
+                fields.add(DataForm.Field.builder().var(TITLE).value(title).build());
+            }
+            if (payloadType != null) {
+                fields.add(DataForm.Field.builder().var(TYPE).value(payloadType).build());
+            }
+            fields(fields).formType(FORM_TYPE).type(DataForm.Type.RESULT);
+            return new PubSubMetaDataForm(new DataForm(this));
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
     }
 }

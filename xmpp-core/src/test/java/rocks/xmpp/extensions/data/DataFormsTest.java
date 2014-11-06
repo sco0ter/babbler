@@ -285,7 +285,7 @@ public class DataFormsTest extends XmlTest {
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
         dataForm.getFields().add(field);
         String xml = marshal(dataForm);
-        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field></field></x>");
+        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
         Date date = null;
         DataForm.Field field2 = DataForm.Field.builder()
@@ -294,7 +294,7 @@ public class DataFormsTest extends XmlTest {
         DataForm dataForm2 = new DataForm(DataForm.Type.SUBMIT);
         dataForm2.getFields().add(field2);
         String xml2 = marshal(dataForm);
-        Assert.assertEquals(xml2, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field></field></x>");
+        Assert.assertEquals(xml2, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
         Jid jid = null;
         DataForm.Field field3 = DataForm.Field.builder()
@@ -303,7 +303,7 @@ public class DataFormsTest extends XmlTest {
         DataForm dataForm3 = new DataForm(DataForm.Type.SUBMIT);
         dataForm3.getFields().add(field3);
         String xml3 = marshal(dataForm);
-        Assert.assertEquals(xml3, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field></field></x>");
+        Assert.assertEquals(xml3, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
         List<String> values = null;
         DataForm.Field field4 = DataForm.Field.builder()
@@ -312,7 +312,7 @@ public class DataFormsTest extends XmlTest {
         DataForm dataForm4 = new DataForm(DataForm.Type.SUBMIT);
         dataForm4.getFields().add(field4);
         String xml4 = marshal(dataForm);
-        Assert.assertEquals(xml4, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field></field></x>");
+        Assert.assertEquals(xml4, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
         List<Jid> valuesJid = null;
         DataForm.Field field5 = DataForm.Field.builder()
@@ -321,6 +321,6 @@ public class DataFormsTest extends XmlTest {
         DataForm dataForm5 = new DataForm(DataForm.Type.SUBMIT);
         dataForm5.getFields().add(field5);
         String xml5 = marshal(dataForm);
-        Assert.assertEquals(xml5, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field></field></x>");
+        Assert.assertEquals(xml5, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
     }
 }

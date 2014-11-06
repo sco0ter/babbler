@@ -44,7 +44,7 @@ import java.util.*;
  * @see <a href="http://xmpp.org/extensions/xep-0004.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "x")
-public final class DataForm implements Comparable<DataForm> {
+public class DataForm implements Comparable<DataForm> {
 
     private static final String FORM_TYPE = "FORM_TYPE";
 
@@ -80,6 +80,12 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public DataForm(Type type) {
         this.type = type;
+    }
+
+    public DataForm(Builder<? extends Builder> builder) {
+        this.fields.addAll(builder.fields);
+        this.setFormType(builder.formType);
+        this.type = builder.type;
     }
 
     /**
@@ -157,6 +163,17 @@ public final class DataForm implements Comparable<DataForm> {
     public Integer findValueAsInteger(String var) {
         Field field = findField(var);
         return field == null ? null : field.getValueAsInteger();
+    }
+
+    /**
+     * Finds the field and gets its value as date.
+     *
+     * @param var The field name.
+     * @return The value as date or null, if the field could not be found.
+     */
+    public Date findValueAsDate(String var) {
+        Field field = findField(var);
+        return field == null ? null : field.getValueAsDate();
     }
 
     /**
@@ -553,6 +570,19 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
+         * Returns the first value as date.
+         *
+         * @return The date or null, if the values are empty.
+         */
+        public Date getValueAsDate() {
+            if (values.isEmpty()) {
+                return null;
+            } else {
+                return DatatypeConverter.parseDateTime(values.get(0)).getTime();
+            }
+        }
+
+        /**
          * Returns a JID list for the {@link Type#JID_MULTI} field type.
          *
          * @return The JID list.
@@ -849,7 +879,7 @@ public final class DataForm implements Comparable<DataForm> {
             public Builder value(String value) {
                 this.values.clear();
                 this.values.add(value);
-                return this;
+                return type(Type.TEXT_SINGLE);
             }
 
             /**
@@ -1023,5 +1053,35 @@ public final class DataForm implements Comparable<DataForm> {
         public String getValue() {
             return value;
         }
+    }
+
+    public static abstract class Builder<T extends Builder<T>> {
+        private List<Field> fields;
+
+        private String formType;
+
+        private Type type;
+
+        public T fields(List<Field> fields) {
+            this.fields = fields;
+            return self();
+        }
+
+        public T formType(String formType) {
+            this.formType = formType;
+            return self();
+        }
+
+        public T type(Type type) {
+            this.type = type;
+            return self();
+        }
+
+        /**
+         * Returns an instance of the concrete builder.
+         *
+         * @return The concrete builder.
+         */
+        protected abstract T self();
     }
 }

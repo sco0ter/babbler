@@ -109,6 +109,10 @@ public final class NodeConfigurationBuilder {
 
     private static final String TYPE = "pubsub#type";
 
+    private final List<Jid> contacts = new ArrayList<>();
+
+    private final List<String> rosterGroupsAllowed = new ArrayList<>();
+
     private AccessModel accessModel;
 
     private URL bodyXslt;
@@ -122,8 +126,6 @@ public final class NodeConfigurationBuilder {
     private Integer childrenMax;
 
     private String[] collection;
-
-    private Jid[] contact;
 
     private URL dataformXslt;
 
@@ -162,8 +164,6 @@ public final class NodeConfigurationBuilder {
     private PublisherModel publisherModel;
 
     private Boolean purgeOffline;
-
-    private String[] rosterGroupsAllowed;
 
     private SendLastPublishedItem sendLastPublishedItem;
 
@@ -257,11 +257,14 @@ public final class NodeConfigurationBuilder {
     /**
      * The JIDs of those to contact with questions
      *
-     * @param contact The JIDs of those to contact with questions.
+     * @param contacts The JIDs of those to contact with questions.
      * @return The builder.
      */
-    public NodeConfigurationBuilder contact(Jid... contact) {
-        this.contact = contact;
+    public NodeConfigurationBuilder contact(List<Jid> contacts) {
+        this.contacts.clear();
+        if (contacts != null) {
+            this.contacts.addAll(contacts);
+        }
         return this;
     }
 
@@ -487,8 +490,11 @@ public final class NodeConfigurationBuilder {
      * @param rosterGroupsAllowed The roster group(s) allowed to subscribe and retrieve items.
      * @return The builder.
      */
-    public NodeConfigurationBuilder rosterGroupsAllowed(String... rosterGroupsAllowed) {
-        this.rosterGroupsAllowed = rosterGroupsAllowed;
+    public NodeConfigurationBuilder rosterGroupsAllowed(List<String> rosterGroupsAllowed) {
+        this.rosterGroupsAllowed.clear();
+        if (rosterGroupsAllowed != null) {
+            this.rosterGroupsAllowed.addAll(rosterGroupsAllowed);
+        }
         return this;
     }
 
@@ -570,32 +576,28 @@ public final class NodeConfigurationBuilder {
             for (Jid jid : childrenAssociationWhitelist) {
                 values.add(jid.toEscapedString());
             }
-            fields.add(new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, CHILDREN_ASSOCIATION_WHITELIST, values));
+            fields.add(DataForm.Field.builder().var(CHILDREN_ASSOCIATION_WHITELIST).values(values).type(DataForm.Field.Type.LIST_SINGLE).build());
         }
         if (children != null) {
-            fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_MULTI, CHILDREN, Arrays.asList(children)));
+            fields.add(DataForm.Field.builder().var(CHILDREN).values(Arrays.asList(children)).build());
         }
         if (childrenMax != null) {
             fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, CHILDREN_MAX, childrenMax.toString()));
         }
         if (collection != null) {
-            fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_MULTI, COLLECTION, Arrays.asList(collection)));
+            fields.add(DataForm.Field.builder().var(COLLECTION).values(Arrays.asList(collection)).build());
         }
-        if (contact != null) {
-            List<String> values = new ArrayList<>();
-            for (Jid jid : contact) {
-                values.add(jid.toEscapedString());
-            }
-            fields.add(new DataForm.Field(DataForm.Field.Type.JID_MULTI, CONTACT, values));
+        if (!contacts.isEmpty()) {
+            fields.add(DataForm.Field.builder().var(CONTACT).valuesJid(contacts).build());
         }
         if (dataformXslt != null) {
             fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, DATAFORM_XSLT, dataformXslt.toString()));
         }
         if (deliverNotifications != null) {
-            fields.add(new DataForm.Field(DELIVER_NOTIFICATIONS, deliverNotifications));
+            fields.add(DataForm.Field.builder().var(DELIVER_NOTIFICATIONS).value(deliverNotifications).build());
         }
         if (deliverPayloads != null) {
-            fields.add(new DataForm.Field(DELIVER_PAYLOADS, deliverPayloads));
+            fields.add(DataForm.Field.builder().var(DELIVER_PAYLOADS).value(deliverPayloads).build());
         }
         if (description != null) {
             fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, DESCRIPTION, description));
@@ -622,40 +624,40 @@ public final class NodeConfigurationBuilder {
             fields.add(new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, NOTIFICATION_TYPE, notificationType.name().toLowerCase()));
         }
         if (notifyConfig != null) {
-            fields.add(new DataForm.Field(NOTIFY_CONFIG, notifyConfig));
+            fields.add(DataForm.Field.builder().var(NOTIFY_CONFIG).value(notifyConfig).build());
         }
         if (notifyDelete != null) {
-            fields.add(new DataForm.Field(NOTIFY_DELETE, notifyDelete));
+            fields.add(DataForm.Field.builder().var(NOTIFY_DELETE).value(notifyDelete).build());
         }
         if (notifyRetract != null) {
-            fields.add(new DataForm.Field(NOTIFY_RETRACT, notifyRetract));
+            fields.add(DataForm.Field.builder().var(NOTIFY_RETRACT).value(notifyRetract).build());
         }
         if (notifySub != null) {
-            fields.add(new DataForm.Field(NOTIFY_SUB, notifySub));
+            fields.add(DataForm.Field.builder().var(NOTIFY_SUB).value(notifySub).build());
         }
         if (persistItems != null) {
-            fields.add(new DataForm.Field(PERSIST_ITEMS, persistItems));
+            fields.add(DataForm.Field.builder().var(PERSIST_ITEMS).value(persistItems).build());
         }
         if (presenceBasedDelivery != null) {
-            fields.add(new DataForm.Field(PRESENCE_BASED_DELIVERY, presenceBasedDelivery));
+            fields.add(DataForm.Field.builder().var(PRESENCE_BASED_DELIVERY).value(presenceBasedDelivery).build());
         }
         if (publisherModel != null) {
             fields.add(new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, PUBLISH_MODEL, publisherModel.name().toLowerCase()));
         }
         if (purgeOffline != null) {
-            fields.add(new DataForm.Field(PURGE_OFFLINE, purgeOffline));
+            fields.add(DataForm.Field.builder().var(PURGE_OFFLINE).value(purgeOffline).build());
         }
-        if (rosterGroupsAllowed != null) {
-            fields.add(new DataForm.Field(DataForm.Field.Type.LIST_MULTI, ROSTER_GROUPS_ALLOWED, Arrays.asList(rosterGroupsAllowed)));
+        if (!rosterGroupsAllowed.isEmpty()) {
+            fields.add(DataForm.Field.builder().var(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
         }
         if (sendLastPublishedItem != null) {
             fields.add(new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, SEND_LAST_PUBLISHED_ITEM, sendLastPublishedItem.name().toLowerCase()));
         }
         if (temporarySubscriptions != null) {
-            fields.add(new DataForm.Field(TEMPSUB, temporarySubscriptions));
+            fields.add(DataForm.Field.builder().var(TEMPSUB).value(temporarySubscriptions).build());
         }
         if (allowSubscriptions != null) {
-            fields.add(new DataForm.Field(SUBSCRIBE, allowSubscriptions));
+            fields.add(DataForm.Field.builder().var(SUBSCRIBE).value(allowSubscriptions).build());
         }
         if (title != null) {
             fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, TITLE, title));

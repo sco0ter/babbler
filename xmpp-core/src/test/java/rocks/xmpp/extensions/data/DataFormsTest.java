@@ -180,10 +180,10 @@ public class DataFormsTest extends XmlTest {
         Assert.assertEquals(dataForm.getFields().get(11).getLabel(), "People to invite");
 
         Assert.assertNotNull(dataForm.findField("FORM_TYPE"));
-        Assert.assertEquals(dataForm.getValue("maxsubs"), "20");
-        Assert.assertTrue(dataForm.getValueAsBoolean("test"));
-        Assert.assertNull(dataForm.getValue("...."));
-        Assert.assertFalse(dataForm.getValueAsBoolean("maxsubs"));
+        Assert.assertEquals(dataForm.findValue("maxsubs"), "20");
+        Assert.assertTrue(dataForm.findValueAsBoolean("test"));
+        Assert.assertNull(dataForm.findValue("...."));
+        Assert.assertFalse(dataForm.findValueAsBoolean("maxsubs"));
     }
 
     @Test

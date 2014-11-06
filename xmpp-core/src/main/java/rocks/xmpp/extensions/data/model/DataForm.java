@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.data.model;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;
@@ -120,8 +121,8 @@ public final class DataForm implements Comparable<DataForm> {
      * @param var The field name.
      * @return The value or null, if the field does not exist.
      */
-    public String getValue(String var) {
-        List<String> values = getValues(var);
+    public String findValue(String var) {
+        List<String> values = findValues(var);
         return values.isEmpty() ? null : values.get(0);
     }
 
@@ -131,19 +132,52 @@ public final class DataForm implements Comparable<DataForm> {
      * @param var The field name.
      * @return The values.
      */
-    public List<String> getValues(String var) {
+    public List<String> findValues(String var) {
         Field field = findField(var);
-        return field == null || field.getValues().isEmpty() ? Collections.<String>emptyList() : field.getValues();
+        return field == null ? Collections.<String>emptyList() : field.getValues();
     }
 
     /**
-     * Gets the value as boolean.
+     * Finds the field and gets the value as boolean.
      *
      * @param var The field name.
      * @return The value as boolean.
      */
-    public boolean getValueAsBoolean(String var) {
-        return parseBoolean(getValue(var));
+    public boolean findValueAsBoolean(String var) {
+        return parseBoolean(findValue(var));
+    }
+
+    /**
+     * Finds the field and gets its value as integer.
+     *
+     * @param var The field name.
+     * @return The value as integer or null, if the field could not be found.
+     */
+    public Integer findValueAsInteger(String var) {
+        Field field = findField(var);
+        return field == null ? null : field.getValueAsInteger();
+    }
+
+    /**
+     * Finds the field and gets the value as JID.
+     *
+     * @param var The field name.
+     * @return The value as JID or null, if the field could not be found.
+     */
+    public Jid findValueAsJid(String var) {
+        Field field = findField(var);
+        return field == null ? null : field.getValueAsJid();
+    }
+
+    /**
+     * Finds the field and gets its values as JID list. If the field could not be found, an empty list is returned.
+     *
+     * @param var The field name.
+     * @return The values as JID list.
+     */
+    public List<Jid> findValuesAsJid(String var) {
+        Field field = findField(var);
+        return field == null ? Collections.<Jid>emptyList() : field.getValuesAsJid();
     }
 
     /**
@@ -515,6 +549,48 @@ public final class DataForm implements Comparable<DataForm> {
         public List<String> getValues() {
             return values;
         }
+
+        /**
+         * Gets the value as boolean.
+         *
+         * @param var The field name.
+         * @return The value as boolean.
+         */
+        public boolean getValueAsBoolean(String var) {
+            return parseBoolean(values.isEmpty() ? null : values.get(0));
+        }
+
+        /**
+         * Returns the first value as integer.
+         *
+         * @return The integer or null, if the values are empty.
+         */
+        public Integer getValueAsInteger() {
+            return values.isEmpty() ? null : Integer.valueOf(values.get(0));
+        }
+
+        /**
+         * Returns a JID list for the {@link Type#JID_MULTI} field type.
+         *
+         * @return The JID list.
+         */
+        public List<Jid> getValuesAsJid() {
+            List<Jid> jids = new ArrayList<>();
+            for (String value : values) {
+                jids.add(Jid.valueOf(value, true));
+            }
+            return Collections.unmodifiableList(jids);
+        }
+
+        /**
+         * Returns the first value as JID, e.g. for the {@link Type#JID_SINGLE} field type.
+         *
+         * @return The JID or null, if the values are empty.
+         */
+        public Jid getValueAsJid() {
+            return values.isEmpty() ? null : Jid.valueOf(values.get(0));
+        }
+
 
         /**
          * Gets the media element.

@@ -427,6 +427,35 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
+         * Creates a field of type jid-multi.
+         *
+         * @param var    The unique identifier for the field.
+         * @param values The values.
+         */
+        public Field(String var, Collection<Jid> values) {
+            this.type = Type.JID_MULTI;
+            this.var = var;
+            List<String> list = new ArrayList<>();
+            for (Jid value : values) {
+                list.add(value.toEscapedString());
+            }
+            this.values.addAll(list);
+        }
+
+        /**
+         * Creates a field.
+         *
+         * @param type  The type, should either be {@link Type#JID_MULTI} or {@link Type#JID_SINGLE}.
+         * @param var   The unique identifier for the field.
+         * @param value The value.
+         */
+        public Field(Type type, String var, Jid value) {
+            this.type = type;
+            this.var = var;
+            this.values.add(value.toEscapedString());
+        }
+
+        /**
          * Creates a field.
          *
          * @param type   The field type.

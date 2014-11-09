@@ -29,6 +29,7 @@ import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.*;
 import java.util.*;
 
@@ -202,7 +203,7 @@ public final class DataForm implements Comparable<DataForm> {
     public void setFormType(String formType) {
         Field field = findField(FORM_TYPE);
         if (field == null) {
-            field = new Field(Field.Type.HIDDEN, FORM_TYPE);
+            field = Field.builder().type(Field.Type.HIDDEN).var(FORM_TYPE).build();
             getFields().add(0, field);
         }
         field.getValues().clear();
@@ -405,54 +406,27 @@ public final class DataForm implements Comparable<DataForm> {
         private Field() {
         }
 
+        private Field(Builder builder) {
+            this.type = builder.type;
+            this.description = builder.description;
+            this.required = builder.required ? "" : null;
+            this.validation = builder.validation;
+            this.values.addAll(builder.values);
+            this.options.addAll(builder.options);
+            this.media = builder.media;
+            this.label = builder.label;
+            this.var = builder.var;
+        }
+
         /**
          * Creates a field.
          *
          * @param type The field type.
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
+        @Deprecated
         public Field(Type type) {
             this.type = type;
-        }
-
-        /**
-         * Creates a field of type boolean.
-         *
-         * @param var   The field name.
-         * @param value The value.
-         */
-        public Field(String var, boolean value) {
-            this.type = Type.BOOLEAN;
-            this.var = var;
-            this.values.add(value ? "1" : "0");
-        }
-
-        /**
-         * Creates a field of type jid-multi.
-         *
-         * @param var    The unique identifier for the field.
-         * @param values The values.
-         */
-        public Field(String var, Collection<Jid> values) {
-            this.type = Type.JID_MULTI;
-            this.var = var;
-            List<String> list = new ArrayList<>();
-            for (Jid value : values) {
-                list.add(value.toEscapedString());
-            }
-            this.values.addAll(list);
-        }
-
-        /**
-         * Creates a field.
-         *
-         * @param type  The type, should either be {@link Type#JID_MULTI} or {@link Type#JID_SINGLE}.
-         * @param var   The unique identifier for the field.
-         * @param value The value.
-         */
-        public Field(Type type, String var, Jid value) {
-            this.type = type;
-            this.var = var;
-            this.values.add(value.toEscapedString());
         }
 
         /**
@@ -461,6 +435,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @param type   The field type.
          * @param var    The unique identifier for the field.
          * @param values The values.
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
         @Deprecated
         public Field(Type type, String var, String... values) {
@@ -470,31 +445,12 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
-         * Creates a field.
+         * Creates the builder to build a data form field.
          *
-         * @param type   The field type.
-         * @param var    The unique identifier for the field.
-         * @param values The values.
+         * @return The builder.
          */
-        public Field(Type type, String var, Collection<String> values) {
-            this.type = type;
-            this.var = var;
-            this.values.addAll(values);
-        }
-
-        /**
-         * Creates a field.
-         *
-         * @param type   The field type.
-         * @param var    The unique identifier for the field.
-         * @param label  The label.
-         * @param values The values.
-         */
-        public Field(Type type, String var, String label, Collection<String> values) {
-            this.type = type;
-            this.var = var;
-            this.label = label;
-            this.values.addAll(values);
+        public static Builder builder() {
+            return new Builder();
         }
 
         /**
@@ -510,7 +466,7 @@ public final class DataForm implements Comparable<DataForm> {
          * Sets the field type.
          *
          * @param type The type.
-         * @deprecated Use constructor to set the type.
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
         @Deprecated
         public void setType(Type type) {
@@ -532,7 +488,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param var The var attribute.
          * @see #getVar()
-         * @deprecated Use constructor to set the type.
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
         @Deprecated
         public void setVar(String var) {
@@ -554,7 +510,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param label The label.
          * @see #getLabel()
-         * @deprecated Use constructor to set the type.
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
         @Deprecated
         public void setLabel(String label) {
@@ -582,10 +538,9 @@ public final class DataForm implements Comparable<DataForm> {
         /**
          * Gets the value as boolean.
          *
-         * @param var The field name.
          * @return The value as boolean.
          */
-        public boolean getValueAsBoolean(String var) {
+        public boolean getValueAsBoolean() {
             return parseBoolean(values.isEmpty() ? null : values.get(0));
         }
 
@@ -620,12 +575,10 @@ public final class DataForm implements Comparable<DataForm> {
             return values.isEmpty() ? null : Jid.valueOf(values.get(0));
         }
 
-
         /**
          * Gets the media element.
          *
          * @return The media element.
-         * @see #setMedia(rocks.xmpp.extensions.data.mediaelement.model.Media)
          */
         public Media getMedia() {
             return media;
@@ -636,7 +589,9 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param media The media element.
          * @see #getMedia()
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
+        @Deprecated
         public void setMedia(Media media) {
             this.media = media;
         }
@@ -645,7 +600,6 @@ public final class DataForm implements Comparable<DataForm> {
          * Gets a natural-language description of the field, intended for presentation in a user-agent (e.g., as a "tool-tip", help button, or explanatory text provided near the field).
          *
          * @return The description.
-         * @see #setDescription(String)
          */
         public String getDescription() {
             return description;
@@ -656,7 +610,9 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param description The description.
          * @see #getDescription()
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
+        @Deprecated
         public void setDescription(String description) {
             this.description = description;
         }
@@ -676,17 +632,17 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param validation The validation.
          * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
+        @Deprecated
         public void setValidation(Validation validation) {
             this.validation = validation;
         }
-
 
         /**
          * If the field as required in order for the form to be considered valid.
          *
          * @return True, if the field is required.
-         * @see #setRequired(boolean)
          */
         public boolean isRequired() {
             return required != null;
@@ -697,7 +653,9 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @param required If the field is required.
          * @see #isRequired()
+         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
          */
+        @Deprecated
         public void setRequired(boolean required) {
             this.required = required ? "" : null;
         }
@@ -727,9 +685,8 @@ public final class DataForm implements Comparable<DataForm> {
          * <p>The following field types represent data "types" that are commonly exchanged between Jabber/XMPP entities.</p>
          * </blockquote>
          */
-        @XmlEnum
         @XmlType(name = "field-type")
-        public static enum Type {
+        public enum Type {
             /**
              * The field enables an entity to gather or provide an either-or choice between two options. The default value is "false".
              */
@@ -780,6 +737,222 @@ public final class DataForm implements Comparable<DataForm> {
              */
             @XmlEnumValue(value = "text-single")
             TEXT_SINGLE
+        }
+
+        /**
+         * A builder class to build a data form field.
+         */
+        public static final class Builder {
+            private final List<String> values = new ArrayList<>();
+
+            private final List<Option> options = new ArrayList<>();
+
+            private Type type;
+
+            private String description;
+
+            private boolean required;
+
+            private Media media;
+
+            private Validation validation;
+
+            private String var;
+
+            private String label;
+
+            private Builder() {
+            }
+
+            /**
+             * Sets the type of the field.
+             *
+             * @param type The field type.
+             * @return The builder.
+             */
+            public Builder type(Type type) {
+                this.type = type;
+                return this;
+            }
+
+            /**
+             * Sets if the field is required.
+             *
+             * @param required If the field is required.
+             * @return The builder.
+             */
+            public Builder required(boolean required) {
+                this.required = required;
+                return this;
+            }
+
+            /**
+             * Sets the description.
+             *
+             * @param description The description.
+             * @return The builder.
+             */
+            public Builder description(String description) {
+                this.description = description;
+                return this;
+            }
+
+            /**
+             * Sets the media element.
+             *
+             * @param media The media element.
+             * @return The builder.
+             */
+            public Builder media(Media media) {
+                this.media = media;
+                return this;
+            }
+
+            /**
+             * Sets the validation.
+             *
+             * @param validation The validation.
+             * @return The builder.
+             */
+            public Builder validation(Validation validation) {
+                this.validation = validation;
+                return this;
+            }
+
+            /**
+             * Sets the label.
+             *
+             * @param label The label.
+             * @return The builder.
+             */
+            public Builder label(String label) {
+                this.label = label;
+                return this;
+            }
+
+            /**
+             * Sets the var attribute.
+             *
+             * @param var The var attribute.
+             * @return The builder.
+             */
+            public Builder var(String var) {
+                this.var = var;
+                return this;
+            }
+
+            /**
+             * Sets the value as string.
+             *
+             * @param value The value.
+             * @return The builder.
+             */
+            public Builder value(String value) {
+                this.values.clear();
+                this.values.add(value);
+                return this;
+            }
+
+            /**
+             * Sets the value as boolean. This methods sets the field type implicitly to {@link Type#BOOLEAN}.
+             *
+             * @param value The value.
+             * @return The builder.
+             */
+            public Builder value(boolean value) {
+                value(value ? "1" : "0");
+                return type(Type.BOOLEAN);
+            }
+
+            /**
+             * Sets the value as integer. This methods sets the field type implicitly to {@link Type#TEXT_SINGLE}.
+             *
+             * @param value The value.
+             * @return The builder.
+             */
+            public Builder value(int value) {
+                value(String.valueOf(value));
+                return type(Type.TEXT_SINGLE);
+            }
+
+            /**
+             * Sets the value as JID. This methods sets the field type implicitly to {@link Type#JID_SINGLE}.
+             *
+             * @param value The value.
+             * @return The builder.
+             */
+            public Builder value(Jid value) {
+                if (value != null) {
+                    value(value.toEscapedString());
+                }
+                return type(Type.JID_SINGLE);
+            }
+
+            /**
+             * Sets the value as date. This methods sets the field type implicitly to {@link Type#TEXT_SINGLE}.
+             *
+             * @param date The value.
+             * @return The builder.
+             */
+            public Builder value(Date date) {
+                if (date != null) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+                    value(DatatypeConverter.printDateTime(calendar));
+                }
+                return type(Type.TEXT_SINGLE);
+            }
+
+            /**
+             * Sets the values. This methods sets the field type implicitly to {@link Type#TEXT_MULTI}.
+             *
+             * @param values The values.
+             * @return The builder.
+             */
+            public Builder values(List<String> values) {
+                this.values.clear();
+                if (values != null) {
+                    this.values.addAll(values);
+                }
+                return type(Type.TEXT_MULTI);
+            }
+
+            /**
+             * Sets the values as JIDs. This methods sets the field type implicitly to {@link Type#JID_MULTI}.
+             *
+             * @param values The values.
+             * @return The builder.
+             */
+            public Builder valuesJid(List<Jid> values) {
+                this.values.clear();
+                if (values != null) {
+                    for (Jid value : values) {
+                        this.values.add(value.toEscapedString());
+                    }
+                }
+                return type(Type.JID_MULTI);
+            }
+
+            /**
+             * Sets the options.
+             *
+             * @param options The options.
+             * @return The builder.
+             */
+            public Builder options(List<Option> options) {
+                this.options.clear();
+                this.options.addAll(options);
+                return this;
+            }
+
+            /**
+             * Builds the field.
+             *
+             * @return The field.
+             */
+            public Field build() {
+                return new Field(this);
+            }
         }
     }
 

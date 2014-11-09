@@ -29,7 +29,10 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.pubsub.model.AccessModel;
 import rocks.xmpp.extensions.pubsub.model.PubSubMetaDataForm;
+import rocks.xmpp.extensions.pubsub.model.PublishOptions;
+import rocks.xmpp.extensions.pubsub.model.SendLastPublishedItem;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
@@ -90,5 +93,33 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(pubSubMetaDataForm1.getPublishers(), Arrays.asList(Jid.valueOf("publisher")));
         Assert.assertEquals(pubSubMetaDataForm1.getTitle(), "title");
         Assert.assertEquals(pubSubMetaDataForm1.getPayloadType(), "namespace");
+    }
+
+    @Test
+    public void testPublishOptions() throws JAXBException, XMLStreamException {
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        PublishOptions publishOptions = PublishOptions.builder()
+                .accessModel(AccessModel.AUTHORIZE)
+                .persistItems(true)
+                .rosterGroupsAllowed(Arrays.asList("Friends"))
+                .sendLastPublishedItem(SendLastPublishedItem.ON_SUB)
+                .build();
+
+        String xml = marshal(publishOptions.getDataForm());
+        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
+                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#publish-options</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#access_model\"><value>authorize</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#persist_items\"><value>1</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#send_last_published_item\"><value>on_sub</value></field>" +
+                "<field type=\"list-multi\" var=\"pubsub#roster_groups_allowed\"><value>Friends</value></field>" +
+                "</x>");
+        DataForm dataForm = unmarshal(xml, DataForm.class);
+        PublishOptions publishOptionsForm = new PublishOptions(dataForm);
+        Assert.assertEquals(publishOptionsForm.getAccessModel(), AccessModel.AUTHORIZE);
+        Assert.assertTrue(publishOptionsForm.isPersistItems());
+        Assert.assertEquals(publishOptionsForm.getSendLastPublishedItem(), SendLastPublishedItem.ON_SUB);
+        Assert.assertEquals(publishOptionsForm.getRosterGroupsAllowed(), Arrays.asList("Friends"));
     }
 }

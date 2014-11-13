@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.pubsub.model;
  * The type of a node.
  *
  * @author Christian Schudt
- * @see NodeConfigurationBuilder#nodeType(NodeType)
+ * @see NodeConfiguration#getNodeType()
  */
 public enum NodeType {
     /**

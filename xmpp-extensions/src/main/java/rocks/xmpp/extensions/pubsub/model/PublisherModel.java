@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.pubsub.model;
  * Defines who may publish publish to a node.
  *
  * @author Christian Schudt
- * @see NodeConfigurationBuilder#publisherModel(PublisherModel)
+ * @see NodeConfiguration#getPublisherModel()
  */
 public enum PublisherModel {
 

@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.pubsub.model;
  * Defines who may subscribe to a node.
  *
  * @author Christian Schudt
- * @see NodeConfigurationBuilder#accessModel(AccessModel)
+ * @see NodeConfiguration#getAccessModel()
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#accessmodels">4.5 Node Access Models</a>
  */
 public enum AccessModel {

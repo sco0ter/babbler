@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.pubsub.model;
  * Defines whether owners or publishers should receive replies to items.
  *
  * @author Christian Schudt
- * @see NodeConfigurationBuilder#itemReply(ItemReply)
+ * @see NodeConfiguration#getItemReply()
  */
 public enum ItemReply {
     /**

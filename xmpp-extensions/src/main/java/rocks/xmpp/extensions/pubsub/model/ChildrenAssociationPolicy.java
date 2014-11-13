@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.pubsub.model;
  * The children association policy defines, who may associate leaf nodes with a collection.
  *
  * @author Christian Schudt
- * @see NodeConfigurationBuilder#childrenAssociationPolicy(ChildrenAssociationPolicy)
+ * @see NodeConfiguration#getChildrenAssociationPolicy()
  */
 public enum ChildrenAssociationPolicy {
     /**

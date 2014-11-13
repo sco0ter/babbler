@@ -29,10 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.pubsub.model.AccessModel;
 import rocks.xmpp.extensions.pubsub.model.AffiliationState;
-import rocks.xmpp.extensions.pubsub.model.NodeConfigurationBuilder;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 
@@ -465,19 +462,5 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
         PubSubOwner pubSubOwner = PubSubOwner.withDelete("test");
         String xml = marshal(pubSubOwner);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"test\"></delete></pubsub>");
-    }
-
-    @Test
-    public void testNodeConfiguration() throws JAXBException, XMLStreamException {
-        DataForm nodeConfiguration = new NodeConfigurationBuilder()
-                .notifyDelete(true)
-                .accessModel(AccessModel.AUTHORIZE)
-                .language("de")
-                .persistItems(true)
-                .allowSubscriptions(true)
-                .build();
-
-        String xml = marshal(nodeConfiguration);
-        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#node_config</value></field><field type=\"list-single\" var=\"pubsub#access_model\"><value>authorize</value></field><field type=\"text-single\" var=\"pubsub#language\"><value>de</value></field><field type=\"boolean\" var=\"pubsub#notify_delete\"><value>1</value></field><field type=\"boolean\" var=\"pubsub#persist_items\"><value>1</value></field><field type=\"boolean\" var=\"pubsub#subscribe\"><value>1</value></field></x>");
     }
 }

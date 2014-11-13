@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.pubsub.model;
  * Defines when to send the last published item.
  *
  * @author Christian Schudt
- * @see NodeConfigurationBuilder#sendLastPublishedItem(SendLastPublishedItem)
+ * @see NodeConfiguration#getSendLastPublishedItem()
  */
 public enum SendLastPublishedItem {
     /**

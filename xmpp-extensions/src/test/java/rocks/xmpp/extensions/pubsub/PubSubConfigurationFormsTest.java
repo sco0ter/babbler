@@ -28,15 +28,15 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.pubsub.model.AccessModel;
-import rocks.xmpp.extensions.pubsub.model.PubSubMetaDataForm;
-import rocks.xmpp.extensions.pubsub.model.PublishOptions;
-import rocks.xmpp.extensions.pubsub.model.SendLastPublishedItem;
+import rocks.xmpp.extensions.pubsub.model.*;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -121,5 +121,86 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertTrue(publishOptionsForm.isPersistItems());
         Assert.assertEquals(publishOptionsForm.getSendLastPublishedItem(), SendLastPublishedItem.ON_SUB);
         Assert.assertEquals(publishOptionsForm.getRosterGroupsAllowed(), Arrays.asList("Friends"));
+    }
+
+    @Test
+    public void testNodeConfiguration() throws JAXBException, XMLStreamException, MalformedURLException {
+        NodeConfiguration nodeConfiguration = NodeConfiguration.builder()
+                .accessModel(AccessModel.AUTHORIZE)
+                .bodyXslt(new URL("http://xmpp.org"))
+                .childrenAssociationPolicy(ChildrenAssociationPolicy.OWNERS)
+                .childrenAssociationWhitelist(Arrays.asList(Jid.valueOf("domain")))
+                .children(Arrays.asList("collection1"))
+                .childrenMax(23)
+                .collection(Arrays.asList("collections"))
+                .contact(Arrays.asList(Jid.valueOf("contact")))
+                .dataformXslt(new URL("http://www.xmpp.org"))
+                .deliverNotifications(true)
+                .deliverPayloads(false)
+                .description("description")
+                .itemExpire(2)
+                .itemReply(ItemReply.OWNER)
+                .language("de")
+                .maxItems(4)
+                .maxPayloadSize(54)
+                .nodeType(NodeType.LEAF)
+                .notificationType(AbstractMessage.Type.NORMAL)
+                .notifyConfig(true)
+                .notifyDelete(true)
+                .notifyRetract(true)
+                .notifySub(true)
+                .persistItems(true)
+                .presenceBasedDelivery(true)
+                .publisherModel(PublisherModel.OPEN)
+                .purgeOffline(false)
+                .rosterGroupsAllowed(Arrays.asList("group1", "group2"))
+                .sendLastPublishedItem(SendLastPublishedItem.ON_SUB_AND_PRESENCE)
+                .temporarySubscriptions(true)
+                .allowSubscriptions(true)
+                .title("Title")
+                .type("Type")
+                .build();
+
+        String xml = marshal(nodeConfiguration.getDataForm());
+        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
+                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#node_config</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#access_model\"><value>authorize</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#body_xslt\"><value>http://xmpp.org</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#children_association_policy\"><value>owners</value></field>" +
+                "<field type=\"jid-multi\" var=\"pubsub#children_association_whitelist\"><value>domain</value></field>" +
+                "<field type=\"text-multi\" var=\"pubsub#children\"><value>collection1</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#children_max\"><value>23</value></field>" +
+                "<field type=\"text-multi\" var=\"pubsub#collection\"><value>collections</value></field>" +
+                "<field type=\"jid-multi\" var=\"pubsub#contact\"><value>contact</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#dataform_xslt\"><value>http://www.xmpp.org</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#deliver_notifications\"><value>1</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#deliver_payloads\"><value>0</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#description\"><value>description</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#item_expire\"><value>2</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#itemreply\"><value>owner</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#language\"><value>de</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#max_items\"><value>4</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#max_payload_size\"><value>54</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#node_type\"><value>leaf</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#notification_type\"><value>normal</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#notify_config\"><value>1</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#notify_delete\"><value>1</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#notify_retract\"><value>1</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#notify_sub\"><value>1</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#persist_items\"><value>1</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#presence_based_delivery\"><value>1</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#publish_model\"><value>open</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#purge_offline\"><value>0</value></field>" +
+                "<field type=\"list-multi\" var=\"pubsub#roster_groups_allowed\"><value>group1</value><value>group2</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#send_last_published_item\"><value>on_sub_and_presence</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#tempsub\"><value>1</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#subscribe\"><value>1</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#title\"><value>Title</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#type\"><value>Type</value></field>" +
+                "</x>");
+
+        DataForm dataForm = unmarshal(xml, DataForm.class);
+        NodeConfiguration nodeConfiguration1 = new NodeConfiguration(dataForm);
+        Assert.assertEquals(nodeConfiguration1.getAccessModel(), AccessModel.AUTHORIZE);
     }
 }

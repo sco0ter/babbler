@@ -202,5 +202,37 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         DataForm dataForm = unmarshal(xml, DataForm.class);
         NodeConfiguration nodeConfiguration1 = new NodeConfiguration(dataForm);
         Assert.assertEquals(nodeConfiguration1.getAccessModel(), AccessModel.AUTHORIZE);
+        Assert.assertEquals(nodeConfiguration1.getBodyXslt(), new URL("http://xmpp.org"));
+        Assert.assertEquals(nodeConfiguration1.getChildrenAssociationPolicy(), ChildrenAssociationPolicy.OWNERS);
+        Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Arrays.asList(Jid.valueOf("domain")));
+        Assert.assertEquals(nodeConfiguration1.getChildren(), Arrays.asList("collection1"));
+        Assert.assertEquals(nodeConfiguration1.getChildrenMax(), Integer.valueOf(23));
+        Assert.assertEquals(nodeConfiguration1.getContact(), Arrays.asList(Jid.valueOf("contact")));
+        Assert.assertEquals(nodeConfiguration1.getDataformXslt(), new URL("http://www.xmpp.org"));
+        Assert.assertTrue(nodeConfiguration1.isDeliverNotifications());
+        Assert.assertFalse(nodeConfiguration1.isDeliverPayloads());
+        Assert.assertEquals(nodeConfiguration1.getDescription(), "description");
+        Assert.assertEquals(nodeConfiguration1.getItemExpire(), Integer.valueOf(2));
+        Assert.assertEquals(nodeConfiguration1.getItemReply(), ItemReply.OWNER);
+        Assert.assertEquals(nodeConfiguration1.getLanguage(), "de");
+        Assert.assertEquals(nodeConfiguration1.getMaxItems(), Integer.valueOf(4));
+        Assert.assertEquals(nodeConfiguration1.getMaxPayloadSize(), Integer.valueOf(54));
+        Assert.assertEquals(nodeConfiguration1.getNodeType(), NodeType.LEAF);
+        Assert.assertEquals(nodeConfiguration1.getNotificationType(), AbstractMessage.Type.NORMAL);
+        Assert.assertTrue(nodeConfiguration1.isNotifyConfig());
+        Assert.assertTrue(nodeConfiguration1.isNotifyDelete());
+        Assert.assertTrue(nodeConfiguration1.isNotifyRetract());
+        Assert.assertTrue(nodeConfiguration1.isNotifySub());
+        Assert.assertTrue(nodeConfiguration1.isPersistItems());
+        Assert.assertTrue(nodeConfiguration1.isPresenceBasedDelivery());
+        Assert.assertEquals(nodeConfiguration1.getPublisherModel(), PublisherModel.OPEN);
+        Assert.assertFalse(nodeConfiguration1.isPurgeOffline());
+        Assert.assertEquals(nodeConfiguration1.getRosterGroupsAllowed(), Arrays.asList("group1", "group2"));
+        Assert.assertEquals(nodeConfiguration1.getSendLastPublishedItem(), SendLastPublishedItem.ON_SUB_AND_PRESENCE);
+        Assert.assertTrue(nodeConfiguration1.isTemporarySubscriptions());
+        Assert.assertTrue(nodeConfiguration1.isAllowSubscriptions());
+        Assert.assertEquals(nodeConfiguration1.getTitle(), "Title");
+        Assert.assertEquals(nodeConfiguration1.getPayloadType(), "Type");
+
     }
 }

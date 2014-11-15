@@ -164,17 +164,17 @@ public final class PubSubNode {
     /**
      * Subscribes to and configures this node.
      *
-     * @param dataForm The configuration form.
+     * @param subscribeOptions The configuration form.
      * @return The subscription.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
      */
-    public Subscription subscribe(DataForm dataForm) throws XmppException {
+    public Subscription subscribe(SubscribeOptions subscribeOptions) throws XmppException {
         if (nodeId == null) {
             throw new IllegalArgumentException("nodeId must not be null");
         }
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withSubscribe(nodeId, xmppSession.getConnectedResource().asBareJid(), dataForm)));
+        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withSubscribe(nodeId, xmppSession.getConnectedResource().asBareJid(), subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
         return result.getExtension(PubSub.class).getSubscription();
     }
 
@@ -208,11 +208,11 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
-     * @see #configureSubscription(rocks.xmpp.extensions.data.model.DataForm)
+     * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
      */
-    public DataForm getSubscriptionOptions() throws XmppException {
+    public SubscribeOptions getSubscriptionOptions() throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null)));
-        return result.getExtension(PubSub.class).getOptions().getDataForm();
+        return new SubscribeOptions(result.getExtension(PubSub.class).getOptions().getDataForm());
     }
 
     /**
@@ -222,23 +222,23 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
-     * @deprecated Use {@link #configureSubscription(rocks.xmpp.extensions.data.model.DataForm)}
+     * @deprecated Use {@link #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)}
      */
     @Deprecated
     public void submitSubscriptionOptions(DataForm dataForm) throws XmppException {
-        configureSubscription(dataForm);
+        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), dataForm)));
     }
 
     /**
      * Submits subscription options for this node.
      *
-     * @param dataForm The subscription options form.
+     * @param subscribeOptions The subscription options form.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
-    public void configureSubscription(DataForm dataForm) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), dataForm)));
+    public void configureSubscription(SubscribeOptions subscribeOptions) throws XmppException {
+        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), subscribeOptions.getDataForm())));
     }
 
     /**
@@ -249,9 +249,9 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      */
-    public DataForm getDefaultSubscriptionOptions() throws XmppException {
+    public SubscribeOptions getDefaultSubscriptionOptions() throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withDefault(nodeId)));
-        return result.getExtension(PubSub.class).getDefault().getDataForm();
+        return new SubscribeOptions(result.getExtension(PubSub.class).getDefault().getDataForm());
     }
 
     /**
@@ -357,14 +357,14 @@ public final class PubSubNode {
     /**
      * Creates and configures this node.
      *
-     * @param dataForm The configuration form.
+     * @param nodeConfiguration The configuration form.
      * @return The node id.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
      */
-    public String create(DataForm dataForm) throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withCreate(nodeId, dataForm)));
+    public String create(NodeConfiguration nodeConfiguration) throws XmppException {
+        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withCreate(nodeId, nodeConfiguration.getDataForm())));
         if (nodeId != null) {
             return nodeId;
         }
@@ -386,10 +386,10 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-request">8.2.1 Request</a>
      */
-    public DataForm getNodeConfiguration() throws XmppException {
+    public NodeConfiguration getNodeConfiguration() throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSubOwner.withConfigure(nodeId)));
         PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
-        return pubSubOwner.getConfigurationForm();
+        return new NodeConfiguration(pubSubOwner.getConfigurationForm());
     }
 
     /**
@@ -399,23 +399,23 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
-     * @deprecated Use {@link #configureNode(rocks.xmpp.extensions.data.model.DataForm)}
+     * @deprecated Use {@link #configureNode(rocks.xmpp.extensions.pubsub.model.NodeConfiguration)}
      */
     @Deprecated
     public void submitNodeConfiguration(DataForm dataForm) throws XmppException {
-        configureNode(dataForm);
+        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withConfigure(nodeId, dataForm)));
     }
 
     /**
      * Submits the node configuration form.
      *
-     * @param dataForm The configuration form.
+     * @param nodeConfiguration The configuration form.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
      */
-    public void configureNode(DataForm dataForm) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withConfigure(nodeId, dataForm)));
+    public void configureNode(NodeConfiguration nodeConfiguration) throws XmppException {
+        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withConfigure(nodeId, nodeConfiguration.getDataForm())));
     }
 
     /**

@@ -34,6 +34,8 @@ import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * @author Christian Schudt
@@ -125,7 +127,7 @@ public class RegistrationTest extends XmlTest {
 
     @Test
     public void marshalRemove() throws JAXBException, XMLStreamException {
-        Registration registration = new Registration(true);
+        Registration registration = Registration.remove();
         String xml = marshal(registration);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:register\"><remove></remove></query>");
     }
@@ -135,5 +137,41 @@ public class RegistrationTest extends XmlTest {
         String feature = "<register xmlns='http://jabber.org/features/iq-register'/>";
         StreamFeature registerFeature = unmarshal(feature, RegisterFeature.class);
         Assert.assertNotNull(registerFeature);
+    }
+
+    @Test
+    public void marshalRegistration() throws JAXBException, XMLStreamException {
+        Registration registration = Registration.builder()
+                .name("name")
+                .givenName("First name")
+                .familyName("Last name")
+                .email("mail@mail")
+                .postalCode("12345")
+                .city("City")
+                .build();
+
+        String xml = marshal(registration);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:register\"><name>name</name><first>First name</first><last>Last name</last><email>mail@mail</email><city>City</city><zip>12345</zip></query>");
+    }
+
+    @Test
+    public void unmarshalWebRegistration() throws XMLStreamException, JAXBException, MalformedURLException {
+        String xml = "<iq type='result'\n" +
+                "    from='contests.shakespeare.lit'\n" +
+                "    to='juliet@capulet.com/balcony'\n" +
+                "    id='reg3'>\n" +
+                "  <query xmlns='jabber:iq:register'>\n" +
+                "    <instructions>\n" +
+                "      To register, visit http://www.shakespeare.lit/contests.php\n" +
+                "    </instructions>\n" +
+                "    <x xmlns='jabber:x:oob'>\n" +
+                "      <url>http://www.shakespeare.lit/contests.php</url>\n" +
+                "    </x>\n" +
+                "  </query>\n" +
+                "</iq>\n";
+        IQ iq = unmarshal(xml, IQ.class);
+        Registration registration = iq.getExtension(Registration.class);
+        Assert.assertNotNull(registration);
+        Assert.assertEquals(registration.getWebRegistrationUrl(), new URL("http://www.shakespeare.lit/contests.php"));
     }
 }

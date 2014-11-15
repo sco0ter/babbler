@@ -45,7 +45,7 @@ public class PubSubPublisherUseCasesTest extends XmlTest {
 
     @Test
     public void marshalPublish() throws JAXBException, XMLStreamException {
-        PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null);
+        PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null, null);
         String xml = marshal(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish></pubsub>");
     }

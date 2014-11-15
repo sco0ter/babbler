@@ -476,12 +476,8 @@ public final class PubSub {
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
-    public static PubSub withPublish(String node, String id, Object item) {
-        return new PubSub(new Publish(node, new ItemElement(id, item)));
-    }
-
     public static PubSub withPublish(String node, String id, Object item, DataForm options) {
-        return new PubSub(new Publish(node, new ItemElement(id, item)), new PublishOptions(options));
+        return new PubSub(new Publish(node, new ItemElement(id, item)), options != null ? new PublishOptions(options) : null);
     }
 
     /**

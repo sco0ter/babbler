@@ -28,13 +28,18 @@ import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 
-import javax.xml.bind.DatatypeConverter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
+ * A helper class to build a 'subscribe options' data form.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-subscribe">16.4.2 pubsub#subscribe_options FORM_TYPE</a>
  */
-public class SubscribeOptions {
+public final class SubscribeOptions {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/pubsub#subscribe_options";
 
@@ -80,34 +85,10 @@ public class SubscribeOptions {
 
     private static final String SUBSCRIPTION_DEPTH = "pubsub#subscription_depth";
 
-    private final Boolean deliver;
+    private final DataForm dataForm;
 
-    private final Boolean digest;
-
-    private final Integer digestFrequency;
-
-    private final Date expire;
-
-    private final Boolean includeBody;
-
-    private final Set<AbstractPresence.Show> showValues;
-
-    private final Boolean temporary;
-
-    private final SubscriptionType subscriptionType;
-
-    private final Integer subscriptionDepth;
-
-    private SubscribeOptions(Builder builder) {
-        this.deliver = builder.deliver;
-        this.digest = builder.digest;
-        this.digestFrequency = builder.digestFrequency;
-        this.expire = builder.expireAt;
-        this.includeBody = builder.includeBody;
-        this.showValues = builder.showValues;
-        this.temporary = builder.temporary;
-        this.subscriptionType = builder.subscriptionType;
-        this.subscriptionDepth = builder.subscriptionDepth;
+    public SubscribeOptions(DataForm dataForm) {
+        this.dataForm = dataForm;
     }
 
     /**
@@ -119,58 +100,123 @@ public class SubscribeOptions {
         return new Builder();
     }
 
-    public DataForm toDataForm() {
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.setFormType(FORM_TYPE);
-
-        List<DataForm.Field> fields = new ArrayList<>();
-
-        if (deliver != null) {
-            fields.add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, DELIVER, deliver ? "1" : "0"));
-        }
-        if (digest != null) {
-            fields.add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, DIGEST, digest ? "1" : "0"));
-        }
-        if (digestFrequency != null) {
-            fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, DIGEST_FREQUENCY, String.valueOf(digestFrequency)));
-        }
-        if (temporary != null && temporary) {
-            // To subscribe temporarily, the subscriber MUST set the "pubsub#expire" subscription configuration option to a literal value of "presence".
-            fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, EXPIRE, "presence"));
-        } else if (expire != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(expire);
-            fields.add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, EXPIRE, DatatypeConverter.printDateTime(calendar)));
-        }
-        if (includeBody != null) {
-            fields.add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, INCLUDE_BODY, includeBody ? "1" : "0"));
-        }
-        if (!showValues.isEmpty()) {
-            DataForm.Field field = new DataForm.Field(DataForm.Field.Type.LIST_MULTI, SHOW_VALUES);
-            for (AbstractPresence.Show show : showValues) {
-                if (show != null) {
-                    field.getValues().add(show.name().toLowerCase());
-                } else {
-                    field.getValues().add("online");
-                }
-            }
-            fields.add(field);
-        }
-        if (subscriptionType != null) {
-            fields.add(new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, SUBSCRIPTION_TYPE, subscriptionType.name().toLowerCase()));
-        }
-        if (subscriptionDepth != null) {
-            DataForm.Field field = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, SUBSCRIPTION_DEPTH);
-            if (subscriptionDepth < 1) {
-                field.getValues().add("all");
-            } else {
-                field.getValues().add(subscriptionDepth.toString());
-            }
-            fields.add(field);
-        }
-        dataForm.getFields().addAll(fields);
-
+    /**
+     * Gets the underlying data form.
+     *
+     * @return The underlying data form.
+     */
+    public DataForm getDataForm() {
         return dataForm;
+    }
+
+    /**
+     * Whether an entity wants to receive or disable notifications.
+     *
+     * @return True, if notifications are delivered.
+     */
+    public Boolean isDeliver() {
+        return dataForm.findValueAsBoolean(DELIVER);
+    }
+
+    /**
+     * Whether an entity wants to receive digests
+     * (aggregations) of notifications or all
+     * notifications individually.
+     *
+     * @return True, if digests are sent.
+     */
+    public Boolean isDigest() {
+        return dataForm.findValueAsBoolean(DIGEST);
+    }
+
+    /**
+     * The minimum number of milliseconds between
+     * sending any two notification digests
+     *
+     * @return The digest frequency.
+     */
+    public Integer getDigestFrequency() {
+        return dataForm.findValueAsInteger(DIGEST_FREQUENCY);
+    }
+
+    /**
+     * The DateTime at which a leased subscription
+     * will end or has ended.
+     *
+     * @return The expiration date.
+     */
+    public Date getExpire() {
+        DataForm.Field field = dataForm.findField(EXPIRE);
+        if (!field.getValues().isEmpty() && field.getValues().get(0) != null && !field.getValues().get(0).equals("presence")) {
+            return field.getValueAsDate();
+        }
+        return null;
+    }
+
+    /**
+     * Whether an entity wants to receive an XMPP
+     * message body in addition to the payload
+     * format.
+     *
+     * @return True, if the body is included.
+     */
+    public Boolean isIncludeBody() {
+        return dataForm.findValueAsBoolean(INCLUDE_BODY);
+    }
+
+    /**
+     * Gets the show values.
+     *
+     * @return The show values.
+     */
+    public List<AbstractPresence.Show> getShowValues() {
+        List<String> values = dataForm.findValues(SHOW_VALUES);
+        List<AbstractPresence.Show> list = new ArrayList<>();
+        for (String value : values) {
+            if ("online".equals(value)) {
+                list.add(null);
+            } else {
+                list.add(AbstractPresence.Show.valueOf(value.toUpperCase()));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Gets the subscription type.
+     *
+     * @return The subscription type.
+     */
+    public SubscriptionType getSubscriptionType() {
+        String value = dataForm.findValue(SUBSCRIPTION_TYPE);
+        if (value != null) {
+            return SubscriptionType.valueOf(value.toUpperCase());
+        }
+        return null;
+    }
+
+    /**
+     * Gets the subscription depth. A negative value of -1 represents "all".
+     *
+     * @return The subscription depth.
+     */
+    public Integer getSubscriptionDepth() {
+        String value = dataForm.findValue(SUBSCRIPTION_DEPTH);
+        if ("all".equals(value)) {
+            return -1;
+        } else {
+            return Integer.valueOf(value);
+        }
+    }
+
+    /**
+     * Whether the subscription is temporary, i.e. presence-based.
+     *
+     * @return True, if the subscription is temporary.
+     */
+    public boolean isTemporary() {
+        DataForm.Field field = dataForm.findField(EXPIRE);
+        return !field.getValues().isEmpty() && field.getValues().get(0) != null && field.getValues().get(0).equals("presence");
     }
 
     /**
@@ -192,11 +238,11 @@ public class SubscribeOptions {
     /**
      * A builder for the subscribe options.
      *
-     * @see rocks.xmpp.extensions.pubsub.model.SubscribeOptions
+     * @see SubscribeOptions
      */
-    public static final class Builder {
+    public static final class Builder extends DataForm.Builder<SubscribeOptions.Builder> {
 
-        private final Set<Presence.Show> showValues = new HashSet<>();
+        private final List<Presence.Show> showValues = new ArrayList<>();
 
         private Boolean deliver;
 
@@ -268,9 +314,11 @@ public class SubscribeOptions {
          * @param showValues The presence states for which an entity wants to receive notifications.
          * @return The builder.
          */
-        public Builder showValues(AbstractPresence.Show... showValues) {
+        public Builder showValues(List<AbstractPresence.Show> showValues) {
             this.showValues.clear();
-            this.showValues.addAll(Arrays.asList(showValues));
+            if (showValues != null) {
+                this.showValues.addAll(showValues);
+            }
             return this;
         }
 
@@ -328,7 +376,66 @@ public class SubscribeOptions {
          * @return The subscribe options.
          */
         public SubscribeOptions build() {
-            return new SubscribeOptions(this);
+
+            DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
+            dataForm.setFormType(FORM_TYPE);
+
+            List<DataForm.Field> fields = new ArrayList<>();
+
+            if (deliver != null) {
+                fields.add(DataForm.Field.builder().var(DELIVER).value(deliver).build());
+            }
+            if (digest != null) {
+                fields.add(DataForm.Field.builder().var(DIGEST).value(digest).build());
+            }
+            if (digestFrequency != null) {
+                fields.add(DataForm.Field.builder().var(DIGEST_FREQUENCY).value(digestFrequency).build());
+            }
+            if (temporary != null && temporary) {
+                // To subscribe temporarily, the subscriber MUST set the "pubsub#expire" subscription configuration option to a literal value of "presence".
+                fields.add(DataForm.Field.builder().var(EXPIRE).value("presence").build());
+            } else if (expireAt != null) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(expireAt);
+                fields.add(DataForm.Field.builder().var(EXPIRE).value(expireAt).build());
+            }
+            if (includeBody != null) {
+                fields.add(DataForm.Field.builder().var(INCLUDE_BODY).value(includeBody).build());
+            }
+            if (!showValues.isEmpty()) {
+                DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().var(SHOW_VALUES);
+                List<String> values = new ArrayList<>();
+                for (AbstractPresence.Show show : showValues) {
+                    if (show != null) {
+                        values.add(show.name().toLowerCase());
+                    } else {
+                        values.add("online");
+                    }
+                }
+                fieldBuilder.values(values).type(DataForm.Field.Type.LIST_MULTI);
+                fields.add(fieldBuilder.build());
+            }
+            if (subscriptionType != null) {
+                fields.add(DataForm.Field.builder().var(SUBSCRIPTION_TYPE).value(subscriptionType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+            }
+            if (subscriptionDepth != null) {
+                DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().var(SUBSCRIPTION_DEPTH);
+                if (subscriptionDepth < 1) {
+                    fieldBuilder.value("all");
+                } else {
+                    fieldBuilder.value(subscriptionDepth.toString());
+                }
+                fieldBuilder.type(DataForm.Field.Type.LIST_SINGLE);
+                fields.add(fieldBuilder.build());
+            }
+
+            fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
+            return new SubscribeOptions(new DataForm(this));
+        }
+
+        @Override
+        protected SubscribeOptions.Builder self() {
+            return this;
         }
     }
 }

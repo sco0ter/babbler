@@ -578,7 +578,7 @@ public class DataForm implements Comparable<DataForm> {
             if (values.isEmpty()) {
                 return null;
             } else {
-                return DatatypeConverter.parseDateTime(values.get(0)).getTime();
+                return values.get(0) != null ? DatatypeConverter.parseDateTime(values.get(0)).getTime() : null;
             }
         }
 
@@ -1055,24 +1055,49 @@ public class DataForm implements Comparable<DataForm> {
         }
     }
 
+    /**
+     * An abstract builder to build simple data forms.
+     *
+     * @param <T> The sub builder.
+     */
     public static abstract class Builder<T extends Builder<T>> {
-        private List<Field> fields;
+        private final List<Field> fields = new ArrayList<>();
 
         private String formType;
 
         private Type type;
 
-        public T fields(List<Field> fields) {
-            this.fields = fields;
+        /**
+         * Sets the fields. Fields are appended to the existing fields.
+         *
+         * @param fields The fields.
+         * @return The builder.
+         */
+        public final T fields(List<Field> fields) {
+            if (fields != null) {
+                this.fields.addAll(fields);
+            }
             return self();
         }
 
-        public T formType(String formType) {
+        /**
+         * Sets the form type.
+         *
+         * @param formType The form type.
+         * @return The builder.
+         */
+        public final T formType(String formType) {
             this.formType = formType;
             return self();
         }
 
-        public T type(Type type) {
+        /**
+         * Sets the type of the form.
+         *
+         * @param type The data form type.
+         * @return The builder.
+         */
+        public final T type(Type type) {
             this.type = type;
             return self();
         }

@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.*;
 
@@ -233,6 +234,46 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertTrue(nodeConfiguration1.isAllowSubscriptions());
         Assert.assertEquals(nodeConfiguration1.getTitle(), "Title");
         Assert.assertEquals(nodeConfiguration1.getPayloadType(), "Type");
+
+    }
+
+    @Test
+    public void testSubscribeOptions() throws JAXBException, XMLStreamException, MalformedURLException {
+        SubscribeOptions nodeConfiguration = SubscribeOptions.builder()
+                .deliver(true)
+                .digest(true)
+                .digestFrequency(3)
+                .includeBody(true)
+                .temporary(true)
+                .showValues(Arrays.asList(AbstractPresence.Show.AWAY, AbstractPresence.Show.CHAT, null))
+                .subscriptionType(SubscribeOptions.SubscriptionType.NODES)
+                .subscriptionDepth(-1)
+                .build();
+
+        String xml = marshal(nodeConfiguration.getDataForm());
+        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
+                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#subscribe_options</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#deliver\"><value>1</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#digest\"><value>1</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#digest_frequency\"><value>3</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#expire\"><value>presence</value></field>" +
+                "<field type=\"boolean\" var=\"pubsub#include_body\"><value>1</value></field>" +
+                "<field type=\"list-multi\" var=\"pubsub#show-values\"><value>away</value><value>chat</value><value>online</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#subscription_type\"><value>nodes</value></field>" +
+                "<field type=\"list-single\" var=\"pubsub#subscription_depth\"><value>all</value></field>" +
+                "</x>");
+
+        DataForm dataForm = unmarshal(xml, DataForm.class);
+        SubscribeOptions subscribeOptions = new SubscribeOptions(dataForm);
+        Assert.assertTrue(subscribeOptions.isDeliver());
+        Assert.assertTrue(subscribeOptions.isDigest());
+        Assert.assertEquals(subscribeOptions.getDigestFrequency(), Integer.valueOf(3));
+        Assert.assertNull(subscribeOptions.getExpire());
+        Assert.assertTrue(subscribeOptions.isTemporary());
+        Assert.assertTrue(subscribeOptions.isIncludeBody());
+        Assert.assertEquals(subscribeOptions.getShowValues(), Arrays.asList(AbstractPresence.Show.AWAY, AbstractPresence.Show.CHAT, null));
+        Assert.assertEquals(subscribeOptions.getSubscriptionType(), SubscribeOptions.SubscriptionType.NODES);
+        Assert.assertEquals(subscribeOptions.getSubscriptionDepth(), Integer.valueOf(-1));
 
     }
 }

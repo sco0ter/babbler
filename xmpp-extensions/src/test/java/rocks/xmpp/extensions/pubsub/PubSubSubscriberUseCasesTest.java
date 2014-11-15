@@ -156,17 +156,16 @@ public class PubSubSubscriberUseCasesTest extends XmlTest {
 
     @Test
     public void marshalRequestOptions() throws JAXBException, XMLStreamException {
-        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"));
+        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"), null);
         String xml = marshal(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><options node=\"node6\" jid=\"francisco@denmark.lit\"></options></pubsub>");
     }
 
-    // TODO  Example 68. Subscriber submits completed options form
     @Test
     public void marshalSubmitOptions() throws JAXBException, XMLStreamException {
-        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"));
+        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"), new DataForm(DataForm.Type.SUBMIT));
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><options node=\"node6\" jid=\"francisco@denmark.lit\"></options></pubsub>");
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><options node=\"node6\" jid=\"francisco@denmark.lit\"><x xmlns=\"jabber:x:data\" type=\"submit\"></x></options></pubsub>");
     }
 
     @Test
@@ -275,25 +274,5 @@ public class PubSubSubscriberUseCasesTest extends XmlTest {
         PubSub pubSub = PubSub.withItems("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901");
         String xml = marshal(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><items node=\"princely_musings\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></items></pubsub>");
-    }
-
-    @Test
-    public void buildSubscribeOptions() throws JAXBException, XMLStreamException {
-        SubscribeOptions subscribeOptions = SubscribeOptions.builder()
-                .deliver(true)
-                .digest(false)
-                .includeBody(true)
-                .digestFrequency(2)
-                .temporary(true)
-                .subscriptionDepth(1)
-                .subscriptionType(SubscribeOptions.SubscriptionType.ITEMS)
-                .showValues(AbstractPresence.Show.AWAY, null)
-                .build();
-
-        DataForm dataForm = subscribeOptions.toDataForm();
-        Assert.assertEquals(dataForm.getFormType(), "http://jabber.org/protocol/pubsub#subscribe_options");
-
-        String xml = marshal(dataForm);
-        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#subscribe_options</value></field><field type=\"boolean\" var=\"pubsub#deliver\"><value>1</value></field><field type=\"boolean\" var=\"pubsub#digest\"><value>0</value></field><field type=\"text-single\" var=\"pubsub#digest_frequency\"><value>2</value></field><field type=\"text-single\" var=\"pubsub#expire\"><value>presence</value></field><field type=\"boolean\" var=\"pubsub#include_body\"><value>1</value></field><field type=\"list-multi\" var=\"pubsub#show-values\"><value>online</value><value>away</value></field><field type=\"list-single\" var=\"pubsub#subscription_type\"><value>items</value></field><field type=\"list-single\" var=\"pubsub#subscription_depth\"><value>1</value></field></x>");
     }
 }

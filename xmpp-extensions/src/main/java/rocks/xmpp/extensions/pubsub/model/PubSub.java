@@ -322,13 +322,14 @@ public final class PubSub {
      * }
      * </pre>
      *
-     * @param node The node.
-     * @param jid  The JID.
+     * @param node     The node.
+     * @param jid      The JID.
+     * @param dataForm The data form.
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
-    public static PubSub withOptions(String node, Jid jid) {
-        return new PubSub(new Options(node, jid));
+    public static PubSub withOptions(String node, Jid jid, DataForm dataForm) {
+        return new PubSub(new Options(node, jid, dataForm));
     }
 
     /**
@@ -611,9 +612,10 @@ public final class PubSub {
         private Options() {
         }
 
-        private Options(String node, Jid jid) {
+        private Options(String node, Jid jid, DataForm dataForm) {
             this.node = node;
             this.jid = jid;
+            this.dataForm = dataForm;
         }
 
         private Options(DataForm dataForm) {

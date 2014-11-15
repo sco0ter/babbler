@@ -115,10 +115,20 @@ public final class NodeConfiguration {
         this.dataForm = dataForm;
     }
 
+    /**
+     * Gets the builder to build a node configuration.
+     *
+     * @return The builder.
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Gets the underlying data form.
+     *
+     * @return The underlying data form.
+     */
     public DataForm getDataForm() {
         return dataForm;
     }

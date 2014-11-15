@@ -32,7 +32,6 @@ import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.pubsub.model.*;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
@@ -47,7 +46,7 @@ public final class PubSubNode {
 
     private final String name;
 
-    private final Type type;
+    private final NodeType type;
 
     private final Jid pubSubServiceAddress;
 
@@ -59,10 +58,10 @@ public final class PubSubNode {
 
     PubSubNode(String nodeId, String name, Jid pubSubServiceAddress, XmppSession xmppSession) {
         // If a node is a leaf node rather than a collection node and items have been published to the node, the service MAY return one <item/> element for each published item as described in the Discover Items for a Node section of this document, however such items MUST NOT include a 'node' attribute (since they are published items, not nodes).
-        this(nodeId, name, nodeId == null ? Type.LEAF : Type.COLLECTION, pubSubServiceAddress, xmppSession);
+        this(nodeId, name, nodeId == null ? NodeType.LEAF : NodeType.COLLECTION, pubSubServiceAddress, xmppSession);
     }
 
-    PubSubNode(String nodeId, String name, Type type, Jid pubSubServiceAddress, XmppSession xmppSession) {
+    PubSubNode(String nodeId, String name, NodeType type, Jid pubSubServiceAddress, XmppSession xmppSession) {
         this.nodeId = nodeId;
         this.name = name;
         this.type = type;
@@ -73,11 +72,13 @@ public final class PubSubNode {
     }
 
     /**
-     * Gets node info.
+     * Gets node info, which consists of a node name, type and meta info.
      *
      * @return The node info.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-info">5.3 Discover Node Information</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
      */
     public NodeInfo getNodeInfo() throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(pubSubServiceAddress);
@@ -111,10 +112,10 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-discoveritems">5.5 Discover Items for a Node</a>
      */
-    public List<rocks.xmpp.extensions.pubsub.model.Item> discoverItems() throws XmppException {
+    public List<Item> discoverItems() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(pubSubServiceAddress, nodeId);
-        List<rocks.xmpp.extensions.pubsub.model.Item> result = new ArrayList<>();
-        for (Item item : itemNode.getItems()) {
+        List<Item> result = new ArrayList<>();
+        for (rocks.xmpp.extensions.disco.model.items.Item item : itemNode.getItems()) {
             // The 'name' attribute of each Service Discovery item MUST contain its ItemID
             result.add(new PubSub.ItemElement(item.getName()));
         }
@@ -131,8 +132,7 @@ public final class PubSubNode {
      */
     public List<Subscription> getSubscriptions() throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withSubscriptions(nodeId)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getSubscriptions();
+        return result.getExtension(PubSub.class).getSubscriptions();
     }
 
 
@@ -146,8 +146,7 @@ public final class PubSubNode {
      */
     public List<Affiliation> getAffiliations() throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withAffiliations(nodeId)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getAffiliations();
+        return result.getExtension(PubSub.class).getAffiliations();
     }
 
     /**
@@ -176,8 +175,7 @@ public final class PubSubNode {
             throw new IllegalArgumentException("nodeId must not be null");
         }
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withSubscribe(nodeId, xmppSession.getConnectedResource().asBareJid(), dataForm)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getSubscription();
+        return result.getExtension(PubSub.class).getSubscription();
     }
 
     /**
@@ -210,11 +208,25 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
+     * @see #configureSubscription(rocks.xmpp.extensions.data.model.DataForm)
      */
     public DataForm getSubscriptionOptions() throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid())));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getOptions().getDataForm();
+        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null)));
+        return result.getExtension(PubSub.class).getOptions().getDataForm();
+    }
+
+    /**
+     * Submits subscription options for this node.
+     *
+     * @param dataForm The subscription options form.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
+     * @deprecated Use {@link #configureSubscription(rocks.xmpp.extensions.data.model.DataForm)}
+     */
+    @Deprecated
+    public void submitSubscriptionOptions(DataForm dataForm) throws XmppException {
+        configureSubscription(dataForm);
     }
 
     /**
@@ -225,8 +237,8 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
-    public void submitSubscriptionOptions(DataForm dataForm) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid())));
+    public void configureSubscription(DataForm dataForm) throws XmppException {
+        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), dataForm)));
     }
 
     /**
@@ -239,8 +251,7 @@ public final class PubSubNode {
      */
     public DataForm getDefaultSubscriptionOptions() throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withDefault(nodeId)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getDefault().getDataForm();
+        return result.getExtension(PubSub.class).getDefault().getDataForm();
     }
 
     /**
@@ -251,10 +262,9 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
      */
-    public List<rocks.xmpp.extensions.pubsub.model.Item> getItems() throws XmppException {
+    public List<Item> getItems() throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withItems(nodeId)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getItems();
+        return result.getExtension(PubSub.class).getItems();
     }
 
     /**
@@ -267,10 +277,9 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning Notifications Only</a>
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestone">6.5.8 Requesting a Particular Item</a>
      */
-    public List<rocks.xmpp.extensions.pubsub.model.Item> getItems(String... ids) throws XmppException {
+    public List<Item> getItems(String... ids) throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withItems(nodeId, ids)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getItems();
+        return result.getExtension(PubSub.class).getItems();
     }
 
 
@@ -283,10 +292,9 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
-    public List<rocks.xmpp.extensions.pubsub.model.Item> getItems(int maxItems) throws XmppException {
+    public List<Item> getItems(int maxItems) throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withItems(nodeId, maxItems)));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getItems();
+        return result.getExtension(PubSub.class).getItems();
     }
 
     /**
@@ -391,8 +399,22 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
+     * @deprecated Use {@link #configureNode(rocks.xmpp.extensions.data.model.DataForm)}
      */
+    @Deprecated
     public void submitNodeConfiguration(DataForm dataForm) throws XmppException {
+        configureNode(dataForm);
+    }
+
+    /**
+     * Submits the node configuration form.
+     *
+     * @param dataForm The configuration form.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
+     */
+    public void configureNode(DataForm dataForm) throws XmppException {
         xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withConfigure(nodeId, dataForm)));
     }
 
@@ -441,7 +463,7 @@ public final class PubSubNode {
     public List<PubSubNode> getNodes() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(pubSubServiceAddress, nodeId);
         List<PubSubNode> nodes = new ArrayList<>();
-        for (Item item : itemNode.getItems()) {
+        for (rocks.xmpp.extensions.disco.model.items.Item item : itemNode.getItems()) {
             PubSubNode n = new PubSubNode(item.getNode(), item.getName(), pubSubServiceAddress, xmppSession);
             nodes.add(n);
         }
@@ -471,20 +493,12 @@ public final class PubSubNode {
      *
      * @return The type.
      */
-    public Type getType() {
+    public NodeType getType() {
         return type;
     }
 
     @Override
     public String toString() {
         return nodeId;
-    }
-
-    /**
-     * The node type.
-     */
-    public enum Type {
-        LEAF,
-        COLLECTION,
     }
 }

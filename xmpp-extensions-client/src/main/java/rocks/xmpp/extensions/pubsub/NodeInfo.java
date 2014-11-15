@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.pubsub;
 
 import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.pubsub.model.NodeType;
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.extensions.pubsub.model.PubSubMetaDataForm;
 
@@ -41,12 +42,12 @@ public class NodeInfo {
 
     private final PubSubMetaDataForm metaDataForm;
 
-    private final PubSubNode.Type type;
+    private final NodeType type;
 
     public NodeInfo(Identity identity, Set<PubSubFeature> features, PubSubMetaDataForm metaDataForm) {
         this.identity = identity;
         this.features = features;
         this.metaDataForm = metaDataForm;
-        this.type = "collection".equals(identity.getType()) ? PubSubNode.Type.COLLECTION : PubSubNode.Type.LEAF;
+        this.type = "collection".equals(identity.getType()) ? NodeType.COLLECTION : NodeType.LEAF;
     }
 }

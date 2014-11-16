@@ -27,8 +27,15 @@ package rocks.xmpp.extensions.muc.model;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
+ * A helper class to build a standard {@link rocks.xmpp.extensions.data.model.DataForm}, which can be used to request voice in a MUC room.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-request">15.5.2 muc#request FORM_TYPE</a>
  */
 public final class RequestVoiceForm {
 
@@ -56,9 +63,29 @@ public final class RequestVoiceForm {
 
     private final DataForm dataForm;
 
+    /**
+     * Creates the request voice form.
+     *
+     * @param dataForm The underlying data form.
+     */
     public RequestVoiceForm(DataForm dataForm) {
         this.dataForm = dataForm;
-        this.dataForm.setFormType(FORM_TYPE);
+    }
+
+    /**
+     * Creates the builder to build a form.
+     *
+     * @return The builder.
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Gets the underlying data form.
+     */
+    public DataForm getDataForm() {
+        return dataForm;
     }
 
     /**
@@ -67,56 +94,16 @@ public final class RequestVoiceForm {
      * @return The JID.
      */
     public Jid getJid() {
-        DataForm.Field field = dataForm.findField(JID);
-        if (field != null && !field.getValues().isEmpty()) {
-            return Jid.valueOf(field.getValues().get(0));
-        }
-        return null;
-    }
-
-    /**
-     * Sets the JID.
-     *
-     * @param jid The JID.
-     */
-    public void setJid(Jid jid) {
-        DataForm.Field field = dataForm.findField(JID);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.JID_SINGLE, JID);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(jid.toEscapedString());
+        return dataForm.findValueAsJid(JID);
     }
 
     /**
      * Gets the room nick.
      *
      * @return The room nick.
-     * @see #setRoomNick(String)
      */
     public String getRoomNick() {
-        DataForm.Field field = dataForm.findField(ROOM_NICK);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the room nick.
-     *
-     * @param roomNick The room nick.
-     * @see #getRoomNick()
-     */
-    public void setRoomNick(String roomNick) {
-        DataForm.Field field = dataForm.findField(ROOM_NICK);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, ROOM_NICK);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(roomNick);
+        return dataForm.findValue(ROOM_NICK);
     }
 
     /**
@@ -125,26 +112,11 @@ public final class RequestVoiceForm {
      * @return The requested role.
      */
     public Role getRole() {
-        DataForm.Field field = dataForm.findField(ROLE);
-        if (field != null && !field.getValues().isEmpty()) {
-            return Role.valueOf(field.getValues().get(0).toUpperCase());
+        String value = dataForm.findValue(ROLE);
+        if (value != null) {
+            return Role.valueOf(value.toUpperCase());
         }
         return null;
-    }
-
-    /**
-     * Sets the requested role.
-     *
-     * @param role The requested role.
-     */
-    public void setRole(Role role) {
-        DataForm.Field field = dataForm.findField(ROLE);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, ROLE);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(role.toString().toLowerCase());
     }
 
     /**
@@ -153,22 +125,95 @@ public final class RequestVoiceForm {
      * @return True, if the request is approved.
      */
     public boolean isRequestAllowed() {
-        DataForm.Field field = dataForm.findField(REQUEST_ALLOW);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
+        return dataForm.findValueAsBoolean(REQUEST_ALLOW);
     }
 
     /**
-     * Indicates, whether the request is approved.
-     *
-     * @param requestAllowed True, if the request is approved.
+     * The builder to build a request voice form.
      */
-    public void setRequestAllowed(boolean requestAllowed) {
-        DataForm.Field field = dataForm.findField(REQUEST_ALLOW);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, REQUEST_ALLOW);
-            dataForm.getFields().add(field);
+    public static final class Builder extends DataForm.Builder<Builder> {
+
+        private Role role;
+
+        private Jid jid;
+
+        private String roomNick;
+
+        private Boolean allowRequest;
+
+        private Builder() {
         }
-        field.getValues().clear();
-        field.getValues().add(requestAllowed ? "1" : "0");
+
+        /**
+         * Sets the requested role.
+         *
+         * @param role The role.
+         * @return The builder.
+         */
+        public Builder role(Role role) {
+            this.role = role;
+            return this;
+        }
+
+        /**
+         * Sets the JID.
+         *
+         * @param jid The JID.
+         * @return The builder.
+         */
+        public Builder jid(Jid jid) {
+            this.jid = jid;
+            return this;
+        }
+
+        /**
+         * Sets the room nickname.
+         *
+         * @param roomNick The room nickname.
+         * @return The builder.
+         */
+        public Builder roomNick(String roomNick) {
+            this.roomNick = roomNick;
+            return this;
+        }
+
+        /**
+         * Whether to grant voice.
+         *
+         * @param allowRequest Whether to grant voice.
+         * @return The builder.
+         */
+        public Builder allowRequest(boolean allowRequest) {
+            this.allowRequest = allowRequest;
+            return this;
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        /**
+         * Builds the request voice form.
+         *
+         * @return The request voice form.
+         */
+        public RequestVoiceForm build() {
+            List<DataForm.Field> fields = new ArrayList<>();
+            if (role != null) {
+                fields.add(DataForm.Field.builder().var(ROLE).value(role.name().toLowerCase()).build());
+            }
+            if (jid != null) {
+                fields.add(DataForm.Field.builder().var(JID).value(jid).build());
+            }
+            if (roomNick != null) {
+                fields.add(DataForm.Field.builder().var(ROOM_NICK).value(roomNick).build());
+            }
+            if (allowRequest != null) {
+                fields.add(DataForm.Field.builder().var(REQUEST_ALLOW).value(allowRequest).build());
+            }
+            fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
+            return new RequestVoiceForm(new DataForm(this));
+        }
     }
 }

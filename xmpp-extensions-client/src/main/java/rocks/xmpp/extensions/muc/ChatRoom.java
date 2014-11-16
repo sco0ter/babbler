@@ -601,10 +601,8 @@ public final class ChatRoom {
      */
     public void requestVoice() {
         Message message = new Message(roomJid);
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        RequestVoiceForm requestVoiceForm = new RequestVoiceForm(dataForm);
-        requestVoiceForm.setRole(Role.PARTICIPANT);
-        message.getExtensions().add(dataForm);
+        RequestVoiceForm requestVoiceForm = RequestVoiceForm.builder().role(Role.PARTICIPANT).build();
+        message.getExtensions().add(requestVoiceForm.getDataForm());
         xmppSession.send(message);
     }
 

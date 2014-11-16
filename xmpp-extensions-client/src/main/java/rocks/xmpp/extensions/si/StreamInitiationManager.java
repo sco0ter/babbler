@@ -159,7 +159,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
         // Offer stream methods.
         DataForm dataForm = new DataForm(DataForm.Type.FORM);
-        DataForm.Field field = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, STREAM_METHOD);
+        DataForm.Field field = DataForm.Field.builder().value(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).build();
         for (String streamMethod : supportedStreamMethod) {
             field.getOptions().add(new DataForm.Option(streamMethod));
         }
@@ -204,7 +204,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             offeredStreamMethods.add(option.getValue());
         }
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        DataForm.Field fieldReply = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, STREAM_METHOD);
+        DataForm.Field fieldReply = DataForm.Field.builder().value(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).build();
         offeredStreamMethods.retainAll(supportedStreamMethod);
         fieldReply.getValues().addAll(offeredStreamMethods);
         dataForm.getFields().add(fieldReply);

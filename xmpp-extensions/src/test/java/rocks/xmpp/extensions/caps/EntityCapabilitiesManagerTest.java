@@ -39,6 +39,7 @@ import javax.xml.stream.XMLStreamException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -96,15 +97,15 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     public void testSortDataForms() throws XMLStreamException, JAXBException {
 
         DataForm dataForm1 = new DataForm(DataForm.Type.FORM);
-        dataForm1.getFields().add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, "ccc"));
-        dataForm1.getFields().add(new DataForm.Field(DataForm.Field.Type.HIDDEN, "FORM_TYPE", "aaa"));
+        dataForm1.getFields().add(DataForm.Field.builder().var("ccc").type(DataForm.Field.Type.BOOLEAN).build());
+        dataForm1.getFields().add(DataForm.Field.builder().var("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build());
 
         DataForm dataForm2 = new DataForm(DataForm.Type.FORM);
-        dataForm2.getFields().add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, "bbb"));
+        dataForm2.getFields().add(DataForm.Field.builder().var("bbb").type(DataForm.Field.Type.BOOLEAN).build());
 
         DataForm dataForm3 = new DataForm(DataForm.Type.FORM);
-        dataForm3.getFields().add(new DataForm.Field(DataForm.Field.Type.HIDDEN, "FORM_TYPE", "bbb"));
-        dataForm3.getFields().add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, "aaa"));
+        dataForm3.getFields().add(DataForm.Field.builder().var("FORM_TYPE").value("bbb").type(DataForm.Field.Type.HIDDEN).build());
+        dataForm3.getFields().add(DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build());
 
         List<DataForm> dataForms = new ArrayList<>();
         dataForms.add(dataForm1);
@@ -123,11 +124,11 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     public void testSortDataFormFields() throws XMLStreamException, JAXBException {
 
         List<DataForm.Field> dataFields = new ArrayList<>();
-        DataForm.Field field1 = new DataForm.Field(DataForm.Field.Type.BOOLEAN, "ccc");
-        DataForm.Field field2 = new DataForm.Field(DataForm.Field.Type.HIDDEN, "FORM_TYPE", "aaa");
-        DataForm.Field field3 = new DataForm.Field(DataForm.Field.Type.BOOLEAN, "aaa");
-        DataForm.Field field4 = new DataForm.Field(DataForm.Field.Type.BOOLEAN, "ggg");
-        DataForm.Field field5 = new DataForm.Field(DataForm.Field.Type.BOOLEAN, "eee");
+        DataForm.Field field1 = DataForm.Field.builder().var("ccc").type(DataForm.Field.Type.BOOLEAN).value("ccc").build();
+        DataForm.Field field2 = DataForm.Field.builder().var("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build();
+        DataForm.Field field3 = DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build();
+        DataForm.Field field4 = DataForm.Field.builder().var("ggg").type(DataForm.Field.Type.BOOLEAN).build();
+        DataForm.Field field5 = DataForm.Field.builder().var("eee").type(DataForm.Field.Type.BOOLEAN).build();
 
         dataFields.add(field1);
         dataFields.add(field2);
@@ -186,12 +187,13 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         features.add(new Feature("http://jabber.org/protocol/muc"));
 
         DataForm dataForm = new DataForm(DataForm.Type.RESULT);
-        dataForm.getFields().add(new DataForm.Field(DataForm.Field.Type.HIDDEN, "FORM_TYPE", "urn:xmpp:dataforms:softwareinfo"));
-        dataForm.getFields().add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, "ip_version", "ipv4", "ipv6"));
-        dataForm.getFields().add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, "os", "Mac"));
-        dataForm.getFields().add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, "os_version", "10.5.1"));
-        dataForm.getFields().add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, "software", "Psi"));
-        dataForm.getFields().add(new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, "software_version", "0.11"));
+        dataForm.getFields().add(DataForm.Field.builder().var("FORM_TYPE").value("urn:xmpp:dataforms:softwareinfo").type(DataForm.Field.Type.HIDDEN).build());
+        dataForm.getFields().add(DataForm.Field.builder().var("ip_version").values(Arrays.asList("ipv4", "ipv6")).type(DataForm.Field.Type.TEXT_SINGLE).build());
+
+        dataForm.getFields().add(DataForm.Field.builder().var("os").value("Mac").type(DataForm.Field.Type.TEXT_SINGLE).build());
+        dataForm.getFields().add(DataForm.Field.builder().var("os_version").value("10.5.1").type(DataForm.Field.Type.TEXT_SINGLE).build());
+        dataForm.getFields().add(DataForm.Field.builder().var("software").value("Psi").type(DataForm.Field.Type.TEXT_SINGLE).build());
+        dataForm.getFields().add(DataForm.Field.builder().var("software_version").value("0.11").type(DataForm.Field.Type.TEXT_SINGLE).build());
 
         InfoDiscovery infoDiscovery = new InfoDiscovery();
         infoDiscovery.getFeatures().addAll(features);
@@ -213,15 +215,15 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         features.add(new Feature("http://jabber.org/protocol/caps"));
 
         DataForm dataForm1 = new DataForm(DataForm.Type.FORM);
-        dataForm1.getFields().add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, "ccc"));
-        dataForm1.getFields().add(new DataForm.Field(DataForm.Field.Type.HIDDEN, "FORM_TYPE"));
+        dataForm1.getFields().add(DataForm.Field.builder().var("ccc").build());
+        dataForm1.getFields().add(DataForm.Field.builder().var("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build());
 
         DataForm dataForm2 = new DataForm(DataForm.Type.FORM);
-        dataForm2.getFields().add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, "bbb"));
+        dataForm2.getFields().add(DataForm.Field.builder().var("bbb").type(DataForm.Field.Type.BOOLEAN).build());
 
         DataForm dataForm3 = new DataForm(DataForm.Type.FORM);
-        dataForm3.getFields().add(new DataForm.Field(DataForm.Field.Type.HIDDEN, "FORM_TYPE"));
-        dataForm3.getFields().add(new DataForm.Field(DataForm.Field.Type.BOOLEAN, "aaa"));
+        dataForm3.getFields().add(DataForm.Field.builder().var("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build());
+        dataForm3.getFields().add(DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build());
 
         InfoDiscovery infoDiscovery = new InfoDiscovery();
         infoDiscovery.getFeatures().addAll(features);

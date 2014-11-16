@@ -569,7 +569,7 @@ public final class ChatRoom {
         if (!"http://jabber.org/protocol/muc#register".equals(dataForm.getFormType())) {
             throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#register'");
         }
-        Registration registration = new Registration(dataForm);
+        Registration registration = Registration.builder().registrationForm(dataForm).build();
         IQ iq = new IQ(roomJid, IQ.Type.SET, registration);
         xmppSession.query(iq);
     }

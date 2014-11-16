@@ -106,7 +106,7 @@ public final class RegistrationManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing Registration</a>
      */
     public void cancelRegistration() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, new Registration(true)));
+        xmppSession.query(new IQ(IQ.Type.SET, Registration.remove()));
     }
 
     /**
@@ -119,6 +119,6 @@ public final class RegistrationManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-changepw">3.3 User Changes Password</a>
      */
     public void changePassword(String username, String password) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, new Registration(username, password)));
+        xmppSession.query(new IQ(IQ.Type.SET, Registration.builder().username(username).password(password).build()));
     }
 }

@@ -32,8 +32,11 @@ import java.util.*;
 
 /**
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner">15.5.3 muc#roomconfig FORM_TYPE</a>
  */
 public final class RoomConfigurationForm {
+
+    private static final String FORM_TYPE = "http://jabber.org/protocol/muc#roomconfig";
 
     private static final String MAX_HISTORY_FETCH = "muc#maxhistoryfetch";
 
@@ -83,45 +86,17 @@ public final class RoomConfigurationForm {
         this.dataForm = dataForm;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     /**
      * Gets the maximum number of history messages returned by the room.
      *
      * @return The maximum number of history messages returned by the room.
      */
-    public int getMaxHistoryMessages() {
-        return getAsInteger(MAX_HISTORY_FETCH);
-    }
-
-    /**
-     * Sets the maximum number of history messages returned by the room.
-     *
-     * @param maxHistoryMessages The maximum number of history messages returned by the room.
-     */
-    public void setMaxHistoryMessages(int maxHistoryMessages) {
-        DataForm.Field field = getOrCreateField(DataForm.Field.Type.TEXT_SINGLE, MAX_HISTORY_FETCH);
-        field.getValues().clear();
-        field.getValues().add(Integer.toString(maxHistoryMessages));
-    }
-
-    private DataForm.Field getOrCreateField(DataForm.Field.Type type, String var) {
-        DataForm.Field field = dataForm.findField(var);
-        if (field == null) {
-            field = new DataForm.Field(type, var);
-            dataForm.getFields().add(field);
-        }
-        return field;
-    }
-
-    private int getAsInteger(String fieldName) {
-        DataForm.Field field = dataForm.findField(fieldName);
-        if (field != null && !field.getValues().isEmpty()) {
-            try {
-                return Integer.parseInt(field.getValues().get(0));
-            } catch (NumberFormatException e) {
-                return 0;
-            }
-        }
-        return 0;
+    public Integer getMaxHistoryMessages() {
+        return dataForm.findValueAsInteger(MAX_HISTORY_FETCH);
     }
 
     /**
@@ -129,11 +104,10 @@ public final class RoomConfigurationForm {
      *
      * @return The roles.
      */
-    public Set<Role> getAllowedRolesToSendPrivateMessages() {
-        DataForm.Field field = dataForm.findField(ALLOW_PM);
+    public Set<Role> getRolesThatMaySendPrivateMessages() {
+        String value = dataForm.findValue(ALLOW_PM);
         Set<Role> roles = EnumSet.of(Role.NONE);
-        if (field != null && !field.getValues().isEmpty()) {
-            String value = field.getValues().get(0);
+        if (value != null) {
             switch (value) {
                 case "anyone":
                     roles = EnumSet.of(Role.MODERATOR, Role.PARTICIPANT);
@@ -150,31 +124,6 @@ public final class RoomConfigurationForm {
             }
         }
         return roles;
-    }
-
-    /**
-     * Sets the roles that may send private messages.
-     *
-     * @param roles The roles.
-     */
-    public void setAllowedRolesToSendPrivateMessages(Set<Role> roles) {
-        String value;
-        if (roles.contains(Role.MODERATOR) && roles.contains(Role.PARTICIPANT)) {
-            value = "anyone";
-        } else if (roles.contains(Role.PARTICIPANT)) {
-            value = "participants";
-        } else if (roles.contains(Role.MODERATOR)) {
-            value = "moderators";
-        } else {
-            value = "none";
-        }
-        DataForm.Field field = dataForm.findField(ALLOW_PM);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, ALLOW_PM);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(value);
     }
 
     /**
@@ -183,23 +132,7 @@ public final class RoomConfigurationForm {
      * @return True, if occupants are allowed to invite others.
      */
     public boolean isAllowInvites() {
-        DataForm.Field field = dataForm.findField(ALLOW_INVITES);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
-    }
-
-    /**
-     * Indicates, whether to allow occupants to invite others.
-     *
-     * @param allowInvites True, if occupants are allowed to invite others.
-     */
-    public void setAllowInvites(boolean allowInvites) {
-        DataForm.Field field = dataForm.findField(ALLOW_INVITES);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, ALLOW_INVITES);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(allowInvites ? "1" : "0");
+        return dataForm.findValueAsBoolean(ALLOW_INVITES);
     }
 
     /**
@@ -207,24 +140,8 @@ public final class RoomConfigurationForm {
      *
      * @return True, if occupants are allowed to change subject.
      */
-    public boolean isChangeSubjectAllowed() {
-        DataForm.Field field = dataForm.findField(CHANGE_SUBJECT);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
-    }
-
-    /**
-     * Indicates, whether to allow occupants to change subject.
-     *
-     * @param changeSubjectAllowed True, if occupants are allowed to change subject.
-     */
-    public void setChangeSubjectAllowed(boolean changeSubjectAllowed) {
-        DataForm.Field field = dataForm.findField(CHANGE_SUBJECT);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, CHANGE_SUBJECT);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(changeSubjectAllowed ? "1" : "0");
+    public boolean isAllowChangeSubject() {
+        return dataForm.findValueAsBoolean(CHANGE_SUBJECT);
     }
 
     /**
@@ -233,23 +150,7 @@ public final class RoomConfigurationForm {
      * @return True, if public logging of room conversations is enabled.
      */
     public boolean isPublicLoggingEnabled() {
-        DataForm.Field field = dataForm.findField(ENABLE_LOGGING);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
-    }
-
-    /**
-     * Indicates, whether to enable public logging of room conversations.
-     *
-     * @param publicLoggingEnabled True, if public logging of room conversations is enabled.
-     */
-    public void setPublicLoggingEnabled(boolean publicLoggingEnabled) {
-        DataForm.Field field = dataForm.findField(ENABLE_LOGGING);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, ENABLE_LOGGING);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(publicLoggingEnabled ? "1" : "0");
+        return dataForm.findValueAsBoolean(ENABLE_LOGGING);
     }
 
     /**
@@ -257,45 +158,26 @@ public final class RoomConfigurationForm {
      *
      * @return The roles which may retrieve member list.
      */
-    public Set<Role> getRolesWhichMayRetrieveMemberList() {
-        DataForm.Field field = dataForm.findField(GET_MEMBER_LIST);
-        Set<Role> roles = new HashSet<>();
-        if (field != null) {
-            for (String value : field.getValues()) {
-                switch (value.toLowerCase()) {
-                    case "moderator":
-                        roles.add(Role.MODERATOR);
-                        break;
-                    case "participant":
-                        roles.add(Role.PARTICIPANT);
-                        break;
-                    case "visitor":
-                        roles.add(Role.VISITOR);
-                        break;
-                    case "none":
-                        roles.add(Role.NONE);
-                        break;
-                }
+    public Set<Role> getRolesThatMayRetrieveMemberList() {
+        List<String> values = dataForm.findValues(GET_MEMBER_LIST);
+        Set<Role> roles = new LinkedHashSet<>();
+        for (String value : values) {
+            switch (value.toLowerCase()) {
+                case "moderator":
+                    roles.add(Role.MODERATOR);
+                    break;
+                case "participant":
+                    roles.add(Role.PARTICIPANT);
+                    break;
+                case "visitor":
+                    roles.add(Role.VISITOR);
+                    break;
+                case "none":
+                    roles.add(Role.NONE);
+                    break;
             }
         }
         return roles;
-    }
-
-    /**
-     * Sets the roles for which presence is broadcast.
-     *
-     * @param roles The roles for which presence is broadcast.
-     */
-    public void setRolesWhichMayRetrieveMemberList(Set<Role> roles) {
-        DataForm.Field field = dataForm.findField(GET_MEMBER_LIST);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.LIST_MULTI, GET_MEMBER_LIST);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        for (Role role : roles) {
-            field.getValues().add(role.name().toLowerCase());
-        }
     }
 
     /**
@@ -304,26 +186,7 @@ public final class RoomConfigurationForm {
      * @return The language.
      */
     public String getLanguage() {
-        DataForm.Field field = dataForm.findField(LANGUAGE);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the natural language for room discussions.
-     *
-     * @param language The language.
-     */
-    public void setLanguage(String language) {
-        DataForm.Field field = dataForm.findField(LANGUAGE);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, LANGUAGE);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(language);
+        return dataForm.findValue(LANGUAGE);
     }
 
     /**
@@ -332,10 +195,10 @@ public final class RoomConfigurationForm {
      * @return The URI.
      */
     public URI getPubSubNode() {
-        DataForm.Field field = dataForm.findField(PUBSUB);
-        if (field != null && !field.getValues().isEmpty()) {
+        String value = dataForm.findValue(PUBSUB);
+        if (value != null) {
             try {
-                return URI.create(field.getValues().get(0));
+                return URI.create(value);
             } catch (IllegalArgumentException e) {
                 return null;
             }
@@ -344,42 +207,12 @@ public final class RoomConfigurationForm {
     }
 
     /**
-     * Sets the XMPP URI of associated publish-subscribe node.
-     *
-     * @param pubSubNode The URI.
-     */
-    public void setPubSubNode(URI pubSubNode) {
-        DataForm.Field field = dataForm.findField(PUBSUB);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, PUBSUB);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(pubSubNode.toString());
-    }
-
-    /**
      * Gets the maximum number of room occupants.
      *
      * @return The maximum number of room occupants.
      */
-    public int getMaxOccupants() {
-        return getAsInteger(MAX_USERS);
-    }
-
-    /**
-     * Sets the maximum number of room occupants.
-     *
-     * @param maxOccupants The maximum number of room occupants.
-     */
-    public void setMaxOccupants(int maxOccupants) {
-        DataForm.Field field = dataForm.findField(MAX_USERS);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, MAX_USERS);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(Integer.toString(maxOccupants));
+    public Integer getMaxUsers() {
+        return dataForm.findValueAsInteger(MAX_USERS);
     }
 
     /**
@@ -388,23 +221,7 @@ public final class RoomConfigurationForm {
      * @return True, if the room is members-only.
      */
     public boolean isMembersOnly() {
-        DataForm.Field field = dataForm.findField(MEMBERS_ONLY);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
-    }
-
-    /**
-     * Indicates, whether the room is members-only.
-     *
-     * @param membersOnly True, if the room is members-only.
-     */
-    public void setMembersOnly(boolean membersOnly) {
-        DataForm.Field field = dataForm.findField(MEMBERS_ONLY);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, MEMBERS_ONLY);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(membersOnly ? "1" : "0");
+        return dataForm.findValueAsBoolean(MEMBERS_ONLY);
     }
 
     /**
@@ -413,23 +230,7 @@ public final class RoomConfigurationForm {
      * @return True, if the room is moderated.
      */
     public boolean isModerated() {
-        DataForm.Field field = dataForm.findField(MODERATED_ROOM);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
-    }
-
-    /**
-     * Indicates, whether the room is moderated.
-     *
-     * @param moderated True, if the room is moderated.
-     */
-    public void setModerated(boolean moderated) {
-        DataForm.Field field = dataForm.findField(MODERATED_ROOM);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, MODERATED_ROOM);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(moderated ? "1" : "0");
+        return dataForm.findValueAsBoolean(MODERATED_ROOM);
     }
 
     /**
@@ -438,23 +239,7 @@ public final class RoomConfigurationForm {
      * @return True, if the room is password protected.
      */
     public boolean isPasswordProtected() {
-        DataForm.Field field = dataForm.findField(PASSWORD_PROTECTED);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
-    }
-
-    /**
-     * Indicates, whether the room is password protected.
-     *
-     * @param passwordProtected True, if the room is password protected.
-     */
-    public void setPasswordProtected(boolean passwordProtected) {
-        DataForm.Field field = dataForm.findField(PASSWORD_PROTECTED);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, PASSWORD_PROTECTED);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(passwordProtected ? "1" : "0");
+        return dataForm.findValueAsBoolean(PASSWORD_PROTECTED);
     }
 
     /**
@@ -462,24 +247,8 @@ public final class RoomConfigurationForm {
      *
      * @return True, if the room is persistent.
      */
-    public boolean isPersistentRoom() {
-        DataForm.Field field = dataForm.findField(PERSISTENT_ROOM);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
-    }
-
-    /**
-     * Indicates, whether the room is persistent.
-     *
-     * @param persistentRoom True, if the room is persistent.
-     */
-    public void setPersistentRoom(boolean persistentRoom) {
-        DataForm.Field field = dataForm.findField(PERSISTENT_ROOM);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, PERSISTENT_ROOM);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(persistentRoom ? "1" : "0");
+    public boolean isPersistent() {
+        return dataForm.findValueAsBoolean(PERSISTENT_ROOM);
     }
 
     /**
@@ -488,44 +257,25 @@ public final class RoomConfigurationForm {
      * @return The roles for which presence is broadcast.
      */
     public Set<Role> getRolesForWhichPresenceIsBroadcast() {
-        DataForm.Field field = dataForm.findField(PRESENCE_BROADCAST);
-        Set<Role> roles = new HashSet<>();
-        if (field != null) {
-            for (String value : field.getValues()) {
-                switch (value.toLowerCase()) {
-                    case "moderator":
-                        roles.add(Role.MODERATOR);
-                        break;
-                    case "participant":
-                        roles.add(Role.PARTICIPANT);
-                        break;
-                    case "visitor":
-                        roles.add(Role.VISITOR);
-                        break;
-                    case "none":
-                        roles.add(Role.NONE);
-                        break;
-                }
+        List<String> values = dataForm.findValues(PRESENCE_BROADCAST);
+        Set<Role> roles = new LinkedHashSet<>();
+        for (String value : values) {
+            switch (value.toLowerCase()) {
+                case "moderator":
+                    roles.add(Role.MODERATOR);
+                    break;
+                case "participant":
+                    roles.add(Role.PARTICIPANT);
+                    break;
+                case "visitor":
+                    roles.add(Role.VISITOR);
+                    break;
+                case "none":
+                    roles.add(Role.NONE);
+                    break;
             }
         }
         return roles;
-    }
-
-    /**
-     * Sets the roles for which presence is broadcast.
-     *
-     * @param roles The roles for which presence is broadcast.
-     */
-    public void setRolesForWhichPresenceIsBroadcast(Set<Role> roles) {
-        DataForm.Field field = dataForm.findField(PRESENCE_BROADCAST);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.LIST_MULTI, PRESENCE_BROADCAST);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        for (Role role : roles) {
-            field.getValues().add(role.name().toLowerCase());
-        }
     }
 
     /**
@@ -534,23 +284,7 @@ public final class RoomConfigurationForm {
      * @return True, if the room is public.
      */
     public boolean isPublicRoom() {
-        DataForm.Field field = dataForm.findField(PUBLIC_ROOM);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
-    }
-
-    /**
-     * Indicates, whether the room is public.
-     *
-     * @param publicRoom True, if the room is public.
-     */
-    public void setPublicRoom(boolean publicRoom) {
-        DataForm.Field field = dataForm.findField(PUBLIC_ROOM);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, PUBLIC_ROOM);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(publicRoom ? "1" : "0");
+        return dataForm.findValueAsBoolean(PUBLIC_ROOM);
     }
 
     /**
@@ -559,31 +293,7 @@ public final class RoomConfigurationForm {
      * @return The administrators.
      */
     public List<Jid> getAdministrators() {
-        DataForm.Field field = dataForm.findField(ROOM_ADMINS);
-        List<Jid> admins = new ArrayList<>();
-        if (field != null) {
-            for (String value : field.getValues()) {
-                admins.add(Jid.valueOf(value, true));
-            }
-        }
-        return admins;
-    }
-
-    /**
-     * Sets the administrators.
-     *
-     * @param administrators The administrators.
-     */
-    public void setAdministrators(List<Jid> administrators) {
-        DataForm.Field field = dataForm.findField(ROOM_ADMINS);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.JID_MULTI, ROOM_ADMINS);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        for (Jid admin : administrators) {
-            field.getValues().add(admin.toString());
-        }
+        return dataForm.findValuesAsJid(ROOM_ADMINS);
     }
 
     /**
@@ -591,27 +301,8 @@ public final class RoomConfigurationForm {
      *
      * @return The description.
      */
-    public String getRoomDescription() {
-        DataForm.Field field = dataForm.findField(ROOM_DESC);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets a short description.
-     *
-     * @param description The description.
-     */
-    public void setRoomDescription(String description) {
-        DataForm.Field field = dataForm.findField(ROOM_DESC);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, ROOM_DESC);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(description);
+    public String getDescription() {
+        return dataForm.findValue(ROOM_DESC);
     }
 
     /**
@@ -619,27 +310,8 @@ public final class RoomConfigurationForm {
      *
      * @return The room name.
      */
-    public String getRoomName() {
-        DataForm.Field field = dataForm.findField(ROOM_NAME);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the natural-language room name.
-     *
-     * @param description The room name.
-     */
-    public void setRoomName(String description) {
-        DataForm.Field field = dataForm.findField(ROOM_NAME);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, ROOM_NAME);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(description);
+    public String getName() {
+        return dataForm.findValue(ROOM_NAME);
     }
 
     /**
@@ -648,31 +320,7 @@ public final class RoomConfigurationForm {
      * @return The owners.
      */
     public List<Jid> getOwners() {
-        DataForm.Field field = dataForm.findField(ROOM_OWNERS);
-        List<Jid> owners = new ArrayList<>();
-        if (field != null) {
-            for (String value : field.getValues()) {
-                owners.add(Jid.valueOf(value, true));
-            }
-        }
-        return owners;
-    }
-
-    /**
-     * Sets the owners.
-     *
-     * @param owners The owners.
-     */
-    public void setOwners(List<Jid> owners) {
-        DataForm.Field field = dataForm.findField(ROOM_OWNERS);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.JID_MULTI, ROOM_OWNERS);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        for (Jid admin : owners) {
-            field.getValues().add(admin.toString());
-        }
+        return dataForm.findValuesAsJid(ROOM_OWNERS);
     }
 
     /**
@@ -681,26 +329,7 @@ public final class RoomConfigurationForm {
      * @return The password.
      */
     public String getPassword() {
-        DataForm.Field field = dataForm.findField(ROOM_SECRET);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the room password.
-     *
-     * @param password The password.
-     */
-    public void setPassword(String password) {
-        DataForm.Field field = dataForm.findField(ROOM_SECRET);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, ROOM_SECRET);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(password);
+        return dataForm.findValue(ROOM_SECRET);
     }
 
     /**
@@ -708,11 +337,10 @@ public final class RoomConfigurationForm {
      *
      * @return The roles, which may discover real JIDs.
      */
-    public Set<Role> getRolesWhichMayDiscoverRealJids() {
-        DataForm.Field field = dataForm.findField(WHOIS);
+    public Set<Role> getRolesThatMayDiscoverRealJids() {
+        String value = dataForm.findValue(WHOIS);
         Set<Role> roles = EnumSet.of(Role.NONE);
-        if (field != null && !field.getValues().isEmpty()) {
-            String value = field.getValues().get(0);
+        if (value != null) {
             switch (value) {
                 case "anyone":
                     roles = EnumSet.of(Role.MODERATOR, Role.PARTICIPANT);
@@ -732,27 +360,400 @@ public final class RoomConfigurationForm {
     }
 
     /**
-     * Get the roles, which may discover real JIDs.
+     * Gets the underlying form.
      *
-     * @param roles The roles, which may discover real JIDs.
+     * @return The data form.
      */
-    public void setRolesWhichMayDiscoverRealJids(Set<Role> roles) {
-        String value;
-        if (roles.contains(Role.MODERATOR) && roles.contains(Role.PARTICIPANT)) {
-            value = "anyone";
-        } else if (roles.contains(Role.PARTICIPANT)) {
-            value = "participants";
-        } else if (roles.contains(Role.MODERATOR)) {
-            value = "moderators";
-        } else {
-            value = "none";
+    public DataForm getDataForm() {
+        return dataForm;
+    }
+
+    /**
+     * The builder to build a room configuration.
+     */
+    public static final class Builder extends DataForm.Builder<Builder> {
+        private Integer maxHistoryFetch;
+
+        private Set<Role> rolesThatMaySendPrivateMessages;
+
+        private Boolean allowInvites;
+
+        private Boolean allowChangeSubject;
+
+        private Boolean enableLogging;
+
+        private Set<Role> rolesThatMayRetrieveMemberList;
+
+        private String language;
+
+        private URI pubsubNode;
+
+        private Integer maxUsers;
+
+        private Boolean membersOnly;
+
+        private Boolean moderated;
+
+        private Boolean passwordProtected;
+
+        private Boolean persistent;
+
+        private Set<Role> presenceBroadcast;
+
+        private Boolean publicRoom;
+
+        private List<Jid> roomAdmins;
+
+        private String description;
+
+        private String name;
+
+        private List<Jid> owners;
+
+        private String password;
+
+        private Set<Role> whois;
+
+        private Builder() {
         }
-        DataForm.Field field = dataForm.findField(WHOIS);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.LIST_SINGLE, WHOIS);
-            dataForm.getFields().add(field);
+
+        /**
+         * Sets the maximum number of history messages returned by the room.
+         *
+         * @param maxHistoryMessages The maximum number of history messages returned by the room.
+         * @return The builder.
+         */
+        public Builder maxHistoryMessages(int maxHistoryMessages) {
+            this.maxHistoryFetch = maxHistoryMessages;
+            return this;
         }
-        field.getValues().clear();
-        field.getValues().add(value);
+
+        /**
+         * Roles that may send private messages.
+         *
+         * @param rolesThatMaySendPrivateMessages The roles.
+         * @return The builder.
+         */
+        public Builder rolesThatMaySendPrivateMessages(Set<Role> rolesThatMaySendPrivateMessages) {
+            this.rolesThatMaySendPrivateMessages = rolesThatMaySendPrivateMessages;
+            return this;
+        }
+
+        /**
+         * Whether to allow occupants to invite others
+         *
+         * @param allowInvites Whether to allow occupants to invite others
+         * @return The builder.
+         */
+        public Builder allowInvites(boolean allowInvites) {
+            this.allowInvites = allowInvites;
+            return this;
+        }
+
+        /**
+         * Whether to allow occupants to change subject.
+         *
+         * @param allowChangeSubject Whether to allow occupants to change subject.
+         * @return The builder.
+         */
+        public Builder allowChangeSubject(boolean allowChangeSubject) {
+            this.allowChangeSubject = allowChangeSubject;
+            return this;
+        }
+
+        /**
+         * Whether to enable public logging of room conversations.
+         *
+         * @param enableLogging Whether to enable public logging of room conversations.
+         * @return The builder.
+         */
+        public Builder enableLogging(boolean enableLogging) {
+            this.enableLogging = enableLogging;
+            return this;
+        }
+
+        /**
+         * Roles that may retrieve member list.
+         *
+         * @param rolesThatMayRetrieveMemberList Roles that may retrieve member list.
+         * @return The builder.
+         */
+        public Builder rolesThatMayRetrieveMemberList(Set<Role> rolesThatMayRetrieveMemberList) {
+            this.rolesThatMayRetrieveMemberList = rolesThatMayRetrieveMemberList;
+            return this;
+        }
+
+        /**
+         * Natural language for room discussions.
+         *
+         * @param language The language.
+         * @return The builder.
+         */
+        public Builder language(String language) {
+            this.language = language;
+            return this;
+        }
+
+        /**
+         * XMPP URI of associated publish-subcribe node.
+         *
+         * @param pubsubNode The URI.
+         * @return The builder.
+         */
+        public Builder pubSubNode(URI pubsubNode) {
+            this.pubsubNode = pubsubNode;
+            return this;
+        }
+
+        /**
+         * Maximum number of room occupants.
+         *
+         * @param maxUsers The max users.
+         * @return The builder.
+         */
+        public Builder maxUsers(int maxUsers) {
+            this.maxUsers = maxUsers;
+            return this;
+        }
+
+        /**
+         * Whether to make room members-only.
+         *
+         * @param membersOnly Whether to make room members-only.
+         * @return The builder.
+         */
+        public Builder membersOnly(boolean membersOnly) {
+            this.membersOnly = membersOnly;
+            return this;
+        }
+
+        /**
+         * Whether to make room moderated.
+         *
+         * @param moderated Whether to make room moderated.
+         * @return The builder.
+         */
+        public Builder moderated(boolean moderated) {
+            this.moderated = moderated;
+            return this;
+        }
+
+        /**
+         * Whether a password is required to enter.
+         *
+         * @param passwordProtected Whether a password is required to enter.
+         * @return The builder.
+         */
+        public Builder passwordProtected(boolean passwordProtected) {
+            this.passwordProtected = passwordProtected;
+            return this;
+        }
+
+        /**
+         * Whether to make room persistent.
+         *
+         * @param persistent Whether to maker room persistent.
+         * @return The builder.
+         */
+        public Builder persistent(boolean persistent) {
+            this.persistent = persistent;
+            return this;
+        }
+
+        /**
+         * Roles for which presence is broadcast.
+         *
+         * @param roles Roles for which presence is broadcast.
+         * @return The builder.
+         */
+        public Builder rolesForWhichPresenceIsBroadcast(Set<Role> roles) {
+            this.presenceBroadcast = roles;
+            return this;
+        }
+
+        /**
+         * Whether to allow public searching for room.
+         *
+         * @param publicRoom Whether to allow public searching for room.
+         * @return The builder.
+         */
+        public Builder publicRoom(boolean publicRoom) {
+            this.publicRoom = publicRoom;
+            return this;
+        }
+
+        /**
+         * Full list of room admins.
+         *
+         * @param admins The admins.
+         * @return The builder.
+         */
+        public Builder administrators(List<Jid> admins) {
+            this.roomAdmins = admins;
+            return this;
+        }
+
+        /**
+         * Short description of room.
+         *
+         * @param description The description.
+         * @return The builder.
+         */
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        /**
+         * Natural-language room name.
+         *
+         * @param name The name.
+         * @return The builder.
+         */
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        /**
+         * Full list of room owners.
+         *
+         * @param owners Full list of room owners.
+         * @return The builder.
+         */
+        public Builder owners(List<Jid> owners) {
+            this.owners = owners;
+            return this;
+        }
+
+        /**
+         * The room password.
+         *
+         * @param password The password.
+         * @return The builder.
+         */
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        /**
+         * Roles that may discover real JIDs of occupants.
+         *
+         * @param roles Roles that may discover real JIDs of occupants.
+         * @return The builder.
+         */
+        public Builder rolesThatMayDiscoverRealJids(Set<Role> roles) {
+            this.whois = roles;
+            return this;
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        /**
+         * Builds the room configuration.
+         *
+         * @return The room configuration.
+         */
+        public RoomConfigurationForm build() {
+            List<DataForm.Field> fields = new ArrayList<>();
+            if (maxHistoryFetch != null) {
+                fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryFetch).build());
+            }
+            if (rolesThatMaySendPrivateMessages != null) {
+                String value;
+                if (rolesThatMaySendPrivateMessages.contains(Role.MODERATOR) && rolesThatMaySendPrivateMessages.contains(Role.PARTICIPANT)) {
+                    value = "anyone";
+                } else if (rolesThatMaySendPrivateMessages.contains(Role.PARTICIPANT)) {
+                    value = "participants";
+                } else if (rolesThatMaySendPrivateMessages.contains(Role.MODERATOR)) {
+                    value = "moderators";
+                } else {
+                    value = "none";
+                }
+                fields.add(DataForm.Field.builder().var(ALLOW_PM).value(value).type(DataForm.Field.Type.LIST_SINGLE).build());
+            }
+            if (allowInvites != null) {
+                fields.add(DataForm.Field.builder().var(ALLOW_INVITES).value(allowInvites).build());
+            }
+            if (allowChangeSubject != null) {
+                fields.add(DataForm.Field.builder().var(CHANGE_SUBJECT).value(allowChangeSubject).build());
+            }
+            if (enableLogging != null) {
+                fields.add(DataForm.Field.builder().var(ENABLE_LOGGING).value(enableLogging).build());
+            }
+            if (rolesThatMayRetrieveMemberList != null) {
+                List<String> values = new ArrayList<>();
+                for (Role role : rolesThatMayRetrieveMemberList) {
+                    values.add(role.name().toLowerCase());
+                }
+                fields.add(DataForm.Field.builder().var(GET_MEMBER_LIST).values(values).type(DataForm.Field.Type.LIST_MULTI).build());
+            }
+
+            if (language != null) {
+                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language).build());
+            }
+            if (pubsubNode != null) {
+                fields.add(DataForm.Field.builder().var(PUBSUB).value(pubsubNode.toString()).build());
+            }
+            if (maxUsers != null) {
+                fields.add(DataForm.Field.builder().var(MAX_USERS).value(maxUsers).type(DataForm.Field.Type.LIST_SINGLE).build());
+            }
+            if (membersOnly != null) {
+                fields.add(DataForm.Field.builder().var(MEMBERS_ONLY).value(membersOnly).build());
+            }
+            if (moderated != null) {
+                fields.add(DataForm.Field.builder().var(MODERATED_ROOM).value(moderated).build());
+            }
+            if (passwordProtected != null) {
+                fields.add(DataForm.Field.builder().var(PASSWORD_PROTECTED).value(passwordProtected).build());
+            }
+            if (persistent != null) {
+                fields.add(DataForm.Field.builder().var(PERSISTENT_ROOM).value(persistent).build());
+            }
+            if (presenceBroadcast != null) {
+                List<String> values = new ArrayList<>();
+                for (Role role : presenceBroadcast) {
+                    values.add(role.name().toLowerCase());
+                }
+                fields.add(DataForm.Field.builder().var(PRESENCE_BROADCAST).values(values).type(DataForm.Field.Type.LIST_MULTI).build());
+            }
+            if (publicRoom != null) {
+                fields.add(DataForm.Field.builder().var(PUBLIC_ROOM).value(publicRoom).build());
+            }
+            if (roomAdmins != null) {
+                fields.add(DataForm.Field.builder().var(ROOM_ADMINS).valuesJid(roomAdmins).build());
+            }
+            if (description != null) {
+                fields.add(DataForm.Field.builder().var(ROOM_DESC).value(description).build());
+            }
+            if (name != null) {
+                fields.add(DataForm.Field.builder().var(ROOM_NAME).value(name).build());
+            }
+            if (owners != null) {
+                fields.add(DataForm.Field.builder().var(ROOM_OWNERS).valuesJid(owners).build());
+            }
+            if (password != null) {
+                fields.add(DataForm.Field.builder().var(ROOM_SECRET).value(password).build());
+            }
+            if (whois != null) {
+                String value;
+                if (whois.contains(Role.MODERATOR) && whois.contains(Role.PARTICIPANT)) {
+                    value = "anyone";
+                } else if (whois.contains(Role.PARTICIPANT)) {
+                    value = "participants";
+                } else if (whois.contains(Role.MODERATOR)) {
+                    value = "moderators";
+                } else {
+                    value = "none";
+                }
+                fields.add(DataForm.Field.builder().var(WHOIS).value(value).type(DataForm.Field.Type.LIST_SINGLE).build());
+            }
+            fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
+            return new RoomConfigurationForm(new DataForm(this));
+        }
     }
 }

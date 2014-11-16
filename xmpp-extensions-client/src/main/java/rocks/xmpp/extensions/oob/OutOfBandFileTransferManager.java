@@ -80,7 +80,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                                     connection.connect();
 
                                     mimeType = connection.getContentType();
-                                    length = connection.getContentLengthLong();
+                                    length = connection.getContentLength();
                                     lastModified = connection.getLastModified();
 
                                     final Date date = lastModified > 0 ? new Date(lastModified) : null;

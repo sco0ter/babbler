@@ -42,8 +42,7 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
+import java.net.URLConnection;
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -139,7 +138,7 @@ public final class FileTransferManager extends ExtensionManager {
         }
 
         if (!file.exists()) {
-            throw new IllegalArgumentException(new NoSuchFileException(file.getName()));
+            throw new FileNotFoundException(file.getName());
         }
 
         // Before a Stream Initiation is attempted the Sender should be sure that the Receiver supports both Stream Initiation and the specific profile that they wish to use.
@@ -149,7 +148,7 @@ public final class FileTransferManager extends ExtensionManager {
             String mimeType;
 
             try {
-                mimeType = Files.probeContentType(file.toPath());
+                mimeType = URLConnection.guessContentTypeFromStream(new BufferedInputStream(new FileInputStream(file))); //Files.probeContentType(file.toPath());
             } catch (IOException e) {
                 mimeType = null;
             }

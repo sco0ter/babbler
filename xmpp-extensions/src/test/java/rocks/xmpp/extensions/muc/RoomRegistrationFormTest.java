@@ -45,93 +45,39 @@ public class RoomRegistrationFormTest extends XmlTest {
 
     @Test
     public void testRoomRegistrationForm() throws JAXBException, XMLStreamException, MalformedURLException {
-        String xml = "<x xmlns='jabber:x:data' type='submit'>\n" +
-                "      <field var='FORM_TYPE'>\n" +
-                "        <value>http://jabber.org/protocol/muc#register</value>\n" +
-                "      </field>\n" +
-                "      <field var='muc#register_first'>\n" +
-                "        <value>Brunhilde</value>\n" +
-                "      </field>\n" +
-                "      <field var='muc#register_last'>\n" +
-                "        <value>Entwhistle-Throckmorton</value>\n" +
-                "      </field>\n" +
-                "      <field var='muc#register_roomnick'>\n" +
-                "        <value>thirdwitch</value>\n" +
-                "      </field>\n" +
-                "      <field var='muc#register_url'>\n" +
-                "        <value>http://witchesonline/~hag66/</value>\n" +
-                "      </field>\n" +
-                "      <field var='muc#register_email'>\n" +
-                "        <value>hag66@witchesonline</value>\n" +
-                "      </field>\n" +
-                "      <field var='muc#register_faqentry'>\n" +
-                "        <value>Just another witch.</value>\n" +
-                "      </field>\n" +
-                "    </x>\n";
+
+        RoomRegistrationForm roomRegistrationForm = RoomRegistrationForm.builder()
+                .allowRegister(true)
+                .email("hag66@witchesonline")
+                .familyName("Entwhistle-Throckmorton")
+                .givenName("Brunhilde")
+                .faqEntry("Just another witch.")
+                .nickname("thirdwitch")
+                .webPage(new URL("http://witchesonline/~hag66/"))
+                .build();
+
+        String xml = marshal(roomRegistrationForm.getDataForm());
+
+        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
+                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/muc#register</value></field>" +
+                "<field type=\"boolean\" var=\"muc#register_allow\"><value>1</value></field>" +
+                "<field type=\"text-single\" var=\"muc#register_email\"><value>hag66@witchesonline</value></field>" +
+                "<field type=\"text-multi\" var=\"muc#register_faqentry\"><value>Just another witch.</value></field>" +
+                "<field type=\"text-single\" var=\"muc#register_first\"><value>Brunhilde</value></field>" +
+                "<field type=\"text-single\" var=\"muc#register_last\"><value>Entwhistle-Throckmorton</value></field>" +
+                "<field type=\"text-single\" var=\"muc#register_roomnick\"><value>thirdwitch</value></field>" +
+                "<field type=\"text-single\" var=\"muc#register_url\"><value>http://witchesonline/~hag66/</value></field>" +
+                "</x>");
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
 
-        RoomRegistrationForm roomRegistrationForm = new RoomRegistrationForm(dataForm);
-
-        Assert.assertEquals(roomRegistrationForm.getGivenName(), "Brunhilde");
-        Assert.assertEquals(roomRegistrationForm.getFamilyName(), "Entwhistle-Throckmorton");
-        Assert.assertEquals(roomRegistrationForm.getRoomNick(), "thirdwitch");
-        Assert.assertEquals(roomRegistrationForm.getWebPage(), new URL("http://witchesonline/~hag66/"));
-        Assert.assertEquals(roomRegistrationForm.getEmail(), "hag66@witchesonline");
-        Assert.assertEquals(roomRegistrationForm.getFaqEntry(), "Just another witch.");
-    }
-
-    @Test
-    public void testEmptyDataForm() throws MalformedURLException {
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        RoomRegistrationForm roomRegistrationForm = new RoomRegistrationForm(dataForm);
-        roomRegistrationForm.setGivenName("Brunhilde");
-        DataForm.Field fieldGivenName = dataForm.findField("muc#register_first");
-        Assert.assertNotNull(fieldGivenName);
-        Assert.assertEquals(fieldGivenName.getValues().size(), 1);
-        Assert.assertEquals(fieldGivenName.getValues().get(0), "Brunhilde");
-        Assert.assertEquals(roomRegistrationForm.getGivenName(), "Brunhilde");
-
-        roomRegistrationForm.setFamilyName("Entwhistle-Throckmorton");
-        DataForm.Field fieldFamilyName = dataForm.findField("muc#register_last");
-        Assert.assertNotNull(fieldFamilyName);
-        Assert.assertEquals(fieldFamilyName.getValues().size(), 1);
-        Assert.assertEquals(fieldFamilyName.getValues().get(0), "Entwhistle-Throckmorton");
-        Assert.assertEquals(roomRegistrationForm.getFamilyName(), "Entwhistle-Throckmorton");
-
-        roomRegistrationForm.setRoomNick("thirdwitch");
-        DataForm.Field fieldDescription = dataForm.findField("muc#register_roomnick");
-        Assert.assertNotNull(fieldDescription);
-        Assert.assertEquals(fieldDescription.getValues().size(), 1);
-        Assert.assertEquals(fieldDescription.getValues().get(0), "thirdwitch");
-        Assert.assertEquals(roomRegistrationForm.getRoomNick(), "thirdwitch");
-
-        roomRegistrationForm.setWebPage(new URL("http://witchesonline/~hag66/"));
-        DataForm.Field fieldLanguage = dataForm.findField("muc#register_url");
-        Assert.assertNotNull(fieldLanguage);
-        Assert.assertEquals(fieldLanguage.getValues().size(), 1);
-        Assert.assertEquals(fieldLanguage.getValues().get(0), "http://witchesonline/~hag66/");
-        Assert.assertEquals(roomRegistrationForm.getWebPage(), new URL("http://witchesonline/~hag66/"));
-
-        roomRegistrationForm.setEmail("hag66@witchesonline");
-        DataForm.Field fieldLdap = dataForm.findField("muc#register_email");
-        Assert.assertNotNull(fieldLdap);
-        Assert.assertEquals(fieldLdap.getValues().size(), 1);
-        Assert.assertEquals(fieldLdap.getValues().get(0), "hag66@witchesonline");
-        Assert.assertEquals(roomRegistrationForm.getEmail(), "hag66@witchesonline");
-
-        roomRegistrationForm.setFaqEntry("Just another witch.");
-        DataForm.Field fieldLogs = dataForm.findField("muc#register_faqentry");
-        Assert.assertNotNull(fieldLogs);
-        Assert.assertEquals(fieldLogs.getValues().size(), 1);
-        Assert.assertEquals(fieldLogs.getValues().get(0), "Just another witch.");
-        Assert.assertEquals(roomRegistrationForm.getFaqEntry(), "Just another witch.");
-
-        roomRegistrationForm.setRegisterAllowed(true);
-        DataForm.Field fieldAllow = dataForm.findField("muc#register_allow");
-        Assert.assertNotNull(fieldAllow);
-        Assert.assertEquals(fieldAllow.getValues().size(), 1);
-        Assert.assertEquals(fieldAllow.getValues().get(0), "1");
-        Assert.assertTrue(roomRegistrationForm.isRegisterAllowed());
+        RoomRegistrationForm roomRegistrationForm2 = new RoomRegistrationForm(dataForm);
+        Assert.assertEquals(roomRegistrationForm2.getGivenName(), "Brunhilde");
+        Assert.assertEquals(roomRegistrationForm2.getFamilyName(), "Entwhistle-Throckmorton");
+        Assert.assertEquals(roomRegistrationForm2.getRoomNick(), "thirdwitch");
+        Assert.assertEquals(roomRegistrationForm2.getWebPage(), new URL("http://witchesonline/~hag66/"));
+        Assert.assertEquals(roomRegistrationForm2.getEmail(), "hag66@witchesonline");
+        Assert.assertEquals(roomRegistrationForm2.getFaqEntry(), "Just another witch.");
+        Assert.assertTrue(roomRegistrationForm2.isRegisterAllowed());
     }
 }

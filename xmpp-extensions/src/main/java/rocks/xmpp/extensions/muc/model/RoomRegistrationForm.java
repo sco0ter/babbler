@@ -28,11 +28,18 @@ import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
+ * A helper class to build a standard {@link rocks.xmpp.extensions.data.model.DataForm}, which can be used to register with a MUC room.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-register">15.5.1 muc#register FORM_TYPE</a>
  */
 public final class RoomRegistrationForm {
+
+    private static final String FORM_TYPE = "http://jabber.org/protocol/muc#register";
 
     /**
      * Allow this person to register with the room?
@@ -75,122 +82,44 @@ public final class RoomRegistrationForm {
         this.dataForm = dataForm;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     /**
      * Gets the e-mail address.
      *
      * @return The e-mail address.
      */
     public String getEmail() {
-        DataForm.Field field = dataForm.findField(EMAIL);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the e-mail address.
-     *
-     * @param email The e-mail address.
-     */
-    public void setEmail(String email) {
-        DataForm.Field field = dataForm.findField(EMAIL);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, EMAIL);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(email);
+        return dataForm.findValue(EMAIL);
     }
 
     /**
      * Gets the family name.
      *
      * @return The family name.
-     * @see #setFamilyName(String)
      */
     public String getFamilyName() {
-        DataForm.Field field = dataForm.findField(FAMILY_NAME);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the family name.
-     *
-     * @param familyName The family name.
-     * @see #getFamilyName()
-     */
-    public void setFamilyName(String familyName) {
-        DataForm.Field field = dataForm.findField(FAMILY_NAME);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, FAMILY_NAME);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(familyName);
+        return dataForm.findValue(FAMILY_NAME);
     }
 
     /**
      * Gets the given name.
      *
      * @return The given name.
-     * @see #setGivenName(String)
      */
     public String getGivenName() {
-        DataForm.Field field = dataForm.findField(GIVEN_NAME);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the given name.
-     *
-     * @param givenName The given name.
-     * @see #setGivenName(String)
-     */
-    public void setGivenName(String givenName) {
-        DataForm.Field field = dataForm.findField(GIVEN_NAME);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, GIVEN_NAME);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(givenName);
+        return dataForm.findValue(GIVEN_NAME);
     }
 
     /**
      * Gets the desired room nick.
      *
      * @return The room nick.
-     * @see #setRoomNick(String)
      */
     public String getRoomNick() {
-        DataForm.Field field = dataForm.findField(ROOM_NICK);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the desired room nick.
-     *
-     * @param roomNick The room nick.
-     * @see #getRoomNick()
-     */
-    public void setRoomNick(String roomNick) {
-        DataForm.Field field = dataForm.findField(ROOM_NICK);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, ROOM_NICK);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(roomNick);
+        return dataForm.findValue(ROOM_NICK);
     }
 
     /**
@@ -199,10 +128,10 @@ public final class RoomRegistrationForm {
      * @return The URL.
      */
     public URL getWebPage() {
-        DataForm.Field field = dataForm.findField(URL);
-        if (field != null && !field.getValues().isEmpty()) {
+        String value = dataForm.findValue(URL);
+        if (value != null) {
             try {
-                return new URL(field.getValues().get(0));
+                return new URL(value);
             } catch (MalformedURLException e) {
                 return null;
             }
@@ -211,46 +140,12 @@ public final class RoomRegistrationForm {
     }
 
     /**
-     * Sets an URL to a web page.
-     *
-     * @param webPage The URL.
-     */
-    public void setWebPage(URL webPage) {
-        DataForm.Field field = dataForm.findField(URL);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, URL);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(webPage.toString());
-    }
-
-    /**
      * Gets the FAQ entry.
      *
      * @return The FAQ entry.
      */
     public String getFaqEntry() {
-        DataForm.Field field = dataForm.findField(FAQ_ENTRY);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the FAQ entry.
-     *
-     * @param faqEntry The FAQ entry.
-     */
-    public void setFaqEntry(String faqEntry) {
-        DataForm.Field field = dataForm.findField(FAQ_ENTRY);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, FAQ_ENTRY);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(faqEntry);
+        return dataForm.findValue(FAQ_ENTRY);
     }
 
     /**
@@ -259,22 +154,144 @@ public final class RoomRegistrationForm {
      * @return True, if the registration request is approved.
      */
     public boolean isRegisterAllowed() {
-        DataForm.Field field = dataForm.findField(REGISTER_ALLOW);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
+        return dataForm.findValueAsBoolean(REGISTER_ALLOW);
+    }
+
+    public DataForm getDataForm() {
+        return dataForm;
     }
 
     /**
-     * Indicates, whether the registration request is approved.
-     *
-     * @param registerAllowed True, if the registration request is approved.
+     * A builder to build MUC registration forms.
      */
-    public void setRegisterAllowed(boolean registerAllowed) {
-        DataForm.Field field = dataForm.findField(REGISTER_ALLOW);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, REGISTER_ALLOW);
-            dataForm.getFields().add(field);
+    public static final class Builder extends DataForm.Builder<Builder> {
+
+        private Boolean allowRegister;
+
+        private String email;
+
+        private String faqEntry;
+
+        private String givenName;
+
+        private String familyName;
+
+        private String nickname;
+
+        private URL webPage;
+
+        /**
+         * Whether to allow registration with the room.
+         *
+         * @param allowRegister Whether to allow registration with the room.
+         * @return THe builder.
+         */
+        public Builder allowRegister(boolean allowRegister) {
+            this.allowRegister = allowRegister;
+            return this;
         }
-        field.getValues().clear();
-        field.getValues().add(registerAllowed ? "1" : "0");
+
+        /**
+         * The email address.
+         *
+         * @param email The email address.
+         * @return The builder.
+         */
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        /**
+         * The FAQ entry.
+         *
+         * @param faqEntry The FAQ entry.
+         * @return The builder.
+         */
+        public Builder faqEntry(String faqEntry) {
+            this.faqEntry = faqEntry;
+            return this;
+        }
+
+        /**
+         * The given name.
+         *
+         * @param givenName The given name.
+         * @return The builder.
+         */
+        public Builder givenName(String givenName) {
+            this.givenName = givenName;
+            return this;
+        }
+
+        /**
+         * The family name.
+         *
+         * @param familyName The family name.
+         * @return The builder.
+         */
+        public Builder familyName(String familyName) {
+            this.familyName = familyName;
+            return this;
+        }
+
+        /**
+         * The desired nickname.
+         *
+         * @param nickname The nickname.
+         * @return The builder.
+         */
+        public Builder nickname(String nickname) {
+            this.nickname = nickname;
+            return this;
+        }
+
+        /**
+         * The web page.
+         *
+         * @param webPage The web page.
+         * @return The builder.
+         */
+        public Builder webPage(URL webPage) {
+            this.webPage = webPage;
+            return this;
+        }
+
+        /**
+         * Builds the registration form.
+         *
+         * @return The registration form.
+         */
+        public RoomRegistrationForm build() {
+            List<DataForm.Field> fields = new ArrayList<>();
+            if (allowRegister != null) {
+                fields.add(DataForm.Field.builder().var(REGISTER_ALLOW).value(allowRegister).build());
+            }
+            if (email != null) {
+                fields.add(DataForm.Field.builder().var(EMAIL).value(email).build());
+            }
+            if (faqEntry != null) {
+                fields.add(DataForm.Field.builder().var(FAQ_ENTRY).value(faqEntry).type(DataForm.Field.Type.TEXT_MULTI).build());
+            }
+            if (givenName != null) {
+                fields.add(DataForm.Field.builder().var(GIVEN_NAME).value(givenName).build());
+            }
+            if (familyName != null) {
+                fields.add(DataForm.Field.builder().var(FAMILY_NAME).value(familyName).build());
+            }
+            if (nickname != null) {
+                fields.add(DataForm.Field.builder().var(ROOM_NICK).value(nickname).build());
+            }
+            if (webPage != null) {
+                fields.add(DataForm.Field.builder().var(URL).value(webPage.toString()).build());
+            }
+            fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
+            return new RoomRegistrationForm(new DataForm(this));
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
     }
 }

@@ -44,7 +44,7 @@ import java.util.*;
  * @see <a href="http://xmpp.org/extensions/xep-0004.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "x")
-public class DataForm implements Comparable<DataForm> {
+public final class DataForm implements Comparable<DataForm> {
 
     private static final String FORM_TYPE = "FORM_TYPE";
 

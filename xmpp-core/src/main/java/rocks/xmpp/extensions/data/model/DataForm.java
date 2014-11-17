@@ -947,12 +947,26 @@ public class DataForm implements Comparable<DataForm> {
             }
 
             /**
+             * Sets the values from an enum. This methods sets the field type implicitly to {@link Type#LIST_SINGLE}.
+             *
+             * @param values The values.
+             * @return The builder.
+             */
+            public Builder valuesEnum(Collection<? extends Enum<?>> values) {
+                this.values.clear();
+                for (Enum<?> enumValue : values) {
+                    this.values.add(enumValue.name().toLowerCase());
+                }
+                return type(Type.LIST_SINGLE);
+            }
+
+            /**
              * Sets the values as JIDs. This methods sets the field type implicitly to {@link Type#JID_MULTI}.
              *
              * @param values The values.
              * @return The builder.
              */
-            public Builder valuesJid(List<Jid> values) {
+            public Builder valuesJid(Collection<Jid> values) {
                 this.values.clear();
                 if (values != null) {
                     for (Jid value : values) {

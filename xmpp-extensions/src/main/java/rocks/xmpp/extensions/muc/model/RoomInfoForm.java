@@ -30,12 +30,19 @@ import rocks.xmpp.extensions.data.model.DataForm;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
+ * A helper class to build a standard {@link rocks.xmpp.extensions.data.model.DataForm}, which can be used to retrieve MUC room info.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-roominfo">15.5.4 muc#roominfo FORM_TYPE</a>
  */
 public final class RoomInfoForm {
+
+    private static final String FORM_TYPE = "http://jabber.org/protocol/muc#roominfo";
+
     /**
      * Maximum Number of History Messages Returned by Room
      */
@@ -92,24 +99,17 @@ public final class RoomInfoForm {
         this.dataForm = dataForm;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     /**
      * Gets the maximum number of history messages returned by the room.
      *
      * @return The maximum number of history messages returned by the room.
      */
-    public int getMaxHistoryMessages() {
-        return getAsInteger(MAX_HISTORY_FETCH);
-    }
-
-    /**
-     * Sets the maximum number of history messages returned by the room.
-     *
-     * @param maxHistoryMessages The maximum number of history messages returned by the room.
-     */
-    public void setMaxHistoryMessages(int maxHistoryMessages) {
-        DataForm.Field field = getOrCreateField(DataForm.Field.Type.TEXT_SINGLE, MAX_HISTORY_FETCH);
-        field.getValues().clear();
-        field.getValues().add(Integer.toString(maxHistoryMessages));
+    public Integer getMaxHistoryMessages() {
+        return dataForm.findValueAsInteger(MAX_HISTORY_FETCH);
     }
 
     /**
@@ -118,31 +118,7 @@ public final class RoomInfoForm {
      * @return The contact addresses.
      */
     public List<Jid> getContacts() {
-        DataForm.Field field = dataForm.findField(CONTACT_JID);
-        List<Jid> admins = new ArrayList<>();
-        if (field != null) {
-            for (String value : field.getValues()) {
-                admins.add(Jid.valueOf(value, true));
-            }
-        }
-        return admins;
-    }
-
-    /**
-     * Gets the contact addresses (normally, room owner or owners).
-     *
-     * @param administrators The contact addresses.
-     */
-    public void setContacts(List<Jid> administrators) {
-        DataForm.Field field = dataForm.findField(CONTACT_JID);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.JID_MULTI, CONTACT_JID);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        for (Jid admin : administrators) {
-            field.getValues().add(admin.toString());
-        }
+        return dataForm.findValuesAsJid(CONTACT_JID);
     }
 
     /**
@@ -151,26 +127,7 @@ public final class RoomInfoForm {
      * @return The description.
      */
     public String getDescription() {
-        DataForm.Field field = dataForm.findField(DESCRIPTION);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets a short description.
-     *
-     * @param description The description.
-     */
-    public void setDescription(String description) {
-        DataForm.Field field = dataForm.findField(DESCRIPTION);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, DESCRIPTION);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(description);
+        return dataForm.findValue(DESCRIPTION);
     }
 
     /**
@@ -179,26 +136,7 @@ public final class RoomInfoForm {
      * @return The language.
      */
     public String getLanguage() {
-        DataForm.Field field = dataForm.findField(LANGUAGE);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets the natural language for room discussions.
-     *
-     * @param language The language.
-     */
-    public void setLanguage(String language) {
-        DataForm.Field field = dataForm.findField(LANGUAGE);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, LANGUAGE);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(language);
+        return dataForm.findValue(LANGUAGE);
     }
 
     /**
@@ -212,31 +150,7 @@ public final class RoomInfoForm {
      * @return The LDAP group.
      */
     public String getLdapGroup() {
-        DataForm.Field field = dataForm.findField(LDAP_GROUP);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
-    }
-
-    /**
-     * Sets an associated LDAP group that defines
-     * room membership; this should be an LDAP
-     * Distinguished Name according to an
-     * implementation-specific or
-     * deployment-specific definition of a
-     * group.
-     *
-     * @param ldapGroup LDAP group.
-     */
-    public void setLdapGroup(String ldapGroup) {
-        DataForm.Field field = dataForm.findField(LDAP_GROUP);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, LDAP_GROUP);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(ldapGroup);
+        return dataForm.findValue(LDAP_GROUP);
     }
 
     /**
@@ -245,10 +159,10 @@ public final class RoomInfoForm {
      * @return The URL.
      */
     public URL getLogs() {
-        DataForm.Field field = dataForm.findField(LOGS);
-        if (field != null && !field.getValues().isEmpty()) {
+        String value = dataForm.findValue(LOGS);
+        if (value != null) {
             try {
-                return new URL(field.getValues().get(0));
+                return new URL(value);
             } catch (MalformedURLException e) {
                 return null;
             }
@@ -257,38 +171,12 @@ public final class RoomInfoForm {
     }
 
     /**
-     * Sets an URL for archived discussion logs.
-     *
-     * @param logs The URL.
-     */
-    public void setLogs(URL logs) {
-        DataForm.Field field = dataForm.findField(LOGS);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, LOGS);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(logs.toString());
-    }
-
-    /**
      * Gets the current number of occupants in the room.
      *
      * @return The number of occupants.
      */
-    public int getCurrentNumberOfOccupants() {
-        return getAsInteger(OCCUPANTS);
-    }
-
-    /**
-     * Sets the current number of occupants in the room.
-     *
-     * @param currentNumberOfOccupants The number of occupants.
-     */
-    public void setCurrentNumberOfOccupants(int currentNumberOfOccupants) {
-        DataForm.Field field = getOrCreateField(DataForm.Field.Type.TEXT_SINGLE, OCCUPANTS);
-        field.getValues().clear();
-        field.getValues().add(Integer.toString(currentNumberOfOccupants));
+    public Integer getCurrentNumberOfOccupants() {
+        return dataForm.findValueAsInteger(OCCUPANTS);
     }
 
     /**
@@ -297,28 +185,8 @@ public final class RoomInfoForm {
      * @return The topic.
      */
     public String getSubject() {
-        DataForm.Field field = dataForm.findField(SUBJECT);
-        if (field != null && !field.getValues().isEmpty()) {
-            return field.getValues().get(0);
-        }
-        return null;
+        return dataForm.findValue(SUBJECT);
     }
-
-    /**
-     * Sets the current discussion topic.
-     *
-     * @param subject The topic.
-     */
-    public void setSubject(String subject) {
-        DataForm.Field field = dataForm.findField(SUBJECT);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.TEXT_SINGLE, SUBJECT);
-            dataForm.getFields().add(field);
-        }
-        field.getValues().clear();
-        field.getValues().add(subject);
-    }
-
 
     /**
      * Indicates, whether the room subject can be modified by participants.
@@ -326,45 +194,166 @@ public final class RoomInfoForm {
      * @return Whether the room subject can be modified by participants.
      */
     public boolean isChangeSubjectAllowed() {
-        DataForm.Field field = dataForm.findField(SUBJECT_MOD);
-        return field != null && !field.getValues().isEmpty() && DataForm.parseBoolean(field.getValues().get(0));
+        return dataForm.findValueAsBoolean(SUBJECT_MOD);
     }
 
-    /**
-     * Indicates, whether the room subject can be modified by participants.
-     *
-     * @param changeSubjectAllowed Whether the room subject can be modified by participants.
-     */
-    public void setChangeSubjectAllowed(boolean changeSubjectAllowed) {
-        DataForm.Field field = dataForm.findField(SUBJECT_MOD);
-        if (field == null) {
-            field = new DataForm.Field(DataForm.Field.Type.BOOLEAN, SUBJECT_MOD);
-            dataForm.getFields().add(field);
+    public DataForm getDataForm() {
+        return dataForm;
+    }
+
+    public static final class Builder extends DataForm.Builder<Builder> {
+        private Integer maxHistoryMessages;
+
+        private Collection<Jid> contacts;
+
+        private String description;
+
+        private String language;
+
+        private String ldapGroup;
+
+        private URL logs;
+
+        private Integer occupants;
+
+        private String subject;
+
+        private Boolean changeSubjectAllowed;
+
+        private Builder() {
         }
-        field.getValues().clear();
-        field.getValues().add(changeSubjectAllowed ? "1" : "0");
-    }
 
-
-    private DataForm.Field getOrCreateField(DataForm.Field.Type type, String var) {
-        DataForm.Field field = dataForm.findField(var);
-        if (field == null) {
-            field = new DataForm.Field(type, var);
-            dataForm.getFields().add(field);
+        /**
+         * Sets the maximum number of history messages returned by the room.
+         *
+         * @param maxHistoryMessages The maximum number of history messages returned by the room.
+         */
+        public Builder maxHistoryMessages(int maxHistoryMessages) {
+            this.maxHistoryMessages = maxHistoryMessages;
+            return this;
         }
-        return field;
-    }
 
-    private int getAsInteger(String fieldName) {
-        DataForm.Field field = dataForm.findField(fieldName);
-        if (field != null && !field.getValues().isEmpty()) {
-            try {
-                return Integer.parseInt(field.getValues().get(0));
-            } catch (NumberFormatException e) {
-                return 0;
+        /**
+         * Gets the contact addresses (normally, room owner or owners).
+         *
+         * @param contacts The contact addresses.
+         */
+        public Builder contacts(Collection<Jid> contacts) {
+            this.contacts = contacts;
+            return this;
+        }
+
+        /**
+         * Sets a short description.
+         *
+         * @param description The description.
+         */
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        /**
+         * Sets the natural language for room discussions.
+         *
+         * @param language The language.
+         */
+        public Builder language(String language) {
+            this.language = language;
+            return this;
+        }
+
+        /**
+         * Sets an associated LDAP group that defines
+         * room membership; this should be an LDAP
+         * Distinguished Name according to an
+         * implementation-specific or
+         * deployment-specific definition of a
+         * group.
+         *
+         * @param ldapGroup LDAP group.
+         */
+        public Builder ldapGroup(String ldapGroup) {
+            this.ldapGroup = ldapGroup;
+            return this;
+        }
+
+        /**
+         * Sets an URL for archived discussion logs.
+         *
+         * @param logs The URL.
+         */
+        public Builder logs(URL logs) {
+            this.logs = logs;
+            return this;
+        }
+
+        /**
+         * Sets the current number of occupants in the room.
+         *
+         * @param occupants The number of occupants.
+         */
+        public Builder currentNumberOfOccupants(int occupants) {
+            this.occupants = occupants;
+            return this;
+        }
+
+        /**
+         * Sets the current discussion topic.
+         *
+         * @param subject The topic.
+         */
+        public Builder subject(String subject) {
+            this.subject = subject;
+            return this;
+        }
+
+        /**
+         * Indicates, whether the room subject can be modified by participants.
+         *
+         * @param changeSubjectAllowed Whether the room subject can be modified by participants.
+         */
+        public Builder changeSubjectAllowed(boolean changeSubjectAllowed) {
+            this.changeSubjectAllowed = changeSubjectAllowed;
+            return this;
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        public RoomInfoForm build() {
+            List<DataForm.Field> fields = new ArrayList<>();
+            if (maxHistoryMessages != null) {
+                fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryMessages).build());
             }
+            if (contacts != null && !contacts.isEmpty()) {
+                fields.add(DataForm.Field.builder().var(CONTACT_JID).valuesJid(contacts).build());
+            }
+            if (description != null) {
+                fields.add(DataForm.Field.builder().var(DESCRIPTION).value(description).build());
+            }
+            if (language != null) {
+                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language).build());
+            }
+            if (ldapGroup != null) {
+                fields.add(DataForm.Field.builder().var(LDAP_GROUP).value(ldapGroup).build());
+            }
+            if (logs != null) {
+                fields.add(DataForm.Field.builder().var(LOGS).value(logs.toString()).build());
+            }
+            if (occupants != null) {
+                fields.add(DataForm.Field.builder().var(OCCUPANTS).value(occupants).build());
+            }
+            if (subject != null) {
+                fields.add(DataForm.Field.builder().var(SUBJECT).value(subject).build());
+            }
+            if (changeSubjectAllowed != null) {
+                fields.add(DataForm.Field.builder().var(SUBJECT_MOD).value(changeSubjectAllowed).build());
+            }
+            fields(fields).formType(FORM_TYPE).type(DataForm.Type.RESULT);
+            return new RoomInfoForm(new DataForm(this));
         }
-        return 0;
     }
-
 }

@@ -883,7 +883,7 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the value as boolean. This methods sets the field type implicitly to {@link Type#BOOLEAN}.
+             * Sets the value as boolean. This methods sets the field type implicitly to {@link Field.Type#BOOLEAN}.
              *
              * @param value The value.
              * @return The builder.
@@ -894,7 +894,7 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the value as integer. This methods sets the field type implicitly to {@link Type#TEXT_SINGLE}.
+             * Sets the value as integer. This methods sets the field type implicitly to {@link Field.Type#TEXT_SINGLE}.
              *
              * @param value The value.
              * @return The builder.
@@ -905,7 +905,7 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the value as JID. This methods sets the field type implicitly to {@link Type#JID_SINGLE}.
+             * Sets the value as JID. This methods sets the field type implicitly to {@link Field.Type#JID_SINGLE}.
              *
              * @param value The value.
              * @return The builder.
@@ -918,7 +918,7 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the value as date. This methods sets the field type implicitly to {@link Type#TEXT_SINGLE}.
+             * Sets the value as date. This methods sets the field type implicitly to {@link Field.Type#TEXT_SINGLE}.
              *
              * @param date The value.
              * @return The builder.
@@ -933,7 +933,7 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the values. This methods sets the field type implicitly to {@link Type#TEXT_MULTI}.
+             * Sets the values. This methods sets the field type implicitly to {@link Field.Type#TEXT_MULTI}.
              *
              * @param values The values.
              * @return The builder.
@@ -947,7 +947,7 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the values from an enum. This methods sets the field type implicitly to {@link Type#LIST_SINGLE}.
+             * Sets the values from an enum. This methods sets the field type implicitly to {@link Field.Type#LIST_SINGLE}.
              *
              * @param values The values.
              * @return The builder.
@@ -961,7 +961,7 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the values as JIDs. This methods sets the field type implicitly to {@link Type#JID_MULTI}.
+             * Sets the values as JIDs. This methods sets the field type implicitly to {@link Field.Type#JID_MULTI}.
              *
              * @param values The values.
              * @return The builder.

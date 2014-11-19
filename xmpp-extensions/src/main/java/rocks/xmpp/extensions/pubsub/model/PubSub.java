@@ -470,9 +470,10 @@ public final class PubSub {
      * }
      * </pre>
      *
-     * @param node The node.
-     * @param id   The id.
-     * @param item The item to publish.
+     * @param node    The node.
+     * @param id      The id.
+     * @param item    The item to publish.
+     * @param options The publish options.
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */

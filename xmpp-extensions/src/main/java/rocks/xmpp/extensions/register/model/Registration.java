@@ -126,6 +126,7 @@ public final class Registration {
     }
 
     /**
+     * @param dataForm The data form.
      * @deprecated Use {@link #builder()}}
      */
     @Deprecated
@@ -134,6 +135,9 @@ public final class Registration {
     }
 
     /**
+     * @param username The username.
+     * @param password The password.
+     * @param email    The email address.
      * @deprecated Use {@link #builder()}}
      */
     @Deprecated
@@ -150,6 +154,8 @@ public final class Registration {
     }
 
     /**
+     * @param username The username.
+     * @param password The password.
      * @deprecated Use {@link #builder()}}
      */
     @Deprecated

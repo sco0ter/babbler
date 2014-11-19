@@ -64,6 +64,7 @@ public final class PublishOptions {
     /**
      * Creates publish options for use of persistent storage of public data via pubsub.
      *
+     * @param accessModel The access model.
      * @return The publish options.
      * @see <a href="http://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via PubSub</a>
      */

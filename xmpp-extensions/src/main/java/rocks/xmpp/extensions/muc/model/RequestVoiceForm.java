@@ -31,7 +31,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A helper class to build a standard {@link rocks.xmpp.extensions.data.model.DataForm}, which can be used to request voice in a MUC room.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#request}, which can be used to request voice in a MUC room.
+ * <h3>Usage</h3>
+ * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
+ * <pre>
+ * {@code
+ * RequestVoiceForm requestVoiceForm = new RequestVoiceForm(dataForm);
+ * }
+ * </pre>
+ * To build a form:
+ * <pre>
+ * RequestVoiceForm requestVoiceForm = RequestVoiceForm.builder()
+ *     .jid(Jid.valueOf("hag66@shakespeare.lit/pda"))
+ *     .role(Role.PARTICIPANT)
+ *     .roomNick("thirdwitch")
+ *     .allowRequest(true)
+ *     .build();
+ * </pre>
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>
@@ -83,6 +99,8 @@ public final class RequestVoiceForm {
 
     /**
      * Gets the underlying data form.
+     *
+     * @return The underlying data form.
      */
     public DataForm getDataForm() {
         return dataForm;
@@ -129,7 +147,7 @@ public final class RequestVoiceForm {
     }
 
     /**
-     * The builder to build a request voice form.
+     * A builder to build a request voice form. The form is of type {@link rocks.xmpp.extensions.data.model.DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
 

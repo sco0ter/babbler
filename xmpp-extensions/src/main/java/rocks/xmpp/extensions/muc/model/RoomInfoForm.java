@@ -34,9 +34,33 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * A helper class to build a standard {@link rocks.xmpp.extensions.data.model.DataForm}, which can be used to retrieve MUC room info.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roominfo}, which can be used to retrieve MUC room info.
+ * <h3>Usage</h3>
+ * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
+ * <pre>
+ * {@code
+ * RoomInfoForm roomInfoForm = new RoomInfoForm(dataForm);
+ * }
+ * </pre>
+ * To build a form:
+ * <pre>
+ * {@code
+ * RoomInfoForm roomInfoForm = RoomInfoForm.builder()
+ *     .maxHistoryMessages(50)
+ *     .contacts(Arrays.asList(Jid.valueOf("contact1"), Jid.valueOf("contact2")))
+ *     .description("The place for all good witches!")
+ *     .language("en")
+ *     .ldapGroup("cn=witches,dc=shakespeare,dc=lit")
+ *     .logs(new URL("http://www.shakespeare.lit/chatlogs/coven/"))
+ *     .currentNumberOfOccupants(45)
+ *     .subject("Spells")
+ *     .changeSubjectAllowed(true)
+ *     .build();
+ * }
+ * </pre>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-roominfo">15.5.4 muc#roominfo FORM_TYPE</a>
  */
 public final class RoomInfoForm {
@@ -49,7 +73,7 @@ public final class RoomInfoForm {
     private static final String MAX_HISTORY_FETCH = "muc#maxhistoryfetch";
 
     /**
-     * Contact Addresses (normally, room owner or owners)
+     * Contact Addresses (normally room owners)
      */
     private static final String CONTACT_JID = "muc#roominfo_contactjid";
 
@@ -113,7 +137,7 @@ public final class RoomInfoForm {
     }
 
     /**
-     * Gets the contact addresses (normally, room owner or owners).
+     * Gets the contact addresses (normally room owners).
      *
      * @return The contact addresses.
      */
@@ -197,10 +221,18 @@ public final class RoomInfoForm {
         return dataForm.findValueAsBoolean(SUBJECT_MOD);
     }
 
+    /**
+     * Gets the underlying data form.
+     *
+     * @return The underlying data form.
+     */
     public DataForm getDataForm() {
         return dataForm;
     }
 
+    /**
+     * A builder to build a room info form. The form is of type {@link rocks.xmpp.extensions.data.model.DataForm.Type#RESULT} by default.
+     */
     public static final class Builder extends DataForm.Builder<Builder> {
         private Integer maxHistoryMessages;
 
@@ -227,6 +259,7 @@ public final class RoomInfoForm {
          * Sets the maximum number of history messages returned by the room.
          *
          * @param maxHistoryMessages The maximum number of history messages returned by the room.
+         * @return The builder.
          */
         public Builder maxHistoryMessages(int maxHistoryMessages) {
             this.maxHistoryMessages = maxHistoryMessages;
@@ -237,6 +270,7 @@ public final class RoomInfoForm {
          * Gets the contact addresses (normally, room owner or owners).
          *
          * @param contacts The contact addresses.
+         * @return The builder.
          */
         public Builder contacts(Collection<Jid> contacts) {
             this.contacts = contacts;
@@ -247,6 +281,7 @@ public final class RoomInfoForm {
          * Sets a short description.
          *
          * @param description The description.
+         * @return The builder.
          */
         public Builder description(String description) {
             this.description = description;
@@ -257,6 +292,7 @@ public final class RoomInfoForm {
          * Sets the natural language for room discussions.
          *
          * @param language The language.
+         * @return The builder.
          */
         public Builder language(String language) {
             this.language = language;
@@ -272,6 +308,7 @@ public final class RoomInfoForm {
          * group.
          *
          * @param ldapGroup LDAP group.
+         * @return The builder.
          */
         public Builder ldapGroup(String ldapGroup) {
             this.ldapGroup = ldapGroup;
@@ -282,6 +319,7 @@ public final class RoomInfoForm {
          * Sets an URL for archived discussion logs.
          *
          * @param logs The URL.
+         * @return The builder.
          */
         public Builder logs(URL logs) {
             this.logs = logs;
@@ -292,6 +330,7 @@ public final class RoomInfoForm {
          * Sets the current number of occupants in the room.
          *
          * @param occupants The number of occupants.
+         * @return The builder.
          */
         public Builder currentNumberOfOccupants(int occupants) {
             this.occupants = occupants;
@@ -302,6 +341,7 @@ public final class RoomInfoForm {
          * Sets the current discussion topic.
          *
          * @param subject The topic.
+         * @return The builder.
          */
         public Builder subject(String subject) {
             this.subject = subject;
@@ -312,6 +352,7 @@ public final class RoomInfoForm {
          * Indicates, whether the room subject can be modified by participants.
          *
          * @param changeSubjectAllowed Whether the room subject can be modified by participants.
+         * @return The builder.
          */
         public Builder changeSubjectAllowed(boolean changeSubjectAllowed) {
             this.changeSubjectAllowed = changeSubjectAllowed;
@@ -323,6 +364,11 @@ public final class RoomInfoForm {
             return this;
         }
 
+        /**
+         * Builds the room info.
+         *
+         * @return The room info.
+         */
         public RoomInfoForm build() {
             List<DataForm.Field> fields = new ArrayList<>();
             if (maxHistoryMessages != null) {

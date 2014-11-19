@@ -81,9 +81,9 @@ public class MultiUserChatFormsTest extends XmlTest {
         RoomConfigurationForm roomConfigurationForm = RoomConfigurationForm.builder()
                 .maxHistoryMessages(4)
                 .rolesThatMaySendPrivateMessages(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
-                .allowInvites(true)
-                .allowChangeSubject(true)
-                .enableLogging(true)
+                .invitesAllowed(true)
+                .changeSubjectAllowed(true)
+                .loggingEnabled(true)
                 .rolesThatMayRetrieveMemberList(Arrays.asList(Role.PARTICIPANT))
                 .language("en")
                 .pubSubNode(URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"))
@@ -136,9 +136,9 @@ public class MultiUserChatFormsTest extends XmlTest {
 
         Assert.assertEquals(roomConfigurationForm1.getMaxHistoryMessages(), Integer.valueOf(4));
         Assert.assertEquals(roomConfigurationForm1.getRolesThatMaySendPrivateMessages(), Arrays.asList(Role.MODERATOR, Role.PARTICIPANT));
-        Assert.assertTrue(roomConfigurationForm1.isAllowInvites());
-        Assert.assertTrue(roomConfigurationForm1.isAllowChangeSubject());
-        Assert.assertTrue(roomConfigurationForm1.isPublicLoggingEnabled());
+        Assert.assertTrue(roomConfigurationForm1.isInvitesAllowed());
+        Assert.assertTrue(roomConfigurationForm1.isChangeSubjectAllowed());
+        Assert.assertTrue(roomConfigurationForm1.isLoggingEnabled());
         Assert.assertEquals(roomConfigurationForm1.getRolesThatMayRetrieveMemberList(), Arrays.asList(Role.PARTICIPANT));
         Assert.assertEquals(roomConfigurationForm1.getLanguage(), "en");
         Assert.assertEquals(roomConfigurationForm1.getPubSubNode(), URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"));

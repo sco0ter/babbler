@@ -29,7 +29,11 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.*;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -43,7 +47,15 @@ import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
-import rocks.xmpp.extensions.muc.model.*;
+import rocks.xmpp.extensions.muc.model.Actor;
+import rocks.xmpp.extensions.muc.model.Affiliation;
+import rocks.xmpp.extensions.muc.model.History;
+import rocks.xmpp.extensions.muc.model.Muc;
+import rocks.xmpp.extensions.muc.model.MucFeature;
+import rocks.xmpp.extensions.muc.model.RequestVoiceForm;
+import rocks.xmpp.extensions.muc.model.Role;
+import rocks.xmpp.extensions.muc.model.RoomInfoForm;
+import rocks.xmpp.extensions.muc.model.RoomRegistrationForm;
 import rocks.xmpp.extensions.muc.model.admin.MucAdmin;
 import rocks.xmpp.extensions.muc.model.owner.MucOwner;
 import rocks.xmpp.extensions.muc.model.user.Decline;
@@ -52,7 +64,15 @@ import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.muc.model.user.Status;
 import rocks.xmpp.extensions.register.model.Registration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -558,18 +578,34 @@ public final class ChatRoom {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see RoomRegistrationForm
+     * @deprecated Use {@link #register(rocks.xmpp.extensions.register.model.Registration)}
      */
+    @Deprecated
     public void submitRegistrationForm(DataForm dataForm) throws XmppException {
-        if (dataForm == null) {
-            throw new IllegalArgumentException("dataForm must not be null.");
+        register(Registration.builder().registrationForm(dataForm).build());
+    }
+
+    /**
+     * Registers with the room.
+     *
+     * @param registration The registration.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
+     * @see RoomRegistrationForm
+     */
+    public void register(Registration registration) throws XmppException {
+        if (registration == null) {
+            throw new IllegalArgumentException("registration must not be null.");
         }
-        if (dataForm.getType() != DataForm.Type.SUBMIT) {
-            throw new IllegalArgumentException("Data Form must be of type 'submit'");
+        if (registration.getRegistrationForm() != null) {
+            if (registration.getRegistrationForm().getType() != DataForm.Type.SUBMIT) {
+                throw new IllegalArgumentException("Data Form must be of type 'submit'");
+            }
+            if (!"http://jabber.org/protocol/muc#register".equals(registration.getRegistrationForm().getFormType())) {
+                throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#register'");
+            }
         }
-        if (!"http://jabber.org/protocol/muc#register".equals(dataForm.getFormType())) {
-            throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#register'");
-        }
-        Registration registration = Registration.builder().registrationForm(dataForm).build();
         IQ iq = new IQ(roomJid, IQ.Type.SET, registration);
         xmppSession.query(iq);
     }
@@ -937,7 +973,6 @@ public final class ChatRoom {
         IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
         xmppSession.query(iq);
     }
-
 
     /**
      * Gets the room address.

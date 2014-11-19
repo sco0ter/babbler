@@ -28,12 +28,51 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * A helper class to build a standard {@link rocks.xmpp.extensions.data.model.DataForm}, which can be used to configure a MUC room.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roomconfig}, which can be used to configure a MUC room.
+ * <h3>Usage</h3>
+ * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
+ * <pre>
+ * {@code
+ * RoomConfigurationForm roomConfigurationForm = new RoomConfigurationForm(dataForm);
+ * }
+ * </pre>
+ * To build a form:
+ * <pre>
+ * RoomConfigurationForm roomConfigurationForm = RoomConfigurationForm.builder()
+ *     .maxHistoryMessages(4)
+ *     .rolesThatMaySendPrivateMessages(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
+ *     .invitesAllowed(true)
+ *     .changeSubjectAllowed(true)
+ *     .loggingEnabled(true)
+ *     .rolesThatMayRetrieveMemberList(Arrays.asList(Role.PARTICIPANT))
+ *     .language("en")
+ *     .pubSubNode(URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"))
+ *     .maxUsers(30)
+ *     .membersOnly(true)
+ *     .moderated(true)
+ *     .passwordProtected(true)
+ *     .persistent(true)
+ *     .rolesForWhichPresenceIsBroadcast(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
+ *     .publicRoom(true)
+ *     .administrators(Arrays.asList(Jid.valueOf("admin1"), Jid.valueOf("admin2")))
+ *     .description("description")
+ *     .name("name")
+ *     .owners(Arrays.asList(Jid.valueOf("owner1"), Jid.valueOf("owner2")))
+ *     .password("pass")
+ *     .rolesThatMayDiscoverRealJids(EnumSet.of(Role.MODERATOR))
+ *     .build();
+ * </pre>
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner">15.5.3 muc#roomconfig FORM_TYPE</a>
  */
 public final class RoomConfigurationForm {
@@ -157,7 +196,7 @@ public final class RoomConfigurationForm {
      *
      * @return True, if occupants are allowed to invite others.
      */
-    public boolean isAllowInvites() {
+    public boolean isInvitesAllowed() {
         return dataForm.findValueAsBoolean(ALLOW_INVITES);
     }
 
@@ -166,7 +205,7 @@ public final class RoomConfigurationForm {
      *
      * @return True, if occupants are allowed to change subject.
      */
-    public boolean isAllowChangeSubject() {
+    public boolean isChangeSubjectAllowed() {
         return dataForm.findValueAsBoolean(CHANGE_SUBJECT);
     }
 
@@ -175,7 +214,7 @@ public final class RoomConfigurationForm {
      *
      * @return True, if public logging of room conversations is enabled.
      */
-    public boolean isPublicLoggingEnabled() {
+    public boolean isLoggingEnabled() {
         return dataForm.findValueAsBoolean(ENABLE_LOGGING);
     }
 
@@ -334,25 +373,25 @@ public final class RoomConfigurationForm {
     /**
      * Gets the underlying form.
      *
-     * @return The data form.
+     * @return The underlying data form.
      */
     public DataForm getDataForm() {
         return dataForm;
     }
 
     /**
-     * The builder to build a room configuration.
+     * A builder to build a room configuration. The form is of type {@link rocks.xmpp.extensions.data.model.DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
         private Integer maxHistoryFetch;
 
         private Collection<Role> rolesThatMaySendPrivateMessages;
 
-        private Boolean allowInvites;
+        private Boolean invitesAllowed;
 
-        private Boolean allowChangeSubject;
+        private Boolean changeSubjectAllowed;
 
-        private Boolean enableLogging;
+        private Boolean loggingEnabled;
 
         private Collection<Role> rolesThatMayRetrieveMemberList;
 
@@ -414,33 +453,33 @@ public final class RoomConfigurationForm {
         /**
          * Whether to allow occupants to invite others
          *
-         * @param allowInvites Whether to allow occupants to invite others
+         * @param invitesAllowed Whether to allow occupants to invite others
          * @return The builder.
          */
-        public Builder allowInvites(boolean allowInvites) {
-            this.allowInvites = allowInvites;
+        public Builder invitesAllowed(boolean invitesAllowed) {
+            this.invitesAllowed = invitesAllowed;
             return this;
         }
 
         /**
          * Whether to allow occupants to change subject.
          *
-         * @param allowChangeSubject Whether to allow occupants to change subject.
+         * @param changeSubjectAllowed Whether to allow occupants to change subject.
          * @return The builder.
          */
-        public Builder allowChangeSubject(boolean allowChangeSubject) {
-            this.allowChangeSubject = allowChangeSubject;
+        public Builder changeSubjectAllowed(boolean changeSubjectAllowed) {
+            this.changeSubjectAllowed = changeSubjectAllowed;
             return this;
         }
 
         /**
          * Whether to enable public logging of room conversations.
          *
-         * @param enableLogging Whether to enable public logging of room conversations.
+         * @param loggingEnabled Whether to enable public logging of room conversations.
          * @return The builder.
          */
-        public Builder enableLogging(boolean enableLogging) {
-            this.enableLogging = enableLogging;
+        public Builder loggingEnabled(boolean loggingEnabled) {
+            this.loggingEnabled = loggingEnabled;
             return this;
         }
 
@@ -638,14 +677,14 @@ public final class RoomConfigurationForm {
             if (rolesThatMaySendPrivateMessages != null && !rolesThatMaySendPrivateMessages.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(ALLOW_PM).value(rolesToValue(rolesThatMaySendPrivateMessages)).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
-            if (allowInvites != null) {
-                fields.add(DataForm.Field.builder().var(ALLOW_INVITES).value(allowInvites).build());
+            if (invitesAllowed != null) {
+                fields.add(DataForm.Field.builder().var(ALLOW_INVITES).value(invitesAllowed).build());
             }
-            if (allowChangeSubject != null) {
-                fields.add(DataForm.Field.builder().var(CHANGE_SUBJECT).value(allowChangeSubject).build());
+            if (changeSubjectAllowed != null) {
+                fields.add(DataForm.Field.builder().var(CHANGE_SUBJECT).value(changeSubjectAllowed).build());
             }
-            if (enableLogging != null) {
-                fields.add(DataForm.Field.builder().var(ENABLE_LOGGING).value(enableLogging).build());
+            if (loggingEnabled != null) {
+                fields.add(DataForm.Field.builder().var(ENABLE_LOGGING).value(loggingEnabled).build());
             }
             if (rolesThatMayRetrieveMemberList != null && !rolesThatMayRetrieveMemberList.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(GET_MEMBER_LIST).valuesEnum(rolesThatMayRetrieveMemberList).type(DataForm.Field.Type.LIST_MULTI).build());

@@ -29,7 +29,6 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -395,8 +394,6 @@ public final class SubscribeOptions {
                 // To subscribe temporarily, the subscriber MUST set the "pubsub#expire" subscription configuration option to a literal value of "presence".
                 fields.add(DataForm.Field.builder().var(EXPIRE).value("presence").build());
             } else if (expireAt != null) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(expireAt);
                 fields.add(DataForm.Field.builder().var(EXPIRE).value(expireAt).build());
             }
             if (includeBody != null) {

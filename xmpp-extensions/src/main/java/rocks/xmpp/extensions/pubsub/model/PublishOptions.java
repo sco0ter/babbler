@@ -62,6 +62,26 @@ public final class PublishOptions {
     }
 
     /**
+     * Creates publish options for use of persistent storage of public data via pubsub.
+     *
+     * @return The publish options.
+     * @see <a href="http://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via PubSub</a>
+     */
+    public static PublishOptions forStorageOfPublicData(AccessModel accessModel) {
+        return builder().persistItems(true).sendLastPublishedItem(SendLastPublishedItem.NEVER).accessModel(accessModel).build();
+    }
+
+    /**
+     * Creates publish options for use of persistent storage of private data via pubsub.
+     *
+     * @return The publish options.
+     * @see <a href="http://xmpp.org/extensions/xep-0223.html">XEP-0223: Persistent Storage of Private Data via PubSub</a>
+     */
+    public static PublishOptions forStorageOfPrivateData() {
+        return builder().persistItems(true).accessModel(AccessModel.WHITELIST).build();
+    }
+
+    /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.

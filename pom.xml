@@ -110,6 +110,7 @@
         <module>xmpp-sample</module>
         <module>xmpp-documentation</module>
         <module>xmpp-fx</module>
+        <module>xmpp-websocket</module>
     </modules>
 
     <distributionManagement>

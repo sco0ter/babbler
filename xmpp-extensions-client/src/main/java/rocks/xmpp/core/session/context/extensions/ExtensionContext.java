@@ -44,6 +44,7 @@ import rocks.xmpp.extensions.carbons.model.Enable;
 import rocks.xmpp.extensions.carbons.model.Private;
 import rocks.xmpp.extensions.carbons.model.Sent;
 import rocks.xmpp.extensions.chatstates.model.*;
+import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;
@@ -170,6 +171,9 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0049: Private XML Storage
                 PrivateData.class,
+
+                // XEP-0050: Ad-Hoc Commands
+                Command.class,
 
                 // XEP-0054: vcard-temp
                 VCard.class,

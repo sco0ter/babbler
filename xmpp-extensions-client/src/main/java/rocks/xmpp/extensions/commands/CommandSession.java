@@ -51,6 +51,7 @@ public class CommandSession {
         this.xmppSession = xmppSession;
         this.node = command.getNode();
         this.sessionId = command.getSessionId();
+        this.currentCommand = command;
     }
 
     public void execute() throws XmppException {
@@ -99,5 +100,9 @@ public class CommandSession {
     private void executeAction(Command.Action action, DataForm dataForm) throws XmppException {
         IQ result = xmppSession.query(new IQ(to, IQ.Type.SET, new Command(node, action, sessionId, dataForm)));
         currentCommand = result.getExtension(Command.class);
+    }
+
+    public Command getCurrentCommand() {
+        return currentCommand;
     }
 }

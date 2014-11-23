@@ -152,7 +152,7 @@ public class AdHocCommandsManager extends ExtensionManager {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, Command.NAMESPACE);
         List<AdHocCommand> commands = new ArrayList<>();
         for (Item item : itemNode.getItems()) {
-            commands.add(new AdHocCommand(serviceDiscoveryManager, xmppSession, item.getName(), item.getNode()));
+            commands.add(new AdHocCommand(serviceDiscoveryManager, xmppSession, item.getJid(), item.getName(), item.getNode()));
         }
         return commands;
     }
@@ -170,6 +170,7 @@ public class AdHocCommandsManager extends ExtensionManager {
     public void addCommand(final String node, final String name, AdHocCommand command) {
         serviceDiscoveryManager.addInfoNode(new InfoNode() {
             private final Set<Identity> identities = new HashSet<>();
+
             private final Set<Feature> features = new HashSet<>();
 
             {

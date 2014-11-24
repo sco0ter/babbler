@@ -56,7 +56,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        PubSubMetaDataForm pubSubMetaDataForm = PubSubMetaDataForm.builder()
+        NodeMetaData pubSubMetaDataForm = NodeMetaData.builder()
                 .contacts(Arrays.asList(Jid.valueOf("contact")))
                 .creationDate(date)
                 .creator(Jid.valueOf("creator"))
@@ -84,7 +84,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 "<field type=\"text-single\" var=\"pubsub#type\"><value>namespace</value></field>" +
                 "</x>");
         DataForm dataForm = unmarshal(xml, DataForm.class);
-        PubSubMetaDataForm pubSubMetaDataForm1 = new PubSubMetaDataForm(dataForm);
+        NodeMetaData pubSubMetaDataForm1 = new NodeMetaData(dataForm);
         Assert.assertEquals(pubSubMetaDataForm1.getCreationDate(), date);
         Assert.assertEquals(pubSubMetaDataForm1.getCreator(), Jid.valueOf("creator"));
         Assert.assertEquals(pubSubMetaDataForm1.getDescription(), "desc");
@@ -134,7 +134,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .children(Arrays.asList("collection1"))
                 .childrenMax(23)
                 .collection(Arrays.asList("collections"))
-                .contact(Arrays.asList(Jid.valueOf("contact")))
+                .contacts(Arrays.asList(Jid.valueOf("contact")))
                 .dataformXslt(new URL("http://www.xmpp.org"))
                 .deliverNotifications(true)
                 .deliverPayloads(false)
@@ -208,7 +208,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Arrays.asList(Jid.valueOf("domain")));
         Assert.assertEquals(nodeConfiguration1.getChildren(), Arrays.asList("collection1"));
         Assert.assertEquals(nodeConfiguration1.getChildrenMax(), Integer.valueOf(23));
-        Assert.assertEquals(nodeConfiguration1.getContact(), Arrays.asList(Jid.valueOf("contact")));
+        Assert.assertEquals(nodeConfiguration1.getContacts(), Arrays.asList(Jid.valueOf("contact")));
         Assert.assertEquals(nodeConfiguration1.getDataformXslt(), new URL("http://www.xmpp.org"));
         Assert.assertTrue(nodeConfiguration1.isDeliverNotifications());
         Assert.assertFalse(nodeConfiguration1.isDeliverPayloads());
@@ -239,7 +239,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
 
     @Test
     public void testSubscribeOptions() throws JAXBException, XMLStreamException, MalformedURLException {
-        SubscribeOptions nodeConfiguration = SubscribeOptions.builder()
+        SubscribeOptions subscribeOptions1 = SubscribeOptions.builder()
                 .deliver(true)
                 .digest(true)
                 .digestFrequency(3)
@@ -250,7 +250,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .subscriptionDepth(-1)
                 .build();
 
-        String xml = marshal(nodeConfiguration.getDataForm());
+        String xml = marshal(subscribeOptions1.getDataForm());
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#subscribe_options</value></field>" +
                 "<field type=\"boolean\" var=\"pubsub#deliver\"><value>1</value></field>" +

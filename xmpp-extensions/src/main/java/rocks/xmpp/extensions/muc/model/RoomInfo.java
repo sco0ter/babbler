@@ -39,13 +39,13 @@ import java.util.List;
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>
  * {@code
- * RoomInfoForm roomInfoForm = new RoomInfoForm(dataForm);
+ * RoomInfo roomInfo = new RoomInfo(dataForm);
  * }
  * </pre>
  * To build a form:
  * <pre>
  * {@code
- * RoomInfoForm roomInfoForm = RoomInfoForm.builder()
+ * RoomInfo roomInfo = RoomInfo.builder()
  *     .maxHistoryMessages(50)
  *     .contacts(Arrays.asList(Jid.valueOf("contact1"), Jid.valueOf("contact2")))
  *     .description("The place for all good witches!")
@@ -63,7 +63,7 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-roominfo">15.5.4 muc#roominfo FORM_TYPE</a>
  */
-public final class RoomInfoForm {
+public final class RoomInfo {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/muc#roominfo";
 
@@ -119,7 +119,7 @@ public final class RoomInfoForm {
 
     private final DataForm dataForm;
 
-    public RoomInfoForm(DataForm dataForm) {
+    public RoomInfo(DataForm dataForm) {
         this.dataForm = dataForm;
     }
 
@@ -369,7 +369,7 @@ public final class RoomInfoForm {
          *
          * @return The room info.
          */
-        public RoomInfoForm build() {
+        public RoomInfo build() {
             List<DataForm.Field> fields = new ArrayList<>();
             if (maxHistoryMessages != null) {
                 fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryMessages).build());
@@ -399,7 +399,7 @@ public final class RoomInfoForm {
                 fields.add(DataForm.Field.builder().var(SUBJECT_MOD).value(changeSubjectAllowed).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.RESULT);
-            return new RoomInfoForm(new DataForm(this));
+            return new RoomInfo(new DataForm(this));
         }
     }
 }

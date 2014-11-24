@@ -30,7 +30,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#publish-options}, which can be used to retrieve node meta data.
+ * <h3>Usage</h3>
+ * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
+ * <pre>
+ * {@code
+ * PublishOptions publishOptions = new PublishOptions(dataForm);
+ * }
+ * </pre>
+ * To build a form:
+ * <pre>
+ * {@code
+ * PublishOptions publishOptions = PublishOptions.builder()
+ *     .accessModel(AccessModel.AUTHORIZE)
+ *     .persistItems(true)
+ *     .rosterGroupsAllowed(Arrays.asList("Friends"))
+ *     .sendLastPublishedItem(SendLastPublishedItem.ON_SUB)
+ *     .build();
+ * }
+ * </pre>
+ * <h4>Persistent Storage of Public Data via PubSub</h4>
+ * <pre>
+ * {@code
+ * PublishOptions publishOptions = PublishOptions.forStorageOfPublicData();
+ * }
+ * </pre>
+ * <h4>Persistent Storage of Public Private via PubSub</h4>
+ * <pre>
+ * {@code
+ * PublishOptions publishOptions = PublishOptions.forStorageOfPrivateData();
+ * }
+ * </pre>
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-publish">16.4.5 pubsub#publish-options FORM_TYPE</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-options">7.1.5 Publishing Options</a>
  * @see <a href="http://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via PubSub</a>
  * @see <a href="http://xmpp.org/extensions/xep-0223.html">XEP-0223: Persistent Storage of Private Data via PubSub</a>
  */
@@ -173,6 +206,11 @@ public final class PublishOptions {
             return this;
         }
 
+        /**
+         * Builds the publish options.
+         *
+         * @return The publish options.
+         */
         public PublishOptions build() {
             List<DataForm.Field> fields = new ArrayList<>();
 
@@ -185,7 +223,7 @@ public final class PublishOptions {
             if (sendLastPublishedItem != null) {
                 fields.add(DataForm.Field.builder().var(SEND_LAST_PUBLISHED_ITEM).value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
-            if (rosterGroupsAllowed != null) {
+            if (rosterGroupsAllowed != null && !rosterGroupsAllowed.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
             }
 

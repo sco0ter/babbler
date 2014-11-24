@@ -29,11 +29,34 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 /**
- * A helper class to build a 'subscribe options' data form.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#subscribe_options}, which can be used to configure a node subscription.
+ * <h3>Usage</h3>
+ * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
+ * <pre>
+ * {@code
+ * SubscribeOptions subscribeOptions = new SubscribeOptions(dataForm);
+ * }
+ * </pre>
+ * To build a form:
+ * <pre>
+ * {@code
+ * SubscribeOptions subscribeOptions = SubscribeOptions.builder()
+ *     .deliver(true)
+ *     .digest(true)
+ *     .digestFrequency(3)
+ *     .includeBody(true)
+ *     .temporary(true)
+ *     .showValues(Arrays.asList(AbstractPresence.Show.AWAY, AbstractPresence.Show.CHAT, null))
+ *     .subscriptionType(SubscribeOptions.SubscriptionType.NODES)
+ *     .subscriptionDepth(-1)
+ *     .build();
+ * }
+ * </pre>
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-subscribe">16.4.2 pubsub#subscribe_options FORM_TYPE</a>
@@ -241,8 +264,6 @@ public final class SubscribeOptions {
      */
     public static final class Builder extends DataForm.Builder<SubscribeOptions.Builder> {
 
-        private final List<Presence.Show> showValues = new ArrayList<>();
-
         private Boolean deliver;
 
         private Boolean digest;
@@ -250,6 +271,8 @@ public final class SubscribeOptions {
         private Integer digestFrequency;
 
         private Boolean includeBody;
+
+        private Collection<Presence.Show> showValues;
 
         private Date expireAt;
 
@@ -313,11 +336,8 @@ public final class SubscribeOptions {
          * @param showValues The presence states for which an entity wants to receive notifications.
          * @return The builder.
          */
-        public Builder showValues(List<AbstractPresence.Show> showValues) {
-            this.showValues.clear();
-            if (showValues != null) {
-                this.showValues.addAll(showValues);
-            }
+        public Builder showValues(Collection<AbstractPresence.Show> showValues) {
+            this.showValues = showValues;
             return this;
         }
 
@@ -369,18 +389,18 @@ public final class SubscribeOptions {
             return this;
         }
 
+        @Override
+        protected SubscribeOptions.Builder self() {
+            return this;
+        }
+
         /**
          * Builds the subscribe options.
          *
          * @return The subscribe options.
          */
         public SubscribeOptions build() {
-
-            DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-            dataForm.setFormType(FORM_TYPE);
-
             List<DataForm.Field> fields = new ArrayList<>();
-
             if (deliver != null) {
                 fields.add(DataForm.Field.builder().var(DELIVER).value(deliver).build());
             }
@@ -399,7 +419,7 @@ public final class SubscribeOptions {
             if (includeBody != null) {
                 fields.add(DataForm.Field.builder().var(INCLUDE_BODY).value(includeBody).build());
             }
-            if (!showValues.isEmpty()) {
+            if (showValues != null && !showValues.isEmpty()) {
                 DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().var(SHOW_VALUES);
                 List<String> values = new ArrayList<>();
                 for (AbstractPresence.Show show : showValues) {
@@ -428,11 +448,6 @@ public final class SubscribeOptions {
 
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
             return new SubscribeOptions(new DataForm(this));
-        }
-
-        @Override
-        protected SubscribeOptions.Builder self() {
-            return this;
         }
     }
 }

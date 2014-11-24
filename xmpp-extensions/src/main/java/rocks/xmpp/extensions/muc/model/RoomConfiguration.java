@@ -41,12 +41,13 @@ import java.util.Set;
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>
  * {@code
- * RoomConfigurationForm roomConfigurationForm = new RoomConfigurationForm(dataForm);
+ * RoomConfiguration roomConfiguration = new RoomConfiguration(dataForm);
  * }
  * </pre>
  * To build a form:
  * <pre>
- * RoomConfigurationForm roomConfigurationForm = RoomConfigurationForm.builder()
+ * {@code
+ * RoomConfiguration roomConfiguration = RoomConfiguration.builder()
  *     .maxHistoryMessages(4)
  *     .rolesThatMaySendPrivateMessages(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
  *     .invitesAllowed(true)
@@ -69,13 +70,14 @@ import java.util.Set;
  *     .password("pass")
  *     .rolesThatMayDiscoverRealJids(EnumSet.of(Role.MODERATOR))
  *     .build();
+ * }
  * </pre>
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner">15.5.3 muc#roomconfig FORM_TYPE</a>
  */
-public final class RoomConfigurationForm {
+public final class RoomConfiguration {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/muc#roomconfig";
 
@@ -123,7 +125,7 @@ public final class RoomConfigurationForm {
 
     private final DataForm dataForm;
 
-    public RoomConfigurationForm(DataForm dataForm) {
+    public RoomConfiguration(DataForm dataForm) {
         this.dataForm = dataForm;
     }
 
@@ -669,7 +671,7 @@ public final class RoomConfigurationForm {
          *
          * @return The room configuration.
          */
-        public RoomConfigurationForm build() {
+        public RoomConfiguration build() {
             List<DataForm.Field> fields = new ArrayList<>();
             if (maxHistoryFetch != null) {
                 fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryFetch).build());
@@ -735,7 +737,7 @@ public final class RoomConfigurationForm {
                 fields.add(DataForm.Field.builder().var(WHOIS).value(rolesToValue(whois)).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
-            return new RoomConfigurationForm(new DataForm(this));
+            return new RoomConfiguration(new DataForm(this));
         }
     }
 }

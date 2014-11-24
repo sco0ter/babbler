@@ -52,10 +52,9 @@ import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.History;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.MucFeature;
-import rocks.xmpp.extensions.muc.model.RequestVoiceForm;
+import rocks.xmpp.extensions.muc.model.RequestVoice;
 import rocks.xmpp.extensions.muc.model.Role;
-import rocks.xmpp.extensions.muc.model.RoomInfoForm;
-import rocks.xmpp.extensions.muc.model.RoomRegistrationForm;
+import rocks.xmpp.extensions.muc.model.RoomInfo;
 import rocks.xmpp.extensions.muc.model.admin.MucAdmin;
 import rocks.xmpp.extensions.muc.model.owner.MucOwner;
 import rocks.xmpp.extensions.muc.model.user.Decline;
@@ -558,7 +557,7 @@ public final class ChatRoom {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see RoomRegistrationForm
+     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
     public DataForm getRegistrationForm() throws XmppException {
         IQ iq = new IQ(roomJid, IQ.Type.GET, new Registration());
@@ -577,7 +576,7 @@ public final class ChatRoom {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see RoomRegistrationForm
+     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      * @deprecated Use {@link #register(rocks.xmpp.extensions.register.model.Registration)}
      */
     @Deprecated
@@ -592,7 +591,7 @@ public final class ChatRoom {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see RoomRegistrationForm
+     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
     public void register(Registration registration) throws XmppException {
         if (registration == null) {
@@ -637,8 +636,8 @@ public final class ChatRoom {
      */
     public void requestVoice() {
         Message message = new Message(roomJid);
-        RequestVoiceForm requestVoiceForm = RequestVoiceForm.builder().role(Role.PARTICIPANT).build();
-        message.getExtensions().add(requestVoiceForm.getDataForm());
+        RequestVoice requestVoice = RequestVoice.builder().role(Role.PARTICIPANT).build();
+        message.getExtensions().add(requestVoice.getDataForm());
         xmppSession.send(message);
     }
 
@@ -831,12 +830,12 @@ public final class ChatRoom {
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
      */
-    public RoomInfo getRoomInfo() throws XmppException {
+    public rocks.xmpp.extensions.muc.RoomInfo getRoomInfo() throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid);
 
         Identity identity = null;
         Set<MucFeature> mucFeatures = new HashSet<>();
-        RoomInfoForm roomInfoForm = null;
+        RoomInfo roomInfo = null;
 
         if (infoNode != null) {
             Set<Identity> identities = infoNode.getIdentities();
@@ -855,13 +854,13 @@ public final class ChatRoom {
             for (DataForm dataForm : infoNode.getExtensions()) {
                 DataForm.Field formType = dataForm.findField("FORM_TYPE");
                 if (formType != null && !formType.getValues().isEmpty() && formType.getValues().get(0).equals("http://jabber.org/protocol/muc#roominfo")) {
-                    roomInfoForm = new RoomInfoForm(dataForm);
+                    roomInfo = new RoomInfo(dataForm);
                     break;
                 }
             }
         }
 
-        return new RoomInfo(identity, mucFeatures, roomInfoForm);
+        return new rocks.xmpp.extensions.muc.RoomInfo(identity, mucFeatures, roomInfo);
     }
 
     /**
@@ -909,7 +908,7 @@ public final class ChatRoom {
 
     /**
      * Gets the configuration form for the room.
-     * You can wrap the form into {@link rocks.xmpp.extensions.muc.model.RoomConfigurationForm} for easier processing.
+     * You can wrap the form into {@link rocks.xmpp.extensions.muc.model.RoomConfiguration} for easier processing.
      * <p>
      * Use this method if you want to create a reserved room or configure an existing room.
      * </p>
@@ -917,7 +916,7 @@ public final class ChatRoom {
      * @return The configuration form.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
-     * @see rocks.xmpp.extensions.muc.model.RoomConfigurationForm
+     * @see rocks.xmpp.extensions.muc.model.RoomConfiguration
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #submitConfigurationForm(rocks.xmpp.extensions.data.model.DataForm)
      */

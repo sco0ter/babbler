@@ -37,13 +37,13 @@ import java.util.List;
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>
  * {@code
- * RoomRegistrationForm roomRegistrationForm = new RoomRegistrationForm(dataForm);
+ * RoomRegistration roomRegistration = new RoomRegistration(dataForm);
  * }
  * </pre>
  * To build a form:
  * <pre>
  * {@code
- * RoomRegistrationForm roomRegistrationForm = RoomRegistrationForm.builder()
+ * RoomRegistration roomRegistration = RoomRegistration.builder()
  *     .allowRegister(true)
  *     .email("hag66@witchesonline")
  *     .familyName("Entwhistle-Throckmorton")
@@ -59,7 +59,7 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-register">15.5.1 muc#register FORM_TYPE</a>
  */
-public final class RoomRegistrationForm {
+public final class RoomRegistration {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/muc#register";
 
@@ -100,7 +100,7 @@ public final class RoomRegistrationForm {
 
     private final DataForm dataForm;
 
-    public RoomRegistrationForm(DataForm dataForm) {
+    public RoomRegistration(DataForm dataForm) {
         this.dataForm = dataForm;
     }
 
@@ -296,7 +296,7 @@ public final class RoomRegistrationForm {
          *
          * @return The registration form.
          */
-        public RoomRegistrationForm build() {
+        public RoomRegistration build() {
             List<DataForm.Field> fields = new ArrayList<>();
             if (allowRegister != null) {
                 fields.add(DataForm.Field.builder().var(REGISTER_ALLOW).value(allowRegister).build());
@@ -320,7 +320,7 @@ public final class RoomRegistrationForm {
                 fields.add(DataForm.Field.builder().var(URL).value(webPage.toString()).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
-            return new RoomRegistrationForm(new DataForm(this));
+            return new RoomRegistration(new DataForm(this));
         }
     }
 }

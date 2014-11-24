@@ -938,7 +938,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param values The values.
              * @return The builder.
              */
-            public Builder values(List<String> values) {
+            public Builder values(Collection<String> values) {
                 this.values.clear();
                 if (values != null) {
                     this.values.addAll(values);

@@ -50,14 +50,14 @@ public class MultiUserChatFormsTest extends XmlTest {
     @Test
     public void testRequestVoiceForm() throws JAXBException, XMLStreamException, MalformedURLException {
 
-        RequestVoiceForm requestVoiceForm = RequestVoiceForm.builder()
+        RequestVoice requestVoice = RequestVoice.builder()
                 .jid(Jid.valueOf("hag66@shakespeare.lit/pda"))
                 .role(Role.MODERATOR)
                 .roomNick("thirdwitch")
                 .allowRequest(true)
                 .build();
 
-        String xml = marshal(requestVoiceForm.getDataForm());
+        String xml = marshal(requestVoice.getDataForm());
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/muc#request</value></field>" +
                 "<field type=\"text-single\" var=\"muc#role\"><value>moderator</value></field>" +
@@ -67,18 +67,18 @@ public class MultiUserChatFormsTest extends XmlTest {
                 "</x>");
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
-        RequestVoiceForm requestVoiceForm1 = new RequestVoiceForm(dataForm);
+        RequestVoice requestVoice1 = new RequestVoice(dataForm);
 
-        Assert.assertEquals(requestVoiceForm1.getRoomNick(), "thirdwitch");
-        Assert.assertEquals(requestVoiceForm1.getRole(), Role.MODERATOR);
-        Assert.assertEquals(requestVoiceForm1.getJid(), Jid.valueOf("hag66@shakespeare.lit/pda"));
-        Assert.assertTrue(requestVoiceForm1.isRequestAllowed());
+        Assert.assertEquals(requestVoice1.getRoomNick(), "thirdwitch");
+        Assert.assertEquals(requestVoice1.getRole(), Role.MODERATOR);
+        Assert.assertEquals(requestVoice1.getJid(), Jid.valueOf("hag66@shakespeare.lit/pda"));
+        Assert.assertTrue(requestVoice1.isRequestAllowed());
     }
 
     @Test
     public void testRoomConfigurationForm() throws JAXBException, XMLStreamException {
 
-        RoomConfigurationForm roomConfigurationForm = RoomConfigurationForm.builder()
+        RoomConfiguration roomConfiguration = RoomConfiguration.builder()
                 .maxHistoryMessages(4)
                 .rolesThatMaySendPrivateMessages(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
                 .invitesAllowed(true)
@@ -102,7 +102,7 @@ public class MultiUserChatFormsTest extends XmlTest {
                 .rolesThatMayDiscoverRealJids(EnumSet.of(Role.MODERATOR))
                 .build();
 
-        String xml = marshal(roomConfigurationForm.getDataForm());
+        String xml = marshal(roomConfiguration.getDataForm());
 
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/muc#roomconfig</value></field>" +
@@ -132,35 +132,35 @@ public class MultiUserChatFormsTest extends XmlTest {
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
 
-        RoomConfigurationForm roomConfigurationForm1 = new RoomConfigurationForm(dataForm);
+        RoomConfiguration roomConfiguration1 = new RoomConfiguration(dataForm);
 
-        Assert.assertEquals(roomConfigurationForm1.getMaxHistoryMessages(), Integer.valueOf(4));
-        Assert.assertEquals(roomConfigurationForm1.getRolesThatMaySendPrivateMessages(), Arrays.asList(Role.MODERATOR, Role.PARTICIPANT));
-        Assert.assertTrue(roomConfigurationForm1.isInvitesAllowed());
-        Assert.assertTrue(roomConfigurationForm1.isChangeSubjectAllowed());
-        Assert.assertTrue(roomConfigurationForm1.isLoggingEnabled());
-        Assert.assertEquals(roomConfigurationForm1.getRolesThatMayRetrieveMemberList(), Arrays.asList(Role.PARTICIPANT));
-        Assert.assertEquals(roomConfigurationForm1.getLanguage(), "en");
-        Assert.assertEquals(roomConfigurationForm1.getPubSubNode(), URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"));
-        Assert.assertEquals(roomConfigurationForm1.getMaxUsers(), Integer.valueOf(30));
-        Assert.assertTrue(roomConfigurationForm1.isMembersOnly());
-        Assert.assertTrue(roomConfigurationForm1.isModerated());
-        Assert.assertTrue(roomConfigurationForm1.isPasswordProtected());
-        Assert.assertTrue(roomConfigurationForm1.isPersistent());
-        Assert.assertEquals(roomConfigurationForm1.getRolesForWhichPresenceIsBroadcast(), Arrays.asList(Role.MODERATOR, Role.PARTICIPANT));
-        Assert.assertTrue(roomConfigurationForm1.isPublicRoom());
-        Assert.assertEquals(roomConfigurationForm1.getAdministrators(), Arrays.asList(Jid.valueOf("admin1"), Jid.valueOf("admin2")));
-        Assert.assertEquals(roomConfigurationForm1.getDescription(), "description");
-        Assert.assertEquals(roomConfigurationForm1.getName(), "name");
-        Assert.assertEquals(roomConfigurationForm1.getOwners(), Arrays.asList(Jid.valueOf("owner1"), Jid.valueOf("owner2")));
-        Assert.assertEquals(roomConfigurationForm1.getPassword(), "pass");
-        Assert.assertEquals(roomConfigurationForm1.getRolesThatMayDiscoverRealJids(), Arrays.asList(Role.MODERATOR));
+        Assert.assertEquals(roomConfiguration1.getMaxHistoryMessages(), Integer.valueOf(4));
+        Assert.assertEquals(roomConfiguration1.getRolesThatMaySendPrivateMessages(), Arrays.asList(Role.MODERATOR, Role.PARTICIPANT));
+        Assert.assertTrue(roomConfiguration1.isInvitesAllowed());
+        Assert.assertTrue(roomConfiguration1.isChangeSubjectAllowed());
+        Assert.assertTrue(roomConfiguration1.isLoggingEnabled());
+        Assert.assertEquals(roomConfiguration1.getRolesThatMayRetrieveMemberList(), Arrays.asList(Role.PARTICIPANT));
+        Assert.assertEquals(roomConfiguration1.getLanguage(), "en");
+        Assert.assertEquals(roomConfiguration1.getPubSubNode(), URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"));
+        Assert.assertEquals(roomConfiguration1.getMaxUsers(), Integer.valueOf(30));
+        Assert.assertTrue(roomConfiguration1.isMembersOnly());
+        Assert.assertTrue(roomConfiguration1.isModerated());
+        Assert.assertTrue(roomConfiguration1.isPasswordProtected());
+        Assert.assertTrue(roomConfiguration1.isPersistent());
+        Assert.assertEquals(roomConfiguration1.getRolesForWhichPresenceIsBroadcast(), Arrays.asList(Role.MODERATOR, Role.PARTICIPANT));
+        Assert.assertTrue(roomConfiguration1.isPublicRoom());
+        Assert.assertEquals(roomConfiguration1.getAdministrators(), Arrays.asList(Jid.valueOf("admin1"), Jid.valueOf("admin2")));
+        Assert.assertEquals(roomConfiguration1.getDescription(), "description");
+        Assert.assertEquals(roomConfiguration1.getName(), "name");
+        Assert.assertEquals(roomConfiguration1.getOwners(), Arrays.asList(Jid.valueOf("owner1"), Jid.valueOf("owner2")));
+        Assert.assertEquals(roomConfiguration1.getPassword(), "pass");
+        Assert.assertEquals(roomConfiguration1.getRolesThatMayDiscoverRealJids(), Arrays.asList(Role.MODERATOR));
     }
 
     @Test
     public void testRoomRegistrationForm() throws JAXBException, XMLStreamException, MalformedURLException {
 
-        RoomRegistrationForm roomRegistrationForm = RoomRegistrationForm.builder()
+        RoomRegistration roomRegistration = RoomRegistration.builder()
                 .allowRegister(true)
                 .email("hag66@witchesonline")
                 .familyName("Entwhistle-Throckmorton")
@@ -170,7 +170,7 @@ public class MultiUserChatFormsTest extends XmlTest {
                 .webPage(new URL("http://witchesonline/~hag66/"))
                 .build();
 
-        String xml = marshal(roomRegistrationForm.getDataForm());
+        String xml = marshal(roomRegistration.getDataForm());
 
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/muc#register</value></field>" +
@@ -185,20 +185,20 @@ public class MultiUserChatFormsTest extends XmlTest {
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
 
-        RoomRegistrationForm roomRegistrationForm2 = new RoomRegistrationForm(dataForm);
-        Assert.assertEquals(roomRegistrationForm2.getGivenName(), "Brunhilde");
-        Assert.assertEquals(roomRegistrationForm2.getFamilyName(), "Entwhistle-Throckmorton");
-        Assert.assertEquals(roomRegistrationForm2.getRoomNick(), "thirdwitch");
-        Assert.assertEquals(roomRegistrationForm2.getWebPage(), new URL("http://witchesonline/~hag66/"));
-        Assert.assertEquals(roomRegistrationForm2.getEmail(), "hag66@witchesonline");
-        Assert.assertEquals(roomRegistrationForm2.getFaqEntry(), "Just another witch.");
-        Assert.assertTrue(roomRegistrationForm2.isRegisterAllowed());
+        RoomRegistration roomRegistration2 = new RoomRegistration(dataForm);
+        Assert.assertEquals(roomRegistration2.getGivenName(), "Brunhilde");
+        Assert.assertEquals(roomRegistration2.getFamilyName(), "Entwhistle-Throckmorton");
+        Assert.assertEquals(roomRegistration2.getRoomNick(), "thirdwitch");
+        Assert.assertEquals(roomRegistration2.getWebPage(), new URL("http://witchesonline/~hag66/"));
+        Assert.assertEquals(roomRegistration2.getEmail(), "hag66@witchesonline");
+        Assert.assertEquals(roomRegistration2.getFaqEntry(), "Just another witch.");
+        Assert.assertTrue(roomRegistration2.isRegisterAllowed());
     }
 
     @Test
     public void testRoomInfoForm() throws JAXBException, XMLStreamException, MalformedURLException {
 
-        RoomInfoForm roomInfoForm = RoomInfoForm.builder()
+        RoomInfo roomInfo = RoomInfo.builder()
                 .maxHistoryMessages(50)
                 .contacts(Arrays.asList(Jid.valueOf("contact1"), Jid.valueOf("contact2")))
                 .description("The place for all good witches!")
@@ -210,7 +210,7 @@ public class MultiUserChatFormsTest extends XmlTest {
                 .changeSubjectAllowed(true)
                 .build();
 
-        String xml = marshal(roomInfoForm.getDataForm());
+        String xml = marshal(roomInfo.getDataForm());
 
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"result\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/muc#roominfo</value></field>" +
@@ -227,16 +227,16 @@ public class MultiUserChatFormsTest extends XmlTest {
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
 
-        RoomInfoForm roomInfoForm2 = new RoomInfoForm(dataForm);
+        RoomInfo roomInfo2 = new RoomInfo(dataForm);
 
-        Assert.assertEquals(roomInfoForm2.getDescription(), "The place for all good witches!");
-        Assert.assertTrue(roomInfoForm2.isChangeSubjectAllowed());
-        Assert.assertEquals(roomInfoForm2.getContacts(), Arrays.asList(Jid.valueOf("contact1"), Jid.valueOf("contact2")));
-        Assert.assertEquals(roomInfoForm2.getSubject(), "Spells");
-        Assert.assertEquals(roomInfoForm2.getCurrentNumberOfOccupants(), Integer.valueOf(45));
-        Assert.assertEquals(roomInfoForm2.getLdapGroup(), "cn=witches,dc=shakespeare,dc=lit");
-        Assert.assertEquals(roomInfoForm2.getLanguage(), "en");
-        Assert.assertEquals(roomInfoForm2.getLogs(), new URL("http://www.shakespeare.lit/chatlogs/coven/"));
-        Assert.assertEquals(roomInfoForm2.getMaxHistoryMessages(), Integer.valueOf(50));
+        Assert.assertEquals(roomInfo2.getDescription(), "The place for all good witches!");
+        Assert.assertTrue(roomInfo2.isChangeSubjectAllowed());
+        Assert.assertEquals(roomInfo2.getContacts(), Arrays.asList(Jid.valueOf("contact1"), Jid.valueOf("contact2")));
+        Assert.assertEquals(roomInfo2.getSubject(), "Spells");
+        Assert.assertEquals(roomInfo2.getCurrentNumberOfOccupants(), Integer.valueOf(45));
+        Assert.assertEquals(roomInfo2.getLdapGroup(), "cn=witches,dc=shakespeare,dc=lit");
+        Assert.assertEquals(roomInfo2.getLanguage(), "en");
+        Assert.assertEquals(roomInfo2.getLogs(), new URL("http://www.shakespeare.lit/chatlogs/coven/"));
+        Assert.assertEquals(roomInfo2.getMaxHistoryMessages(), Integer.valueOf(50));
     }
 }

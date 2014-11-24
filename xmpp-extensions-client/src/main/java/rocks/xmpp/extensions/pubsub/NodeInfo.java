@@ -25,9 +25,9 @@
 package rocks.xmpp.extensions.pubsub;
 
 import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.pubsub.model.NodeMetaData;
 import rocks.xmpp.extensions.pubsub.model.NodeType;
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
-import rocks.xmpp.extensions.pubsub.model.PubSubMetaDataForm;
 
 import java.util.Set;
 
@@ -40,11 +40,11 @@ public class NodeInfo {
 
     private final Set<PubSubFeature> features;
 
-    private final PubSubMetaDataForm metaDataForm;
+    private final NodeMetaData metaDataForm;
 
     private final NodeType type;
 
-    public NodeInfo(Identity identity, Set<PubSubFeature> features, PubSubMetaDataForm metaDataForm) {
+    public NodeInfo(Identity identity, Set<PubSubFeature> features, NodeMetaData metaDataForm) {
         this.identity = identity;
         this.features = features;
         this.metaDataForm = metaDataForm;

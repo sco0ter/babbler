@@ -84,7 +84,7 @@ public final class PubSubNode {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(pubSubServiceAddress);
         Identity identity = null;
         Set<PubSubFeature> features = new HashSet<>();
-        PubSubMetaDataForm metaDataForm = null;
+        NodeMetaData metaDataForm = null;
 
         if (infoNode != null) {
             Set<Identity> identities = infoNode.getIdentities();
@@ -94,8 +94,8 @@ public final class PubSubNode {
             }
             for (DataForm dataForm : infoNode.getExtensions()) {
                 String formType = dataForm.getFormType();
-                if (PubSubMetaDataForm.FORM_TYPE.equals(formType)) {
-                    metaDataForm = new PubSubMetaDataForm(dataForm);
+                if (NodeMetaData.FORM_TYPE.equals(formType)) {
+                    metaDataForm = new NodeMetaData(dataForm);
                     break;
                 }
             }

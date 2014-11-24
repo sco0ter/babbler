@@ -28,20 +28,42 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Represents meta data for a pubsub node.
- * <p>
- * Meta data are represented by a data form. This class acts as a wrapper for a data form and provides convenient methods to retrieve meta data from standardized fields of a data form.
- * </p>
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#meta-data}, which can be used to retrieve node meta data.
+ * <h3>Usage</h3>
+ * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
+ * <pre>
+ * {@code
+ * NodeMetaData nodeMetaData = new NodeMetaData(dataForm);
+ * }
+ * </pre>
+ * To build a form:
+ * <pre>
+ * {@code
+ * NodeMetaData nodeMetaData = NodeMetaData.builder()
+ *     .contacts(Arrays.asList(Jid.valueOf("contact")))
+ *     .creationDate(date)
+ *     .creator(Jid.valueOf("creator"))
+ *     .description("desc")
+ *     .language("de")
+ *     .numberOfSubscribers(2)
+ *     .owners(Arrays.asList(Jid.valueOf("owner")))
+ *     .publishers(Arrays.asList(Jid.valueOf("publisher")))
+ *     .title("title")
+ *     .payloadType("namespace")
+ *     .build();
+ * }
+ * </pre>
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-metadata">16.4.3 pubsub#meta-data FORM_TYPE</a>
  */
-public final class PubSubMetaDataForm {
+public final class NodeMetaData {
 
     public static final String FORM_TYPE = "http://jabber.org/protocol/pubsub#meta-data";
 
@@ -102,7 +124,7 @@ public final class PubSubMetaDataForm {
      *
      * @param dataForm The underlying data form.
      */
-    public PubSubMetaDataForm(DataForm dataForm) {
+    public NodeMetaData(DataForm dataForm) {
         this.dataForm = dataForm;
     }
 
@@ -218,7 +240,7 @@ public final class PubSubMetaDataForm {
      * A builder class to build the meta data form. If not provided the default data form type is {@link rocks.xmpp.extensions.data.model.DataForm.Type#RESULT}.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
-        private List<Jid> contacts;
+        private Collection<Jid> contacts;
 
         private Date creationDate;
 
@@ -230,9 +252,9 @@ public final class PubSubMetaDataForm {
 
         private Integer numberOfSubscribers;
 
-        private List<Jid> owners;
+        private Collection<Jid> owners;
 
-        private List<Jid> publishers;
+        private Collection<Jid> publishers;
 
         private String title;
 
@@ -247,7 +269,7 @@ public final class PubSubMetaDataForm {
          * @param contacts The contacts.
          * @return The builder.
          */
-        public Builder contacts(List<Jid> contacts) {
+        public Builder contacts(Collection<Jid> contacts) {
             this.contacts = contacts;
             return this;
         }
@@ -313,7 +335,7 @@ public final class PubSubMetaDataForm {
          * @param owners The owners.
          * @return The builder.
          */
-        public Builder owners(List<Jid> owners) {
+        public Builder owners(Collection<Jid> owners) {
             this.owners = owners;
             return this;
         }
@@ -324,7 +346,7 @@ public final class PubSubMetaDataForm {
          * @param publishers The publishers.
          * @return The builder.
          */
-        public Builder publishers(List<Jid> publishers) {
+        public Builder publishers(Collection<Jid> publishers) {
             this.publishers = publishers;
             return this;
         }
@@ -351,12 +373,17 @@ public final class PubSubMetaDataForm {
             return this;
         }
 
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
         /**
          * Builds the meta data form.
          *
          * @return The meta data form.
          */
-        public PubSubMetaDataForm build() {
+        public NodeMetaData build() {
             List<DataForm.Field> fields = new ArrayList<>();
 
             if (contacts != null && !contacts.isEmpty()) {
@@ -377,10 +404,10 @@ public final class PubSubMetaDataForm {
             if (numberOfSubscribers != null) {
                 fields.add(DataForm.Field.builder().var(NUM_SUBSCRIBERS).value(numberOfSubscribers).build());
             }
-            if (owners != null) {
+            if (owners != null && !owners.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(OWNER).valuesJid(owners).build());
             }
-            if (publishers != null) {
+            if (publishers != null && !publishers.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(PUBLISHER).valuesJid(publishers).build());
             }
             if (title != null) {
@@ -390,12 +417,7 @@ public final class PubSubMetaDataForm {
                 fields.add(DataForm.Field.builder().var(TYPE).value(payloadType).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.RESULT);
-            return new PubSubMetaDataForm(new DataForm(this));
-        }
-
-        @Override
-        protected Builder self() {
-            return this;
+            return new NodeMetaData(new DataForm(this));
         }
     }
 }

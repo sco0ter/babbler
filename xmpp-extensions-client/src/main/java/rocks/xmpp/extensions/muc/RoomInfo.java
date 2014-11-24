@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.muc;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.muc.model.MucFeature;
-import rocks.xmpp.extensions.muc.model.RoomInfoForm;
 
 import java.net.URL;
 import java.util.Collections;
@@ -47,12 +46,12 @@ public final class RoomInfo {
 
     private final Set<MucFeature> features;
 
-    private final RoomInfoForm roomInfoForm;
+    private final rocks.xmpp.extensions.muc.model.RoomInfo roomInfo;
 
-    public RoomInfo(Identity identity, Set<MucFeature> features, RoomInfoForm roomInfoForm) {
+    public RoomInfo(Identity identity, Set<MucFeature> features, rocks.xmpp.extensions.muc.model.RoomInfo roomInfo) {
         this.identity = identity;
         this.features = features;
-        this.roomInfoForm = roomInfoForm;
+        this.roomInfo = roomInfo;
     }
 
     /**
@@ -79,8 +78,8 @@ public final class RoomInfo {
      * @return The maximum number of history messages returned by the room.
      */
     public int getMaxHistoryMessages() {
-        if (roomInfoForm != null) {
-            return roomInfoForm.getMaxHistoryMessages();
+        if (roomInfo != null) {
+            return roomInfo.getMaxHistoryMessages();
         }
         return 0;
     }
@@ -91,8 +90,8 @@ public final class RoomInfo {
      * @return The contact addresses.
      */
     public List<Jid> getContacts() {
-        if (roomInfoForm != null) {
-            return roomInfoForm.getContacts();
+        if (roomInfo != null) {
+            return roomInfo.getContacts();
         }
         return Collections.emptyList();
     }
@@ -103,8 +102,8 @@ public final class RoomInfo {
      * @return The description.
      */
     public String getDescription() {
-        if (roomInfoForm != null) {
-            return roomInfoForm.getDescription();
+        if (roomInfo != null) {
+            return roomInfo.getDescription();
         }
         return null;
     }
@@ -115,8 +114,8 @@ public final class RoomInfo {
      * @return The language.
      */
     public String getLanguage() {
-        if (roomInfoForm != null) {
-            return roomInfoForm.getLanguage();
+        if (roomInfo != null) {
+            return roomInfo.getLanguage();
         }
         return null;
     }
@@ -132,8 +131,8 @@ public final class RoomInfo {
      * @return The LDAP group.
      */
     public String getLdapGroup() {
-        if (roomInfoForm != null) {
-            return roomInfoForm.getLdapGroup();
+        if (roomInfo != null) {
+            return roomInfo.getLdapGroup();
         }
         return null;
     }
@@ -144,8 +143,8 @@ public final class RoomInfo {
      * @return The URL.
      */
     public URL getLogs() {
-        if (roomInfoForm != null) {
-            return roomInfoForm.getLogs();
+        if (roomInfo != null) {
+            return roomInfo.getLogs();
         }
         return null;
     }
@@ -156,8 +155,8 @@ public final class RoomInfo {
      * @return The number of occupants.
      */
     public int getCurrentNumberOfOccupants() {
-        if (roomInfoForm != null) {
-            return roomInfoForm.getCurrentNumberOfOccupants();
+        if (roomInfo != null) {
+            return roomInfo.getCurrentNumberOfOccupants();
         }
         return 0;
     }
@@ -168,8 +167,8 @@ public final class RoomInfo {
      * @return The topic.
      */
     public String getSubject() {
-        if (roomInfoForm != null) {
-            return roomInfoForm.getSubject();
+        if (roomInfo != null) {
+            return roomInfo.getSubject();
         }
         return null;
     }
@@ -180,6 +179,6 @@ public final class RoomInfo {
      * @return Whether the room subject can be modified by participants.
      */
     public boolean isChangeSubjectAllowed() {
-        return roomInfoForm != null && roomInfoForm.isChangeSubjectAllowed();
+        return roomInfo != null && roomInfo.isChangeSubjectAllowed();
     }
 }

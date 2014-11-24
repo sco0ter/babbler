@@ -36,24 +36,26 @@ import java.util.List;
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>
  * {@code
- * RequestVoiceForm requestVoiceForm = new RequestVoiceForm(dataForm);
+ * RequestVoice requestVoice = new RequestVoice(dataForm);
  * }
  * </pre>
  * To build a form:
  * <pre>
- * RequestVoiceForm requestVoiceForm = RequestVoiceForm.builder()
+ * {@code
+ * RequestVoice requestVoice = RequestVoice.builder()
  *     .jid(Jid.valueOf("hag66@shakespeare.lit/pda"))
  *     .role(Role.PARTICIPANT)
  *     .roomNick("thirdwitch")
  *     .allowRequest(true)
  *     .build();
+ * }
  * </pre>
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-request">15.5.2 muc#request FORM_TYPE</a>
  */
-public final class RequestVoiceForm {
+public final class RequestVoice {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/muc#request";
 
@@ -84,7 +86,7 @@ public final class RequestVoiceForm {
      *
      * @param dataForm The underlying data form.
      */
-    public RequestVoiceForm(DataForm dataForm) {
+    public RequestVoice(DataForm dataForm) {
         this.dataForm = dataForm;
     }
 
@@ -216,7 +218,7 @@ public final class RequestVoiceForm {
          *
          * @return The request voice form.
          */
-        public RequestVoiceForm build() {
+        public RequestVoice build() {
             List<DataForm.Field> fields = new ArrayList<>();
             if (role != null) {
                 fields.add(DataForm.Field.builder().var(ROLE).value(role.name().toLowerCase()).build());
@@ -231,7 +233,7 @@ public final class RequestVoiceForm {
                 fields.add(DataForm.Field.builder().var(REQUEST_ALLOW).value(allowRequest).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
-            return new RequestVoiceForm(new DataForm(this));
+            return new RequestVoice(new DataForm(this));
         }
     }
 }

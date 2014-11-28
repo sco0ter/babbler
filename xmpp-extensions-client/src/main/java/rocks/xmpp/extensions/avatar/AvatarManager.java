@@ -53,8 +53,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -355,38 +364,41 @@ public final class AvatarManager extends ExtensionManager {
         try {
             // Let's see, if there's a stored image already.
             String hash = userHashes.get(contact);
-            if (hash != null) {
-                byte[] imageData = loadFromCache(hash);
-                if (imageData != null) {
-                    avatar = imageData;
-                }
-            }
-            if (avatar == null) {
-                // If there's no avatar for that user, create an empty avatar and load it.
-                avatar = new byte[0];
-                hash = "";
-                VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
-
-                // Load the vCard for that user
-                VCard vCard;
-                if (contact.equals(xmppSession.getConnectedResource().asBareJid())) {
-                    vCard = vCardManager.getVCard();
-                } else {
-                    vCard = vCardManager.getVCard(contact);
-                }
-                if (vCard != null) {
-                    // And check if it has a photo.
-                    VCard.Image image = vCard.getPhoto();
-                    if (image != null && image.getValue() != null) {
-                        hash = XmppUtils.hash(image.getValue());
-                        if (hash != null) {
-                            avatar = image.getValue();
-                        }
+            // "" means, the user is known to have no avatar. Therefore don't try to load anything.
+            if (!"".equals(hash)) {
+                if (hash != null) {
+                    byte[] imageData = loadFromCache(hash);
+                    if (imageData != null) {
+                        avatar = imageData;
                     }
                 }
-                userHashes.put(contact, hash);
-                if (!Arrays.equals(avatar, new byte[0])) {
-                    storeToCache(hash, avatar);
+                if (avatar == null) {
+                    // If there's no avatar for that user, create an empty avatar and load it.
+                    avatar = new byte[0];
+                    hash = "";
+                    VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
+
+                    // Load the vCard for that user
+                    VCard vCard;
+                    if (contact.equals(xmppSession.getConnectedResource().asBareJid())) {
+                        vCard = vCardManager.getVCard();
+                    } else {
+                        vCard = vCardManager.getVCard(contact);
+                    }
+                    if (vCard != null) {
+                        // And check if it has a photo.
+                        VCard.Image image = vCard.getPhoto();
+                        if (image != null && image.getValue() != null) {
+                            hash = XmppUtils.hash(image.getValue());
+                            if (hash != null) {
+                                avatar = image.getValue();
+                            }
+                        }
+                    }
+                    userHashes.put(contact, hash);
+                    if (!Arrays.equals(avatar, new byte[0])) {
+                        storeToCache(hash, avatar);
+                    }
                 }
             }
             return avatar;

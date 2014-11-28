@@ -153,13 +153,13 @@ public final class BoshConnection extends Connection {
             switch (httpCode) {
                 case HttpURLConnection.HTTP_BAD_REQUEST:
                     // Superseded by bad-request
-                    throw new BoshException(Body.Condition.BAD_REQUEST);
+                    throw new BoshException(Body.Condition.BAD_REQUEST, httpCode);
                 case HttpURLConnection.HTTP_FORBIDDEN:
                     // Superseded by policy-violation
-                    throw new BoshException(Body.Condition.POLICY_VIOLATION);
+                    throw new BoshException(Body.Condition.POLICY_VIOLATION, httpCode);
                 case HttpURLConnection.HTTP_NOT_FOUND:
                     // Superseded by item-not-found
-                    throw new BoshException(Body.Condition.ITEM_NOT_FOUND);
+                    throw new BoshException(Body.Condition.ITEM_NOT_FOUND, httpCode);
                 default:
                     throw new BoshException(Body.Condition.UNDEFINED_CONDITION, httpCode);
             }

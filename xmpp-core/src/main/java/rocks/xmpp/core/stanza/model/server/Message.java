@@ -41,8 +41,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(propOrder = {"from", "id", "to", "type", "body", "subject", "thread", "extensions", "error"})
 public final class Message extends AbstractMessage implements ServerStreamElement {
 
-    @SuppressWarnings("unused")
-    private Message() {
+    public Message() {
     }
 
     /**

@@ -235,7 +235,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     @Override
     public final <T> T getExtension(Class<T> type) {
         for (Object extension : extensions) {
-            if (extension.getClass() == type) {
+            if (type.isAssignableFrom(extension.getClass())) {
                 return (T) extension;
             }
         }

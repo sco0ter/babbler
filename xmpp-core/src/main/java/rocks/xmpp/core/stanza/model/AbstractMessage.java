@@ -318,7 +318,7 @@ public abstract class AbstractMessage extends Stanza {
     @Override
     public final <T> T getExtension(Class<T> type) {
         for (Object extension : extensions) {
-            if (extension.getClass() == type) {
+            if (type.isAssignableFrom(extension.getClass())) {
                 return (T) extension;
             }
         }

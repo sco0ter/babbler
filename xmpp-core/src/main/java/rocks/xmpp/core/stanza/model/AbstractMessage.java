@@ -27,7 +27,13 @@ package rocks.xmpp.core.stanza.model;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -448,6 +454,11 @@ public abstract class AbstractMessage extends Stanza {
         public void setText(String text) {
             this.text = text;
         }
+
+        @Override
+        public String toString() {
+            return text;
+        }
     }
 
     /**
@@ -528,6 +539,11 @@ public abstract class AbstractMessage extends Stanza {
         public void setText(String text) {
             this.text = text;
         }
+
+        @Override
+        public String toString() {
+            return text;
+        }
     }
 
     /**
@@ -546,6 +562,11 @@ public abstract class AbstractMessage extends Stanza {
         private String value;
 
         private Thread() {
+        }
+
+        @Override
+        public String toString() {
+            return value;
         }
     }
 }

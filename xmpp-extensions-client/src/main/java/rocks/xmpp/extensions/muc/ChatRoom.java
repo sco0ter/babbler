@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.Chat;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
@@ -81,7 +82,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ChatRoom {
+public final class ChatRoom extends Chat {
 
     private static final Logger logger = Logger.getLogger(ChatRoom.class.getName());
 
@@ -90,8 +91,6 @@ public final class ChatRoom {
     private final Set<SubjectChangeListener> subjectChangeListeners = new CopyOnWriteArraySet<>();
 
     private final Set<OccupantListener> occupantListeners = new CopyOnWriteArraySet<>();
-
-    private final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
 
     private final Map<String, Occupant> occupantMap = new HashMap<>();
 
@@ -264,16 +263,6 @@ public final class ChatRoom {
         }
     }
 
-    private void notifyMessageListeners(MessageEvent messageEvent) {
-        for (MessageListener messageListener : messageListeners) {
-            try {
-                messageListener.handle(messageEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
     private boolean isSelfPresence(Presence presence) {
         boolean isSelfPresence = false;
         MucUser mucUser = presence.getExtension(MucUser.class);
@@ -322,26 +311,6 @@ public final class ChatRoom {
      */
     public void removeSubjectChangeListener(SubjectChangeListener subjectChangeListener) {
         subjectChangeListeners.remove(subjectChangeListener);
-    }
-
-    /**
-     * Adds a message listener, which allows to listen for incoming messages in this room.
-     *
-     * @param messageListener The listener.
-     * @see #removeMessageListener(rocks.xmpp.core.stanza.MessageListener)
-     */
-    public void addMessageListener(MessageListener messageListener) {
-        messageListeners.add(messageListener);
-    }
-
-    /**
-     * Removes a previously added message listener.
-     *
-     * @param messageListener The listener.
-     * @see #addMessageListener(rocks.xmpp.core.stanza.MessageListener)
-     */
-    public void removeMessageListener(MessageListener messageListener) {
-        messageListeners.remove(messageListener);
     }
 
     /**

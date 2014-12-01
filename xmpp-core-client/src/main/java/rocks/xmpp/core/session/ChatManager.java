@@ -95,7 +95,7 @@ public final class ChatManager {
             @Override
             public void handle(MessageEvent e) {
                 Message message = e.getMessage();
-                if (message.getType() == Message.Type.CHAT && message.getBody() != null && !message.getBody().isEmpty()) {
+                if (message.getType() == Message.Type.CHAT) {
                     Jid chatPartner = e.isIncoming() ? message.getFrom() : message.getTo();
                     // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
                     // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).
@@ -118,7 +118,7 @@ public final class ChatManager {
                                 // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
                                 chatSession.chatPartner = message.getFrom();
                             }
-                            chatSession.notifyMessageListeners(message, e.isIncoming());
+                            chatSession.notifyMessageListeners(new MessageEvent(chatSession, message, e.isIncoming()));
                         }
                     }
                 }

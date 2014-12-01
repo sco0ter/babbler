@@ -205,7 +205,7 @@ public class ExtensionContext extends CoreContext {
                 AvatarData.class, AvatarMetadata.class,
 
                 // XEP-0085: Chat State Notifications
-                Active.class, Composing.class, Gone.class, Inactive.class, Paused.class,
+                ChatState.Active.class, ChatState.Composing.class, ChatState.Gone.class, ChatState.Inactive.class, ChatState.Paused.class,
 
                 // XEP-0092: Software Version
                 SoftwareVersion.class,

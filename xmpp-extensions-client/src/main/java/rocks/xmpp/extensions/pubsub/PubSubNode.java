@@ -33,11 +33,24 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
-import rocks.xmpp.extensions.pubsub.model.*;
+import rocks.xmpp.extensions.pubsub.model.Affiliation;
+import rocks.xmpp.extensions.pubsub.model.Item;
+import rocks.xmpp.extensions.pubsub.model.NodeConfiguration;
+import rocks.xmpp.extensions.pubsub.model.NodeMetaData;
+import rocks.xmpp.extensions.pubsub.model.NodeType;
+import rocks.xmpp.extensions.pubsub.model.PubSub;
+import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
+import rocks.xmpp.extensions.pubsub.model.PublishOptions;
+import rocks.xmpp.extensions.pubsub.model.SubscribeOptions;
+import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
@@ -394,7 +407,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
      */
     public String create(NodeConfiguration nodeConfiguration) throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withCreate(nodeId, nodeConfiguration.getDataForm())));
+        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withCreate(nodeId, nodeConfiguration != null ? nodeConfiguration.getDataForm() : null)));
         if (nodeId != null) {
             return nodeId;
         }

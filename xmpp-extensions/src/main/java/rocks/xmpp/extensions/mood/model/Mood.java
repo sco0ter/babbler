@@ -24,9 +24,11 @@
 
 package rocks.xmpp.extensions.mood.model;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * The implementation of the {@code <mood/>} element in the {@code http://jabber.org/protocol/mood} namespace.
@@ -130,7 +132,6 @@ public final class Mood {
     @XmlElement
     private String text;
 
-    @XmlJavaTypeAdapter(MoodAdapter.class)
     @XmlElements({@XmlElement(name = "afraid", type = Afraid.class),
             @XmlElement(name = "amazed", type = Amazed.class),
             @XmlElement(name = "angry", type = Angry.class),
@@ -255,1140 +256,1035 @@ public final class Mood {
     }
 
     /**
-     * Defines a mood value.
+     * An abstract base class for all possible mood values.
      */
-    public enum Value {
-        /**
-         * Impressed with fear or apprehension; in fear; apprehensive.
-         */
-        AFRAID(Afraid.class),
-        /**
-         * Astonished; confounded with fear, surprise or wonder.
-         */
-        AMAZED(Amazed.class),
+    public static abstract class Value {
 
-        /**
-         * Inclined to love; having a propensity to love, or to sexual enjoyment; loving, fond, affectionate, passionate, lustful, sexual, etc.
-         */
-        AMOROUS(Amorous.class),
-        /**
-         * Displaying or feeling anger, i.e., a strong feeling of displeasure, hostility or antagonism towards someone or something, usually combined with an urge to harm.
-         */
-        ANGRY(Angry.class),
-        /**
-         * To be disturbed or irritated, especially by continued or repeated acts.
-         */
-        ANNOYED(Annoyed.class),
-        /**
-         * Full of anxiety or disquietude; greatly concerned or solicitous, esp. respecting something future or unknown; being in painful suspense.
-         */
-        ANXIOUS(Anxious.class),
-        /**
-         * To be stimulated in one's feelings, especially to be sexually stimulated.
-         */
-        AROUSED(Aroused.class),
-        /**
-         * Feeling shame or guilt.
-         */
-        ASHAMED(Ashamed.class),
-        /**
-         * Suffering from boredom; uninterested, without attention.
-         */
-        BORED(Bored.class),
-        /**
-         * Strong in the face of fear; courageous.
-         */
-        BRAVE(Brave.class),
-        /**
-         * Peaceful, quiet.
-         */
-        CALM(Calm.class),
-        /**
-         * Taking care or caution; tentative.
-         */
-        CAUTIOUS(Cautious.class),
-        /**
-         * Feeling the sensation of coldness, especially to the point of discomfort.
-         */
-        COLD(Cold.class),
-        /**
-         * Feeling very sure of or positive about something, especially about one's own capabilities.
-         */
-        CONFIDENT(Confident.class),
-        /**
-         * Chaotic, jumbled or muddled.
-         */
-        CONFUSED(Confused.class),
-        /**
-         * Feeling introspective or thoughtful.
-         */
-        CONTEMPLATIVE(Contemplative.class),
-        /**
-         * Pleased at the satisfaction of a want or desire; satisfied.
-         */
-        CONTENTED(Contented.class),
-        /**
-         * Grouchy, irritable; easily upset.
-         */
-        CRANKY(Cranky.class),
-        /**
-         * Feeling out of control; feeling overly excited or enthusiastic.
-         */
-        CRAZY(Crazy.class),
-        /**
-         * Feeling original, expressive, or imaginative.
-         */
-        CREATIVE(Creative.class),
-        /**
-         * Inquisitive; tending to ask questions, investigate, or explore.
-         */
-        CURIOUS(Curious.class),
-        /**
-         * Feeling sad and dispirited.
-         */
-        DEJECTED(Dejected.class),
-        /**
-         * Severely despondent and unhappy.
-         */
-        DEPRESSED(Depressed.class),
-        /**
-         * Defeated of expectation or hope; let down.
-         */
-        DISAPPOINTED(Disappointed.class),
-        /**
-         * Filled with disgust; irritated and out of patience.
-         */
-        DISGUSTED(Disgusted.class),
-        /**
-         * Feeling a sudden or complete loss of courage in the face of trouble or danger.
-         */
-        DISMAYED(Dismayed.class),
-        /**
-         * Having one's attention diverted; preoccupied.
-         */
-        DISTRACTED(Distracted.class),
-        /**
-         * Having a feeling of shameful discomfort.
-         */
-        EMBARRASSED(Embarrassed.class),
-        /**
-         * Feeling pain by the excellence or good fortune of another.
-         */
-        ENVIOUS(Envious.class),
-        /**
-         * Having great enthusiasm.
-         */
-        EXCITED(Excited.class),
-        /**
-         * In the mood for flirting.
-         */
-        FLIRTATIOUS(Flirtatious.class),
-        /**
-         * Suffering from frustration; dissatisfied, agitated, or discontented because one is unable to perform an action or fulfill a desire.
-         */
-        FRUSTRATED(Frustrated.class),
-        /**
-         * Feeling appreciation or thanks.
-         */
-        GRATEFUL(Grateful.class),
-        /**
-         * Feeling very sad about something, especially something lost; mournful; sorrowful.
-         */
-        GRIEVING(Grieving.class),
-        /**
-         * Unhappy and irritable.
-         */
-        GRUMPY(Grumpy.class),
-        /**
-         * Feeling responsible for wrongdoing; feeling blameworthy.
-         */
-        GUILTY(Guilty.class),
-        /**
-         * Experiencing the effect of favourable fortune; having the feeling arising from the consciousness of well-being or of enjoyment; enjoying good of any kind, as peace, tranquillity, comfort; contented; joyous.
-         */
-        HAPPY(Happy.class),
-        /**
-         * Having a positive feeling, belief, or expectation that something wished for can or will happen.
-         */
-        HOPEFUL(Hopeful.class),
-        /**
-         * Feeling the sensation of heat, especially to the point of discomfort.
-         */
-        HOT(Hot.class),
-        /**
-         * Having or showing a modest or low estimate of one's own importance; feeling lowered in dignity or importance.
-         */
-        HUMBLED(Humbled.class),
-        /**
-         * Feeling deprived of dignity or self-respect.
-         */
-        HUMILIATED(Humiliated.class),
-        /**
-         * Having a physical need for food.
-         */
-        HUNGRY(Hungry.class),
-        /**
-         * Wounded, injured, or pained, whether physically or emotionally.
-         */
-        HURT(Hurt.class),
-        /**
-         * Favourably affected by something or someone.
-         */
-        IMPRESSED(Impressed.class),
-        /**
-         * Feeling amazement at something or someone; or feeling a combination of fear and reverence.
-         */
-        IN_AWE(InAwe.class),
-        /**
-         * Feeling strong affection, care, liking, or attraction..
-         */
-        IN_LOVE(InLove.class),
-        /**
-         * Showing anger or indignation, especially at something unjust or wrong.
-         */
-        INDIGNANT(Indignant.class),
-        /**
-         * Showing great attention to something or someone; having or showing interest.
-         */
-        INTERESTED(Interested.class),
-        /**
-         * Under the influence of alcohol; drunk.
-         */
-        INTOXICATED(Intoxicated.class),
-        /**
-         * Feeling as if one cannot be defeated, overcome or denied.
-         */
-        INVINCIBLE(Invincible.class),
-        /**
-         * Fearful of being replaced in position or affection.
-         */
-        JEALOUS(Jealous.class),
-        /**
-         * Feeling isolated, empty, or abandoned.
-         */
-        LONELY(Lonely.class),
-        /**
-         * Unable to find one's way, either physically or emotionally.
-         */
-        LOST(Lost.class),
-        /**
-         * Feeling as if one will be favored by luck.
-         */
-        LUCKY(Lucky.class),
-        /**
-         * Causing or intending to cause intentional harm; bearing ill will towards another; cruel; malicious.
-         */
-        MEAN(Mean.class),
-        /**
-         * Given to sudden or frequent changes of mind or feeling; temperamental.
-         */
-        MOODY(Moody.class),
-        /**
-         * Easily agitated or alarmed; apprehensive or anxious.
-         */
-        NERVOUS(Nervous.class),
-        /**
-         * Not having a strong mood or emotional state.
-         */
-        NEUTRAL(Neutral.class),
-        /**
-         * Feeling emotionally hurt, displeased, or insulted.
-         */
-        OFFENDED(Offended.class),
-        /**
-         * Feeling resentful anger caused by an extremely violent or vicious attack, or by an offensive, immoral, or indecent act.
-         */
-        OUTRAGED(Outraged.class),
-        /**
-         * Interested in play; fun, recreational, unserious, lighthearted; joking, silly.
-         */
-        PLAYFUL(Playful.class),
-        /**
-         * Feeling a sense of one's own worth or accomplishment.
-         */
-        PROUD(Proud.class),
-        /**
-         * Having an easy-going mood; not stressed; calm.
-         */
-        RELAXED(Relaxed.class),
-        /**
-         * Feeling uplifted because of the removal of stress or discomfort.
-         */
-        RELIEVED(Relieved.class),
-        /**
-         * Feeling regret or sadness for doing something wrong.
-         */
-        REMORSEFUL(Remorseful.class),
-        /**
-         * Without rest; unable to be still or quiet; uneasy; continually moving.
-         */
-        RESTLESS(Restless.class),
-        /**
-         * Feeling sorrow; sorrowful, mournful.
-         */
-        SAD(Sad.class),
-        /**
-         * Mocking and ironical.
-         */
-        SARCASTIC(Sarcastic.class),
-        /**
-         * Pleased at the fulfillment of a need or desire.
-         */
-        SATISFIED(Satisfied.class),
-        /**
-         * Without humor or expression of happiness; grave in manner or disposition; earnest; thoughtful; solemn.
-         */
-        SERIOUS(Serious.class),
-        /**
-         * Surprised, startled, confused, or taken aback.
-         */
-        SHOCKED(Shocked.class),
-        /**
-         * Feeling easily frightened or scared; timid; reserved or coy.
-         */
-        SHY(Shy.class),
-        /**
-         * Feeling in poor health; ill.
-         */
-        SICK(Sick.class),
-        /**
-         * Feeling the need for sleep.
-         */
-        SLEEPY(Sleepy.class),
-        /**
-         * Acting without planning; natural; impulsive.
-         */
-        SPONTANEOUS(Spontaneous.class),
-        /**
-         * Suffering emotional pressure.
-         */
-        STRESSED(Stressed.class),
-        /**
-         * Capable of producing great physical force; or, emotionally forceful, able, determined, unyielding.
-         */
-        STRONG(Strong.class),
-        /**
-         * Experiencing a feeling caused by something unexpected.
-         */
-        SURPRISED(Surprised.class),
-        /**
-         * Showing appreciation or gratitude.
-         */
-        THANKFUL(Thankful.class),
-        /**
-         * Feeling the need to drink.
-         */
-        THIRSTY(Thirsty.class),
-        /**
-         * In need of rest or sleep.
-         */
-        TIRED(Tired.class),
-        /**
-         * Feeling any emotion not defined here
-         */
-        UNDEFINED(Undefined.class),
-        /**
-         * Lacking in force or ability, either physical or emotional.
-         */
-        WEAK(Weak.class),
-        /**
-         * Thinking about unpleasant things that have happened or that might happen; feeling afraid and unhappy.
-         */
-        WORRIED(Worried.class);
+        @XmlAnyElement(lax = true)
+        private Object specificMood;
 
-        private final Class<? extends AbstractValue> valueClass;
-
-        private Value(Class<? extends AbstractValue> valueClass) {
-            this.valueClass = valueClass;
+        private Value() {
         }
 
-    }
-
-    private static abstract class AbstractValue {
-
-        @XmlTransient
-        private Value value;
-
-        private AbstractValue() {
+        private Value(Object specificMood) {
+            this.specificMood = specificMood;
         }
 
-        private AbstractValue(Value value) {
-            this.value = value;
+        /**
+         * Gets the specific mood value.
+         *
+         * @return The specific mood.
+         */
+        public Object getSpecificMood() {
+            return specificMood;
         }
     }
 
     /**
      * Impressed with fear or apprehension; in fear; apprehensive.
      */
-    static final class Afraid extends AbstractValue {
-        Afraid() {
-            super(Value.AFRAID);
+    public static final class Afraid extends Value {
+        public Afraid() {
+        }
+
+        public Afraid(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Astonished; confounded with fear, surprise or wonder.
      */
-    static final class Amazed extends AbstractValue {
-        Amazed() {
-            super(Value.AMAZED);
+    public static final class Amazed extends Value {
+        public Amazed() {
+        }
+
+        public Amazed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Inclined to love; having a propensity to love, or to sexual enjoyment; loving, fond, affectionate, passionate, lustful, sexual, etc.
      */
-    static final class Amorous extends AbstractValue {
-        Amorous() {
-            super(Value.AMOROUS);
+    public static final class Amorous extends Value {
+        public Amorous() {
+        }
+
+        public Amorous(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Displaying or feeling anger, i.e., a strong feeling of displeasure, hostility or antagonism towards someone or something, usually combined with an urge to harm.
      */
-    static final class Angry extends AbstractValue {
-        Angry() {
-            super(Value.ANGRY);
+    public static final class Angry extends Value {
+        public Angry() {
+        }
+
+        public Angry(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * To be disturbed or irritated, especially by continued or repeated acts.
      */
-    static final class Annoyed extends AbstractValue {
-        Annoyed() {
-            super(Value.ANNOYED);
+    public static final class Annoyed extends Value {
+        public Annoyed() {
+        }
+
+        public Annoyed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Full of anxiety or disquietude; greatly concerned or solicitous, esp. respecting something future or unknown; being in painful suspense.
      */
-    static final class Anxious extends AbstractValue {
-        Anxious() {
-            super(Value.ANXIOUS);
+    public static final class Anxious extends Value {
+        public Anxious() {
+        }
+
+        public Anxious(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * To be stimulated in one's feelings, especially to be sexually stimulated.
      */
-    static final class Aroused extends AbstractValue {
-        Aroused() {
-            super(Value.AROUSED);
+    public static final class Aroused extends Value {
+        public Aroused() {
+        }
+
+        public Aroused(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * To be stimulated in one's feelings, especially to be sexually stimulated.
      */
-    static final class Ashamed extends AbstractValue {
-        Ashamed() {
-            super(Value.ASHAMED);
+    public static final class Ashamed extends Value {
+        public Ashamed() {
+        }
+
+        public Ashamed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Suffering from boredom; uninterested, without attention.
      */
-    static final class Bored extends AbstractValue {
-        Bored() {
-            super(Value.BORED);
+    public static final class Bored extends Value {
+        public Bored() {
+        }
+
+        public Bored(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Strong in the face of fear; courageous.
      */
-    static final class Brave extends AbstractValue {
-        Brave() {
-            super(Value.BRAVE);
+    public static final class Brave extends Value {
+        public Brave() {
+        }
+
+        public Brave(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Peaceful, quiet.
      */
-    static final class Calm extends AbstractValue {
-        Calm() {
-            super(Value.CALM);
+    public static final class Calm extends Value {
+        public Calm() {
+        }
+
+        public Calm(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Taking care or caution; tentative.
      */
-    static final class Cautious extends AbstractValue {
-        Cautious() {
-            super(Value.CAUTIOUS);
+    public static final class Cautious extends Value {
+        public Cautious() {
+        }
+
+        public Cautious(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling the sensation of coldness, especially to the point of discomfort.
      */
-    static final class Cold extends AbstractValue {
-        Cold() {
-            super(Value.COLD);
+    public static final class Cold extends Value {
+        public Cold() {
+        }
+
+        public Cold(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling very sure of or positive about something, especially about one's own capabilities.
      */
-    static final class Confident extends AbstractValue {
-        Confident() {
-            super(Value.CONFIDENT);
+    public static final class Confident extends Value {
+        public Confident() {
+        }
+
+        public Confident(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Chaotic, jumbled or muddled.
      */
-    static final class Confused extends AbstractValue {
-        Confused() {
-            super(Value.CONFUSED);
+    public static final class Confused extends Value {
+        public Confused() {
+        }
+
+        public Confused(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling introspective or thoughtful.
      */
-    static final class Contemplative extends AbstractValue {
-        Contemplative() {
-            super(Value.CONTEMPLATIVE);
+    public static final class Contemplative extends Value {
+        public Contemplative() {
+        }
+
+        public Contemplative(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Pleased at the satisfaction of a want or desire; satisfied.
      */
-    static final class Contented extends AbstractValue {
-        Contented() {
-            super(Value.CONTENTED);
+    public static final class Contented extends Value {
+        public Contented() {
+        }
+
+        public Contented(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Grouchy, irritable; easily upset.
      */
-    static final class Cranky extends AbstractValue {
-        Cranky() {
-            super(Value.CRANKY);
+    public static final class Cranky extends Value {
+        public Cranky() {
+        }
+
+        public Cranky(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling out of control; feeling overly excited or enthusiastic.
      */
-    static final class Crazy extends AbstractValue {
-        Crazy() {
-            super(Value.CRAZY);
+    public static final class Crazy extends Value {
+        public Crazy() {
+        }
+
+        public Crazy(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling original, expressive, or imaginative.
      */
-    static final class Creative extends AbstractValue {
-        Creative() {
-            super(Value.CREATIVE);
+    public static final class Creative extends Value {
+        public Creative() {
+        }
+
+        public Creative(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Inquisitive; tending to ask questions, investigate, or explore.
      */
-    static final class Curious extends AbstractValue {
-        Curious() {
-            super(Value.CURIOUS);
+    public static final class Curious extends Value {
+        public Curious() {
+        }
+
+        public Curious(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling sad and dispirited.
      */
-    static final class Dejected extends AbstractValue {
-        Dejected() {
-            super(Value.DEJECTED);
+    public static final class Dejected extends Value {
+        public Dejected() {
+        }
+
+        public Dejected(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Severely despondent and unhappy.
      */
-    static final class Depressed extends AbstractValue {
-        Depressed() {
-            super(Value.DEPRESSED);
+    public static final class Depressed extends Value {
+        public Depressed() {
+        }
+
+        public Depressed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Defeated of expectation or hope; let down.
      */
-    static final class Disappointed extends AbstractValue {
-        Disappointed() {
-            super(Value.DISAPPOINTED);
+    public static final class Disappointed extends Value {
+        public Disappointed() {
+        }
+
+        public Disappointed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Filled with disgust; irritated and out of patience.
      */
-    static final class Disgusted extends AbstractValue {
-        Disgusted() {
-            super(Value.DISGUSTED);
+    public static final class Disgusted extends Value {
+        public Disgusted() {
+        }
+
+        public Disgusted(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling a sudden or complete loss of courage in the face of trouble or danger.
      */
-    static final class Dismayed extends AbstractValue {
-        Dismayed() {
-            super(Value.DISMAYED);
+    public static final class Dismayed extends Value {
+        public Dismayed() {
+        }
+
+        public Dismayed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Having one's attention diverted; preoccupied.
      */
-    static final class Distracted extends AbstractValue {
-        Distracted() {
-            super(Value.DISTRACTED);
+    public static final class Distracted extends Value {
+        public Distracted() {
+        }
+
+        public Distracted(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Having a feeling of shameful discomfort.
      */
-    static final class Embarrassed extends AbstractValue {
-        Embarrassed() {
-            super(Value.EMBARRASSED);
+    public static final class Embarrassed extends Value {
+        public Embarrassed() {
+        }
+
+        public Embarrassed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling pain by the excellence or good fortune of another.
      */
-    static final class Envious extends AbstractValue {
-        Envious() {
-            super(Value.ENVIOUS);
+    public static final class Envious extends Value {
+        public Envious() {
+        }
+
+        public Envious(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Having great enthusiasm.
      */
-    static final class Excited extends AbstractValue {
-        Excited() {
-            super(Value.EXCITED);
+    public static final class Excited extends Value {
+        public Excited() {
+        }
+
+        public Excited(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * In the mood for flirting.
      */
-    static final class Flirtatious extends AbstractValue {
-        Flirtatious() {
-            super(Value.FLIRTATIOUS);
+    public static final class Flirtatious extends Value {
+        public Flirtatious() {
+        }
+
+        public Flirtatious(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Suffering from frustration; dissatisfied, agitated, or discontented because one is unable to perform an action or fulfill a desire.
      */
-    static final class Frustrated extends AbstractValue {
-        Frustrated() {
-            super(Value.FRUSTRATED);
+    public static final class Frustrated extends Value {
+        public Frustrated() {
+        }
+
+        public Frustrated(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling appreciation or thanks.
      */
-    static final class Grateful extends AbstractValue {
-        Grateful() {
-            super(Value.GRATEFUL);
+    public static final class Grateful extends Value {
+        public Grateful() {
+        }
+
+        public Grateful(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling very sad about something, especially something lost; mournful; sorrowful.
      */
-    static final class Grieving extends AbstractValue {
-        Grieving() {
-            super(Value.GRIEVING);
+    public static final class Grieving extends Value {
+        public Grieving() {
+        }
+
+        public Grieving(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Unhappy and irritable.
      */
-    static final class Grumpy extends AbstractValue {
-        Grumpy() {
-            super(Value.GRUMPY);
+    public static final class Grumpy extends Value {
+        public Grumpy() {
+        }
+
+        public Grumpy(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling responsible for wrongdoing; feeling blameworthy.
      */
-    static final class Guilty extends AbstractValue {
-        Guilty() {
-            super(Value.GUILTY);
+    public static final class Guilty extends Value {
+        public Guilty() {
+        }
+
+        public Guilty(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Experiencing the effect of favourable fortune; having the feeling arising from the consciousness of well-being or of enjoyment; enjoying good of any kind, as peace, tranquillity, comfort; contented; joyous.
      */
-    static final class Happy extends AbstractValue {
-        Happy() {
-            super(Value.HAPPY);
+    public static final class Happy extends Value {
+        public Happy() {
+        }
+
+        public Happy(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Having a positive feeling, belief, or expectation that something wished for can or will happen.
      */
-    static final class Hopeful extends AbstractValue {
-        Hopeful() {
-            super(Value.HOPEFUL);
+    public static final class Hopeful extends Value {
+        public Hopeful() {
+        }
+
+        public Hopeful(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling the sensation of heat, especially to the point of discomfort.
      */
-    static final class Hot extends AbstractValue {
-        Hot() {
-            super(Value.HOT);
+    public static final class Hot extends Value {
+        public Hot() {
+        }
+
+        public Hot(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Having or showing a modest or low estimate of one's own importance; feeling lowered in dignity or importance.
      */
-    static final class Humbled extends AbstractValue {
-        Humbled() {
-            super(Value.HUMBLED);
+    public static final class Humbled extends Value {
+        public Humbled() {
+        }
+
+        public Humbled(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling deprived of dignity or self-respect.
      */
-    static final class Humiliated extends AbstractValue {
-        Humiliated() {
-            super(Value.HUMILIATED);
+    public static final class Humiliated extends Value {
+        public Humiliated() {
+        }
+
+        public Humiliated(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Having a physical need for food.
      */
-    static final class Hungry extends AbstractValue {
-        Hungry() {
-            super(Value.HUNGRY);
+    public static final class Hungry extends Value {
+        public Hungry() {
+        }
+
+        public Hungry(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Wounded, injured, or pained, whether physically or emotionally.
      */
-    static final class Hurt extends AbstractValue {
-        Hurt() {
-            super(Value.HURT);
+    public static final class Hurt extends Value {
+        public Hurt() {
+        }
+
+        public Hurt(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Favourably affected by something or someone.
      */
-    static final class Impressed extends AbstractValue {
-        Impressed() {
-            super(Value.IMPRESSED);
+    public static final class Impressed extends Value {
+        public Impressed() {
+        }
+
+        public Impressed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling amazement at something or someone; or feeling a combination of fear and reverence.
      */
-    static final class InAwe extends AbstractValue {
-        InAwe() {
-            super(Value.IN_AWE);
+    public static final class InAwe extends Value {
+        public InAwe() {
+        }
+
+        public InAwe(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling strong affection, care, liking, or attraction..
      */
-    static final class InLove extends AbstractValue {
-        InLove() {
-            super(Value.IN_LOVE);
+    public static final class InLove extends Value {
+        public InLove() {
+        }
+
+        public InLove(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Showing anger or indignation, especially at something unjust or wrong.
      */
-    static final class Indignant extends AbstractValue {
-        Indignant() {
-            super(Value.INDIGNANT);
+    public static final class Indignant extends Value {
+        public Indignant() {
+        }
+
+        public Indignant(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Showing great attention to something or someone; having or showing interest.
      */
-    static final class Interested extends AbstractValue {
-        Interested() {
-            super(Value.INTERESTED);
+    public static final class Interested extends Value {
+        public Interested() {
+        }
+
+        public Interested(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Under the influence of alcohol; drunk.
      */
-    static final class Intoxicated extends AbstractValue {
-        Intoxicated() {
-            super(Value.INTOXICATED);
+    public static final class Intoxicated extends Value {
+        public Intoxicated() {
+        }
+
+        public Intoxicated(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling as if one cannot be defeated, overcome or denied.
      */
-    static final class Invincible extends AbstractValue {
-        Invincible() {
-            super(Value.INVINCIBLE);
+    public static final class Invincible extends Value {
+        public Invincible() {
+        }
+
+        public Invincible(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Fearful of being replaced in position or affection.
      */
-    static final class Jealous extends AbstractValue {
-        Jealous() {
-            super(Value.JEALOUS);
+    public static final class Jealous extends Value {
+        public Jealous() {
+        }
+
+        public Jealous(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling isolated, empty, or abandoned.
      */
-    static final class Lonely extends AbstractValue {
-        Lonely() {
-            super(Value.LONELY);
+    public static final class Lonely extends Value {
+        public Lonely() {
+        }
+
+        public Lonely(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Unable to find one's way, either physically or emotionally.
      */
-    static final class Lost extends AbstractValue {
-        Lost() {
-            super(Value.LOST);
+    public static final class Lost extends Value {
+        public Lost() {
+        }
+
+        public Lost(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling as if one will be favored by luck.
      */
-    static final class Lucky extends AbstractValue {
-        Lucky() {
-            super(Value.LUCKY);
+    public static final class Lucky extends Value {
+        public Lucky() {
+        }
+
+        public Lucky(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Causing or intending to cause intentional harm; bearing ill will towards another; cruel; malicious.
      */
-    static final class Mean extends AbstractValue {
-        Mean() {
-            super(Value.MEAN);
+    public static final class Mean extends Value {
+        public Mean() {
+        }
+
+        public Mean(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Given to sudden or frequent changes of mind or feeling; temperamental.
      */
-    static final class Moody extends AbstractValue {
-        Moody() {
-            super(Value.MOODY);
+    public static final class Moody extends Value {
+        public Moody() {
+        }
+
+        public Moody(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Easily agitated or alarmed; apprehensive or anxious.
      */
-    static final class Nervous extends AbstractValue {
-        Nervous() {
-            super(Value.NERVOUS);
+    public static final class Nervous extends Value {
+        public Nervous() {
+        }
+
+        public Nervous(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Not having a strong mood or emotional state.
      */
-    static final class Neutral extends AbstractValue {
-        Neutral() {
-            super(Value.NEUTRAL);
+    public static final class Neutral extends Value {
+        public Neutral() {
+        }
+
+        public Neutral(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling emotionally hurt, displeased, or insulted.
      */
-    static final class Offended extends AbstractValue {
-        Offended() {
-            super(Value.OFFENDED);
+    public static final class Offended extends Value {
+        public Offended() {
+        }
+
+        public Offended(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling resentful anger caused by an extremely violent or vicious attack, or by an offensive, immoral, or indecent act.
      */
-    static final class Outraged extends AbstractValue {
-        Outraged() {
-            super(Value.OUTRAGED);
+    public static final class Outraged extends Value {
+        public Outraged() {
+        }
+
+        public Outraged(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Interested in play; fun, recreational, unserious, lighthearted; joking, silly.
      */
-    static final class Playful extends AbstractValue {
-        Playful() {
-            super(Value.PLAYFUL);
+    public static final class Playful extends Value {
+        public Playful() {
+        }
+
+        public Playful(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling a sense of one's own worth or accomplishment.
      */
-    static final class Proud extends AbstractValue {
-        Proud() {
-            super(Value.PROUD);
+    public static final class Proud extends Value {
+        public Proud() {
+        }
+
+        public Proud(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Having an easy-going mood; not stressed; calm.
      */
-    static final class Relaxed extends AbstractValue {
-        Relaxed() {
-            super(Value.RELAXED);
+    public static final class Relaxed extends Value {
+        public Relaxed() {
+        }
+
+        public Relaxed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling uplifted because of the removal of stress or discomfort.
      */
-    static final class Relieved extends AbstractValue {
-        Relieved() {
-            super(Value.RELIEVED);
+    public static final class Relieved extends Value {
+        public Relieved() {
+        }
+
+        public Relieved(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling regret or sadness for doing something wrong.
      */
-    static final class Remorseful extends AbstractValue {
-        Remorseful() {
-            super(Value.REMORSEFUL);
+    public static final class Remorseful extends Value {
+        public Remorseful() {
+        }
+
+        public Remorseful(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Without rest; unable to be still or quiet; uneasy; continually moving.
      */
-    static final class Restless extends AbstractValue {
-        Restless() {
-            super(Value.RESTLESS);
+    public static final class Restless extends Value {
+        public Restless() {
+        }
+
+        public Restless(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling sorrow; sorrowful, mournful.
      */
-    static final class Sad extends AbstractValue {
-        Sad() {
-            super(Value.SAD);
+    public static final class Sad extends Value {
+        public Sad() {
+        }
+
+        public Sad(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Mocking and ironical.
      */
-    static final class Sarcastic extends AbstractValue {
-        Sarcastic() {
-            super(Value.SARCASTIC);
+    public static final class Sarcastic extends Value {
+        public Sarcastic() {
+        }
+
+        public Sarcastic(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Pleased at the fulfillment of a need or desire.
      */
-    static final class Satisfied extends AbstractValue {
-        Satisfied() {
-            super(Value.SATISFIED);
+    public static final class Satisfied extends Value {
+        public Satisfied() {
+        }
+
+        public Satisfied(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Without humor or expression of happiness; grave in manner or disposition; earnest; thoughtful; solemn.
      */
-    static final class Serious extends AbstractValue {
-        Serious() {
-            super(Value.SERIOUS);
+    public static final class Serious extends Value {
+        public Serious() {
+        }
+
+        public Serious(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Surprised, startled, confused, or taken aback.
      */
-    static final class Shocked extends AbstractValue {
-        Shocked() {
-            super(Value.SHOCKED);
+    public static final class Shocked extends Value {
+        public Shocked() {
+        }
+
+        public Shocked(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling easily frightened or scared; timid; reserved or coy.
      */
-    static final class Shy extends AbstractValue {
-        Shy() {
-            super(Value.SHY);
+    public static final class Shy extends Value {
+        public Shy() {
+        }
+
+        public Shy(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling in poor health; ill.
      */
-    static final class Sick extends AbstractValue {
-        Sick() {
-            super(Value.SICK);
+    public static final class Sick extends Value {
+        public Sick() {
+        }
+
+        public Sick(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling the need for sleep.
      */
-    static final class Sleepy extends AbstractValue {
-        Sleepy() {
-            super(Value.SLEEPY);
+    public static final class Sleepy extends Value {
+        public Sleepy() {
+        }
+
+        public Sleepy(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Acting without planning; natural; impulsive.
      */
-    static final class Spontaneous extends AbstractValue {
-        Spontaneous() {
-            super(Value.SPONTANEOUS);
+    public static final class Spontaneous extends Value {
+        public Spontaneous() {
+        }
+
+        public Spontaneous(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Suffering emotional pressure.
      */
-    static final class Stressed extends AbstractValue {
-        Stressed() {
-            super(Value.STRESSED);
+    public static final class Stressed extends Value {
+        public Stressed() {
+        }
+
+        public Stressed(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Capable of producing great physical force; or, emotionally forceful, able, determined, unyielding.
      */
-    static final class Strong extends AbstractValue {
-        Strong() {
-            super(Value.STRONG);
+    public static final class Strong extends Value {
+        public Strong() {
+        }
+
+        public Strong(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Experiencing a feeling caused by something unexpected.
      */
-    static final class Surprised extends AbstractValue {
-        Surprised() {
-            super(Value.SURPRISED);
+    public static final class Surprised extends Value {
+        public Surprised() {
+        }
+
+        public Surprised(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Showing appreciation or gratitude.
      */
-    static final class Thankful extends AbstractValue {
-        Thankful() {
-            super(Value.THANKFUL);
+    public static final class Thankful extends Value {
+        public Thankful() {
+        }
+
+        public Thankful(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling the need to drink.
      */
-    static final class Thirsty extends AbstractValue {
-        Thirsty() {
-            super(Value.THIRSTY);
+    public static final class Thirsty extends Value {
+        public Thirsty() {
+        }
+
+        public Thirsty(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * In need of rest or sleep.
      */
-    static final class Tired extends AbstractValue {
-        Tired() {
-            super(Value.TIRED);
+    public static final class Tired extends Value {
+        public Tired() {
+        }
+
+        public Tired(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Feeling any emotion.
      */
-    static final class Undefined extends AbstractValue {
-        Undefined() {
-            super(Value.UNDEFINED);
+    public static final class Undefined extends Value {
+        public Undefined() {
+        }
+
+        public Undefined(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Lacking in force or ability, either physical or emotional.
      */
-    static final class Weak extends AbstractValue {
-        Weak() {
-            super(Value.WEAK);
+    public static final class Weak extends Value {
+        public Weak() {
+        }
+
+        public Weak(Object specificMood) {
+            super(specificMood);
         }
     }
 
     /**
      * Thinking about unpleasant things that have happened or that might happen; feeling afraid and unhappy.
      */
-    static final class Worried extends AbstractValue {
-        Worried() {
-            super(Value.WORRIED);
-        }
-    }
-
-    private static class MoodAdapter extends XmlAdapter<AbstractValue, Value> {
-
-        @Override
-        public Value unmarshal(AbstractValue v) throws Exception {
-            if (v != null) {
-                return v.value;
-            }
-            return null;
+    public static final class Worried extends Value {
+        public Worried() {
         }
 
-        @Override
-        public AbstractValue marshal(Value v) throws Exception {
-            if (v != null) {
-                return v.valueClass.newInstance();
-            }
-            return null;
+        public Worried(Object specificMood) {
+            super(specificMood);
         }
     }
 }

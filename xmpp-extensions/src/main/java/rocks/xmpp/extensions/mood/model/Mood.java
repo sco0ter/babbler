@@ -129,6 +129,12 @@ import javax.xml.bind.annotation.XmlSeeAlso;
         Mood.Worried.class,
 })
 public final class Mood {
+
+    /**
+     * http://jabber.org/protocol/mood
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/mood";
+
     @XmlElement
     private String text;
 
@@ -214,7 +220,10 @@ public final class Mood {
             @XmlElement(name = "worried", type = Worried.class)})
     private Value value;
 
-    private Mood() {
+    /**
+     * Creates an empty mood, which indicates that no mood is used.
+     */
+    public Mood() {
     }
 
     /**

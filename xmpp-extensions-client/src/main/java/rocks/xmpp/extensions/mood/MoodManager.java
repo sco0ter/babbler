@@ -22,16 +22,34 @@
  * THE SOFTWARE.
  */
 
-/**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a>.
- * <p>
- * This specification defines a payload format for communicating information about user moods, such as whether a person is currently happy, sad, angy, or annoyed. The payload format is typically transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.
- * </p>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Mood.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.mood.model;
+package rocks.xmpp.extensions.mood;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.extensions.mood.model.Mood;
+import rocks.xmpp.extensions.pubsub.PubSubManager;
+
+/**
+ * @author Christian Schudt
+ */
+public final class MoodManager extends ExtensionManager {
+
+    private final PubSubManager pubSubManager;
+
+    private MoodManager(XmppSession xmppSession) {
+        super(xmppSession, Mood.NAMESPACE, Mood.NAMESPACE + "notify");
+        pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+    }
+
+    /**
+     * Publishes a mood to the personal eventing service.
+     *
+     * @param mood The mood.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     */
+    public void publish(Mood mood) throws XmppException {
+        pubSubManager.createPersonalEventingService().getNode(Mood.NAMESPACE).publish(mood);
+    }
+}

@@ -54,6 +54,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -83,7 +84,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private final Map<Jid, InfoNode> jidInfos = new ConcurrentHashMap<>();
 
-    private final ExecutorService serviceDiscoverer = Executors.newSingleThreadExecutor();
+    private final ExecutorService serviceDiscoverer;
 
     private boolean capsSent;
 
@@ -250,6 +251,14 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                         }
                     }
                 }
+            }
+        });
+        serviceDiscoverer = Executors.newSingleThreadExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r, "Automatic Service Discovery Thread");
+                thread.setDaemon(true);
+                return thread;
             }
         });
         setEnabled(true);

@@ -28,7 +28,13 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -518,6 +524,9 @@ public final class Jingle {
 
             @XmlElement(name = "sid")
             private String sessionId;
+
+            private AlternativeSession() {
+            }
 
             public AlternativeSession(String sessionId) {
                 this.sessionId = sessionId;

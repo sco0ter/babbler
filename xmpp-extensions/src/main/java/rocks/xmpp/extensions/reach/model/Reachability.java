@@ -71,13 +71,13 @@ public final class Reachability {
         }
         Reachability other = (Reachability) o;
 
-        return (addresses == null ? other.addresses == null : addresses.equals(other.addresses));
+        return addresses.equals(other.addresses);
     }
 
     @Override
     public int hashCode() {
         int result = 17;
-        result = 31 * result + ((addresses == null) ? 0 : addresses.hashCode());
+        result = 31 * result + addresses.hashCode();
         return result;
     }
 

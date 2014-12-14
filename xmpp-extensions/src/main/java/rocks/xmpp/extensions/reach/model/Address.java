@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlValue;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,11 +43,11 @@ import java.util.List;
  */
 public final class Address {
 
+    @XmlElement(name = "desc")
+    private final List<Description> descriptions = new ArrayList<>();
+
     @XmlAttribute
     private URI uri;
-
-    @XmlElement(name = "desc")
-    private List<Description> descriptions;
 
     private Address() {
     }
@@ -57,7 +58,7 @@ public final class Address {
 
     public Address(URI uri, Description... descriptions) {
         this.uri = uri;
-        this.descriptions = Arrays.asList(descriptions);
+        this.descriptions.addAll(Arrays.asList(descriptions));
     }
 
     public URI getUri() {
@@ -78,14 +79,14 @@ public final class Address {
         }
         Address other = (Address) o;
 
-        return (descriptions == null ? other.descriptions == null : descriptions.equals(other.descriptions))
+        return descriptions.equals(other.descriptions)
                 && (uri == null ? other.uri == null : uri.equals(other.uri));
     }
 
     @Override
     public int hashCode() {
         int result = 17;
-        result = 31 * result + ((descriptions == null) ? 0 : descriptions.hashCode());
+        result = 31 * result + descriptions.hashCode();
         result = 31 * result + ((uri == null) ? 0 : uri.hashCode());
         return result;
     }

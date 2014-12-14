@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public final class ContactExchange {
     public static final String NAMESPACE = "http://jabber.org/protocol/rosterx";
 
     @XmlElement(name = "item")
-    private List<Item> items = new ArrayList<>();
+    private final List<Item> items = new ArrayList<>();
 
     /**
      * Gets the contact exchange items.
@@ -59,7 +60,7 @@ public final class ContactExchange {
      * @return The items.
      */
     public List<Item> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     /**
@@ -86,7 +87,7 @@ public final class ContactExchange {
         public Item(Jid jid, String name, List<String> groups, Action action) {
             this.jid = jid;
             this.name = name;
-            this.groups = groups;
+            this.groups.addAll(groups);
             this.action = action;
         }
 
@@ -123,7 +124,7 @@ public final class ContactExchange {
          * @return The roster groups.
          */
         public List<String> getGroups() {
-            return groups;
+            return Collections.unmodifiableList(groups);
         }
 
         /**

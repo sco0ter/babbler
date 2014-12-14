@@ -43,6 +43,9 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlSeeAlso({MucUser.class, MucAdmin.class, MucOwner.class})
 public final class Muc {
 
+    /**
+     * http://jabber.org/protocol/muc
+     */
     public static final String NAMESPACE = "http://jabber.org/protocol/muc";
 
     @XmlElement(name = "password")

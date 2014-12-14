@@ -47,6 +47,11 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class Privacy {
 
+    /**
+     * jabber:iq:privacy
+     */
+    public static final String NAMESPACE = "jabber:iq:privacy";
+
     @XmlElement(name = "list")
     private final List<PrivacyList> privacyLists = new ArrayList<>();
 

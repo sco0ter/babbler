@@ -49,7 +49,11 @@ import java.io.StringWriter;
  */
 @XmlRootElement(name = "html")
 public final class Html {
-    static final String NAMESPACE = "http://jabber.org/protocol/xhtml-im";
+
+    /**
+     * http://jabber.org/protocol/xhtml-im
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/xhtml-im";
 
     @XmlElement(name = "body", namespace = "http://www.w3.org/1999/xhtml")
     private Object body;

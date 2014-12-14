@@ -25,8 +25,8 @@
 package rocks.xmpp.extensions.amp.model;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.amp.model.errors.FailedRules;
-import rocks.xmpp.extensions.amp.model.feature.AdvancedMessageProcessingFeature;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -45,8 +45,13 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-amp">XML Schema</a>
  */
 @XmlRootElement(name = "amp")
-@XmlSeeAlso({FailedRules.class, UnsupportedActions.class, UnsupportedConditions.class, InvalidRules.class, AdvancedMessageProcessingFeature.class})
-public final class AdvancedMessageProcessing {
+@XmlSeeAlso({FailedRules.class, UnsupportedActions.class, UnsupportedConditions.class, InvalidRules.class})
+public final class AdvancedMessageProcessing extends StreamFeature {
+
+    /**
+     * http://jabber.org/protocol/amp
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/amp";
 
     @XmlElement(name = "rule")
     private final List<Rule> rules = new ArrayList<>();
@@ -153,5 +158,10 @@ public final class AdvancedMessageProcessing {
      */
     public Jid getTo() {
         return to;
+    }
+
+    @Override
+    public int getPriority() {
+        return 0;
     }
 }

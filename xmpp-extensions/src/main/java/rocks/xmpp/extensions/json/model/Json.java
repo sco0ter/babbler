@@ -37,6 +37,11 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "json")
 public final class Json {
 
+    /**
+     * urn:xmpp:json:0
+     */
+    public static final String NAMESPACE = "urn:xmpp:json:0";
+
     @XmlValue
     private String json;
 

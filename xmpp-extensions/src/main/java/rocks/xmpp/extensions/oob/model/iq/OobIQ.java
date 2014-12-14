@@ -35,6 +35,11 @@ import java.net.URL;
 @XmlRootElement(name = "query")
 public final class OobIQ {
 
+    /**
+     * jabber:iq:oob
+     */
+    public static final String NAMESPACE = "jabber:iq:oob";
+
     @XmlElement(name = "url")
     private URL url;
 

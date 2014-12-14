@@ -43,6 +43,11 @@ import java.util.Date;
 @XmlRootElement(name = "query")
 public final class Registration {
 
+    /**
+     * jabber:iq:register
+     */
+    public static final String NAMESPACE = "jabber:iq:register";
+
     @XmlElement(name = "registered")
     private String registered;
 

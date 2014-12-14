@@ -52,6 +52,11 @@ import java.util.Date;
 @XmlRootElement(name = "delay")
 public final class DelayedDelivery {
 
+    /**
+     * urn:xmpp:delay
+     */
+    public static final String NAMESPACE = "urn:xmpp:delay";
+
     @XmlAttribute
     @XmlJavaTypeAdapter(JidAdapter.class)
     private Jid from;

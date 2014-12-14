@@ -37,6 +37,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "set")
 public final class ResultSet {
 
+    /**
+     * http://jabber.org/protocol/rsm
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/rsm";
+
     @XmlElement(name = "max")
     private Integer max;
 

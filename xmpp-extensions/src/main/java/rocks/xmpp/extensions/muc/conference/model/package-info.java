@@ -30,7 +30,7 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "jabber:x:conference", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.muc.conference.model;
+@XmlSchema(namespace = DirectInvitation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.muc.conference.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;

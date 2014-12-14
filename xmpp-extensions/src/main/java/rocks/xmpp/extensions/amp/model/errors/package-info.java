@@ -29,7 +29,9 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/amp#errors", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.amp.model.errors;
+@XmlSchema(namespace = AdvancedMessageProcessing.NAMESPACE + "#errors", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.amp.model.errors;
+
+import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessing;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

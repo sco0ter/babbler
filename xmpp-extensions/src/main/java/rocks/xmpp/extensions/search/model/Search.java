@@ -25,12 +25,13 @@
 package rocks.xmpp.extensions.search.model;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.rsm.model.ResultSet;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +45,11 @@ import java.util.List;
  */
 @XmlRootElement(name = "query")
 public final class Search {
+
+    /**
+     * jabber:iq:search
+     */
+    public static final String NAMESPACE = "jabber:iq:search";
 
     @XmlElement(name = "item")
     private final List<Item> items = new ArrayList<>();

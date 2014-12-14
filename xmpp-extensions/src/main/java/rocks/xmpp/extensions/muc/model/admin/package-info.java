@@ -27,10 +27,11 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/muc#admin", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.muc.model.admin;
+@XmlSchema(namespace = Muc.NAMESPACE + "#admin", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.muc.model.admin;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.extensions.muc.model.Muc;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

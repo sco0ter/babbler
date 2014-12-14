@@ -44,7 +44,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public final class Forwarded {
 
-    static final String NAMESPACE = "urn:xmpp:forward:0";
+    /**
+     * urn:xmpp:forward:0
+     */
+    public static final String NAMESPACE = "urn:xmpp:forward:0";
 
     @XmlElementRef
     private DelayedDelivery delayedDelivery;

@@ -29,6 +29,7 @@ import rocks.xmpp.extensions.amp.model.Rule;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,6 +54,6 @@ public final class FailedRules {
      * @return The failed rules.
      */
     public List<Rule> getRules() {
-        return rules;
+        return Collections.unmodifiableList(rules);
     }
 }

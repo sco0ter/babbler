@@ -37,6 +37,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "x")
 public final class DirectInvitation {
 
+    /**
+     * jabber:x:conference
+     */
+    public static final String NAMESPACE = "jabber:x:conference";
+
     @XmlAttribute(name = "continue")
     private Boolean aContinue;
 
@@ -52,7 +57,7 @@ public final class DirectInvitation {
     @XmlAttribute(name = "thread")
     private String thread;
 
-    protected DirectInvitation() {
+    private DirectInvitation() {
     }
 
     public DirectInvitation(Jid jid) {

@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Collections;
 
 /**
  * @author Christian Schudt
@@ -43,7 +44,7 @@ public class PrivateDataTest extends XmlTest {
 
     @Test
     public void marshalPrivateData() throws JAXBException, XMLStreamException {
-        PrivateData privateData = new PrivateData(new Annotation(null));
+        PrivateData privateData = new PrivateData(new Annotation(Collections.<Annotation.Note>emptyList()));
         String xml = marshal(privateData);
         Assert.assertEquals("<query xmlns=\"jabber:iq:private\"><storage xmlns=\"storage:rosternotes\"></storage></query>", xml);
     }

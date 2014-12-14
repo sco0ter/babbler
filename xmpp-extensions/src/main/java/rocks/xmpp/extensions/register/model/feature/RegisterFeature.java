@@ -37,8 +37,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "register")
 public final class RegisterFeature extends StreamFeature {
-    private RegisterFeature() {
-    }
+
+    /**
+     * http://jabber.org/features/iq-register
+     */
+    public static final String NAMESPACE = "http://jabber.org/features/iq-register";
 
     @Override
     public int getPriority() {

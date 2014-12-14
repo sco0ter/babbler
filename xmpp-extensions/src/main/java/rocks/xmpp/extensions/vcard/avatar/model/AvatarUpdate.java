@@ -36,6 +36,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "x")
 public final class AvatarUpdate {
+
+    /**
+     * vcard-temp:x:update
+     */
+    public static final String NAMESPACE = "vcard-temp:x:update";
+
     @XmlElement(name = "photo")
     private String hash;
 

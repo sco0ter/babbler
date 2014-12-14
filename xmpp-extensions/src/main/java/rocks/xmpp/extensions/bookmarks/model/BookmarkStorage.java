@@ -48,6 +48,11 @@ import java.util.List;
 @XmlRootElement(name = "storage")
 public final class BookmarkStorage {
 
+    /**
+     * storage:bookmarks
+     */
+    public static final String NAMESPACE = "storage:bookmarks";
+
     @XmlElements({
             @XmlElement(name = "conference", type = ChatRoomBookmark.class),
             @XmlElement(name = "url", type = WebPageBookmark.class)})

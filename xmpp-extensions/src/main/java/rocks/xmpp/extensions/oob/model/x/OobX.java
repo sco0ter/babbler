@@ -34,6 +34,11 @@ import java.net.URL;
 @XmlRootElement(name = "x")
 public final class OobX {
 
+    /**
+     * jabber:x:oob
+     */
+    public static final String NAMESPACE = "jabber:x:oob";
+
     @XmlElement(name = "url")
     private URL url;
 

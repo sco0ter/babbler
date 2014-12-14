@@ -38,6 +38,11 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "hash")
 public final class Hash {
 
+    /**
+     * urn:xmpp:hashes:1
+     */
+    public static final String NAMESPACE = "urn:xmpp:hashes:1";
+
     @XmlValue
     private byte[] value;
 

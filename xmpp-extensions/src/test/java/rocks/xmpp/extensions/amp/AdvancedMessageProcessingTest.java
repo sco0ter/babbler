@@ -29,9 +29,12 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.extensions.amp.model.*;
+import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessing;
+import rocks.xmpp.extensions.amp.model.InvalidRules;
+import rocks.xmpp.extensions.amp.model.Rule;
+import rocks.xmpp.extensions.amp.model.UnsupportedActions;
+import rocks.xmpp.extensions.amp.model.UnsupportedConditions;
 import rocks.xmpp.extensions.amp.model.errors.FailedRules;
-import rocks.xmpp.extensions.amp.model.feature.AdvancedMessageProcessingFeature;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
@@ -200,7 +203,7 @@ public class AdvancedMessageProcessingTest extends XmlTest {
     @Test
     public void unmarshalAmpStreamFeature() throws XMLStreamException, JAXBException {
         String xml = "<amp xmlns='http://jabber.org/features/amp'/>\n";
-        AdvancedMessageProcessingFeature feature = unmarshal(xml, AdvancedMessageProcessingFeature.class);
+        AdvancedMessageProcessing feature = unmarshal(xml, AdvancedMessageProcessing.class);
         Assert.assertNotNull(feature);
     }
 

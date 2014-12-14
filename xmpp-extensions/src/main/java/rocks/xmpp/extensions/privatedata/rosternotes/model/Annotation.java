@@ -25,13 +25,13 @@
 package rocks.xmpp.extensions.privatedata.rosternotes.model;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -51,25 +51,35 @@ import java.util.List;
 @XmlRootElement(name = "storage")
 public final class Annotation {
 
+    /**
+     * storage:rosternotes
+     */
+    public static final String NAMESPACE = "storage:rosternotes";
+
     @XmlElement(name = "note")
-    private List<Note> notes;
+    private final List<Note> notes = new ArrayList<>();
 
     private Annotation() {
     }
 
     public Annotation(List<Note> notes) {
-        this.notes = notes;
+        this.notes.addAll(notes);
     }
 
+    /**
+     * Gets the roster notes.
+     *
+     * @return The notes.
+     */
     public List<Note> getNotes() {
-        return notes;
+        return Collections.unmodifiableList(notes);
     }
 
     /**
      * Represents a note for a contact in the roster (roster item).
      */
     public static final class Note {
-        @XmlJavaTypeAdapter(JidAdapter.class)
+
         @XmlAttribute(name = "jid")
         private Jid jid;
 

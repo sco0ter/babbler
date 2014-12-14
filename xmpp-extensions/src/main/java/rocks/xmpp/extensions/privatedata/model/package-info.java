@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "jabber:iq:private", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.privatedata.model;
+@XmlSchema(namespace = PrivateData.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.privatedata.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

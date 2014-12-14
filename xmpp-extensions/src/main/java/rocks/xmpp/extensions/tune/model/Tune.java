@@ -37,6 +37,12 @@ import java.net.URI;
  */
 @XmlRootElement(name = "tune")
 public final class Tune {
+
+    /**
+     * http://jabber.org/protocol/tune
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/tune";
+
     @XmlElement(name = "artist")
     private String artist;
 

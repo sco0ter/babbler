@@ -44,6 +44,11 @@ import java.util.List;
 @XmlRootElement(name = "jingle")
 public final class Jingle {
 
+    /**
+     * urn:xmpp:jingle:1
+     */
+    public static final String NAMESPACE = "urn:xmpp:jingle:1";
+
     @XmlElement(name = "content")
     private final List<Content> contents = new ArrayList<>();
 

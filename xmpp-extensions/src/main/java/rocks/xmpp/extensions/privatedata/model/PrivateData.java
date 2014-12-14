@@ -37,6 +37,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "query")
 public final class PrivateData {
 
+    /**
+     * jabber:iq:private
+     */
+    public static final String NAMESPACE = "jabber:iq:private";
+
     @XmlAnyElement(lax = true)
     private Object privateData;
 

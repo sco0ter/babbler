@@ -40,6 +40,11 @@ import java.net.URI;
  */
 public final class Address {
 
+    /**
+     * http://jabber.org/protocol/address
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/address";
+
     @XmlAttribute(name = "type")
     private Type type;
 

@@ -45,10 +45,31 @@ import java.util.List;
 @XmlSeeAlso({Block.class, Unblock.class, Blocked.class})
 public final class BlockList {
 
+    /**
+     * urn:xmpp:blocking
+     */
+    public static final String NAMESPACE = "urn:xmpp:blocking";
+
     @XmlElement(name = "item")
     private final List<Item> items = new ArrayList<>();
 
+    /**
+     * Creates an empty {@code <blocklist/>} element, used to ask the server for the block list.
+     */
     public BlockList() {
+    }
+
+    /**
+     * Creates a block list with items.
+     *
+     * @param blockedItems The blocked items.
+     */
+    public BlockList(List<Jid> blockedItems) {
+        List<Item> items = new ArrayList<>();
+        for (Jid item : blockedItems) {
+            items.add(new Item(item));
+        }
+        this.items.addAll(items);
     }
 
     /**

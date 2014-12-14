@@ -28,10 +28,14 @@
  * It defines a protocol for making annotations about roster items and other entities.
  * </p>
  */
+@XmlJavaTypeAdapter(JidAdapter.class)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "storage:rosternotes", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.privatedata.rosternotes.model;
+@XmlSchema(namespace = Annotation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.privatedata.rosternotes.model;
+
+import rocks.xmpp.core.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

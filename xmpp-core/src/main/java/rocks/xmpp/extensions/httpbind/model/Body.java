@@ -414,14 +414,6 @@ public final class Body {
         return version;
     }
 
-    /**
-     * @param version The 'version' attribute value.
-     * @see #getVersion()
-     */
-    public void setVersion(String version) {
-        this.ver = version;
-    }
-
     public Integer getWait() {
         return wait;
     }

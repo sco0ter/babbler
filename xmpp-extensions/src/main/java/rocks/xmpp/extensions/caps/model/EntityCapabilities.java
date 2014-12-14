@@ -183,20 +183,9 @@ public final class EntityCapabilities extends StreamFeature {
      * Gets the hashing algorithm used to generate the verification string.
      *
      * @return The verification string.
-     * @see #setHashingAlgorithm(String)
      */
     public String getHashingAlgorithm() {
         return hash;
-    }
-
-    /**
-     * Sets the hashing algorithm used to generate the verification string.
-     *
-     * @param hash The verification string.
-     * @see #getHashingAlgorithm()
-     */
-    public void setHashingAlgorithm(String hash) {
-        this.hash = hash;
     }
 
     /**
@@ -207,40 +196,18 @@ public final class EntityCapabilities extends StreamFeature {
      * </blockquote>
      *
      * @return The node.
-     * @see #setNode(String)
      */
     public String getNode() {
         return node;
     }
 
     /**
-     * Sets the node.
-     *
-     * @param node The node.
-     * @see #getNode()
-     */
-    public void setNode(String node) {
-        this.node = node;
-    }
-
-    /**
      * Gets the verification string that is used to verify the identity and supported features of the entity.
      *
      * @return The verification string.
-     * @see #setVerificationString(String)
      */
     public String getVerificationString() {
         return ver;
-    }
-
-    /**
-     * Sets the verification string.
-     *
-     * @param verificationString The verification string.
-     * @see #getVerificationString()
-     */
-    public void setVerificationString(String verificationString) {
-        this.ver = verificationString;
     }
 
     @Override

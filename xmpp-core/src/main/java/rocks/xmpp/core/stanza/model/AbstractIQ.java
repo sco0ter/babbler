@@ -26,7 +26,11 @@ package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import java.util.UUID;
 
 /**
@@ -100,7 +104,7 @@ public abstract class AbstractIQ extends Stanza {
      * @param extension The extension.
      */
     protected AbstractIQ(String id, Type type, Object extension) {
-        this(null, id, type, extension);
+        this(null, null, id, type, null, extension, null);
     }
 
     /**
@@ -111,7 +115,7 @@ public abstract class AbstractIQ extends Stanza {
      * @param extension The extension.
      */
     protected AbstractIQ(Jid to, Type type, Object extension) {
-        this(to, UUID.randomUUID().toString(), type, extension);
+        this(to, null, UUID.randomUUID().toString(), type, null, extension, null);
     }
 
     /**
@@ -122,15 +126,14 @@ public abstract class AbstractIQ extends Stanza {
      * @param type      The type.
      * @param extension The extension.
      */
-    protected AbstractIQ(Jid to, String id, Type type, Object extension) {
+    protected AbstractIQ(Jid to, Jid from, String id, Type type, String language, Object extension, StanzaError error) {
+        super(to, from, id, language, error);
         if (id == null) {
             throw new IllegalArgumentException("id must not be null.");
         }
         if (type == null) {
             throw new IllegalArgumentException("type must not be null.");
         }
-        this.to = to;
-        this.id = id;
         this.type = type;
         this.extension = extension;
     }
@@ -166,7 +169,9 @@ public abstract class AbstractIQ extends Stanza {
      * Sets the extension.
      *
      * @param extension The extension.
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setExtension(Object extension) {
         this.extension = extension;
     }

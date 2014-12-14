@@ -98,13 +98,9 @@ public final class RpcManager extends ExtensionManager {
                                     public void run() {
                                         try {
                                             Value value = rpcHandler.process(iq.getFrom(), methodCall.getMethodName(), parameters);
-                                            IQ result = iq.createResult();
-                                            result.setExtension(new Rpc(value));
-                                            xmppSession.send(result);
+                                            xmppSession.send(iq.createResult(new Rpc(value)));
                                         } catch (RpcException e1) {
-                                            IQ result = iq.createResult();
-                                            result.setExtension(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
-                                            xmppSession.send(result);
+                                            xmppSession.send(iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString()))));
                                         } catch (Throwable e1) {
                                             logger.log(Level.WARNING, e1.getMessage(), e1);
                                             xmppSession.send(iq.createError(new StanzaError(new InternalServerError())));

@@ -54,7 +54,13 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -241,9 +247,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             inBandByteStreamManager.addByteStreamListener(byteStreamListener);
 
             // Send the stream initiation result.
-            IQ result = iq.createResult();
-            result.setExtension(siResponse);
-            xmppSession.send(result);
+            xmppSession.send(iq.createResult(siResponse));
 
             // And then wait until the peer opens the stream.
             lock.lock();

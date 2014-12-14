@@ -44,19 +44,30 @@ import javax.xml.bind.annotation.XmlTransient;
 public abstract class Stanza {
 
     @XmlAttribute
-    protected Jid from;
+    private Jid from;
 
     @XmlAttribute
-    protected String id;
+    private String id;
 
     @XmlAttribute
-    protected Jid to;
+    private Jid to;
 
     @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    protected String language;
+    private String language;
 
     @XmlElement
     private StanzaError error;
+
+    protected Stanza() {
+    }
+
+    protected Stanza(Jid to, Jid from, String id, String language, StanzaError error) {
+        this.to = to;
+        this.from = from;
+        this.id = id;
+        this.language = language;
+        this.error = error;
+    }
 
     /**
      * Gets the stanza's 'to' attribute.

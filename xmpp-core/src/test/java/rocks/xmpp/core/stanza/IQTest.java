@@ -87,31 +87,21 @@ public class IQTest extends XmlTest {
 
     @Test
     public void marshalIQ() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(IQ.Type.GET);
-        iq.setId("id");
-        iq.setTo(new Jid("to", "domain"));
-        iq.setFrom(new Jid("from", "domain"));
+        IQ iq = new IQ(new Jid("to", "domain"), new Jid("from", "domain"), "id", IQ.Type.GET, null);
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"></iq>");
     }
 
     @Test
     public void marshalIQWithError() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(IQ.Type.GET);
-        iq.setId("id");
-        iq.setTo(new Jid("to", "domain"));
-        iq.setFrom(new Jid("from", "domain"));
-        iq.setError(new StanzaError(StanzaError.Type.MODIFY, new ServiceUnavailable()));
+        IQ iq = new IQ(new Jid("to", "domain"), new Jid("from", "domain"), "id", IQ.Type.GET, null, new StanzaError(StanzaError.Type.MODIFY, new ServiceUnavailable()));
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"><error type=\"modify\"><service-unavailable xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></service-unavailable></error></iq>");
     }
 
     @Test
     public void testErrorIQ() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(IQ.Type.GET);
-        iq.setId("id");
-        iq.setTo(new Jid("to", "domain"));
-        iq.setFrom(new Jid("from", "domain"));
+        IQ iq = new IQ(new Jid("to", "domain"), new Jid("from", "domain"), "id", IQ.Type.GET, null);
         IQ error = iq.createError(new StanzaError(new UndefinedCondition()));
         Assert.assertEquals(error.getType(), IQ.Type.ERROR);
         Assert.assertEquals(error.getId(), iq.getId());
@@ -122,10 +112,7 @@ public class IQTest extends XmlTest {
 
     @Test
     public void testResultIQ() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(IQ.Type.GET);
-        iq.setId("id");
-        iq.setTo(new Jid("to", "domain"));
-        iq.setFrom(new Jid("from", "domain"));
+        IQ iq = new IQ(new Jid("to", "domain"), new Jid("from", "domain"), "id", IQ.Type.GET, null);
         IQ result = iq.createResult();
         Assert.assertEquals(result.getType(), IQ.Type.RESULT);
         Assert.assertEquals(result.getId(), iq.getId());

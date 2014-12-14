@@ -69,8 +69,7 @@ class BitsOfBinaryManager extends ExtensionManager {
                         // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
                         Data cachedData = dataCache.get(data.getContentId());
                         if (cachedData != null) {
-                            IQ result = iq.createResult();
-                            result.setExtension(cachedData);
+                            IQ result = iq.createResult(cachedData);
                             xmppSession.send(result);
                         } else {
                             xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));

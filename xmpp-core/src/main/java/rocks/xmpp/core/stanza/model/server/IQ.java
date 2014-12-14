@@ -86,7 +86,7 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
      * @param extension The extension.
      */
     public IQ(String id, Type type, Object extension) {
-        super(null, id, type, extension);
+        super(null, null, id, type, null, extension, null);
     }
 
     /**
@@ -104,12 +104,27 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
      * Creates an IQ stanza with the given receiver, id, type and extension.
      *
      * @param to        The receiver.
+     * @param from      The sender.
      * @param id        The id.
      * @param type      The type.
      * @param extension The extension.
      */
-    public IQ(Jid to, String id, Type type, Object extension) {
-        super(to, id, type, extension);
+    public IQ(Jid to, Jid from, String id, Type type, Object extension) {
+        super(to, from, id, type, null, extension, null);
+    }
+
+    /**
+     * Creates an IQ stanza with the given receiver, id, type, extension and error.
+     *
+     * @param to        The receiver.
+     * @param from      The sender.
+     * @param id        The id.
+     * @param type      The type.
+     * @param extension The extension.
+     * @param error     The error.
+     */
+    public IQ(Jid to, Jid from, String id, Type type, Object extension, StanzaError error) {
+        super(to, from, id, type, null, extension, error);
     }
 
     /**
@@ -118,16 +133,22 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
      * @return The result IQ stanza.
      */
     public final IQ createResult() {
-        IQ responseIQ = new IQ(id, Type.RESULT);
-        responseIQ.setTo(from);
-        responseIQ.setFrom(to);
-        return responseIQ;
+        return createResult(null);
+    }
+
+    /**
+     * Creates a result IQ stanza with a payload, i.e. it uses the same id as this IQ, sets the type to 'result' and switches the 'to' and 'from' attribute.
+     *
+     * @param extension The extension.
+     * @return The result IQ stanza.
+     */
+    public final IQ createResult(Object extension) {
+        return new IQ(getFrom(), getTo(), getId(), Type.RESULT, extension);
     }
 
     @Override
     public final IQ createError(StanzaError error) {
-        IQ responseIQ = new IQ(id, Type.ERROR);
-        createError(responseIQ, error);
-        return responseIQ;
+        error.setBy(getTo());
+        return new IQ(getFrom(), getTo(), getId(), Type.ERROR, null, error);
     }
 }

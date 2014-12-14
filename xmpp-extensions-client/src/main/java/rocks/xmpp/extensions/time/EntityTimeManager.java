@@ -53,9 +53,7 @@ public final class EntityTimeManager extends ExtensionManager {
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(EntityTime.class) != null) {
-                    IQ result = iq.createResult();
-                    result.setExtension(new EntityTime(TimeZone.getDefault(), new Date()));
-                    xmppSession.send(result);
+                    xmppSession.send(iq.createResult(new EntityTime(TimeZone.getDefault(), new Date())));
                     e.consume();
                 }
             }

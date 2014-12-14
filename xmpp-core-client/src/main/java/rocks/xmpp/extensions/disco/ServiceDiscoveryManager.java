@@ -46,7 +46,12 @@ import rocks.xmpp.extensions.disco.model.items.ItemNode;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -105,16 +110,12 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                     InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
                     if (infoDiscovery != null) {
                         if (infoDiscovery.getNode() == null) {
-                            IQ result = iq.createResult();
-                            result.setExtension(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
-                            xmppSession.send(result);
+                            xmppSession.send(iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions())));
                             e.consume();
                         } else {
                             InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
                             if (infoNode != null) {
-                                IQ result = iq.createResult();
-                                result.setExtension(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
-                                xmppSession.send(result);
+                                xmppSession.send(iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions())));
                                 e.consume();
                             } else {
                                 xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
@@ -125,16 +126,12 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                         ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
                         if (itemDiscovery != null) {
                             if (itemDiscovery.getNode() == null) {
-                                IQ result = iq.createResult();
-                                result.setExtension(new ItemDiscovery(items));
-                                xmppSession.send(result);
+                                xmppSession.send(iq.createResult(new ItemDiscovery(items)));
                                 e.consume();
                             } else {
                                 ItemNode itemNode = itemNodeMap.get(itemDiscovery.getNode());
                                 if (itemNode != null) {
-                                    IQ result = iq.createResult();
-                                    result.setExtension(new ItemDiscovery(itemNode.getNode(), items));
-                                    xmppSession.send(result);
+                                    xmppSession.send(iq.createResult(new ItemDiscovery(itemNode.getNode(), items)));
                                     e.consume();
                                 } else {
                                     xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));

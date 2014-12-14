@@ -38,7 +38,14 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
@@ -383,9 +390,7 @@ public final class RosterManager {
      * That means, you should first {@linkplain #addRosterListener(RosterListener) register} a {@link RosterListener} prior to calling this method.
      */
     public void requestRoster() {
-        IQ iq = new IQ(IQ.Type.GET);
-        iq.setExtension(new Roster());
-        this.xmppSession.send(iq);
+        this.xmppSession.send(new IQ(IQ.Type.GET, new Roster()));
     }
 
     /**

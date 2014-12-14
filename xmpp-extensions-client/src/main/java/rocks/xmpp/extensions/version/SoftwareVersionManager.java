@@ -56,9 +56,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {
                     synchronized (SoftwareVersionManager.this) {
                         if (softwareVersion != null) {
-                            IQ result = iq.createResult();
-                            result.setExtension(softwareVersion);
-                            xmppSession.send(result);
+                            xmppSession.send(iq.createResult(softwareVersion));
                             e.consume();
                         }
                     }

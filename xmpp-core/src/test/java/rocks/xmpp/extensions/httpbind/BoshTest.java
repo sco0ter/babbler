@@ -181,8 +181,7 @@ public class BoshTest extends XmlTest {
 
     @Test
     public void marshalBodyWithMultipleStanzas() throws XMLStreamException, JAXBException {
-        IQ iq = new IQ("1", IQ.Type.GET);
-        iq.setExtension(new Roster());
+        IQ iq = new IQ("1", IQ.Type.GET, new Roster());
         Body body = Body.builder()
                 .wrappedObjects(Arrays.<Object>asList(iq, new Presence())).build();
 

@@ -118,9 +118,7 @@ public final class ReachabilityManager extends ExtensionManager {
             public void handle(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(Reachability.class) != null) {
-                    IQ result = iq.createResult();
-                    result.setExtension(new Reachability(new ArrayList<>(addresses)));
-                    xmppSession.send(result);
+                    xmppSession.send(iq.createResult(new Reachability(new ArrayList<>(addresses))));
                     e.consume();
                 }
             }

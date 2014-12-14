@@ -74,7 +74,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param to The recipient.
      */
     protected AbstractMessage(Jid to) {
-        this.to = to;
+        setTo(to);
     }
 
     /**
@@ -84,7 +84,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param type The message type.
      */
     protected AbstractMessage(Jid to, Type type) {
-        this.to = to;
+        setTo(to);
         this.type = type;
     }
 
@@ -96,7 +96,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param type The message type.
      */
     protected AbstractMessage(Jid to, Type type, String body) {
-        this.to = to;
+        setTo(to);
         this.body.add(new Body(body));
         this.type = type;
     }

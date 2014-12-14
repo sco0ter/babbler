@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlValue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,52 +67,41 @@ public final class Media {
     }
 
     /**
+     * Creates a media object with a location.
+     *
+     * @param locations The location.
+     */
+    public Media(int width, int height, Location... locations) {
+        this.width = width;
+        this.height = height;
+        this.locations.addAll(Arrays.asList(locations));
+    }
+
+    /**
      * Gets the locations to the media.
      *
      * @return The locations.
      */
     public List<Location> getLocations() {
-        return locations;
+        return Collections.unmodifiableList(locations);
     }
 
     /**
      * If the media is an image or video, gets the recommended display height of the image.
      *
      * @return The height.
-     * @see #setHeight(int)
      */
     public int getHeight() {
         return height;
     }
 
     /**
-     * If the media is an image or video, gets the recommended display height of the image.
-     *
-     * @param height The height.
-     * @see #getHeight()
-     */
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    /**
      * If the media is an image or video, gets the recommended display width of the image.
      *
      * @return The width.
-     * @see #setWidth(int)
      */
     public int getWidth() {
         return width;
-    }
-
-    /**
-     * If the media is an image or video, gets the recommended display width of the image.
-     *
-     * @param width The width.
-     * @see #getWidth()
-     */
-    public void setWidth(int width) {
-        this.width = width;
     }
 
     /**

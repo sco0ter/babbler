@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
 public class ChatStateManagerTest extends XmlTest {
 
     protected ChatStateManagerTest() throws JAXBException, XMLStreamException {
-        super(Message.class, ChatState.Active.class, ChatState.Composing.class, ChatState.Paused.class, ChatState.Inactive.class, ChatState.Gone.class);
+        super(Message.class, ChatState.class);
     }
 
     @Test

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.chatstates.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -33,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @see <a href="http://xmpp.org/extensions/xep-0085.html#schema">XML Schema</a>
  */
 @XmlTransient
+@XmlSeeAlso({ChatState.Active.class, ChatState.Composing.class, ChatState.Gone.class, ChatState.Inactive.class, ChatState.Paused.class})
 public abstract class ChatState {
 
     /**
@@ -64,6 +66,9 @@ public abstract class ChatState {
      * http://jabber.org/protocol/chatstates
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/chatstates";
+
+    private ChatState() {
+    }
 
     /**
      * The implementation of the {@code <active/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents an active chat state.

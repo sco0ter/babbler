@@ -295,11 +295,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private void recomputeVerificationString(String hashAlgorithm) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance(hashAlgorithm);
-        InfoDiscovery infoDiscovery = new InfoDiscovery();
-
-        infoDiscovery.getFeatures().addAll(serviceDiscoveryManager.getFeatures());
-        infoDiscovery.getIdentities().addAll(serviceDiscoveryManager.getIdentities());
-        infoDiscovery.getExtensions().addAll(serviceDiscoveryManager.getExtensions());
+        InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getIdentities(), serviceDiscoveryManager.getFeatures(), serviceDiscoveryManager.getExtensions());
         currentVerificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
         cache(new Verification(HASH_ALGORITHM, currentVerificationString), infoDiscovery);
     }

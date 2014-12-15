@@ -26,7 +26,7 @@
  * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a> (#info).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/disco#info", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.disco.model.info;
+@XmlSchema(namespace = InfoDiscovery.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.disco.model.info;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

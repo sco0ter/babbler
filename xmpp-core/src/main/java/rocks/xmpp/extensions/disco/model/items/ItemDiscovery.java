@@ -28,6 +28,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,11 +42,16 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class ItemDiscovery implements ItemNode {
 
-    @XmlAttribute(name = "node")
-    private String node;
+    /**
+     * http://jabber.org/protocol/disco#items
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/disco#items";
 
     @XmlElement(name = "item")
-    private List<Item> items = new ArrayList<>();
+    private final List<Item> items = new ArrayList<>();
+
+    @XmlAttribute(name = "node")
+    private String node;
 
     /**
      * Creates an empty element, used for item discovery requests.
@@ -66,8 +73,8 @@ public final class ItemDiscovery implements ItemNode {
      *
      * @param items The items.
      */
-    public ItemDiscovery(List<Item> items) {
-        this.items = items;
+    public ItemDiscovery(Collection<Item> items) {
+        this(null, items);
     }
 
     /**
@@ -76,14 +83,16 @@ public final class ItemDiscovery implements ItemNode {
      * @param node  The node.
      * @param items The items.
      */
-    public ItemDiscovery(String node, List<Item> items) {
+    public ItemDiscovery(String node, Collection<Item> items) {
         this.node = node;
-        this.items = items;
+        if (items != null) {
+            this.items.addAll(items);
+        }
     }
 
     @Override
     public List<Item> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     @Override
@@ -97,7 +106,7 @@ public final class ItemDiscovery implements ItemNode {
         if (node != null) {
             sb.append(node);
         }
-        if (items != null) {
+        if (!items.isEmpty()) {
             if (!sb.toString().isEmpty()) {
                 sb.append(": ");
             }

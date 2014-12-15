@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -42,10 +43,9 @@ public class PubSubEntityUseCasesTest extends ExtensionTest {
     @Test
     public void testFeatures() {
         TestXmppSession xmppSession = new TestXmppSession();
-        InfoDiscovery infoDiscovery = new InfoDiscovery();
-        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#collections"));
-        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/pubsub#config-node"));
-        infoDiscovery.getFeatures().add(new Feature("http://jabber.org/protocol/disco#info"));
+        InfoDiscovery infoDiscovery = new InfoDiscovery(null, Arrays.asList(new Feature("http://jabber.org/protocol/pubsub#collections"),
+                new Feature("http://jabber.org/protocol/pubsub#config-node"),
+                new Feature("http://jabber.org/protocol/disco#info")));
         PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
         Collection<PubSubFeature> pubSubFeatures = pubSubManager.createPubSubService(null).getFeatures(infoDiscovery);
 

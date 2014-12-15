@@ -45,7 +45,6 @@ public final class Item {
     private String node;
 
     public Item() {
-
     }
 
     public Item(String node) {

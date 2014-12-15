@@ -162,9 +162,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         features.add(new Feature("http://jabber.org/protocol/muc"));
         features.add(new Feature("http://jabber.org/protocol/caps"));
 
-        InfoNode infoNode = new InfoDiscovery();
-        infoNode.getFeatures().addAll(features);
-        infoNode.getIdentities().addAll(identities);
+        InfoNode infoNode = new InfoDiscovery(identities, features);
         String verificationString = EntityCapabilities.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "QgayPKawpkPSDYmwT/WM94uAlu0=");
     }
@@ -195,10 +193,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         dataForm.getFields().add(DataForm.Field.builder().var("software").value("Psi").type(DataForm.Field.Type.TEXT_SINGLE).build());
         dataForm.getFields().add(DataForm.Field.builder().var("software_version").value("0.11").type(DataForm.Field.Type.TEXT_SINGLE).build());
 
-        InfoDiscovery infoDiscovery = new InfoDiscovery();
-        infoDiscovery.getFeatures().addAll(features);
-        infoDiscovery.getIdentities().addAll(identities);
-        infoDiscovery.getExtensions().add(dataForm);
+        InfoDiscovery infoDiscovery = new InfoDiscovery(identities, features, Arrays.asList(dataForm));
         String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "dsMdhhH+tbCICmoptvSp3x+DafI=");
     }
@@ -225,13 +220,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         dataForm3.getFields().add(DataForm.Field.builder().var("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build());
         dataForm3.getFields().add(DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build());
 
-        InfoDiscovery infoDiscovery = new InfoDiscovery();
-        infoDiscovery.getFeatures().addAll(features);
-        infoDiscovery.getIdentities().addAll(identities);
-        infoDiscovery.getExtensions().add(dataForm1);
-        infoDiscovery.getExtensions().add(dataForm2);
-        infoDiscovery.getExtensions().add(dataForm3);
-
+        InfoDiscovery infoDiscovery = new InfoDiscovery(identities, features, Arrays.asList(dataForm1, dataForm2, dataForm3));
         String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "EwaG/3/PLTavYdlrevpQmoqM3nw=");
     }
@@ -253,9 +242,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         features.add(new Feature("http://jabber.org/protocol/shim"));
         features.add(new Feature("http://jabber.org/protocol/caps"));
 
-        InfoNode infoNode = new InfoDiscovery();
-        infoNode.getFeatures().addAll(features);
-        infoNode.getIdentities().addAll(identities);
+        InfoNode infoNode = new InfoDiscovery(identities, features);
         String verificationString = EntityCapabilities.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "40K55pBx86cs2cR44flP35MpLCk=");
     }

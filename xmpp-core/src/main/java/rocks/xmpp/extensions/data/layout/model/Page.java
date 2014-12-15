@@ -27,6 +27,9 @@ package rocks.xmpp.extensions.data.layout.model;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,17 +51,17 @@ import java.util.List;
 @XmlRootElement(name = "page")
 public final class Page {
 
-    @XmlAttribute(name = "label")
-    private String label;
-
     @XmlElement(name = "text")
-    private List<String> text;
+    private final List<String> text = new ArrayList<>();
 
     @XmlElement(name = "fieldref")
-    private List<FieldReference> fieldReferences;
+    private final List<FieldReference> fieldReferences = new ArrayList<>();
 
     @XmlElement(name = "section")
-    private List<Section> sections;
+    private final List<Section> sections = new ArrayList<>();
+
+    @XmlAttribute(name = "label")
+    private String label;
 
     @XmlElement(name = "reportedref")
     private FieldReference reportedReference;
@@ -72,9 +75,8 @@ public final class Page {
      * @param label           The label.
      * @param fieldReferences The field references.
      */
-    public Page(String label, List<FieldReference> fieldReferences) {
-        this.label = label;
-        this.fieldReferences = fieldReferences;
+    public Page(String label, Collection<FieldReference> fieldReferences) {
+        this(label, fieldReferences, null);
     }
 
     /**
@@ -84,10 +86,8 @@ public final class Page {
      * @param fieldReferences The field references.
      * @param text            The text.
      */
-    public Page(String label, List<FieldReference> fieldReferences, List<String> text) {
-        this.label = label;
-        this.text = text;
-        this.fieldReferences = fieldReferences;
+    public Page(String label, Collection<FieldReference> fieldReferences, Collection<String> text) {
+        this(label, fieldReferences, text, null);
     }
 
     /**
@@ -98,10 +98,14 @@ public final class Page {
      * @param text              The text.
      * @param reportedReference The reference to a reported field.
      */
-    public Page(String label, List<FieldReference> fieldReferences, List<String> text, FieldReference reportedReference) {
+    public Page(String label, Collection<FieldReference> fieldReferences, Collection<String> text, FieldReference reportedReference) {
         this.label = label;
-        this.text = text;
-        this.fieldReferences = fieldReferences;
+        if (text != null) {
+            this.text.addAll(text);
+        }
+        if (fieldReferences != null) {
+            this.fieldReferences.addAll(fieldReferences);
+        }
         this.reportedReference = reportedReference;
     }
 
@@ -111,7 +115,7 @@ public final class Page {
      * @return Additional information.
      */
     public List<String> getText() {
-        return text;
+        return Collections.unmodifiableList(text);
     }
 
     /**
@@ -120,7 +124,7 @@ public final class Page {
      * @return The field references.
      */
     public List<FieldReference> getFieldReferences() {
-        return fieldReferences;
+        return Collections.unmodifiableList(fieldReferences);
     }
 
     /**
@@ -129,7 +133,7 @@ public final class Page {
      * @return The sections.
      */
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
     /**
@@ -139,5 +143,14 @@ public final class Page {
      */
     public FieldReference getReportedReference() {
         return reportedReference;
+    }
+
+    /**
+     * Gets the label for this page.
+     *
+     * @return The label.
+     */
+    public String getLabel() {
+        return label;
     }
 }

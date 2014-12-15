@@ -51,6 +51,12 @@ public final class Item {
         this.node = node;
     }
 
+    public Item(String node, String name, Jid jid) {
+        this.node = node;
+        this.name = name;
+        this.jid = jid;
+    }
+
     /**
      * Gets the JID.
      *

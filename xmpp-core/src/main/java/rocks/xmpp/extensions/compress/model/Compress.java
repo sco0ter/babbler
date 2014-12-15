@@ -41,6 +41,10 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlRootElement(name = "compress")
 @XmlSeeAlso({Compression.class, Compressed.class, Failure.class})
 public final class Compress implements ClientStreamElement {
+    /**
+     * http://jabber.org/protocol/compress
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/compress";
 
     @XmlElement
     private CompressionMethod method;

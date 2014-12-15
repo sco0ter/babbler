@@ -27,12 +27,18 @@ package rocks.xmpp.extensions.disco;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.disco.model.items.ItemNode;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -80,5 +86,45 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertFalse(serviceDiscoveryManager.isEnabled());
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureInfo));
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureItems));
+    }
+
+    @Test
+    public void testItemDiscovery() throws XmppException {
+
+        MockServer mockServer = new MockServer();
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager.addItem(new Item("root", "name", Jid.valueOf("test")));
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO);
+        Assert.assertEquals(result.getItems().size(), 1);
+        Assert.assertEquals(result.getItems().get(0).getNode(), "root");
+        Assert.assertEquals(result.getItems().get(0).getName(), "name");
+        Assert.assertEquals(result.getItems().get(0).getJid(), Jid.valueOf("test"));
+    }
+
+    @Test
+    public void testItemDiscoveryWithNode() throws XmppException {
+
+        MockServer mockServer = new MockServer();
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager.addItemNode(new ItemNode() {
+            @Override
+            public String getNode() {
+                return "node1";
+            }
+
+            @Override
+            public List<Item> getItems() {
+                return Arrays.asList(new Item("node1"));
+            }
+        });
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO, "node1");
+        Assert.assertEquals(result.getItems().size(), 1);
+        Assert.assertEquals(result.getItems().get(0).getNode(), "node1");
     }
 }

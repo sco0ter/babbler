@@ -32,9 +32,7 @@ import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
-import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -118,7 +116,9 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                                 xmppSession.send(iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions())));
                                 e.consume();
                             } else {
-                                xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                                // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                                // Treat info discovery the same as item discovery.
+                                xmppSession.send(iq.createResult(new InfoDiscovery()));
                                 e.consume();
                             }
                         }
@@ -131,10 +131,11 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                             } else {
                                 ItemNode itemNode = itemNodeMap.get(itemDiscovery.getNode());
                                 if (itemNode != null) {
-                                    xmppSession.send(iq.createResult(new ItemDiscovery(itemNode.getNode(), items)));
+                                    xmppSession.send(iq.createResult(new ItemDiscovery(itemNode.getNode(), itemNode.getItems())));
                                     e.consume();
                                 } else {
-                                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                                    // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                                    xmppSession.send(iq.createResult(new ItemDiscovery()));
                                     e.consume();
                                 }
                             }

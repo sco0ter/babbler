@@ -35,7 +35,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public final class HashManager extends ExtensionManager {
 
-    private final static String[] REGISTERED_HASH_ALGORITHMS = new String[]{"md5", "sha-1", "sha-224", "sha-256", "sha-384", "sha-512"};
+    private static final String[] REGISTERED_HASH_ALGORITHMS = new String[]{"md5", "sha-1", "sha-224", "sha-256", "sha-384", "sha-512"};
 
     private HashManager(XmppSession xmppSession) {
         super(xmppSession, "urn:xmpp:hashes:1");

@@ -180,7 +180,7 @@ public final class Event {
             return redirect;
         }
 
-        private final static class Redirect {
+        private static final class Redirect {
             @XmlAttribute(name = "uri")
             private URI uri;
 

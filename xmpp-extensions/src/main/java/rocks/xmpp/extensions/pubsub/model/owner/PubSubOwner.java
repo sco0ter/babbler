@@ -477,7 +477,7 @@ public final class PubSubOwner {
             return redirect;
         }
 
-        private final static class Redirect {
+        private static final class Redirect {
             @XmlAttribute(name = "uri")
             private URI uri;
 

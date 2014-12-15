@@ -39,6 +39,7 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -188,7 +189,8 @@ public final class RosterManager {
         List<Contact> addedContacts = new ArrayList<>();
         List<Contact> updatedContacts = new ArrayList<>();
         List<Contact> removedContacts = new ArrayList<>();
-        Collections.sort(roster.getContacts());
+        List<Contact> contacts = new ArrayList<>(roster.getContacts());
+        Collections.sort(contacts);
         synchronized (this) {
             if (!isRosterPush) {
                 rosterGroupMap.clear();
@@ -196,7 +198,7 @@ public final class RosterManager {
             }
 
             // Loop through the new roster and compare it with the old one.
-            for (Contact contact : roster.getContacts()) {
+            for (Contact contact : contacts) {
                 Contact oldContact = contactMap.get(contact.getJid());
                 if (contact.getSubscription() == Contact.Subscription.REMOVE) {
                     contactMap.remove(contact.getJid());
@@ -406,9 +408,7 @@ public final class RosterManager {
         if (contact == null) {
             throw new IllegalArgumentException("contact must not be null.");
         }
-        Roster roster = new Roster();
-        roster.getContacts().add(contact);
-        xmppSession.query(new IQ(IQ.Type.SET, roster));
+        xmppSession.query(new IQ(IQ.Type.SET, new Roster(contact)));
         if (requestSubscription) {
             xmppSession.getPresenceManager().requestSubscription(contact.getJid(), status);
         }
@@ -433,10 +433,7 @@ public final class RosterManager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void removeContact(Jid jid) throws XmppException {
-        Roster roster = new Roster();
-        Contact contact = new Contact(jid);
-        contact.setSubscription(Contact.Subscription.REMOVE);
-        roster.getContacts().add(contact);
+        Roster roster = new Roster(new Contact(jid, null, false, Contact.Subscription.REMOVE));
         xmppSession.query(new IQ(IQ.Type.SET, roster));
     }
 

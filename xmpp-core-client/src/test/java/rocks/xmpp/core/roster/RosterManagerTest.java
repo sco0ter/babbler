@@ -75,29 +75,21 @@ public class RosterManagerTest extends BaseTest {
             }
         });
 
-        Roster roster1 = new Roster();
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact1@domain")));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact2@domain")));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact3@domain")));
+        Roster roster1 = new Roster(new Contact(Jid.valueOf("contact1@domain")),
+                new Contact(Jid.valueOf("contact2@domain")),
+                new Contact(Jid.valueOf("contact3@domain")));
         rosterManager.updateRoster(roster1, false);
         rosterPushCount[0]++;
 
-        Roster roster2 = new Roster();
-        roster2.getContacts().add(new Contact(Jid.valueOf("contact4@domain")));
+        Roster roster2 = new Roster(new Contact(Jid.valueOf("contact4@domain")));
         rosterManager.updateRoster(roster2, true);
 
         rosterPushCount[0]++;
-        Roster roster3 = new Roster();
-        Contact contact = new Contact(Jid.valueOf("contact2@domain"));
-        contact.setSubscription(Contact.Subscription.REMOVE);
-        roster3.getContacts().add(contact);
+        Roster roster3 = new Roster(new Contact(Jid.valueOf("contact2@domain"), null, false, Contact.Subscription.REMOVE));
         rosterManager.updateRoster(roster3, true);
 
         rosterPushCount[0]++;
-        Roster roster4 = new Roster();
-        Contact contact2 = new Contact(Jid.valueOf("contact1@domain"));
-        contact2.setName("Name");
-        roster4.getContacts().add(contact2);
+        Roster roster4 = new Roster(new Contact(Jid.valueOf("contact1@domain"), "Name"));
         rosterManager.updateRoster(roster4, true);
     }
 
@@ -105,12 +97,11 @@ public class RosterManagerTest extends BaseTest {
     public void testRosterGroups() {
         RosterManager rosterManager = new RosterManager(new TestXmppSession());
 
-        Roster roster1 = new Roster();
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact1@domain"), "contact1", "Group1"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact2@domain"), "contact2", "Group2"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact4@domain"), "contact4", "Group3"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact5@domain"), "contact5", "Group3"));
+        Roster roster1 = new Roster(new Contact(Jid.valueOf("contact1@domain"), "contact1", "Group1"),
+                new Contact(Jid.valueOf("contact2@domain"), "contact2", "Group2"),
+                new Contact(Jid.valueOf("contact4@domain"), "contact4", "Group3"),
+                new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3"),
+                new Contact(Jid.valueOf("contact5@domain"), "contact5", "Group3"));
         rosterManager.updateRoster(roster1, false);
 
         List<ContactGroup> list = new ArrayList<>(rosterManager.getContactGroups());
@@ -131,10 +122,9 @@ public class RosterManagerTest extends BaseTest {
     public void testNestedRosterGroups() {
         RosterManager rosterManager = new RosterManager(new TestXmppSession());
         rosterManager.setGroupDelimiter("::");
-        Roster roster1 = new Roster();
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3::SubGroup"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact4@domain"), "contact4", "Group3::SubGroup::3rdLevel"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact5@domain"), "contact5", "Group3"));
+        Roster roster1 = new Roster(new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3::SubGroup"),
+                new Contact(Jid.valueOf("contact4@domain"), "contact4", "Group3::SubGroup::3rdLevel"),
+                new Contact(Jid.valueOf("contact5@domain"), "contact5", "Group3"));
         rosterManager.updateRoster(roster1, false);
 
         List<ContactGroup> list = new ArrayList<>(rosterManager.getContactGroups());
@@ -161,11 +151,10 @@ public class RosterManagerTest extends BaseTest {
         RosterManager rosterManager = new RosterManager(new TestXmppSession());
 
         // Initial roster
-        Roster roster1 = new Roster();
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact1@domain"), "contact1", "group1"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact2@domain"), "contact2", "group2"));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", true, Contact.Subscription.FROM));
-        roster1.getContacts().add(new Contact(Jid.valueOf("contact4@domain"), "contact4", true, Contact.Subscription.FROM, "group2"));
+        Roster roster1 = new Roster(new Contact(Jid.valueOf("contact1@domain"), "contact1", "group1"),
+                new Contact(Jid.valueOf("contact2@domain"), "contact2", "group2"),
+                new Contact(Jid.valueOf("contact3@domain"), "contact3", true, Contact.Subscription.FROM),
+                new Contact(Jid.valueOf("contact4@domain"), "contact4", true, Contact.Subscription.FROM, "group2"));
         rosterManager.updateRoster(roster1, false);
 
         Assert.assertEquals(rosterManager.getUnaffiliatedContacts().size(), 1);
@@ -174,8 +163,7 @@ public class RosterManagerTest extends BaseTest {
         Assert.assertEquals(groups.get(0).getContacts().size(), 1);
         Assert.assertEquals(groups.get(1).getContacts().size(), 2);
 
-        Roster roster2 = new Roster();
-        roster2.getContacts().add(new Contact(Jid.valueOf("contact3@domain"), "contact3", true, Contact.Subscription.BOTH));
+        Roster roster2 = new Roster(new Contact(Jid.valueOf("contact3@domain"), "contact3", true, Contact.Subscription.BOTH));
         rosterManager.updateRoster(roster2, true);
 
         Assert.assertEquals(rosterManager.getUnaffiliatedContacts().size(), 1);
@@ -183,8 +171,7 @@ public class RosterManagerTest extends BaseTest {
 
         Assert.assertEquals(rosterManager.getContactGroups().size(), 2);
 
-        Roster roster3 = new Roster();
-        roster3.getContacts().add(new Contact(Jid.valueOf("contact2@domain"), "contact2", true, Contact.Subscription.TO, "group1"));
+        Roster roster3 = new Roster(new Contact(Jid.valueOf("contact2@domain"), "contact2", true, Contact.Subscription.TO, "group1"));
         rosterManager.updateRoster(roster3, true);
 
         groups = new ArrayList<>(rosterManager.getContactGroups());
@@ -194,9 +181,7 @@ public class RosterManagerTest extends BaseTest {
         Assert.assertTrue(contacts.get(1).isPending());
         Assert.assertEquals(groups.get(1).getContacts().size(), 1);
 
-        Roster roster4 = new Roster();
-        Contact contact2 = new Contact(Jid.valueOf("contact3@domain"), "", false, Contact.Subscription.REMOVE);
-        roster4.getContacts().add(contact2);
+        Roster roster4 = new Roster(new Contact(Jid.valueOf("contact3@domain"), "", false, Contact.Subscription.REMOVE));
         rosterManager.updateRoster(roster4, true);
         Assert.assertTrue(rosterManager.getUnaffiliatedContacts().isEmpty());
     }

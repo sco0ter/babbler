@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -77,7 +78,7 @@ public final class Contact implements Comparable<Contact> {
      * @param jid The JID.
      */
     public Contact(Jid jid) {
-        this.jid = jid;
+        this(jid, null);
     }
 
     /**
@@ -87,8 +88,7 @@ public final class Contact implements Comparable<Contact> {
      * @param name The name.
      */
     public Contact(Jid jid, String name) {
-        this.jid = jid;
-        this.name = name;
+        this(jid, name, Collections.<String>emptyList());
     }
 
     /**
@@ -99,9 +99,7 @@ public final class Contact implements Comparable<Contact> {
      * @param groups The groups for this contact.
      */
     public Contact(Jid jid, String name, String... groups) {
-        this.jid = jid;
-        this.name = name;
-        this.group.addAll(Arrays.asList(groups));
+        this(jid, name, Arrays.asList(groups));
     }
 
     /**
@@ -114,7 +112,9 @@ public final class Contact implements Comparable<Contact> {
     public Contact(Jid jid, String name, List<String> groups) {
         this.jid = jid;
         this.name = name;
-        this.group.addAll(groups);
+        if (groups != null) {
+            this.group.addAll(groups);
+        }
     }
 
     /**
@@ -145,9 +145,13 @@ public final class Contact implements Comparable<Contact> {
 
     /**
      * Gets the name of the contact.
+     * <blockquote>
+     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-name">2.1.2.4.  Name Attribute</a></cite></p>
+     * <p>The 'name' attribute of the {@code <item/>} element specifies the "handle" to be associated with the JID, as determined by the user (not the contact). Although the value of the 'name' attribute MAY have meaning to a human user, it is opaque to the server. However, the 'name' attribute MAY be used by the server for matching purposes within the context of various XMPP extensions (one possible comparison method is that described for XMPP resourceparts in [XMPP-ADDR]).</p>
+     * <p>It is OPTIONAL for a client to include the 'name' attribute when adding or updating a roster item.</p>
+     * </blockquote>
      *
      * @return The name.
-     * @see #setName(String)
      */
     public String getName() {
         return name;
@@ -162,7 +166,9 @@ public final class Contact implements Comparable<Contact> {
      * </blockquote>
      *
      * @param name The name.
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
@@ -180,7 +186,9 @@ public final class Contact implements Comparable<Contact> {
      * Sets the subscription state of the contact. A client should only set {@link Subscription#REMOVE} as other states are managed via presence stanzas.
      *
      * @param subscription The subscription.
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setSubscription(Subscription subscription) {
         this.subscription = subscription;
     }
@@ -191,7 +199,7 @@ public final class Contact implements Comparable<Contact> {
      * @return The groups.
      */
     public List<String> getGroups() {
-        return group;
+        return Collections.unmodifiableList(group);
     }
 
     /**
@@ -242,11 +250,11 @@ public final class Contact implements Comparable<Contact> {
     @Override
     public int hashCode() {
         int result = 17;
-        result = 31 * result + ((jid == null) ? 0 : jid.hashCode());
-        result = 31 * result + ((name == null) ? 0 : name.hashCode());
-        result = 31 * result + ((subscription == null) ? 0 : subscription.hashCode());
-        result = 31 * result + ((approved == null) ? 0 : approved.hashCode());
-        result = 31 * result + ((ask == null) ? 0 : ask.hashCode());
+        result = 31 * result + (jid == null ? 0 : jid.hashCode());
+        result = 31 * result + (name == null ? 0 : name.hashCode());
+        result = 31 * result + (subscription == null ? 0 : subscription.hashCode());
+        result = 31 * result + (approved == null ? 0 : approved.hashCode());
+        result = 31 * result + (ask == null ? 0 : ask.hashCode());
         result = 31 * result + group.hashCode();
         return result;
     }
@@ -356,12 +364,12 @@ public final class Contact implements Comparable<Contact> {
 
         @Override
         public Boolean unmarshal(Ask v) throws Exception {
-            return v != null && v == Ask.SUBSCRIBE;
+            return v == Ask.SUBSCRIBE;
         }
 
         @Override
         public Ask marshal(Boolean v) throws Exception {
-            return v != null ? Ask.SUBSCRIBE : null;
+            return v != null && v ? Ask.SUBSCRIBE : null;
         }
     }
 }

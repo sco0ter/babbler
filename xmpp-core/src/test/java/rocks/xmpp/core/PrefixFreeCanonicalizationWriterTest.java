@@ -59,10 +59,10 @@ public class PrefixFreeCanonicalizationWriterTest {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 
-        Roster roster = new Roster();
+
         List<Contact> contacts = new ArrayList<>();
         contacts.add(new Contact(new Jid("domain")));
-        roster.getContacts().addAll(contacts);
+        Roster roster = new Roster(contacts);
         IQ iq = new IQ("1", IQ.Type.GET, roster);
 
         marshaller.marshal(iq, prefixFreeWriter);

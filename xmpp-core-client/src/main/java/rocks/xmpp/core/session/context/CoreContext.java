@@ -43,6 +43,7 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.extensions.rsm.ResultSetManager;
 
 import java.util.*;
 
@@ -84,6 +85,7 @@ public class CoreContext {
         ));
         this.extensions.addAll(Arrays.asList(extensions));
         managers.add(ServiceDiscoveryManager.class);
+        managers.add(ResultSetManager.class);
         managers.addAll(extensionManagers);
     }
 

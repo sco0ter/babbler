@@ -22,16 +22,22 @@
  * THE SOFTWARE.
  */
 
-/**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>.
- * <p>
- * It defines an XMPP protocol extension that enables an entity to page through and otherwise manage the receipt of large result sets. The protocol can be used in the context of any XMPP protocol that might send large result sets (such as service discovery, multi-user chat, and publish-subscribe). While the requesting entity in such an interaction can explicitly request the use of result set management, an indication that result set management is in use can also be proactively included by the responding entity when returning a limited result set in response to a query.
- * </p>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = ResultSet.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.rsm.model;
+package rocks.xmpp.extensions.rsm.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+/**
+ * A result item, which can be used in the context of result set management.
+ * Possible implementations of this interface could be Service Discovery Items, Jabber Search Items, PubSub Items, etc.
+ * <p>
+ * All of these items have a UID in common to allow paging through the result set.
+ *
+ * @author Christian Schudt
+ */
+public interface ResultSetItem {
+
+    /**
+     * Gets the item id to allow paging through the result set.
+     *
+     * @return The item id.
+     */
+    String getId();
+}

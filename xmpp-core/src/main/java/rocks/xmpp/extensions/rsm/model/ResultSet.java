@@ -22,36 +22,41 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.disco.model.items;
-
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+package rocks.xmpp.extensions.rsm.model;
 
 import java.util.List;
 
 /**
- * A generic service discovery item node.
+ * A result set usually consists of a list of items and additional result set information (e.g. to mark first and last items).
  *
  * @author Christian Schudt
  */
-public interface ItemNode {
-    /**
-     * Gets the node name.
-     *
-     * @return The node.
-     */
-    String getNode();
+public final class ResultSet<T extends ResultSetItem> {
+
+    private final List<T> items;
+
+    private final ResultSetManagement resultSetManagement;
+
+    public ResultSet(List<T> items, ResultSetManagement resultSetManagement) {
+        this.items = items;
+        this.resultSetManagement = resultSetManagement;
+    }
 
     /**
      * Gets the items.
      *
      * @return The items.
      */
-    List<Item> getItems();
+    public List<T> getItems() {
+        return items;
+    }
 
     /**
-     * Gets the result set.
+     * Gets the result set info.
      *
-     * @return The result set.
+     * @return The result set info.
      */
-    ResultSetManagement getResultSetManagement();
+    public ResultSetManagement getResultSetManagement() {
+        return resultSetManagement;
+    }
 }

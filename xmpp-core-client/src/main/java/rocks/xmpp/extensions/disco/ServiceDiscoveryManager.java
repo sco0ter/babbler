@@ -41,10 +41,13 @@ import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.extensions.rsm.ResultSetManager;
+import rocks.xmpp.extensions.rsm.ResultSetProvider;
+import rocks.xmpp.extensions.rsm.model.ResultSet;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -68,7 +71,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends ExtensionManager implements InfoNode, ItemNode {
+public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private static Identity defaultIdentity = new Identity("client", "pc");
 
@@ -78,16 +81,16 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
 
     private final List<DataForm> extensions = new CopyOnWriteArrayList<>();
 
-    private final List<Item> items = new CopyOnWriteArrayList<>();
-
     private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
 
-    private final Map<String, ItemNode> itemNodeMap = new ConcurrentHashMap<>();
+    private final Map<String, ResultSetProvider<Item>> itemProviders = new ConcurrentHashMap<>();
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
-        super(xmppSession, "http://jabber.org/protocol/disco#info", "http://jabber.org/protocol/disco#items");
+        super(xmppSession, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
+
+        itemProviders.put("", new DefaultItemProvider());
 
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
@@ -109,42 +112,38 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
                     if (infoDiscovery != null) {
                         if (infoDiscovery.getNode() == null) {
                             xmppSession.send(iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions())));
-                            e.consume();
                         } else {
                             InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
                             if (infoNode != null) {
                                 xmppSession.send(iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions())));
-                                e.consume();
                             } else {
                                 // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
                                 // Treat info discovery the same as item discovery.
                                 xmppSession.send(iq.createResult(new InfoDiscovery()));
-                                e.consume();
                             }
                         }
+                        e.consume();
                     } else {
                         ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
                         if (itemDiscovery != null) {
-                            if (itemDiscovery.getNode() == null) {
-                                xmppSession.send(iq.createResult(new ItemDiscovery(items)));
-                                e.consume();
+                            ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
+                            if (itemProvider != null) {
+                                ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
+                                ItemDiscovery itemDiscoveryResult = new ItemDiscovery(resultSet.getItems(), resultSet.getResultSetManagement());
+                                xmppSession.send(iq.createResult(itemDiscoveryResult));
                             } else {
-                                ItemNode itemNode = itemNodeMap.get(itemDiscovery.getNode());
-                                if (itemNode != null) {
-                                    xmppSession.send(iq.createResult(new ItemDiscovery(itemNode.getNode(), itemNode.getItems())));
-                                    e.consume();
-                                } else {
-                                    // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                                    xmppSession.send(iq.createResult(new ItemDiscovery()));
-                                    e.consume();
-                                }
+                                // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                                xmppSession.send(iq.createResult(new ItemDiscovery()));
                             }
+                            e.consume();
                         }
                     }
                 }
             }
         });
+
         setEnabled(true);
+
     }
 
     /**
@@ -168,25 +167,19 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
     }
 
     /**
-     * Since this is the "root" node, it returns null.
-     *
-     * @return null
-     */
-    @Override
-    public String getNode() {
-        return null;
-    }
-
-    /**
      * Gets an unmodifiable list of items.
      *
      * @return The items.
      * @see #addItem(rocks.xmpp.extensions.disco.model.items.Item)
      * @see #removeItem(rocks.xmpp.extensions.disco.model.items.Item)
      */
-    @Override
     public List<Item> getItems() {
-        return Collections.unmodifiableList(items);
+        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
+        if (rootItemProvider != null) {
+            return Collections.unmodifiableList(rootItemProvider.getItems());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**
@@ -196,7 +189,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #addIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      */
-    @Override
     public synchronized Set<Identity> getIdentities() {
         Set<Identity> ids;
         //  Every entity MUST have at least one identity
@@ -216,7 +208,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #addFeature(rocks.xmpp.extensions.disco.model.info.Feature)
      * @see #removeFeature(rocks.xmpp.extensions.disco.model.info.Feature)
      */
-    @Override
     public Set<Feature> getFeatures() {
         return Collections.unmodifiableSet(features);
     }
@@ -229,7 +220,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #removeExtension(rocks.xmpp.extensions.data.model.DataForm)
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
-    @Override
     public List<DataForm> getExtensions() {
         return Collections.unmodifiableList(extensions);
     }
@@ -238,26 +228,36 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * Adds an item.
      *
      * @param item The item.
-     * @see #removeItem(rocks.xmpp.extensions.disco.model.items.Item)
+     * @see #removeItem(Item)
      * @see #getItems() ()
      */
     public synchronized void addItem(Item item) {
-        List<Item> oldList = Collections.unmodifiableList(new ArrayList<>(items));
-        items.add(item);
-        this.pcs.firePropertyChange("items", oldList, getItems());
+        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
+        if (rootItemProvider != null) {
+            List<Item> oldList = Collections.unmodifiableList(rootItemProvider.getItems());
+            rootItemProvider.getItems().add(item);
+            this.pcs.firePropertyChange("items", oldList, getItems());
+        } else {
+            throw new IllegalStateException("Root item provider is null");
+        }
     }
 
     /**
      * Removes an item.
      *
      * @param item The item.
-     * @see #addItem(rocks.xmpp.extensions.disco.model.items.Item)
+     * @see #addItem(Item)
      * @see #getItems()
      */
     public synchronized void removeItem(Item item) {
-        List<Item> oldList = Collections.unmodifiableList(new ArrayList<>(items));
-        items.remove(item);
-        this.pcs.firePropertyChange("items", oldList, getItems());
+        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
+        if (rootItemProvider != null) {
+            List<Item> oldList = Collections.unmodifiableList(rootItemProvider.getItems());
+            rootItemProvider.getItems().remove(item);
+            this.pcs.firePropertyChange("items", oldList, getItems());
+        } else {
+            throw new IllegalStateException("Root item provider is null");
+        }
     }
 
     /**
@@ -268,7 +268,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #getIdentities()
      */
     public synchronized void addIdentity(Identity identity) {
-        Set<Identity> oldList = Collections.unmodifiableSet(new HashSet<>(identities));
+        Set<Identity> oldList = Collections.unmodifiableSet(identities);
         identities.add(identity);
         this.pcs.firePropertyChange("identities", oldList, getIdentities());
     }
@@ -281,7 +281,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #getIdentities()
      */
     public synchronized void removeIdentity(Identity identity) {
-        Set<Identity> oldList = Collections.unmodifiableSet(new HashSet<>(identities));
+        Set<Identity> oldList = Collections.unmodifiableSet(identities);
         identities.remove(identity);
         this.pcs.firePropertyChange("identities", oldList, getIdentities());
     }
@@ -295,7 +295,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #getFeatures()
      */
     public synchronized void addFeature(Feature feature) {
-        Set<Feature> oldList = Collections.unmodifiableSet(new HashSet<>(features));
+        Set<Feature> oldList = Collections.unmodifiableSet(features);
         features.add(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
@@ -308,7 +308,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #getFeatures()
      */
     public synchronized void removeFeature(Feature feature) {
-        Set<Feature> oldList = Collections.unmodifiableSet(new HashSet<>(features));
+        Set<Feature> oldList = Collections.unmodifiableSet(features);
         features.remove(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
@@ -322,7 +322,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public synchronized void addExtension(DataForm extension) {
-        List<DataForm> oldList = Collections.unmodifiableList(new ArrayList<>(extensions));
+        List<DataForm> oldList = Collections.unmodifiableList(extensions);
         extensions.add(extension);
         this.pcs.firePropertyChange("extensions", oldList, getExtensions());
     }
@@ -336,7 +336,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public synchronized void removeExtension(DataForm extension) {
-        List<DataForm> oldList = Collections.unmodifiableList(new ArrayList<>(extensions));
+        List<DataForm> oldList = Collections.unmodifiableList(extensions);
         extensions.remove(extension);
         this.pcs.firePropertyChange("extensions", oldList, getExtensions());
     }
@@ -376,8 +376,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @see #discoverInformation(rocks.xmpp.core.Jid)
      */
     public InfoNode discoverInformation(Jid jid, String node) throws XmppException {
-        IQ iq = new IQ(jid, IQ.Type.GET, new InfoDiscovery(node));
-        IQ result = xmppSession.query(iq);
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new InfoDiscovery(node)));
         return result.getExtension(InfoDiscovery.class);
     }
 
@@ -390,7 +389,19 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid) throws XmppException {
-        return discoverItems(jid, null);
+        return discoverItems(jid, null, null);
+    }
+
+    /**
+     * Discovers item associated with another XMPP entity.
+     *
+     * @param jid The JID.
+     * @return The discovered items.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     */
+    public ItemNode discoverItems(Jid jid, ResultSetManagement resultSet) throws XmppException {
+        return discoverItems(jid, null, resultSet);
     }
 
     /**
@@ -403,9 +414,20 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node) throws XmppException {
-        IQ iq = new IQ(IQ.Type.GET, new ItemDiscovery(node));
-        iq.setTo(jid);
-        IQ result = xmppSession.query(iq);
+        return discoverItems(jid, node, null);
+    }
+
+    /**
+     * Discovers item associated with another XMPP entity.
+     *
+     * @param jid  The JID.
+     * @param node The node.
+     * @return The discovered items.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     */
+    public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSet) throws XmppException {
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSet)));
         return result.getExtension(ItemDiscovery.class);
     }
 
@@ -428,20 +450,35 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements I
     }
 
     /**
-     * Adds an item node.
+     * Sets an item provider for the root node. This method is similar to {@link #addItem(Item)}.
+     * The difference is that this method adds a new items to a specified node to the item hierarchy, whereas {@link #addItem(Item)} adds new items to the root node.
+     * <p>
+     * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
-     * @param itemNode The item node.
+     * @param itemProvider The item provider.
      */
-    public void addItemNode(ItemNode itemNode) {
-        itemNodeMap.put(itemNode.getNode(), itemNode);
+    public void setItemProvider(ResultSetProvider<Item> itemProvider) {
+        if (itemProvider == null) {
+            itemProviders.remove("");
+        } else {
+            itemProviders.put("", itemProvider);
+        }
     }
 
     /**
-     * Removes an item node.
+     * Sets an item provider for a node. This method is similar to {@link #addItem(Item)}.
+     * The difference is that this method adds a new items to a specified node to the item hierarchy, whereas {@link #addItem(Item)} adds new items to the root node.
+     * <p>
+     * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
-     * @param node The item node.
+     * @param node         The node name.
+     * @param itemProvider The item provider.
      */
-    public void removeItemNode(String node) {
-        itemNodeMap.remove(node);
+    public void setItemProvider(String node, ResultSetProvider<Item> itemProvider) {
+        if (itemProvider == null) {
+            itemProviders.remove(node);
+        } else {
+            itemProviders.put(node, itemProvider);
+        }
     }
 }

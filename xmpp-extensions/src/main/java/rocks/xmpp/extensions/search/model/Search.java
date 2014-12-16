@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.search.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.rsm.model.ResultSet;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -73,7 +73,7 @@ public final class Search {
     private DataForm form;
 
     @XmlElementRef
-    private ResultSet resultSet;
+    private ResultSetManagement resultSet;
 
     /**
      * Creates an empty search request.
@@ -105,7 +105,7 @@ public final class Search {
      * @param email     The email.
      * @param resultSet The result set information.
      */
-    public Search(String first, String last, String nick, String email, ResultSet resultSet) {
+    public Search(String first, String last, String nick, String email, ResultSetManagement resultSet) {
         this.first = first;
         this.last = last;
         this.nick = nick;
@@ -186,7 +186,7 @@ public final class Search {
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
      */
-    public ResultSet getResultSet() {
+    public ResultSetManagement getResultSet() {
         return resultSet;
     }
 

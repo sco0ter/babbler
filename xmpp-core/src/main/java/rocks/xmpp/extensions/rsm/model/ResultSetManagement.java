@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0059.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "set")
-public final class ResultSet {
+public final class ResultSetManagement {
 
     /**
      * http://jabber.org/protocol/rsm
@@ -63,7 +63,7 @@ public final class ResultSet {
     @XmlElement(name = "last")
     private String last;
 
-    private ResultSet() {
+    private ResultSetManagement() {
     }
 
     /**
@@ -73,34 +73,23 @@ public final class ResultSet {
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#limit">2.1 Limiting the Number of Items</a>
      */
-    public static ResultSet forLimit(int limit) {
-        ResultSet resultSet = new ResultSet();
+    public static ResultSetManagement forLimit(int limit) {
+        ResultSetManagement resultSet = new ResultSetManagement();
         resultSet.max = limit;
         return resultSet;
     }
 
     /**
-     * Gets a result set, which requests the first page.
-     *
-     * @param itemCount The item count per page.
-     * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
-     */
-    public static ResultSet forFirstPage(int itemCount) {
-        return forLimit(itemCount);
-    }
-
-    /**
      * Gets a result set, which requests the next page after a specified item.
      *
-     * @param itemCount The item count per page.
-     * @param id        The id of the last item of the previous page. This should be the {@link #getLastItem()} ()} of the previous page.
+     * @param max The item count per page.
+     * @param id  The id of the last item of the previous page. This should be the {@link #getLastItem()} ()} of the previous page.
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
      */
-    public static ResultSet forNextPage(int itemCount, String id) {
-        ResultSet resultSet = new ResultSet();
-        resultSet.max = itemCount;
+    public static ResultSetManagement forNextPage(int max, String id) {
+        ResultSetManagement resultSet = new ResultSetManagement();
+        resultSet.max = max;
         resultSet.after = id;
         return resultSet;
     }
@@ -108,14 +97,14 @@ public final class ResultSet {
     /**
      * Gets a result set, which requests the previous page before a specified item.
      *
-     * @param itemCount The item count per page.
-     * @param id        The id of the first item of the next page. This should be the {@link #getFirstItem()} of the next page.
+     * @param max The item count per page.
+     * @param id  The id of the first item of the next page. This should be the {@link #getFirstItem()} of the next page.
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#backwards">2.3 Paging Backwards Through a Result Set</a>
      */
-    public static ResultSet forPreviousPage(int itemCount, String id) {
-        ResultSet resultSet = new ResultSet();
-        resultSet.max = itemCount;
+    public static ResultSetManagement forPreviousPage(int max, String id) {
+        ResultSetManagement resultSet = new ResultSetManagement();
+        resultSet.max = max;
         resultSet.before = id;
         return resultSet;
     }
@@ -123,13 +112,13 @@ public final class ResultSet {
     /**
      * Gets a result set, which requests the last page.
      *
-     * @param itemCount The item count per page.
+     * @param limit The item count per page.
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#last">2.5 Requesting the Last Page in a Result Set</a>
      */
-    public static ResultSet forLastPage(int itemCount) {
-        ResultSet resultSet = new ResultSet();
-        resultSet.max = itemCount;
+    public static ResultSetManagement forLastPage(int limit) {
+        ResultSetManagement resultSet = new ResultSetManagement();
+        resultSet.max = limit;
         resultSet.before = "";
         return resultSet;
     }
@@ -137,15 +126,46 @@ public final class ResultSet {
     /**
      * Gets a result set, which starts at a particular index.
      *
-     * @param itemCount The item count per page.
-     * @param index     The index to start from.
+     * @param limit The item count per page.
+     * @param index The index to start from.
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
      */
-    public static ResultSet forIndex(int itemCount, int index) {
-        ResultSet resultSet = new ResultSet();
-        resultSet.max = itemCount;
+    public static ResultSetManagement forLimit(int limit, int index) {
+        ResultSetManagement resultSet = new ResultSetManagement();
+        resultSet.max = limit;
         resultSet.index = index;
+        return resultSet;
+    }
+
+    /**
+     * Gets a result set, which has a count information.
+     *
+     * @param count The item count per page.
+     * @return The result set.
+     * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
+     */
+    public static ResultSetManagement forCount(int count) {
+        ResultSetManagement resultSet = new ResultSetManagement();
+        resultSet.count = count;
+        return resultSet;
+    }
+
+    /**
+     * Gets a result set, which has a count information, including first and last item.
+     *
+     * @param count The item count per page.
+     * @param index The index of the first item.
+     * @param first The first item.
+     * @param last  The last item.
+     * @return The result set.
+     * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
+     */
+    public static ResultSetManagement forCount(Integer count, Integer index, String first, String last) {
+        ResultSetManagement resultSet = new ResultSetManagement();
+        resultSet.count = count;
+        resultSet.first = new First(index, first);
+        resultSet.last = last;
         return resultSet;
     }
 
@@ -155,7 +175,7 @@ public final class ResultSet {
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#count">2.7 Getting the Item Count</a>
      */
-    public static ResultSet forItemCount() {
+    public static ResultSetManagement forItemCount() {
         return forLimit(0);
     }
 
@@ -193,5 +213,41 @@ public final class ResultSet {
      */
     public String getLastItem() {
         return last;
+    }
+
+    /**
+     * Gets the max size.
+     *
+     * @return The max size.
+     */
+    public Integer getMaxSize() {
+        return max;
+    }
+
+    /**
+     * Gets the 'after' element.
+     *
+     * @return The 'after' element.
+     */
+    public String getAfter() {
+        return after;
+    }
+
+    /**
+     * Gets the 'before' element.
+     *
+     * @return The 'before' element.
+     */
+    public String getBefore() {
+        return before;
+    }
+
+    /**
+     * Gets the index.
+     *
+     * @return The index.
+     */
+    public Integer getIndex() {
+        return index;
     }
 }

@@ -22,36 +22,28 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.disco.model.items;
+package rocks.xmpp.extensions.rsm.model;
 
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
-
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
- * A generic service discovery item node.
- *
  * @author Christian Schudt
  */
-public interface ItemNode {
-    /**
-     * Gets the node name.
-     *
-     * @return The node.
-     */
-    String getNode();
+final class First {
 
-    /**
-     * Gets the items.
-     *
-     * @return The items.
-     */
-    List<Item> getItems();
+    @XmlAttribute(name = "index")
+    Integer index;
 
-    /**
-     * Gets the result set.
-     *
-     * @return The result set.
-     */
-    ResultSetManagement getResultSetManagement();
+    @XmlValue
+    String value;
+
+    private First() {
+    }
+
+    First(Integer index, String value) {
+        this.index = index;
+        this.value = value;
+    }
 }

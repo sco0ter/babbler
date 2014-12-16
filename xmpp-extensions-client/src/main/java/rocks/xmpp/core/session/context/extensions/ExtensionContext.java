@@ -92,7 +92,7 @@ import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.extensions.rpc.model.Rpc;
-import rocks.xmpp.extensions.rsm.model.ResultSet;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.extensions.search.model.Search;
 import rocks.xmpp.extensions.shim.model.Headers;
@@ -178,7 +178,7 @@ public class ExtensionContext extends CoreContext {
                 Search.class,
 
                 // XEP-0059: Result Set Management
-                ResultSet.class,
+                ResultSetManagement.class,
 
                 // XEP-0060: Publish-Subscribe
                 PubSub.class,

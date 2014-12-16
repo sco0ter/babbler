@@ -24,8 +24,11 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +56,9 @@ public final class ItemDiscovery implements ItemNode {
     @XmlAttribute(name = "node")
     private String node;
 
+    @XmlElementRef
+    private ResultSetManagement resultSetManagement;
+
     /**
      * Creates an empty element, used for item discovery requests.
      */
@@ -69,6 +75,16 @@ public final class ItemDiscovery implements ItemNode {
     }
 
     /**
+     * Creates an item discovery element with a node attribute.
+     *
+     * @param node The node.
+     */
+    public ItemDiscovery(String node, ResultSetManagement resultSetManagement) {
+        this.node = node;
+        this.resultSetManagement = resultSetManagement;
+    }
+
+    /**
      * Creates an item discovery element with nodes.
      *
      * @param items The items.
@@ -78,21 +94,46 @@ public final class ItemDiscovery implements ItemNode {
     }
 
     /**
+     * Creates an item discovery element with nodes and result set management.
+     *
+     * @param items The items.
+     */
+    public ItemDiscovery(Collection<Item> items, ResultSetManagement resultSetManagement) {
+        this(null, items, resultSetManagement);
+    }
+
+    /**
      * Creates an item discovery element with a node attribute.
      *
      * @param node  The node.
      * @param items The items.
      */
     public ItemDiscovery(String node, Collection<Item> items) {
+        this(node, items, null);
+    }
+
+    /**
+     * Creates an item discovery element with a node attribute and result set management.
+     *
+     * @param node  The node.
+     * @param items The items.
+     */
+    public ItemDiscovery(String node, Collection<Item> items, ResultSetManagement resultSetManagement) {
         this.node = node;
         if (items != null) {
             this.items.addAll(items);
         }
+        this.resultSetManagement = resultSetManagement;
     }
 
     @Override
     public List<Item> getItems() {
         return Collections.unmodifiableList(items);
+    }
+
+    @Override
+    public ResultSetManagement getResultSetManagement() {
+        return resultSetManagement;
     }
 
     @Override

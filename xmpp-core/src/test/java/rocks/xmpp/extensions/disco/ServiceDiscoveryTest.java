@@ -168,4 +168,22 @@ public class ServiceDiscoveryTest extends XmlTest {
         Assert.assertEquals(infoDiscovery.getExtensions().size(), 1);
         Assert.assertEquals(infoDiscovery.getExtensions().get(0).getType(), DataForm.Type.RESULT);
     }
+
+    @Test
+    public void unmarshalServiceDiscoveryWithResultSet() throws JAXBException, XMLStreamException {
+        String xml = "<iq type='set' from='stpeter@jabber.org/roundabout' to='conference.jabber.org' id='ex3'>\n" +
+                "  <query xmlns='http://jabber.org/protocol/disco#items'>\n" +
+                "    <set xmlns='http://jabber.org/protocol/rsm'>\n" +
+                "      <max>20</max>\n" +
+                "      <after>4da91d4b330112f683dddaebf93180b1bd25e95f</after>\n" +
+                "    </set>\n" +
+                "  </query>\n" +
+                "</iq>\n";
+        IQ iq = unmarshal(xml, IQ.class);
+        ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
+        Assert.assertNotNull(itemDiscovery);
+        Assert.assertNotNull(itemDiscovery.getResultSetManagement());
+        Assert.assertEquals(itemDiscovery.getResultSetManagement().getMaxSize(), Integer.valueOf(20));
+    }
+
 }

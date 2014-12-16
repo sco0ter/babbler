@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.rsm;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.rsm.model.ResultSet;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -37,49 +37,52 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ResultSetTest extends XmlTest {
     protected ResultSetTest() throws JAXBException, XMLStreamException {
-        super(ResultSet.class);
+        super(ResultSetManagement.class);
     }
 
     @Test
     public void marshalItemCount() throws JAXBException, XMLStreamException {
-        String xml = marshal(ResultSet.forItemCount());
+        String xml = marshal(ResultSetManagement.forItemCount());
         Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>0</max></set>");
     }
 
     @Test
     public void marshalLimit() throws JAXBException, XMLStreamException {
-        String xml = marshal(ResultSet.forLimit(10));
-        Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max></set>");
-    }
-
-    @Test
-    public void marshalForFirstPage() throws JAXBException, XMLStreamException {
-        String xml = marshal(ResultSet.forFirstPage(10));
+        String xml = marshal(ResultSetManagement.forLimit(10));
         Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max></set>");
     }
 
     @Test
     public void marshalForNextPage() throws JAXBException, XMLStreamException {
-        String xml = marshal(ResultSet.forNextPage(10, "next"));
+        String xml = marshal(ResultSetManagement.forNextPage(10, "next"));
         Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max><after>next</after></set>");
     }
 
     @Test
     public void marshalForLastPage() throws JAXBException, XMLStreamException {
-        String xml = marshal(ResultSet.forLastPage(10));
+        String xml = marshal(ResultSetManagement.forLastPage(10));
         Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max><before></before></set>");
     }
 
     @Test
     public void marshalForPreviousPage() throws JAXBException, XMLStreamException {
-        String xml = marshal(ResultSet.forPreviousPage(10, "previous"));
+        String xml = marshal(ResultSetManagement.forPreviousPage(10, "previous"));
         Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max><before>previous</before></set>");
     }
 
     @Test
     public void marshalForIndex() throws JAXBException, XMLStreamException {
-        String xml = marshal(ResultSet.forIndex(10, 371));
+        String xml = marshal(ResultSetManagement.forLimit(10, 371));
         Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max><index>371</index></set>");
+    }
+
+    @Test
+    public void marshalForCount() throws JAXBException, XMLStreamException {
+        String xml = marshal(ResultSetManagement.forCount(10));
+        Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><count>10</count></set>");
+
+        String xml2 = marshal(ResultSetManagement.forCount(10, 1, "first", "last"));
+        Assert.assertEquals(xml2, "<set xmlns=\"http://jabber.org/protocol/rsm\"><count>10</count><first index=\"1\">first</first><last>last</last></set>");
     }
 
     @Test
@@ -89,7 +92,7 @@ public class ResultSetTest extends XmlTest {
                 "      <last>peterpan@neverland.lit</last>\n" +
                 "      <count>800</count>\n" +
                 "    </set>";
-        ResultSet set = unmarshal(xml, ResultSet.class);
+        ResultSetManagement set = unmarshal(xml, ResultSetManagement.class);
         Assert.assertNotNull(set);
         Assert.assertEquals(set.getFirstItem(), "stpeter@jabber.org");
         Assert.assertEquals(set.getFirstItemIndex(), Integer.valueOf(0));

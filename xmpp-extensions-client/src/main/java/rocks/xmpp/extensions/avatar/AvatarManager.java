@@ -219,13 +219,12 @@ public final class AvatarManager extends ExtensionManager {
                                     try {
                                         getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
                                         // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
-                                        Presence lastSentPresence = xmppSession.getPresenceManager().getLastSentPresence();
-                                        Presence presence = new Presence();
-                                        if (lastSentPresence != null) {
-                                            presence.setPriority(lastSentPresence.getPriority());
-                                            presence.getStatuses().addAll(lastSentPresence.getStatuses());
-                                            presence.setShow(lastSentPresence.getShow());
-                                            presence.setLanguage(lastSentPresence.getLanguage());
+                                        Presence lastPresence = xmppSession.getPresenceManager().getLastSentPresence();
+                                        Presence presence;
+                                        if (lastPresence != null) {
+                                            presence = new Presence(lastPresence.getType(), lastPresence.getShow(), null, null, lastPresence.getStatuses(), lastPresence.getPriority(), null, lastPresence.getLanguage(), null);
+                                        } else {
+                                            presence = new Presence();
                                         }
                                         // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
                                         xmppSession.send(presence);

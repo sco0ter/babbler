@@ -24,8 +24,18 @@
 
 package rocks.xmpp.core.stanza.model;
 
+import rocks.xmpp.core.Jid;
+
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -67,21 +77,17 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     }
 
     /**
-     * Constructs a presence of a specific type.
-     *
-     * @param type The type.
+     * Constructs an full presence with all possible values.
      */
-    protected AbstractPresence(Type type) {
-        this.type = type;
-    }
-
-    /**
-     * Constructs a presence with a specific 'show' attribute.
-     *
-     * @param show The 'show' attribute.
-     */
-    protected AbstractPresence(Show show) {
+    protected AbstractPresence(Type type, Show show, Jid to, Jid from, Collection<Status> status, Byte priority, String id, String language, StanzaError error) {
+        super(to, from, id, language, error);
         this.show = show;
+        this.type = type;
+        this.show = show;
+        if (status != null) {
+            this.status.addAll(status);
+        }
+        this.priority = priority;
     }
 
     /**
@@ -113,7 +119,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @param show The {@code <show/>} element.
      * @see #getShow()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setShow(Show show) {
         this.show = show;
     }
@@ -137,7 +145,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @param priority The priority.
      * @see #getPriority()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setPriority(byte priority) {
         this.priority = priority;
     }
@@ -158,7 +168,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @param type The type.
      * @see #getType()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setType(Type type) {
         this.type = type;
     }
@@ -174,7 +186,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      * @see #getStatus()
      */
     public final List<Status> getStatuses() {
-        return status;
+        return Collections.unmodifiableList(status);
     }
 
     /**
@@ -207,7 +219,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @param text The status text.
      * @see #getStatus() ()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setStatus(String text) {
         if (text != null) {
             for (Status s : status) {
@@ -231,6 +245,13 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
         return extensions;
     }
 
+    /**
+     * Gets the extension by this class.
+     *
+     * @param type The class.
+     * @param <T>  The type of the extension.
+     * @return The extension.
+     */
     @SuppressWarnings("unchecked")
     @Override
     public final <T> T getExtension(Class<T> type) {
@@ -429,7 +450,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
          * Sets the language.
          *
          * @param language The language.
+         * @deprecated Use constructor.
          */
+        @Deprecated
         public void setLanguage(String language) {
             this.language = language;
         }
@@ -447,7 +470,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
          * Sets the text.
          *
          * @param text The text.
+         * @deprecated Use constructor.
          */
+        @Deprecated
         public void setText(String text) {
             this.text = text;
         }

@@ -33,7 +33,11 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -171,11 +175,8 @@ public final class PresenceManager {
      * @return The id, which is used for the request.
      */
     public String requestSubscription(Jid jid, String status) {
-        Presence presence = new Presence(Presence.Type.SUBSCRIBE);
         // the value of the 'to' attribute MUST be a bare JID
-        presence.setTo(jid.asBareJid());
-        presence.setId(UUID.randomUUID().toString());
-        presence.setStatus(status);
+        Presence presence = new Presence(Presence.Type.SUBSCRIBE, jid.asBareJid(), status, UUID.randomUUID().toString());
         xmppSession.send(presence);
         return presence.getId();
     }

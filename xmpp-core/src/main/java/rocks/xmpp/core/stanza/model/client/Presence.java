@@ -24,12 +24,16 @@
 
 package rocks.xmpp.core.stanza.model.client;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The implementation of the {@code <presence/>} element for the client namespace ('jabber:client').
@@ -45,13 +49,8 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
     public Presence() {
     }
 
-    /**
-     * Constructs a presence of a specific type.
-     *
-     * @param type The type.
-     */
-    public Presence(Type type) {
-        super(type);
+    public Presence(Byte priority) {
+        this(null, null, null, null, Collections.<Status>emptyList(), priority, null, null, null);
     }
 
     /**
@@ -60,14 +59,92 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param show The 'show' attribute.
      */
     public Presence(Show show) {
-        super(show);
+        this(show, null);
     }
 
+    /**
+     * Constructs a presence with a specific 'show' attribute and priority.
+     *
+     * @param show     The 'show' attribute.
+     * @param priority The priority.
+     */
+    public Presence(Show show, Byte priority) {
+        this(null, show, null, null, Collections.<Status>emptyList(), priority, null, null, null);
+    }
+
+    /**
+     * Constructs a directed presence with a specific 'show' attribute and status.
+     *
+     * @param show   The 'show' attribute.
+     * @param to     The 'to' attribute.
+     * @param status The status.
+     */
+    public Presence(Show show, Jid to, String status) {
+        this(null, show, to, null, Arrays.asList(new Status(status)), null, null, null, null);
+    }
+
+    /**
+     * Constructs a presence of a specific type.
+     *
+     * @param type The type.
+     */
+    public Presence(Type type) {
+        this(type, null);
+    }
+
+    /**
+     * Constructs a presence of a specific type.
+     *
+     * @param type     The type.
+     * @param priority The priority.
+     */
+    public Presence(Type type, Byte priority) {
+        this(type, null, null, null, Collections.<Status>emptyList(), priority, null, null, null);
+    }
+
+    /**
+     * Constructs a directed presence, which is useful for requesting subscription or for exiting a multi-user chat.
+     *
+     * @param type   The type.
+     * @param to     The 'to' attribute.
+     * @param status The status.
+     */
+    public Presence(Type type, Jid to, String status) {
+        this(type, to, status, null);
+    }
+
+    /**
+     * Constructs a directed presence, which is useful for requesting subscription or for exiting a multi-user chat.
+     *
+     * @param type   The type.
+     * @param to     The 'to' attribute.
+     * @param status The status.
+     * @param id     The id.
+     */
+    public Presence(Type type, Jid to, String status, String id) {
+        this(type, null, to, null, Arrays.asList(new Status(status)), null, id, null, null);
+    }
+
+    /**
+     * Constructs a presence with all possible values.
+     *
+     * @param type     The type.
+     * @param show     The 'show' attribute.
+     * @param to       The 'to' attribute.
+     * @param from     The 'from' attribute.
+     * @param status   The status.
+     * @param priority The priority.
+     * @param id       The id.
+     * @param language The language.
+     * @param error    The stanza error.
+     */
+    public Presence(Type type, Show show, Jid to, Jid from, Collection<Status> status, Byte priority, String id, String language, StanzaError error) {
+        super(type, show, to, from, status, priority, id, language, error);
+    }
 
     @Override
     public Presence createError(StanzaError error) {
-        Presence presence = new Presence(Type.ERROR);
-        createError(presence, error);
-        return presence;
+        error.setBy(getTo());
+        return new Presence(Presence.Type.ERROR, getShow(), getFrom(), getTo(), getStatuses(), getPriority(), getId(), getLanguage(), error);
     }
 }

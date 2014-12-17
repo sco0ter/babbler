@@ -395,7 +395,8 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     /**
      * Discovers item associated with another XMPP entity.
      *
-     * @param jid The JID.
+     * @param jid       The JID.
+     * @param resultSet The result set management.
      * @return The discovered items.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
@@ -420,14 +421,15 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     /**
      * Discovers item associated with another XMPP entity.
      *
-     * @param jid  The JID.
-     * @param node The node.
+     * @param jid                 The JID.
+     * @param node                The node.
+     * @param resultSetManagement The result set management.
      * @return The discovered items.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
-    public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSet) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSet)));
+    public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
         return result.getExtension(ItemDiscovery.class);
     }
 

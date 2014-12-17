@@ -77,7 +77,8 @@ public final class ItemDiscovery implements ItemNode {
     /**
      * Creates an item discovery element with a node attribute.
      *
-     * @param node The node.
+     * @param node                The node.
+     * @param resultSetManagement The result set management extension.
      */
     public ItemDiscovery(String node, ResultSetManagement resultSetManagement) {
         this.node = node;
@@ -96,7 +97,8 @@ public final class ItemDiscovery implements ItemNode {
     /**
      * Creates an item discovery element with nodes and result set management.
      *
-     * @param items The items.
+     * @param items               The items.
+     * @param resultSetManagement The result set management extension.
      */
     public ItemDiscovery(Collection<Item> items, ResultSetManagement resultSetManagement) {
         this(null, items, resultSetManagement);
@@ -115,8 +117,9 @@ public final class ItemDiscovery implements ItemNode {
     /**
      * Creates an item discovery element with a node attribute and result set management.
      *
-     * @param node  The node.
-     * @param items The items.
+     * @param node                The node.
+     * @param items               The items.
+     * @param resultSetManagement The result set management extension.
      */
     public ItemDiscovery(String node, Collection<Item> items, ResultSetManagement resultSetManagement) {
         this.node = node;

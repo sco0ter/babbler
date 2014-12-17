@@ -49,7 +49,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![not supported][not supported]   [XEP-0050: Ad-Hoc Commands](http://xmpp.org/extensions/xep-0050.html)
 * ![supported][supported]           [XEP-0054: vcard-temp](http://xmpp.org/extensions/xep-0054.html)
 * ![supported][supported]           [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
-* ![in development][in development] [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
+* ![supported][supported]           [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
 * ![supported][supported]           [XEP-0060: Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)
 * ![supported][supported]           [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
 * ![supported][supported]           [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)

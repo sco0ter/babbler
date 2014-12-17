@@ -69,6 +69,8 @@ public final class Media {
     /**
      * Creates a media object with a location.
      *
+     * @param width     The width.
+     * @param height    The height.
      * @param locations The location.
      */
     public Media(int width, int height, Location... locations) {

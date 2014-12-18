@@ -224,7 +224,21 @@ public final class PubSubNode {
      * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
      */
     public SubscribeOptions getSubscriptionOptions() throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null)));
+        return getSubscriptionOptions(null);
+    }
+
+    /**
+     * Requests the subscription options for this node.
+     *
+     * @param subId The subscription id.
+     * @return The data form.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
+     * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
+     */
+    public SubscribeOptions getSubscriptionOptions(String subId) throws XmppException {
+        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), subId, null)));
         return new SubscribeOptions(result.getExtension(PubSub.class).getOptions().getDataForm());
     }
 
@@ -239,7 +253,7 @@ public final class PubSubNode {
      */
     @Deprecated
     public void submitSubscriptionOptions(DataForm dataForm) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), dataForm)));
+        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null, dataForm)));
     }
 
     /**
@@ -251,7 +265,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
     public void configureSubscription(SubscribeOptions subscribeOptions) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), subscribeOptions.getDataForm())));
+        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null, subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
     }
 
     /**

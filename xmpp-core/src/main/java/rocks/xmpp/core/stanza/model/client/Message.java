@@ -41,7 +41,7 @@ import java.util.Collections;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "message")
-@XmlType(propOrder = {"from", "id", "to", "type", "subject", "body", "thread", "extensions", "error"})
+@XmlType(propOrder = {"from", "id", "to", "type", "language", "subject", "body", "thread", "extensions", "error"})
 public final class Message extends AbstractMessage implements ClientStreamElement {
 
     public Message() {

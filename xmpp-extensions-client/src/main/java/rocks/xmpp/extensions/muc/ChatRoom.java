@@ -479,7 +479,7 @@ public final class ChatRoom extends Chat {
         if (!entered) {
             throw new IllegalStateException("You must have entered the room to change the availability status.");
         }
-        xmppSession.send(new Presence(show, roomJid.withResource(nick), status));
+        xmppSession.send(new Presence(roomJid.withResource(nick), show, status));
     }
 
     /**
@@ -623,7 +623,7 @@ public final class ChatRoom extends Chat {
         if (!entered) {
             throw new IllegalStateException("You can't exit a room, when you didn't enter it.");
         }
-        xmppSession.send(new Presence(Presence.Type.UNAVAILABLE, roomJid.withResource(nick), message));
+        xmppSession.send(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message));
         userHasExited();
 
         nick = null;

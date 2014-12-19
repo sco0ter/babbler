@@ -48,45 +48,24 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
     }
 
     /**
-     * Creates an IQ stanza with the given type. The id attribute will be generated randomly.
-     *
-     * @param type The type.
-     */
-    public IQ(Type type) {
-        // The 'id' attribute is REQUIRED for IQ stanzas.
-        super(type);
-    }
-
-    /**
      * Creates an IQ stanza with the given type and extension. The id attribute will be generated randomly.
      *
      * @param type      The type.
      * @param extension The extension.
      */
     public IQ(Type type, Object extension) {
-        super(type, extension);
-    }
-
-    /**
-     * Creates an IQ stanza with the given id and type.
-     * Not that, if the type is {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#SET} or {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#GET}, you will have to also set an extension.
-     *
-     * @param id   The id.
-     * @param type The type.
-     */
-    public IQ(String id, Type type) {
-        super(id, type, null);
+        this(type, extension, null);
     }
 
     /**
      * Creates an IQ stanza with the given id, type and extension.
      *
-     * @param id        The id.
      * @param type      The type.
      * @param extension The extension.
+     * @param id        The id.
      */
-    public IQ(String id, Type type, Object extension) {
-        super(null, null, id, type, null, extension, null);
+    public IQ(Type type, Object extension, String id) {
+        this(null, type, extension, id);
     }
 
     /**
@@ -97,34 +76,34 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
      * @param extension The extension.
      */
     public IQ(Jid to, Type type, Object extension) {
-        super(to, type, extension);
+        this(to, type, extension, null);
     }
 
     /**
      * Creates an IQ stanza with the given receiver, id, type and extension.
      *
      * @param to        The receiver.
-     * @param from      The sender.
-     * @param id        The id.
      * @param type      The type.
      * @param extension The extension.
+     * @param id        The id.
      */
-    public IQ(Jid to, Jid from, String id, Type type, Object extension) {
-        super(to, from, id, type, null, extension, null);
+    public IQ(Jid to, Type type, Object extension, String id) {
+        this(to, type, extension, id, null, null, null);
     }
 
     /**
      * Creates an IQ stanza with the given receiver, id, type, extension and error.
      *
      * @param to        The receiver.
-     * @param from      The sender.
-     * @param id        The id.
      * @param type      The type.
      * @param extension The extension.
+     * @param id        The id.
+     * @param from      The sender.
+     * @param language  The language.
      * @param error     The error.
      */
-    public IQ(Jid to, Jid from, String id, Type type, Object extension, StanzaError error) {
-        super(to, from, id, type, null, extension, error);
+    public IQ(Jid to, Type type, Object extension, String id, Jid from, String language, StanzaError error) {
+        super(to, type, extension, id, from, language, error);
     }
 
     /**
@@ -143,11 +122,11 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
      * @return The result IQ stanza.
      */
     public final IQ createResult(Object extension) {
-        return new IQ(getFrom(), getTo(), getId(), Type.RESULT, extension);
+        return new IQ(getFrom(), Type.RESULT, extension, getId(), getTo(), getLanguage(), null);
     }
 
     @Override
     public final IQ createError(StanzaError error) {
-        return new IQ(getFrom(), getTo(), getId(), Type.ERROR, null, error);
+        return new IQ(getFrom(), Type.ERROR, null, getId(), getTo(), getLanguage(), error);
     }
 }

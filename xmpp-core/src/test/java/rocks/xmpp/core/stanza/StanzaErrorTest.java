@@ -513,7 +513,7 @@ public class StanzaErrorTest extends XmlTest {
     public void marshalCondition() throws JAXBException, XMLStreamException {
         String xml = "<iq id=\"1\" type=\"error\"><error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error></iq>";
         StanzaError error = new StanzaError(new UnexpectedRequest());
-        IQ iq = new IQ(null, null, "1", AbstractIQ.Type.ERROR, null, error);
+        IQ iq = new IQ(null, AbstractIQ.Type.ERROR, null, "1", null, null, error);
         Assert.assertEquals(marshal(iq), xml);
     }
 }

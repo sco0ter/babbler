@@ -44,47 +44,37 @@ import java.util.Collections;
 @XmlType(propOrder = {"from", "id", "to", "type", "language", "show", "status", "priority", "extensions", "error"})
 public final class Presence extends AbstractPresence implements ClientStreamElement {
     /**
-     * Constructs an empty presence.
+     * Constructs an empty presence to indicate availability.
      */
     public Presence() {
     }
 
-    public Presence(Jid to) {
-        this(null, to, null, null);
-    }
-
+    /**
+     * Constructs a presence with a priority.
+     *
+     * @param priority The priority.
+     */
     public Presence(Byte priority) {
-        this(null, null, null, null, Collections.<Status>emptyList(), priority, null, null, null);
+        this(null, null, null, Collections.<Status>emptyList(), priority, null, null, null, null);
     }
 
     /**
-     * Constructs a presence with a specific 'show' attribute.
+     * Constructs a presence with a specific 'show' value.
      *
-     * @param show The 'show' attribute.
+     * @param show The 'show' value.
      */
     public Presence(Show show) {
         this(show, null);
     }
 
     /**
-     * Constructs a presence with a specific 'show' attribute and priority.
+     * Constructs a presence with a specific 'show' value and priority.
      *
-     * @param show     The 'show' attribute.
+     * @param show     The 'show' value.
      * @param priority The priority.
      */
     public Presence(Show show, Byte priority) {
-        this(null, show, null, null, Collections.<Status>emptyList(), priority, null, null, null);
-    }
-
-    /**
-     * Constructs a directed presence with a specific 'show' attribute and status.
-     *
-     * @param show   The 'show' attribute.
-     * @param to     The 'to' attribute.
-     * @param status The status.
-     */
-    public Presence(Show show, Jid to, String status) {
-        this(null, show, to, null, status != null ? Arrays.asList(new Status(status)) : Collections.<Status>emptyList(), null, null, null, null);
+        this(null, null, show, Collections.<Status>emptyList(), priority, null, null, null, null);
     }
 
     /**
@@ -103,51 +93,71 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param priority The priority.
      */
     public Presence(Type type, Byte priority) {
-        this(type, null, null, null, Collections.<Status>emptyList(), priority, null, null, null);
+        this(null, type, null, Collections.<Status>emptyList(), priority, null, null, null, null);
     }
 
     /**
-     * Constructs a directed presence, which is useful for requesting subscription or for exiting a multi-user chat.
+     * Constructs a directed presence.
      *
-     * @param type   The type.
-     * @param to     The 'to' attribute.
+     * @param to The recipient.
+     */
+    public Presence(Jid to) {
+        this(to, null, null, null);
+    }
+
+    /**
+     * Constructs a directed presence with a specific 'show' attribute and status.
+     *
+     * @param to     The recipient.
+     * @param show   The 'show' value.
      * @param status The status.
      */
-    public Presence(Type type, Jid to, String status) {
-        this(type, to, status, null);
+    public Presence(Jid to, Show show, String status) {
+        this(to, null, show, status != null ? Arrays.asList(new Status(status)) : Collections.<Status>emptyList(), null, null, null, null, null);
     }
 
     /**
      * Constructs a directed presence, which is useful for requesting subscription or for exiting a multi-user chat.
      *
+     * @param to     The recipient.
      * @param type   The type.
-     * @param to     The 'to' attribute.
+     * @param status The status.
+     */
+    public Presence(Jid to, Type type, String status) {
+        this(to, type, status, null);
+    }
+
+    /**
+     * Constructs a directed presence, which is useful for requesting subscription or for exiting a multi-user chat.
+     *
+     * @param to     The recipient.
+     * @param type   The type.
      * @param status The status.
      * @param id     The id.
      */
-    public Presence(Type type, Jid to, String status, String id) {
-        this(type, null, to, null, status != null ? Arrays.asList(new Status(status)) : Collections.<Status>emptyList(), null, id, null, null);
+    public Presence(Jid to, Type type, String status, String id) {
+        this(to, type, null, status != null ? Arrays.asList(new Status(status)) : Collections.<Status>emptyList(), null, id, null, null, null);
     }
 
     /**
      * Constructs a presence with all possible values.
      *
+     * @param to       The recipient.
      * @param type     The type.
-     * @param show     The 'show' attribute.
-     * @param to       The 'to' attribute.
-     * @param from     The 'from' attribute.
+     * @param show     The 'show' value.
      * @param status   The status.
      * @param priority The priority.
      * @param id       The id.
+     * @param from     The 'from' attribute.
      * @param language The language.
      * @param error    The stanza error.
      */
-    public Presence(Type type, Show show, Jid to, Jid from, Collection<Status> status, Byte priority, String id, String language, StanzaError error) {
-        super(type, show, to, from, status, priority, id, language, error);
+    public Presence(Jid to, Type type, Show show, Collection<Status> status, Byte priority, String id, Jid from, String language, StanzaError error) {
+        super(type, show, to, status, priority, id, from, language, error);
     }
 
     @Override
     public Presence createError(StanzaError error) {
-        return new Presence(Presence.Type.ERROR, getShow(), getFrom(), getTo(), getStatuses(), getPriority(), getId(), getLanguage(), error);
+        return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(), getLanguage(), error);
     }
 }

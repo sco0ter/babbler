@@ -79,7 +79,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     /**
      * Constructs an full presence with all possible values.
      */
-    protected AbstractPresence(Type type, Show show, Jid to, Jid from, Collection<Status> status, Byte priority, String id, String language, StanzaError error) {
+    protected AbstractPresence(Type type, Show show, Jid to, Collection<Status> status, Byte priority, String id, Jid from, String language, StanzaError error) {
         super(to, from, id, language, error);
         this.show = show;
         this.type = type;
@@ -245,13 +245,6 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
         return extensions;
     }
 
-    /**
-     * Gets the extension by this class.
-     *
-     * @param type The class.
-     * @param <T>  The type of the extension.
-     * @return The extension.
-     */
     @SuppressWarnings("unchecked")
     @Override
     public final <T> T getExtension(Class<T> type) {

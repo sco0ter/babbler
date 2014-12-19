@@ -49,7 +49,7 @@ public class EntityTimeTest extends XmlTest {
 
     @Test
     public void marshalEntityTimeRequest() throws XMLStreamException, JAXBException {
-        IQ iq = new IQ("time_1", IQ.Type.GET, new EntityTime());
+        IQ iq = new IQ(IQ.Type.GET, new EntityTime(), "time_1");
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq id=\"time_1\" type=\"get\"><time xmlns=\"urn:xmpp:time\"></time></iq>");
     }

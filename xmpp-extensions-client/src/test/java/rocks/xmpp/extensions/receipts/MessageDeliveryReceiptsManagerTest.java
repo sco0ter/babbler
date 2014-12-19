@@ -71,7 +71,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
             }
         });
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, null, "123", null, null);
+        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null);
         xmppSession1.send(message);
 
         Assert.assertTrue(messageReceived[0]);
@@ -99,7 +99,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
             }
         });
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, null, "123", null, null);
+        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null);
         xmppSession1.send(message);
 
         Assert.assertFalse(messageReceived[0]);
@@ -140,7 +140,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
             }
         });
 
-        Message message = new Message(JULIET, Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, null, null, null, "123", null, null);
+        Message message = new Message(JULIET, Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null);
         xmppSession1.send(message);
     }
 
@@ -157,7 +157,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
             }
         });
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, null, "123", null, null);
+        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null);
         xmppSession1.send(message);
     }
 

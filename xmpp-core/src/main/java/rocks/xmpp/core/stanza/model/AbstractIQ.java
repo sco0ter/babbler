@@ -77,48 +77,6 @@ public abstract class AbstractIQ extends Stanza {
     }
 
     /**
-     * Creates an IQ stanza with the given type. The id attribute will be generated randomly.
-     *
-     * @param type The type.
-     */
-    protected AbstractIQ(Type type) {
-        // The 'id' attribute is REQUIRED for IQ stanzas.
-        this(UUID.randomUUID().toString(), type, null);
-    }
-
-    /**
-     * Creates an IQ stanza with the given type and extension. The id attribute will be generated randomly.
-     *
-     * @param type      The type.
-     * @param extension The extension.
-     */
-    protected AbstractIQ(Type type, Object extension) {
-        this(UUID.randomUUID().toString(), type, extension);
-    }
-
-    /**
-     * Creates an IQ stanza with the given id, type and extension.
-     *
-     * @param id        The id.
-     * @param type      The type.
-     * @param extension The extension.
-     */
-    protected AbstractIQ(String id, Type type, Object extension) {
-        this(null, null, id, type, null, extension, null);
-    }
-
-    /**
-     * Creates an IQ stanza with the given receiver, type and extension. The id attribute will be generated randomly.
-     *
-     * @param to        The receiver.
-     * @param type      The type.
-     * @param extension The extension.
-     */
-    protected AbstractIQ(Jid to, Type type, Object extension) {
-        this(to, null, UUID.randomUUID().toString(), type, null, extension, null);
-    }
-
-    /**
      * Creates an IQ stanza with the given receiver, id, type and extension.
      *
      * @param to        The receiver.
@@ -126,11 +84,8 @@ public abstract class AbstractIQ extends Stanza {
      * @param type      The type.
      * @param extension The extension.
      */
-    protected AbstractIQ(Jid to, Jid from, String id, Type type, String language, Object extension, StanzaError error) {
-        super(to, from, id, language, error);
-        if (id == null) {
-            throw new IllegalArgumentException("id must not be null.");
-        }
+    protected AbstractIQ(Jid to, Type type, Object extension, String id, Jid from, String language, StanzaError error) {
+        super(to, from, id == null ? UUID.randomUUID().toString() : id, language, error);
         if (type == null) {
             throw new IllegalArgumentException("type must not be null.");
         }

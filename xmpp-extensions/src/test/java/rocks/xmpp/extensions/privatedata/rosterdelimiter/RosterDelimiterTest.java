@@ -64,7 +64,7 @@ public class RosterDelimiterTest extends XmlTest {
 
     @Test
     public void marshalRosterDelimiterQuery() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ("1", IQ.Type.GET, new PrivateData(new RosterDelimiter()));
+        IQ iq = new IQ(IQ.Type.GET, new PrivateData(new RosterDelimiter()), "1");
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:private\"><roster xmlns=\"roster:delimiter\"></roster></query></iq>");
     }

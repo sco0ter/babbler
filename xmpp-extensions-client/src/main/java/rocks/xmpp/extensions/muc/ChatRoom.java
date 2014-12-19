@@ -440,7 +440,7 @@ public final class ChatRoom extends Chat {
      * @param message The message.
      */
     public void sendMessage(Message message) {
-        xmppSession.send(new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(), message.getThread(), message.getParentThread(), message.getId(), message.getFrom(), message.getLanguage(), message.getError()));
+        xmppSession.send(new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(), message.getThread(), message.getParentThread(), message.getId(), message.getFrom(), message.getLanguage(), message.getExtensions(), message.getError()));
     }
 
     /**

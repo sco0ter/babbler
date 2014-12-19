@@ -40,7 +40,17 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -57,7 +67,11 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.roster.RosterEvent;
 import rocks.xmpp.core.roster.RosterListener;
 import rocks.xmpp.core.roster.model.Contact;
-import rocks.xmpp.core.session.*;
+import rocks.xmpp.core.session.ChatSession;
+import rocks.xmpp.core.session.ChatSessionEvent;
+import rocks.xmpp.core.session.ChatSessionListener;
+import rocks.xmpp.core.session.NoResponseException;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -108,12 +122,24 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.*;
-import java.util.logging.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
@@ -583,7 +609,7 @@ public class JavaFXApp extends Application {
 
                                     try {
                                         GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
-                                        geoLocationManager.publish(new GeoLocation(45.44, 12.33));
+                                        geoLocationManager.publish(GeoLocation.builder().latitude(45.44).longitude(12.33).build());
                                     } catch (XmppException e) {
                                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                     }

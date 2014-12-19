@@ -107,7 +107,7 @@ public final class PresenceManager {
                 if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
                     for (Contact contact : xmppSession.getRosterManager().getContacts()) {
                         try {
-                            xmppSession.handleElement(new Presence(null, Presence.Type.UNAVAILABLE, null, null, null, null, contact.getJid(), null, null));
+                            xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact.getJid()));
                         } catch (Exception e1) {
                             logger.log(Level.WARNING, e1.getMessage(), e1);
                         }
@@ -157,7 +157,7 @@ public final class PresenceManager {
             }
         }
 
-        return new Presence(null, Presence.Type.UNAVAILABLE, null, null, null, null, jid, null, null);
+        return new Presence(Presence.Type.UNAVAILABLE).withFrom(jid);
     }
 
     /**

@@ -148,6 +148,14 @@ public abstract class Stanza {
     }
 
     /**
+     * Creates a copy of this stanza and adds a from attribute to it.
+     *
+     * @param from The sender.
+     * @return A new stanza with a from attribute.
+     */
+    public abstract Stanza withFrom(Jid from);
+
+    /**
      * Gets the stanza's 'xml:lang' attribute.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-lang">8.1.5.  xml:lang</a></cite></p>

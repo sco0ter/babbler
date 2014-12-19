@@ -43,7 +43,6 @@ import java.util.Collections;
 @XmlRootElement(name = "message")
 @XmlType(propOrder = {"from", "id", "to", "type", "language", "subject", "body", "thread", "extensions", "error"})
 public final class Message extends AbstractMessage implements ClientStreamElement {
-
     public Message() {
         this(null);
     }
@@ -100,7 +99,7 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param thread  The thread.
      */
     public Message(Jid to, Type type, String body, String subject, String thread) {
-        this(to, type, body != null ? Arrays.asList(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Arrays.asList(new Subject(subject)) : Collections.<Subject>emptyList(), thread, null, null, null, null, null);
+        this(to, type, body != null ? Arrays.asList(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Arrays.asList(new Subject(subject)) : Collections.<Subject>emptyList(), thread, null, null, null, null, null, null);
     }
 
     /**
@@ -117,8 +116,8 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param language     The language.
      * @param error        The error.
      */
-    public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, StanzaError error) {
-        this(to, type, body != null ? Arrays.asList(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Arrays.asList(new Subject(subject)) : Collections.<Subject>emptyList(), thread, parentThread, id, from, language, error);
+    public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, Collection<Object> extensions, StanzaError error) {
+        this(to, type, body != null ? Arrays.asList(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Arrays.asList(new Subject(subject)) : Collections.<Subject>emptyList(), thread, parentThread, id, from, language, extensions, error);
     }
 
     /**
@@ -135,12 +134,17 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param language     The language.
      * @param error        The error..
      */
-    public Message(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, String id, Jid from, String language, StanzaError error) {
-        super(to, type, bodies, subjects, thread, parentThread, from, id, language, error);
+    public Message(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<Object> extensions, StanzaError error) {
+        super(to, type, bodies, subjects, thread, parentThread, from, id, language, extensions, error);
     }
 
     @Override
     public Message createError(StanzaError error) {
-        return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), error);
+        return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), error);
+    }
+
+    @Override
+    public Message withFrom(Jid from) {
+        return new Message(getTo(), getType(), getBodies(), getSubjects(), getThread(), getParentThread(), getId(), from, getLanguage(), getExtensions(), getError());
     }
 }

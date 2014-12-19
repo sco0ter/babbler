@@ -55,7 +55,7 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param priority The priority.
      */
     public Presence(Byte priority) {
-        this(null, null, null, Collections.<Status>emptyList(), priority, null, null, null, null);
+        this(null, null, null, null, priority, null, null, null, null, null);
     }
 
     /**
@@ -74,7 +74,7 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param priority The priority.
      */
     public Presence(Show show, Byte priority) {
-        this(null, null, show, Collections.<Status>emptyList(), priority, null, null, null, null);
+        this(null, null, show, null, priority, null, null, null, null, null);
     }
 
     /**
@@ -93,7 +93,7 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param priority The priority.
      */
     public Presence(Type type, Byte priority) {
-        this(null, type, null, Collections.<Status>emptyList(), priority, null, null, null, null);
+        this(null, type, null, null, priority, null, null, null, null, null);
     }
 
     /**
@@ -113,7 +113,7 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param status The status.
      */
     public Presence(Jid to, Show show, String status) {
-        this(to, null, show, status != null ? Arrays.asList(new Status(status)) : Collections.<Status>emptyList(), null, null, null, null, null);
+        this(to, null, show, status != null ? Arrays.asList(new Status(status)) : null, null, null, null, null, null, null);
     }
 
     /**
@@ -136,7 +136,7 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param id     The id.
      */
     public Presence(Jid to, Type type, String status, String id) {
-        this(to, type, null, status != null ? Arrays.asList(new Status(status)) : Collections.<Status>emptyList(), null, id, null, null, null);
+        this(to, type, null, status != null ? Arrays.asList(new Status(status)) : null, null, id, null, null, null, null);
     }
 
     /**
@@ -152,12 +152,17 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param language The language.
      * @param error    The stanza error.
      */
-    public Presence(Jid to, Type type, Show show, Collection<Status> status, Byte priority, String id, Jid from, String language, StanzaError error) {
-        super(type, show, to, status, priority, id, from, language, error);
+    public Presence(Jid to, Type type, Show show, Collection<Status> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+        super(to, type, show, status, priority, id, from, language, extensions, error);
     }
 
     @Override
     public Presence createError(StanzaError error) {
-        return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(), getLanguage(), error);
+        return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(), getLanguage(), getExtensions(), error);
+    }
+
+    @Override
+    public Presence withFrom(Jid from) {
+        return new Presence(getTo(), getType(), getShow(), getStatuses(), getPriority(), getId(), from, getLanguage(), getExtensions(), getError());
     }
 }

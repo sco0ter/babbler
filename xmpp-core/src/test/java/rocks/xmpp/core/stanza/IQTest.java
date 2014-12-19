@@ -28,6 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.roster.model.Roster;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
@@ -117,5 +119,15 @@ public class IQTest extends XmlTest {
         Assert.assertEquals(result.getId(), iq.getId());
         Assert.assertEquals(result.getTo(), iq.getFrom());
         Assert.assertEquals(result.getFrom(), iq.getTo());
+    }
+
+    @Test
+    public void testWithFrom() throws JAXBException, XMLStreamException {
+        IQ iq = new IQ(new Jid("to", "domain"), IQ.Type.GET, new Roster(), "id", new Jid("from", "domain"), null, null);
+        IQ withFrom = iq.withFrom(Jid.valueOf("from"));
+        Assert.assertEquals(withFrom.getType(), IQ.Type.GET);
+        Assert.assertEquals(withFrom.getId(), iq.getId());
+        Assert.assertEquals(withFrom.getFrom(), Jid.valueOf("from"));
+        Assert.assertNotNull(withFrom.getExtension(Roster.class));
     }
 }

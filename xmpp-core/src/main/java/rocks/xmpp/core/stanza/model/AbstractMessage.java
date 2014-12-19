@@ -72,7 +72,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param bodies The message bodies.
      * @param type   The message type.
      */
-    protected AbstractMessage(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, Jid from, String id, String language, StanzaError error) {
+    protected AbstractMessage(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, Jid from, String id, String language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, error);
         this.type = type;
         if (bodies != null) {
@@ -85,6 +85,9 @@ public abstract class AbstractMessage extends Stanza {
             this.thread = new Thread();
             this.thread.value = thread;
             this.thread.parent = parentThread;
+        }
+        if (extensions != null) {
+            this.extensions.addAll(extensions);
         }
     }
 

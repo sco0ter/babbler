@@ -129,4 +129,9 @@ public final class IQ extends AbstractIQ implements ClientStreamElement {
     public final IQ createError(StanzaError error) {
         return new IQ(getFrom(), Type.ERROR, null, getId(), getTo(), getLanguage(), error);
     }
+
+    @Override
+    public IQ withFrom(Jid from) {
+        return new IQ(getTo(), getType(), getExtension(Object.class), getId(), from, getLanguage(), getError());
+    }
 }

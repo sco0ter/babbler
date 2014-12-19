@@ -222,7 +222,7 @@ public final class AvatarManager extends ExtensionManager {
                                         Presence lastPresence = xmppSession.getPresenceManager().getLastSentPresence();
                                         Presence presence;
                                         if (lastPresence != null) {
-                                            presence = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null);
+                                            presence = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
                                         } else {
                                             presence = new Presence();
                                         }

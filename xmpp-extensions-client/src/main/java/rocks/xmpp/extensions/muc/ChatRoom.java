@@ -416,8 +416,7 @@ public final class ChatRoom extends Chat {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void changeSubject(final String subject) throws XmppException {
-        Message message = new Message(roomJid, Message.Type.GROUPCHAT);
-        message.setSubject(subject);
+        Message message = new Message(roomJid, Message.Type.GROUPCHAT, null, subject, null);
         xmppSession.sendAndAwaitMessage(message, new StanzaFilter<Message>() {
             @Override
             public boolean accept(Message message) {
@@ -441,9 +440,7 @@ public final class ChatRoom extends Chat {
      * @param message The message.
      */
     public void sendMessage(Message message) {
-        message.setType(Message.Type.GROUPCHAT);
-        message.setTo(roomJid);
-        xmppSession.send(message);
+        xmppSession.send(new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(), message.getThread(), message.getParentThread(), message.getId(), message.getFrom(), message.getLanguage(), message.getError()));
     }
 
     /**

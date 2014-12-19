@@ -80,7 +80,7 @@ public final class Presence extends AbstractPresence implements ServerStreamElem
      * @param status The status.
      */
     public Presence(Show show, Jid to, String status) {
-        this(null, show, to, null, Arrays.asList(new Status(status)), null, null, null, null);
+        this(null, show, to, null, status != null ? Arrays.asList(new Status(status)) : Collections.<Status>emptyList(), null, null, null, null);
     }
 
     /**
@@ -122,7 +122,7 @@ public final class Presence extends AbstractPresence implements ServerStreamElem
      * @param id     The id.
      */
     public Presence(Type type, Jid to, String status, String id) {
-        this(type, null, to, null, Arrays.asList(new Status(status)), null, id, null, null);
+        this(type, null, to, null, status != null ? Arrays.asList(new Status(status)) : Collections.<Status>emptyList(), null, id, null, null);
     }
 
     /**

@@ -191,10 +191,8 @@ public final class PresenceManager {
      * @return The id, which is used for the approval.
      */
     public String approveSubscription(Jid jid) {
-        Presence presence = new Presence(Presence.Type.SUBSCRIBED);
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
-        presence.setId(UUID.randomUUID().toString());
-        presence.setTo(jid);
+        Presence presence = new Presence(Presence.Type.SUBSCRIBED, jid, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
         return presence.getId();
     }
@@ -210,10 +208,8 @@ public final class PresenceManager {
      * @return The id, which is used for the subscription denial.
      */
     public String denySubscription(Jid jid) {
-        Presence presence = new Presence(Presence.Type.UNSUBSCRIBED);
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
-        presence.setId(UUID.randomUUID().toString());
-        presence.setTo(jid);
+        Presence presence = new Presence(Presence.Type.UNSUBSCRIBED, jid, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
         return presence.getId();
     }
@@ -229,10 +225,8 @@ public final class PresenceManager {
      * @return The id, which is used for the unsubscription.
      */
     public String unsubscribe(Jid jid) {
-        Presence presence = new Presence(Presence.Type.UNSUBSCRIBE);
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
-        presence.setId(UUID.randomUUID().toString());
-        presence.setTo(jid);
+        Presence presence = new Presence(Presence.Type.UNSUBSCRIBE, jid, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
         return presence.getId();
     }

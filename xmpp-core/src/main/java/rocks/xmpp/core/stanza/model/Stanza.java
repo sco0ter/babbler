@@ -77,7 +77,6 @@ public abstract class Stanza {
      * </blockquote>
      *
      * @return The JID.
-     * @see #setTo(rocks.xmpp.core.Jid)
      */
     public final Jid getTo() {
         return to;
@@ -88,7 +87,9 @@ public abstract class Stanza {
      *
      * @param to The JID.
      * @see #getTo()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setTo(Jid to) {
         this.to = to;
     }
@@ -104,7 +105,6 @@ public abstract class Stanza {
      * </blockquote>
      *
      * @return The id.
-     * @see #setId(String)
      */
     public final String getId() {
         return id;
@@ -115,7 +115,9 @@ public abstract class Stanza {
      *
      * @param id The id.
      * @see #getId()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setId(String id) {
         this.id = id;
     }
@@ -128,7 +130,6 @@ public abstract class Stanza {
      * </blockquote>
      *
      * @return The JID.
-     * @see #setFrom(rocks.xmpp.core.Jid)
      */
     public final Jid getFrom() {
         return from;
@@ -139,7 +140,9 @@ public abstract class Stanza {
      *
      * @param from The JID.
      * @see #getFrom()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setFrom(Jid from) {
         this.from = from;
     }
@@ -152,7 +155,6 @@ public abstract class Stanza {
      * </blockquote>
      *
      * @return The language.
-     * @see #setLanguage(String)
      */
     public final String getLanguage() {
         return language;
@@ -163,7 +165,9 @@ public abstract class Stanza {
      *
      * @param language The language.
      * @see #getLanguage()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setLanguage(String language) {
         this.language = language;
     }
@@ -185,7 +189,6 @@ public abstract class Stanza {
      * </blockquote>
      *
      * @return The stanza error.
-     * @see #setError(StanzaError)
      */
     public final StanzaError getError() {
         return error;
@@ -196,7 +199,9 @@ public abstract class Stanza {
      *
      * @param stanzaError The stanza error.
      * @see #getError()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setError(StanzaError stanzaError) {
         this.error = stanzaError;
     }
@@ -207,25 +212,8 @@ public abstract class Stanza {
      * @param error The error which is appended to the stanza.
      * @return The error response.
      * @see #getError()
-     * @see #createError(Stanza, StanzaError)
      */
     public abstract Stanza createError(StanzaError error);
-
-    /**
-     * Swaps the 'from' and 'to' addresses from the generated stanza and adds a 'by' attribute to the error.
-     *
-     * @param stanza The stanza to create the error for.
-     * @param error  The error.
-     * @see #createError(StanzaError)
-     */
-    protected final void createError(Stanza stanza, StanzaError error) {
-        stanza.setId(id);
-        stanza.setError(error);
-        // The entity that returns an error stanza MAY pass along its JID to the sender of the generated stanza (e.g., for diagnostic or tracking purposes) through the addition of a 'by' attribute to the <error/> child element.
-        error.setBy(to);
-        stanza.setFrom(to);
-        stanza.setTo(from);
-    }
 
     /**
      * Gets an extension by type.

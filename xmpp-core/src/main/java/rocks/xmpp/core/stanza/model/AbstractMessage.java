@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -48,12 +50,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @XmlTransient
 public abstract class AbstractMessage extends Stanza {
+    @XmlElement(name = "subject")
+    private final List<Subject> subject = new CopyOnWriteArrayList<>();
 
     @XmlElement(name = "body")
     private final List<Body> body = new CopyOnWriteArrayList<>();
-
-    @XmlElement(name = "subject")
-    private final List<Subject> subject = new CopyOnWriteArrayList<>();
 
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new CopyOnWriteArrayList<>();
@@ -64,41 +65,27 @@ public abstract class AbstractMessage extends Stanza {
     @XmlElement
     private Thread thread;
 
-    @SuppressWarnings("unused")
-    protected AbstractMessage() {
-    }
-
     /**
-     * Constructs an empty message.
+     * Constructs a message with all possible values.
      *
-     * @param to The recipient.
+     * @param to     The recipient.
+     * @param bodies The message bodies.
+     * @param type   The message type.
      */
-    protected AbstractMessage(Jid to) {
-        setTo(to);
-    }
-
-    /**
-     * Constructs a message with a type.
-     *
-     * @param to   The recipient.
-     * @param type The message type.
-     */
-    protected AbstractMessage(Jid to, Type type) {
-        setTo(to);
+    protected AbstractMessage(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, Jid from, String id, String language, StanzaError error) {
+        super(to, from, id, language, error);
         this.type = type;
-    }
-
-    /**
-     * Constructs a message with body and type.
-     *
-     * @param to   The recipient.
-     * @param body The message body.
-     * @param type The message type.
-     */
-    protected AbstractMessage(Jid to, Type type, String body) {
-        setTo(to);
-        this.body.add(new Body(body));
-        this.type = type;
+        if (bodies != null) {
+            this.body.addAll(bodies);
+        }
+        if (subjects != null) {
+            this.subject.addAll(subjects);
+        }
+        if (thread != null || parentThread != null) {
+            this.thread = new Thread();
+            this.thread.value = thread;
+            this.thread.parent = parentThread;
+        }
     }
 
     /**
@@ -108,11 +95,11 @@ public abstract class AbstractMessage extends Stanza {
      * <p>Multiple instances of the {@code <body/>} element MAY be included in a message stanza for the purpose of providing alternate versions of the same body, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
      * </blockquote>
      *
-     * @return The bodies.
+     * @return The unmodifiable list of bodies.
      * @see #getBody()
      */
     public final List<Body> getBodies() {
-        return body;
+        return Collections.unmodifiableList(body);
     }
 
     /**
@@ -128,7 +115,6 @@ public abstract class AbstractMessage extends Stanza {
      *
      * @return The body or null.
      * @see #getBodies()
-     * @see #setBody(String)
      */
     public final String getBody() {
         for (Body body : this.body) {
@@ -147,7 +133,9 @@ public abstract class AbstractMessage extends Stanza {
      *
      * @param body The body text.
      * @see #getBody()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setBody(String body) {
         if (body != null) {
             for (Body b : this.body) {
@@ -169,11 +157,11 @@ public abstract class AbstractMessage extends Stanza {
      * <p>Multiple instances of the {@code <subject/>} element MAY be included for the purpose of providing alternate versions of the same subject, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
      * </blockquote>
      *
-     * @return The subjects.
+     * @return The unmodifiable list of subjects.
      * @see #getSubject()
      */
     public final List<Subject> getSubjects() {
-        return subject;
+        return Collections.unmodifiableList(subject);
     }
 
     /**
@@ -187,7 +175,6 @@ public abstract class AbstractMessage extends Stanza {
      *
      * @return The subject or null.
      * @see #getSubjects()
-     * @see #setSubject(String)
      */
     public final String getSubject() {
         for (Subject subject : this.subject) {
@@ -206,7 +193,9 @@ public abstract class AbstractMessage extends Stanza {
      *
      * @param subject The subject text.
      * @see #getSubject()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setSubject(String subject) {
         if (subject != null) {
             for (Subject s : this.subject) {
@@ -229,7 +218,6 @@ public abstract class AbstractMessage extends Stanza {
      * </blockquote>
      *
      * @return The message type.
-     * @see #setType(Type)
      */
     public final Type getType() {
         return type;
@@ -240,7 +228,9 @@ public abstract class AbstractMessage extends Stanza {
      *
      * @param type The message type.
      * @see #getType()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setType(Type type) {
         this.type = type;
     }
@@ -253,7 +243,6 @@ public abstract class AbstractMessage extends Stanza {
      * </blockquote>
      *
      * @return The thread.
-     * @see #setThread(String)
      */
     public final String getThread() {
         if (thread != null) {
@@ -267,7 +256,9 @@ public abstract class AbstractMessage extends Stanza {
      *
      * @param thread The thread.
      * @see #getThread()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setThread(String thread) {
         if (this.thread == null) {
             this.thread = new Thread();
@@ -283,7 +274,6 @@ public abstract class AbstractMessage extends Stanza {
      * </blockquote>
      *
      * @return The parent thread.
-     * @see #setParentThread(String)
      */
     public final String getParentThread() {
         if (thread != null) {
@@ -297,7 +287,9 @@ public abstract class AbstractMessage extends Stanza {
      *
      * @param parent The parent thread.
      * @see #getParentThread()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public final void setParentThread(String parent) {
         if (this.thread == null) {
             this.thread = new Thread();
@@ -432,7 +424,9 @@ public abstract class AbstractMessage extends Stanza {
          * Sets the language.
          *
          * @param language The language.
+         * @deprecated Use constructor.
          */
+        @Deprecated
         public void setLanguage(String language) {
             this.language = language;
         }
@@ -450,7 +444,9 @@ public abstract class AbstractMessage extends Stanza {
          * Sets the text.
          *
          * @param text The text.
+         * @deprecated Use constructor.
          */
+        @Deprecated
         public void setText(String text) {
             this.text = text;
         }
@@ -481,7 +477,6 @@ public abstract class AbstractMessage extends Stanza {
          */
         @SuppressWarnings("unused")
         private Subject() {
-
         }
 
         /**
@@ -517,7 +512,9 @@ public abstract class AbstractMessage extends Stanza {
          * Sets the language.
          *
          * @param language The language.
+         * @deprecated Use constructor.
          */
+        @Deprecated
         public void setLanguage(String language) {
             this.language = language;
         }
@@ -535,7 +532,9 @@ public abstract class AbstractMessage extends Stanza {
          * Sets the text.
          *
          * @param text The text.
+         * @deprecated Use constructor.
          */
+        @Deprecated
         public void setText(String text) {
             this.text = text;
         }

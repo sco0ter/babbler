@@ -33,6 +33,7 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.errors.NotAuthorized;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 
+import java.util.Collections;
 import java.util.EventObject;
 
 /**
@@ -92,8 +93,7 @@ public final class HttpAuthenticationEvent extends EventObject {
             xmppSession.send(((IQ) stanza).createResult());
         } else if (stanza instanceof Message) {
             // If the user wishes to confirm the request, the <message/> response stanza SHOULD be of type "normal", MUST mirror the <thread/> ID (if provided by the XMPP Server), and MUST contain the original <confirm/> child element
-            Message m = new Message(getRequester(), Message.Type.NORMAL);
-            m.setThread(((Message) stanza).getThread());
+            Message m = new Message(getRequester(), Message.Type.NORMAL, null, null, ((Message) stanza).getThread());
             m.getExtensions().add(confirmationRequest);
             xmppSession.send(m);
         }
@@ -113,10 +113,8 @@ public final class HttpAuthenticationEvent extends EventObject {
             // MUST mirror the <thread/> ID (if provided by the XMPP Server),
             // MUST contain the original <confirm/> child element,
             // and MUST specify an error, which SHOULD be <not-authorized/>
-            Message m = new Message(getRequester(), Message.Type.ERROR);
-            m.setThread(((Message) stanza).getThread());
+            Message m = new Message(getRequester(), Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, ((Message) stanza).getThread(), null, null, null, null, new StanzaError(new NotAuthorized()));
             m.getExtensions().add(confirmationRequest);
-            m.setError(new StanzaError(new NotAuthorized()));
             xmppSession.send(m);
         }
     }

@@ -390,8 +390,7 @@ public final class ChatRoom extends Chat {
             xmppSession.addMessageListener(messageListener);
             xmppSession.addPresenceListener(presenceListener);
 
-            final Presence enterPresence = new Presence();
-            enterPresence.setTo(roomJid.withResource(nick));
+            final Presence enterPresence = new Presence(roomJid.withResource(nick));
             enterPresence.getExtensions().add(new Muc(password, history));
             this.nick = nick;
             xmppSession.sendAndAwaitPresence(enterPresence, new StanzaFilter<Presence>() {
@@ -433,9 +432,7 @@ public final class ChatRoom extends Chat {
      * @param message The message text.
      */
     public void sendMessage(String message) {
-        Message m = new Message(roomJid, Message.Type.GROUPCHAT);
-        m.setBody(message);
-        xmppSession.send(m);
+        xmppSession.send(new Message(roomJid, Message.Type.GROUPCHAT, message));
     }
 
     /**
@@ -461,8 +458,8 @@ public final class ChatRoom extends Chat {
         if (!entered) {
             throw new IllegalStateException("You must have entered the room to change your nickname.");
         }
-        final Presence changeNickNamePresence = new Presence();
-        changeNickNamePresence.setTo(roomJid.withResource(newNickname));
+
+        final Presence changeNickNamePresence = new Presence(roomJid.withResource(newNickname));
         xmppSession.sendAndAwaitPresence(changeNickNamePresence, new StanzaFilter<Presence>() {
             @Override
             public boolean accept(Presence presence) {

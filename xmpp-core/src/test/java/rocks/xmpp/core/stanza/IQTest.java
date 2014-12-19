@@ -107,7 +107,6 @@ public class IQTest extends XmlTest {
         Assert.assertEquals(error.getId(), iq.getId());
         Assert.assertEquals(error.getTo(), iq.getFrom());
         Assert.assertEquals(error.getFrom(), iq.getTo());
-        Assert.assertEquals(error.getError().getBy(), error.getFrom());
     }
 
     @Test

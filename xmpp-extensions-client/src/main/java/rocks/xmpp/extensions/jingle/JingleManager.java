@@ -160,9 +160,7 @@ public final class JingleManager extends ExtensionManager {
                             if (jingleSession == null) {
                                 // If we receive a non-session-initiate Jingle action with an unknown session id,
                                 // return <item-not-found/> and <unknown-session/>
-                                StanzaError stanzaError = new StanzaError(new ItemNotFound());
-                                stanzaError.setExtension(new UnknownSession());
-                                xmppSession.send(iq.createError(stanzaError));
+                                xmppSession.send(iq.createError(new StanzaError(new ItemNotFound(), new UnknownSession())));
                             } else {
                                 jingleSession.notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                                 xmppSession.send(iq.createResult());

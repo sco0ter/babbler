@@ -33,7 +33,28 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.stanza.model.errors.*;
+import rocks.xmpp.core.stanza.model.errors.BadRequest;
+import rocks.xmpp.core.stanza.model.errors.Conflict;
+import rocks.xmpp.core.stanza.model.errors.FeatureNotImplemented;
+import rocks.xmpp.core.stanza.model.errors.Forbidden;
+import rocks.xmpp.core.stanza.model.errors.Gone;
+import rocks.xmpp.core.stanza.model.errors.InternalServerError;
+import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
+import rocks.xmpp.core.stanza.model.errors.JidMalformed;
+import rocks.xmpp.core.stanza.model.errors.NotAcceptable;
+import rocks.xmpp.core.stanza.model.errors.NotAllowed;
+import rocks.xmpp.core.stanza.model.errors.NotAuthorized;
+import rocks.xmpp.core.stanza.model.errors.PolicyViolation;
+import rocks.xmpp.core.stanza.model.errors.RecipientUnavailable;
+import rocks.xmpp.core.stanza.model.errors.Redirect;
+import rocks.xmpp.core.stanza.model.errors.RegistrationRequired;
+import rocks.xmpp.core.stanza.model.errors.RemoteServerNotFound;
+import rocks.xmpp.core.stanza.model.errors.RemoteServerTimeout;
+import rocks.xmpp.core.stanza.model.errors.ResourceConstraint;
+import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
+import rocks.xmpp.core.stanza.model.errors.SubscriptionRequired;
+import rocks.xmpp.core.stanza.model.errors.UndefinedCondition;
+import rocks.xmpp.core.stanza.model.errors.UnexpectedRequest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -492,8 +513,7 @@ public class StanzaErrorTest extends XmlTest {
     public void marshalCondition() throws JAXBException, XMLStreamException {
         String xml = "<iq id=\"1\" type=\"error\"><error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error></iq>";
         StanzaError error = new StanzaError(new UnexpectedRequest());
-        IQ iq = new IQ("1", AbstractIQ.Type.ERROR);
-        iq.setError(error);
+        IQ iq = new IQ(null, null, "1", AbstractIQ.Type.ERROR, null, error);
         Assert.assertEquals(marshal(iq), xml);
     }
 }

@@ -148,7 +148,6 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
 
     @Override
     public final IQ createError(StanzaError error) {
-        error.setBy(getTo());
         return new IQ(getFrom(), getTo(), getId(), Type.ERROR, null, error);
     }
 }

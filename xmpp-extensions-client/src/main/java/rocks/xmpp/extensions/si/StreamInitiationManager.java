@@ -124,16 +124,12 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                             }
                         }
                         if (noValidStreams) {
-                            StanzaError error = new StanzaError(new BadRequest());
-                            error.setExtension(new NoValidStreams());
-                            xmppSession.send(iq.createError(error));
+                            xmppSession.send(iq.createError(new StanzaError(new BadRequest(), new NoValidStreams())));
                         } else {
                             ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
 
                             if (profileManager == null) {
-                                StanzaError error = new StanzaError(new BadRequest());
-                                error.setExtension(new BadProfile());
-                                xmppSession.send(iq.createError(error));
+                                xmppSession.send(iq.createError(new StanzaError(new BadRequest(), new BadProfile())));
                             } else {
                                 profileManager.handle(iq, streamInitiation);
                             }

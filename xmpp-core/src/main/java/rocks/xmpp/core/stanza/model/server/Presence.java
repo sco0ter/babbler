@@ -144,7 +144,6 @@ public final class Presence extends AbstractPresence implements ServerStreamElem
 
     @Override
     public Presence createError(StanzaError error) {
-        error.setBy(getTo());
         return new Presence(Presence.Type.ERROR, getShow(), getFrom(), getTo(), getStatuses(), getPriority(), getId(), getLanguage(), error);
     }
 }

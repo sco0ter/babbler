@@ -25,9 +25,37 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stanza.model.errors.*;
+import rocks.xmpp.core.stanza.model.errors.BadRequest;
+import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.stanza.model.errors.Conflict;
+import rocks.xmpp.core.stanza.model.errors.FeatureNotImplemented;
+import rocks.xmpp.core.stanza.model.errors.Forbidden;
+import rocks.xmpp.core.stanza.model.errors.Gone;
+import rocks.xmpp.core.stanza.model.errors.InternalServerError;
+import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
+import rocks.xmpp.core.stanza.model.errors.JidMalformed;
+import rocks.xmpp.core.stanza.model.errors.NotAcceptable;
+import rocks.xmpp.core.stanza.model.errors.NotAllowed;
+import rocks.xmpp.core.stanza.model.errors.NotAuthorized;
+import rocks.xmpp.core.stanza.model.errors.PolicyViolation;
+import rocks.xmpp.core.stanza.model.errors.RecipientUnavailable;
+import rocks.xmpp.core.stanza.model.errors.Redirect;
+import rocks.xmpp.core.stanza.model.errors.RegistrationRequired;
+import rocks.xmpp.core.stanza.model.errors.RemoteServerNotFound;
+import rocks.xmpp.core.stanza.model.errors.RemoteServerTimeout;
+import rocks.xmpp.core.stanza.model.errors.ResourceConstraint;
+import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
+import rocks.xmpp.core.stanza.model.errors.SubscriptionRequired;
+import rocks.xmpp.core.stanza.model.errors.Text;
+import rocks.xmpp.core.stanza.model.errors.UndefinedCondition;
+import rocks.xmpp.core.stanza.model.errors.UnexpectedRequest;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +118,7 @@ public final class StanzaError {
      */
     @SuppressWarnings("unused")
     private StanzaError() {
-        this.condition = new UndefinedCondition();
+        this(null, new UndefinedCondition(), null, null, null, null);
     }
 
     /**
@@ -101,11 +129,7 @@ public final class StanzaError {
      * @param condition The condition.
      */
     public StanzaError(Type type, Condition condition) {
-        if (type == null) {
-            throw new IllegalArgumentException("type must not be null.");
-        }
-        this.type = type;
-        this.condition = condition;
+        this(type, condition, null);
     }
 
     /**
@@ -117,12 +141,7 @@ public final class StanzaError {
      * @param text      The text.
      */
     public StanzaError(Type type, Condition condition, String text) {
-        if (type == null) {
-            throw new IllegalArgumentException("type must not be null.");
-        }
-        this.type = type;
-        this.condition = condition;
-        setText(text);
+        this(type, condition, text, null, null, null);
     }
 
     /**
@@ -134,8 +153,7 @@ public final class StanzaError {
      * @param condition The condition.
      */
     public StanzaError(Condition condition) {
-        this.condition = condition;
-        this.type = ASSOCIATED_ERROR_TYPE.get(condition.getClass());
+        this(condition, null);
     }
 
     /**
@@ -148,8 +166,44 @@ public final class StanzaError {
      * @param text      The text.
      */
     public StanzaError(Condition condition, String text) {
-        this(condition);
-        setText(text);
+        this(null, condition, text, null, null, null);
+    }
+
+    /**
+     * Creates an error with a given condition and extension.
+     * <p>
+     * The error type is set by the condition's associated error type.
+     * </p>
+     *
+     * @param condition The condition.
+     * @param extension The extension.
+     */
+    public StanzaError(Condition condition, Object extension) {
+        this(null, condition, null, null, extension, null);
+    }
+
+    /**
+     * Creates a stanza error with all possible values.
+     *
+     * @param type      The error type.
+     * @param condition The condition.
+     * @param text      The text.
+     * @param language  The language.
+     * @param extension The application specific condition.
+     * @param by        The entity which returns the error.
+     */
+    public StanzaError(Type type, Condition condition, String text, String language, Object extension, Jid by) {
+        if (type == null) {
+            this.type = ASSOCIATED_ERROR_TYPE.get(condition.getClass());
+        } else {
+            this.type = type;
+        }
+        this.condition = condition;
+        if (text != null) {
+            this.text = new Text(text, language);
+        }
+        this.extension = extension;
+        this.by = by;
     }
 
     /**
@@ -160,7 +214,6 @@ public final class StanzaError {
      * </blockquote>
      *
      * @return The JID.
-     * @see #setBy(rocks.xmpp.core.Jid)
      */
     public Jid getBy() {
         return by;
@@ -171,7 +224,9 @@ public final class StanzaError {
      *
      * @param by The JID.
      * @see #getBy()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setBy(Jid by) {
         this.by = by;
     }
@@ -189,7 +244,6 @@ public final class StanzaError {
      * Gets the optional error text.
      *
      * @return The text.
-     * @see #setText(String)
      */
     public String getText() {
         if (text != null) {
@@ -202,9 +256,10 @@ public final class StanzaError {
      * Sets the optional error text.
      *
      * @param text The text.
-     * @see #setText(String, String)
      * @see #getText()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setText(String text) {
         setText(text, null);
     }
@@ -214,9 +269,10 @@ public final class StanzaError {
      *
      * @param text     The text.
      * @param language The language.
-     * @see #setText(String)
      * @see #getText()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setText(String text, String language) {
         if (text != null) {
             this.text = new Text(text, language);
@@ -229,7 +285,6 @@ public final class StanzaError {
      * Gets the language of the error text.
      *
      * @return The language.
-     * @see #setText(String, String)
      */
     public String getLanguage() {
         if (text != null) {
@@ -246,7 +301,6 @@ public final class StanzaError {
      * </blockquote>
      *
      * @return The application specific condition.
-     * @see #setExtension(Object)
      */
     public Object getExtension() {
         return extension;
@@ -257,7 +311,9 @@ public final class StanzaError {
      *
      * @param extension The application specific condition.
      * @see #getExtension()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setExtension(Object extension) {
         this.extension = extension;
     }

@@ -28,6 +28,7 @@ import rocks.xmpp.core.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Objects;
 
 /**
  * A conference bookmark to bookmark multi-user chat rooms.
@@ -125,15 +126,13 @@ public final class ChatRoomBookmark extends Bookmark {
         }
         ChatRoomBookmark other = (ChatRoomBookmark) o;
 
-        return room == null ? other.room == null : room.equals(other.room);
+        return Objects.equals(room, other.room);
 
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + ((room == null) ? 0 : room.hashCode());
-        return result;
+        return Objects.hash(room);
     }
 
     @Override

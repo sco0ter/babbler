@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A contact in the user's roster.
@@ -239,24 +240,17 @@ public final class Contact implements Comparable<Contact> {
         }
         Contact other = (Contact) o;
 
-        return (jid == null ? other.jid == null : jid.equals(other.jid))
-                && (name == null ? other.name == null : name.equals(other.name))
-                && (subscription == null ? other.subscription == null : subscription.equals(other.subscription))
-                && (approved == null ? other.approved == null : approved.equals(other.approved))
-                && (ask == null ? other.ask == null : ask.equals(other.ask))
-                && (group.containsAll(other.group) && other.group.containsAll(group));
+        return Objects.equals(jid, other.jid)
+                && Objects.equals(name, other.name)
+                && Objects.equals(subscription, other.subscription)
+                && Objects.equals(approved, other.approved)
+                && Objects.equals(ask, other.ask)
+                && group.size() == other.group.size() && group.containsAll(other.group);
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + (jid == null ? 0 : jid.hashCode());
-        result = 31 * result + (name == null ? 0 : name.hashCode());
-        result = 31 * result + (subscription == null ? 0 : subscription.hashCode());
-        result = 31 * result + (approved == null ? 0 : approved.hashCode());
-        result = 31 * result + (ask == null ? 0 : ask.hashCode());
-        result = 31 * result + group.hashCode();
-        return result;
+        return Objects.hash(jid, name, subscription, approved, ask, group);
     }
 
     /**

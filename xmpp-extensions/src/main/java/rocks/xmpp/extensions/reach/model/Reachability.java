@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <reach/>} element in the {@code urn:xmpp:reach:0} namespace.
@@ -71,14 +72,12 @@ public final class Reachability {
         }
         Reachability other = (Reachability) o;
 
-        return addresses.equals(other.addresses);
+        return Objects.equals(addresses, other.addresses);
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + addresses.hashCode();
-        return result;
+        return Objects.hash(addresses);
     }
 
     @Override

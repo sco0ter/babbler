@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.muc.model.user;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <status/>} element.
@@ -238,13 +239,11 @@ public final class Status {
         }
         Status other = (Status) o;
 
-        return (code == null ? other.code == null : code.equals(other.code));
+        return Objects.equals(code, other.code);
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + ((code == null) ? 0 : code.hashCode());
-        return result;
+       return Objects.hash(code);
     }
 }

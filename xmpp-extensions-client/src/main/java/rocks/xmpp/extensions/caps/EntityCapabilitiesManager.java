@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -386,17 +387,14 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             }
             Verification other = (Verification) o;
 
-            return (hashAlgorithm == null ? other.hashAlgorithm == null : hashAlgorithm.equals(other.hashAlgorithm))
-                    && (verificationString == null ? other.verificationString == null : verificationString.equals(other.verificationString));
+            return Objects.equals(hashAlgorithm, other.hashAlgorithm)
+                    && Objects.equals(verificationString, other.verificationString);
 
         }
 
         @Override
         public int hashCode() {
-            int result = 17;
-            result = 31 * result + ((hashAlgorithm == null) ? 0 : hashAlgorithm.hashCode());
-            result = 31 * result + ((verificationString == null) ? 0 : verificationString.hashCode());
-            return result;
+            return Objects.hash(hashAlgorithm, verificationString);
         }
 
         @Override

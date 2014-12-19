@@ -39,7 +39,6 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -390,9 +389,13 @@ public final class RosterManager {
     /**
      * Requests the roster from the server. When the server returns the result, the {@link RosterListener} are notified.
      * That means, you should first {@linkplain #addRosterListener(RosterListener) register} a {@link RosterListener} prior to calling this method.
+     *
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
-    public void requestRoster() {
-        this.xmppSession.send(new IQ(IQ.Type.GET, new Roster()));
+    public Roster requestRoster() throws XmppException {
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Roster()));
+        return result.getExtension(Roster.class);
     }
 
     /**

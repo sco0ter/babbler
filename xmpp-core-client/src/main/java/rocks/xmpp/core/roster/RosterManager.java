@@ -87,7 +87,7 @@ public final class RosterManager {
         this.xmppSession = xmppSession;
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 if (e.isIncoming() && !e.isConsumed()) {
                     IQ iq = e.getIQ();
                     Roster roster = iq.getExtension(Roster.class);

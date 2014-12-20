@@ -138,7 +138,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 final Presence presence = e.getPresence();
 
                 if (!e.isIncoming()) {

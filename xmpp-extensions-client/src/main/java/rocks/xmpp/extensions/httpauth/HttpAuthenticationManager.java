@@ -72,7 +72,7 @@ public final class HttpAuthenticationManager extends ExtensionManager {
 
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
                     ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
@@ -87,7 +87,7 @@ public final class HttpAuthenticationManager extends ExtensionManager {
 
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (e.isIncoming()) {
                     Message message = e.getMessage();
                     if (message.getType() == null || message.getType() == Message.Type.NORMAL) {

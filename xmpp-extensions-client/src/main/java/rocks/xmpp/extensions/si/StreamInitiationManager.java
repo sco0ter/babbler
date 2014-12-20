@@ -99,7 +99,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);

@@ -104,7 +104,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
         });
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (isEnabled()) {
                     Message message = e.getMessage();
 

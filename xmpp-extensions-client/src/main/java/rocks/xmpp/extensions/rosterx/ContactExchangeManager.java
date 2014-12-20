@@ -77,7 +77,7 @@ public final class ContactExchangeManager extends ExtensionManager {
 
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (e.isIncoming() && isEnabled()) {
                     Message message = e.getMessage();
                     ContactExchange contactExchange = message.getExtension(ContactExchange.class);
@@ -100,7 +100,7 @@ public final class ContactExchangeManager extends ExtensionManager {
 
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     ContactExchange contactExchange = iq.getExtension(ContactExchange.class);

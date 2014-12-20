@@ -84,7 +84,7 @@ public final class LastActivityManager extends ExtensionManager {
         });
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 if (!e.isIncoming() && isEnabled()) {
                     AbstractPresence presence = e.getPresence();
                     if (presence.getTo() == null) {
@@ -101,7 +101,7 @@ public final class LastActivityManager extends ExtensionManager {
 
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
                     // If someone asks me to get my last activity, reply.
@@ -166,7 +166,7 @@ public final class LastActivityManager extends ExtensionManager {
         public DefaultLastActivityStrategy(XmppSession xmppSession) {
             xmppSession.addMessageListener(new MessageListener() {
                 @Override
-                public void handle(MessageEvent e) {
+                public void handleMessage(MessageEvent e) {
                     if (!e.isIncoming()) {
                         lastActivity = new Date();
                     }
@@ -174,7 +174,7 @@ public final class LastActivityManager extends ExtensionManager {
             });
             xmppSession.addPresenceListener(new PresenceListener() {
                 @Override
-                public void handle(PresenceEvent e) {
+                public void handlePresence(PresenceEvent e) {
                     AbstractPresence presence = e.getPresence();
                     if (!e.isIncoming() && (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA)) {
                         lastActivity = new Date();

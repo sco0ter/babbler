@@ -80,7 +80,7 @@ public final class RpcManager extends ExtensionManager {
 
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(final IQEvent e) {
+            public void handleIQ(final IQEvent e) {
                 final IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     Rpc rpc = iq.getExtension(Rpc.class);

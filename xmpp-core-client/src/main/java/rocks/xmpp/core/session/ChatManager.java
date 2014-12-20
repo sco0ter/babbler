@@ -93,7 +93,7 @@ public final class ChatManager {
 
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
                 if (message.getType() == Message.Type.CHAT) {
                     Jid chatPartner = e.isIncoming() ? message.getFrom() : message.getTo();
@@ -126,7 +126,7 @@ public final class ChatManager {
         });
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 if (e.isIncoming()) {
                     // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
                     AbstractPresence presence = e.getPresence();

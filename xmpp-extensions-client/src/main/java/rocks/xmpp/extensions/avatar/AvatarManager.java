@@ -130,7 +130,7 @@ public final class AvatarManager extends ExtensionManager {
         });
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 // If vCard based avatars are enabled.
                 if (isEnabled()) {
                     final Presence presence = e.getPresence();
@@ -244,7 +244,7 @@ public final class AvatarManager extends ExtensionManager {
 
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (e.isIncoming() && isEnabled()) {
                     Message message = e.getMessage();
                     Event event = message.getExtension(Event.class);

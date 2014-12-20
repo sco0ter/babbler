@@ -24,11 +24,15 @@
 
 package rocks.xmpp.core.stanza;
 
+import java.util.EventListener;
+
 /**
  * A listener interface, which allows to listen for received or sent IQ stanzas.
  *
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.XmppSession#addIQListener(IQListener)
  */
-public interface IQListener extends StanzaListener<IQEvent> {
+public interface IQListener extends EventListener {
+
+    void handleIQ(IQEvent e);
 }

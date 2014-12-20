@@ -261,7 +261,7 @@ public class JavaFXApp extends Application {
 
                                 chatSession.addMessageListener(new MessageListener() {
                                     @Override
-                                    public void handle(final MessageEvent e) {
+                                    public void handleMessage(final MessageEvent e) {
                                         Platform.runLater(new Runnable() {
                                             @Override
                                             public void run() {
@@ -309,7 +309,7 @@ public class JavaFXApp extends Application {
 
                         xmppSession.addPresenceListener(new PresenceListener() {
                             @Override
-                            public void handle(final PresenceEvent e) {
+                            public void handlePresence(final PresenceEvent e) {
                                 if (e.isIncoming()) {
                                     if (e.getPresence().isAvailable()) {
                                         Platform.runLater(new Runnable() {

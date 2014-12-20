@@ -71,7 +71,7 @@ public final class PresenceManager {
 
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
                 if (e.isIncoming()) {
 

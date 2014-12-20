@@ -78,7 +78,7 @@ public final class MultiUserChatManager extends ExtensionManager {
         // Listen for incoming invitations.
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (e.isIncoming()) {
                     Message message = e.getMessage();
                     // Check, if the message contains a mediated invitation.

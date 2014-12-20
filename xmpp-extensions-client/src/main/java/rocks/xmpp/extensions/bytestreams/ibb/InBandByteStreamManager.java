@@ -74,7 +74,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
 
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     // Check, if the IQ carries some IBB related payload.
@@ -129,7 +129,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
         // an application MAY use message stanzas instead.
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (e.isIncoming() && isEnabled()) {
                     InBandByteStream.Data data = e.getMessage().getExtension(InBandByteStream.Data.class);
                     if (data != null) {

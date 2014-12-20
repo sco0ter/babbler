@@ -54,7 +54,7 @@ public class ReachabilityManagerTest extends ExtensionTest {
         final boolean[] attentionReceived = {false};
         xmppSession2.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (e.isIncoming() && e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
                     attentionReceived[0] = true;
                     Assert.assertEquals(e.getMessage().getType(), AbstractMessage.Type.HEADLINE);

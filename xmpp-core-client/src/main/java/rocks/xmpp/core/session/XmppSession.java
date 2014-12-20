@@ -32,7 +32,13 @@ import rocks.xmpp.core.sasl.AuthenticationManager;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.*;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.StanzaException;
@@ -64,8 +70,18 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -395,7 +411,7 @@ public class XmppSession implements Closeable {
             MessageEvent messageEvent = new MessageEvent(this, (Message) element, incoming);
             for (MessageListener messageListener : messageListeners) {
                 try {
-                    messageListener.handle(messageEvent);
+                    messageListener.handleMessage(messageEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
@@ -404,7 +420,7 @@ public class XmppSession implements Closeable {
             PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) element, incoming);
             for (PresenceListener presenceListener : presenceListeners) {
                 try {
-                    presenceListener.handle(presenceEvent);
+                    presenceListener.handlePresence(presenceEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
@@ -414,7 +430,7 @@ public class XmppSession implements Closeable {
             IQEvent iqEvent = new IQEvent(this, iq, incoming);
             for (IQListener iqListener : iqListeners) {
                 try {
-                    iqListener.handle(iqEvent);
+                    iqListener.handleIQ(iqEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
@@ -508,7 +524,7 @@ public class XmppSession implements Closeable {
 
         final IQListener listener = new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && filter.accept(iq)) {
                     lock.lock();
@@ -574,7 +590,7 @@ public class XmppSession implements Closeable {
 
         final PresenceListener listener = new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
                 if (e.isIncoming() && filter.accept(presence)) {
                     lock.lock();
@@ -626,7 +642,7 @@ public class XmppSession implements Closeable {
 
         final MessageListener listener = new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
                 if (e.isIncoming() && filter.accept(message)) {
                     lock.lock();

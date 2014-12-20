@@ -82,7 +82,7 @@ public abstract class Chat {
     protected void notifyMessageListeners(MessageEvent messageEvent) {
         for (MessageListener messageListener : messageListeners) {
             try {
-                messageListener.handle(messageEvent);
+                messageListener.handleMessage(messageEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }

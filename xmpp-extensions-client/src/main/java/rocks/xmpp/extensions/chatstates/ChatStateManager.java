@@ -94,7 +94,7 @@ public final class ChatStateManager extends ExtensionManager {
 
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (isEnabled()) {
                     Message message = e.getMessage();
                     // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".

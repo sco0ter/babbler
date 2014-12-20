@@ -93,7 +93,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 xmppSession1.removePresenceListener(this);
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
             }
@@ -108,7 +108,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });
@@ -122,7 +122,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });
@@ -135,7 +135,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });
@@ -148,7 +148,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });

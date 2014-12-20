@@ -131,7 +131,7 @@ public final class ChatRoom extends Chat {
 
         messageListener = new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (e.isIncoming()) {
                     Message message = e.getMessage();
                     if (message.getFrom().asBareJid().equals(roomJid)) {
@@ -165,7 +165,7 @@ public final class ChatRoom extends Chat {
 
         presenceListener = new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
                 // If the presence came from the room.
                 if (presence.getFrom() != null && presence.getFrom().asBareJid().equals(roomJid)) {

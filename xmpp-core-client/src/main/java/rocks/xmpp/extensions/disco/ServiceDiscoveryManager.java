@@ -105,7 +105,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
                     InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);

@@ -81,7 +81,7 @@ public final class ReachabilityManager extends ExtensionManager {
 
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 AbstractPresence presence = e.getPresence();
                 if (e.isIncoming()) {
                     boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
@@ -105,7 +105,7 @@ public final class ReachabilityManager extends ExtensionManager {
         // A user MAY send reachability addresses in an XMPP <message/> stanza.
         xmppSession.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 if (e.isIncoming()) {
                     checkStanzaForReachabilityAndNotify(e.getMessage());
                 }
@@ -115,7 +115,7 @@ public final class ReachabilityManager extends ExtensionManager {
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(Reachability.class) != null) {
                     xmppSession.send(iq.createResult(new Reachability(new ArrayList<>(addresses))));

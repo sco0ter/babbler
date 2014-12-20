@@ -114,7 +114,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(Request.class));
             }
         });
@@ -135,7 +135,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(Request.class));
             }
         });
@@ -152,7 +152,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(Request.class));
             }
         });

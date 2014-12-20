@@ -24,11 +24,15 @@
 
 package rocks.xmpp.core.stanza;
 
+import java.util.EventListener;
+
 /**
  * A listener interface, which allows to listen for received or sent messages.
  *
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.XmppSession#addMessageListener(MessageListener)
  */
-public interface MessageListener extends StanzaListener<MessageEvent> {
+public interface MessageListener extends EventListener {
+
+    void handleMessage(MessageEvent e);
 }

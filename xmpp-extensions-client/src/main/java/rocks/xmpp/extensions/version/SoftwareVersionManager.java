@@ -50,7 +50,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
         super(xmppSession, SoftwareVersion.NAMESPACE);
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 // If an entity asks us for our software version, reply.
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {

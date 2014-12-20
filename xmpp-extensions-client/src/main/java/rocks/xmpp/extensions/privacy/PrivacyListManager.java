@@ -76,7 +76,7 @@ public final class PrivacyListManager extends ExtensionManager {
         });
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
                     // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.

@@ -74,7 +74,7 @@ public final class BlockingManager extends ExtensionManager {
         // Listen for "un/block pushes"
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
                     Block block = iq.getExtension(Block.class);

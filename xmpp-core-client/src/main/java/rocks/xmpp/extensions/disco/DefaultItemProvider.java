@@ -63,31 +63,23 @@ public final class DefaultItemProvider implements ResultSetProvider<Item> {
 
     @Override
     public List<Item> getItems(int index, int maxSize) {
-        return items.subList(index, index + maxSize);
+        int toIndex = index + maxSize;
+        synchronized (items) {
+            if (index < 0 || toIndex > items.size() || index > toIndex) {
+                return Collections.emptyList();
+            }
+            return items.subList(index, toIndex);
+        }
     }
 
     @Override
     public List<Item> getItemsAfter(String itemId, int maxSize) {
-        synchronized (items) {
-            int fromIndex = indexOf(itemId) + 1;
-            int toIndex = fromIndex + maxSize;
-            if (fromIndex < 0 || toIndex > items.size() || fromIndex > toIndex) {
-                return Collections.emptyList();
-            }
-            return items.subList(fromIndex, fromIndex + maxSize);
-        }
+        return getItems(indexOf(itemId) + 1, maxSize);
     }
 
     @Override
     public List<Item> getItemsBefore(String itemId, int maxSize) {
-        synchronized (items) {
-            int fromIndex = indexOf(itemId) - maxSize;
-            int toIndex = fromIndex - 1 + maxSize;
-            if (fromIndex < 0 || toIndex > items.size() || fromIndex > toIndex) {
-                return Collections.emptyList();
-            }
-            return items.subList(fromIndex, fromIndex + maxSize);
-        }
+        return getItems(indexOf(itemId) - maxSize, maxSize);
     }
 
     @Override

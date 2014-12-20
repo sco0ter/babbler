@@ -26,16 +26,15 @@ package rocks.xmpp.extensions.reach;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -61,7 +60,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ReachabilityManager extends ExtensionManager implements SessionStatusListener, PresenceListener, MessageListener, IQListener {
+public final class ReachabilityManager extends IQExtensionManager implements SessionStatusListener, PresenceListener, MessageListener {
 
     private static final Logger logger = Logger.getLogger(ReachabilityManager.class.getName());
 
@@ -72,7 +71,7 @@ public final class ReachabilityManager extends ExtensionManager implements Sessi
     private final List<Address> addresses = new CopyOnWriteArrayList<>();
 
     private ReachabilityManager(final XmppSession xmppSession) {
-        super(xmppSession, Reachability.NAMESPACE);
+        super(xmppSession, AbstractIQ.Type.GET, Reachability.NAMESPACE);
         xmppSession.addSessionStatusListener(this);
 
         xmppSession.addPresenceListener(this);
@@ -81,7 +80,8 @@ public final class ReachabilityManager extends ExtensionManager implements Sessi
         xmppSession.addMessageListener(this);
 
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
-        xmppSession.addIQListener(this);
+        xmppSession.addIQHandler(Reachability.class, this);
+
         // TODO: implement similar logic for PEP
     }
 
@@ -155,15 +155,6 @@ public final class ReachabilityManager extends ExtensionManager implements Sessi
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(Reachability.class) != null) {
-            xmppSession.send(iq.createResult(new Reachability(new ArrayList<>(addresses))));
-            e.consume();
-        }
-    }
-
-    @Override
     public void handleMessage(MessageEvent e) {
         if (e.isIncoming()) {
             checkStanzaForReachabilityAndNotify(e.getMessage());
@@ -198,5 +189,11 @@ public final class ReachabilityManager extends ExtensionManager implements Sessi
             reachabilities.clear();
             addresses.clear();
         }
+    }
+
+    @Override
+    protected IQ processRequest(final IQ iq) {
+        // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
+        return iq.createResult(new Reachability(addresses));
     }
 }

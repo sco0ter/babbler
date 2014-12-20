@@ -49,7 +49,6 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
-import rocks.xmpp.extensions.filetransfer.FileTransferRejectedException;
 import rocks.xmpp.extensions.filetransfer.FileTransferStatusEvent;
 import rocks.xmpp.extensions.filetransfer.FileTransferStatusListener;
 
@@ -75,7 +74,7 @@ public class FileTransferSender extends Application {
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(VisualDebugger.class)
-                        .defaultResponseTimeout(5000)
+                        .defaultResponseTimeout(10000)
                         .build();
 
                 XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
@@ -159,11 +158,7 @@ public class FileTransferSender extends Application {
                             switch (newValue) {
                                 case FAILED:
                                     Throwable e = fileTransferTask.getException();
-                                    if (e instanceof FileTransferRejectedException) {
-                                        label.setText("File transfer offer has been rejected.");
-                                    } else {
-                                        label.setText(e.getMessage());
-                                    }
+                                    e.printStackTrace();
                                     break;
                                 case SUCCEEDED:
                                     break;

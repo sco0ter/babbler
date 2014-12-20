@@ -26,12 +26,11 @@ package rocks.xmpp.extensions.ping;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.ping.model.Ping;
 
@@ -54,7 +53,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class PingManager extends ExtensionManager implements SessionStatusListener, IQListener {
+public final class PingManager extends IQExtensionManager implements SessionStatusListener {
 
     private static final Logger logger = Logger.getLogger(PingManager.class.getName());
 
@@ -70,8 +69,8 @@ public final class PingManager extends ExtensionManager implements SessionStatus
      * @param xmppSession The underlying XMPP session.
      */
     private PingManager(final XmppSession xmppSession) {
-        super(xmppSession, Ping.NAMESPACE);
-        xmppSession.addIQListener(this);
+        super(xmppSession, AbstractIQ.Type.GET, Ping.NAMESPACE);
+        xmppSession.addIQHandler(Ping.class, this);
 
         xmppSession.addSessionStatusListener(this);
 
@@ -167,12 +166,8 @@ public final class PingManager extends ExtensionManager implements SessionStatus
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(Ping.class) != null) {
-            xmppSession.send(iq.createResult());
-            e.consume();
-        }
+    protected IQ processRequest(final IQ iq) {
+        return iq.createResult();
     }
 
     @Override

@@ -32,8 +32,7 @@ import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -68,7 +67,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class RosterManager implements SessionStatusListener, IQListener {
+public final class RosterManager implements SessionStatusListener, IQHandler {
     private static final Logger logger = Logger.getLogger(RosterManager.class.getName());
 
     private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();
@@ -94,7 +93,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
     public RosterManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
         privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
-        xmppSession.addIQListener(this);
+        xmppSession.addIQHandler(Roster.class, this);
         xmppSession.addSessionStatusListener(this);
     }
 
@@ -382,7 +381,9 @@ public final class RosterManager implements SessionStatusListener, IQListener {
             }
         }
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Roster()));
-        return result.getExtension(Roster.class);
+        Roster roster = result.getExtension(Roster.class);
+        updateRoster(roster, false);
+        return roster;
     }
 
     /**
@@ -545,28 +546,21 @@ public final class RosterManager implements SessionStatusListener, IQListener {
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        if (e.isIncoming() && !e.isConsumed()) {
-            IQ iq = e.getIQ();
-            Roster roster = iq.getExtension(Roster.class);
-            if (roster != null) {
-                // 2.1.6.  Roster Push
-                if (iq.getType() == IQ.Type.SET) {
-                    // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
-                    if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
-                        // Gracefully send an empty result.
-                        xmppSession.send(iq.createResult());
-                        updateRoster(roster, true);
-                    } else {
-                        // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
-                        xmppSession.send(iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE)));
-                    }
-                } else if (iq.getType() == IQ.Type.RESULT) {
-                    updateRoster(roster, false);
-                }
-                e.consume();
+    public IQ handleRequest(IQ iq) {
+        Roster roster = iq.getExtension(Roster.class);
+        // 2.1.6.  Roster Push
+        if (iq.getType() == IQ.Type.SET) {
+            // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
+            if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
+                updateRoster(roster, true);
+                // Gracefully send an empty result.
+                return iq.createResult();
+            } else {
+                // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
+                return iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE));
             }
         }
+        return iq.createError(new StanzaError(Condition.BAD_REQUEST));
     }
 
     @Override

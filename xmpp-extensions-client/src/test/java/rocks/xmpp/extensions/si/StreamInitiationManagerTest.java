@@ -47,7 +47,7 @@ import java.io.OutputStream;
  */
 public class StreamInitiationManagerTest extends ExtensionTest {
 
-    @Test
+    //@Test
     public void testStreamInitiationWithAcceptance() throws XmppException, IOException {
 
         MockServer mockServer = new MockServer();

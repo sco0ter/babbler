@@ -28,8 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
@@ -53,7 +51,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
  */
-public final class InBandByteStreamManager extends ByteStreamManager implements IQListener, MessageListener {
+public final class InBandByteStreamManager extends ByteStreamManager implements MessageListener {
 
     private static final Logger logger = Logger.getLogger(InBandByteStreamManager.class.getName());
 
@@ -62,22 +60,14 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
     private InBandByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession, InBandByteStream.NAMESPACE);
 
-        xmppSession.addIQListener(this);
+        xmppSession.addIQHandler(InBandByteStream.Open.class, this);
+        xmppSession.addIQHandler(InBandByteStream.Data.class, this);
+        xmppSession.addIQHandler(InBandByteStream.Close.class, this);
 
         // 4. Use of Message Stanzas
         // an application MAY use message stanzas instead.
         xmppSession.addMessageListener(this);
         setEnabled(true);
-    }
-
-    private IbbSession getIbbSession(IQ iq, String sessionId) {
-        // Check, if the session id is known.
-        IbbSession ibbSession = ibbSessionMap.get(sessionId);
-        if (ibbSession == null) {
-            // 1. Because the session ID is unknown, the recipient returns an <item-not-found/> error with a type of 'cancel'.
-            xmppSession.send(iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND)));
-        }
-        return ibbSession;
     }
 
     /**
@@ -114,48 +104,48 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-            // Check, if the IQ carries some IBB related payload.
-            InBandByteStream ibbElement = iq.getExtension(InBandByteStream.class);
-            if (ibbElement instanceof InBandByteStream.Data) {
-                InBandByteStream.Data data = (InBandByteStream.Data) ibbElement;
-                IbbSession ibbSession = getIbbSession(iq, data.getSessionId());
-                // Data has been received for a session, so notify the IBB session about it.
-                if (ibbSession != null) {
-                    if (ibbSession.dataReceived(data)) {
-                        xmppSession.send(iq.createResult());
-                    } else {
-                        // 2. Because the sequence number has already been used, the recipient returns an <unexpected-request/> error with a type of 'cancel'.
-                        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, Condition.UNEXPECTED_REQUEST)));
-                    }
-                }
-                e.consume();
-            } else if (ibbElement instanceof InBandByteStream.Open) {
-                InBandByteStream.Open open = (InBandByteStream.Open) ibbElement;
-                if (open.getBlockSize() > 65535) {
-                    xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.MODIFY, Condition.RESOURCE_CONSTRAINT)));
+    protected IQ processRequest(final IQ iq) {
+        // Check, if the IQ carries some IBB related payload.
+        InBandByteStream ibbElement = iq.getExtension(InBandByteStream.class);
+        if (ibbElement instanceof InBandByteStream.Data) {
+            InBandByteStream.Data data = (InBandByteStream.Data) ibbElement;
+            IbbSession ibbSession = ibbSessionMap.get(data.getSessionId());
+            // Data has been received for a session, so notify the IBB session about it.
+            if (ibbSession != null) {
+                if (ibbSession.dataReceived(data)) {
+                    return iq.createResult();
                 } else {
-                    // Somebody wants to create a IBB session with me.
-                    // Notify the listeners.
-                    notifyByteStreamEvent(new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize()));
+                    // 2. Because the sequence number has already been used, the recipient returns an <unexpected-request/> error with a type of 'cancel'.
+                    return iq.createError(new StanzaError(StanzaError.Type.CANCEL, rocks.xmpp.core.stanza.model.errors.Condition.UNEXPECTED_REQUEST));
                 }
-                e.consume();
-            } else if (ibbElement instanceof InBandByteStream.Close) {
-                InBandByteStream.Close close = (InBandByteStream.Close) ibbElement;
-                IbbSession ibbSession = getIbbSession(iq, close.getSessionId());
-                if (ibbSession != null) {
-                    try {
-                        ibbSessionMap.remove(close.getSessionId());
-                        ibbSession.closedByPeer();
-                    } catch (IOException e1) {
-                        logger.log(Level.WARNING, e1.getMessage(), e1);
-                    } finally {
-                        xmppSession.send(iq.createResult());
-                    }
+            } else {
+                return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND));
+            }
+        } else if (ibbElement instanceof InBandByteStream.Open) {
+            InBandByteStream.Open open = (InBandByteStream.Open) ibbElement;
+            if (open.getBlockSize() > 65535) {
+                return iq.createError(new StanzaError(StanzaError.Type.MODIFY, rocks.xmpp.core.stanza.model.errors.Condition.RESOURCE_CONSTRAINT));
+            } else {
+                // Somebody wants to create a IBB session with me.
+                // Notify the listeners.
+                notifyByteStreamEvent(new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize()));
+                return null;
+            }
+        } else {
+            // Must be a close element.
+            InBandByteStream.Close close = (InBandByteStream.Close) ibbElement;
+            IbbSession ibbSession = ibbSessionMap.get(close.getSessionId());
+            if (ibbSession != null) {
+                try {
+                    ibbSessionMap.remove(close.getSessionId());
+                    ibbSession.closedByPeer();
+                    return iq.createResult();
+                } catch (IOException e1) {
+                    logger.log(Level.WARNING, e1.getMessage(), e1);
+                    return iq.createResult();
                 }
-                e.consume();
+            } else {
+                return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND));
             }
         }
     }

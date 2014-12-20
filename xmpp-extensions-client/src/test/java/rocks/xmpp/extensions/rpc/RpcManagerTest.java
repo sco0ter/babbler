@@ -65,7 +65,7 @@ public class RpcManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
-        rpcManager.executorService = new SameThreadExecutorService();
+        //rpcManager.executorService = new SameThreadExecutorService();
         rpcManager.setEnabled(true);
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override
@@ -91,7 +91,7 @@ public class RpcManagerTest extends ExtensionTest {
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);
 
-        rpcManager.executorService = new SameThreadExecutorService();
+        //rpcManager.executorService = new SameThreadExecutorService();
 
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override

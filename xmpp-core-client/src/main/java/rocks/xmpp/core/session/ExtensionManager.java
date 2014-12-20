@@ -54,12 +54,13 @@ public abstract class ExtensionManager extends Manager {
     }
 
     @Override
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         Collection<Feature> f = new ArrayList<>();
         for (String namespace : features) {
             f.add(new Feature(namespace));
         }
         return serviceDiscoveryManager.getFeatures().containsAll(f);
+
     }
 
     /**

@@ -33,6 +33,7 @@ import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
@@ -90,6 +91,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
  * The base class for establishing an XMPP session with a server.
  *
@@ -136,6 +138,8 @@ public class XmppSession implements Closeable {
 
     private final Set<IQListener> iqListeners = new CopyOnWriteArraySet<>();
 
+    private final Map<Class<?>, IQHandler> iqHandlerMap = new ConcurrentHashMap<>();
+
     private final Set<SessionStatusListener> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
     private final Map<Class<? extends ExtensionManager>, ExtensionManager> instances = new ConcurrentHashMap<>();
@@ -143,6 +147,8 @@ public class XmppSession implements Closeable {
     private final List<Connection> connections = new ArrayList<>();
 
     private final XmppSessionConfiguration configuration;
+
+    ExecutorService iqHandlerExecutor;
 
     ExecutorService stanzaListenerExecutor;
 
@@ -210,7 +216,14 @@ public class XmppSession implements Closeable {
                 return thread;
             }
         });
-
+        this.iqHandlerExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
         try {
             // Create the marshaller and unmarshaller, which will be used for this connection.
             unmarshaller = configuration.getJAXBContext().createUnmarshaller();
@@ -395,6 +408,27 @@ public class XmppSession implements Closeable {
     }
 
     /**
+     * Adds an IQ handler for a given payload type.
+     *
+     * @param type      The payload type.
+     * @param iqHandler The IQ handler.
+     * @see #removeIQHandler(Class)
+     */
+    public final void addIQHandler(Class<?> type, IQHandler iqHandler) {
+        iqHandlerMap.put(type, iqHandler);
+    }
+
+    /**
+     * Removes an IQ handler.
+     *
+     * @param type The payload type.
+     * @see #addIQHandler(Class, rocks.xmpp.core.stanza.IQHandler)
+     */
+    public final void removeIQHandler(Class<?> type) {
+        iqHandlerMap.remove(type);
+    }
+
+    /**
      * Adds a session listener, which listens for session status changes.
      * Each time the {@linkplain Status session status} changes, all listeners will be notified.
      *
@@ -415,7 +449,7 @@ public class XmppSession implements Closeable {
         sessionStatusListeners.remove(sessionStatusListener);
     }
 
-    private void notifyStanzaListeners(Stanza element, boolean incoming) {
+    private void notifyStanzaListeners(Stanza element, final boolean incoming) {
 
         if (element instanceof Message) {
             MessageEvent messageEvent = new MessageEvent(this, (Message) element, incoming);
@@ -436,7 +470,43 @@ public class XmppSession implements Closeable {
                 }
             }
         } else if (element instanceof IQ) {
-            IQ iq = (IQ) element;
+            final IQ iq = (IQ) element;
+
+            if (incoming) {
+                if (iq.getType() == null) {
+                    // return <bad-request/> if the <iq/> has no type.
+                    send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST)));
+                } else if (iq.isRequest()) {
+                    Object payload = iq.getExtension(Object.class);
+                    if (payload == null) {
+                        // return <bad-request/> if the <iq/> has no payload.
+                        send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST)));
+                    } else {
+                        final IQHandler iqHandler = iqHandlerMap.get(payload.getClass());
+                        if (iqHandler != null) {
+                            iqHandlerExecutor.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        IQ response = iqHandler.handleRequest(iq);
+                                        if (response != null) {
+                                            send(response);
+                                        }
+                                    } catch (Exception e) {
+                                        // If any exception occurs during processing the IQ, return <service-unavailable/>.
+                                        send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE)));
+                                    }
+                                }
+                            });
+                        } else {
+                            // return <service-unavailable/> if the <iq/> is not understood.
+                            send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE)));
+                        }
+                    }
+                }
+            }
+
+
             IQEvent iqEvent = new IQEvent(this, iq, incoming);
             for (IQListener iqListener : iqListeners) {
                 try {
@@ -444,11 +514,6 @@ public class XmppSession implements Closeable {
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
-            }
-            if (incoming && (iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET) && !iqEvent.isConsumed()) {
-                // return <service-unavailble/> if the <iq/> is not understood or has not been handles by an event listener.
-                IQ error = iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
-                send(error);
             }
         }
     }
@@ -749,6 +814,7 @@ public class XmppSession implements Closeable {
         }
 
         stanzaListenerExecutor.shutdown();
+        iqHandlerExecutor.shutdown();
 
         updateStatus(Status.CLOSED);
     }

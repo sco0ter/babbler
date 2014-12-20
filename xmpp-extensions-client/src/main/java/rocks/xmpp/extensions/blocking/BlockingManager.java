@@ -26,13 +26,14 @@ package rocks.xmpp.extensions.blocking;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Unblock;
@@ -55,7 +56,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class BlockingManager extends ExtensionManager implements SessionStatusListener, IQListener {
+public final class BlockingManager extends IQExtensionManager implements SessionStatusListener {
 
     private static final Logger logger = Logger.getLogger(BlockingManager.class.getName());
 
@@ -64,11 +65,12 @@ public final class BlockingManager extends ExtensionManager implements SessionSt
     private final Set<BlockingListener> blockingListeners = new CopyOnWriteArraySet<>();
 
     private BlockingManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, AbstractIQ.Type.SET);
 
         xmppSession.addSessionStatusListener(this);
         // Listen for "un/block pushes"
-        xmppSession.addIQListener(this);
+        xmppSession.addIQHandler(Block.class, this);
+        xmppSession.addIQHandler(Unblock.class, this);
     }
 
     private void notifyListeners(List<Jid> blockedContacts, List<Jid> unblockedContacts) {
@@ -152,9 +154,8 @@ public final class BlockingManager extends ExtensionManager implements SessionSt
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
+    protected IQ processRequest(IQ iq) {
+        if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
             Block block = iq.getExtension(Block.class);
             if (block != null) {
                 List<Jid> pushedContacts = new ArrayList<>();
@@ -164,9 +165,8 @@ public final class BlockingManager extends ExtensionManager implements SessionSt
                         pushedContacts.add(item);
                     }
                 }
-                xmppSession.send(iq.createResult());
-                e.consume();
                 notifyListeners(pushedContacts, Collections.<Jid>emptyList());
+                return iq.createResult();
             } else {
                 Unblock unblock = iq.getExtension(Unblock.class);
                 if (unblock != null) {
@@ -183,12 +183,12 @@ public final class BlockingManager extends ExtensionManager implements SessionSt
                             }
                         }
                     }
-                    xmppSession.send(iq.createResult());
-                    e.consume();
                     notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
+                    return iq.createResult();
                 }
             }
         }
+        return iq.createError(new StanzaError(Condition.NOT_ACCEPTABLE));
     }
 
     @Override

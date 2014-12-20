@@ -99,7 +99,7 @@ public class TestXmppSession extends XmppSession {
 
             }
         };
-        stanzaListenerExecutor = new SameThreadExecutorService();
+        stanzaListenerExecutor = iqHandlerExecutor= new SameThreadExecutorService();
         this.mockServer = mockServer;
         mockServer.registerConnection(this);
 

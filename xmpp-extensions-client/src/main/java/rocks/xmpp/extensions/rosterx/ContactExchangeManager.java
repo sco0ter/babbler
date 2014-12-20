@@ -28,14 +28,13 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Contact;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -58,7 +57,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ContactExchangeManager extends ExtensionManager implements SessionStatusListener, MessageListener, IQListener {
+public final class ContactExchangeManager extends IQExtensionManager implements SessionStatusListener, MessageListener {
 
     private static final Logger logger = Logger.getLogger(ContactExchangeManager.class.getName());
 
@@ -67,13 +66,11 @@ public final class ContactExchangeManager extends ExtensionManager implements Se
     private final Collection<Jid> trustedEntities = new CopyOnWriteArraySet<>();
 
     private ContactExchangeManager(final XmppSession xmppSession) {
-        super(xmppSession, ContactExchange.NAMESPACE);
+        super(xmppSession, AbstractIQ.Type.SET, ContactExchange.NAMESPACE);
 
         xmppSession.addSessionStatusListener(this);
-
         xmppSession.addMessageListener(this);
-
-        xmppSession.addIQListener(this);
+        xmppSession.addIQHandler(ContactExchange.class, this);
     }
 
     private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Date date) {
@@ -279,23 +276,17 @@ public final class ContactExchangeManager extends ExtensionManager implements Se
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-            ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
-            if (contactExchange != null) {
-                if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
-                    // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
-                    xmppSession.send(iq.createError(new StanzaError(Condition.NOT_AUTHORIZED)));
-                } else {
-                    List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                    if (!items.isEmpty()) {
-                        processItems(items, iq.getFrom(), null, new Date());
-                    }
-                    xmppSession.send(iq.createResult());
-                }
-                e.consume();
+    protected IQ processRequest(final IQ iq) {
+        ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
+        if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
+            // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
+            return iq.createError(new StanzaError(Condition.NOT_AUTHORIZED));
+        } else {
+            List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+            if (!items.isEmpty()) {
+                processItems(items, iq.getFrom(), null, new Date());
             }
+            return iq.createResult();
         }
     }
 

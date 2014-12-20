@@ -26,10 +26,9 @@ package rocks.xmpp.extensions.si;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
@@ -66,7 +65,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author Christian Schudt
  */
-public final class StreamInitiationManager extends ExtensionManager implements FileTransferNegotiator, IQListener {
+public final class StreamInitiationManager extends IQExtensionManager implements FileTransferNegotiator {
 
     private static final String STREAM_METHOD = "stream-method";
 
@@ -79,7 +78,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     private final Socks5ByteStreamManager socks5ByteStreamManager;
 
     private StreamInitiationManager(final XmppSession xmppSession) {
-        super(xmppSession, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
+        super(xmppSession, AbstractIQ.Type.SET, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
 
         inBandByteStreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
         socks5ByteStreamManager = xmppSession.getExtensionManager(Socks5ByteStreamManager.class);
@@ -93,7 +92,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             }
         });
 
-        xmppSession.addIQListener(this);
+        xmppSession.addIQHandler(StreamInitiation.class, this);
         setEnabled(true);
     }
 
@@ -222,42 +221,38 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-            StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
-            if (streamInitiation != null) {
-                FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
-                // Assume no valid streams by default, unless valid streams are found.
-                boolean noValidStreams = true;
-                if (featureNegotiation != null) {
-                    DataForm dataForm = featureNegotiation.getDataForm();
-                    if (dataForm != null) {
-                        DataForm.Field field = dataForm.findField(STREAM_METHOD);
-                        if (field != null) {
-                            List<String> streamMethods = new ArrayList<>();
-                            for (DataForm.Option option : field.getOptions()) {
-                                streamMethods.add(option.getValue());
-                            }
-                            if (!Collections.disjoint(streamMethods, supportedStreamMethod)) {
-                                // Request contains valid streams
-                                noValidStreams = false;
-                            }
-                        }
-                    }
-                }
-                if (noValidStreams) {
-                    xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.NO_VALID_STREAMS)));
-                } else {
-                    ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
+    protected IQ processRequest(final IQ iq) {
+        StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
 
-                    if (profileManager == null) {
-                        xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.BAD_PROFILE)));
-                    } else {
-                        profileManager.handle(iq, streamInitiation);
+        FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
+        // Assume no valid streams by default, unless valid streams are found.
+        boolean noValidStreams = true;
+        if (featureNegotiation != null) {
+            DataForm dataForm = featureNegotiation.getDataForm();
+            if (dataForm != null) {
+                DataForm.Field field = dataForm.findField(STREAM_METHOD);
+                if (field != null) {
+                    List<String> streamMethods = new ArrayList<>();
+                    for (DataForm.Option option : field.getOptions()) {
+                        streamMethods.add(option.getValue());
+                    }
+                    if (!Collections.disjoint(streamMethods, supportedStreamMethod)) {
+                        // Request contains valid streams
+                        noValidStreams = false;
                     }
                 }
-                e.consume();
+            }
+        }
+        if (noValidStreams) {
+            return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.NO_VALID_STREAMS));
+        } else {
+            ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
+
+            if (profileManager == null) {
+                return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.BAD_PROFILE));
+            } else {
+                profileManager.handle(iq, streamInitiation);
+                return null;
             }
         }
     }

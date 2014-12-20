@@ -26,11 +26,12 @@ package rocks.xmpp.extensions.version;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 /**
@@ -42,13 +43,13 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
  *
  * @author Christian Schudt
  */
-public final class SoftwareVersionManager extends ExtensionManager implements IQListener {
+public final class SoftwareVersionManager extends IQExtensionManager {
 
     private SoftwareVersion softwareVersion;
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
-        super(xmppSession, SoftwareVersion.NAMESPACE);
-        xmppSession.addIQListener(this);
+        super(xmppSession, AbstractIQ.Type.GET, SoftwareVersion.NAMESPACE);
+        xmppSession.addIQHandler(SoftwareVersion.class, this);
         setEnabled(true);
     }
 
@@ -86,16 +87,12 @@ public final class SoftwareVersionManager extends ExtensionManager implements IQ
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        // If an entity asks us for our software version, reply.
-        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {
-            synchronized (SoftwareVersionManager.this) {
-                if (softwareVersion != null) {
-                    xmppSession.send(iq.createResult(softwareVersion));
-                    e.consume();
-                }
+    protected IQ processRequest(final IQ iq) {
+        synchronized (SoftwareVersionManager.this) {
+            if (softwareVersion != null) {
+                return iq.createResult(softwareVersion);
             }
         }
+        return iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE));
     }
 }

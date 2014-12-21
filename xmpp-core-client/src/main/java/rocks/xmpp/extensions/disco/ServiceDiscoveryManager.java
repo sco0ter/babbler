@@ -48,6 +48,8 @@ import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -384,6 +386,26 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
     public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
         return result.getExtension(ItemDiscovery.class);
+    }
+
+    /**
+     * Discovers a service on the connected server by its feature namespace.
+     *
+     * @param feature The feature namespace.
+     * @return The services, that belong to the namespace.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     */
+    public Collection<Item> discoverServices(String feature) throws XmppException {
+        ItemNode itemDiscovery = discoverItems(null);
+        Collection<Item> services = new ArrayList<>();
+        for (Item item : itemDiscovery.getItems()) {
+            InfoNode infoDiscovery = discoverInformation(item.getJid());
+            if (infoDiscovery.getFeatures().contains(new Feature(feature))) {
+                services.add(item);
+            }
+        }
+        return services;
     }
 
     /**

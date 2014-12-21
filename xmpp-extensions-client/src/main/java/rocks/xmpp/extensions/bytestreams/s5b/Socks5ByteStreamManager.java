@@ -39,15 +39,13 @@ import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.StreamHost;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -157,15 +155,12 @@ public final class Socks5ByteStreamManager extends ByteStreamManager implements 
      * @see <a href="http://xmpp.org/extensions/xep-0065.html#disco">4. Discovering Proxies</a>
      */
     public List<StreamHost> discoverProxies() throws XmppException {
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(null);
-        for (Item item : itemNode.getItems()) {
-            InfoNode infoNode = serviceDiscoveryManager.discoverInformation(item.getJid());
-            if (infoNode.getFeatures().contains(new Feature(Socks5ByteStream.NAMESPACE))) {
-                IQ result = xmppSession.query(new IQ(item.getJid(), IQ.Type.GET, new Socks5ByteStream()));
-                Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);
-                if (socks5ByteStream != null) {
-                    return socks5ByteStream.getStreamHosts();
-                }
+        Collection<Item> services = serviceDiscoveryManager.discoverServices(Socks5ByteStream.NAMESPACE);
+        for (Item service : services) {
+            IQ result = xmppSession.query(new IQ(service.getJid(), IQ.Type.GET, new Socks5ByteStream()));
+            Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);
+            if (socks5ByteStream != null) {
+                return socks5ByteStream.getStreamHosts();
             }
         }
         return Collections.emptyList();

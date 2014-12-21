@@ -34,10 +34,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.user.Invite;
@@ -112,14 +109,10 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
     public Collection<ChatService> getChatServices() throws XmppException {
-        ItemNode itemDiscovery = serviceDiscoveryManager.discoverItems(null);
+        Collection<Item> services = serviceDiscoveryManager.discoverServices(Muc.NAMESPACE);
         Collection<ChatService> chatServices = new ArrayList<>();
-
-        for (Item item : itemDiscovery.getItems()) {
-            InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(item.getJid());
-            if (infoDiscovery.getFeatures().contains(new Feature(Muc.NAMESPACE))) {
-                chatServices.add(new ChatService(item.getJid(), xmppSession, serviceDiscoveryManager));
-            }
+        for (Item service : services) {
+            chatServices.add(new ChatService(service.getJid(), xmppSession, serviceDiscoveryManager));
         }
         return chatServices;
     }

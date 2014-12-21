@@ -29,10 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 import java.util.ArrayList;
@@ -81,14 +78,10 @@ public final class PubSubManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      */
     public Collection<PubSubService> discoverPubSubServices() throws XmppException {
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(null);
+        Collection<Item> services = serviceDiscoveryManager.discoverServices(PubSub.NAMESPACE);
         Collection<PubSubService> pubSubServices = new ArrayList<>();
-
-        for (Item item : itemNode.getItems()) {
-            InfoNode infoNode = serviceDiscoveryManager.discoverInformation(item.getJid());
-            if (infoNode.getFeatures().contains(new Feature(PubSub.NAMESPACE))) {
-                pubSubServices.add(new PubSubService(item.getJid(), xmppSession, serviceDiscoveryManager));
-            }
+        for (Item service : services) {
+            pubSubServices.add(new PubSubService(service.getJid(), xmppSession, serviceDiscoveryManager));
         }
         return pubSubServices;
     }

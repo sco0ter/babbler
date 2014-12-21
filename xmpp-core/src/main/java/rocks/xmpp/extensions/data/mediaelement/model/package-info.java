@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:media-element", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.data.mediaelement.model;
+@XmlSchema(namespace = Media.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.data.mediaelement.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

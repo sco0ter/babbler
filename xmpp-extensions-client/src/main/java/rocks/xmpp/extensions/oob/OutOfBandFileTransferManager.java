@@ -41,6 +41,7 @@ import rocks.xmpp.extensions.filetransfer.FileTransferStatusListener;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
+import rocks.xmpp.extensions.oob.model.x.OobX;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -60,7 +61,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
     private final FileTransferManager fileTransferManager;
 
     private OutOfBandFileTransferManager(final XmppSession xmppSession) {
-        super(xmppSession, "jabber:iq:oob", "jabber:x:oob");
+        super(xmppSession, OobIQ.NAMESPACE, OobX.NAMESPACE);
         fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
 
         xmppSession.addIQListener(this);

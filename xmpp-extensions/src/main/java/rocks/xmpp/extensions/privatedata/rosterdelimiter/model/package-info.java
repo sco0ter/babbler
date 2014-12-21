@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "roster:delimiter", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.privatedata.rosterdelimiter.model;
+@XmlSchema(namespace = RosterDelimiter.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.privatedata.rosterdelimiter.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

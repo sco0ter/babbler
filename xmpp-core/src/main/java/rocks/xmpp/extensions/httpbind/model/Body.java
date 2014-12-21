@@ -27,7 +27,12 @@ package rocks.xmpp.extensions.httpbind.model;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +50,15 @@ import java.util.List;
 @XmlRootElement
 public final class Body {
 
-    static final String XBOSH_NAMESPACE = "urn:xmpp:xbosh";
+    /**
+     * http://jabber.org/protocol/httpbind
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/httpbind";
+
+    /**
+     * urn:xmpp:xbosh
+     */
+    public static final String XBOSH_NAMESPACE = "urn:xmpp:xbosh";
 
     @XmlAnyElement(lax = true)
     private final List<Object> wrappedObjects = new ArrayList<>();

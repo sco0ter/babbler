@@ -358,6 +358,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
      * Requests the roster from the server. When the server returns the result, the {@link RosterListener} are notified.
      * That means, you should first {@linkplain #addRosterListener(RosterListener) register} a {@link RosterListener} prior to calling this method.
      *
+     * @return The roster.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */

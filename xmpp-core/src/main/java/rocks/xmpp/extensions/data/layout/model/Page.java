@@ -51,6 +51,11 @@ import java.util.List;
 @XmlRootElement(name = "page")
 public final class Page {
 
+    /**
+     * http://jabber.org/protocol/xdata-layout
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/xdata-layout";
+
     @XmlElement(name = "text")
     private final List<String> text = new ArrayList<>();
 

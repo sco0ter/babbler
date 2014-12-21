@@ -30,8 +30,21 @@ import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.*;
-import java.util.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:data} namespace, which represents data forms.
@@ -45,6 +58,11 @@ import java.util.*;
  */
 @XmlRootElement(name = "x")
 public final class DataForm implements Comparable<DataForm> {
+
+    /**
+     * jabber:x:data
+     */
+    public static final String NAMESPACE = "jabber:x:data";
 
     private static final String FORM_TYPE = "FORM_TYPE";
 

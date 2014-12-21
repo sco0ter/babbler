@@ -45,6 +45,11 @@ import java.util.List;
 @XmlRootElement(name = "media")
 public final class Media {
 
+    /**
+     * urn:xmpp:media-element
+     */
+    public static final String NAMESPACE = "urn:xmpp:media-element";
+
     @XmlElement(name = "uri")
     private final List<Location> locations = new ArrayList<>();
 

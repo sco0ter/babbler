@@ -29,6 +29,10 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/xdata-validate", xmlns = {@XmlNs(prefix = "xdv", namespaceURI = "http://jabber.org/protocol/xdata-validate")}, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.data.validate.model;
+@XmlSchema(namespace = Validation.NAMESPACE, xmlns = {@XmlNs(prefix = "xdv", namespaceURI = "http://jabber.org/protocol/xdata-validate")}, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.data.validate.model;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

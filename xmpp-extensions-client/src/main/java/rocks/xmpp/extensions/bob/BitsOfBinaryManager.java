@@ -48,7 +48,7 @@ class BitsOfBinaryManager extends ExtensionManager implements SessionStatusListe
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 
     private BitsOfBinaryManager(final XmppSession xmppSession) {
-        super(xmppSession, "urn:xmpp:bob");
+        super(xmppSession, Data.NAMESPACE);
 
         xmppSession.addSessionStatusListener(this);
         xmppSession.addIQListener(this);

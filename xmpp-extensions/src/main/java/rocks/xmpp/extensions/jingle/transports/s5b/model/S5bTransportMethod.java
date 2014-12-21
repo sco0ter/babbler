@@ -40,6 +40,11 @@ import java.util.List;
 @XmlRootElement(name = "transport")
 public class S5bTransportMethod extends TransportMethod {
 
+    /**
+     * urn:xmpp:jingle:transports:s5b:1
+     */
+    public static final String NAMESPACE = "urn:xmpp:jingle:transports:s5b:1";
+
     @XmlElement(name = "candidate")
     private final List<Candidate> candidates = new ArrayList<>();
 

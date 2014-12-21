@@ -114,6 +114,7 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param from         The sender.
      * @param id           The id.
      * @param language     The language.
+     * @param extensions   The extensions.
      * @param error        The error.
      */
     public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, Collection<Object> extensions, StanzaError error) {
@@ -132,7 +133,8 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param from         The sender.
      * @param id           The id.
      * @param language     The language.
-     * @param error        The error..
+     * @param extensions   The extensions.
+     * @param error        The error.
      */
     public Message(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<Object> extensions, StanzaError error) {
         super(to, type, bodies, subjects, thread, parentThread, from, id, language, extensions, error);

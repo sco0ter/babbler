@@ -141,15 +141,16 @@ public final class Presence extends AbstractPresence implements ServerStreamElem
     /**
      * Constructs a presence with all possible values.
      *
-     * @param to       The recipient.
-     * @param type     The type.
-     * @param show     The 'show' value.
-     * @param status   The status.
-     * @param priority The priority.
-     * @param id       The id.
-     * @param from     The 'from' attribute.
-     * @param language The language.
-     * @param error    The stanza error.
+     * @param to         The recipient.
+     * @param type       The type.
+     * @param show       The 'show' value.
+     * @param status     The status.
+     * @param priority   The priority.
+     * @param id         The id.
+     * @param from       The 'from' attribute.
+     * @param language   The language.
+     * @param extensions The extensions.
+     * @param error      The stanza error.
      */
     public Presence(Jid to, Type type, Show show, Collection<Status> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
         super(to, type, show, status, priority, id, from, language, extensions, error);

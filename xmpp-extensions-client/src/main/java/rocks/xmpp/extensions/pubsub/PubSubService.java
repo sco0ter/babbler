@@ -35,6 +35,7 @@ import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;
+import rocks.xmpp.extensions.pubsub.model.NodeType;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
@@ -48,6 +49,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * This class acts a facade to deal with a remote pubsub service.
+ * <p>
+ * E.g. it lets you get all your subscriptions on the service, let's you work with nodes (e.g. subscribe to nodes)
+ * or let's you discover the features provided by the remote service.
+ * <p>
+ * To work with pubsub nodes, {@linkplain #node(String) create a local node instance}, which can be used to work the remote node (e.g. subscribe to the node).
+ *
  * @author Christian Schudt
  */
 public final class PubSubService {
@@ -73,8 +81,22 @@ public final class PubSubService {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-features">5.1 Discover Features</a>
+     * @deprecated Use {@link #discoverFeatures()}
      */
+    @Deprecated
     public Collection<PubSubFeature> getFeatures() throws XmppException {
+        return discoverFeatures();
+    }
+
+    /**
+     * Discovers the features, which are supported by the pubsub service.
+     *
+     * @return The set of supported features.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-features">5.1 Discover Features</a>
+     */
+    public Collection<PubSubFeature> discoverFeatures() throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(service);
         return getFeatures(infoNode);
     }
@@ -104,13 +126,26 @@ public final class PubSubService {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
+     * @deprecated Use {@link #discoverNodes()}
      */
+    @Deprecated
     public List<PubSubNode> getNodes() throws XmppException {
+        return discoverNodes();
+    }
+
+    /**
+     * Discovers the first-level nodes of this pubsub service.
+     *
+     * @return The list of nodes.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
+     */
+    public List<PubSubNode> discoverNodes() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(service);
         List<PubSubNode> nodes = new ArrayList<>();
         for (Item item : itemNode.getItems()) {
-            PubSubNode n = new PubSubNode(item.getNode(), item.getName(), service, xmppSession);
-            nodes.add(n);
+            nodes.add(new PubSubNode(item.getNode(), service, xmppSession));
         }
         return nodes;
     }
@@ -120,9 +155,21 @@ public final class PubSubService {
      *
      * @param node The node.
      * @return The node.
+     * @deprecated Use {@link #node(String)} instead.
      */
+    @Deprecated
     public PubSubNode getNode(String node) {
-        return new PubSubNode(node, null, service, xmppSession);
+        return new PubSubNode(node, NodeType.LEAF, service, xmppSession);
+    }
+
+    /**
+     * Creates a pubsub node locally, which can be used to work with a node at the pubsub service.
+     *
+     * @param node The node.
+     * @return The node.
+     */
+    public PubSubNode node(String node) {
+        return new PubSubNode(node, NodeType.LEAF, service, xmppSession);
     }
 
     /**
@@ -190,6 +237,11 @@ public final class PubSubService {
         return service;
     }
 
+    /**
+     * Returns the service address.
+     *
+     * @return The service address.
+     */
     @Override
     public String toString() {
         return service.toString();

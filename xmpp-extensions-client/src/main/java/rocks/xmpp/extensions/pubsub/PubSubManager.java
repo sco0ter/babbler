@@ -28,28 +28,30 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
-import rocks.xmpp.extensions.pubsub.model.event.Event;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
+ * This class is the entry point to work with pubsub.
+ * <p>
+ * You should first {@linkplain #createPubSubService(rocks.xmpp.core.Jid) create a pubsub service}, which allows you to work with that service.
+ * If you don't know the service address, you can {@linkplain #getPubSubServices() discover} the pubsub services hosted at your server.
+ * <p>
+ * It also allows you to {@linkplain #createPersonalEventingService() create a Personal Eventing Service}, which is a virtual pubsub service, bound to your account.
+ *
  * @author Christian Schudt
+ * @see rocks.xmpp.extensions.pubsub.PubSubService
+ * @see <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
  */
 public final class PubSubManager extends ExtensionManager {
-
-    final Set<PubSubListener> pubSubListeners = new CopyOnWriteArraySet<>();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -64,8 +66,21 @@ public final class PubSubManager extends ExtensionManager {
      * @return The list of publish-subscribe services.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     * @deprecated Use {@link #discoverPubSubServices()}
      */
+    @Deprecated
     public Collection<PubSubService> getPubSubServices() throws XmppException {
+        return discoverPubSubServices();
+    }
+
+    /**
+     * Discovers the publish-subscribe services for the current connection.
+     *
+     * @return The list of publish-subscribe services.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     */
+    public Collection<PubSubService> discoverPubSubServices() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null);
         Collection<PubSubService> pubSubServices = new ArrayList<>();
 
@@ -81,7 +96,7 @@ public final class PubSubManager extends ExtensionManager {
     /**
      * Creates a pubsub service.
      *
-     * @param service The pubsub service address.
+     * @param service The pubsub service address, e.g. {@code Jid.valueOf("pubsub.mydomain")}
      * @return The pubsub service.
      */
     public PubSubService createPubSubService(Jid service) {
@@ -96,25 +111,5 @@ public final class PubSubManager extends ExtensionManager {
      */
     public PubSubService createPersonalEventingService() {
         return new PubSubService(xmppSession.getConnectedResource().asBareJid(), xmppSession, serviceDiscoveryManager);
-    }
-
-    /**
-     * Adds a pubsub listener, which allows to listen for pubsub notifications.
-     *
-     * @param pubSubListener The listener.
-     * @see #removePubSubListener(PubSubListener)
-     */
-    public void addPubSubListener(PubSubListener pubSubListener) {
-        pubSubListeners.add(pubSubListener);
-    }
-
-    /**
-     * Removes a previously added pubsub listener.
-     *
-     * @param pubSubListener The listener.
-     * @see #addPubSubListener(PubSubListener)
-     */
-    public void removePubSubListener(PubSubListener pubSubListener) {
-        pubSubListeners.remove(pubSubListener);
     }
 }

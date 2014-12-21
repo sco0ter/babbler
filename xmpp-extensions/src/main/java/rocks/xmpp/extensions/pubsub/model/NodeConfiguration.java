@@ -211,7 +211,7 @@ public final class NodeConfiguration {
     }
 
     /**
-     * Who may associate leaf nodes with a collection
+     * Who may associate leaf nodes with a collection.
      *
      * @return The children association policy.
      */

@@ -64,6 +64,7 @@ public final class Tune {
     @XmlElement(name = "uri")
     private URI uri;
 
+    @Deprecated
     public Tune() {
     }
 

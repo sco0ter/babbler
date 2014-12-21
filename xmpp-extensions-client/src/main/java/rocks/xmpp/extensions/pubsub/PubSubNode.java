@@ -39,7 +39,6 @@ import rocks.xmpp.extensions.pubsub.model.NodeConfiguration;
 import rocks.xmpp.extensions.pubsub.model.NodeMetaData;
 import rocks.xmpp.extensions.pubsub.model.NodeType;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
-import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.extensions.pubsub.model.PublishOptions;
 import rocks.xmpp.extensions.pubsub.model.SubscribeOptions;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
@@ -47,19 +46,18 @@ import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 /**
+ * This class represents a single pubsub node.
+ * <p>
+ * It allows you to create the node on the pubsub service, subscribe or unsubscribe from the node, retrieve items from it, publish items to it, etc.
+ *
  * @author Christian Schudt
  */
 public final class PubSubNode {
-
-    private final String name;
-
-    private final NodeType type;
 
     private final Jid pubSubServiceAddress;
 
@@ -67,25 +65,25 @@ public final class PubSubNode {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private String nodeId;
+    private volatile NodeType type;
 
-    PubSubNode(String nodeId, String name, Jid pubSubServiceAddress, XmppSession xmppSession) {
+    private volatile String nodeId;
+
+    PubSubNode(String nodeId, Jid pubSubServiceAddress, XmppSession xmppSession) {
         // If a node is a leaf node rather than a collection node and items have been published to the node, the service MAY return one <item/> element for each published item as described in the Discover Items for a Node section of this document, however such items MUST NOT include a 'node' attribute (since they are published items, not nodes).
-        this(nodeId, name, nodeId == null ? NodeType.LEAF : NodeType.COLLECTION, pubSubServiceAddress, xmppSession);
+        this(nodeId, nodeId == null ? NodeType.LEAF : NodeType.COLLECTION, pubSubServiceAddress, xmppSession);
     }
 
-    PubSubNode(String nodeId, String name, NodeType type, Jid pubSubServiceAddress, XmppSession xmppSession) {
+    PubSubNode(String nodeId, NodeType type, Jid pubSubServiceAddress, XmppSession xmppSession) {
         this.nodeId = nodeId;
-        this.name = name;
         this.type = type;
         this.pubSubServiceAddress = pubSubServiceAddress;
         this.xmppSession = xmppSession;
         this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-
     }
 
     /**
-     * Gets node info, which consists of a node name, type and meta info.
+     * Discovers the node info, which consists of a node name, type and meta data.
      *
      * @return The node info.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
@@ -93,10 +91,12 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-info">5.3 Discover Node Information</a>
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
      */
-    public NodeInfo getNodeInfo() throws XmppException {
-        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(pubSubServiceAddress);
+    public NodeMetaData discoverNodeMetaData() throws XmppException {
+        if (nodeId == null) {
+            throw new IllegalStateException("nodeId must not be null.");
+        }
+        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(pubSubServiceAddress, nodeId);
         Identity identity = null;
-        Set<PubSubFeature> features = new HashSet<>();
         NodeMetaData metaDataForm = null;
 
         if (infoNode != null) {
@@ -113,12 +113,13 @@ public final class PubSubNode {
                 }
             }
         }
-
-        return new NodeInfo(identity, features, metaDataForm);
+        // Assign the node type.
+        type = identity != null ? "collection".equals(identity.getType()) ? NodeType.COLLECTION : NodeType.LEAF : NodeType.LEAF;
+        return metaDataForm;
     }
 
     /**
-     * Gets the items for this node.
+     * Discovers the items for this node.
      *
      * @return The items.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
@@ -128,9 +129,29 @@ public final class PubSubNode {
     public List<Item> discoverItems() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(pubSubServiceAddress, nodeId);
         List<Item> result = new ArrayList<>();
-        for (rocks.xmpp.extensions.disco.model.items.Item item : itemNode.getItems()) {
+        for (final rocks.xmpp.extensions.disco.model.items.Item item : itemNode.getItems()) {
             // The 'name' attribute of each Service Discovery item MUST contain its ItemID
-            result.add(new PubSub.ItemElement(item.getName()));
+            result.add(new Item() {
+                @Override
+                public Object getPayload() {
+                    return null;
+                }
+
+                @Override
+                public String getId() {
+                    return item.getName();
+                }
+
+                @Override
+                public String getNode() {
+                    return null;
+                }
+
+                @Override
+                public String getPublisher() {
+                    return null;
+                }
+            });
         }
         return result;
     }
@@ -215,7 +236,27 @@ public final class PubSubNode {
     }
 
     /**
-     * Requests the subscription options for this node.
+     * Gets the (default) subscription options for this node.
+     *
+     * @param defaultOptions Whether to get the default options or not.
+     * @return The data form.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
+     * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
+     */
+    public SubscribeOptions getSubscriptionOptions(boolean defaultOptions) throws XmppException {
+        if (defaultOptions) {
+            IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withDefault(nodeId)));
+            return new SubscribeOptions(result.getExtension(PubSub.class).getDefault().getDataForm());
+        } else {
+            return getSubscriptionOptions();
+        }
+    }
+
+    /**
+     * Gets the subscription options for this node.
      *
      * @return The data form.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
@@ -228,7 +269,7 @@ public final class PubSubNode {
     }
 
     /**
-     * Requests the subscription options for this node.
+     * Gets the subscription options for this node.
      *
      * @param subId The subscription id.
      * @return The data form.
@@ -257,7 +298,7 @@ public final class PubSubNode {
     }
 
     /**
-     * Submits subscription options for this node.
+     * Configures the subscription options for this node.
      *
      * @param subscribeOptions The subscription options form.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
@@ -275,7 +316,9 @@ public final class PubSubNode {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
+     * @deprecated Use {@link #getSubscriptionOptions(boolean)}
      */
+    @Deprecated
     public SubscribeOptions getDefaultSubscriptionOptions() throws XmppException {
         IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withDefault(nodeId)));
         return new SubscribeOptions(result.getExtension(PubSub.class).getDefault().getDataForm());
@@ -400,9 +443,9 @@ public final class PubSubNode {
     }
 
     /**
-     * Creates a node.
+     * Creates the node on the remote pubsub service.
      *
-     * @return The node id.
+     * @return The node id, if it wasn't already set.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
@@ -412,7 +455,7 @@ public final class PubSubNode {
     }
 
     /**
-     * Creates and configures this node.
+     * Creates and configures this node on the remote pubsub service.
      *
      * @param nodeConfiguration The configuration form.
      * @return The node id.
@@ -464,7 +507,7 @@ public final class PubSubNode {
     }
 
     /**
-     * Submits the node configuration form.
+     * Configures the node by submitting the configuration form.
      *
      * @param nodeConfiguration The configuration form.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
@@ -476,7 +519,7 @@ public final class PubSubNode {
     }
 
     /**
-     * Deletes a node on the pubsub service.
+     * Deletes this node on the pubsub service.
      *
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
@@ -510,30 +553,34 @@ public final class PubSubNode {
     }
 
     /**
-     * Gets the (sub-)nodes, which hierarchically reside under this node, e.g. the "second-level" nodes.
+     * Discovers the (sub-)nodes, which hierarchically reside under this node, e.g. the "second-level" nodes.
      *
      * @return The list of nodes.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
      */
-    public List<PubSubNode> getNodes() throws XmppException {
+    public List<PubSubNode> discoverNodes() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(pubSubServiceAddress, nodeId);
         List<PubSubNode> nodes = new ArrayList<>();
         for (rocks.xmpp.extensions.disco.model.items.Item item : itemNode.getItems()) {
-            PubSubNode n = new PubSubNode(item.getNode(), item.getName(), pubSubServiceAddress, xmppSession);
-            nodes.add(n);
+            nodes.add(new PubSubNode(item.getNode(), pubSubServiceAddress, xmppSession));
         }
         return nodes;
     }
 
     /**
-     * Gets the name.
+     * Gets the (sub-)nodes, which hierarchically reside under this node, e.g. the "second-level" nodes.
      *
-     * @return The name.
+     * @return The list of nodes.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
+     * @deprecated Use {@link #discoverNodes()}
      */
-    public String getName() {
-        return name;
+    @Deprecated
+    public List<PubSubNode> getNodes() throws XmppException {
+        return discoverNodes();
     }
 
     /**
@@ -554,6 +601,11 @@ public final class PubSubNode {
         return type;
     }
 
+    /**
+     * The node id.
+     *
+     * @return The node id.
+     */
     @Override
     public String toString() {
         return nodeId;

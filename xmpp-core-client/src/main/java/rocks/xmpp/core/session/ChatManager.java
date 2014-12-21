@@ -59,7 +59,7 @@ import java.util.logging.Logger;
  *         ChatSession chatSession = chatSessionEvent.getChatSession();
  *         chatSession.addMessageListener(new MessageListener() {
  *             {@literal @}Override
- *             public void handle(MessageEvent e) {
+ *             public void handleMessage(MessageEvent e) {
  *                 Message message = e.getMessage();
  *             }
  *         });

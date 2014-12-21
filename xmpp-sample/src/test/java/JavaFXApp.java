@@ -121,6 +121,7 @@ import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.swing.event.EventListenerList;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -703,6 +704,7 @@ public class JavaFXApp extends Application {
                 }
             }
         });
+
         Button btn = new Button("Misc");
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override

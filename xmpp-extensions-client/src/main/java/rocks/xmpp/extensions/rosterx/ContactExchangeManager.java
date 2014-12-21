@@ -44,7 +44,11 @@ import rocks.xmpp.core.stanza.model.errors.NotAuthorized;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,7 +58,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ContactExchangeManager extends ExtensionManager {
+public final class ContactExchangeManager extends ExtensionManager implements SessionStatusListener, MessageListener, IQListener {
 
     private static final Logger logger = Logger.getLogger(ContactExchangeManager.class.getName());
 
@@ -65,61 +69,11 @@ public final class ContactExchangeManager extends ExtensionManager {
     private ContactExchangeManager(final XmppSession xmppSession) {
         super(xmppSession, ContactExchange.NAMESPACE);
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    contactExchangeListeners.clear();
-                    trustedEntities.clear();
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
 
-        xmppSession.addMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (e.isIncoming() && isEnabled()) {
-                    Message message = e.getMessage();
-                    ContactExchange contactExchange = message.getExtension(ContactExchange.class);
-                    if (contactExchange != null) {
-                        List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                        if (!items.isEmpty()) {
-                            Date date;
-                            DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                            if (delayedDelivery != null) {
-                                date = delayedDelivery.getTimeStamp();
-                            } else {
-                                date = new Date();
-                            }
-                            processItems(items, message.getFrom(), message.getBody(), date);
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addMessageListener(this);
 
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-                    ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
-                    if (contactExchange != null) {
-                        if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
-                            // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
-                            xmppSession.send(iq.createError(new StanzaError(new NotAuthorized())));
-                        } else {
-                            List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                            if (!items.isEmpty()) {
-                                processItems(items, iq.getFrom(), null, new Date());
-                            }
-                            xmppSession.send(iq.createResult());
-                        }
-                        e.consume();
-                    }
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
     }
 
     private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Date date) {
@@ -322,5 +276,55 @@ public final class ContactExchangeManager extends ExtensionManager {
      */
     public void removeContactExchangeListener(ContactExchangeListener contactExchangeListener) {
         contactExchangeListeners.remove(contactExchangeListener);
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
+            ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
+            if (contactExchange != null) {
+                if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
+                    // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
+                    xmppSession.send(iq.createError(new StanzaError(new NotAuthorized())));
+                } else {
+                    List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+                    if (!items.isEmpty()) {
+                        processItems(items, iq.getFrom(), null, new Date());
+                    }
+                    xmppSession.send(iq.createResult());
+                }
+                e.consume();
+            }
+        }
+    }
+
+    @Override
+    public void handleMessage(MessageEvent e) {
+        if (e.isIncoming() && isEnabled()) {
+            Message message = e.getMessage();
+            ContactExchange contactExchange = message.getExtension(ContactExchange.class);
+            if (contactExchange != null) {
+                List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+                if (!items.isEmpty()) {
+                    Date date;
+                    DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
+                    if (delayedDelivery != null) {
+                        date = delayedDelivery.getTimeStamp();
+                    } else {
+                        date = new Date();
+                    }
+                    processItems(items, message.getFrom(), message.getBody(), date);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            contactExchangeListeners.clear();
+            trustedEntities.clear();
+        }
     }
 }

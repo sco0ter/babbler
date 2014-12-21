@@ -56,7 +56,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
-public final class MultiUserChatManager extends ExtensionManager {
+public final class MultiUserChatManager extends ExtensionManager implements SessionStatusListener, MessageListener {
     private static final Logger logger = Logger.getLogger(MultiUserChatManager.class.getName());
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
@@ -66,37 +66,10 @@ public final class MultiUserChatManager extends ExtensionManager {
     private MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, Muc.NAMESPACE);
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    invitationListeners.clear();
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
 
         // Listen for incoming invitations.
-        xmppSession.addMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
-                    Message message = e.getMessage();
-                    // Check, if the message contains a mediated invitation.
-                    MucUser mucUser = message.getExtension(MucUser.class);
-                    if (mucUser != null) {
-                        for (Invite invite : mucUser.getInvites()) {
-                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
-                        }
-                    } else {
-                        // Check, if the message contains a direct invitation.
-                        DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
-                        if (directInvitation != null) {
-                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addMessageListener(this);
         this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
     }
 
@@ -159,5 +132,32 @@ public final class MultiUserChatManager extends ExtensionManager {
      */
     public ChatService createChatService(Jid chatService) {
         return new ChatService(chatService, xmppSession, serviceDiscoveryManager);
+    }
+
+    @Override
+    public void handleMessage(MessageEvent e) {
+        if (e.isIncoming()) {
+            Message message = e.getMessage();
+            // Check, if the message contains a mediated invitation.
+            MucUser mucUser = message.getExtension(MucUser.class);
+            if (mucUser != null) {
+                for (Invite invite : mucUser.getInvites()) {
+                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                }
+            } else {
+                // Check, if the message contains a direct invitation.
+                DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
+                if (directInvitation != null) {
+                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            invitationListeners.clear();
+        }
     }
 }

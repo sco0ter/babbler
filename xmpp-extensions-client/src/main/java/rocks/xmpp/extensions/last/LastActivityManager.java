@@ -30,7 +30,12 @@ import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.*;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.last.model.LastActivity;
@@ -66,7 +71,7 @@ import java.util.Date;
  *
  * @author Christian Schudt
  */
-public final class LastActivityManager extends ExtensionManager {
+public final class LastActivityManager extends ExtensionManager implements SessionStatusListener, PresenceListener, IQListener {
 
     private volatile LastActivityStrategy lastActivityStrategy;
 
@@ -74,45 +79,9 @@ public final class LastActivityManager extends ExtensionManager {
         super(xmppSession, LastActivity.NAMESPACE);
         lastActivityStrategy = new DefaultLastActivityStrategy(xmppSession);
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    lastActivityStrategy = null;
-                }
-            }
-        });
-        xmppSession.addPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                if (!e.isIncoming() && isEnabled()) {
-                    AbstractPresence presence = e.getPresence();
-                    if (presence.getTo() == null) {
-                        synchronized (LastActivityManager.this) {
-                            // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                            if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
-                                presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity()), presence.getStatus()));
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
-                    // If someone asks me to get my last activity, reply.
-                    synchronized (LastActivityManager.this) {
-                        long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
-                        xmppSession.send(iq.createResult(new LastActivity(seconds, null)));
-                        e.consume();
-                    }
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
+        xmppSession.addPresenceListener(this);
+        xmppSession.addIQListener(this);
         setEnabled(true);
     }
 
@@ -157,35 +126,70 @@ public final class LastActivityManager extends ExtensionManager {
         this.lastActivityStrategy = lastActivityStrategy;
     }
 
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
+            // If someone asks me to get my last activity, reply.
+            synchronized (LastActivityManager.this) {
+                long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
+                xmppSession.send(iq.createResult(new LastActivity(seconds, null)));
+                e.consume();
+            }
+        }
+    }
+
+    @Override
+    public void handlePresence(PresenceEvent e) {
+        if (!e.isIncoming() && isEnabled()) {
+            AbstractPresence presence = e.getPresence();
+            if (presence.getTo() == null) {
+                synchronized (LastActivityManager.this) {
+                    // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
+                    if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                        presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity()), presence.getStatus()));
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            lastActivityStrategy = null;
+        }
+    }
+
     /**
      * The default strategy to determine last activity. It simply sets the date of last activity, whenever a message or presence is sent.
      */
-    private static class DefaultLastActivityStrategy implements LastActivityStrategy {
+    private static class DefaultLastActivityStrategy implements LastActivityStrategy, MessageListener, PresenceListener {
         private volatile Date lastActivity;
 
         public DefaultLastActivityStrategy(XmppSession xmppSession) {
-            xmppSession.addMessageListener(new MessageListener() {
-                @Override
-                public void handleMessage(MessageEvent e) {
-                    if (!e.isIncoming()) {
-                        lastActivity = new Date();
-                    }
-                }
-            });
-            xmppSession.addPresenceListener(new PresenceListener() {
-                @Override
-                public void handlePresence(PresenceEvent e) {
-                    AbstractPresence presence = e.getPresence();
-                    if (!e.isIncoming() && (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA)) {
-                        lastActivity = new Date();
-                    }
-                }
-            });
+            xmppSession.addMessageListener(this);
+            xmppSession.addPresenceListener(this);
         }
 
         @Override
         public Date getLastActivity() {
             return lastActivity;
+        }
+
+        @Override
+        public void handleMessage(MessageEvent e) {
+            if (!e.isIncoming()) {
+                lastActivity = new Date();
+            }
+        }
+
+        @Override
+        public void handlePresence(PresenceEvent e) {
+            AbstractPresence presence = e.getPresence();
+            if (!e.isIncoming() && (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA)) {
+                lastActivity = new Date();
+            }
         }
     }
 }

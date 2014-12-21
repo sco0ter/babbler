@@ -64,7 +64,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class RosterManager {
+public final class RosterManager implements SessionStatusListener, IQListener {
     private static final Logger logger = Logger.getLogger(RosterManager.class.getName());
 
     private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();
@@ -85,40 +85,8 @@ public final class RosterManager {
 
     public RosterManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                if (e.isIncoming() && !e.isConsumed()) {
-                    IQ iq = e.getIQ();
-                    Roster roster = iq.getExtension(Roster.class);
-                    if (roster != null) {
-                        // 2.1.6.  Roster Push
-                        if (iq.getType() == IQ.Type.SET) {
-                            // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
-                            if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
-                                // Gracefully send an empty result.
-                                xmppSession.send(iq.createResult());
-                                updateRoster(roster, true);
-                            } else {
-                                // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
-                                xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
-                            }
-                        } else if (iq.getType() == IQ.Type.RESULT) {
-                            updateRoster(roster, false);
-                        }
-                        e.consume();
-                    }
-                }
-            }
-        });
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    rosterListeners.clear();
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
+        xmppSession.addSessionStatusListener(this);
     }
 
     /**
@@ -542,5 +510,37 @@ public final class RosterManager {
      */
     public synchronized void setGroupDelimiter(String groupDelimiter) {
         this.groupDelimiter = groupDelimiter;
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        if (e.isIncoming() && !e.isConsumed()) {
+            IQ iq = e.getIQ();
+            Roster roster = iq.getExtension(Roster.class);
+            if (roster != null) {
+                // 2.1.6.  Roster Push
+                if (iq.getType() == IQ.Type.SET) {
+                    // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
+                    if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
+                        // Gracefully send an empty result.
+                        xmppSession.send(iq.createResult());
+                        updateRoster(roster, true);
+                    } else {
+                        // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
+                        xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
+                    }
+                } else if (iq.getType() == IQ.Type.RESULT) {
+                    updateRoster(roster, false);
+                }
+                e.consume();
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            rosterListeners.clear();
+        }
     }
 }

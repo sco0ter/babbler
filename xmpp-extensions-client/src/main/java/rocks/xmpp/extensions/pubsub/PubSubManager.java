@@ -56,19 +56,6 @@ public final class PubSubManager extends ExtensionManager {
     private PubSubManager(XmppSession xmppSession) {
         super(xmppSession);
         serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-
-        xmppSession.addMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
-                    Message message = e.getMessage();
-                    Event event = message.getExtension(Event.class);
-                    if (event != null) {
-                        int i = 0;
-                    }
-                }
-            }
-        });
     }
 
     /**

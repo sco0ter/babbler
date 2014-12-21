@@ -51,7 +51,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
  */
-public final class HttpAuthenticationManager extends ExtensionManager {
+public final class HttpAuthenticationManager extends ExtensionManager implements SessionStatusListener, IQListener, MessageListener {
 
     private static final Logger logger = Logger.getLogger(HttpAuthenticationManager.class.getName());
 
@@ -61,44 +61,11 @@ public final class HttpAuthenticationManager extends ExtensionManager {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
         super(xmppSession);
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    httpAuthenticationListeners.clear();
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
 
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
-                    ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
-                    if (confirmationRequest != null) {
-                        if (notifyHttpAuthListeners(iq, confirmationRequest)) {
-                            e.consume();
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
 
-        xmppSession.addMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
-                    Message message = e.getMessage();
-                    if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
-                        ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
-                        if (confirmationRequest != null) {
-                            notifyHttpAuthListeners(message, confirmationRequest);
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addMessageListener(this);
     }
 
     private boolean notifyHttpAuthListeners(Stanza stanza, ConfirmationRequest confirmationRequest) {
@@ -132,5 +99,38 @@ public final class HttpAuthenticationManager extends ExtensionManager {
      */
     public void removeHttpAuthenticationListener(HttpAuthenticationListener httpAuthenticationListener) {
         httpAuthenticationListeners.remove(httpAuthenticationListener);
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
+            ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
+            if (confirmationRequest != null) {
+                if (notifyHttpAuthListeners(iq, confirmationRequest)) {
+                    e.consume();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void handleMessage(MessageEvent e) {
+        if (e.isIncoming()) {
+            Message message = e.getMessage();
+            if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
+                ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
+                if (confirmationRequest != null) {
+                    notifyHttpAuthListeners(message, confirmationRequest);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            httpAuthenticationListeners.clear();
+        }
     }
 }

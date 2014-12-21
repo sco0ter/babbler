@@ -42,27 +42,13 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
  *
  * @author Christian Schudt
  */
-public final class SoftwareVersionManager extends ExtensionManager {
+public final class SoftwareVersionManager extends ExtensionManager implements IQListener {
 
     private SoftwareVersion softwareVersion;
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
         super(xmppSession, SoftwareVersion.NAMESPACE);
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                // If an entity asks us for our software version, reply.
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {
-                    synchronized (SoftwareVersionManager.this) {
-                        if (softwareVersion != null) {
-                            xmppSession.send(iq.createResult(softwareVersion));
-                            e.consume();
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
         setEnabled(true);
     }
 
@@ -97,5 +83,19 @@ public final class SoftwareVersionManager extends ExtensionManager {
      */
     public synchronized void setSoftwareVersion(SoftwareVersion softwareVersion) {
         this.softwareVersion = softwareVersion;
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        // If an entity asks us for our software version, reply.
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {
+            synchronized (SoftwareVersionManager.this) {
+                if (softwareVersion != null) {
+                    xmppSession.send(iq.createResult(softwareVersion));
+                    e.consume();
+                }
+            }
+        }
     }
 }

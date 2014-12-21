@@ -34,5 +34,10 @@ import java.util.EventListener;
  */
 public interface PresenceListener extends EventListener {
 
+    /**
+     * Handles the incoming or outgoing presence.
+     *
+     * @param e The presence event.
+     */
     void handlePresence(PresenceEvent e);
 }

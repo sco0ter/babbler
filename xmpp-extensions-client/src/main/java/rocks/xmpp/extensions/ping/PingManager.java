@@ -35,7 +35,11 @@ import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.ping.model.Ping;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,7 +54,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class PingManager extends ExtensionManager {
+public final class PingManager extends ExtensionManager implements SessionStatusListener, IQListener {
 
     private static final Logger logger = Logger.getLogger(PingManager.class.getName());
 
@@ -67,32 +71,10 @@ public final class PingManager extends ExtensionManager {
      */
     private PingManager(final XmppSession xmppSession) {
         super(xmppSession, Ping.NAMESPACE);
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(Ping.class) != null) {
-                    xmppSession.send(iq.createResult());
-                    e.consume();
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    // Shutdown the ping executor service and cancel the next ping.
-                    synchronized (PingManager.this) {
-                        if (nextPing != null) {
-                            nextPing.cancel(false);
-                        }
-                        nextPing = null;
-                        scheduledExecutorService.shutdown();
-                    }
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
+
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -181,6 +163,29 @@ public final class PingManager extends ExtensionManager {
                     nextPing = scheduledExecutorService.schedule(this, pingInterval, TimeUnit.SECONDS);
                 }
             }, pingInterval, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(Ping.class) != null) {
+            xmppSession.send(iq.createResult());
+            e.consume();
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            // Shutdown the ping executor service and cancel the next ping.
+            synchronized (PingManager.this) {
+                if (nextPing != null) {
+                    nextPing.cancel(false);
+                }
+                nextPing = null;
+                scheduledExecutorService.shutdown();
+            }
         }
     }
 }

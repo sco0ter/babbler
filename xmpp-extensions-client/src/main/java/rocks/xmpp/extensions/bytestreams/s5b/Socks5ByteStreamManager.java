@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
@@ -55,7 +54,7 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-public final class Socks5ByteStreamManager extends ByteStreamManager {
+public final class Socks5ByteStreamManager extends ByteStreamManager implements IQListener {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -71,35 +70,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
 
         this.localSocks5Server = new LocalSocks5Server();
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    // Stop the server, when the session is closed.
-                    localSocks5Server.stop();
-                }
-            }
-        });
-
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-
-                    Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
-                    if (socks5ByteStream != null) {
-                        if (socks5ByteStream.getSessionId() == null) {
-                            // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
-                            xmppSession.send(iq.createError(new StanzaError(new BadRequest())));
-                        } else {
-                            notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
-                        }
-                        e.consume();
-                    }
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
         setEnabled(true);
     }
 
@@ -290,6 +261,33 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
             return new S5bSession(sessionId, socket, usedStreamHost.getJid());
         } finally {
             localSocks5Server.removeConnection(hash);
+        }
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
+
+            Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
+            if (socks5ByteStream != null) {
+                if (socks5ByteStream.getSessionId() == null) {
+                    // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
+                    xmppSession.send(iq.createError(new StanzaError(new BadRequest())));
+                } else {
+                    notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
+                }
+                e.consume();
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        super.sessionStatusChanged(e);
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            // Stop the server, when the session is closed.
+            localSocks5Server.stop();
         }
     }
 }

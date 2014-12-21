@@ -33,6 +33,10 @@ import java.util.EventListener;
  * @see rocks.xmpp.core.session.XmppSession#addMessageListener(MessageListener)
  */
 public interface MessageListener extends EventListener {
-
+    /**
+     * Handles the incoming or outgoing message.
+     *
+     * @param e The message event.
+     */
     void handleMessage(MessageEvent e);
 }

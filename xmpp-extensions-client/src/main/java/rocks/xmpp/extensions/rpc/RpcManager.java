@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
-public final class RpcManager extends ExtensionManager {
+public final class RpcManager extends ExtensionManager implements SessionStatusListener, IQListener {
 
     private static final Logger logger = Logger.getLogger(RpcManager.class.getName());
 
@@ -68,52 +68,9 @@ public final class RpcManager extends ExtensionManager {
         executorService = Executors.newCachedThreadPool();
 
         // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    rpcHandler = null;
-                    executorService.shutdown();
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
 
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(final IQEvent e) {
-                final IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-                    Rpc rpc = iq.getExtension(Rpc.class);
-                    // If there's an incoming RPC
-                    if (rpc != null) {
-                        synchronized (RpcManager.this) {
-                            if (rpcHandler != null) {
-                                final Rpc.MethodCall methodCall = rpc.getMethodCall();
-                                final List<Value> parameters = new ArrayList<>();
-                                for (Value parameter : methodCall.getParameters()) {
-                                    parameters.add(parameter);
-                                }
-                                executorService.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            Value value = rpcHandler.process(iq.getFrom(), methodCall.getMethodName(), parameters);
-                                            xmppSession.send(iq.createResult(new Rpc(value)));
-                                        } catch (RpcException e1) {
-                                            xmppSession.send(iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString()))));
-                                        } catch (Throwable e1) {
-                                            logger.log(Level.WARNING, e1.getMessage(), e1);
-                                            xmppSession.send(iq.createError(new StanzaError(new InternalServerError())));
-                                        }
-                                    }
-                                });
-                                e.consume();
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
     }
 
     /**
@@ -152,5 +109,48 @@ public final class RpcManager extends ExtensionManager {
     public synchronized void setRpcHandler(RpcHandler rpcHandler) {
         this.rpcHandler = rpcHandler;
         setEnabled(rpcHandler != null);
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        final IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
+            Rpc rpc = iq.getExtension(Rpc.class);
+            // If there's an incoming RPC
+            if (rpc != null) {
+                synchronized (RpcManager.this) {
+                    if (rpcHandler != null) {
+                        final Rpc.MethodCall methodCall = rpc.getMethodCall();
+                        final List<Value> parameters = new ArrayList<>();
+                        for (Value parameter : methodCall.getParameters()) {
+                            parameters.add(parameter);
+                        }
+                        executorService.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Value value = rpcHandler.process(iq.getFrom(), methodCall.getMethodName(), parameters);
+                                    xmppSession.send(iq.createResult(new Rpc(value)));
+                                } catch (RpcException e1) {
+                                    xmppSession.send(iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString()))));
+                                } catch (Throwable e1) {
+                                    logger.log(Level.WARNING, e1.getMessage(), e1);
+                                    xmppSession.send(iq.createError(new StanzaError(new InternalServerError())));
+                                }
+                            }
+                        });
+                        e.consume();
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            rpcHandler = null;
+            executorService.shutdown();
+        }
     }
 }

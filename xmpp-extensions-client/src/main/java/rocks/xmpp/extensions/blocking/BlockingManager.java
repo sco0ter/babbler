@@ -37,7 +37,12 @@ import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Unblock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +55,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class BlockingManager extends ExtensionManager {
+public final class BlockingManager extends ExtensionManager implements SessionStatusListener, IQListener {
 
     private static final Logger logger = Logger.getLogger(BlockingManager.class.getName());
 
@@ -61,58 +66,9 @@ public final class BlockingManager extends ExtensionManager {
     private BlockingManager(final XmppSession xmppSession) {
         super(xmppSession);
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    blockingListeners.clear();
-                    blockedContacts.clear();
-                }
-            }
-        });
-
+        xmppSession.addSessionStatusListener(this);
         // Listen for "un/block pushes"
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
-                    Block block = iq.getExtension(Block.class);
-                    if (block != null) {
-                        List<Jid> pushedContacts = new ArrayList<>();
-                        synchronized (blockedContacts) {
-                            for (Jid item : block.getItems()) {
-                                blockedContacts.add(item);
-                                pushedContacts.add(item);
-                            }
-                        }
-                        xmppSession.send(iq.createResult());
-                        e.consume();
-                        notifyListeners(pushedContacts, Collections.<Jid>emptyList());
-                    } else {
-                        Unblock unblock = iq.getExtension(Unblock.class);
-                        if (unblock != null) {
-                            List<Jid> pushedContacts = new ArrayList<>();
-                            synchronized (blockedContacts) {
-                                if (unblock.getItems().isEmpty()) {
-                                    // Empty means, the user has unblocked communications with all contacts.
-                                    pushedContacts.addAll(blockedContacts);
-                                    blockedContacts.clear();
-                                } else {
-                                    for (Jid item : unblock.getItems()) {
-                                        blockedContacts.remove(item);
-                                        pushedContacts.add(item);
-                                    }
-                                }
-                            }
-                            xmppSession.send(iq.createResult());
-                            e.consume();
-                            notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
     }
 
     private void notifyListeners(List<Jid> blockedContacts, List<Jid> unblockedContacts) {
@@ -193,5 +149,53 @@ public final class BlockingManager extends ExtensionManager {
         List<Jid> items = new ArrayList<>();
         Collections.addAll(items, jids);
         xmppSession.query(new IQ(IQ.Type.SET, new Unblock(items)));
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
+            Block block = iq.getExtension(Block.class);
+            if (block != null) {
+                List<Jid> pushedContacts = new ArrayList<>();
+                synchronized (blockedContacts) {
+                    for (Jid item : block.getItems()) {
+                        blockedContacts.add(item);
+                        pushedContacts.add(item);
+                    }
+                }
+                xmppSession.send(iq.createResult());
+                e.consume();
+                notifyListeners(pushedContacts, Collections.<Jid>emptyList());
+            } else {
+                Unblock unblock = iq.getExtension(Unblock.class);
+                if (unblock != null) {
+                    List<Jid> pushedContacts = new ArrayList<>();
+                    synchronized (blockedContacts) {
+                        if (unblock.getItems().isEmpty()) {
+                            // Empty means, the user has unblocked communications with all contacts.
+                            pushedContacts.addAll(blockedContacts);
+                            blockedContacts.clear();
+                        } else {
+                            for (Jid item : unblock.getItems()) {
+                                blockedContacts.remove(item);
+                                pushedContacts.add(item);
+                            }
+                        }
+                    }
+                    xmppSession.send(iq.createResult());
+                    e.consume();
+                    notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            blockingListeners.clear();
+            blockedContacts.clear();
+        }
     }
 }

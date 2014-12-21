@@ -71,7 +71,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends ExtensionManager {
+public final class ServiceDiscoveryManager extends ExtensionManager implements SessionStatusListener, IQListener {
 
     private static Identity defaultIdentity = new Identity("client", "pc");
 
@@ -92,58 +92,11 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
         itemProviders.put("", new DefaultItemProvider());
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
-                        pcs.removePropertyChangeListener(propertyChangeListener);
-                    }
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
 
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
-                    InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
-                    if (infoDiscovery != null) {
-                        if (infoDiscovery.getNode() == null) {
-                            xmppSession.send(iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions())));
-                        } else {
-                            InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
-                            if (infoNode != null) {
-                                xmppSession.send(iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions())));
-                            } else {
-                                // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                                // Treat info discovery the same as item discovery.
-                                xmppSession.send(iq.createResult(new InfoDiscovery()));
-                            }
-                        }
-                        e.consume();
-                    } else {
-                        ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
-                        if (itemDiscovery != null) {
-                            ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
-                            if (itemProvider != null) {
-                                ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
-                                ItemDiscovery itemDiscoveryResult = new ItemDiscovery(resultSet.getItems(), resultSet.getResultSetManagement());
-                                xmppSession.send(iq.createResult(itemDiscoveryResult));
-                            } else {
-                                // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                                xmppSession.send(iq.createResult(new ItemDiscovery()));
-                            }
-                            e.consume();
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
 
         setEnabled(true);
-
     }
 
     /**
@@ -481,6 +434,52 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
             itemProviders.remove(node);
         } else {
             itemProviders.put(node, itemProvider);
+        }
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
+            InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
+            if (infoDiscovery != null) {
+                if (infoDiscovery.getNode() == null) {
+                    xmppSession.send(iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions())));
+                } else {
+                    InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
+                    if (infoNode != null) {
+                        xmppSession.send(iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions())));
+                    } else {
+                        // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                        // Treat info discovery the same as item discovery.
+                        xmppSession.send(iq.createResult(new InfoDiscovery()));
+                    }
+                }
+                e.consume();
+            } else {
+                ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
+                if (itemDiscovery != null) {
+                    ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
+                    if (itemProvider != null) {
+                        ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
+                        ItemDiscovery itemDiscoveryResult = new ItemDiscovery(resultSet.getItems(), resultSet.getResultSetManagement());
+                        xmppSession.send(iq.createResult(itemDiscoveryResult));
+                    } else {
+                        // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                        xmppSession.send(iq.createResult(new ItemDiscovery()));
+                    }
+                    e.consume();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
+                pcs.removePropertyChangeListener(propertyChangeListener);
+            }
         }
     }
 }

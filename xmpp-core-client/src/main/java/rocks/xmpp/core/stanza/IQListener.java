@@ -33,6 +33,10 @@ import java.util.EventListener;
  * @see rocks.xmpp.core.session.XmppSession#addIQListener(IQListener)
  */
 public interface IQListener extends EventListener {
-
+    /**
+     * Handles the incoming or outgoing IQ.
+     *
+     * @param e The IQ event.
+     */
     void handleIQ(IQEvent e);
 }

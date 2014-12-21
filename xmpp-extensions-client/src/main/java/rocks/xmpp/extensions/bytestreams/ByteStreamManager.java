@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 /**
  * @author Christian Schudt
  */
-public abstract class ByteStreamManager extends ExtensionManager {
+public abstract class ByteStreamManager extends ExtensionManager implements SessionStatusListener {
 
     private static final Logger logger = Logger.getLogger(ByteStreamManager.class.getName());
 
@@ -45,15 +45,7 @@ public abstract class ByteStreamManager extends ExtensionManager {
 
     protected ByteStreamManager(XmppSession xmppSession, String... features) {
         super(xmppSession, features);
-
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    byteStreamListeners.clear();
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
     }
 
     /**
@@ -88,6 +80,13 @@ public abstract class ByteStreamManager extends ExtensionManager {
             } catch (Exception exc) {
                 logger.log(Level.WARNING, exc.getMessage(), exc);
             }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            byteStreamListeners.clear();
         }
     }
 }

@@ -61,41 +61,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Christian Schudt
  */
-public final class PrivacyListManager extends ExtensionManager {
+public final class PrivacyListManager extends ExtensionManager implements SessionStatusListener, IQListener {
     private final Set<PrivacyListListener> privacyListListeners = new CopyOnWriteArraySet<>();
 
     private PrivacyListManager(final XmppSession xmppSession) {
         super(xmppSession);
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    privacyListListeners.clear();
-                }
-            }
-        });
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
-                    // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
-                    xmppSession.send(iq.createResult());
-                    e.consume();
-
-                    Privacy privacy = iq.getExtension(Privacy.class);
-                    if (privacy != null) {
-                        List<PrivacyList> privacyLists = privacy.getPrivacyLists();
-                        if (privacyLists.size() == 1) {
-                            // Notify the listeners about the reception.
-                            for (PrivacyListListener privacyListListener : privacyListListeners) {
-                                privacyListListener.privacyListUpdated(new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
+        xmppSession.addIQListener(this);
     }
 
     /**
@@ -239,5 +211,33 @@ public final class PrivacyListManager extends ExtensionManager {
 
     private void setPrivacy(Privacy privacy) throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, privacy));
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
+            // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
+            xmppSession.send(iq.createResult());
+            e.consume();
+
+            Privacy privacy = iq.getExtension(Privacy.class);
+            if (privacy != null) {
+                List<PrivacyList> privacyLists = privacy.getPrivacyLists();
+                if (privacyLists.size() == 1) {
+                    // Notify the listeners about the reception.
+                    for (PrivacyListListener privacyListListener : privacyListListeners) {
+                        privacyListListener.privacyListUpdated(new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            privacyListListeners.clear();
+        }
     }
 }

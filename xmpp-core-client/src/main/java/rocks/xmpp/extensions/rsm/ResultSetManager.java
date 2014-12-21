@@ -33,7 +33,11 @@ import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import java.util.List;
 
 /**
+ * This manager is used to deal with result set management. If enabled (which it is by default), the result set management feature
+ * is included in Service Discovery responses to indicate, that result set management is supported.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
  */
 public final class ResultSetManager extends ExtensionManager {
     private ResultSetManager(XmppSession xmppSession) {
@@ -41,27 +45,41 @@ public final class ResultSetManager extends ExtensionManager {
         setEnabled(true);
     }
 
-    public static <T extends ResultSetItem> ResultSet<T> createResultSet(ResultSetProvider<T> resultSetProvider, ResultSetManagement resultSet) {
+    /**
+     * Creates a result set from a result set provider and a result set management.
+     * <p>
+     * If the result set management asks for a limited result set (e.g. starting at a specific index and a maximum size),
+     * this method takes care, that the result set provider returns the appropriate results.
+     * <p>
+     * The returned result set contains the limited result set as well as a result set management,
+     * which contains the total item count and which can be used by the requester to navigate through the results, e.g. by asking for the previous or next page.
+     *
+     * @param resultSetProvider   The result set provider.
+     * @param resultSetManagement The result set management.
+     * @param <T>                 The type of the result set.
+     * @return The result set.
+     */
+    public static <T extends ResultSetItem> ResultSet<T> createResultSet(ResultSetProvider<T> resultSetProvider, ResultSetManagement resultSetManagement) {
 
         // If the query has a RSM extension, use it and return a limited result set.
-        if (resultSet != null && resultSet.getMaxSize() != null) {
+        if (resultSetManagement != null && resultSetManagement.getMaxSize() != null) {
             // If the max size == 0, it means the requester wants to know the total item count only.
-            if (resultSet.getMaxSize() != 0) {
-                if (resultSet.getAfter() != null) {
+            if (resultSetManagement.getMaxSize() != 0) {
+                if (resultSetManagement.getAfter() != null) {
                     // 2.2 Paging Forwards Through a Result Set
-                    return createResponse(resultSetProvider.getItemsAfter(resultSet.getAfter(), resultSet.getMaxSize()), resultSetProvider);
-                } else if (resultSet.getBefore() != null) {
-                    if (!resultSet.getBefore().isEmpty()) {
+                    return createResponse(resultSetProvider.getItemsAfter(resultSetManagement.getAfter(), resultSetManagement.getMaxSize()), resultSetProvider);
+                } else if (resultSetManagement.getBefore() != null) {
+                    if (!resultSetManagement.getBefore().isEmpty()) {
                         // 2.3 Paging Backwards Through a Result Set
-                        return createResponse(resultSetProvider.getItemsBefore(resultSet.getBefore(), resultSet.getMaxSize()), resultSetProvider);
+                        return createResponse(resultSetProvider.getItemsBefore(resultSetManagement.getBefore(), resultSetManagement.getMaxSize()), resultSetProvider);
                     } else {
                         // 2.5 Requesting the Last Page in a Result Set
-                        return createResponse(resultSetProvider.getItems(resultSetProvider.getItemCount() - resultSet.getItemCount(), resultSet.getMaxSize()), resultSetProvider);
+                        return createResponse(resultSetProvider.getItems(resultSetProvider.getItemCount() - resultSetManagement.getItemCount(), resultSetManagement.getMaxSize()), resultSetProvider);
                     }
                 } else {
                     // 2.6 Retrieving a Page Out of Order
-                    int fromIndex = resultSet.getIndex() != null ? resultSet.getIndex() : 0;
-                    return createResponse(resultSetProvider.getItems(fromIndex, resultSet.getMaxSize()), resultSetProvider);
+                    int fromIndex = resultSetManagement.getIndex() != null ? resultSetManagement.getIndex() : 0;
+                    return createResponse(resultSetProvider.getItems(fromIndex, resultSetManagement.getMaxSize()), resultSetProvider);
                 }
             } else {
                 // 2.7 Getting the Item Count

@@ -49,11 +49,14 @@ public final class ChatService {
 
     private final Jid serviceAddress;
 
+    private final String name;
+
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    ChatService(Jid serviceAddress, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
+    ChatService(Jid serviceAddress, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
         this.xmppSession = xmppSession;
         this.serviceAddress = serviceAddress;
+        this.name = name;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
     }
 
@@ -95,5 +98,14 @@ public final class ChatService {
     @Override
     public String toString() {
         return serviceAddress.toString();
+    }
+
+    /**
+     * Gets the name of this service.
+     *
+     * @return The name or null, if the name is unknown.
+     */
+    public String getName() {
+        return name;
     }
 }

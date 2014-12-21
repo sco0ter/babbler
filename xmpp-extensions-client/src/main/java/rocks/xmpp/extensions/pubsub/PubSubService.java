@@ -64,12 +64,15 @@ public final class PubSubService {
 
     private final Jid service;
 
+    private final String name;
+
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     private final XmppSession xmppSession;
 
-    PubSubService(Jid service, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
+    PubSubService(Jid service, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
         this.service = service;
+        this.name = name;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
         this.xmppSession = xmppSession;
     }
@@ -245,5 +248,14 @@ public final class PubSubService {
     @Override
     public String toString() {
         return service.toString();
+    }
+
+    /**
+     * Gets the name of this service.
+     *
+     * @return The name or null, if the name is unknown.
+     */
+    public String getName() {
+        return name;
     }
 }

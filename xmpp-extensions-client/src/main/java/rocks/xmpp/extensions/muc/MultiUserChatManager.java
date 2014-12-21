@@ -112,7 +112,7 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
         Collection<Item> services = serviceDiscoveryManager.discoverServices(Muc.NAMESPACE);
         Collection<ChatService> chatServices = new ArrayList<>();
         for (Item service : services) {
-            chatServices.add(new ChatService(service.getJid(), xmppSession, serviceDiscoveryManager));
+            chatServices.add(new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager));
         }
         return chatServices;
     }
@@ -124,7 +124,7 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * @return The chat service.
      */
     public ChatService createChatService(Jid chatService) {
-        return new ChatService(chatService, xmppSession, serviceDiscoveryManager);
+        return new ChatService(chatService, null, xmppSession, serviceDiscoveryManager);
     }
 
     @Override

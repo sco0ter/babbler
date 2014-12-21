@@ -81,7 +81,7 @@ public final class PubSubManager extends ExtensionManager {
         Collection<Item> services = serviceDiscoveryManager.discoverServices(PubSub.NAMESPACE);
         Collection<PubSubService> pubSubServices = new ArrayList<>();
         for (Item service : services) {
-            pubSubServices.add(new PubSubService(service.getJid(), xmppSession, serviceDiscoveryManager));
+            pubSubServices.add(new PubSubService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager));
         }
         return pubSubServices;
     }
@@ -93,7 +93,7 @@ public final class PubSubManager extends ExtensionManager {
      * @return The pubsub service.
      */
     public PubSubService createPubSubService(Jid service) {
-        return new PubSubService(service, xmppSession, serviceDiscoveryManager);
+        return new PubSubService(service, null, xmppSession, serviceDiscoveryManager);
     }
 
     /**
@@ -103,6 +103,6 @@ public final class PubSubManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
      */
     public PubSubService createPersonalEventingService() {
-        return new PubSubService(xmppSession.getConnectedResource().asBareJid(), xmppSession, serviceDiscoveryManager);
+        return new PubSubService(xmppSession.getConnectedResource().asBareJid(), "Personal Eventing Service", xmppSession, serviceDiscoveryManager);
     }
 }

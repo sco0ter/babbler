@@ -179,7 +179,7 @@ Closing a session is simply done with:
 xmppSession.close();
 ```
 
-Note, that ```org.xmpp.XmppSession``` implements ```java.io.Closeable```, which means you can also use the try-with-resources statement, which automatically closes the session:
+Note, that `XmppSession` implements `java.io.Closeable`, which means you can also use the try-with-resources statement, which automatically closes the session:
 
 ```java
 try (XmppSession xmppSession = new XmppSession("domain")) {

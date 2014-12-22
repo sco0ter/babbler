@@ -706,6 +706,16 @@ public class XmppSession implements Closeable {
      * @throws IOException If anything went wrong, e.g. the host was not found.
      */
     public synchronized void connect() throws IOException {
+        connect(null);
+    }
+
+    /**
+     * Connects to the XMPP server.
+     *
+     * @param from The 'from' attribute.
+     * @throws IOException If anything went wrong, e.g. the host was not found.
+     */
+    public synchronized void connect(Jid from) throws IOException {
         if (status == Status.CLOSED) {
             throw new IllegalStateException("Session is already closed. Create a new one.");
         }
@@ -725,7 +735,7 @@ public class XmppSession implements Closeable {
         while (connectionIterator.hasNext()) {
             Connection connection = connectionIterator.next();
             try {
-                connection.connect();
+                connection.connect(from);
                 activeConnection = connection;
                 break;
             } catch (IOException e) {
@@ -754,6 +764,7 @@ public class XmppSession implements Closeable {
         }
         updateStatus(Status.CONNECTED);
     }
+
 
     /**
      * Explicitly closes the connection and performs a clean up of all listeners.

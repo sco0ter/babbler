@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import java.io.Closeable;
@@ -141,6 +142,16 @@ public abstract class Connection implements Closeable {
      * Connects to the server.
      *
      * @throws IOException If no connection could be established, e.g. due to unknown host.
+     * @deprecated Use {@link #connect(rocks.xmpp.core.Jid)}
      */
+    @Deprecated
     public abstract void connect() throws IOException;
+
+    /**
+     * Connects to the server and provides an optional 'from' attribute.
+     *
+     * @param from The 'from' attribute.
+     * @throws IOException If no connection could be established, e.g. due to unknown host.
+     */
+    public abstract void connect(Jid from) throws IOException;
 }

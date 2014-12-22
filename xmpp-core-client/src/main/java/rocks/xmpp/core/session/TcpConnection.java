@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stream.StreamFeatureEvent;
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
@@ -44,14 +45,22 @@ import javax.net.ssl.SSLSocket;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -107,6 +116,13 @@ public final class TcpConnection extends Connection {
         }, configuration.getCompressionMethod()));
     }
 
+
+    @Override
+    @Deprecated
+    public synchronized void connect() throws IOException {
+        connect(null);
+    }
+
     /**
      * Connects to the specified XMPP server using a socket connection.
      * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppSession#login(String, String)} method.
@@ -116,10 +132,11 @@ public final class TcpConnection extends Connection {
      * If a proxy has been specified, the connection is established through this proxy.<br>
      * </p>
      *
+     * @param from The optional 'from' attribute in the stream header.
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public synchronized void connect() throws IOException {
+    public synchronized void connect(Jid from) throws IOException {
 
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
@@ -145,7 +162,7 @@ public final class TcpConnection extends Connection {
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }
-        xmppStreamWriter.openStream(null);
+        xmppStreamWriter.openStream(from);
 
         // Start reading from the input stream.
         try {

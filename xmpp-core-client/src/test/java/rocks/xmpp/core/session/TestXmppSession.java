@@ -90,6 +90,11 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
+            public void connect(Jid from) throws IOException {
+
+            }
+
+            @Override
             public void close() throws IOException {
 
             }

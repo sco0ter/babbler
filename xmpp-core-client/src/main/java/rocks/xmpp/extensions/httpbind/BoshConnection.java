@@ -244,8 +244,19 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public synchronized void connect() throws IOException {
+    @Deprecated
+    public void connect() throws IOException {
+        connect(null);
+    }
 
+    /**
+     * Connects to the BOSH server.
+     *
+     * @param from The optional 'from' attribute in the initial BOSH session creation request.
+     * @throws IOException If a connection could not be established.
+     */
+    @Override
+    public synchronized void connect(Jid from) throws IOException {
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
         }
@@ -290,7 +301,7 @@ public final class BoshConnection extends Connection {
                 .hold((byte) 1)
                 .route(boshConnectionConfiguration.getRoute())
                 .ack(1L)
-                .from(null) // TODO!?
+                .from(from) // TODO!?
                 .xmppVersion("1.0");
 
         if (boshConnectionConfiguration.isUseKeySequence()) {

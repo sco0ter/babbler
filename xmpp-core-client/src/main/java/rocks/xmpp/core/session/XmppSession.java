@@ -844,22 +844,39 @@ public class XmppSession implements Closeable {
         if (password == null) {
             throw new IllegalArgumentException("password must not be null.");
         }
-        if (getDomain() == null) {
-            throw new IllegalStateException("The XMPP domain must not be null.");
-        }
+        loginInternal(user, password, resource);
+    }
+
+    /**
+     * Logs in anonymously and binds a resource.
+     *
+     * @throws LoginException If the anonymous login failed.
+     */
+    public synchronized final void loginAnonymously() throws LoginException {
+        loginInternal(null, null, null);
+    }
+
+    private void loginInternal(String user, String password, String resource) throws LoginException {
         if (getStatus() == Status.AUTHENTICATED) {
             throw new IllegalStateException("You are already logged in.");
         }
         if (getStatus() != Status.CONNECTED) {
             throw new IllegalStateException("You must be connected to the server before trying to login.");
         }
+        if (getDomain() == null) {
+            throw new IllegalStateException("The XMPP domain must not be null.");
+        }
         exception = null;
         try {
             updateStatus(Status.AUTHENTICATING);
-            authenticationManager.authenticate(null, user, password, null);
+            if (user == null) {
+                authenticationManager.authenticate(new String[]{"ANONYMOUS"}, null, null, null, null);
+            } else {
+                authenticationManager.authenticate(null, null, user, password, null);
+            }
             bindResource(resource);
 
-            if (getRosterManager().isRetrieveRosterOnLogin()) {
+            if (user != null && getRosterManager().isRetrieveRosterOnLogin()) {
                 getRosterManager().requestRoster();
             }
         } catch (Exception e) {
@@ -879,32 +896,6 @@ public class XmppSession implements Closeable {
                 loginException.initCause(e);
                 throw loginException;
             }
-        }
-        updateStatus(Status.AUTHENTICATED);
-    }
-
-    /**
-     * Logs in anonymously and binds a resource.
-     *
-     * @throws LoginException If the anonymous login failed.
-     * @see rocks.xmpp.core.sasl.AuthenticationManager#authenticateAnonymously()
-     */
-    public synchronized final void loginAnonymously() throws LoginException {
-        try {
-            updateStatus(Status.AUTHENTICATING);
-            authenticationManager.authenticateAnonymously();
-            bindResource(null);
-        } catch (Exception e) {
-            // Revert status
-            updateStatus(Status.CONNECTED);
-            if (exception != null) {
-                Throwable ex = e;
-                while (ex.getCause() != null) {
-                    ex = e.getCause();
-                }
-                ex.initCause(exception);
-            }
-            throw e;
         }
         updateStatus(Status.AUTHENTICATED);
     }

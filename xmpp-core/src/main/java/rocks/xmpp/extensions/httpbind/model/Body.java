@@ -202,6 +202,7 @@ public final class Body {
         this.wait = builder.wait;
         this.newkey = builder.newKey;
         this.key = builder.key;
+        this.from = builder.from;
     }
 
     /**
@@ -591,6 +592,8 @@ public final class Body {
 
         private String newKey;
 
+        private Jid from;
+
         private Builder() {
         }
 
@@ -757,6 +760,17 @@ public final class Body {
          */
         public Builder key(String key) {
             this.key = key;
+            return this;
+        }
+
+        /**
+         * Sets the 'from' attribute of the body.
+         *
+         * @param from The 'from' attribute.
+         * @return The builder.
+         */
+        public Builder from(Jid from) {
+            this.from = from;
             return this;
         }
 

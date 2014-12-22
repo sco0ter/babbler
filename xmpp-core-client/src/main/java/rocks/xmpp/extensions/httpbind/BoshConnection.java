@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.httpbind;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
@@ -56,8 +57,19 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -278,6 +290,7 @@ public final class BoshConnection extends Connection {
                 .hold((byte) 1)
                 .route(boshConnectionConfiguration.getRoute())
                 .ack(1L)
+                .from(null) // TODO!?
                 .xmppVersion("1.0");
 
         if (boshConnectionConfiguration.isUseKeySequence()) {

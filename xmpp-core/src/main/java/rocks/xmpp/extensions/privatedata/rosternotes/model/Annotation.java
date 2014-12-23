@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -62,8 +63,10 @@ public final class Annotation {
     private Annotation() {
     }
 
-    public Annotation(List<Note> notes) {
-        this.notes.addAll(notes);
+    public Annotation(Collection<Note> notes) {
+        if (notes != null) {
+            this.notes.addAll(notes);
+        }
     }
 
     /**

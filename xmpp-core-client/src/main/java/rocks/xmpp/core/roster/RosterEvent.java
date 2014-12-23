@@ -31,12 +31,13 @@ import java.util.EventObject;
 import java.util.List;
 
 /**
- * A roster event which holds information about added, updated and removed contacts.
+ * A roster event which holds information about added, updated and removed contacts of the roster.
  * <p>
  * This event is dispatched by the {@link RosterManager}, whenever a roster push or result is received.
  * </p>
  *
  * @author Christian Schudt
+ * @see RosterListener
  */
 public final class RosterEvent extends EventObject {
 

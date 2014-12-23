@@ -37,6 +37,8 @@ import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
+import rocks.xmpp.extensions.privatedata.PrivateDataManager;
+import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,13 +55,14 @@ import java.util.logging.Logger;
 
 /**
  * This class manages the roster (aka contact or buddy list).
+ * <h3>Nested Roster Groups</h3>
+ * <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, which means by default the group delimiter is retrieved before {@linkplain #requestRoster() requesting the roster}.
+ * You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix roster group delimiter.
+ * <h3>Retrieving the Roster on Login</h3>
+ * As per <a href="http://xmpp.org/rfcs/rfc6121.html#roster-login">RFC 6121</a> the roster should be retrieved on login.
+ * This behavior can also be {@linkplain #setRetrieveRosterOnLogin(boolean) set}.
  * <p>
- * Contacts are often organized in groups, which may contain nested groups by themselves.
- * This manager takes care for sorting the the contacts in the right group and also creates the group hierarchy for nested groups.
- * </p>
- * <p>Nested groups are determined by a delimiter, which must be {@linkplain #setGroupDelimiter(String) set} prior to requesting the roster.</p>
- * <p>
- * By adding a {@link RosterListener}, you can listen for roster updates (aka roster pushes) in order to update the view.
+ * By adding a {@link RosterListener}, you can listen for roster updates (aka roster pushes).
  * </p>
  *
  * @author Christian Schudt
@@ -79,12 +82,17 @@ public final class RosterManager implements SessionStatusListener, IQListener {
 
     private final Map<String, ContactGroup> rosterGroupMap = new HashMap<>();
 
+    private final PrivateDataManager privateDataManager;
+
     private boolean retrieveRosterOnLogin = true;
+
+    private boolean askForGroupDelimiter = true;
 
     private String groupDelimiter = null;
 
     public RosterManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
+        privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
         xmppSession.addIQListener(this);
         xmppSession.addSessionStatusListener(this);
     }
@@ -182,7 +190,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
 
                     for (String group : contact.getGroups()) {
                         String[] nestedGroups;
-                        if (groupDelimiter != null) {
+                        if (groupDelimiter != null && !groupDelimiter.isEmpty()) {
                             nestedGroups = group.split(groupDelimiter);
                         } else {
                             nestedGroups = new String[]{group};
@@ -337,7 +345,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
      * @return True, if the roster is automatically retrieved after login.
      * @see #setRetrieveRosterOnLogin(boolean)
      */
-    public boolean isRetrieveRosterOnLogin() {
+    public synchronized boolean isRetrieveRosterOnLogin() {
         return this.retrieveRosterOnLogin;
     }
 
@@ -350,7 +358,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
      *
      * @param retrieveRosterOnLogin True, if the roster is automatically retrieved after login.
      */
-    public void setRetrieveRosterOnLogin(boolean retrieveRosterOnLogin) {
+    public synchronized void setRetrieveRosterOnLogin(boolean retrieveRosterOnLogin) {
         this.retrieveRosterOnLogin = retrieveRosterOnLogin;
     }
 
@@ -363,6 +371,18 @@ public final class RosterManager implements SessionStatusListener, IQListener {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public Roster requestRoster() throws XmppException {
+        // XEP-0083: A compliant client SHOULD ask for the nested delimiter before requesting the user's roster
+        if (askForGroupDelimiter) {
+            try {
+                PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
+                RosterDelimiter rosterDelimiter = privateDataManager.getData(RosterDelimiter.class);
+                synchronized (this) {
+                    this.groupDelimiter = rosterDelimiter.getRosterDelimiter();
+                }
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Roster delimiter could not be retrieved from private storage.");
+            }
+        }
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Roster()));
         return result.getExtension(Roster.class);
     }
@@ -441,7 +461,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
     private void replaceGroupName(ContactGroup contactGroup, String name, int index) throws XmppException {
         // Update each contact in this group with the new group name.
         String newName = name;
-        if (groupDelimiter != null) {
+        if (groupDelimiter != null && !groupDelimiter.isEmpty()) {
             String[] groups = contactGroup.getFullName().split(groupDelimiter);
             if (index < groups.length) {
                 groups[index] = name;
@@ -501,16 +521,31 @@ public final class RosterManager implements SessionStatusListener, IQListener {
     }
 
     /**
-     * Sets the group delimiter.
+     * Sets the group delimiter without storing it on the server.
      * <p>
      * If this is set to a non-null value, contact groups are split by the specified delimiter in order to build a nested hierarchy of groups.
      * </p>
      *
      * @param groupDelimiter The group delimiter.
+     * @see #storeGroupDelimiter(String)
      * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
      */
     public synchronized void setGroupDelimiter(String groupDelimiter) {
         this.groupDelimiter = groupDelimiter;
+    }
+
+    /**
+     * Stores the roster group delimiter in the private storage and afterwards sets it.
+     *
+     * @param groupDelimiter The group delimiter.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see #setGroupDelimiter(String)
+     * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
+     */
+    public synchronized void storeGroupDelimiter(String groupDelimiter) throws XmppException {
+        privateDataManager.storeData(new RosterDelimiter(groupDelimiter));
+        setGroupDelimiter(groupDelimiter);
     }
 
     @Override
@@ -543,5 +578,24 @@ public final class RosterManager implements SessionStatusListener, IQListener {
         if (e.getStatus() == XmppSession.Status.CLOSED) {
             rosterListeners.clear();
         }
+    }
+
+    /**
+     * Indicates whether the server is asked for the roster delimiter before requesting the roster.
+     *
+     * @return True, if the server is asked for the roster delimiter.
+     */
+    public synchronized boolean isAskForGroupDelimiter() {
+        return askForGroupDelimiter;
+    }
+
+    /**
+     * Sets whether the server is asked for the roster delimiter before requesting the roster.
+     *
+     * @param askForGroupDelimiter True, if the server is asked for the roster delimiter before requesting the roster.
+     * @see #requestRoster()
+     */
+    public synchronized void setAskForGroupDelimiter(boolean askForGroupDelimiter) {
+        this.askForGroupDelimiter = askForGroupDelimiter;
     }
 }

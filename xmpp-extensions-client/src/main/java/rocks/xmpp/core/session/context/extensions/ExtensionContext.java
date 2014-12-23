@@ -168,17 +168,11 @@ public class ExtensionContext extends CoreContext {
                 // XEP-0048: BookmarkStorage
                 BookmarkStorage.class,
 
-                // XEP-0049: Private XML Storage
-                PrivateData.class,
-
                 // XEP-0054: vcard-temp
                 VCard.class,
 
                 // XEP-0055: Jabber Search
                 Search.class,
-
-                // XEP-0059: Result Set Management
-                ResultSetManagement.class,
 
                 // XEP-0060: Publish-Subscribe
                 PubSub.class,
@@ -197,9 +191,6 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0080: User Location
                 GeoLocation.class,
-
-                // XEP-0083: Nested Roster Groups
-                RosterDelimiter.class,
 
                 // XEP-0084: User Avatar
                 AvatarData.class, AvatarMetadata.class,
@@ -228,20 +219,11 @@ public class ExtensionContext extends CoreContext {
                 // XEP-0118: User Tune
                 Tune.class,
 
-                // XEP-0122: Data Forms Validation
-                Validation.class,
-
                 // XEP-0131: Stanza Headers and Internet Metadata
                 Headers.class,
 
-                // XEP-0141: Data Forms Layout
-                Page.class,
-
                 // XEP-0144: Roster Item Exchange
                 ContactExchange.class,
-
-                // XEP-0145: Annotations
-                Annotation.class,
 
                 // XEP-0152: Reachability Addresses
                 Reachability.class,
@@ -281,9 +263,6 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0203: Delayed Delivery
                 DelayedDelivery.class,
-
-                // XEP-0221: Data Forms Media Element
-                Media.class,
 
                 // XEP-0224: Attention
                 Attention.class,

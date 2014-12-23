@@ -36,9 +36,8 @@ import java.util.Map;
 /**
  * A factory which creates {@linkplain SaslClient}s, which are used in XMPP context and are not natively provided by the default security provider.
  * <p>
- * For example, the <a href="http://www.ietf.org/rfc/rfc2245.txt">ANONYMOUS</a> mechanism is not provided by default.
+ * For example, the <a href="http://tools.ietf.org/html/rfc2245">ANONYMOUS</a> and <a href="http://tools.ietf.org/html/rfc5802">SCRAM-SHA-1</a> mechanisms are not provided by default.
  * </p>
- * Other mechanisms required by XMPP, like the SCRAM-SHA-1 mechanism should be registered here, too.
  *
  * @author Christian Schudt
  */

@@ -97,7 +97,7 @@ public final class TcpConnection extends Connection {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
 
-        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new rocks.xmpp.core.tls.SecurityManager(xmppSession, new StreamFeatureListener() {
+        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new SecurityManager(xmppSession, new StreamFeatureListener() {
             @Override
             public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) throws Exception {
                 if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.SUCCESS) {

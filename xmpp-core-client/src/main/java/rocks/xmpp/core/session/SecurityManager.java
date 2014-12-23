@@ -22,9 +22,8 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.tls;
+package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.tls.model.Failure;
@@ -37,7 +36,7 @@ import rocks.xmpp.core.tls.model.StartTls;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
  */
-public final class SecurityManager extends StreamFeatureNegotiator {
+final class SecurityManager extends StreamFeatureNegotiator {
 
     private final XmppSession xmppSession;
 

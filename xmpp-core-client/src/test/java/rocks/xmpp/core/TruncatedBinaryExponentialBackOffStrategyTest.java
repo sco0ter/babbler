@@ -2,30 +2,30 @@ package rocks.xmpp.core;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.session.TruncatedBinaryExponentialBackOffStrategy;
+import rocks.xmpp.core.session.TruncatedBinaryExponentialBackoffStrategy;
 
 /**
  * @author Christian Schudt
  */
-public class TruncatedBinaryExponentialBackOffStrategyTest {
+public class TruncatedBinaryExponentialBackoffStrategyTest {
 
     @Test
     public void test() {
-        TruncatedBinaryExponentialBackOffStrategy truncatedBinaryExponentialBackOffStrategy = new TruncatedBinaryExponentialBackOffStrategy(60, 4);
-        int first = truncatedBinaryExponentialBackOffStrategy.getNextReconnectionAttempt(0);
+        TruncatedBinaryExponentialBackoffStrategy truncatedBinaryExponentialBackoffStrategy = new TruncatedBinaryExponentialBackoffStrategy(60, 4);
+        int first = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(0);
 
         Assert.assertTrue(first >= 0 && first < 60);
-        int second = truncatedBinaryExponentialBackOffStrategy.getNextReconnectionAttempt(1);
+        int second = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(1);
         Assert.assertTrue(second >= 0 && second < 180);
-        int third = truncatedBinaryExponentialBackOffStrategy.getNextReconnectionAttempt(2);
+        int third = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(2);
         Assert.assertTrue(third >= 0 && third < 420);
-        int fourth = truncatedBinaryExponentialBackOffStrategy.getNextReconnectionAttempt(3);
+        int fourth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(3);
         Assert.assertTrue(fourth >= 0 && fourth < 900);
-        int fifth = truncatedBinaryExponentialBackOffStrategy.getNextReconnectionAttempt(4);
+        int fifth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4);
         Assert.assertTrue(fifth >= 0 && fifth < 1860);
-        int sixth = truncatedBinaryExponentialBackOffStrategy.getNextReconnectionAttempt(4);
+        int sixth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4);
         Assert.assertTrue(sixth >= 0 && sixth < 1860);
-        int seventh = truncatedBinaryExponentialBackOffStrategy.getNextReconnectionAttempt(4);
+        int seventh = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4);
         Assert.assertTrue(seventh >= 0 && seventh < 1860);
     }
 }

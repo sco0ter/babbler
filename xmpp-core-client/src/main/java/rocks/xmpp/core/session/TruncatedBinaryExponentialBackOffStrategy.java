@@ -24,14 +24,32 @@
 
 package rocks.xmpp.core.session;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
+ * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
+ * <p>
+ * It exponentially increases the time span from which a random value for the next reconnection attempt is chosen.
+ * The formula for doing this, is: <code>(2<sup>n</sup> - 1) * s</code>, where <code>n</code> is the number of reconnection attempt and <code>s</code> is the slot time, which is 60 seconds by default.
+ * <p>
+ * In practice this means, the first reconnection attempt occurs after a random period of time between 0 and 60 seconds.<br>
+ * The second attempt chooses a random number between 0 and 180 seconds.<br>
+ * The third attempt chooses a random number between 0 and 420 seconds.<br>
+ * The fourth attempt chooses a random number between 0 and 900 seconds.<br>
+ * The fifth attempt chooses a random number between 0 and 1860 seconds (= 31 minutes)<br>
+ * <p>
+ * The strategy is called "truncated", because it won't increase the time span after the nth iteration, which means in the example above, the sixth and any further attempt
+ * behaves equally to the fifth attempt.
+ * <p>
+ * This "truncated binary exponential backoff" is the <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">recommended reconnection strategy by the XMPP specification</a>.
+ *
  * @author Christian Schudt
+ * @see rocks.xmpp.core.session.ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
  */
-public final class TruncatedBinaryExponentialBackOffStrategy implements ReconnectionStrategy {
+public final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
 
-    private static final Random RANDOM = new Random();
+    private static final Random RANDOM = new SecureRandom();
 
     private final int slotTime;
 
@@ -39,9 +57,9 @@ public final class TruncatedBinaryExponentialBackOffStrategy implements Reconnec
 
     /**
      * @param slotTime The slot time (in seconds), usually 60.
-     * @param ceiling  The ceiling, i.e. when the time is truncated. E.g. if the ceiling is 5
+     * @param ceiling  The ceiling, i.e. when the time is truncated. E.g. if the ceiling is 4, the back off is truncated at the 5th reconnection attempt (it starts at zero).
      */
-    public TruncatedBinaryExponentialBackOffStrategy(int slotTime, int ceiling) {
+    public TruncatedBinaryExponentialBackoffStrategy(int slotTime, int ceiling) {
         this.slotTime = slotTime;
         this.ceiling = ceiling;
     }
@@ -51,7 +69,7 @@ public final class TruncatedBinaryExponentialBackOffStrategy implements Reconnec
         // For the first attempt choose a random number between 0 and 60.
         // For the second attempt choose a random number between 0 and 180.
         // For the third attempt choose a random number between 0 and 420.
-        // For the forth attempt choose a random number between 0 and 900.
+        // For the fourth attempt choose a random number between 0 and 900.
         // For the fifth attempt choose a random number between 0 and 1860.
         // ==> max wait time: 1860 seconds = 31 minutes. (if ceiling == 4)
         return RANDOM.nextInt((int) (Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime);

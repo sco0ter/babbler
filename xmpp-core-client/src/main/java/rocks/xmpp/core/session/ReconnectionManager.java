@@ -71,7 +71,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
 
     ReconnectionManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
-        this.reconnectionStrategy = new TruncatedBinaryExponentialBackOffStrategy(60, 5);
+        this.reconnectionStrategy = new TruncatedBinaryExponentialBackoffStrategy(60, 5);
 
         // Enable by default.
         setEnabled(true);

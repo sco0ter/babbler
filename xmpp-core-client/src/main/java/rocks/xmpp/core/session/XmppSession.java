@@ -838,13 +838,29 @@ public class XmppSession implements Closeable {
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
      */
     public synchronized final void login(String user, String password, String resource) throws LoginException {
+        login(null, user, password, resource);
+    }
+
+    /**
+     * Authenticates against the server and binds a resource.
+     *
+     * @param authorizationId The authorization id.
+     * @param user            The user name. Usually this is the local part of the user's JID. Must not be null.
+     * @param password        The password. Must not be null.
+     * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
+     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
+     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
+     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
+     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     */
+    public synchronized final void login(String authorizationId, String user, String password, String resource) throws LoginException {
         if (user == null) {
             throw new IllegalArgumentException("user must not be null.");
         }
         if (password == null) {
             throw new IllegalArgumentException("password must not be null.");
         }
-        loginInternal(user, password, resource);
+        loginInternal(authorizationId, user, password, resource);
     }
 
     /**
@@ -853,10 +869,10 @@ public class XmppSession implements Closeable {
      * @throws LoginException If the anonymous login failed.
      */
     public synchronized final void loginAnonymously() throws LoginException {
-        loginInternal(null, null, null);
+        loginInternal(null, null, null, null);
     }
 
-    private void loginInternal(String user, String password, String resource) throws LoginException {
+    private void loginInternal(String authorizationId, String user, String password, String resource) throws LoginException {
         if (getStatus() == Status.AUTHENTICATED) {
             throw new IllegalStateException("You are already logged in.");
         }
@@ -872,7 +888,7 @@ public class XmppSession implements Closeable {
             if (user == null) {
                 authenticationManager.authenticate(new String[]{"ANONYMOUS"}, null, null, null, null);
             } else {
-                authenticationManager.authenticate(null, null, user, password, null);
+                authenticationManager.authenticate(null, authorizationId, user, password, null);
             }
             bindResource(resource);
 

@@ -56,13 +56,13 @@ import java.util.logging.Logger;
 /**
  * This class manages the roster (aka contact or buddy list).
  * <h3>Nested Roster Groups</h3>
- * <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, which means by default the group delimiter is retrieved before {@linkplain #requestRoster() requesting the roster}.
+ * <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting the roster}.
  * You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix roster group delimiter.
  * <h3>Retrieving the Roster on Login</h3>
  * As per <a href="http://xmpp.org/rfcs/rfc6121.html#roster-login">RFC 6121</a> the roster should be retrieved on login.
- * This behavior can also be {@linkplain #setRetrieveRosterOnLogin(boolean) set}.
+ * This behavior can also be {@linkplain #setRetrieveRosterOnLogin(boolean) changed}.
  * <p>
- * By adding a {@link RosterListener}, you can listen for roster updates (aka roster pushes).
+ * You can listen for roster updates (aka roster pushes), by {@linkplain #addRosterListener(RosterListener) adding} a {@link RosterListener}.
  * </p>
  *
  * @author Christian Schudt
@@ -86,9 +86,9 @@ public final class RosterManager implements SessionStatusListener, IQListener {
 
     private boolean retrieveRosterOnLogin = true;
 
-    private boolean askForGroupDelimiter = true;
+    private boolean askForGroupDelimiter;
 
-    private String groupDelimiter = null;
+    private String groupDelimiter;
 
     public RosterManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;

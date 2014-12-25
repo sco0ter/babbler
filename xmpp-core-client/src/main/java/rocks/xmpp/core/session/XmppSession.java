@@ -58,10 +58,16 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.AccountLockedException;
 import javax.security.auth.login.CredentialExpiredException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
+import javax.security.sasl.RealmCallback;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -821,12 +827,12 @@ public class XmppSession implements Closeable {
      * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
      */
-    public synchronized final void login(String user, String password) throws LoginException {
+    public final void login(String user, String password) throws LoginException {
         login(user, password, null);
     }
 
     /**
-     * Authenticates against the server and binds a resource.
+     * Authenticates against the server with username/password credential and binds a resource.
      *
      * @param user     The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password The password. Must not be null.
@@ -836,12 +842,12 @@ public class XmppSession implements Closeable {
      * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
      */
-    public synchronized final void login(String user, String password, String resource) throws LoginException {
+    public final void login(String user, String password, String resource) throws LoginException {
         login(null, user, password, resource);
     }
 
     /**
-     * Authenticates against the server and binds a resource.
+     * Authenticates against the server with an authorization id and username/password credential and binds a resource.
      *
      * @param authorizationId The authorization id.
      * @param user            The user name. Usually this is the local part of the user's JID. Must not be null.
@@ -852,14 +858,45 @@ public class XmppSession implements Closeable {
      * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
      */
-    public synchronized final void login(String authorizationId, String user, String password, String resource) throws LoginException {
+    public final void login(String authorizationId, final String user, final String password, String resource) throws LoginException {
         if (user == null) {
             throw new IllegalArgumentException("user must not be null.");
         }
         if (password == null) {
             throw new IllegalArgumentException("password must not be null.");
         }
-        loginInternal(authorizationId, user, password, resource);
+        // A default callback handler for username/password retrieval:
+        login(authorizationId, new CallbackHandler() {
+            @Override
+            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+                for (Callback callback : callbacks) {
+                    if (callback instanceof NameCallback) {
+                        ((NameCallback) callback).setName(user);
+                    }
+                    if (callback instanceof PasswordCallback) {
+                        ((PasswordCallback) callback).setPassword(password.toCharArray());
+                    }
+                    if (callback instanceof RealmCallback) {
+                        ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
+                    }
+                }
+            }
+        }, resource);
+    }
+
+    /**
+     * Authenticates against the server with a custom callback handler and binds a resource.
+     *
+     * @param authorizationId The authorization id.
+     * @param callbackHandler The callback handler.
+     * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
+     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
+     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
+     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
+     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     */
+    public final void login(String authorizationId, CallbackHandler callbackHandler, String resource) throws LoginException {
+        loginInternal(null, authorizationId, callbackHandler, resource);
     }
 
     /**
@@ -867,11 +904,11 @@ public class XmppSession implements Closeable {
      *
      * @throws LoginException If the anonymous login failed.
      */
-    public synchronized final void loginAnonymously() throws LoginException {
-        loginInternal(null, null, null, null);
+    public final void loginAnonymously() throws LoginException {
+        loginInternal(new String[]{"ANONYMOUS"}, null, null, null);
     }
 
-    private void loginInternal(String authorizationId, String user, String password, String resource) throws LoginException {
+    private synchronized void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws LoginException {
         if (getStatus() == Status.AUTHENTICATED) {
             throw new IllegalStateException("You are already logged in.");
         }
@@ -884,14 +921,14 @@ public class XmppSession implements Closeable {
         exception = null;
         try {
             updateStatus(Status.AUTHENTICATING);
-            if (user == null) {
-                authenticationManager.authenticate(new String[]{"ANONYMOUS"}, null, null, null, null);
+            if (callbackHandler == null) {
+                authenticationManager.authenticate(mechanisms, null, null);
             } else {
-                authenticationManager.authenticate(null, authorizationId, user, password, null);
+                authenticationManager.authenticate(mechanisms, authorizationId, callbackHandler);
             }
             bindResource(resource);
 
-            if (user != null && getRosterManager().isRetrieveRosterOnLogin()) {
+            if (callbackHandler != null && getRosterManager().isRetrieveRosterOnLogin()) {
                 getRosterManager().requestRoster();
             }
         } catch (Exception e) {

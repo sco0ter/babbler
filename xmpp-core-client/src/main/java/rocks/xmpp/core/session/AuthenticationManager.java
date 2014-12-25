@@ -33,20 +33,14 @@ import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 
-import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.AccountLockedException;
 import javax.security.auth.login.CredentialExpiredException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
-import javax.security.sasl.RealmCallback;
 import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
-import java.io.IOException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
@@ -115,10 +109,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      */
     private volatile boolean authenticated;
 
-    private String lastPassword;
-
-    private String lastUsername;
-
     private String lastAuthorizationId;
 
     private String[] lastMechanisms;
@@ -148,8 +138,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     /**
      * @param mechanisms      The mechanisms to use.
      * @param authorizationId The authorization identity.
-     * @param user            The user.
-     * @param password        The password.
      * @param callbackHandler The callback handler.
      * @throws SaslException              If a {@link SaslClient} could not be created.
      * @throws LoginException             If the login failed, due to a SASL error reported by the server.
@@ -157,7 +145,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
      */
-    public void authenticate(String[] mechanisms, String authorizationId, String user, String password, CallbackHandler callbackHandler) throws SaslException, LoginException {
+    public void authenticate(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws SaslException, LoginException {
         Collection<String> clientMechanisms;
         if (mechanisms == null) {
             clientMechanisms = new ArrayList<>(Arrays.asList(preferredMechanisms));
@@ -174,10 +162,8 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
 
         lastMechanisms = mechanisms;
         lastAuthorizationId = authorizationId;
-        lastUsername = user;
-        lastPassword = password;
         lastCallbackHandler = callbackHandler;
-        saslClient = createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, user, password, callbackHandler);
+        saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
 
         if (saslClient == null) {
             throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);
@@ -231,7 +217,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @throws LoginException If the login failed.
      */
     public void reAuthenticate() throws SaslException, LoginException {
-        authenticate(lastMechanisms, lastAuthorizationId, lastUsername, lastPassword, lastCallbackHandler);
+        authenticate(lastMechanisms, lastAuthorizationId, lastCallbackHandler);
     }
 
     @Override
@@ -282,41 +268,5 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     @Override
     public boolean canProcess(Object element) {
         return element instanceof Challenge || element instanceof Failure || element instanceof Success;
-    }
-
-    /**
-     * Creates the SASL client which is used during the authentication process.
-     *
-     * @param mechanisms      The SASL mechanisms.
-     * @param authorizationId The authorization identity.
-     * @param user            The user.
-     * @param password        The password.
-     * @param callbackHandler The optional callback handler. May be null.
-     * @return The SASL client.
-     * @throws SaslException If no SASL client could be created.
-     */
-    private SaslClient createSaslClient(String[] mechanisms, String authorizationId, final String user, final String password, CallbackHandler callbackHandler) throws SaslException {
-
-        // If the callbackHandler is null, assign a default callback handler.
-        if (callbackHandler == null) {
-            callbackHandler = new CallbackHandler() {
-                @Override
-                public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                    for (Callback callback : callbacks) {
-                        if (callback instanceof NameCallback) {
-                            ((NameCallback) callback).setName(user);
-                        }
-                        if (callback instanceof PasswordCallback) {
-                            ((PasswordCallback) callback).setPassword(password.toCharArray());
-                        }
-                        if (callback instanceof RealmCallback) {
-                            ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
-                        }
-                    }
-                }
-            };
-        }
-
-        return Sasl.createSaslClient(mechanisms, authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
     }
 }

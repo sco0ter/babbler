@@ -22,15 +22,15 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.sasl;
+package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.sasl.XmppSaslClientFactory;
 import rocks.xmpp.core.sasl.model.Auth;
 import rocks.xmpp.core.sasl.model.Challenge;
 import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 
 import javax.security.auth.callback.Callback;
@@ -47,6 +47,7 @@ import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
 import java.io.IOException;
+import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,14 +63,19 @@ import java.util.concurrent.locks.Lock;
  *
  * @author Christian Schudt
  */
-public final class AuthenticationManager extends StreamFeatureNegotiator {
+final class AuthenticationManager extends StreamFeatureNegotiator {
 
     static {
         // The SunSASL Provider only supports: "PLAIN", "CRAM-MD5", "DIGEST-MD5", "GSSAPI", "EXTERNAL".
         // http://download.java.net/jdk8/docs/technotes/guides/security/sasl/sasl-refguide.html
 
         // Add the "ANONYMOUS" and "SCRAM-SHA-1" SASL mechanism.
-        Security.addProvider(new SaslProvider());
+        Security.addProvider(new Provider("XMPP Sasl Provider", 1.0, "Provides additional SASL mechanisms, which are required for XMPP.") {
+            {
+                put("SaslClientFactory.ANONYMOUS", XmppSaslClientFactory.class.getName());
+                put("SaslClientFactory.SCRAM-SHA-1", XmppSaslClientFactory.class.getName());
+            }
+        });
     }
 
     private final XmppSession xmppSession;
@@ -92,7 +98,7 @@ public final class AuthenticationManager extends StreamFeatureNegotiator {
     /**
      * Stores the preferred SASL mechanisms of the client.
      */
-    private LinkedHashSet<String> preferredMechanisms;
+    private String[] preferredMechanisms;
 
     /**
      * The SASL client which is used during an authentication process.
@@ -125,7 +131,7 @@ public final class AuthenticationManager extends StreamFeatureNegotiator {
      * @param xmppSession The connection.
      * @param lock        The lock object, which is used to make the current thread wait during authentication.
      */
-    public AuthenticationManager(final XmppSession xmppSession, Lock lock) {
+    public AuthenticationManager(final XmppSession xmppSession, Lock lock, String[] mechanisms) {
         super(Mechanisms.class);
 
         if (xmppSession == null) {
@@ -136,47 +142,7 @@ public final class AuthenticationManager extends StreamFeatureNegotiator {
         this.lock = lock;
         this.authenticationComplete = lock.newCondition();
         this.supportedMechanisms = new LinkedHashSet<>();
-        this.preferredMechanisms = new LinkedHashSet<>();
-
-        // Add default preferred SASL mechanisms.
-        preferredMechanisms.add("SCRAM-SHA-1");
-        preferredMechanisms.add("DIGEST-MD5");
-        preferredMechanisms.add("GSSAPI");
-        preferredMechanisms.add("CRAM-MD5");
-        preferredMechanisms.add("PLAIN");
-        preferredMechanisms.add("ANONYMOUS");
-    }
-
-    /**
-     * Gets the preferred mechanisms used for this connection.
-     *
-     * @return The preferred mechanisms.
-     * @see #setPreferredMechanisms(java.util.LinkedHashSet)
-     */
-    public LinkedHashSet<String> getPreferredMechanisms() {
-        return preferredMechanisms;
-    }
-
-    /**
-     * Sets the preferred mechanisms used for this connection.
-     * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-rules-preferences">6.3.3.  Mechanism Preferences</a></cite></p>
-     * <p>Any entity that will act as a SASL client or a SASL server MUST maintain an ordered list
-     * of its preferred SASL mechanisms according to the client or server,
-     * where the list is ordered according to local policy or user configuration
-     * (which SHOULD be in order of perceived strength to enable the strongest authentication possible).
-     * The initiating entity MUST maintain its own preference order independent of the preference order of the receiving entity.
-     * A client MUST try SASL mechanisms in its preference order.
-     * For example, if the server offers the ordered list "PLAIN SCRAM-SHA-1 GSSAPI" or "SCRAM-SHA-1 GSSAPI PLAIN"
-     * but the client's ordered list is "GSSAPI SCRAM-SHA-1",
-     * the client MUST try GSSAPI first and then SCRAM-SHA-1 but MUST NOT try PLAIN (since PLAIN is not on its list).</p>
-     * </blockquote>
-     *
-     * @param preferredMechanisms The preferred mechanisms.
-     * @see #getPreferredMechanisms()
-     */
-    public void setPreferredMechanisms(LinkedHashSet<String> preferredMechanisms) {
-        this.preferredMechanisms = preferredMechanisms;
+        this.preferredMechanisms = mechanisms;
     }
 
     /**
@@ -194,9 +160,9 @@ public final class AuthenticationManager extends StreamFeatureNegotiator {
     public void authenticate(String[] mechanisms, String authorizationId, String user, String password, CallbackHandler callbackHandler) throws SaslException, LoginException {
         Collection<String> clientMechanisms;
         if (mechanisms == null) {
-            clientMechanisms = new ArrayList<>(preferredMechanisms);
+            clientMechanisms = new ArrayList<>(Arrays.asList(preferredMechanisms));
         } else {
-            clientMechanisms = Arrays.asList(mechanisms);
+            clientMechanisms = new ArrayList<>(Arrays.asList(mechanisms));
         }
 
         // Retain only the server-supported mechanisms.

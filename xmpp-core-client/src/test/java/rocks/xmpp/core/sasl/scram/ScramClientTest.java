@@ -26,11 +26,14 @@ package rocks.xmpp.core.sasl.scram;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.sasl.AuthenticationManager;
-import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
 
-import javax.security.auth.callback.*;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
 import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
@@ -67,8 +70,7 @@ public class ScramClientTest {
 
     @Test
     public void testSasl() throws SaslException {
-        XmppSession xmppSession = new TestXmppSession();
-        String[] preferredMechanisms = xmppSession.getAuthenticationManager().getPreferredMechanisms().toArray(new String[xmppSession.getAuthenticationManager().getPreferredMechanisms().size()]);
+        String[] preferredMechanisms = XmppSessionConfiguration.getDefault().getAuthenticationMechanisms();
         SaslClient sc = Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, new CallbackHandler() {
             @Override
             public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
@@ -121,7 +123,7 @@ public class ScramClientTest {
 
     @Test
     public void testClientServer() throws SaslException, ClassNotFoundException {
-        Class.forName(AuthenticationManager.class.getName());
+        Class.forName(XmppSession.class.getName());
 
         SaslClient saslClient = Sasl.createSaslClient(new String[]{"SCRAM-SHA-1"}, "authzid", "xmpp", "servername", null, new CallbackHandler() {
             @Override

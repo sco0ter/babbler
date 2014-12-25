@@ -52,9 +52,11 @@ public final class XmppSessionConfiguration {
 
     private final JAXBContext jaxbContext;
 
-    private Class<? extends XmppDebugger> xmppDebugger;
+    private final Class<? extends XmppDebugger> xmppDebugger;
 
-    private int defaultResponseTimeout;
+    private final int defaultResponseTimeout;
+
+    private final String[] authenticationMechanisms;
 
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
@@ -64,6 +66,8 @@ public final class XmppSessionConfiguration {
     private XmppSessionConfiguration(Builder builder) {
         this.xmppDebugger = builder.xmppDebugger;
         this.defaultResponseTimeout = builder.defaultResponseTimeout;
+        this.authenticationMechanisms = builder.authenticationMechanisms;
+
         CoreContext context = builder.context;
 
         if (context == null) {
@@ -163,6 +167,16 @@ public final class XmppSessionConfiguration {
     }
 
     /**
+     * Gets the preferred authentication (SASL) mechanisms.
+     *
+     * @return The mechanisms.
+     * @see Builder#authenticationMechanisms(String...)
+     */
+    public String[] getAuthenticationMechanisms() {
+        return authenticationMechanisms;
+    }
+
+    /**
      * A builder to create an {@link XmppSessionConfiguration} instance.
      */
     public static final class Builder {
@@ -172,6 +186,16 @@ public final class XmppSessionConfiguration {
         private CoreContext context;
 
         private int defaultResponseTimeout;
+
+        /**
+         * The default preferred SASL mechanisms.
+         */
+        private String[] authenticationMechanisms = new String[]{"SCRAM-SHA-1",
+                "DIGEST-MD5",
+                "GSSAPI",
+                "CRAM-MD5",
+                "PLAIN",
+                "ANONYMOUS"};
 
         private Builder() {
             defaultResponseTimeout(5000);
@@ -207,6 +231,29 @@ public final class XmppSessionConfiguration {
          */
         public Builder defaultResponseTimeout(int defaultResponseTimeout) {
             this.defaultResponseTimeout = defaultResponseTimeout;
+            return this;
+        }
+
+        /**
+         * Sets the preferred mechanisms used for this XMPP session.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-rules-preferences">6.3.3.  Mechanism Preferences</a></cite></p>
+         * <p>Any entity that will act as a SASL client or a SASL server MUST maintain an ordered list
+         * of its preferred SASL mechanisms according to the client or server,
+         * where the list is ordered according to local policy or user configuration
+         * (which SHOULD be in order of perceived strength to enable the strongest authentication possible).
+         * The initiating entity MUST maintain its own preference order independent of the preference order of the receiving entity.
+         * A client MUST try SASL mechanisms in its preference order.
+         * For example, if the server offers the ordered list "PLAIN SCRAM-SHA-1 GSSAPI" or "SCRAM-SHA-1 GSSAPI PLAIN"
+         * but the client's ordered list is "GSSAPI SCRAM-SHA-1",
+         * the client MUST try GSSAPI first and then SCRAM-SHA-1 but MUST NOT try PLAIN (since PLAIN is not on its list).</p>
+         * </blockquote>
+         *
+         * @param authenticationMechanisms The preferred mechanisms.
+         * @return The builder.
+         */
+        public Builder authenticationMechanisms(String... authenticationMechanisms) {
+            this.authenticationMechanisms = authenticationMechanisms;
             return this;
         }
 

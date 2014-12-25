@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.roster.RosterManager;
-import rocks.xmpp.core.sasl.AuthenticationManager;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.Session;
@@ -242,7 +241,7 @@ public class XmppSession implements Closeable {
         reconnectionManager = new ReconnectionManager(this);
         streamFeaturesManager = new StreamFeaturesManager(this);
         chatManager = new ChatManager(this);
-        authenticationManager = new AuthenticationManager(this, lock);
+        authenticationManager = new AuthenticationManager(this, lock, configuration.getAuthenticationMechanisms());
         authenticationManager.addFeatureListener(new StreamFeatureListener() {
             @Override
             public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) {
@@ -609,7 +608,7 @@ public class XmppSession implements Closeable {
             addPresenceListener(listener);
             send(stanza);
             // Wait for the stanza to arrive.
-            if (!resultReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
+            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
             }
         } catch (InterruptedException e) {
@@ -689,7 +688,7 @@ public class XmppSession implements Closeable {
             if (wasLoggedIn) {
                 try {
                     updateStatus(Status.AUTHENTICATING);
-                    getAuthenticationManager().reAuthenticate();
+                    authenticationManager.reAuthenticate();
                     bindResource(resource);
                 } catch (Exception e) {
                     updateStatus(Status.DISCONNECTED);
@@ -1058,15 +1057,6 @@ public class XmppSession implements Closeable {
     }
 
     /**
-     * Gets the authentication manager, which is responsible for SASL negotiation.
-     *
-     * @return The authentication manager.
-     */
-    public final AuthenticationManager getAuthenticationManager() {
-        return authenticationManager;
-    }
-
-    /**
      * Gets the roster manager, which is responsible for retrieving, updating and deleting contacts from the roster.
      *
      * @return The roster manager.
@@ -1199,7 +1189,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException If no response was received from the server.
      * @throws IOException         If any exception occurred during stream negotiation.
      */
-    protected final void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
+    private void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
         // Wait for the response and wait until all features have been negotiated.
         lock.lock();
         try {
@@ -1237,15 +1227,25 @@ public class XmppSession implements Closeable {
      * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link Status#AUTHENTICATING}.
      * @see #getStatus()
      */
-    public boolean isConnected() {
+    public final boolean isConnected() {
         return status == Status.CONNECTED || status == Status.AUTHENTICATED || status == Status.AUTHENTICATING;
     }
 
-    public XmppSessionConfiguration getConfiguration() {
+    /**
+     * Gets the configuration for this session.
+     *
+     * @return The configuration.
+     */
+    public final XmppSessionConfiguration getConfiguration() {
         return configuration;
     }
 
-    public XmppDebugger getDebugger() {
+    /**
+     * Gets the debugger.
+     *
+     * @return The debugger.
+     */
+    public final XmppDebugger getDebugger() {
         return debugger;
     }
 

@@ -56,8 +56,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Manages <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
@@ -77,9 +77,9 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
 
     private static Identity defaultIdentity = new Identity("client", "pc");
 
-    private final Set<Identity> identities = new CopyOnWriteArraySet<>();
+    private final Set<Identity> identities = new ConcurrentSkipListSet<>();
 
-    private final Set<Feature> features = new CopyOnWriteArraySet<>();
+    private final Set<Feature> features = new ConcurrentSkipListSet<>();
 
     private final List<DataForm> extensions = new CopyOnWriteArrayList<>();
 

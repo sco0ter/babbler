@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#info} namespace.
@@ -54,10 +55,10 @@ public final class InfoDiscovery implements InfoNode {
     public static final String NAMESPACE = "http://jabber.org/protocol/disco#info";
 
     @XmlElement(name = "identity")
-    private final Set<Identity> identities = new HashSet<>();
+    private final Set<Identity> identities = new TreeSet<>();
 
     @XmlElement(name = "feature")
-    private final Set<Feature> features = new HashSet<>();
+    private final Set<Feature> features = new TreeSet<>();
 
     @XmlElementRef
     private final List<DataForm> extensions = new ArrayList<>();

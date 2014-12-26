@@ -490,39 +490,6 @@ public class XmppSession implements Closeable {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
 
-        return sendAndAwaitIQ(iq, new StanzaFilter<IQ>() {
-            @Override
-            public boolean accept(IQ stanza) {
-                return stanza.getId() != null && stanza.getId().equals(iq.getId()) && (stanza.getType() == IQ.Type.RESULT || stanza.getType() == IQ.Type.ERROR);
-            }
-        }, timeout);
-    }
-
-    /**
-     * Sends a stanza and then waits for an IQ stanza to arrive. The filter determines the characteristics of the IQ stanza.
-     *
-     * @param stanza The stanza, which is sent.
-     * @param filter The presence filter.
-     * @return The presence stanza.
-     * @throws NoResponseException                          If no IQ stanza has arrived in time.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the returned IQ contains a stanza error.
-     */
-    public IQ sendAndAwaitIQ(ClientStreamElement stanza, final StanzaFilter<IQ> filter) throws NoResponseException, StanzaException {
-        return sendAndAwaitIQ(stanza, filter, configuration.getDefaultResponseTimeout());
-    }
-
-    /**
-     * Sends a stanza and then waits for an IQ stanza to arrive. The filter determines the characteristics of the IQ stanza.
-     *
-     * @param stanza  The stanza, which is sent.
-     * @param filter  The presence filter.
-     * @param timeout The timeout.
-     * @return The presence stanza.
-     * @throws NoResponseException If no IQ stanza has arrived in time.
-     * @throws StanzaException     If the returned presence IQ a stanza error.
-     */
-    public IQ sendAndAwaitIQ(ClientStreamElement stanza, final StanzaFilter<IQ> filter, long timeout) throws NoResponseException, StanzaException {
-
         final IQ[] result = new IQ[1];
 
         final Condition resultReceived = lock.newCondition();
@@ -531,7 +498,7 @@ public class XmppSession implements Closeable {
             @Override
             public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && filter.accept(iq)) {
+                if (e.isIncoming() && iq.getId() != null && iq.getId().equals(iq.getId()) && (iq.getType() == IQ.Type.RESULT || iq.getType() == IQ.Type.ERROR)) {
                     lock.lock();
                     try {
                         result[0] = iq;
@@ -546,7 +513,7 @@ public class XmppSession implements Closeable {
         lock.lock();
         try {
             addIQListener(listener);
-            send(stanza);
+            send(iq);
             // Wait for the stanza to arrive.
             if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
@@ -574,21 +541,6 @@ public class XmppSession implements Closeable {
      * @throws StanzaException     If the returned presence contains a stanza error.
      */
     public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
-        return sendAndAwaitPresence(stanza, filter, configuration.getDefaultResponseTimeout());
-    }
-
-    /**
-     * Sends a stanza and then waits for a presence stanza to arrive. The filter determines the characteristics of the presence stanza.
-     *
-     * @param stanza  The stanza, which is sent.
-     * @param filter  The presence filter.
-     * @param timeout The timeout.
-     * @return The presence stanza.
-     * @throws NoResponseException If no presence stanza has arrived in time.
-     * @throws StanzaException     If the returned presence contains a stanza error.
-     */
-    public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter, long timeout) throws NoResponseException, StanzaException {
-
         final Presence[] result = new Presence[1];
 
         final Condition resultReceived = lock.newCondition();
@@ -614,7 +566,7 @@ public class XmppSession implements Closeable {
             addPresenceListener(listener);
             send(stanza);
             // Wait for the stanza to arrive.
-            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
+            if (!resultReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
             }
         } catch (InterruptedException e) {

@@ -207,7 +207,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             // And then wait until the peer opens the stream.
             lock.lock();
             try {
-                if (!byteStreamOpened.await(xmppSession.getDefaultTimeout(), TimeUnit.MILLISECONDS)) {
+                if (!byteStreamOpened.await(xmppSession.getConfiguration().getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
                     throw new IOException("No byte stream could be negotiated in time.", negotiationExceptions.isEmpty() ? null : negotiationExceptions.get(0));
                 }
             } catch (InterruptedException e) {
@@ -215,7 +215,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             } finally {
                 lock.unlock();
             }
-            byteStreamSessions[0].setReadTimeout(xmppSession.getDefaultTimeout());
+            byteStreamSessions[0].setReadTimeout(xmppSession.getConfiguration().getDefaultResponseTimeout());
             return new FileTransfer(byteStreamSessions[0].getInputStream(), outputStream, fileTransferOffer.getSize());
         } finally {
             inBandByteStreamManager.removeByteStreamListener(byteStreamListener);

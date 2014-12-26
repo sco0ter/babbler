@@ -1253,7 +1253,9 @@ public class XmppSession implements Closeable {
      * Gets the default timeout for synchronous operations.
      *
      * @return The default timeout.
+     * @deprecated Use {@link XmppSessionConfiguration#getDefaultResponseTimeout()}.
      */
+    @Deprecated
     public final int getDefaultTimeout() {
         return configuration.getDefaultResponseTimeout();
     }

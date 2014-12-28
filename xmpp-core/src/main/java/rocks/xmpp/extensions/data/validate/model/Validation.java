@@ -138,7 +138,7 @@ public final class Validation {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-validation">3.2 Validation Methods</a>
      */
-    public static abstract class ValidationMethod {
+    public abstract static class ValidationMethod {
         @XmlValue
         protected String value;
 

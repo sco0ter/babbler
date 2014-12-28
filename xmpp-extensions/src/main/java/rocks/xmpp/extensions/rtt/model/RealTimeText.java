@@ -102,7 +102,7 @@ public final class RealTimeText {
         CANCEL
     }
 
-    public static abstract class Action {
+    public abstract static class Action {
         @XmlValue
         protected String value;
     }

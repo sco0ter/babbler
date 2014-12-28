@@ -267,7 +267,7 @@ public final class Mood {
     /**
      * An abstract base class for all possible mood values.
      */
-    public static abstract class Value {
+    public abstract static class Value {
 
         @XmlAnyElement(lax = true)
         private Object specificMood;

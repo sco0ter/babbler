@@ -1092,7 +1092,7 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @param <T> The sub builder.
      */
-    public static abstract class Builder<T extends Builder<T>> {
+    public abstract static class Builder<T extends Builder<T>> {
         private final List<Field> fields = new ArrayList<>();
 
         private String formType;

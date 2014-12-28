@@ -517,7 +517,7 @@ public final class Jingle {
         /**
          * The base class for the defined conditions for a reason.
          */
-        public static abstract class Condition {
+        public abstract static class Condition {
             private Condition() {
             }
         }

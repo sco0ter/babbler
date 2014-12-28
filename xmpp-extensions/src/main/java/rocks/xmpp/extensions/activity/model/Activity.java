@@ -150,7 +150,7 @@ public final class Activity {
     /**
      * An abstract class for general activities.
      */
-    static abstract class AbstractCategory {
+    abstract static class AbstractCategory {
 
         @XmlTransient
         private Category category;

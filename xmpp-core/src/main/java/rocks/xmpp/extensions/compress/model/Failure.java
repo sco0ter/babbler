@@ -62,7 +62,7 @@ public final class Failure implements ServerStreamElement {
     /**
      * An abstract base class for a compression failure condition.
      */
-    public static abstract class Condition {
+    public abstract static class Condition {
 
         private String name;
 

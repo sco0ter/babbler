@@ -1123,7 +1123,7 @@ public final class VCard {
      * The abstract base class for {@link Address} and {@link AddressLabel}.
      */
     @XmlTransient
-    private static abstract class AbstractAddress extends ContactData {
+    private abstract static class AbstractAddress extends ContactData {
 
         @XmlElement(name = "POSTAL")
         private Boolean postal;
@@ -1214,7 +1214,7 @@ public final class VCard {
      * The abstract base class for {@link Address} and {@link TelephoneNumber}.
      */
     @XmlTransient
-    private static abstract class ContactData extends Preferable {
+    private abstract static class ContactData extends Preferable {
         @XmlElement(name = "HOME")
         private Boolean home;
 
@@ -1276,7 +1276,7 @@ public final class VCard {
      * An abstract base class for address, email and telephone data.
      */
     @XmlTransient
-    private static abstract class Preferable {
+    private abstract static class Preferable {
         @XmlElement(name = "PREF")
         private Boolean pref;
 

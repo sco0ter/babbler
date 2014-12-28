@@ -586,7 +586,7 @@ public final class PubSubOwner {
         }
     }
 
-    private static abstract class PubSubOwnerChildElement {
+    private abstract static class PubSubOwnerChildElement {
 
         @XmlAttribute(name = "node")
         private String node;

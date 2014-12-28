@@ -370,7 +370,7 @@ public final class Event {
         }
     }
 
-    private static abstract class PubSubEventChildElement {
+    private abstract static class PubSubEventChildElement {
 
         @XmlAttribute(name = "node")
         private String node;

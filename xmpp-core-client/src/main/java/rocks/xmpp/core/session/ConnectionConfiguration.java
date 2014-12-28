@@ -123,7 +123,7 @@ public abstract class ConnectionConfiguration {
      *
      * @param <T> The concrete builder class.
      */
-    public static abstract class Builder<T extends Builder<T>> {
+    public abstract static class Builder<T extends Builder<T>> {
 
         private String hostname;
 

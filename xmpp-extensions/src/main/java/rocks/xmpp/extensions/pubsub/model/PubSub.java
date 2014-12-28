@@ -1017,7 +1017,7 @@ public final class PubSub {
         }
     }
 
-    private static abstract class PubSubChildElement {
+    private abstract static class PubSubChildElement {
 
         @XmlAttribute(name = "node")
         private String node;

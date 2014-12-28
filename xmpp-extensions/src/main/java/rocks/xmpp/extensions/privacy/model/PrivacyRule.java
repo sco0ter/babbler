@@ -58,9 +58,6 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     @XmlAttribute(name = "order")
     private long order;
 
-    @XmlElement(name = "iq")
-    private String iq;
-
     @XmlElement(name = "message")
     private String message;
 
@@ -70,6 +67,12 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     @XmlElement(name = "presence-out")
     private String presenceOut;
 
+    @XmlElement(name = "iq")
+    private String iq;
+
+    private PrivacyRule() {
+    }
+
     /**
      * Creates a privacy list item, which allows or blocks everything.
      *
@@ -77,7 +80,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
      */
     public PrivacyRule(Action action, long order) {
-        this(action, order, null, null);
+        this(action, order, null, null, false, false, false, false);
     }
 
     /**
@@ -92,7 +95,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *               <li>If the type is {@link Type#SUBSCRIPTION}, then the value must be one of "both", "to", "from", or "none".</li>
      *               </ul>
      */
-    private PrivacyRule(Action action, long order, Type type, String value) {
+    private PrivacyRule(Action action, long order, Type type, String value, boolean filterMessage, boolean filterPresenceIn, boolean filterPresenceOut, boolean filterIQ) {
         if (action == null) {
             throw new IllegalArgumentException("action must not be null.");
         }
@@ -103,9 +106,10 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
         this.order = order;
         this.type = type;
         this.value = value;
-    }
-
-    private PrivacyRule() {
+        this.message = filterMessage ? "" : null;
+        this.presenceIn = filterPresenceIn ? "" : null;
+        this.presenceOut = filterPresenceOut ? "" : null;
+        this.iq = filterIQ ? "" : null;
     }
 
     /**
@@ -133,7 +137,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param jid    The JID.
      */
     public PrivacyRule(Action action, long order, Jid jid) {
-        this(action, order, Type.JID, jid.toEscapedString());
+        this(action, order, Type.JID, jid.toEscapedString(), false, false, false, false);
     }
 
     /**
@@ -144,7 +148,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param group  The contact group.
      */
     public PrivacyRule(Action action, long order, String group) {
-        this(action, order, Type.GROUP, group);
+        this(action, order, Type.GROUP, group, false, false, false, false);
     }
 
     /**
@@ -198,9 +202,21 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param filterMessages True, if incoming message stanzas are filtered.
      * @see #isFilterMessage()
+     * @deprecated Use {@link #filterPresenceOut()}
      */
+    @Deprecated
     public void setFilterMessage(boolean filterMessages) {
         this.message = filterMessages ? "" : null;
+    }
+
+    /**
+     * Creates a privacy rule, which filters message stanzas.
+     *
+     * @return The privacy rule.
+     * @see #isFilterMessage()
+     */
+    public PrivacyRule filterMessage() {
+        return new PrivacyRule(action, order, type, value, true, presenceIn != null, presenceOut != null, iq != null);
     }
 
     /**
@@ -218,9 +234,21 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param filterIQ True, if incoming IQ stanzas are filtered.
      * @see #isFilterIQ()
+     * @deprecated Use {@link #filterIQ()}
      */
+    @Deprecated
     public void setFilterIQ(boolean filterIQ) {
         this.iq = filterIQ ? "" : null;
+    }
+
+    /**
+     * Creates a privacy rule, which filters IQ stanzas.
+     *
+     * @return The privacy rule.
+     * @see #isFilterIQ()
+     */
+    public PrivacyRule filterIQ() {
+        return new PrivacyRule(action, order, type, value, message != null, presenceIn != null, presenceOut != null, true);
     }
 
     /**
@@ -237,10 +265,21 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * Indicates, whether incoming presence notifications are filtered.
      *
      * @param filterPresenceIn True, if incoming presence notifications are filtered.
-     * @see #isFilterPresenceIn()
+     * @deprecated Use {@link #filterPresenceIn()}
      */
+    @Deprecated
     public void setFilterPresenceIn(boolean filterPresenceIn) {
         this.presenceIn = filterPresenceIn ? "" : null;
+    }
+
+    /**
+     * Creates a privacy rule, which filters inbound presence stanzas.
+     *
+     * @return The privacy rule.
+     * @see #isFilterPresenceIn()
+     */
+    public PrivacyRule filterPresenceIn() {
+        return new PrivacyRule(action, order, type, value, message != null, true, presenceOut != null, iq != null);
     }
 
     /**
@@ -258,13 +297,25 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param filterPresenceOut True, if outgoing presence notifications are filtered.
      * @see #isFilterPresenceOut()
+     * @deprecated Use {@link #filterPresenceOut()}
      */
+    @Deprecated
     public void setFilterPresenceOut(boolean filterPresenceOut) {
         this.presenceOut = filterPresenceOut ? "" : null;
     }
 
+    /**
+     * Creates a privacy rule, which filters outbound presence stanzas.
+     *
+     * @return The privacy rule.
+     * @see #isFilterPresenceOut()
+     */
+    public PrivacyRule filterPresenceOut() {
+        return new PrivacyRule(action, order, type, value, message != null, presenceIn != null, true, iq != null);
+    }
+
     private boolean isFilterEverything() {
-        return (presenceIn == null && presenceOut == null && message == null && iq == null);
+        return presenceIn == null && presenceOut == null && message == null && iq == null;
     }
 
     /**

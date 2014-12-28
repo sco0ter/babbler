@@ -275,6 +275,34 @@ public class PrivacyListTest extends XmlTest {
     }
 
     @Test
+    public void marshalWithMessageFilter() throws XMLStreamException, JAXBException {
+        PrivacyList privacyList = new PrivacyList("message", Arrays.asList(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterMessage()));
+        String xml = marshal(new Privacy(privacyList));
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"message\"><item action=\"allow\" order=\"1\"><message></message></item></list></query>");
+    }
+
+    @Test
+    public void marshalWithIQFilter() throws XMLStreamException, JAXBException {
+        PrivacyList privacyList = new PrivacyList("iq", Arrays.asList(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterIQ()));
+        String xml = marshal(new Privacy(privacyList));
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"iq\"><item action=\"allow\" order=\"1\"><iq></iq></item></list></query>");
+    }
+
+    @Test
+    public void marshalWithPresenceInFilter() throws XMLStreamException, JAXBException {
+        PrivacyList privacyList = new PrivacyList("presence-in", Arrays.asList(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterPresenceIn()));
+        String xml = marshal(new Privacy(privacyList));
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"presence-in\"><item action=\"allow\" order=\"1\"><presence-in></presence-in></item></list></query>");
+    }
+
+    @Test
+    public void marshalWithPresenceOutFilter() throws XMLStreamException, JAXBException {
+        PrivacyList privacyList = new PrivacyList("presence-out", Arrays.asList(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterPresenceOut().filterMessage()));
+        String xml = marshal(new Privacy(privacyList));
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"presence-out\"><item action=\"allow\" order=\"1\"><message></message><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
     public void testComparePrivacyLists() {
 
         PrivacyList privacyList1 = new PrivacyList("zzz");

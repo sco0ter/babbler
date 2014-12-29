@@ -174,14 +174,15 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
     }
 
     /**
-     * Gets the capabilities of another XMPP entity.
+     * Discovers the capabilities of another XMPP entity.
      *
      * @param jid The JID, which should usually be a full JID.
      * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
-    public InfoNode getCapabilities(Jid jid) throws XmppException {
+    public InfoNode discoverCapabilities(Jid jid) throws XmppException {
         InfoNode infoNode = jidInfos.get(jid);
         if (infoNode == null) {
             synchronized (jidInfos) {
@@ -190,6 +191,20 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
             }
         }
         return infoNode;
+    }
+
+    /**
+     * Gets the capabilities of another XMPP entity.
+     *
+     * @param jid The JID, which should usually be a full JID.
+     * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @deprecated Use {@link #discoverCapabilities(rocks.xmpp.core.Jid)}
+     */
+    @Deprecated
+    public InfoNode getCapabilities(Jid jid) throws XmppException {
+        return discoverCapabilities(jid);
     }
 
     /**
@@ -202,7 +217,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public boolean isSupported(String feature, Jid jid) throws XmppException {
-        InfoNode infoNode = getCapabilities(jid);
+        InfoNode infoNode = discoverCapabilities(jid);
         return infoNode.getFeatures().contains(new Feature(feature));
     }
 

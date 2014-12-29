@@ -42,8 +42,14 @@ import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.extensions.rsm.ResultSetProvider;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
@@ -51,8 +57,6 @@ import java.util.*;
 public class AdHocCommandsManager extends ExtensionManager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
-
-    private final ItemNode itemNode;
 
     private final InfoNode infoNode;
 
@@ -65,18 +69,6 @@ public class AdHocCommandsManager extends ExtensionManager {
         serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         commandMap = new HashMap<>();
         commandSessionMap = new HashMap<>();
-
-        itemNode = new ItemNode() {
-            @Override
-            public String getNode() {
-                return Command.NAMESPACE;
-            }
-
-            @Override
-            public List<Item> getItems() {
-                return null;
-            }
-        };
 
         infoNode = new InfoNode() {
             @Override
@@ -105,7 +97,7 @@ public class AdHocCommandsManager extends ExtensionManager {
 
         xmppSession.addIQListener(new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
                 if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
                     Command command = iq.getExtension(Command.class);
@@ -141,10 +133,40 @@ public class AdHocCommandsManager extends ExtensionManager {
         super.setEnabled(enabled);
         if (enabled) {
             serviceDiscoveryManager.addInfoNode(infoNode);
-            serviceDiscoveryManager.addItemNode(itemNode);
+            serviceDiscoveryManager.setItemProvider(Command.NAMESPACE, new ResultSetProvider<Item>() {
+                @Override
+                public List<Item> getItems() {
+                    return null;
+                }
+
+                @Override
+                public int getItemCount() {
+                    return 0;
+                }
+
+                @Override
+                public List<Item> getItems(int index, int maxSize) {
+                    return null;
+                }
+
+                @Override
+                public List<Item> getItemsAfter(String itemId, int maxSize) {
+                    return null;
+                }
+
+                @Override
+                public List<Item> getItemsBefore(String itemId, int maxSize) {
+                    return null;
+                }
+
+                @Override
+                public int indexOf(String itemId) {
+                    return 0;
+                }
+            });
         } else {
             serviceDiscoveryManager.removeInfoNode(Command.NAMESPACE);
-            serviceDiscoveryManager.removeItemNode(Command.NAMESPACE);
+            serviceDiscoveryManager.setItemProvider(Command.NAMESPACE, null);
         }
     }
 

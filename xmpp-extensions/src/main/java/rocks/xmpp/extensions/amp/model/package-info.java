@@ -30,7 +30,7 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/amp", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.amp.model;
+@XmlSchema(namespace = AdvancedMessageProcessing.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.amp.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;

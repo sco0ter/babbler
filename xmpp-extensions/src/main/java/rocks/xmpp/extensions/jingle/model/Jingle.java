@@ -28,7 +28,13 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +43,11 @@ import java.util.List;
  */
 @XmlRootElement(name = "jingle")
 public final class Jingle {
+
+    /**
+     * urn:xmpp:jingle:1
+     */
+    public static final String NAMESPACE = "urn:xmpp:jingle:1";
 
     @XmlElement(name = "content")
     private final List<Content> contents = new ArrayList<>();
@@ -506,7 +517,7 @@ public final class Jingle {
         /**
          * The base class for the defined conditions for a reason.
          */
-        public static abstract class Condition {
+        public abstract static class Condition {
             private Condition() {
             }
         }
@@ -518,6 +529,9 @@ public final class Jingle {
 
             @XmlElement(name = "sid")
             private String sessionId;
+
+            private AlternativeSession() {
+            }
 
             public AlternativeSession(String sessionId) {
                 this.sessionId = sessionId;

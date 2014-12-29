@@ -31,10 +31,58 @@ import rocks.xmpp.extensions.data.model.DataForm;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
- * A helper class to build a standard {@link rocks.xmpp.extensions.data.model.DataForm}, which can be used to configure a PubSub node.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#node_config}, which can be used to configure a pubsub node.
+ * <h3>Usage</h3>
+ * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
+ * <pre>
+ * {@code
+ * NodeConfiguration nodeConfiguration = new NodeConfiguration(dataForm);
+ * }
+ * </pre>
+ * To build a form:
+ * <pre>
+ * {@code
+ * NodeConfiguration nodeConfiguration = NodeConfiguration.builder()
+ *     .accessModel(AccessModel.AUTHORIZE)
+ *     .bodyXslt(new URL("http://xmpp.org"))
+ *     .childrenAssociationPolicy(ChildrenAssociationPolicy.OWNERS)
+ *     .childrenAssociationWhitelist(Arrays.asList(Jid.valueOf("domain")))
+ *     .children(Arrays.asList("collection1"))
+ *     .childrenMax(23)
+ *     .collection(Arrays.asList("collections"))
+ *     .contacts(Arrays.asList(Jid.valueOf("contact")))
+ *     .dataformXslt(new URL("http://www.xmpp.org"))
+ *     .deliverNotifications(true)
+ *     .deliverPayloads(false)
+ *     .description("description")
+ *     .itemExpire(2)
+ *     .itemReply(ItemReply.OWNER)
+ *     .language("de")
+ *     .maxItems(4)
+ *     .maxPayloadSize(54)
+ *     .nodeType(NodeType.LEAF)
+ *     .notificationType(AbstractMessage.Type.NORMAL)
+ *     .notifyConfig(true)
+ *     .notifyDelete(true)
+ *     .notifyRetract(true)
+ *     .notifySub(true)
+ *     .persistItems(true)
+ *     .presenceBasedDelivery(true)
+ *     .publisherModel(PublisherModel.OPEN)
+ *     .purgeOffline(false)
+ *     .rosterGroupsAllowed(Arrays.asList("group1", "group2"))
+ *     .sendLastPublishedItem(SendLastPublishedItem.ON_SUB_AND_PRESENCE)
+ *     .temporarySubscriptions(true)
+ *     .allowSubscriptions(true)
+ *     .title("Title")
+ *     .type("Type")
+ *     .build();
+ * }
+ * </pre>
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-config">16.4.4 pubsub#node_config FORM_TYPE</a>
@@ -163,7 +211,7 @@ public final class NodeConfiguration {
     }
 
     /**
-     * Who may associate leaf nodes with a collection
+     * Who may associate leaf nodes with a collection.
      *
      * @return The children association policy.
      */
@@ -216,7 +264,7 @@ public final class NodeConfiguration {
      *
      * @return The contacts.
      */
-    public List<Jid> getContact() {
+    public List<Jid> getContacts() {
         return dataForm.findValuesAsJid(CONTACT);
     }
 
@@ -461,7 +509,7 @@ public final class NodeConfiguration {
      *
      * @return The title.
      */
-    public String getTitle() {
+    public String getNodeTitle() {
         return dataForm.findValue(TITLE);
     }
 
@@ -480,23 +528,21 @@ public final class NodeConfiguration {
      */
     public static final class Builder extends DataForm.Builder<Builder> {
 
-        private final List<Jid> contacts = new ArrayList<>();
-
-        private final List<String> rosterGroupsAllowed = new ArrayList<>();
-
         private AccessModel accessModel;
 
         private URL bodyXslt;
 
         private ChildrenAssociationPolicy childrenAssociationPolicy;
 
-        private List<Jid> childrenAssociationWhitelist = new ArrayList<>();
+        private Collection<Jid> childrenAssociationWhitelist;
 
-        private List<String> children = new ArrayList<>();
+        private Collection<String> children;
 
         private Integer childrenMax;
 
-        private List<String> collection = new ArrayList<>();
+        private Collection<String> collection;
+
+        private Collection<Jid> contacts;
 
         private URL dataformXslt;
 
@@ -536,13 +582,15 @@ public final class NodeConfiguration {
 
         private Boolean purgeOffline;
 
+        private Collection<String> rosterGroupsAllowed;
+
         private SendLastPublishedItem sendLastPublishedItem;
 
         private Boolean temporarySubscriptions;
 
         private Boolean allowSubscriptions;
 
-        private String title;
+        private String nodeTitle;
 
         private String type;
 
@@ -590,11 +638,8 @@ public final class NodeConfiguration {
          * @param childrenAssociationWhitelist The list of JIDs that may associate leaf nodes with a collection.
          * @return The builder.
          */
-        public Builder childrenAssociationWhitelist(List<Jid> childrenAssociationWhitelist) {
-            this.childrenAssociationWhitelist.clear();
-            if (childrenAssociationWhitelist != null) {
-                this.childrenAssociationWhitelist.addAll(childrenAssociationWhitelist);
-            }
+        public Builder childrenAssociationWhitelist(Collection<Jid> childrenAssociationWhitelist) {
+            this.childrenAssociationWhitelist = childrenAssociationWhitelist;
             return this;
         }
 
@@ -604,11 +649,8 @@ public final class NodeConfiguration {
          * @param children The child nodes (leaf or collection) associated with a collection.
          * @return The builder.
          */
-        public Builder children(List<String> children) {
-            this.children.clear();
-            if (children != null) {
-                this.children.addAll(children);
-            }
+        public Builder children(Collection<String> children) {
+            this.children = children;
             return this;
         }
 
@@ -629,11 +671,8 @@ public final class NodeConfiguration {
          * @param collection The collection(s) with which a node is affiliated.
          * @return The builder.
          */
-        public Builder collection(List<String> collection) {
-            this.collection.clear();
-            if (collection != null) {
-                this.collection.addAll(collection);
-            }
+        public Builder collection(Collection<String> collection) {
+            this.collection = collection;
             return this;
         }
 
@@ -643,11 +682,8 @@ public final class NodeConfiguration {
          * @param contacts The JIDs of those to contact with questions.
          * @return The builder.
          */
-        public Builder contact(List<Jid> contacts) {
-            this.contacts.clear();
-            if (contacts != null) {
-                this.contacts.addAll(contacts);
-            }
+        public Builder contacts(Collection<Jid> contacts) {
+            this.contacts = contacts;
             return this;
         }
 
@@ -873,11 +909,8 @@ public final class NodeConfiguration {
          * @param rosterGroupsAllowed The roster group(s) allowed to subscribe and retrieve items.
          * @return The builder.
          */
-        public Builder rosterGroupsAllowed(List<String> rosterGroupsAllowed) {
-            this.rosterGroupsAllowed.clear();
-            if (rosterGroupsAllowed != null) {
-                this.rosterGroupsAllowed.addAll(rosterGroupsAllowed);
-            }
+        public Builder rosterGroupsAllowed(Collection<String> rosterGroupsAllowed) {
+            this.rosterGroupsAllowed = rosterGroupsAllowed;
             return this;
         }
 
@@ -916,13 +949,13 @@ public final class NodeConfiguration {
         }
 
         /**
-         * A friendly name for the node
+         * A friendly name for the node.
          *
          * @param title The title.
          * @return The name.
          */
-        public Builder title(String title) {
-            this.title = title;
+        public Builder nodeTitle(String title) {
+            this.nodeTitle = title;
             return this;
         }
 
@@ -954,19 +987,19 @@ public final class NodeConfiguration {
             if (childrenAssociationPolicy != null) {
                 fields.add(DataForm.Field.builder().var(CHILDREN_ASSOCIATION_POLICY).value(childrenAssociationPolicy.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
-            if (!childrenAssociationWhitelist.isEmpty()) {
+            if (childrenAssociationWhitelist != null && !childrenAssociationWhitelist.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(CHILDREN_ASSOCIATION_WHITELIST).valuesJid(childrenAssociationWhitelist).build());
             }
-            if (!children.isEmpty()) {
+            if (children != null && !children.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(CHILDREN).values(children).build());
             }
             if (childrenMax != null) {
                 fields.add(DataForm.Field.builder().var(CHILDREN_MAX).value(childrenMax.toString()).build());
             }
-            if (!collection.isEmpty()) {
+            if (collection != null && !collection.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(COLLECTION).values(collection).build());
             }
-            if (!contacts.isEmpty()) {
+            if (contacts != null && !contacts.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(CONTACT).valuesJid(contacts).build());
             }
             if (dataformXslt != null) {
@@ -1026,7 +1059,7 @@ public final class NodeConfiguration {
             if (purgeOffline != null) {
                 fields.add(DataForm.Field.builder().var(PURGE_OFFLINE).value(purgeOffline).build());
             }
-            if (!rosterGroupsAllowed.isEmpty()) {
+            if (rosterGroupsAllowed != null && !rosterGroupsAllowed.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
             }
             if (sendLastPublishedItem != null) {
@@ -1038,8 +1071,8 @@ public final class NodeConfiguration {
             if (allowSubscriptions != null) {
                 fields.add(DataForm.Field.builder().var(SUBSCRIBE).value(allowSubscriptions).build());
             }
-            if (title != null) {
-                fields.add(DataForm.Field.builder().var(TITLE).value(title).build());
+            if (nodeTitle != null) {
+                fields.add(DataForm.Field.builder().var(TITLE).value(nodeTitle).build());
             }
             if (type != null) {
                 fields.add(DataForm.Field.builder().var(TYPE).value(type).build());

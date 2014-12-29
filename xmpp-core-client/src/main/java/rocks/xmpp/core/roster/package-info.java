@@ -23,6 +23,6 @@
  */
 
 /**
- * Provides class for roster management.
+ * Provides classes for roster management.
  */
 package rocks.xmpp.core.roster;

@@ -38,6 +38,11 @@ import java.net.URL;
 @XmlRootElement(name = "confirm")
 public final class ConfirmationRequest {
 
+    /**
+     * http://jabber.org/protocol/http-auth
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/http-auth";
+
     @XmlAttribute(name = "id")
     private String id;
 

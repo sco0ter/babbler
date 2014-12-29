@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.httpbind;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
@@ -56,8 +57,19 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Arrays;
+import java.util.Deque;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -153,13 +165,13 @@ public final class BoshConnection extends Connection {
             switch (httpCode) {
                 case HttpURLConnection.HTTP_BAD_REQUEST:
                     // Superseded by bad-request
-                    throw new BoshException(Body.Condition.BAD_REQUEST);
+                    throw new BoshException(Body.Condition.BAD_REQUEST, httpCode);
                 case HttpURLConnection.HTTP_FORBIDDEN:
                     // Superseded by policy-violation
-                    throw new BoshException(Body.Condition.POLICY_VIOLATION);
+                    throw new BoshException(Body.Condition.POLICY_VIOLATION, httpCode);
                 case HttpURLConnection.HTTP_NOT_FOUND:
                     // Superseded by item-not-found
-                    throw new BoshException(Body.Condition.ITEM_NOT_FOUND);
+                    throw new BoshException(Body.Condition.ITEM_NOT_FOUND, httpCode);
                 default:
                     throw new BoshException(Body.Condition.UNDEFINED_CONDITION, httpCode);
             }
@@ -232,8 +244,19 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public synchronized void connect() throws IOException {
+    @Deprecated
+    public void connect() throws IOException {
+        connect(null);
+    }
 
+    /**
+     * Connects to the BOSH server.
+     *
+     * @param from The optional 'from' attribute in the initial BOSH session creation request.
+     * @throws IOException If a connection could not be established.
+     */
+    @Override
+    public synchronized void connect(Jid from) throws IOException {
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
         }
@@ -278,6 +301,7 @@ public final class BoshConnection extends Connection {
                 .hold((byte) 1)
                 .route(boshConnectionConfiguration.getRoute())
                 .ack(1L)
+                .from(from) // TODO!?
                 .xmppVersion("1.0");
 
         if (boshConnectionConfiguration.isUseKeySequence()) {

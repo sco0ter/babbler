@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.AffiliationState;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
@@ -100,6 +101,28 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
         PubSubOwner pubSub = PubSubOwner.withSubscriptions("princely_musings");
         String xml = marshal(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
+    }
+
+    @Test
+    public void marshalPubSubOwnerAffiliations() throws JAXBException, XMLStreamException {
+        PubSubOwner pubSub = PubSubOwner.withAffiliations("princely_musings", new Affiliation() {
+            @Override
+            public AffiliationState getAffiliationState() {
+                return AffiliationState.MEMBER;
+            }
+
+            @Override
+            public String getNode() {
+                return null;
+            }
+
+            @Override
+            public Jid getJid() {
+                return Jid.valueOf("test");
+            }
+        });
+        String xml = marshal(pubSub);
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><affiliations node=\"princely_musings\"><affiliation affiliation=\"member\" jid=\"test\"></affiliation></affiliations></pubsub>");
     }
 
     @Test

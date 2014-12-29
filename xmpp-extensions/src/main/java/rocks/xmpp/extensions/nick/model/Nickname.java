@@ -48,6 +48,10 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlRootElement(name = "nick")
 public final class Nickname {
+    /**
+     * http://jabber.org/protocol/nick
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/nick";
 
     @XmlValue
     private String value;

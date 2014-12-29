@@ -1,0 +1,91 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package rocks.xmpp.core.session;
+
+import rocks.xmpp.core.stream.StreamFeatureListener;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.tls.model.Failure;
+import rocks.xmpp.core.tls.model.Proceed;
+import rocks.xmpp.core.tls.model.StartTls;
+
+/**
+ * Negotiates transport layer security during stream negotiation.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
+ */
+final class SecurityManager extends StreamFeatureNegotiator {
+
+    private final XmppSession xmppSession;
+
+    private final boolean isSecure;
+
+    public SecurityManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, boolean isSecure) {
+        super(StartTls.class);
+        this.isSecure = isSecure;
+        addFeatureListener(streamFeatureListener);
+        if (xmppSession == null) {
+            throw new IllegalArgumentException("connection must not be null.");
+        }
+        this.xmppSession = xmppSession;
+    }
+
+    @Override
+    public Status processNegotiation(Object element) throws Exception {
+
+        Status status = Status.INCOMPLETE;
+        try {
+            if (element instanceof StartTls) {
+                StartTls startTls = (StartTls) element;
+                if (startTls.isMandatory() && !isSecure) {
+                    throw new Exception("The server requires TLS, but you disabled it.");
+                }
+                if (isSecure) {
+                    xmppSession.send(new StartTls());
+                } else {
+                    status = Status.IGNORE;
+                }
+            } else if (element instanceof Proceed) {
+                status = Status.SUCCESS;
+            } else if (element instanceof Failure) {
+                status = Status.FAILURE;
+                throw new Exception("Failure during TLS negotiation.");
+            }
+        } finally {
+            notifyFeatureNegotiated(status, element);
+        }
+        return status;
+    }
+
+    @Override
+    public boolean needsRestart() {
+        return true;
+    }
+
+    @Override
+    public boolean canProcess(Object element) {
+        return element instanceof Proceed || element instanceof Failure;
+    }
+}

@@ -24,7 +24,11 @@
 
 package rocks.xmpp.extensions.activity.model;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The implementation of the {@code <activity/>} element in the {@code http://jabber.org/protocol/activity} namespace.
@@ -38,8 +42,12 @@ import javax.xml.bind.annotation.*;
  * @see <a href="http://xmpp.org/extensions/xep-0108.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "activity")
-@XmlSeeAlso({Activity.AbstractCategory.class})
 public final class Activity {
+
+    /**
+     * http://jabber.org/protocol/activity
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/activity";
 
     @XmlElements({
             @XmlElement(name = "doing_chores", type = AbstractCategory.DoingChores.class),
@@ -60,7 +68,10 @@ public final class Activity {
     @XmlElement(name = "text")
     private String text;
 
-    private Activity() {
+    /**
+     * Creates an empty activity which is used to disable publishing an activity.
+     */
+    public Activity() {
     }
 
     /**
@@ -139,7 +150,7 @@ public final class Activity {
     /**
      * An abstract class for general activities.
      */
-    static abstract class AbstractCategory {
+    abstract static class AbstractCategory {
 
         @XmlTransient
         private Category category;

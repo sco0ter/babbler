@@ -40,6 +40,11 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement
 public final class Data {
 
+    /**
+     * urn:xmpp:bob
+     */
+    public static final String NAMESPACE = "urn:xmpp:bob";
+
     @XmlAttribute
     private String cid;
 

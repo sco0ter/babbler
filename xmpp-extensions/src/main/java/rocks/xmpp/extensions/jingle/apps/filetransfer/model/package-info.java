@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:jingle:apps:file-transfer:4", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.jingle.apps.filetransfer.model;
+@XmlSchema(namespace = JingleFileTransfer.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.jingle.apps.filetransfer.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

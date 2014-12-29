@@ -28,12 +28,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
-import rocks.xmpp.extensions.pubsub.model.SubscribeOptions;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
 
 import javax.xml.bind.JAXBException;
@@ -156,14 +154,14 @@ public class PubSubSubscriberUseCasesTest extends XmlTest {
 
     @Test
     public void marshalRequestOptions() throws JAXBException, XMLStreamException {
-        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"), null);
+        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"), null, null);
         String xml = marshal(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><options node=\"node6\" jid=\"francisco@denmark.lit\"></options></pubsub>");
     }
 
     @Test
     public void marshalSubmitOptions() throws JAXBException, XMLStreamException {
-        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"), new DataForm(DataForm.Type.SUBMIT));
+        PubSub pubSub = PubSub.withOptions("node6", Jid.valueOf("francisco@denmark.lit"), null, new DataForm(DataForm.Type.SUBMIT));
         String xml = marshal(pubSub);
         Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><options node=\"node6\" jid=\"francisco@denmark.lit\"><x xmlns=\"jabber:x:data\" type=\"submit\"></x></options></pubsub>");
     }

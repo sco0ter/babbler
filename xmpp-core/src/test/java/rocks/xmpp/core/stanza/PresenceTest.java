@@ -28,12 +28,16 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.roster.model.Roster;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
+import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stanza.model.errors.RemoteServerNotFound;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -219,58 +223,35 @@ public class PresenceTest extends XmlTest {
 
     @Test
     public void marshalPresenceMultipleStatus() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Presence.Type.SUBSCRIBE);
-        presence.setId("id");
-        presence.setTo(new Jid("to", "domain"));
-        presence.setFrom(new Jid("from", "domain"));
-        presence.getStatuses().add(new Presence.Status("status", "de"));
-        Presence.Status status = new Presence.Status("status2");
-        status.setLanguage("en");
-        presence.getStatuses().add(status);
+        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.SUBSCRIBE, null, Arrays.asList(new Presence.Status("status", "de"), new Presence.Status("status2", "en")), null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"subscribe\"><status xml:lang=\"de\">status</status><status xml:lang=\"en\">status2</status></presence>");
     }
 
     @Test
     public void marshalPresenceShowDnd() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Presence.Type.SUBSCRIBED);
-        presence.setId("id");
-        presence.setTo(new Jid("to", "domain"));
-        presence.setFrom(new Jid("from", "domain"));
-        presence.setShow(Presence.Show.DND);
+        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.SUBSCRIBED, Presence.Show.DND, Collections.<Presence.Status>emptyList(), null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"subscribed\"><show>dnd</show></presence>");
     }
 
     @Test
     public void marshalPresenceShowAway() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Presence.Type.UNSUBSCRIBE);
-        presence.setId("id");
-        presence.setTo(new Jid("to", "domain"));
-        presence.setFrom(new Jid("from", "domain"));
-        presence.setShow(Presence.Show.AWAY);
+        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.UNSUBSCRIBE, Presence.Show.AWAY, Collections.<Presence.Status>emptyList(), null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"unsubscribe\"><show>away</show></presence>");
     }
 
     @Test
     public void marshalPresenceShowXA() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Presence.Type.UNSUBSCRIBED);
-        presence.setId("id");
-        presence.setTo(new Jid("to", "domain"));
-        presence.setFrom(new Jid("from", "domain"));
-        presence.setShow(Presence.Show.XA);
+        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.UNSUBSCRIBED, Presence.Show.XA, Collections.<Presence.Status>emptyList(), null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"unsubscribed\"><show>xa</show></presence>");
     }
 
     @Test
     public void marshalPresenceShowChat() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Presence.Type.UNAVAILABLE);
-        presence.setId("id");
-        presence.setTo(new Jid("to", "domain"));
-        presence.setFrom(new Jid("from", "domain"));
-        presence.setShow(Presence.Show.CHAT);
+        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.UNAVAILABLE, Presence.Show.CHAT, Collections.<Presence.Status>emptyList(), null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"unavailable\"><show>chat</show></presence>");
     }
@@ -305,21 +286,15 @@ public class PresenceTest extends XmlTest {
     @Test
     public void testComparableImplementation() {
         Presence presenceUnavailable = new Presence(Presence.Type.UNAVAILABLE);
-        Presence presenceDnd = new Presence(Presence.Show.DND);
-        presenceDnd.setPriority((byte) 1);
-        Presence presenceAway = new Presence(Presence.Show.AWAY);
-        presenceAway.setPriority((byte) 1);
-        Presence presenceXa = new Presence(Presence.Show.XA);
-        presenceXa.setPriority((byte) 1);
-        Presence presenceChat = new Presence(Presence.Show.CHAT);
-        presenceChat.setPriority((byte) 1);
+        Presence presenceDnd = new Presence(Presence.Show.DND, (byte) 1);
+        Presence presenceAway = new Presence(Presence.Show.AWAY, (byte) 1);
+        Presence presenceXa = new Presence(Presence.Show.XA, (byte) 1);
+        Presence presenceChat = new Presence(Presence.Show.CHAT, (byte) 1);
 
-        Presence presencePrio1 = new Presence();
-        presencePrio1.setPriority((byte) 1);
-        Presence presencePrio2 = new Presence();
-        presencePrio2.setPriority((byte) 2);
-        Presence presencePrio1Unavailble = new Presence(Presence.Type.UNAVAILABLE);
-        presencePrio1Unavailble.setPriority((byte) 1);
+
+        Presence presencePrio1 = new Presence((byte) 1);
+        Presence presencePrio2 = new Presence((byte) 2);
+        Presence presencePrio1Unavailble = new Presence(Presence.Type.UNAVAILABLE, (byte) 1);
 
         List<Presence> list = new ArrayList<>();
         list.add(presenceAway);
@@ -343,5 +318,15 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(list.get(6), presenceUnavailable);
         Assert.assertEquals(list.get(7), presencePrio1Unavailble);
 
+    }
+
+    @Test
+    public void testWithFrom() throws JAXBException, XMLStreamException {
+        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.SUBSCRIBE, AbstractPresence.Show.AWAY, Arrays.asList(new AbstractPresence.Status("status")), null, "id", null, null, Arrays.asList(new Roster()), null);
+        Presence withFrom = presence.withFrom(Jid.valueOf("from"));
+        Assert.assertEquals(withFrom.getType(), Presence.Type.SUBSCRIBE);
+        Assert.assertEquals(withFrom.getId(), "id");
+        Assert.assertEquals(withFrom.getFrom(), Jid.valueOf("from"));
+        Assert.assertNotNull(withFrom.getExtension(Roster.class));
     }
 }

@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.bookmarks.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import java.net.URL;
+import java.util.Objects;
 
 /**
  * A web page bookmark.
@@ -71,15 +72,13 @@ public final class WebPageBookmark extends Bookmark {
         }
         WebPageBookmark other = (WebPageBookmark) o;
 
-        return url == null ? other.url == null : url.equals(other.url);
+        return Objects.equals(url, other.url);
 
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + ((url == null) ? 0 : url.hashCode());
-        return result;
+        return Objects.hash(url);
     }
 
     @Override

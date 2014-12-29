@@ -30,7 +30,12 @@ import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,13 +119,13 @@ public final class Event {
     /**
      * Gets the items of the event.
      *
-     * @return The items of the event or null, if the event did not include any items.
+     * @return The items of the event or an empty list, if the event did not include any items.
      */
     public List<Item> getItems() {
         if (type instanceof Items) {
-            return Collections.unmodifiableList(new ArrayList<>(((Items) type).getItems()));
+            return Collections.unmodifiableList(((Items) type).getItems());
         }
-        return null;
+        return Collections.emptyList();
     }
 
     /**
@@ -180,7 +185,7 @@ public final class Event {
             return redirect;
         }
 
-        private final static class Redirect {
+        private static final class Redirect {
             @XmlAttribute(name = "uri")
             private URI uri;
 
@@ -365,7 +370,7 @@ public final class Event {
         }
     }
 
-    private static abstract class PubSubEventChildElement {
+    private abstract static class PubSubEventChildElement {
 
         @XmlAttribute(name = "node")
         private String node;

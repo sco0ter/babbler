@@ -38,13 +38,25 @@ import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.preapproval.model.SubscriptionPreApproval;
 import rocks.xmpp.core.tls.model.StartTls;
 import rocks.xmpp.extensions.compress.model.Compress;
+import rocks.xmpp.extensions.data.layout.model.Page;
+import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.data.validate.model.Validation;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.extensions.privatedata.model.PrivateData;
+import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
+import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
+import rocks.xmpp.extensions.rsm.ResultSetManager;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The context provides XMPP classes as well as manager classes which are associated with an XMPP session.
@@ -75,15 +87,36 @@ public class CoreContext {
                 // XEP-0030: Service Discovery
                 InfoDiscovery.class, ItemDiscovery.class,
 
+                // XEP-0059: Result Set Management
+                ResultSetManagement.class,
+
+                // XEP-0049: Private XML Storage
+                PrivateData.class,
+
+                // XEP-0083: Nested Roster Groups
+                RosterDelimiter.class,
+
+                // XEP-0122: Data Forms Validation
+                Validation.class,
+
                 // XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)
                 Body.class,
 
                 // XEP-0138: Stream Compression
-                Compress.class
+                Compress.class,
 
+                // XEP-0141: Data Forms Layout
+                Page.class,
+
+                // XEP-0145: Annotations
+                Annotation.class,
+
+                // XEP-0221: Data Forms Media Element
+                Media.class
         ));
         this.extensions.addAll(Arrays.asList(extensions));
         managers.add(ServiceDiscoveryManager.class);
+        managers.add(ResultSetManager.class);
         managers.addAll(extensionManagers);
     }
 

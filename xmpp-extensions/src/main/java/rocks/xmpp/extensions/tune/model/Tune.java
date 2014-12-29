@@ -37,6 +37,12 @@ import java.net.URI;
  */
 @XmlRootElement(name = "tune")
 public final class Tune {
+
+    /**
+     * http://jabber.org/protocol/tune
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/tune";
+
     @XmlElement(name = "artist")
     private String artist;
 
@@ -58,12 +64,26 @@ public final class Tune {
     @XmlElement(name = "uri")
     private URI uri;
 
+    @Deprecated
     public Tune() {
     }
 
     public Tune(String artist, String title) {
         this.artist = artist;
         this.title = title;
+    }
+
+    public Tune(String artist, String title, Integer length, Integer rating, String source, String track, URI uri) {
+        this.artist = artist;
+        this.title = title;
+        this.length = length;
+        if (rating != null && (rating < 0 || rating > 10)) {
+            throw new IllegalArgumentException("rating must not be greater than 10.");
+        }
+        this.rating = rating;
+        this.source = source;
+        this.track = track;
+        this.uri = uri;
     }
 
     /**
@@ -81,7 +101,9 @@ public final class Tune {
      *
      * @param artist The artist.
      * @see #getArtist()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setArtist(String artist) {
         this.artist = artist;
     }
@@ -101,7 +123,9 @@ public final class Tune {
      *
      * @param length The length.
      * @see #getLength()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setLength(Integer length) {
         this.length = length;
     }
@@ -121,7 +145,9 @@ public final class Tune {
      *
      * @param rating The rating.
      * @see #getRating()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setRating(Integer rating) {
         this.rating = rating;
     }
@@ -141,7 +167,9 @@ public final class Tune {
      *
      * @param source The source.
      * @see #getSource()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setSource(String source) {
         this.source = source;
     }
@@ -161,7 +189,9 @@ public final class Tune {
      *
      * @param title The title.
      * @see #getTitle()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setTitle(String title) {
         this.title = title;
     }
@@ -181,7 +211,9 @@ public final class Tune {
      *
      * @param track The track.
      * @see #getTrack()
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setTrack(String track) {
         this.track = track;
     }
@@ -201,7 +233,9 @@ public final class Tune {
      *
      * @param uri The URI.
      * @see #setUri(java.net.URI)
+     * @deprecated Use constructor.
      */
+    @Deprecated
     public void setUri(URI uri) {
         this.uri = uri;
     }

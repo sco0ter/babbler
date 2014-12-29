@@ -45,6 +45,11 @@ import java.util.List;
 @XmlSeeAlso({JingleFileTransfer.Checksum.class})
 public final class JingleFileTransfer extends ApplicationFormat {
 
+    /**
+     * urn:xmpp:jingle:apps:file-transfer:4
+     */
+    public static final String NAMESPACE = "urn:xmpp:jingle:apps:file-transfer:4";
+
     @XmlElement(name = "file")
     private File file;
 

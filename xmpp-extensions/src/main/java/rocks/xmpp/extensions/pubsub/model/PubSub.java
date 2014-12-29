@@ -26,11 +26,38 @@ package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.pubsub.model.errors.*;
+import rocks.xmpp.extensions.pubsub.model.errors.ClosedNode;
+import rocks.xmpp.extensions.pubsub.model.errors.ConfigurationRequired;
+import rocks.xmpp.extensions.pubsub.model.errors.InvalidJid;
+import rocks.xmpp.extensions.pubsub.model.errors.InvalidOptions;
+import rocks.xmpp.extensions.pubsub.model.errors.InvalidPayload;
+import rocks.xmpp.extensions.pubsub.model.errors.InvalidSubId;
+import rocks.xmpp.extensions.pubsub.model.errors.ItemForbidden;
+import rocks.xmpp.extensions.pubsub.model.errors.ItemRequired;
+import rocks.xmpp.extensions.pubsub.model.errors.JidRequired;
+import rocks.xmpp.extensions.pubsub.model.errors.MaxItemsExceeded;
+import rocks.xmpp.extensions.pubsub.model.errors.MaxNodesExceeded;
+import rocks.xmpp.extensions.pubsub.model.errors.NodeIdRequired;
+import rocks.xmpp.extensions.pubsub.model.errors.NotInRosterGroup;
+import rocks.xmpp.extensions.pubsub.model.errors.NotSubscribed;
+import rocks.xmpp.extensions.pubsub.model.errors.PayloadRequired;
+import rocks.xmpp.extensions.pubsub.model.errors.PayloadTooBig;
+import rocks.xmpp.extensions.pubsub.model.errors.PendingSubscription;
+import rocks.xmpp.extensions.pubsub.model.errors.PresenceSubscriptionRequired;
+import rocks.xmpp.extensions.pubsub.model.errors.SubIdRequired;
+import rocks.xmpp.extensions.pubsub.model.errors.TooManySubscriptions;
+import rocks.xmpp.extensions.pubsub.model.errors.Unsupported;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -324,12 +351,13 @@ public final class PubSub {
      *
      * @param node     The node.
      * @param jid      The JID.
+     * @param subid    The subscription id.
      * @param dataForm The data form.
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
-    public static PubSub withOptions(String node, Jid jid, DataForm dataForm) {
-        return new PubSub(new Options(node, jid, dataForm));
+    public static PubSub withOptions(String node, Jid jid, String subid, DataForm dataForm) {
+        return new PubSub(new Options(node, jid, subid, dataForm));
     }
 
     /**
@@ -596,6 +624,11 @@ public final class PubSub {
         }
     }
 
+    /**
+     * The (subscribe) {@code <options/>} element.
+     *
+     * @see #withOptions(String, rocks.xmpp.core.Jid, String, rocks.xmpp.extensions.data.model.DataForm)
+     */
     public static final class Options {
         @XmlAttribute(name = "node")
         private String node;
@@ -603,15 +636,19 @@ public final class PubSub {
         @XmlAttribute(name = "jid")
         private Jid jid;
 
+        @XmlAttribute(name = "subid")
+        private String subid;
+
         @XmlElementRef
         private DataForm dataForm;
 
         private Options() {
         }
 
-        private Options(String node, Jid jid, DataForm dataForm) {
+        private Options(String node, Jid jid, String subid, DataForm dataForm) {
             this.node = node;
             this.jid = jid;
+            this.subid = subid;
             this.dataForm = dataForm;
         }
 
@@ -619,6 +656,11 @@ public final class PubSub {
             this.dataForm = dataForm;
         }
 
+        /**
+         * Gets the data form.
+         *
+         * @return The data form.
+         */
         public DataForm getDataForm() {
             return dataForm;
         }
@@ -668,6 +710,11 @@ public final class PubSub {
         }
     }
 
+    /**
+     * The {@code <default/>} element.
+     *
+     * @see #withDefault()
+     */
     public static final class Default extends PubSubChildElement {
 
         @XmlAttribute(name = "type")
@@ -737,6 +784,11 @@ public final class PubSub {
         }
     }
 
+    /**
+     * The {@code <publish/>} element.
+     *
+     * @see #withPublish(String, String, Object, rocks.xmpp.extensions.data.model.DataForm)
+     */
     public static final class Publish extends PubSubChildElement {
 
         @XmlElement(name = "item")
@@ -750,6 +802,11 @@ public final class PubSub {
             this.item = item;
         }
 
+        /**
+         * Gets the published item.
+         *
+         * @return The item.
+         */
         public Item getItem() {
             return item;
         }
@@ -919,7 +976,7 @@ public final class PubSub {
         }
     }
 
-    public static final class ItemElement implements Item {
+    private static final class ItemElement implements Item {
 
         @XmlAnyElement(lax = true)
         private Object object;
@@ -930,7 +987,7 @@ public final class PubSub {
         private ItemElement() {
         }
 
-        public ItemElement(String id) {
+        private ItemElement(String id) {
             this.id = id;
         }
 
@@ -960,7 +1017,7 @@ public final class PubSub {
         }
     }
 
-    private static abstract class PubSubChildElement {
+    private abstract static class PubSubChildElement {
 
         @XmlAttribute(name = "node")
         private String node;

@@ -38,6 +38,7 @@ import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.receipts.model.Request;
 
 import java.io.IOException;
+import java.util.Collections;
 
 /**
  * @author Christian Schudt
@@ -70,8 +71,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
             }
         });
 
-        Message message = new Message(JULIET);
-        message.setId("123");
+        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
 
         Assert.assertTrue(messageReceived[0]);
@@ -99,8 +99,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
             }
         });
 
-        Message message = new Message(JULIET);
-        message.setId("123");
+        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
 
         Assert.assertFalse(messageReceived[0]);
@@ -115,7 +114,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(Request.class));
             }
         });
@@ -136,14 +135,12 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(Request.class));
             }
         });
 
-        Message message = new Message(JULIET);
-        message.setType(Message.Type.ERROR);
-        message.setId("123");
+        Message message = new Message(JULIET, Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
     }
 
@@ -155,13 +152,12 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(Request.class));
             }
         });
 
-        Message message = new Message(JULIET);
-        message.setId("123");
+        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
     }
 

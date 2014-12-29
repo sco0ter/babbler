@@ -27,7 +27,12 @@ package rocks.xmpp.extensions.httpbind.model;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +50,15 @@ import java.util.List;
 @XmlRootElement
 public final class Body {
 
-    static final String XBOSH_NAMESPACE = "urn:xmpp:xbosh";
+    /**
+     * http://jabber.org/protocol/httpbind
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/httpbind";
+
+    /**
+     * urn:xmpp:xbosh
+     */
+    public static final String XBOSH_NAMESPACE = "urn:xmpp:xbosh";
 
     @XmlAnyElement(lax = true)
     private final List<Object> wrappedObjects = new ArrayList<>();
@@ -189,6 +202,7 @@ public final class Body {
         this.wait = builder.wait;
         this.newkey = builder.newKey;
         this.key = builder.key;
+        this.from = builder.from;
     }
 
     /**
@@ -414,14 +428,6 @@ public final class Body {
         return version;
     }
 
-    /**
-     * @param version The 'version' attribute value.
-     * @see #getVersion()
-     */
-    public void setVersion(String version) {
-        this.ver = version;
-    }
-
     public Integer getWait() {
         return wait;
     }
@@ -585,6 +591,8 @@ public final class Body {
         private Boolean restart;
 
         private String newKey;
+
+        private Jid from;
 
         private Builder() {
         }
@@ -752,6 +760,17 @@ public final class Body {
          */
         public Builder key(String key) {
             this.key = key;
+            return this;
+        }
+
+        /**
+         * Sets the 'from' attribute of the body.
+         *
+         * @param from The 'from' attribute.
+         * @return The builder.
+         */
+        public Builder from(Jid from) {
+            this.from = from;
             return this;
         }
 

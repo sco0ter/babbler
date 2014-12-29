@@ -28,7 +28,7 @@
  * It defines an XMPP protocol extension that enables two entities to mutually negotiate feature options, such as parameters related to a file transfer or a communications session.
  * </p>
  */
-@XmlSchema(namespace = "http://jabber.org/protocol/feature-neg", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.featureneg.model;
+@XmlSchema(namespace = FeatureNegotiation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.featureneg.model;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

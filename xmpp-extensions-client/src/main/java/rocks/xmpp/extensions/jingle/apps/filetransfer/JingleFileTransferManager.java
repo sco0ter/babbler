@@ -56,7 +56,7 @@ public final class JingleFileTransferManager extends ExtensionManager {
     private final JingleManager jingleManager;
 
     private JingleFileTransferManager(XmppSession xmppSession) {
-        super(xmppSession, "urn:xmpp:jingle:apps:file-transfer:3");
+        super(xmppSession, JingleFileTransfer.NAMESPACE);
         jingleManager = xmppSession.getExtensionManager(JingleManager.class);
     }
 

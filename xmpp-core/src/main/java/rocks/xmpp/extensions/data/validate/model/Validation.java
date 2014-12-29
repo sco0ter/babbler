@@ -24,7 +24,11 @@
 
 package rocks.xmpp.extensions.data.validate.model;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <validate/>} element in the {@code http://jabber.org/protocol/xdata-validate} namespace, which is used to validate form fields.
@@ -35,6 +39,11 @@ import javax.xml.bind.annotation.*;
  */
 @XmlRootElement(name = "validate")
 public final class Validation {
+
+    /**
+     * http://jabber.org/protocol/xdata-validate
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/xdata-validate";
 
     @XmlAttribute(name = "datatype")
     private String dataType;
@@ -129,7 +138,7 @@ public final class Validation {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-validation">3.2 Validation Methods</a>
      */
-    public static abstract class ValidationMethod {
+    public abstract static class ValidationMethod {
         @XmlValue
         protected String value;
 

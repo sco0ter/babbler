@@ -28,12 +28,22 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * The implementation of the {@code <vCard/>} element in the {@code vcard-temp} namespace.
@@ -45,6 +55,9 @@ import java.util.*;
 @XmlRootElement(name = "vCard")
 public final class VCard {
 
+    /**
+     * vcard-temp
+     */
     public static final String NAMESPACE = "vcard-temp";
 
     /**
@@ -1110,7 +1123,7 @@ public final class VCard {
      * The abstract base class for {@link Address} and {@link AddressLabel}.
      */
     @XmlTransient
-    private static abstract class AbstractAddress extends ContactData {
+    private abstract static class AbstractAddress extends ContactData {
 
         @XmlElement(name = "POSTAL")
         private Boolean postal;
@@ -1201,7 +1214,7 @@ public final class VCard {
      * The abstract base class for {@link Address} and {@link TelephoneNumber}.
      */
     @XmlTransient
-    private static abstract class ContactData extends Preferable {
+    private abstract static class ContactData extends Preferable {
         @XmlElement(name = "HOME")
         private Boolean home;
 
@@ -1263,7 +1276,7 @@ public final class VCard {
      * An abstract base class for address, email and telephone data.
      */
     @XmlTransient
-    private static abstract class Preferable {
+    private abstract static class Preferable {
         @XmlElement(name = "PREF")
         private Boolean pref;
 

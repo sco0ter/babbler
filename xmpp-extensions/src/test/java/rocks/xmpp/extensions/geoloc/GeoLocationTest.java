@@ -31,6 +31,8 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.net.URI;
+import java.util.Date;
 import java.util.TimeZone;
 
 /**
@@ -61,6 +63,58 @@ public class GeoLocationTest extends XmlTest {
         Assert.assertEquals(geoLocation.getLocality(), "Venice");
         Assert.assertEquals(geoLocation.getLongitude(), 12.33);
         Assert.assertEquals(geoLocation.getTimeZone(), TimeZone.getTimeZone("GMT-08:00"));
+    }
 
+    @Test
+    public void marshalGeoLocation() throws JAXBException, XMLStreamException {
+        GeoLocation geoLocation = GeoLocation.builder()
+                .accuracy(1.0)
+                .altitude(2.0)
+                .area("area")
+                .bearing(3.0)
+                .building("building")
+                .country("country")
+                .countryCode("countryCode")
+                .datum("datum")
+                .description("description")
+                .floor("floor")
+                .language("language")
+                .latitude(4.0)
+                .locality("locality")
+                .longitude(5.0)
+                .postalCode("postalCode")
+                .region("region")
+                .room("room")
+                .speed(6.0)
+                .street("street")
+                .text("text")
+                .timeZone(TimeZone.getTimeZone("GMT+1"))
+                .uri(URI.create("xmpp.org"))
+                .build();
+
+        String xml = marshal(geoLocation);
+        Assert.assertEquals(xml, "<geoloc xmlns=\"http://jabber.org/protocol/geoloc\" xml:lang=\"language\">" +
+                "<accuracy>1.0</accuracy>" +
+                "<altitude>2.0</altitude>" +
+                "<area>area</area>" +
+                "<bearing>3.0</bearing>" +
+                "<building>building</building>" +
+                "<country>country</country>" +
+                "<countrycode>countryCode</countrycode>" +
+                "<datum>datum</datum>" +
+                "<description>description</description>" +
+                "<floor>floor</floor>" +
+                "<lat>4.0</lat>" +
+                "<locality>locality</locality>" +
+                "<lon>5.0</lon>" +
+                "<postalcode>postalCode</postalcode>" +
+                "<region>region</region>" +
+                "<room>room</room>" +
+                "<speed>6.0</speed>" +
+                "<street>street</street>" +
+                "<text>text</text>" +
+                "<tzo>+01:00</tzo>" +
+                "<uri>xmpp.org</uri>" +
+                "</geoloc>");
     }
 }

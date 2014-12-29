@@ -30,7 +30,7 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/address", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.address.model;
+@XmlSchema(namespace = Address.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.address.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;

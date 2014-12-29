@@ -66,7 +66,7 @@ public class BlockingTest extends XmlTest {
     public void marshalBlock() throws JAXBException, XMLStreamException {
         List<Jid> items = new ArrayList<>();
         items.add(Jid.valueOf("romeo@montague.net"));
-        IQ iq = new IQ("1", IQ.Type.SET, new Block(items));
+        IQ iq = new IQ(IQ.Type.SET, new Block(items), "1");
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"set\"><block xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></block></iq>");
     }
@@ -75,7 +75,7 @@ public class BlockingTest extends XmlTest {
     public void marshalUnblock() throws JAXBException, XMLStreamException {
         List<Jid> items = new ArrayList<>();
         items.add(Jid.valueOf("romeo@montague.net"));
-        IQ iq = new IQ("1", IQ.Type.SET, new Unblock(items));
+        IQ iq = new IQ(IQ.Type.SET, new Unblock(items), "1");
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"set\"><unblock xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></unblock></iq>");
     }

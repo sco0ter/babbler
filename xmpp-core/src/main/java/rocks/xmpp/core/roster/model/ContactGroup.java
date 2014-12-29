@@ -25,6 +25,7 @@
 package rocks.xmpp.core.roster.model;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -137,14 +138,12 @@ public final class ContactGroup implements Comparable<ContactGroup> {
         }
         ContactGroup other = (ContactGroup) o;
 
-        return fullName == null ? other.fullName == null : fullName.equals(other.fullName);
+        return Objects.equals(fullName, other.fullName);
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + ((fullName == null) ? 0 : fullName.hashCode());
-        return result;
+        return Objects.hash(fullName);
     }
 
     @Override

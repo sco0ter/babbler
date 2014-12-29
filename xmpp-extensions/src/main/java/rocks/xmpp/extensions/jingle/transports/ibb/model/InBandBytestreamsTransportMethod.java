@@ -36,6 +36,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "transport")
 public final class InBandBytestreamsTransportMethod extends TransportMethod {
 
+    /**
+     * urn:xmpp:jingle:transports:ibb:1
+     */
+    public static final String NAMESPACE="urn:xmpp:jingle:transports:ibb:1";
+
     @XmlAttribute(name = "block-size")
     private Integer blockSize;
 

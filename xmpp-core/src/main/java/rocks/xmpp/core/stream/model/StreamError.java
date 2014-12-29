@@ -24,7 +24,33 @@
 
 package rocks.xmpp.core.stream.model;
 
-import rocks.xmpp.core.stream.model.errors.*;
+import rocks.xmpp.core.stream.model.errors.BadFormat;
+import rocks.xmpp.core.stream.model.errors.BadNamespacePrefix;
+import rocks.xmpp.core.stream.model.errors.Condition;
+import rocks.xmpp.core.stream.model.errors.Conflict;
+import rocks.xmpp.core.stream.model.errors.ConnectionTimeout;
+import rocks.xmpp.core.stream.model.errors.HostGone;
+import rocks.xmpp.core.stream.model.errors.HostUnknown;
+import rocks.xmpp.core.stream.model.errors.ImproperAddressing;
+import rocks.xmpp.core.stream.model.errors.InternalServerError;
+import rocks.xmpp.core.stream.model.errors.InvalidFrom;
+import rocks.xmpp.core.stream.model.errors.InvalidNamespace;
+import rocks.xmpp.core.stream.model.errors.InvalidXml;
+import rocks.xmpp.core.stream.model.errors.NotAuthorized;
+import rocks.xmpp.core.stream.model.errors.NotWellFormed;
+import rocks.xmpp.core.stream.model.errors.PolicyViolation;
+import rocks.xmpp.core.stream.model.errors.RemoteConnectionFailed;
+import rocks.xmpp.core.stream.model.errors.Reset;
+import rocks.xmpp.core.stream.model.errors.ResourceConstraint;
+import rocks.xmpp.core.stream.model.errors.RestrictedXml;
+import rocks.xmpp.core.stream.model.errors.SeeOtherHost;
+import rocks.xmpp.core.stream.model.errors.SystemShutdown;
+import rocks.xmpp.core.stream.model.errors.Text;
+import rocks.xmpp.core.stream.model.errors.UndefinedCondition;
+import rocks.xmpp.core.stream.model.errors.UnsupportedEncoding;
+import rocks.xmpp.core.stream.model.errors.UnsupportedFeature;
+import rocks.xmpp.core.stream.model.errors.UnsupportedStanzaType;
+import rocks.xmpp.core.stream.model.errors.UnsupportedVersion;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -61,18 +87,6 @@ public final class StreamError implements ServerStreamElement {
         this.condition = condition;
     }
 
-    //    /**
-    //     * Creates a stream error with a given condition.
-    //     * <blockquote>
-    //     * <p>The {@code <error/>} element MUST contain a child element corresponding to one of the defined stream error conditions.</p>
-    //     * </blockquote>
-    //     *
-    //     * @param condition The condition.
-    //     */
-    //    public StreamError(Condition condition) {
-    //        super(condition);
-    //    }
-
     /**
      * Gets the language of the error text.
      *
@@ -98,55 +112,13 @@ public final class StreamError implements ServerStreamElement {
     }
 
     /**
-     * Sets the optional error text.
-     *
-     * @param text The text.
-     * @see #setText(String, String)
-     * @see #getText()
-     */
-    public void setText(String text) {
-        if (text != null) {
-            this.text = new Text(text, null);
-        } else {
-            this.text = null;
-        }
-    }
-
-    /**
-     * Sets the optional error text and a language.
-     *
-     * @param text     The text.
-     * @param language The language.
-     * @see #setText(String)
-     * @see #getText()
-     */
-    public final void setText(String text, String language) {
-        if (text != null) {
-            this.text = new Text(text, language);
-        } else {
-            this.text = null;
-        }
-    }
-
-    /**
      * Gets the application specific condition, if any.
      *
      * @return The application specific condition.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-app">4.9.4.  Application-Specific Conditions</a>
-     * @see #setExtension(Object)
      */
     public final Object getExtension() {
         return extension;
-    }
-
-    /**
-     * Sets an application specific condition.
-     *
-     * @param extension The application specific condition.
-     * @see #getExtension()
-     */
-    public final void setExtension(Object extension) {
-        this.extension = extension;
     }
 
     /**

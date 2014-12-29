@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -286,7 +287,7 @@ public final class MucAdmin {
      * @return The items.
      */
     public List<? extends Item> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     private static final class MucAdminItem implements Item {

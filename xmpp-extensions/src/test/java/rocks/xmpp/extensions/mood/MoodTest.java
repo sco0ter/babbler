@@ -44,13 +44,16 @@ public class MoodTest extends XmlTest {
     @Test
     public void unmarshalHappy() throws XMLStreamException, JAXBException {
         String xml = "<mood xmlns='http://jabber.org/protocol/mood'>\n" +
-                "  <happy/>\n" +
+                "  <happy>\n" +
+                "    <ecstatic xmlns='http://ik.nu/ralphm'/>\n" +
+                "  </happy>\n" +
                 "  <text>Yay, the mood spec has been approved!</text>\n" +
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
         Assert.assertEquals(mood.getText(), "Yay, the mood spec has been approved!");
-        Assert.assertEquals(mood.getValue(), Mood.Value.HAPPY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Happy);
+        Assert.assertTrue(mood.getValue().getSpecificMood() != null);
     }
 
     @Test
@@ -60,7 +63,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.AFRAID);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Afraid);
     }
 
     @Test
@@ -70,7 +73,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.AMAZED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Amazed);
     }
 
     @Test
@@ -80,7 +83,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.ANGRY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Angry);
     }
 
     @Test
@@ -90,7 +93,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.AMOROUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Amorous);
     }
 
     @Test
@@ -100,7 +103,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.ANNOYED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Annoyed);
     }
 
     @Test
@@ -110,7 +113,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.ANXIOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Anxious);
     }
 
     @Test
@@ -120,7 +123,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.AROUSED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Aroused);
     }
 
     @Test
@@ -130,7 +133,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.ASHAMED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Ashamed);
     }
 
     @Test
@@ -140,7 +143,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.BORED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Bored);
     }
 
     @Test
@@ -150,7 +153,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.BRAVE);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Brave);
     }
 
     @Test
@@ -160,7 +163,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CALM);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Calm);
     }
 
     @Test
@@ -170,7 +173,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CAUTIOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Cautious);
     }
 
     @Test
@@ -180,7 +183,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.COLD);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Cold);
     }
 
     @Test
@@ -190,7 +193,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CONFIDENT);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Confident);
     }
 
     @Test
@@ -200,7 +203,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CONFUSED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Confused);
     }
 
     @Test
@@ -210,7 +213,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CONTEMPLATIVE);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Contemplative);
     }
 
     @Test
@@ -220,7 +223,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CONTENTED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Contented);
     }
 
     @Test
@@ -230,7 +233,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CRANKY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Cranky);
     }
 
     @Test
@@ -240,7 +243,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CRAZY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Crazy);
     }
 
     @Test
@@ -250,7 +253,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CREATIVE);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Creative);
     }
 
     @Test
@@ -260,7 +263,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.CURIOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Curious);
     }
 
     @Test
@@ -270,7 +273,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.DEJECTED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Dejected);
     }
 
     @Test
@@ -280,7 +283,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.DEPRESSED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Depressed);
     }
 
     @Test
@@ -290,7 +293,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.DISAPPOINTED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Disappointed);
     }
 
     @Test
@@ -300,7 +303,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.DISGUSTED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Disgusted);
     }
 
     @Test
@@ -310,7 +313,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.DISMAYED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Dismayed);
     }
 
     @Test
@@ -320,7 +323,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.DISTRACTED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Distracted);
     }
 
     @Test
@@ -330,7 +333,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.EMBARRASSED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Embarrassed);
     }
 
     @Test
@@ -340,7 +343,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.ENVIOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Envious);
     }
 
     @Test
@@ -350,7 +353,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.EXCITED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Excited);
     }
 
     @Test
@@ -360,7 +363,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.FRUSTRATED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Frustrated);
     }
 
     @Test
@@ -370,7 +373,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.GRUMPY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Grumpy);
     }
 
     @Test
@@ -380,7 +383,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.GUILTY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Guilty);
     }
 
     @Test
@@ -390,7 +393,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.FLIRTATIOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Flirtatious);
     }
 
     @Test
@@ -400,7 +403,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.HOPEFUL);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Hopeful);
     }
 
     @Test
@@ -410,7 +413,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.HOT);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Hot);
     }
 
     @Test
@@ -420,7 +423,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.HUMBLED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Humbled);
     }
 
     @Test
@@ -430,7 +433,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.HUMILIATED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Humiliated);
     }
 
     @Test
@@ -440,7 +443,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.HUNGRY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Hungry);
     }
 
     @Test
@@ -450,7 +453,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.HURT);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Hurt);
     }
 
     @Test
@@ -460,7 +463,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.IMPRESSED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Impressed);
     }
 
     @Test
@@ -470,7 +473,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.IN_AWE);
+        Assert.assertTrue(mood.getValue() instanceof Mood.InAwe);
     }
 
     @Test
@@ -480,7 +483,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.IN_LOVE);
+        Assert.assertTrue(mood.getValue() instanceof Mood.InLove);
     }
 
     @Test
@@ -490,7 +493,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.INDIGNANT);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Indignant);
     }
 
     @Test
@@ -500,7 +503,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.INTERESTED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Interested);
     }
 
     @Test
@@ -510,7 +513,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.INTOXICATED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Intoxicated);
     }
 
     @Test
@@ -520,7 +523,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.INVINCIBLE);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Invincible);
     }
 
     @Test
@@ -530,7 +533,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.JEALOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Jealous);
     }
 
     @Test
@@ -540,7 +543,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.LONELY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Lonely);
     }
 
     @Test
@@ -550,7 +553,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.LUCKY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Lucky);
     }
 
     @Test
@@ -560,7 +563,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.MEAN);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Mean);
     }
 
     @Test
@@ -570,7 +573,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.MOODY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Moody);
     }
 
     @Test
@@ -580,7 +583,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.NERVOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Nervous);
     }
 
     @Test
@@ -590,7 +593,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.NEUTRAL);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Neutral);
     }
 
     @Test
@@ -600,7 +603,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.OFFENDED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Offended);
     }
 
     @Test
@@ -610,7 +613,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.PLAYFUL);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Playful);
     }
 
     @Test
@@ -620,7 +623,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.PROUD);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Proud);
     }
 
     @Test
@@ -630,7 +633,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.RELAXED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Relaxed);
     }
 
     @Test
@@ -640,7 +643,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.RELIEVED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Relieved);
     }
 
     @Test
@@ -650,7 +653,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.REMORSEFUL);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Remorseful);
     }
 
     @Test
@@ -660,7 +663,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.RESTLESS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Restless);
     }
 
     @Test
@@ -670,7 +673,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SAD);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Sad);
     }
 
     @Test
@@ -680,7 +683,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SARCASTIC);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Sarcastic);
     }
 
     @Test
@@ -690,7 +693,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SERIOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Serious);
     }
 
     @Test
@@ -700,7 +703,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SHOCKED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Shocked);
     }
 
     @Test
@@ -710,7 +713,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SHY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Shy);
     }
 
     @Test
@@ -720,7 +723,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SICK);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Sick);
     }
 
     @Test
@@ -730,7 +733,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SLEEPY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Sleepy);
     }
 
     @Test
@@ -740,7 +743,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SPONTANEOUS);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Spontaneous);
     }
 
     @Test
@@ -750,7 +753,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.STRESSED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Stressed);
     }
 
     @Test
@@ -760,7 +763,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.STRONG);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Strong);
     }
 
     @Test
@@ -770,7 +773,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.SURPRISED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Surprised);
     }
 
     @Test
@@ -780,7 +783,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.THANKFUL);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Thankful);
     }
 
     @Test
@@ -790,7 +793,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.THIRSTY);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Thirsty);
     }
 
     @Test
@@ -800,7 +803,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.TIRED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Tired);
     }
 
     @Test
@@ -810,7 +813,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.UNDEFINED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Undefined);
     }
 
     @Test
@@ -820,7 +823,7 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.WEAK);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Weak);
     }
 
     @Test
@@ -830,6 +833,6 @@ public class MoodTest extends XmlTest {
                 "</mood>\n";
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
-        Assert.assertEquals(mood.getValue(), Mood.Value.WORRIED);
+        Assert.assertTrue(mood.getValue() instanceof Mood.Worried);
     }
 }

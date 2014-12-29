@@ -25,15 +25,21 @@
 package rocks.xmpp.extensions.disco.model.items;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
+import java.util.UUID;
 
 /**
  * The implementation of the {@code <item/>} element in the {@code http://jabber.org/protocol/disco#item} namespace, used for item discovery.
  *
  * @author Christian Schudt
  */
-public final class Item {
+public final class Item implements ResultSetItem {
+
+    @XmlTransient
+    private String id;
 
     @XmlAttribute
     private Jid jid;
@@ -44,12 +50,31 @@ public final class Item {
     @XmlAttribute
     private String node;
 
-    public Item() {
-
+    private Item() {
     }
 
-    public Item(String node) {
+    public Item(Jid jid, String node, String name, String id) {
+        this.jid = jid;
         this.node = node;
+        this.name = name;
+        this.id = id;
+    }
+
+    public Item(Jid jid, String node) {
+        this(jid, node, null, UUID.randomUUID().toString());
+    }
+
+    public Item(Jid jid, String node, String name) {
+        this(jid, node, name, UUID.randomUUID().toString());
+    }
+
+    /**
+     * Gets the id of this item.
+     *
+     * @return The id.
+     */
+    public String getId() {
+        return id;
     }
 
     /**

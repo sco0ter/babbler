@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,9 +60,17 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     private PrivacyList() {
     }
 
-    public PrivacyList(String name, List<PrivacyRule> items) {
+    /**
+     * Creates a privacy list with rules.
+     *
+     * @param name  The privacy list's name.
+     * @param items The privacy rules.
+     */
+    public PrivacyList(String name, Collection<PrivacyRule> items) {
         this.name = name;
-        this.items.addAll(items);
+        if (items != null) {
+            this.items.addAll(items);
+        }
     }
 
     /**
@@ -95,14 +104,9 @@ public final class PrivacyList implements Comparable<PrivacyList> {
         List<PrivacyRule> rules = new ArrayList<>();
         long order = 1;
         for (Jid jid : jids) {
-            PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order++, jid);
-            privacyRule.setFilterPresenceOut(true);
-            rules.add(privacyRule);
+            rules.add(new PrivacyRule(PrivacyRule.Action.ALLOW, order++, jid).filterPresenceOut());
         }
-        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order);
-        privacyRule.setFilterPresenceOut(true);
-        rules.add(privacyRule);
-
+        rules.add(new PrivacyRule(PrivacyRule.Action.DENY, order).filterPresenceOut());
         return new PrivacyList(listName, rules);
     }
 
@@ -119,13 +123,9 @@ public final class PrivacyList implements Comparable<PrivacyList> {
         List<PrivacyRule> rules = new ArrayList<>();
         long order = 1;
         for (String group : groups) {
-            PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order++, group);
-            privacyRule.setFilterPresenceOut(true);
-            rules.add(privacyRule);
+            rules.add(new PrivacyRule(PrivacyRule.Action.ALLOW, order++, group).filterPresenceOut());
         }
-        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order);
-        privacyRule.setFilterPresenceOut(true);
-        rules.add(privacyRule);
+        rules.add(new PrivacyRule(PrivacyRule.Action.DENY, order).filterPresenceOut());
         return new PrivacyList(listName, rules);
     }
 
@@ -142,13 +142,9 @@ public final class PrivacyList implements Comparable<PrivacyList> {
         List<PrivacyRule> rules = new ArrayList<>();
         long order = 1;
         for (Jid jid : jids) {
-            PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order++, jid);
-            privacyRule.setFilterPresenceOut(true);
-            rules.add(privacyRule);
+            rules.add(new PrivacyRule(PrivacyRule.Action.DENY, order++, jid).filterPresenceOut());
         }
-        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order);
-        privacyRule.setFilterPresenceOut(true);
-        rules.add(privacyRule);
+        rules.add(new PrivacyRule(PrivacyRule.Action.ALLOW, order).filterPresenceOut());
         return new PrivacyList(listName, rules);
     }
 
@@ -165,13 +161,9 @@ public final class PrivacyList implements Comparable<PrivacyList> {
         List<PrivacyRule> rules = new ArrayList<>();
         long order = 1;
         for (String group : groups) {
-            PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, order++, group);
-            privacyRule.setFilterPresenceOut(true);
-            rules.add(privacyRule);
+            rules.add(new PrivacyRule(PrivacyRule.Action.DENY, order++, group).filterPresenceOut());
         }
-        PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.ALLOW, order);
-        privacyRule.setFilterPresenceOut(true);
-        rules.add(privacyRule);
+        rules.add(new PrivacyRule(PrivacyRule.Action.ALLOW, order).filterPresenceOut());
         return new PrivacyList(listName, rules);
     }
 

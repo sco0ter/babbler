@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
@@ -501,19 +502,14 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         }
         Jid other = (Jid) o;
 
-        return (local == null ? other.local == null : local.equals(other.local))
-                && (domain == null ? other.domain == null : domain.equals(other.domain))
-                && (resource == null ? other.resource == null : resource.equals(other.resource));
-
+        return Objects.equals(local, other.local)
+                && Objects.equals(domain, other.domain)
+                && Objects.equals(resource, other.resource);
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + ((local == null) ? 0 : local.hashCode());
-        result = 31 * result + ((domain == null) ? 0 : domain.hashCode());
-        result = 31 * result + ((resource == null) ? 0 : resource.hashCode());
-        return result;
+        return Objects.hash(local, domain, resource);
     }
 
     /**

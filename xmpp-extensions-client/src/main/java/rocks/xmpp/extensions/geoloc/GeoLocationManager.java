@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
  */
-public final class GeoLocationManager extends ExtensionManager {
+public final class GeoLocationManager extends ExtensionManager implements SessionStatusListener, MessageListener {
 
     private static final Logger logger = Logger.getLogger(GeoLocationManager.class.getName());
 
@@ -58,39 +58,8 @@ public final class GeoLocationManager extends ExtensionManager {
     private GeoLocationManager(XmppSession xmppSession) {
         super(xmppSession, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    geoLocationListeners.clear();
-                }
-            }
-        });
-
-        xmppSession.addMessageListener(new MessageListener() {
-            @Override
-            public void handle(MessageEvent e) {
-                if (e.isIncoming() && isEnabled()) {
-                    Message message = e.getMessage();
-                    Event event = message.getExtension(Event.class);
-                    if (event != null) {
-                        for (Item item : event.getItems()) {
-                            Object payload = item.getPayload();
-                            if (payload instanceof GeoLocation) {
-                                // Notify the listeners about the reception.
-                                for (GeoLocationListener geoLocationListener : geoLocationListeners) {
-                                    try {
-                                        geoLocationListener.geoLocationUpdated(new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
-                                    } catch (Exception ex) {
-                                        logger.log(Level.WARNING, ex.getMessage(), ex);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
+        xmppSession.addMessageListener(this);
     }
 
     /**
@@ -123,5 +92,35 @@ public final class GeoLocationManager extends ExtensionManager {
      */
     public void removeGeoLocationListener(GeoLocationListener geoLocationListener) {
         geoLocationListeners.remove(geoLocationListener);
+    }
+
+    @Override
+    public void handleMessage(MessageEvent e) {
+        if (e.isIncoming() && isEnabled()) {
+            Message message = e.getMessage();
+            Event event = message.getExtension(Event.class);
+            if (event != null) {
+                for (Item item : event.getItems()) {
+                    Object payload = item.getPayload();
+                    if (payload instanceof GeoLocation) {
+                        // Notify the listeners about the reception.
+                        for (GeoLocationListener geoLocationListener : geoLocationListeners) {
+                            try {
+                                geoLocationListener.geoLocationUpdated(new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
+                            } catch (Exception ex) {
+                                logger.log(Level.WARNING, ex.getMessage(), ex);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            geoLocationListeners.clear();
+        }
     }
 }

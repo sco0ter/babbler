@@ -25,12 +25,13 @@
 package rocks.xmpp.extensions.search.model;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.rsm.model.ResultSet;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +45,11 @@ import java.util.List;
  */
 @XmlRootElement(name = "query")
 public final class Search {
+
+    /**
+     * jabber:iq:search
+     */
+    public static final String NAMESPACE = "jabber:iq:search";
 
     @XmlElement(name = "item")
     private final List<Item> items = new ArrayList<>();
@@ -67,7 +73,7 @@ public final class Search {
     private DataForm form;
 
     @XmlElementRef
-    private ResultSet resultSet;
+    private ResultSetManagement resultSet;
 
     /**
      * Creates an empty search request.
@@ -99,7 +105,7 @@ public final class Search {
      * @param email     The email.
      * @param resultSet The result set information.
      */
-    public Search(String first, String last, String nick, String email, ResultSet resultSet) {
+    public Search(String first, String last, String nick, String email, ResultSetManagement resultSet) {
         this.first = first;
         this.last = last;
         this.nick = nick;
@@ -180,7 +186,7 @@ public final class Search {
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
      */
-    public ResultSet getResultSet() {
+    public ResultSetManagement getResultSet() {
         return resultSet;
     }
 

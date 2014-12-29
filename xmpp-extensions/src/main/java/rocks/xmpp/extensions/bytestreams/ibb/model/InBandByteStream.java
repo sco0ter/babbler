@@ -24,7 +24,12 @@
 
 package rocks.xmpp.extensions.bytestreams.ibb.model;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * This class is a container for the three different In-Band ByteStream elements and provides the namespace for IBB, so that it can be used by other protocols such as XEP-0095.
@@ -34,14 +39,30 @@ import javax.xml.bind.annotation.*;
  */
 @XmlTransient
 @XmlSeeAlso({InBandByteStream.Open.class, InBandByteStream.Data.class, InBandByteStream.Close.class})
-public final class InBandByteStream {
+public abstract class InBandByteStream {
 
     /**
      * http://jabber.org/protocol/ibb.
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/ibb";
 
+    @XmlAttribute
+    private String sid;
+
+    private InBandByteStream(String sid) {
+        this.sid = sid;
+    }
+
     private InBandByteStream() {
+    }
+
+    /**
+     * Gets the session id.
+     *
+     * @return The session id.
+     */
+    public String getSessionId() {
+        return sid;
     }
 
     /**
@@ -51,12 +72,9 @@ public final class InBandByteStream {
      * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
      */
     @XmlRootElement
-    public static final class Open {
+    public static final class Open extends InBandByteStream {
         @XmlAttribute(name = "block-size")
         private int blockSize;
-
-        @XmlAttribute
-        private String sid;
 
         @XmlAttribute
         private StanzaType stanza;
@@ -71,8 +89,8 @@ public final class InBandByteStream {
          * @param sessionId The session id.
          */
         public Open(int blockSize, String sessionId) {
+            super(sessionId);
             this.blockSize = blockSize;
-            this.sid = sessionId;
         }
 
         /**
@@ -82,15 +100,6 @@ public final class InBandByteStream {
          */
         public int getBlockSize() {
             return blockSize;
-        }
-
-        /**
-         * Gets the session id.
-         *
-         * @return The session id.
-         */
-        public String getSessionId() {
-            return sid;
         }
 
         /**
@@ -126,10 +135,7 @@ public final class InBandByteStream {
      * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
      */
     @XmlRootElement
-    public static final class Data {
-
-        @XmlAttribute
-        private String sid;
+    public static final class Data extends InBandByteStream {
 
         @XmlAttribute
         private Integer seq;
@@ -151,8 +157,8 @@ public final class InBandByteStream {
          * @param seq   The sequence number.
          */
         public Data(byte[] bytes, String sid, int seq) {
+            super(sid);
             this.bytes = bytes;
-            this.sid = sid;
             this.seq = seq;
         }
 
@@ -163,15 +169,6 @@ public final class InBandByteStream {
          */
         public int getSequence() {
             return seq;
-        }
-
-        /**
-         * Gets the session id.
-         *
-         * @return The session id.
-         */
-        public String getSessionId() {
-            return sid;
         }
 
         /**
@@ -191,10 +188,7 @@ public final class InBandByteStream {
      * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
      */
     @XmlRootElement
-    public static final class Close {
-
-        @XmlAttribute(name = "sid")
-        private String sid;
+    public static final class Close extends InBandByteStream {
 
         private Close() {
         }
@@ -205,16 +199,7 @@ public final class InBandByteStream {
          * @param sessionId The session id.
          */
         public Close(String sessionId) {
-            this.sid = sessionId;
-        }
-
-        /**
-         * Gets the session id.
-         *
-         * @return The session id.
-         */
-        public String getSessionId() {
-            return sid;
+            super(sessionId);
         }
     }
 }

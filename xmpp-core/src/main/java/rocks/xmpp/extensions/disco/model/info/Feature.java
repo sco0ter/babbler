@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.disco.model.info;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Objects;
 
 /**
  * Represents a feature offered or protocol supported by an XMPP entity.
@@ -79,14 +80,12 @@ public final class Feature implements Comparable<Feature> {
             return false;
         }
         Feature other = (Feature) o;
-        return var == null ? other.var == null : var.equals(other.var);
+        return Objects.equals(var, other.var);
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + ((var == null) ? 0 : var.hashCode());
-        return result;
+        return Objects.hash(var);
     }
 
     /**

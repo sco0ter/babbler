@@ -26,7 +26,9 @@
  * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a> (#errors).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/pubsub#errors", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.pubsub.model.errors;
+@XmlSchema(namespace = PubSub.NAMESPACE + "#errors", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.pubsub.model.errors;
+
+import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

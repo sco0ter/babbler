@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/mood", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.mood.model;
+@XmlSchema(namespace = Mood.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.mood.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

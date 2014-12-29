@@ -90,6 +90,11 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
+            public void connect(Jid from) throws IOException {
+
+            }
+
+            @Override
             public void close() throws IOException {
 
             }
@@ -106,8 +111,7 @@ public class TestXmppSession extends XmppSession {
     public void send(ClientStreamElement element) {
         super.send(element);
         if (mockServer != null && element instanceof Stanza) {
-            ((Stanza) element).setFrom(connectedResource);
-            mockServer.receive(((Stanza) element));
+            mockServer.receive(((Stanza) element).withFrom(connectedResource));
         }
     }
 
@@ -117,7 +121,7 @@ public class TestXmppSession extends XmppSession {
 
         final IQListener iqListener = new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 if (e.isIncoming() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
                     result[0] = e.getIQ();
                 }

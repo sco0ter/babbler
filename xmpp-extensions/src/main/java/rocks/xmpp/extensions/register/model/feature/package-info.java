@@ -25,7 +25,7 @@
 /**
  * Provides classes for <a href="http://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a> (feature).
  */
-@XmlSchema(namespace = "http://jabber.org/features/iq-register", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.register.model.feature;
+@XmlSchema(namespace = RegisterFeature.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.register.model.feature;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

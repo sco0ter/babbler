@@ -54,7 +54,13 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -64,7 +70,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author Christian Schudt
  */
-public final class StreamInitiationManager extends ExtensionManager implements FileTransferNegotiator {
+public final class StreamInitiationManager extends ExtensionManager implements FileTransferNegotiator, IQListener {
 
     private static final String STREAM_METHOD = "stream-method";
 
@@ -91,52 +97,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             }
         });
 
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handle(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-                    StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
-                    if (streamInitiation != null) {
-                        FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
-                        // Assume no valid streams by default, unless valid streams are found.
-                        boolean noValidStreams = true;
-                        if (featureNegotiation != null) {
-                            DataForm dataForm = featureNegotiation.getDataForm();
-                            if (dataForm != null) {
-                                DataForm.Field field = dataForm.findField(STREAM_METHOD);
-                                if (field != null) {
-                                    List<String> streamMethods = new ArrayList<>();
-                                    for (DataForm.Option option : field.getOptions()) {
-                                        streamMethods.add(option.getValue());
-                                    }
-                                    if (!Collections.disjoint(streamMethods, supportedStreamMethod)) {
-                                        // Request contains valid streams
-                                        noValidStreams = false;
-                                    }
-                                }
-                            }
-                        }
-                        if (noValidStreams) {
-                            StanzaError error = new StanzaError(new BadRequest());
-                            error.setExtension(new NoValidStreams());
-                            xmppSession.send(iq.createError(error));
-                        } else {
-                            ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
-
-                            if (profileManager == null) {
-                                StanzaError error = new StanzaError(new BadRequest());
-                                error.setExtension(new BadProfile());
-                                xmppSession.send(iq.createError(error));
-                            } else {
-                                profileManager.handle(iq, streamInitiation);
-                            }
-                        }
-                        e.consume();
-                    }
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
         setEnabled(true);
     }
 
@@ -158,13 +119,12 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         String sessionId = UUID.randomUUID().toString();
 
         // Offer stream methods.
-        DataForm dataForm = new DataForm(DataForm.Type.FORM);
-        DataForm.Field field = DataForm.Field.builder().value(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).build();
+        List<DataForm.Option> options = new ArrayList<>();
         for (String streamMethod : supportedStreamMethod) {
-            field.getOptions().add(new DataForm.Option(streamMethod));
+            options.add(new DataForm.Option(streamMethod));
         }
-        dataForm.getFields().add(field);
-
+        DataForm.Field field = DataForm.Field.builder().value(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
+        DataForm dataForm = new DataForm(DataForm.Type.FORM, Arrays.asList(field));
         // Offer the file to the recipient and wait until it's accepted.
         IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
 
@@ -203,11 +163,9 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         for (DataForm.Option option : field.getOptions()) {
             offeredStreamMethods.add(option.getValue());
         }
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        DataForm.Field fieldReply = DataForm.Field.builder().value(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).build();
         offeredStreamMethods.retainAll(supportedStreamMethod);
-        fieldReply.getValues().addAll(offeredStreamMethods);
-        dataForm.getFields().add(fieldReply);
+        DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 
         final Lock lock = new ReentrantLock();
@@ -241,14 +199,12 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             inBandByteStreamManager.addByteStreamListener(byteStreamListener);
 
             // Send the stream initiation result.
-            IQ result = iq.createResult();
-            result.setExtension(siResponse);
-            xmppSession.send(result);
+            xmppSession.send(iq.createResult(siResponse));
 
             // And then wait until the peer opens the stream.
             lock.lock();
             try {
-                if (!byteStreamOpened.await(xmppSession.getDefaultTimeout(), TimeUnit.MILLISECONDS)) {
+                if (!byteStreamOpened.await(xmppSession.getConfiguration().getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
                     throw new IOException("No byte stream could be negotiated in time.", negotiationExceptions.isEmpty() ? null : negotiationExceptions.get(0));
                 }
             } catch (InterruptedException e) {
@@ -256,7 +212,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             } finally {
                 lock.unlock();
             }
-            byteStreamSessions[0].setReadTimeout(xmppSession.getDefaultTimeout());
+            byteStreamSessions[0].setReadTimeout(xmppSession.getConfiguration().getDefaultResponseTimeout());
             return new FileTransfer(byteStreamSessions[0].getInputStream(), outputStream, fileTransferOffer.getSize());
         } finally {
             inBandByteStreamManager.removeByteStreamListener(byteStreamListener);
@@ -267,6 +223,47 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     @Override
     public void reject(IQ iq) {
         xmppSession.send(iq.createError(new StanzaError(new Forbidden())));
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
+            StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
+            if (streamInitiation != null) {
+                FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
+                // Assume no valid streams by default, unless valid streams are found.
+                boolean noValidStreams = true;
+                if (featureNegotiation != null) {
+                    DataForm dataForm = featureNegotiation.getDataForm();
+                    if (dataForm != null) {
+                        DataForm.Field field = dataForm.findField(STREAM_METHOD);
+                        if (field != null) {
+                            List<String> streamMethods = new ArrayList<>();
+                            for (DataForm.Option option : field.getOptions()) {
+                                streamMethods.add(option.getValue());
+                            }
+                            if (!Collections.disjoint(streamMethods, supportedStreamMethod)) {
+                                // Request contains valid streams
+                                noValidStreams = false;
+                            }
+                        }
+                    }
+                }
+                if (noValidStreams) {
+                    xmppSession.send(iq.createError(new StanzaError(new BadRequest(), new NoValidStreams())));
+                } else {
+                    ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
+
+                    if (profileManager == null) {
+                        xmppSession.send(iq.createError(new StanzaError(new BadRequest(), new BadProfile())));
+                    } else {
+                        profileManager.handle(iq, streamInitiation);
+                    }
+                }
+                e.consume();
+            }
+        }
     }
 
     private interface ProfileManager {

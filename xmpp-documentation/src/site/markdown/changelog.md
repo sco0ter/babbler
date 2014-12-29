@@ -1,16 +1,37 @@
 # Changelog
 ---
 
+## Version 0.5.0-SNAPSHOT
+
+### New Features
+
+* Added support for [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
+    * Specifically your hosted Service Discovery items (XEP-0030) can now return [limited result sets](http://xmpp.org/extensions/xep-0059.html#examples).
+* Added support for [XEP-0222: Persistent Storage of Public Data via PubSub](http://xmpp.org/extensions/xep-0222.html)
+* Added support for [XEP-0223: Persistent Storage of Private Data via PubSub](http://xmpp.org/extensions/xep-0223.html)
+
+### Improvements
+
+* Rename method signature of `[Message|Presence|IQ]Listener` from `handle` to `handle[Message|Presence|IQ]` for better readability if a class implements multiple of those interfaces. (API change!)
+* PubSub: Add support for [Publish Options](http://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
+* PubSub: Add API to retrieve subscription options for a specific subscription id.
+* Added helper classes to work with standardized MUC and PubSub data forms, e.g. to configure a node.
+* Renamed some methods to better resemble the terminology of the specifications (e.g. `discover*` instead of `get*`).
+* Refactored Chat State Notifications.
+* Refactored XEP-0107: Mood values can now take specific (custom) moods
+* Most classes are now immutable.
+
+
 ## Version 0.4.0 (2014-11-01)
 
-## New Features
+### New Features
 
 * Added support for [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * Added support for [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
 * Added visual debugger.
 * First version available on Maven Central.
 
-## Improvements
+### Improvements
 
 * Add ability for modularization.
 * Improved package structure.
@@ -72,7 +93,7 @@
 
 ### Improvements
 
-* `Jid` class improved (nodeprep, resourceprep, better escaping logic, caching for better performance, `Comparable interface implemented)
+* `Jid` class improved (nodeprep, resourceprep, better escaping logic, caching for better performance, `Comparable` interface implemented)
 * Added JID Escaping feature (\"jid\\escaping\") to feature list for Service Discovery.
 * Restructured the project: It\'s now separated into modules:
     * xmpp-core, which contains XML schema implementations and core classes. It could theoretically be useful for a server implementation, too.

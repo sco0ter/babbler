@@ -63,9 +63,7 @@ final class S5bEvent extends ByteStreamEvent {
             S5bSession s5bSession = Socks5ByteStreamManager.createS5bSession(iq.getFrom(), iq.getTo(), getSessionId(), streamHosts);
             // 5.3.3 Target Acknowledges Bytestream
             // 6.3.3 Target Acknowledges Bytestream
-            IQ result = iq.createResult();
-            result.setExtension(Socks5ByteStream.streamHostUsed(s5bSession.getStreamHost()));
-            xmppSession.send(result);
+            xmppSession.send(iq.createResult(Socks5ByteStream.streamHostUsed(s5bSession.getStreamHost())));
             return s5bSession;
         } catch (IOException e) {
             // If the Target tries but is unable to connect to any of the StreamHosts and it does not wish to attempt a connection from its side, it MUST return an <item-not-found/> error to the Requester.

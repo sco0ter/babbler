@@ -14,7 +14,7 @@ PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.clas
 If you don\'t know the address of your server\'s pubsub service, you can discover pubsub services like that:
 
 ```java
-Collection<PubSubService> pubSubServices = pubSubManager.getPubSubServices();
+Collection<PubSubService> pubSubServices = pubSubManager.discoverPubSubServices();
 ```
 
 The resulting list will contain the available PubSub services on your server. Most often it\'s probably only one: \"pubsub.yourxmppdomain\".
@@ -34,7 +34,7 @@ The `PubSubService` instance allows you to perform all use cases described in [X
 Because [XEP-0060][PubSub] is quite complex and many features are optional, a PubSub service might not support all PubSub features. You can get the supported features of your service like that:
 
 ```java
-Collection<PubSubFeature> pubSubFeatures = pubSubService.getFeatures();
+Collection<PubSubFeature> pubSubFeatures = pubSubService.discoverFeatures();
 ```
 
 Each feature is represented as an enum value of `PubSubFeature`, e.g. `PubSubFeature.AUTO_SUBSCRIBE`. If you want to know, if the service supports a feature, you can simply ask for:
@@ -48,7 +48,7 @@ pubSubFeatures.contains(PubSubFeature.INSTANT_NODES);
 Whenever you want to work with a node (e.g. publish items, subscribe, unsubscribe, etc...), you first need to get an instance of `PubSubNode`.
 
 ```java
-PubSubNode pubSubNode = pubSubService.getNode("princely_musings");
+PubSubNode pubSubNode = pubSubService.node("princely_musings");
 ```
 
 This will just create a `PubSubNode` instance locally which acts as an interface to the PubSub service and provides methods to work with the node.
@@ -63,13 +63,13 @@ pubSubNode.create();
 
 ### Publishing Content to a Node
 
-The following publishes a geo location to the node.
+The following publishes a [Tune][Tune] to the node.
 
 ```java
-pubSubNode.publish(new GeoLocation(45.44, 12.33));
+pubSubNode.publish(new Tune("Artist", "Title"));
 ```
 
-*(Note, that this works, because `GeoLocation` is known to the JAXB Context. Unknown objects won\'t work)*
+*(Note, that this works, because `Tune` is known to the JAXB Context. Unknown objects won\'t work)*
 
 ### Subscribing to a Node
 
@@ -94,7 +94,7 @@ For now, you have to just deal directly with the messages. This may change in th
 ```java
 xmppSession.addMessageListener(new MessageListener() {
     @Override
-    public void handle(MessageEvent e) {
+    public void handleMessage(MessageEvent e) {
         if (e.isIncoming()) {
             Message message = e.getMessage();
             Event event = message.getExtension(Event.class);
@@ -117,7 +117,7 @@ The following shows, how to deal with pubsub specific errors.
 ```java
 try {
     PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.yourdomain"));
-    PubSubNode pubSubNode = pubSubService.getNode("princely_musings");
+    PubSubNode pubSubNode = pubSubService.node("princely_musings");
     pubSubNode.subscribe();
 } catch (XmppException e) {
     if (e instanceof StanzaException) {
@@ -130,6 +130,7 @@ try {
 }
 ```
 
-PubSub errors can be found in the ```org.xmpp.extension.pubsub.errors``` package.
+PubSub errors can be found in the ```rocks.xmpp.extensions.pubsub.model.errors``` package.
 
 [PubSub]: http://xmpp.org/extensions/xep-0060.html "XEP-0060: Publish-Subscribe"
+[Tune]: http://xmpp.org/extensions/xep-0118.html "XEP-0118: User Tune"

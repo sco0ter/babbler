@@ -26,9 +26,9 @@ package rocks.xmpp.extensions.compress.model;
 
 import rocks.xmpp.core.stream.model.ServerStreamElement;
 
-import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * The implementation of the {@code <failure/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates failure during compression negotiation.
@@ -38,51 +38,67 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
  */
 @XmlRootElement(name = "failure")
-@XmlSeeAlso({Failure.SetupFailed.class, Failure.ProcessingFailed.class, Failure.UnsupportedMethod.class})
 public final class Failure implements ServerStreamElement {
-    @XmlElementRef
+    @XmlElements({@XmlElement(name = "setup-failed", type = SetupFailed.class),
+            @XmlElement(name = "processing-failed", type = ProcessingFailed.class),
+            @XmlElement(name = "unsupported-method", type = UnsupportedMethod.class)})
     private Condition condition;
 
     private Failure() {
     }
 
+    /**
+     * Gets the failure condition.
+     *
+     * @return The condition.
+     * @see UnsupportedMethod
+     * @see SetupFailed
+     * @see ProcessingFailed
+     */
     public Condition getCondition() {
         return condition;
     }
 
-    static abstract class Condition {
+    /**
+     * An abstract base class for a compression failure condition.
+     */
+    public abstract static class Condition {
 
         private String name;
 
-        private Condition() {
-        }
-
-        protected Condition(String name) {
+        private Condition(String name) {
             this.name = name;
         }
 
-        public String getName() {
+        @Override
+        public String toString() {
             return name;
         }
     }
 
-    @XmlRootElement(name = "setup-failed")
+    /**
+     * If the receiving entity finds the requested method unacceptable or unworkable for any other reason.
+     */
     public static final class SetupFailed extends Condition {
-        private SetupFailed() {
+        public SetupFailed() {
             super("setup-failed");
         }
     }
 
-    @XmlRootElement(name = "processing-failed")
+    /**
+     * If compression processing fails after the new (compressed) stream has been established.
+     */
     public static final class ProcessingFailed extends Condition {
-        private ProcessingFailed() {
+        public ProcessingFailed() {
             super("processing-failed");
         }
     }
 
-    @XmlRootElement(name = "unsupported-method")
+    /**
+     * If the initiating entity requests a stream compression method that is not supported by the receiving entity.
+     */
     public static final class UnsupportedMethod extends Condition {
-        private UnsupportedMethod() {
+        public UnsupportedMethod() {
             super("unsupported-method");
         }
     }

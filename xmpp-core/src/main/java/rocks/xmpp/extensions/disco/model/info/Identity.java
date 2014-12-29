@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.disco.model.info;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Objects;
 
 /**
  * Represents an identity of an XMPP entity.
@@ -147,19 +148,15 @@ public final class Identity implements Comparable<Identity> {
         }
         Identity other = (Identity) o;
 
-        return (category == null ? other.category == null : category.equals(other.category))
-                && (type == null ? other.type == null : type.equals(other.type))
-                && (lang == null ? other.lang == null : lang.equals(other.lang));
+        return Objects.equals(category, other.category)
+                && Objects.equals(type, other.type)
+                && Objects.equals(lang, other.lang);
 
     }
 
     @Override
     public int hashCode() {
-        int result = 17;
-        result = 31 * result + ((category == null) ? 0 : category.hashCode());
-        result = 31 * result + ((type == null) ? 0 : type.hashCode());
-        result = 31 * result + ((lang == null) ? 0 : lang.hashCode());
-        return result;
+        return Objects.hash(category, type, lang);
     }
 
     /**

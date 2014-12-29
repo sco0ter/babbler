@@ -25,12 +25,15 @@
 /**
  * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a> (#items).
  */
-@XmlSchema(namespace = "http://jabber.org/protocol/disco#items", elementFormDefault = XmlNsForm.QUALIFIED)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class) package rocks.xmpp.extensions.disco.model.items;
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
+@XmlSchema(namespace = ItemDiscovery.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.disco.model.items;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "jabber:x:oob", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.oob.model.x;
+@XmlSchema(namespace = OobX.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.oob.model.x;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -27,6 +27,8 @@ package rocks.xmpp.extensions.data.layout.model;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,14 +46,14 @@ public final class Section {
     @XmlElement(name = "section")
     private final List<Section> sections = new ArrayList<>();
 
-    @XmlAttribute(name = "label")
-    private String label;
-
     @XmlElement(name = "text")
-    private List<String> text = new ArrayList<>();
+    private final List<String> text = new ArrayList<>();
 
     @XmlElement(name = "fieldref")
-    private List<FieldReference> fieldReferences = new ArrayList<>();
+    private final List<FieldReference> fieldReferences = new ArrayList<>();
+
+    @XmlAttribute(name = "label")
+    private String label;
 
     @XmlElement(name = "reportedref")
     private FieldReference reportedReference;
@@ -65,9 +67,8 @@ public final class Section {
      * @param label           The label.
      * @param fieldReferences The field references.
      */
-    public Section(String label, List<FieldReference> fieldReferences) {
-        this.label = label;
-        this.fieldReferences = fieldReferences;
+    public Section(String label, Collection<FieldReference> fieldReferences) {
+        this(label, fieldReferences, null);
     }
 
     /**
@@ -77,10 +78,8 @@ public final class Section {
      * @param fieldReferences The field references.
      * @param text            The text.
      */
-    public Section(String label, List<FieldReference> fieldReferences, List<String> text) {
-        this.label = label;
-        this.text = text;
-        this.fieldReferences = fieldReferences;
+    public Section(String label, Collection<FieldReference> fieldReferences, Collection<String> text) {
+        this(label, fieldReferences, text, null);
     }
 
     /**
@@ -91,10 +90,14 @@ public final class Section {
      * @param text              The text.
      * @param reportedReference The reference to a reported field.
      */
-    public Section(String label, List<FieldReference> fieldReferences, List<String> text, FieldReference reportedReference) {
+    public Section(String label, Collection<FieldReference> fieldReferences, Collection<String> text, FieldReference reportedReference) {
         this.label = label;
-        this.text = text;
-        this.fieldReferences = fieldReferences;
+        if (text != null) {
+            this.text.addAll(text);
+        }
+        if (fieldReferences != null) {
+            this.fieldReferences.addAll(fieldReferences);
+        }
         this.reportedReference = reportedReference;
     }
 
@@ -113,7 +116,7 @@ public final class Section {
      * @return Additional information.
      */
     public List<String> getText() {
-        return text;
+        return Collections.unmodifiableList(text);
     }
 
     /**
@@ -122,7 +125,7 @@ public final class Section {
      * @return The field references.
      */
     public List<FieldReference> getFieldReferences() {
-        return fieldReferences;
+        return Collections.unmodifiableList(fieldReferences);
     }
 
     /**
@@ -131,7 +134,7 @@ public final class Section {
      * @return The nested sub-sections.
      */
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
     /**

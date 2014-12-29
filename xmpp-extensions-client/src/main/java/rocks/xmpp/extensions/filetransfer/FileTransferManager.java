@@ -40,7 +40,13 @@ import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
@@ -55,7 +61,7 @@ import java.util.logging.Logger;
 /**
  * @author Christian Schudt
  */
-public final class FileTransferManager extends ExtensionManager {
+public final class FileTransferManager extends ExtensionManager implements SessionStatusListener {
 
     private static final Logger logger = Logger.getLogger(FileTransferManager.class.getName());
 
@@ -76,15 +82,7 @@ public final class FileTransferManager extends ExtensionManager {
 
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession);
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    fileTransferOfferListeners.clear();
-                    fileTransferOfferExecutor.shutdown();
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
         this.streamInitiationManager = xmppSession.getExtensionManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
     }
@@ -203,5 +201,13 @@ public final class FileTransferManager extends ExtensionManager {
      */
     public void removeFileTransferOfferListener(FileTransferOfferListener fileTransferOfferListener) {
         fileTransferOfferListeners.remove(fileTransferOfferListener);
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            fileTransferOfferListeners.clear();
+            fileTransferOfferExecutor.shutdown();
+        }
     }
 }

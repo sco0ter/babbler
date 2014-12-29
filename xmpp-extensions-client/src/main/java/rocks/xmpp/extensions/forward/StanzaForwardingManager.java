@@ -59,7 +59,7 @@ public final class StanzaForwardingManager extends ExtensionManager {
      * @param xmppSession The underlying connection.
      */
     private StanzaForwardingManager(final XmppSession xmppSession) {
-        super(xmppSession, "urn:xmpp:forward:0");
+        super(xmppSession, Forwarded.NAMESPACE);
         setEnabled(false);
     }
 
@@ -71,8 +71,6 @@ public final class StanzaForwardingManager extends ExtensionManager {
      */
     public void forwardMessage(Message message, Jid to) {
         Message outerMessage = new Message(to, message.getType());
-        // Include a empty body to make sure it will be stored in offline case.
-        outerMessage.setBody(" ");
         outerMessage.getExtensions().add(new Forwarded(message, new DelayedDelivery(new Date())));
         xmppSession.send(outerMessage);
     }

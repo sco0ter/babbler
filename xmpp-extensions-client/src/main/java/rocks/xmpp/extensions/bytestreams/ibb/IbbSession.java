@@ -78,9 +78,7 @@ final class IbbSession extends ByteStreamSession {
     }
 
     void open() throws XmppException {
-        IQ iq = new IQ(IQ.Type.SET, new InBandByteStream.Open(blockSize, getSessionId()));
-        iq.setTo(jid);
-        xmppSession.query(iq);
+        xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Open(blockSize, getSessionId())));
     }
 
     @Override

@@ -18,7 +18,7 @@
 * ![not supported][not supported]   [XEP-0050: Ad-Hoc Commands](http://xmpp.org/extensions/xep-0050.html)
 * ![supported][supported]           [XEP-0054: vcard-temp](http://xmpp.org/extensions/xep-0054.html)
 * ![supported][supported]           [XEP-0055: Jabber Search](http://xmpp.org/extensions/xep-0055.html)
-* ![in development][in development] [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
+* ![supported][supported]           [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
 * ![supported][supported]           [XEP-0060: Publish-Subscribe](http://xmpp.org/extensions/xep-0060.html)
 * ![supported][supported]           [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
 * ![supported][supported]           [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)
@@ -46,7 +46,8 @@
 * ![supported][supported]           [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)
 * ![supported][supported]           [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
 * ![supported][supported]           [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
-* ![supported][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
+* ![supported
+][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
 * ![supported][supported]           [XEP-0152: Reachability Addresses](http://xmpp.org/extensions/xep-0152.html)
 * ![supported][supported]           [XEP-0153: vCard-Based Avatars](http://xmpp.org/extensions/xep-0153.html)
 * ![not supported][not supported]   [XEP-0155: Stanza Session Negotiation](http://xmpp.org/extensions/xep-0155.html)
@@ -101,6 +102,8 @@ Additionally following informational XEP documents are respected:
 * ![supported][supported]           [XEP-0170: Recommended Order of Stream Feature Negotiation](http://xmpp.org/extensions/xep-0170.html)
 * ![supported][supported]           [XEP-0175: Best Practices for Use of SASL ANONYMOUS](http://xmpp.org/extensions/xep-0175.html)
 * ![supported][supported]           [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
+* ![supported][supported]           [XEP-0222: Persistent Storage of Public Data via PubSub](http://xmpp.org/extensions/xep-0222.html)
+* ![supported][supported]           [XEP-0223: Persistent Storage of Private Data via PubSub](http://xmpp.org/extensions/xep-0223.html)
 
 [supported]: supported.png "Is supported"
 [not supported]: notsupported.png "Is not supported"

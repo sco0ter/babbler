@@ -31,9 +31,14 @@ import rocks.xmpp.extensions.pubsub.model.AffiliationState;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -185,25 +190,6 @@ public final class PubSubOwner {
     }
 
     /**
-     * Creates a pubsub element with a {@code <subscriptions/>} child element and a 'node' attribute.
-     * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
-     * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
-     *     <subscriptions node='princely_musings'/>
-     * </pubsub>
-     * }
-     * </pre>
-     *
-     * @param node The node.
-     * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-subscriptions">8.8 Manage Subscriptions</a>
-     */
-    public static PubSubOwner withSubscriptions(String node) {
-        return new PubSubOwner(new Subscriptions(node));
-    }
-
-    /**
      * Creates a pubsub element with a {@code <subscriptions/>} child element with {@code <subscription/>} elements.
      * <p><b>Sample:</b></p>
      * <pre>
@@ -222,26 +208,7 @@ public final class PubSubOwner {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-subscriptions-modify">8.8.2 Modify Subscriptions</a>
      */
     public static PubSubOwner withSubscriptions(String node, Subscription... subscriptions) {
-        return new PubSubOwner((new Subscriptions(node))); // TODO
-    }
-
-    /**
-     * Creates a pubsub element with a {@code <affiliations/>} child element and a 'node' attribute.
-     * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
-     * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
-     *     <affiliations node='princely_musings'/>
-     * </pubsub>
-     * }
-     * </pre>
-     *
-     * @param node The node.
-     * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-affiliations">8.9 Manage Affiliations</a>
-     */
-    public static PubSubOwner withAffiliations(String node) {
-        return new PubSubOwner((new Affiliations(node)));
+        return new PubSubOwner(new Subscriptions(node, subscriptions));
     }
 
     /**
@@ -263,7 +230,7 @@ public final class PubSubOwner {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-affiliations-modify">8.9.2 Modify Affiliation</a>
      */
     public static PubSubOwner withAffiliations(String node, Affiliation... affiliationNodes) {
-        return new PubSubOwner((new Affiliations(node))); // TODO
+        return new PubSubOwner((new Affiliations(node, affiliationNodes)));
     }
 
     /**
@@ -295,6 +262,7 @@ public final class PubSubOwner {
      * Indicates, whether this pubsub element contains a 'configure' child element.
      *
      * @return True, if the pubsub element contains a 'configure' child element.
+     * @see #getConfigurationForm()
      */
     public boolean isConfigure() {
         return type instanceof Configure;
@@ -304,6 +272,7 @@ public final class PubSubOwner {
      * Indicates, whether this pubsub element contains a 'default' child element.
      *
      * @return True, if the pubsub element contains a 'default' child element.
+     * @see #getConfigurationForm()
      */
     public boolean isDefault() {
         return type instanceof Default;
@@ -331,39 +300,50 @@ public final class PubSubOwner {
      * Indicates, whether this pubsub element contains a 'subscriptions' child element.
      *
      * @return True, if the pubsub element contains a 'subscriptions' child element.
+     * @see #getSubscriptions()
      */
     public boolean isSubscriptions() {
         return type instanceof Subscriptions;
     }
 
     /**
+     * Indicates, whether this pubsub element contains a 'subscriptions' child element.
+     *
+     * @return True, if the pubsub element contains a 'subscriptions' child element.
+     * @see #getAffiliations()
+     */
+    public boolean isAffiliations() {
+        return type instanceof Affiliations;
+    }
+
+    /**
      * Gets the subscriptions, if this pubsub element contains 'subscriptions' element.
      *
-     * @return The subscriptions or null.
+     * @return The subscriptions, if the pubsub element contains a 'subscriptions' child element; otherwise an empty list.
      */
     public List<? extends Subscription> getSubscriptions() {
         if (type instanceof Subscriptions) {
-            return ((Subscriptions) type).getSubscriptions();
+            return Collections.unmodifiableList(((Subscriptions) type).getSubscriptions());
         }
-        return null;
+        return Collections.emptyList();
     }
 
     /**
      * Gets the affiliations, if this pubsub element contains 'affiliations' element.
      *
-     * @return True, if the pubsub element contains a 'affiliations' child element.
+     * @return The affiliations, if the pubsub element contains a 'affiliations' child element; otherwise an empty list.
      */
     public List<? extends Affiliation> getAffiliations() {
         if (type instanceof Affiliations) {
-            return ((Affiliations) type).getAffiliations();
+            return Collections.unmodifiableList(((Affiliations) type).getAffiliations());
         }
-        return null;
+        return Collections.emptyList();
     }
 
     /**
-     * Gets the redirect URI, if this pubsub element contains 'delete' element.
+     * Gets the redirect URI, if this pubsub element contains a 'delete' element.
      *
-     * @return The redirect URI, if this pubsub element contains 'delete' element.
+     * @return The redirect URI, if this pubsub element contains a 'delete' element; otherwise null.
      */
     public URI getRedirectUri() {
         if (type instanceof Delete && ((Delete) type).getRedirect() != null) {
@@ -381,8 +361,15 @@ public final class PubSubOwner {
             super(null);
         }
 
-        private Affiliations(String node) {
+        private Affiliations(String node, Affiliation... affiliations) {
             super(node);
+            for (Affiliation affiliation : affiliations) {
+                AffiliationNodeOwner affiliationNodeOwner = new AffiliationNodeOwner();
+                affiliationNodeOwner.affiliation = affiliation.getAffiliationState();
+                affiliationNodeOwner.jid = affiliation.getJid();
+                affiliationNodeOwner.node = affiliation.getNode();
+                this.affiliations.add(affiliationNodeOwner);
+            }
         }
 
         private List<? extends Affiliation> getAffiliations() {
@@ -477,7 +464,7 @@ public final class PubSubOwner {
             return redirect;
         }
 
-        private final static class Redirect {
+        private static final class Redirect {
             @XmlAttribute(name = "uri")
             private URI uri;
 
@@ -507,13 +494,26 @@ public final class PubSubOwner {
     private static final class Subscriptions extends PubSubOwnerChildElement {
 
         @XmlElement(name = "subscription")
-        private List<SubscriptionOwner> subscriptions;
+        private List<SubscriptionOwner> subscriptions = new ArrayList<>();
 
         private Subscriptions() {
         }
 
-        private Subscriptions(String node) {
+        private Subscriptions(String node, Subscription... subscriptions) {
             super(node);
+            for (Subscription subscription : subscriptions) {
+                SubscriptionOwner subscriptionOwner = new SubscriptionOwner();
+                subscriptionOwner.expiry = subscription.getExpiry();
+                subscriptionOwner.jid = subscription.getJid();
+                subscriptionOwner.node = subscription.getNode();
+                subscriptionOwner.subid = subscription.getSubId();
+                subscriptionOwner.status = subscription.getSubscriptionState();
+                subscriptionOwner.options = subscription.isConfigurationSupported() ? new SubscriptionOwner.Options() : null;
+                if (subscription.isConfigurationRequired() && subscriptionOwner.options != null) {
+                    subscriptionOwner.options.required = "";
+                }
+                this.subscriptions.add(subscriptionOwner);
+            }
         }
 
         private List<SubscriptionOwner> getSubscriptions() {
@@ -586,7 +586,7 @@ public final class PubSubOwner {
         }
     }
 
-    private static abstract class PubSubOwnerChildElement {
+    private abstract static class PubSubOwnerChildElement {
 
         @XmlAttribute(name = "node")
         private String node;

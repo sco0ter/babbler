@@ -24,10 +24,15 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,11 +45,19 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class ItemDiscovery implements ItemNode {
 
+    /**
+     * http://jabber.org/protocol/disco#items
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/disco#items";
+
+    @XmlElement(name = "item")
+    private final List<Item> items = new ArrayList<>();
+
     @XmlAttribute(name = "node")
     private String node;
 
-    @XmlElement(name = "item")
-    private List<Item> items = new ArrayList<>();
+    @XmlElementRef
+    private ResultSetManagement resultSetManagement;
 
     /**
      * Creates an empty element, used for item discovery requests.
@@ -62,12 +75,33 @@ public final class ItemDiscovery implements ItemNode {
     }
 
     /**
+     * Creates an item discovery element with a node attribute.
+     *
+     * @param node                The node.
+     * @param resultSetManagement The result set management extension.
+     */
+    public ItemDiscovery(String node, ResultSetManagement resultSetManagement) {
+        this.node = node;
+        this.resultSetManagement = resultSetManagement;
+    }
+
+    /**
      * Creates an item discovery element with nodes.
      *
      * @param items The items.
      */
-    public ItemDiscovery(List<Item> items) {
-        this.items = items;
+    public ItemDiscovery(Collection<Item> items) {
+        this(null, items);
+    }
+
+    /**
+     * Creates an item discovery element with nodes and result set management.
+     *
+     * @param items               The items.
+     * @param resultSetManagement The result set management extension.
+     */
+    public ItemDiscovery(Collection<Item> items, ResultSetManagement resultSetManagement) {
+        this(null, items, resultSetManagement);
     }
 
     /**
@@ -76,14 +110,33 @@ public final class ItemDiscovery implements ItemNode {
      * @param node  The node.
      * @param items The items.
      */
-    public ItemDiscovery(String node, List<Item> items) {
+    public ItemDiscovery(String node, Collection<Item> items) {
+        this(node, items, null);
+    }
+
+    /**
+     * Creates an item discovery element with a node attribute and result set management.
+     *
+     * @param node                The node.
+     * @param items               The items.
+     * @param resultSetManagement The result set management extension.
+     */
+    public ItemDiscovery(String node, Collection<Item> items, ResultSetManagement resultSetManagement) {
         this.node = node;
-        this.items = items;
+        if (items != null) {
+            this.items.addAll(items);
+        }
+        this.resultSetManagement = resultSetManagement;
     }
 
     @Override
     public List<Item> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
+    }
+
+    @Override
+    public ResultSetManagement getResultSetManagement() {
+        return resultSetManagement;
     }
 
     @Override
@@ -97,7 +150,7 @@ public final class ItemDiscovery implements ItemNode {
         if (node != null) {
             sb.append(node);
         }
-        if (items != null) {
+        if (!items.isEmpty()) {
             if (!sb.toString().isEmpty()) {
                 sb.append(": ");
             }

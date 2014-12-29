@@ -43,6 +43,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "feature")
 public final class FeatureNegotiation {
 
+    /**
+     * http://jabber.org/protocol/feature-neg
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/feature-neg";
+
     @XmlElementRef
     private DataForm dataForm;
 

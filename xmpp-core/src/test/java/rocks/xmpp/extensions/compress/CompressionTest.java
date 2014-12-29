@@ -80,7 +80,6 @@ public class CompressionTest extends XmlTest {
                 "  <setup-failed/>\n" +
                 "</failure>\n";
         Failure failure = unmarshal(xml, Failure.class);
-
         Assert.assertNotNull(failure);
         Assert.assertTrue(failure.getCondition() instanceof Failure.SetupFailed);
     }

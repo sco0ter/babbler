@@ -94,7 +94,7 @@ Here are some examples:
 // Listen for presence changes
 xmppSession.addPresenceListener(new PresenceListener() {
     @Override
-    public void handle(PresenceEvent e) {
+    public void handlePresence(PresenceEvent e) {
         if (e.isIncoming()) {
             // Handle incoming presence.
         }
@@ -103,7 +103,7 @@ xmppSession.addPresenceListener(new PresenceListener() {
 // Listen for messages
 xmppSession.addMessageListener(new MessageListener() {
     @Override
-    public void handle(MessageEvent e) {
+    public void handleMessage(MessageEvent e) {
         // Handle outgoing or incoming message
     }
 });
@@ -179,7 +179,7 @@ Closing a session is simply done with:
 xmppSession.close();
 ```
 
-Note, that ```org.xmpp.XmppSession``` implements ```java.io.Closeable```, which means you can also use the try-with-resources statement, which automatically closes the session:
+Note, that `XmppSession` implements `java.io.Closeable`, which means you can also use the try-with-resources statement, which automatically closes the session:
 
 ```java
 try (XmppSession xmppSession = new XmppSession("domain")) {

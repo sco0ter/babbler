@@ -27,10 +27,11 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "http://jabber.org/protocol/pubsub#event", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.pubsub.model.event;
+@XmlSchema(namespace = PubSub.NAMESPACE + "#event", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.pubsub.model.event;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

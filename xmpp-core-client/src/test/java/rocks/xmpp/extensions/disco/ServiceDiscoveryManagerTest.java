@@ -27,12 +27,16 @@ package rocks.xmpp.extensions.disco;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 /**
  * @author Christian Schudt
@@ -80,5 +84,134 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertFalse(serviceDiscoveryManager.isEnabled());
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureInfo));
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureItems));
+    }
+
+    @Test
+    public void testItemDiscovery() throws XmppException {
+
+        MockServer mockServer = new MockServer();
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "root", "name"));
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO);
+        Assert.assertEquals(result.getItems().size(), 1);
+        Assert.assertEquals(result.getItems().get(0).getNode(), "root");
+        Assert.assertEquals(result.getItems().get(0).getName(), "name");
+        Assert.assertEquals(result.getItems().get(0).getJid(), Jid.valueOf("test"));
+    }
+
+    @Test
+    public void testItemDiscoveryWithNode() throws XmppException {
+
+        MockServer mockServer = new MockServer();
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+
+        DefaultItemProvider defaultItemProvider = new DefaultItemProvider();
+        defaultItemProvider.getItems().add(new Item(Jid.valueOf("test"), "node1"));
+        serviceDiscoveryManager.setItemProvider("node1", defaultItemProvider);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO, "node1");
+        Assert.assertEquals(result.getItems().size(), 1);
+        Assert.assertEquals(result.getItems().get(0).getNode(), "node1");
+    }
+
+    @Test
+    public void testItemDiscoveryWithRsm() throws XmppException {
+
+        MockServer mockServer = new MockServer();
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+
+        for (int i = 0; i < 100; i++) {
+            serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "item" + i));
+        }
+
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ItemNode resultItemCount = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forItemCount());
+        Assert.assertTrue(resultItemCount.getItems().isEmpty());
+        Assert.assertEquals(resultItemCount.getResultSetManagement().getItemCount(), Integer.valueOf(100));
+
+        ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forLimit(10));
+        Assert.assertEquals(result.getItems().size(), 10);
+        Assert.assertEquals(result.getItems().get(0).getNode(), "item0");
+        Assert.assertEquals(result.getResultSetManagement().getItemCount(), Integer.valueOf(100));
+        Assert.assertEquals(result.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(0));
+
+        ItemNode result2 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forLimit(10, 20));
+        Assert.assertEquals(result2.getItems().size(), 10);
+        Assert.assertEquals(result2.getItems().get(0).getNode(), "item20");
+        Assert.assertEquals(result2.getResultSetManagement().getItemCount(), Integer.valueOf(100));
+        Assert.assertEquals(result2.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(20));
+
+        ItemNode page1 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forNextPage(10, result2.getItems().get(result2.getItems().size() - 1).getId()));
+        Assert.assertEquals(page1.getItems().size(), 10);
+        Assert.assertEquals(page1.getItems().get(0).getNode(), "item30");
+        Assert.assertEquals(page1.getResultSetManagement().getItemCount(), Integer.valueOf(100));
+        Assert.assertEquals(page1.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(30));
+
+        ItemNode page2 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forNextPage(10, page1.getItems().get(page1.getItems().size() - 1).getId()));
+        Assert.assertEquals(page2.getItems().size(), 10);
+        Assert.assertEquals(page2.getItems().get(0).getNode(), "item40");
+        Assert.assertEquals(page2.getResultSetManagement().getItemCount(), Integer.valueOf(100));
+        Assert.assertEquals(page2.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(40));
+
+    }
+
+    @Test
+    public void testItemDiscoveryWithPaging() throws XmppException {
+
+        MockServer mockServer = new MockServer();
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+
+        for (int i = 0; i < 30; i++) {
+            serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "item" + i));
+        }
+
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ItemNode resultItemCount = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forItemCount());
+        Assert.assertTrue(resultItemCount.getItems().isEmpty());
+        Assert.assertEquals(resultItemCount.getResultSetManagement().getItemCount(), Integer.valueOf(30));
+
+        ItemNode page1 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forLimit(10));
+        Assert.assertEquals(page1.getItems().size(), 10);
+        Assert.assertEquals(page1.getItems().get(0).getNode(), "item0");
+        Assert.assertEquals(page1.getResultSetManagement().getItemCount(), Integer.valueOf(30));
+        Assert.assertEquals(page1.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(0));
+
+        ItemNode page2 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forNextPage(10, page1.getItems().get(page1.getItems().size() - 1).getId()));
+        Assert.assertEquals(page2.getItems().size(), 10);
+        Assert.assertEquals(page2.getItems().get(0).getNode(), "item10");
+        Assert.assertEquals(page2.getResultSetManagement().getItemCount(), Integer.valueOf(30));
+        Assert.assertEquals(page2.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(10));
+
+        ItemNode page3 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forNextPage(10, page2.getItems().get(page2.getItems().size() - 1).getId()));
+        Assert.assertEquals(page3.getItems().size(), 10);
+        Assert.assertEquals(page3.getItems().get(0).getNode(), "item20");
+        Assert.assertEquals(page3.getResultSetManagement().getItemCount(), Integer.valueOf(30));
+        Assert.assertEquals(page3.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(20));
+
+        // Empty page.
+        ItemNode page4 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forNextPage(10, page3.getItems().get(page3.getItems().size() - 1).getId()));
+        Assert.assertEquals(page4.getItems().size(), 0);
+
+        // Now page backwards
+        ItemNode page5 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forPreviousPage(10, page3.getItems().get(0).getId()));
+        Assert.assertEquals(page5.getItems().size(), 10);
+        Assert.assertEquals(page5.getItems().get(0).getNode(), "item10");
+        Assert.assertEquals(page5.getResultSetManagement().getItemCount(), Integer.valueOf(30));
+        Assert.assertEquals(page5.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(10));
+
+        ItemNode page6 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forPreviousPage(5, page5.getItems().get(0).getId()));
+        Assert.assertEquals(page6.getItems().size(), 5);
+        Assert.assertEquals(page6.getItems().get(0).getNode(), "item5");
+        Assert.assertEquals(page6.getResultSetManagement().getItemCount(), Integer.valueOf(30));
+        Assert.assertEquals(page6.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(5));
     }
 }

@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
 public class ChatStateManagerTest extends XmlTest {
 
     protected ChatStateManagerTest() throws JAXBException, XMLStreamException {
-        super(Message.class, Active.class, Composing.class, Paused.class, Inactive.class, Gone.class);
+        super(Message.class, ChatState.class);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class ChatStateManagerTest extends XmlTest {
                 "</message>";
         Message message = unmarshal(xml, Message.class);
         Assert.assertEquals(message.getExtensions().size(), 1);
-        Assert.assertTrue(message.getExtensions().get(0) instanceof Active);
+        Assert.assertTrue(message.getExtension(ChatState.class) instanceof ChatState.Active);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ChatStateManagerTest extends XmlTest {
                 "</message>\n";
         Message message = unmarshal(xml, Message.class);
         Assert.assertEquals(message.getExtensions().size(), 1);
-        Assert.assertTrue(message.getExtensions().get(0) instanceof Composing);
+        Assert.assertTrue(message.getExtension(ChatState.class) instanceof ChatState.Composing);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class ChatStateManagerTest extends XmlTest {
                 "</message>";
         Message message = unmarshal(xml, Message.class);
         Assert.assertEquals(message.getExtensions().size(), 1);
-        Assert.assertTrue(message.getExtensions().get(0) instanceof Paused);
+        Assert.assertTrue(message.getExtension(ChatState.class) instanceof ChatState.Paused);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ChatStateManagerTest extends XmlTest {
                 "</message>";
         Message message = unmarshal(xml, Message.class);
         Assert.assertEquals(message.getExtensions().size(), 1);
-        Assert.assertTrue(message.getExtensions().get(0) instanceof Inactive);
+        Assert.assertTrue(message.getExtension(ChatState.class) instanceof ChatState.Inactive);
     }
 
     @Test
@@ -108,6 +108,6 @@ public class ChatStateManagerTest extends XmlTest {
                 "</message>";
         Message message = unmarshal(xml, Message.class);
         Assert.assertEquals(message.getExtensions().size(), 1);
-        Assert.assertTrue(message.getExtensions().get(0) instanceof Gone);
+        Assert.assertTrue(message.getExtension(ChatState.class) instanceof ChatState.Gone);
     }
 }

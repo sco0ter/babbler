@@ -25,13 +25,18 @@
 package rocks.xmpp.extensions.muc.model.user;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.extensions.muc.model.*;
+import rocks.xmpp.extensions.muc.model.Actor;
+import rocks.xmpp.extensions.muc.model.Affiliation;
+import rocks.xmpp.extensions.muc.model.Destroy;
+import rocks.xmpp.extensions.muc.model.Item;
+import rocks.xmpp.extensions.muc.model.Role;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -367,7 +372,7 @@ public final class MucUser {
      * @return The status codes.
      */
     public List<Status> getStatusCodes() {
-        return statusCodes;
+        return Collections.unmodifiableList(statusCodes);
     }
 
     /**
@@ -385,7 +390,7 @@ public final class MucUser {
      * @return The invites.
      */
     public List<Invite> getInvites() {
-        return invites;
+        return Collections.unmodifiableList(invites);
     }
 
     /**
@@ -415,7 +420,7 @@ public final class MucUser {
         return password;
     }
 
-    private static class MucUserItem implements Item {
+    private static final class MucUserItem implements Item {
 
         @XmlElement(name = "actor")
         private MucUserActor actor;

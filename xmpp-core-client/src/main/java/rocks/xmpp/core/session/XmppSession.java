@@ -28,11 +28,16 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.roster.RosterManager;
-import rocks.xmpp.core.sasl.AuthenticationManager;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.*;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.StanzaException;
@@ -53,10 +58,16 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.AccountLockedException;
 import javax.security.auth.login.CredentialExpiredException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
+import javax.security.sasl.RealmCallback;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -64,8 +75,18 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -226,7 +247,7 @@ public class XmppSession implements Closeable {
         reconnectionManager = new ReconnectionManager(this);
         streamFeaturesManager = new StreamFeaturesManager(this);
         chatManager = new ChatManager(this);
-        authenticationManager = new AuthenticationManager(this, lock);
+        authenticationManager = new AuthenticationManager(this, lock, configuration.getAuthenticationMechanisms());
         authenticationManager.addFeatureListener(new StreamFeatureListener() {
             @Override
             public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) {
@@ -395,7 +416,7 @@ public class XmppSession implements Closeable {
             MessageEvent messageEvent = new MessageEvent(this, (Message) element, incoming);
             for (MessageListener messageListener : messageListeners) {
                 try {
-                    messageListener.handle(messageEvent);
+                    messageListener.handleMessage(messageEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
@@ -404,7 +425,7 @@ public class XmppSession implements Closeable {
             PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) element, incoming);
             for (PresenceListener presenceListener : presenceListeners) {
                 try {
-                    presenceListener.handle(presenceEvent);
+                    presenceListener.handlePresence(presenceEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
@@ -414,7 +435,7 @@ public class XmppSession implements Closeable {
             IQEvent iqEvent = new IQEvent(this, iq, incoming);
             for (IQListener iqListener : iqListeners) {
                 try {
-                    iqListener.handle(iqEvent);
+                    iqListener.handleIQ(iqEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
@@ -469,48 +490,15 @@ public class XmppSession implements Closeable {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
 
-        return sendAndAwaitIQ(iq, new StanzaFilter<IQ>() {
-            @Override
-            public boolean accept(IQ stanza) {
-                return stanza.getId() != null && stanza.getId().equals(iq.getId()) && (stanza.getType() == IQ.Type.RESULT || stanza.getType() == IQ.Type.ERROR);
-            }
-        }, timeout);
-    }
-
-    /**
-     * Sends a stanza and then waits for an IQ stanza to arrive. The filter determines the characteristics of the IQ stanza.
-     *
-     * @param stanza The stanza, which is sent.
-     * @param filter The presence filter.
-     * @return The presence stanza.
-     * @throws NoResponseException                          If no IQ stanza has arrived in time.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the returned IQ contains a stanza error.
-     */
-    public IQ sendAndAwaitIQ(ClientStreamElement stanza, final StanzaFilter<IQ> filter) throws NoResponseException, StanzaException {
-        return sendAndAwaitIQ(stanza, filter, configuration.getDefaultResponseTimeout());
-    }
-
-    /**
-     * Sends a stanza and then waits for an IQ stanza to arrive. The filter determines the characteristics of the IQ stanza.
-     *
-     * @param stanza  The stanza, which is sent.
-     * @param filter  The presence filter.
-     * @param timeout The timeout.
-     * @return The presence stanza.
-     * @throws NoResponseException If no IQ stanza has arrived in time.
-     * @throws StanzaException     If the returned presence IQ a stanza error.
-     */
-    public IQ sendAndAwaitIQ(ClientStreamElement stanza, final StanzaFilter<IQ> filter, long timeout) throws NoResponseException, StanzaException {
-
         final IQ[] result = new IQ[1];
 
         final Condition resultReceived = lock.newCondition();
 
         final IQListener listener = new IQListener() {
             @Override
-            public void handle(IQEvent e) {
+            public void handleIQ(IQEvent e) {
                 IQ iq = e.getIQ();
-                if (e.isIncoming() && filter.accept(iq)) {
+                if (e.isIncoming() && iq.getId() != null && iq.getId().equals(iq.getId()) && (iq.getType() == IQ.Type.RESULT || iq.getType() == IQ.Type.ERROR)) {
                     lock.lock();
                     try {
                         result[0] = iq;
@@ -525,7 +513,7 @@ public class XmppSession implements Closeable {
         lock.lock();
         try {
             addIQListener(listener);
-            send(stanza);
+            send(iq);
             // Wait for the stanza to arrive.
             if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
@@ -553,28 +541,13 @@ public class XmppSession implements Closeable {
      * @throws StanzaException     If the returned presence contains a stanza error.
      */
     public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
-        return sendAndAwaitPresence(stanza, filter, configuration.getDefaultResponseTimeout());
-    }
-
-    /**
-     * Sends a stanza and then waits for a presence stanza to arrive. The filter determines the characteristics of the presence stanza.
-     *
-     * @param stanza  The stanza, which is sent.
-     * @param filter  The presence filter.
-     * @param timeout The timeout.
-     * @return The presence stanza.
-     * @throws NoResponseException If no presence stanza has arrived in time.
-     * @throws StanzaException     If the returned presence contains a stanza error.
-     */
-    public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter, long timeout) throws NoResponseException, StanzaException {
-
         final Presence[] result = new Presence[1];
 
         final Condition resultReceived = lock.newCondition();
 
         final PresenceListener listener = new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
                 if (e.isIncoming() && filter.accept(presence)) {
                     lock.lock();
@@ -626,7 +599,7 @@ public class XmppSession implements Closeable {
 
         final MessageListener listener = new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
+            public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
                 if (e.isIncoming() && filter.accept(message)) {
                     lock.lock();
@@ -673,7 +646,7 @@ public class XmppSession implements Closeable {
             if (wasLoggedIn) {
                 try {
                     updateStatus(Status.AUTHENTICATING);
-                    getAuthenticationManager().reAuthenticate();
+                    authenticationManager.reAuthenticate();
                     bindResource(resource);
                 } catch (Exception e) {
                     updateStatus(Status.DISCONNECTED);
@@ -690,6 +663,16 @@ public class XmppSession implements Closeable {
      * @throws IOException If anything went wrong, e.g. the host was not found.
      */
     public synchronized void connect() throws IOException {
+        connect(null);
+    }
+
+    /**
+     * Connects to the XMPP server.
+     *
+     * @param from The 'from' attribute.
+     * @throws IOException If anything went wrong, e.g. the host was not found.
+     */
+    public synchronized void connect(Jid from) throws IOException {
         if (status == Status.CLOSED) {
             throw new IllegalStateException("Session is already closed. Create a new one.");
         }
@@ -709,7 +692,7 @@ public class XmppSession implements Closeable {
         while (connectionIterator.hasNext()) {
             Connection connection = connectionIterator.next();
             try {
-                connection.connect();
+                connection.connect(from);
                 activeConnection = connection;
                 break;
             } catch (IOException e) {
@@ -738,6 +721,7 @@ public class XmppSession implements Closeable {
         }
         updateStatus(Status.CONNECTED);
     }
+
 
     /**
      * Explicitly closes the connection and performs a clean up of all listeners.
@@ -795,12 +779,12 @@ public class XmppSession implements Closeable {
      * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
      */
-    public synchronized final void login(String user, String password) throws LoginException {
+    public final void login(String user, String password) throws LoginException {
         login(user, password, null);
     }
 
     /**
-     * Authenticates against the server and binds a resource.
+     * Authenticates against the server with username/password credential and binds a resource.
      *
      * @param user     The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password The password. Must not be null.
@@ -810,29 +794,93 @@ public class XmppSession implements Closeable {
      * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
      */
-    public synchronized final void login(String user, String password, String resource) throws LoginException {
+    public final void login(String user, String password, String resource) throws LoginException {
+        login(null, user, password, resource);
+    }
+
+    /**
+     * Authenticates against the server with an authorization id and username/password credential and binds a resource.
+     *
+     * @param authorizationId The authorization id.
+     * @param user            The user name. Usually this is the local part of the user's JID. Must not be null.
+     * @param password        The password. Must not be null.
+     * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
+     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
+     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
+     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
+     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     */
+    public final void login(String authorizationId, final String user, final String password, String resource) throws LoginException {
         if (user == null) {
             throw new IllegalArgumentException("user must not be null.");
         }
         if (password == null) {
             throw new IllegalArgumentException("password must not be null.");
         }
-        if (getDomain() == null) {
-            throw new IllegalStateException("The XMPP domain must not be null.");
-        }
+        // A default callback handler for username/password retrieval:
+        login(authorizationId, new CallbackHandler() {
+            @Override
+            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+                for (Callback callback : callbacks) {
+                    if (callback instanceof NameCallback) {
+                        ((NameCallback) callback).setName(user);
+                    }
+                    if (callback instanceof PasswordCallback) {
+                        ((PasswordCallback) callback).setPassword(password.toCharArray());
+                    }
+                    if (callback instanceof RealmCallback) {
+                        ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
+                    }
+                }
+            }
+        }, resource);
+    }
+
+    /**
+     * Authenticates against the server with a custom callback handler and binds a resource.
+     *
+     * @param authorizationId The authorization id.
+     * @param callbackHandler The callback handler.
+     * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
+     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
+     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
+     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
+     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     */
+    public final void login(String authorizationId, CallbackHandler callbackHandler, String resource) throws LoginException {
+        loginInternal(null, authorizationId, callbackHandler, resource);
+    }
+
+    /**
+     * Logs in anonymously and binds a resource.
+     *
+     * @throws LoginException If the anonymous login failed.
+     */
+    public final void loginAnonymously() throws LoginException {
+        loginInternal(new String[]{"ANONYMOUS"}, null, null, null);
+    }
+
+    private synchronized void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws LoginException {
         if (getStatus() == Status.AUTHENTICATED) {
             throw new IllegalStateException("You are already logged in.");
         }
         if (getStatus() != Status.CONNECTED) {
             throw new IllegalStateException("You must be connected to the server before trying to login.");
         }
+        if (getDomain() == null) {
+            throw new IllegalStateException("The XMPP domain must not be null.");
+        }
         exception = null;
         try {
             updateStatus(Status.AUTHENTICATING);
-            authenticationManager.authenticate(null, user, password, null);
+            if (callbackHandler == null) {
+                authenticationManager.authenticate(mechanisms, null, null);
+            } else {
+                authenticationManager.authenticate(mechanisms, authorizationId, callbackHandler);
+            }
             bindResource(resource);
 
-            if (getRosterManager().isRetrieveRosterOnLogin()) {
+            if (callbackHandler != null && getRosterManager().isRetrieveRosterOnLogin()) {
                 getRosterManager().requestRoster();
             }
         } catch (Exception e) {
@@ -852,32 +900,6 @@ public class XmppSession implements Closeable {
                 loginException.initCause(e);
                 throw loginException;
             }
-        }
-        updateStatus(Status.AUTHENTICATED);
-    }
-
-    /**
-     * Logs in anonymously and binds a resource.
-     *
-     * @throws LoginException If the anonymous login failed.
-     * @see rocks.xmpp.core.sasl.AuthenticationManager#authenticateAnonymously()
-     */
-    public synchronized final void loginAnonymously() throws LoginException {
-        try {
-            updateStatus(Status.AUTHENTICATING);
-            authenticationManager.authenticateAnonymously();
-            bindResource(null);
-        } catch (Exception e) {
-            // Revert status
-            updateStatus(Status.CONNECTED);
-            if (exception != null) {
-                Throwable ex = e;
-                while (ex.getCause() != null) {
-                    ex = e.getCause();
-                }
-                ex.initCause(exception);
-            }
-            throw e;
         }
         updateStatus(Status.AUTHENTICATED);
     }
@@ -1024,15 +1046,6 @@ public class XmppSession implements Closeable {
     }
 
     /**
-     * Gets the authentication manager, which is responsible for SASL negotiation.
-     *
-     * @return The authentication manager.
-     */
-    public final AuthenticationManager getAuthenticationManager() {
-        return authenticationManager;
-    }
-
-    /**
      * Gets the roster manager, which is responsible for retrieving, updating and deleting contacts from the roster.
      *
      * @return The roster manager.
@@ -1165,7 +1178,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException If no response was received from the server.
      * @throws IOException         If any exception occurred during stream negotiation.
      */
-    protected final void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
+    private void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
         // Wait for the response and wait until all features have been negotiated.
         lock.lock();
         try {
@@ -1192,7 +1205,9 @@ public class XmppSession implements Closeable {
      * Gets the default timeout for synchronous operations.
      *
      * @return The default timeout.
+     * @deprecated Use {@link XmppSessionConfiguration#getDefaultResponseTimeout()}.
      */
+    @Deprecated
     public final int getDefaultTimeout() {
         return configuration.getDefaultResponseTimeout();
     }
@@ -1203,15 +1218,25 @@ public class XmppSession implements Closeable {
      * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link Status#AUTHENTICATING}.
      * @see #getStatus()
      */
-    public boolean isConnected() {
+    public final boolean isConnected() {
         return status == Status.CONNECTED || status == Status.AUTHENTICATED || status == Status.AUTHENTICATING;
     }
 
-    public XmppSessionConfiguration getConfiguration() {
+    /**
+     * Gets the configuration for this session.
+     *
+     * @return The configuration.
+     */
+    public final XmppSessionConfiguration getConfiguration() {
         return configuration;
     }
 
-    public XmppDebugger getDebugger() {
+    /**
+     * Gets the debugger.
+     *
+     * @return The debugger.
+     */
+    public final XmppDebugger getDebugger() {
         return debugger;
     }
 

@@ -43,43 +43,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Christian Schudt
  */
-class BitsOfBinaryManager extends ExtensionManager {
+class BitsOfBinaryManager extends ExtensionManager implements SessionStatusListener, IQListener {
 
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 
     private BitsOfBinaryManager(final XmppSession xmppSession) {
-        super(xmppSession, "urn:xmpp:bob");
+        super(xmppSession, Data.NAMESPACE);
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    dataCache.clear();
-                }
-            }
-        });
-
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handle(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
-                    Data data = iq.getExtension(Data.class);
-                    if (data != null) {
-                        // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
-                        Data cachedData = dataCache.get(data.getContentId());
-                        if (cachedData != null) {
-                            IQ result = iq.createResult();
-                            result.setExtension(cachedData);
-                            xmppSession.send(result);
-                        } else {
-                            xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
-                        }
-                        e.consume();
-                    }
-                }
-            }
-        });
+        xmppSession.addSessionStatusListener(this);
+        xmppSession.addIQListener(this);
     }
 
     /**
@@ -109,5 +81,31 @@ class BitsOfBinaryManager extends ExtensionManager {
      */
     public void put(Data data) {
         dataCache.put(data.getContentId(), data);
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
+            Data data = iq.getExtension(Data.class);
+            if (data != null) {
+                // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
+                Data cachedData = dataCache.get(data.getContentId());
+                if (cachedData != null) {
+                    IQ result = iq.createResult(cachedData);
+                    xmppSession.send(result);
+                } else {
+                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                }
+                e.consume();
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            dataCache.clear();
+        }
     }
 }

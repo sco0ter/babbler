@@ -59,7 +59,9 @@ public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extend
      * Gets the stanza.
      *
      * @return The stanza.
+     * @deprecated Use getMessage(), getPresence() or getIQ().
      */
+    @Deprecated
     public S getStanza() {
         return stanza;
     }

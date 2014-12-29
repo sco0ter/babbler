@@ -30,7 +30,6 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.model.StanzaException;
-import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
@@ -63,14 +62,6 @@ public class HeadersManagerTest extends ExtensionTest {
         }
         // By default headers are not support, unless they are enabled.
         Assert.assertFalse(infoNode.getFeatures().contains(new Feature("http://jabber.org/protocol/shim")));
-
-        try {
-            serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim");
-        } catch (StanzaException e) {
-            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof ItemNotFound);
-            return;
-        }
-        Assert.fail();
     }
 
     @Test

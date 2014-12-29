@@ -24,7 +24,11 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -62,22 +66,24 @@ final class DirectoryAvatarCache implements Map<String, byte[]> {
 
     @Override
     public byte[] get(final Object key) {
-        File dir = new File(cacheDirectory, ".");
-        File[] files = dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith(key.toString());
-            }
-        });
-        if (files != null && files.length > 0) {
-            File file = files[0];
-            try (FileInputStream fileInputStream = new FileInputStream(file)) {
-                byte[] data = new byte[(int) file.length()];
-                if (fileInputStream.read(data, 0, data.length) > -1) {
-                    return data;
+        if (key != null && !key.toString().isEmpty()) {
+            File dir = new File(cacheDirectory, ".");
+            File[] files = dir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.startsWith(key.toString());
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            });
+            if (files != null && files.length > 0) {
+                File file = files[0];
+                try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                    byte[] data = new byte[(int) file.length()];
+                    if (fileInputStream.read(data, 0, data.length) > -1) {
+                        return data;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return null;

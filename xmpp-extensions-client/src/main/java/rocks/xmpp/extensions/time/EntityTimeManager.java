@@ -44,22 +44,11 @@ import java.util.TimeZone;
  *
  * @author Christian Schudt
  */
-public final class EntityTimeManager extends ExtensionManager {
+public final class EntityTimeManager extends ExtensionManager implements IQListener {
 
     private EntityTimeManager(final XmppSession xmppSession) {
         super(xmppSession, EntityTime.NAMESPACE);
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handle(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(EntityTime.class) != null) {
-                    IQ result = iq.createResult();
-                    result.setExtension(new EntityTime(TimeZone.getDefault(), new Date()));
-                    xmppSession.send(result);
-                    e.consume();
-                }
-            }
-        });
+        xmppSession.addIQListener(this);
         setEnabled(true);
     }
 
@@ -74,5 +63,14 @@ public final class EntityTimeManager extends ExtensionManager {
     public EntityTime getEntityTime(Jid jid) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
         return result.getExtension(EntityTime.class);
+    }
+
+    @Override
+    public void handleIQ(IQEvent e) {
+        IQ iq = e.getIQ();
+        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(EntityTime.class) != null) {
+            xmppSession.send(iq.createResult(new EntityTime(TimeZone.getDefault(), new Date())));
+            e.consume();
+        }
     }
 }

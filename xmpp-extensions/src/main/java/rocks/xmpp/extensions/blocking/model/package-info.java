@@ -30,7 +30,7 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
-@XmlSchema(namespace = "urn:xmpp:blocking", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.blocking.model;
+@XmlSchema(namespace = BlockList.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.blocking.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;

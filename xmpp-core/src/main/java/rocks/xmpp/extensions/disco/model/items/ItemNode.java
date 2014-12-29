@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+
 import java.util.List;
 
 /**
@@ -45,4 +47,11 @@ public interface ItemNode {
      * @return The items.
      */
     List<Item> getItems();
+
+    /**
+     * Gets the result set.
+     *
+     * @return The result set.
+     */
+    ResultSetManagement getResultSetManagement();
 }

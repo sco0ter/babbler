@@ -79,29 +79,11 @@ public final class Decline {
     }
 
     /**
-     * Sets the invitee, who declined the invitation.
-     *
-     * @param from The invitee.
-     */
-    public void setFrom(Jid from) {
-        this.from = from;
-    }
-
-    /**
      * Gets the inviter, who sent the invitation.
      *
      * @return The inviter.
      */
     public Jid getTo() {
         return to;
-    }
-
-    /**
-     * Sets the inviter, who sent the invitation.
-     *
-     * @param to The inviter.
-     */
-    public void setTo(Jid to) {
-        this.to = to;
     }
 }

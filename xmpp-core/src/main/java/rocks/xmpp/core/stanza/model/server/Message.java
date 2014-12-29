@@ -27,10 +27,13 @@ package rocks.xmpp.core.stanza.model.server;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The implementation of the {@code <message/>} element for the server namespace ('jabber:server').
@@ -38,11 +41,10 @@ import javax.xml.bind.annotation.XmlType;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "message")
-@XmlType(propOrder = {"from", "id", "to", "type", "body", "subject", "thread", "extensions", "error"})
-public final class Message extends AbstractMessage implements ServerStreamElement {
-
-    @SuppressWarnings("unused")
-    private Message() {
+@XmlType(propOrder = {"from", "id", "to", "type", "language", "subject", "body", "thread", "extensions", "error"})
+public final class Message extends AbstractMessage implements ClientStreamElement {
+    public Message() {
+        this(null);
     }
 
     /**
@@ -51,7 +53,7 @@ public final class Message extends AbstractMessage implements ServerStreamElemen
      * @param to The recipient.
      */
     public Message(Jid to) {
-        super(to);
+        this(to, null);
     }
 
     /**
@@ -61,7 +63,7 @@ public final class Message extends AbstractMessage implements ServerStreamElemen
      * @param type The message type.
      */
     public Message(Jid to, Type type) {
-        super(to, type);
+        this(to, type, null);
     }
 
     /**
@@ -72,13 +74,79 @@ public final class Message extends AbstractMessage implements ServerStreamElemen
      * @param type The message type.
      */
     public Message(Jid to, Type type, String body) {
-        super(to, type, body);
+        this(to, type, body, null);
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to      The recipient.
+     * @param body    The message body.
+     * @param type    The message type.
+     * @param subject The subject.
+     */
+    public Message(Jid to, Type type, String body, String subject) {
+        this(to, type, body, subject, null);
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to      The recipient.
+     * @param body    The message body.
+     * @param type    The message type.
+     * @param subject The subject.
+     * @param thread  The thread.
+     */
+    public Message(Jid to, Type type, String body, String subject, String thread) {
+        this(to, type, body != null ? Arrays.asList(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Arrays.asList(new Subject(subject)) : Collections.<Subject>emptyList(), thread, null, null, null, null, null, null);
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to           The recipient.
+     * @param body         The message body.
+     * @param type         The message type.
+     * @param subject      The subject.
+     * @param thread       The thread.
+     * @param parentThread The parent thread.
+     * @param from         The sender.
+     * @param id           The id.
+     * @param language     The language.
+     * @param extensions   The extensions.
+     * @param error        The error.
+     */
+    public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, Collection<Object> extensions, StanzaError error) {
+        this(to, type, body != null ? Arrays.asList(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Arrays.asList(new Subject(subject)) : Collections.<Subject>emptyList(), thread, parentThread, id, from, language, extensions, error);
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to           The recipient.
+     * @param bodies       The message bodies.
+     * @param type         The message type.
+     * @param subjects     The subjects.
+     * @param thread       The thread.
+     * @param parentThread The parent thread.
+     * @param from         The sender.
+     * @param id           The id.
+     * @param language     The language.
+     * @param extensions   The extensions.
+     * @param error        The error.
+     */
+    public Message(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<Object> extensions, StanzaError error) {
+        super(to, type, bodies, subjects, thread, parentThread, from, id, language, extensions, error);
     }
 
     @Override
     public Message createError(StanzaError error) {
-        Message message = new Message(getFrom(), Type.ERROR);
-        createError(message, error);
-        return message;
+        return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), error);
+    }
+
+    @Override
+    public Message withFrom(Jid from) {
+        return new Message(getTo(), getType(), getBodies(), getSubjects(), getThread(), getParentThread(), getId(), from, getLanguage(), getExtensions(), getError());
     }
 }

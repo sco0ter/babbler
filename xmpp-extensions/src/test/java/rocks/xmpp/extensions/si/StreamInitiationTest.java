@@ -67,9 +67,7 @@ public class StreamInitiationTest extends XmlTest {
 
     @Test
     public void marshalBadProfile() throws JAXBException, XMLStreamException {
-        IQ result = new IQ("1", IQ.Type.ERROR);
-        result.setError(new StanzaError(new BadRequest()));
-        result.getError().setExtension(new BadProfile());
+        IQ result = new IQ(null, IQ.Type.ERROR, null, "1", null, null, new StanzaError(new BadRequest(), new BadProfile()));
         String xml = marshal(result);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"error\"><error type=\"modify\"><bad-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></bad-request><bad-profile xmlns=\"http://jabber.org/protocol/si\"></bad-profile></error></iq>");
 
@@ -77,9 +75,7 @@ public class StreamInitiationTest extends XmlTest {
 
     @Test
     public void marshalNoValidStreams() throws JAXBException, XMLStreamException {
-        IQ result = new IQ("1", IQ.Type.ERROR);
-        result.setError(new StanzaError(new BadRequest()));
-        result.getError().setExtension(new NoValidStreams());
+        IQ result = new IQ(null, IQ.Type.ERROR, null, "1", null, null, new StanzaError(new BadRequest(), new NoValidStreams()));
         String xml = marshal(result);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"error\"><error type=\"modify\"><bad-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></bad-request><no-valid-streams xmlns=\"http://jabber.org/protocol/si\"></no-valid-streams></error></iq>");
 

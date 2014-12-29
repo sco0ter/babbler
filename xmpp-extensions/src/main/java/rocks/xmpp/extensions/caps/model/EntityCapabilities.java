@@ -136,21 +136,22 @@ public final class EntityCapabilities extends StreamFeature {
 
         // 7. For each extended service discovery information form:
         for (DataForm dataForm : dataForms) {
-
+            List<DataForm.Field> fields = new ArrayList<>(dataForm.getFields());
             // 7.2. Sort the fields by the value of the "var" attribute.
             // This makes sure, that FORM_TYPE fields are always on zero position.
-            Collections.sort(dataForm.getFields());
+            Collections.sort(fields);
 
-            if (!dataForm.getFields().isEmpty()) {
+            if (!fields.isEmpty()) {
 
                 // Also make sure, that we don't send an ill-formed verification string.
                 // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
-                if (!"FORM_TYPE".equals(dataForm.getFields().get(0).getVar()) || dataForm.getFields().get(0).getType() != DataForm.Field.Type.HIDDEN) {
+                if (!"FORM_TYPE".equals(fields.get(0).getVar()) || fields.get(0).getType() != DataForm.Field.Type.HIDDEN) {
                     // => Don't include this form in the verification string.
                     continue;
                 }
 
-                for (DataForm.Field field : dataForm.getFields()) {
+                for (DataForm.Field field : fields) {
+                    List<String> values = new ArrayList<>(field.getValues());
                     // 7.3. For each field other than FORM_TYPE:
                     if (!"FORM_TYPE".equals(field.getVar())) {
                         // 7.3.1. Append the value of the "var" attribute, followed by the '<' character.
@@ -158,16 +159,15 @@ public final class EntityCapabilities extends StreamFeature {
                         sb.append("<");
 
                         // 7.3.2. Sort values by the XML character data of the <value/> element.
-                        Collections.sort(field.getValues());
+                        Collections.sort(values);
                     }
                     // 7.1. Append the XML character data of the FORM_TYPE field's <value/> element, followed by the '<' character.
                     // 7.3.3. For each <value/> element, append the XML character data, followed by the '<' character.
-                    for (String value : field.getValues()) {
+                    for (String value : values) {
                         sb.append(value);
                         sb.append("<");
                     }
                 }
-
             }
         }
 

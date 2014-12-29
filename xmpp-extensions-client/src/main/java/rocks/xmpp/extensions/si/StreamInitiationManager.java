@@ -119,13 +119,12 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         String sessionId = UUID.randomUUID().toString();
 
         // Offer stream methods.
-        DataForm dataForm = new DataForm(DataForm.Type.FORM);
-        DataForm.Field field = DataForm.Field.builder().value(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).build();
+        List<DataForm.Option> options = new ArrayList<>();
         for (String streamMethod : supportedStreamMethod) {
-            field.getOptions().add(new DataForm.Option(streamMethod));
+            options.add(new DataForm.Option(streamMethod));
         }
-        dataForm.getFields().add(field);
-
+        DataForm.Field field = DataForm.Field.builder().value(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
+        DataForm dataForm = new DataForm(DataForm.Type.FORM, Arrays.asList(field));
         // Offer the file to the recipient and wait until it's accepted.
         IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
 
@@ -164,11 +163,9 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         for (DataForm.Option option : field.getOptions()) {
             offeredStreamMethods.add(option.getValue());
         }
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        DataForm.Field fieldReply = DataForm.Field.builder().value(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).build();
         offeredStreamMethods.retainAll(supportedStreamMethod);
-        fieldReply.getValues().addAll(offeredStreamMethods);
-        dataForm.getFields().add(fieldReply);
+        DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 
         final Lock lock = new ReentrantLock();

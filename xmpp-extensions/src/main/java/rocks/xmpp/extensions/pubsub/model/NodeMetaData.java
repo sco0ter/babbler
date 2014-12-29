@@ -223,7 +223,7 @@ public final class NodeMetaData {
      *
      * @return The title.
      */
-    public String getTitle() {
+    public String getNodeTitle() {
         return dataForm.findValue(TITLE);
     }
 
@@ -256,7 +256,7 @@ public final class NodeMetaData {
 
         private Collection<Jid> publishers;
 
-        private String title;
+        private String nodeTitle;
 
         private String payloadType;
 
@@ -357,8 +357,8 @@ public final class NodeMetaData {
          * @param title The title.
          * @return The builder.
          */
-        public Builder title(String title) {
-            this.title = title;
+        public Builder nodeTitle(String title) {
+            this.nodeTitle = title;
             return this;
         }
 
@@ -410,8 +410,8 @@ public final class NodeMetaData {
             if (publishers != null && !publishers.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(PUBLISHER).valuesJid(publishers).build());
             }
-            if (title != null) {
-                fields.add(DataForm.Field.builder().var(TITLE).value(title).build());
+            if (nodeTitle != null) {
+                fields.add(DataForm.Field.builder().var(TITLE).value(nodeTitle).build());
             }
             if (payloadType != null) {
                 fields.add(DataForm.Field.builder().var(TYPE).value(payloadType).build());

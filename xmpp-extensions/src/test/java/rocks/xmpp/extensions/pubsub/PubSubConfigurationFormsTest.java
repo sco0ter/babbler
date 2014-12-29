@@ -65,7 +65,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .numberOfSubscribers(2)
                 .owners(Arrays.asList(Jid.valueOf("owner")))
                 .publishers(Arrays.asList(Jid.valueOf("publisher")))
-                .title("title")
+                .nodeTitle("title")
                 .payloadType("namespace")
                 .build();
 
@@ -92,7 +92,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(pubSubMetaDataForm1.getNumberOfSubscribers(), new Integer(2));
         Assert.assertEquals(pubSubMetaDataForm1.getOwners(), Arrays.asList(Jid.valueOf("owner")));
         Assert.assertEquals(pubSubMetaDataForm1.getPublishers(), Arrays.asList(Jid.valueOf("publisher")));
-        Assert.assertEquals(pubSubMetaDataForm1.getTitle(), "title");
+        Assert.assertEquals(pubSubMetaDataForm1.getNodeTitle(), "title");
         Assert.assertEquals(pubSubMetaDataForm1.getPayloadType(), "namespace");
     }
 
@@ -158,7 +158,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .sendLastPublishedItem(SendLastPublishedItem.ON_SUB_AND_PRESENCE)
                 .temporarySubscriptions(true)
                 .allowSubscriptions(true)
-                .title("Title")
+                .nodeTitle("Title")
                 .type("Type")
                 .build();
 
@@ -232,7 +232,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(nodeConfiguration1.getSendLastPublishedItem(), SendLastPublishedItem.ON_SUB_AND_PRESENCE);
         Assert.assertTrue(nodeConfiguration1.isTemporarySubscriptions());
         Assert.assertTrue(nodeConfiguration1.isAllowSubscriptions());
-        Assert.assertEquals(nodeConfiguration1.getTitle(), "Title");
+        Assert.assertEquals(nodeConfiguration1.getNodeTitle(), "Title");
         Assert.assertEquals(nodeConfiguration1.getPayloadType(), "Type");
 
     }

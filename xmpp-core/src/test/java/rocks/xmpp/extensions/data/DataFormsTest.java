@@ -197,8 +197,7 @@ public class DataFormsTest extends XmlTest {
     @Test
     public void marshalBooleanField() throws JAXBException, XMLStreamException {
         DataForm.Field field = DataForm.Field.builder().var("test").value(true).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"boolean\" var=\"test\"><value>1</value></field></x>");
     }
@@ -206,8 +205,7 @@ public class DataFormsTest extends XmlTest {
     @Test
     public void marshalJidField() throws JAXBException, XMLStreamException {
         DataForm.Field field = DataForm.Field.builder().var("test").value(Jid.valueOf("domain")).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"jid-single\" var=\"test\"><value>domain</value></field></x>");
     }
@@ -215,8 +213,7 @@ public class DataFormsTest extends XmlTest {
     @Test
     public void marshalIntegerField() throws JAXBException, XMLStreamException {
         DataForm.Field field = DataForm.Field.builder().var("test").value(2).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\" var=\"test\"><value>2</value></field></x>");
     }
@@ -224,8 +221,7 @@ public class DataFormsTest extends XmlTest {
     @Test
     public void marshalJidsField() throws JAXBException, XMLStreamException {
         DataForm.Field field = DataForm.Field.builder().var("test").valuesJid(Arrays.asList(Jid.valueOf("domain"))).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"jid-multi\" var=\"test\"><value>domain</value></field></x>");
     }
@@ -233,8 +229,7 @@ public class DataFormsTest extends XmlTest {
     @Test
     public void marshalValuesField() throws JAXBException, XMLStreamException {
         DataForm.Field field = DataForm.Field.builder().var("test").values(Arrays.asList("s")).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-multi\" var=\"test\"><value>s</value></field></x>");
     }
@@ -245,8 +240,7 @@ public class DataFormsTest extends XmlTest {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         DataForm.Field field = DataForm.Field.builder().var("test").value(date).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\" var=\"test\"><value>" + DatatypeConverter.printDateTime(calendar) + "</value></field></x>");
     }
@@ -254,8 +248,7 @@ public class DataFormsTest extends XmlTest {
     @Test
     public void marshalOptions() throws JAXBException, XMLStreamException {
         DataForm.Field field = DataForm.Field.builder().var("test").options(Arrays.asList(new DataForm.Option("option"))).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field var=\"test\"><option><value>option</value></option></field></x>");
     }
@@ -270,8 +263,7 @@ public class DataFormsTest extends XmlTest {
                 .media(new Media())
                 .validation(new Validation("val"))
                 .build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field label=\"Label\" var=\"test\"><desc>description</desc><required></required><validate xmlns=\"http://jabber.org/protocol/xdata-validate\" datatype=\"val\"></validate><media xmlns=\"urn:xmpp:media-element\" height=\"0\" width=\"0\"></media></field></x>");
     }
@@ -282,8 +274,7 @@ public class DataFormsTest extends XmlTest {
         DataForm.Field field = DataForm.Field.builder()
                 .value(value)
                 .build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
-        dataForm.getFields().add(field);
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
@@ -291,8 +282,7 @@ public class DataFormsTest extends XmlTest {
         DataForm.Field field2 = DataForm.Field.builder()
                 .value(date)
                 .build();
-        DataForm dataForm2 = new DataForm(DataForm.Type.SUBMIT);
-        dataForm2.getFields().add(field2);
+        DataForm dataForm2 = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml2 = marshal(dataForm);
         Assert.assertEquals(xml2, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
@@ -300,8 +290,7 @@ public class DataFormsTest extends XmlTest {
         DataForm.Field field3 = DataForm.Field.builder()
                 .value(jid)
                 .build();
-        DataForm dataForm3 = new DataForm(DataForm.Type.SUBMIT);
-        dataForm3.getFields().add(field3);
+        DataForm dataForm3 = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml3 = marshal(dataForm);
         Assert.assertEquals(xml3, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
@@ -309,18 +298,16 @@ public class DataFormsTest extends XmlTest {
         DataForm.Field field4 = DataForm.Field.builder()
                 .values(values)
                 .build();
-        DataForm dataForm4 = new DataForm(DataForm.Type.SUBMIT);
-        dataForm4.getFields().add(field4);
-        String xml4 = marshal(dataForm);
+        DataForm dataForm4 = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
+        String xml4 = marshal(dataForm4);
         Assert.assertEquals(xml4, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
         List<Jid> valuesJid = null;
         DataForm.Field field5 = DataForm.Field.builder()
                 .valuesJid(valuesJid)
                 .build();
-        DataForm dataForm5 = new DataForm(DataForm.Type.SUBMIT);
-        dataForm5.getFields().add(field5);
-        String xml5 = marshal(dataForm);
+        DataForm dataForm5 = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
+        String xml5 = marshal(dataForm5);
         Assert.assertEquals(xml5, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
     }
 }

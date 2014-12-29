@@ -24,7 +24,13 @@
 
 package rocks.xmpp.extensions.commands.model;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +69,7 @@ public final class Command {
     private List<Note> notes = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
-    private Object payload;
+    private List<Object> payloads;
 
     private Command() {
     }
@@ -85,13 +91,15 @@ public final class Command {
      * @param node      The node.
      * @param action    The action. If null, {@link Action#EXECUTE} is implied.
      * @param sessionId The session id.
-     * @param payload   The payload.
+     * @param payloads   The payload.
      */
-    public Command(String node, Action action, String sessionId, Object payload) {
+    public Command(String node, Action action, String sessionId, List<Object> payloads) {
         this.node = node;
         this.action = action;
         this.sessionId = sessionId;
-        this.payload = payload;
+        if (payloads != null) {
+            this.payloads.addAll(payloads);
+        }
     }
 
     /**
@@ -100,8 +108,8 @@ public final class Command {
      * @return The command payload.
      * @see <a href="http://xmpp.org/extensions/xep-0050.html#impl-payloads">3.5 Command Payloads</a>
      */
-    public Object getPayload() {
-        return payload;
+    public List<Object> getPayloads() {
+        return payloads;
     }
 
     /**

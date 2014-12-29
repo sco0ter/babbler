@@ -36,7 +36,14 @@ import javafx.concurrent.Worker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -53,6 +60,7 @@ import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -149,10 +157,10 @@ public class ServiceAdministration extends Application {
                 try {
                     CommandSession commandSession = adHocCommand.execute();
                     Command command = commandSession.getCurrentCommand();
-                    Object payload = command.getPayload();
+                    List<Object> payloads = command.getPayloads();
                     formContainer.getChildren().clear();
-                    if (payload instanceof DataForm) {
-                        DataForm dataForm = (DataForm) payload;
+                    if (payloads.get(0) instanceof DataForm) {
+                        DataForm dataForm = (DataForm) payloads.get(0);
                         for (DataForm.Field field : dataForm.getFields()) {
                             VBox formField = new VBox(5);
                             Control control;

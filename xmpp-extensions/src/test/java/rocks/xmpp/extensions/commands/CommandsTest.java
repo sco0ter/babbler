@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.commands.model.Command;
+import rocks.xmpp.extensions.data.model.DataForm;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -41,7 +42,7 @@ import java.util.Collections;
  */
 public class CommandsTest extends XmlTest {
     protected CommandsTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Command.class);
+        super(IQ.class, Command.class, DataForm.class);
     }
 
     @Test
@@ -92,7 +93,8 @@ public class CommandsTest extends XmlTest {
         Assert.assertEquals(command.getNode(), "list");
         Assert.assertEquals(command.getStatus(), Command.Status.COMPLETED);
         Assert.assertEquals(command.getActions(), Collections.emptyList());
-        Assert.assertNotNull(command.getPayload());
+        Assert.assertEquals(command.getPayloads().size(), 1);
+        Assert.assertTrue(command.getPayloads().get(0) instanceof DataForm);
     }
 
     @Test

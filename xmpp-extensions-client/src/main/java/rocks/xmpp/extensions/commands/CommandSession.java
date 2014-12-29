@@ -31,6 +31,8 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.model.DataForm;
 
+import java.util.Arrays;
+
 /**
  * @author Christian Schudt
  */
@@ -98,7 +100,7 @@ public class CommandSession {
 
 
     private void executeAction(Command.Action action, DataForm dataForm) throws XmppException {
-        IQ result = xmppSession.query(new IQ(to, IQ.Type.SET, new Command(node, action, sessionId, dataForm)));
+        IQ result = xmppSession.query(new IQ(to, IQ.Type.SET, new Command(node, action, sessionId, Arrays.<Object>asList(dataForm))));
         currentCommand = result.getExtension(Command.class);
     }
 

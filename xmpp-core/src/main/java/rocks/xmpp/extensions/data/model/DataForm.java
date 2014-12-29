@@ -64,7 +64,10 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public static final String NAMESPACE = "jabber:x:data";
 
-    private static final String FORM_TYPE = "FORM_TYPE";
+    /**
+     * The name of the hidden field, which determines the form type, "FORM_TYPE".
+     */
+    public static final String FORM_TYPE = "FORM_TYPE";
 
     @XmlElement
     private final List<String> instructions = new ArrayList<>();

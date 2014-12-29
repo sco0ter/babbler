@@ -695,8 +695,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
             }
 
             for (DataForm dataForm : infoNode.getExtensions()) {
-                DataForm.Field formType = dataForm.findField("FORM_TYPE");
-                if (formType != null && !formType.getValues().isEmpty() && formType.getValues().get(0).equals("http://jabber.org/protocol/muc#roominfo")) {
+                String formType = dataForm.getFormType();
+                if (RoomInfo.FORM_TYPE.equals(formType)) {
                     roomInfo = new RoomInfo(dataForm);
                     break;
                 }

@@ -65,7 +65,7 @@ import java.util.List;
  */
 public final class RoomInfo {
 
-    private static final String FORM_TYPE = "http://jabber.org/protocol/muc#roominfo";
+    public static final String FORM_TYPE = "http://jabber.org/protocol/muc#roominfo";
 
     /**
      * Maximum Number of History Messages Returned by Room

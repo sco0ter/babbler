@@ -276,7 +276,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
                                         // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
                                         List<String> ftValues = new ArrayList<>();
                                         for (DataForm dataForm : infoDiscovery.getExtensions()) {
-                                            DataForm.Field formType = dataForm.findField("FORM_TYPE");
+                                            DataForm.Field formType = dataForm.findField(DataForm.FORM_TYPE);
                                             // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
                                             if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
                                                 List<String> values = new ArrayList<>();

@@ -50,6 +50,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * A manager for <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
+ * <p>
+ * This class starts a local SOCKS5 server to support direct connections between two entities.
+ * You can {@linkplain #setPort(int) set a port} of this local server, if you don't set a port, the default port 1080 is used.
+ * <p>
+ * It also allows you to {@linkplain #initiateSession(rocks.xmpp.core.Jid, String) initiate a byte stream session} with another entity.
+ *
  * @author Christian Schudt
  */
 public final class Socks5ByteStreamManager extends ByteStreamManager implements IQListener {
@@ -59,8 +66,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager implements 
     private final LocalSocks5Server localSocks5Server;
 
     private boolean localHostEnabled;
-
-    private int port;
 
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession, Socks5ByteStream.NAMESPACE);
@@ -124,7 +129,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager implements 
      * @return The port.
      */
     public int getPort() {
-        return port;
+        return localSocks5Server.getPort();
     }
 
     /**
@@ -133,7 +138,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager implements 
      * @param port The port.
      */
     public void setPort(int port) {
-        this.port = port;
+        this.localSocks5Server.setPort(port);
     }
 
     @Override

@@ -48,7 +48,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages in-band byte streams (IBB). IBB streams are use the same transport as XMPP, i.e. the same TCP or BOSH connection.
+ * A manager for <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>. IBB streams use the same transport as XMPP, i.e. the same TCP or BOSH connection.
+ * <p>
+ * To initiate an IBB session with another entity, use {@link #initiateSession(rocks.xmpp.core.Jid, String, int)}.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>

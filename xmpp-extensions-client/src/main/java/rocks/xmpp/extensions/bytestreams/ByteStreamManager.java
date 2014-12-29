@@ -35,6 +35,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * An abstract class to manage both <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a> or <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
+ *
  * @author Christian Schudt
  */
 public abstract class ByteStreamManager extends ExtensionManager implements SessionStatusListener {

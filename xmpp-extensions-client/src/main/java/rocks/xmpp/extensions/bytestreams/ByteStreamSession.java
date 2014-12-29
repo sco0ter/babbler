@@ -30,7 +30,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * An abstract byte stream session, which either represents a <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a> or <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a> session.
+ * <p>
+ * Both kind of sessions have a session id and are bidirectional, that's why this class has an {@linkplain #getInputStream() input} and {@linkplain #getOutputStream() output stream}.
+ *
  * @author Christian Schudt
+ * @see rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager#initiateSession(rocks.xmpp.core.Jid, String, int)
+ * @see rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager#initiateSession(rocks.xmpp.core.Jid, String)
+ * @see ByteStreamEvent#accept()
  */
 public abstract class ByteStreamSession implements Closeable {
 

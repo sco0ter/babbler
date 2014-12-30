@@ -32,6 +32,7 @@ import java.util.EventObject;
  * The multi-user chat invitation decline event, which is triggered when an invitee declines a multi-user chat invitation.
  *
  * @author Christian Schudt
+ * @see rocks.xmpp.extensions.muc.InvitationDeclineListener
  */
 public final class InvitationDeclineEvent extends EventObject {
 

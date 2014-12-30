@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.muc;
 import java.util.EventListener;
 
 /**
- * This listener listens for any kind of occupant events in a chat room, e.g. "joins" and "leaves", nickname changes or presence status changes.
+ * Allows to listen for any kind of occupant event in a chat room, e.g&#046;  "joins" and "leaves", nickname changes or presence status changes.
  *
  * @author Christian Schudt
  * @see ChatRoom#addOccupantListener(rocks.xmpp.extensions.muc.OccupantListener)

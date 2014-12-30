@@ -107,8 +107,22 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
+     * @deprecated Use {@link #discoverChatServices()}
      */
+    @Deprecated
     public Collection<ChatService> getChatServices() throws XmppException {
+        return discoverChatServices();
+    }
+
+    /**
+     * Discovers the multi-user chat services hosted at the connected domain.
+     *
+     * @return The list of chat services.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
+     */
+    public Collection<ChatService> discoverChatServices() throws XmppException {
         Collection<Item> services = serviceDiscoveryManager.discoverServices(Muc.NAMESPACE);
         Collection<ChatService> chatServices = new ArrayList<>();
         for (Item service : services) {

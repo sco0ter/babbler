@@ -66,8 +66,22 @@ public final class ChatService {
      * @return The public rooms.
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @deprecated Use {@link #discoverRooms()}
      */
+    @Deprecated
     public List<ChatRoom> getPublicRooms() throws XmppException {
+        return discoverRooms();
+    }
+
+    /**
+     * Discovers the list of chat rooms hosted by this chat service.
+     *
+     * @return The public rooms.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-rooms">6.3 Discovering Rooms</a>
+     */
+    public List<ChatRoom> discoverRooms() throws XmppException {
         List<ChatRoom> chatRooms = new ArrayList<>();
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(serviceAddress);
         for (Item item : itemNode.getItems()) {

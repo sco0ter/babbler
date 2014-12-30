@@ -30,7 +30,11 @@ import rocks.xmpp.extensions.muc.model.Actor;
 import java.util.EventObject;
 
 /**
+ * An event which is triggered by an occupant in a chat room.
+ * Typical events are "joins" and "leaves", as well as "bans" or "kicks".
+ *
  * @author Christian Schudt
+ * @see rocks.xmpp.extensions.muc.OccupantListener
  */
 public final class OccupantEvent extends EventObject {
 
@@ -104,13 +108,14 @@ public final class OccupantEvent extends EventObject {
      * Gets the alternative room address in case the old room has been destroyed.
      *
      * @return The alternative room address.
+     * @see Type#ROOM_DESTROYED
      */
     public Jid getAlternativeRoom() {
         return alternativeRoom;
     }
 
     /**
-     * The exit reason. Possible reasons for exiting a room can be (among others), that an occupant got kicked or banned.
+     * The type of the occupant event.
      */
     public enum Type {
         /**

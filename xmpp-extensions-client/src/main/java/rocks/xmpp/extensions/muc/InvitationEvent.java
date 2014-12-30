@@ -35,6 +35,7 @@ import java.util.EventObject;
  * The multi-user chat invitation event, which is triggered upon receiving an invitation to a multi-user chat.
  *
  * @author Christian Schudt
+ * @see rocks.xmpp.extensions.muc.InvitationListener
  */
 public final class InvitationEvent extends EventObject {
 

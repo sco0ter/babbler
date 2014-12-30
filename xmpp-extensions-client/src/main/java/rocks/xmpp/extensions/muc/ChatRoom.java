@@ -55,6 +55,7 @@ import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.MucFeature;
 import rocks.xmpp.extensions.muc.model.RequestVoice;
 import rocks.xmpp.extensions.muc.model.Role;
+import rocks.xmpp.extensions.muc.model.RoomConfiguration;
 import rocks.xmpp.extensions.muc.model.RoomInfo;
 import rocks.xmpp.extensions.muc.model.admin.MucAdmin;
 import rocks.xmpp.extensions.muc.model.owner.MucOwner;
@@ -378,6 +379,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
     }
 
     /**
+     * Invites another user to the room. The invitation will be either mediated by the room or direct.
+     *
      * @param invitee The invitee.
      * @param reason  The reason.
      * @param direct  True, if the message is sent directly to the invitee; false if it is mediated by the room.
@@ -761,7 +764,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see rocks.xmpp.extensions.muc.model.RoomConfiguration
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
-     * @see #submitConfigurationForm(rocks.xmpp.extensions.data.model.DataForm)
+     * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
      */
     public DataForm getConfigurationForm() throws XmppException {
         IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
@@ -777,7 +780,9 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #getConfigurationForm()
+     * @deprecated Use {@link #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)}
      */
+    @Deprecated
     public void submitConfigurationForm(DataForm dataForm) throws XmppException {
         if (dataForm == null) {
             throw new IllegalArgumentException("dataForm must not be null.");
@@ -789,6 +794,24 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
             throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#roomconfig'");
         }
         MucOwner mucOwner = new MucOwner(dataForm);
+        IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
+        xmppSession.query(iq);
+    }
+
+    /**
+     * Configures this room.
+     *
+     * @param roomConfiguration The room configuration form.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
+     * @see #getConfigurationForm()
+     */
+    public void configure(RoomConfiguration roomConfiguration) throws XmppException {
+        if (roomConfiguration == null) {
+            throw new IllegalArgumentException("roomConfiguration must not be null.");
+        }
+        MucOwner mucOwner = new MucOwner(roomConfiguration.getDataForm());
         IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
         xmppSession.query(iq);
     }

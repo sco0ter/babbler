@@ -486,7 +486,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException                          If the entity did not respond.
      */
     public IQ query(final IQ iq, long timeout) throws XmppException {
-        if (!(iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET)) {
+        if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
 

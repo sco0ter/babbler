@@ -91,10 +91,12 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+    private final List<Item> items = new CopyOnWriteArrayList<>();
+
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
 
-        itemProviders.put("", new DefaultItemProvider());
+        itemProviders.put("", new DefaultItemProvider(items));
 
         xmppSession.addSessionStatusListener(this);
 
@@ -189,14 +191,9 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see #getItems() ()
      */
     public synchronized void addItem(Item item) {
-        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
-        if (rootItemProvider != null) {
-            List<Item> oldList = Collections.unmodifiableList(rootItemProvider.getItems());
-            rootItemProvider.getItems().add(item);
-            this.pcs.firePropertyChange("items", oldList, getItems());
-        } else {
-            throw new IllegalStateException("Root item provider is null");
-        }
+        List<Item> oldList = Collections.unmodifiableList(items);
+        items.add(item);
+        this.pcs.firePropertyChange("items", oldList, getItems());
     }
 
     /**
@@ -207,14 +204,9 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see #getItems()
      */
     public synchronized void removeItem(Item item) {
-        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
-        if (rootItemProvider != null) {
-            List<Item> oldList = Collections.unmodifiableList(rootItemProvider.getItems());
-            rootItemProvider.getItems().remove(item);
-            this.pcs.firePropertyChange("items", oldList, getItems());
-        } else {
-            throw new IllegalStateException("Root item provider is null");
-        }
+        List<Item> oldList = Collections.unmodifiableList(items);
+        items.remove(item);
+        this.pcs.firePropertyChange("items", oldList, getItems());
     }
 
     /**

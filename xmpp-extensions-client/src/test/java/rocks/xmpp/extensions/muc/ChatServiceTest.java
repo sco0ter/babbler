@@ -44,12 +44,12 @@ public class ChatServiceTest {
     public void testComparable() {
         XmppSession xmppSession = new TestXmppSession();
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-        ChatService chatService1 = new ChatService(Jid.valueOf("aaa"), "aaa", xmppSession, serviceDiscoveryManager);
-        ChatService chatService2 = new ChatService(Jid.valueOf("bbb"), "bbb", xmppSession, serviceDiscoveryManager);
-        ChatService chatService3 = new ChatService(Jid.valueOf("ccc"), "aaa", xmppSession, serviceDiscoveryManager);
-        ChatService chatService4 = new ChatService(Jid.valueOf("ddd"), "bbb", xmppSession, serviceDiscoveryManager);
-        ChatService chatService5 = new ChatService(Jid.valueOf("ddd"), null, xmppSession, serviceDiscoveryManager);
-        ChatService chatService6 = new ChatService(null, "aaa", xmppSession, serviceDiscoveryManager);
+        ChatService chatService1 = new ChatService(Jid.valueOf("aaa"), "aaa", xmppSession, serviceDiscoveryManager, null);
+        ChatService chatService2 = new ChatService(Jid.valueOf("bbb"), "bbb", xmppSession, serviceDiscoveryManager,null);
+        ChatService chatService3 = new ChatService(Jid.valueOf("ccc"), "aaa", xmppSession, serviceDiscoveryManager,null);
+        ChatService chatService4 = new ChatService(Jid.valueOf("ddd"), "bbb", xmppSession, serviceDiscoveryManager,null);
+        ChatService chatService5 = new ChatService(Jid.valueOf("ddd"), null, xmppSession, serviceDiscoveryManager,null);
+        ChatService chatService6 = new ChatService(null, "aaa", xmppSession, serviceDiscoveryManager,null);
 
         List<ChatService> chatServices = new ArrayList<>();
         chatServices.add(chatService1);
@@ -74,12 +74,12 @@ public class ChatServiceTest {
     public void testChatRoomsComparable() {
         XmppSession xmppSession = new TestXmppSession();
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-        ChatRoom chatRoom1 = new ChatRoom(Jid.valueOf("aaa"), "aaa", xmppSession, serviceDiscoveryManager);
-        ChatRoom chatRoom2 = new ChatRoom(Jid.valueOf("bbb"), "bbb", xmppSession, serviceDiscoveryManager);
-        ChatRoom chatRoom3 = new ChatRoom(Jid.valueOf("ccc"), "aaa", xmppSession, serviceDiscoveryManager);
-        ChatRoom chatRoom4 = new ChatRoom(Jid.valueOf("ddd"), "bbb", xmppSession, serviceDiscoveryManager);
-        ChatRoom chatRoom5 = new ChatRoom(Jid.valueOf("ddd"), null, xmppSession, serviceDiscoveryManager);
-        ChatRoom chatRoom6 = new ChatRoom(null, "aaa", xmppSession, serviceDiscoveryManager);
+        ChatRoom chatRoom1 = new ChatRoom(Jid.valueOf("aaa"), "aaa", xmppSession, serviceDiscoveryManager,null);
+        ChatRoom chatRoom2 = new ChatRoom(Jid.valueOf("bbb"), "bbb", xmppSession, serviceDiscoveryManager,null);
+        ChatRoom chatRoom3 = new ChatRoom(Jid.valueOf("ccc"), "aaa", xmppSession, serviceDiscoveryManager,null);
+        ChatRoom chatRoom4 = new ChatRoom(Jid.valueOf("ddd"), "bbb", xmppSession, serviceDiscoveryManager,null);
+        ChatRoom chatRoom5 = new ChatRoom(Jid.valueOf("ddd"), null, xmppSession, serviceDiscoveryManager,null);
+        ChatRoom chatRoom6 = new ChatRoom(null, "aaa", xmppSession, serviceDiscoveryManager,null);
 
         List<ChatRoom> chatRooms = new ArrayList<>();
         chatRooms.add(chatRoom1);

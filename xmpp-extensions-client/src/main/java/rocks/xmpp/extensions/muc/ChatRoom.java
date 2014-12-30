@@ -97,6 +97,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
+    private final MultiUserChatManager multiUserChatManager;
+
     private final String name;
 
     private final Jid roomJid;
@@ -107,11 +109,12 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
 
     private volatile boolean entered;
 
-    ChatRoom(final Jid roomJid, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
+    ChatRoom(final Jid roomJid, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager, MultiUserChatManager multiUserChatManager) {
         this.name = name;
         this.roomJid = roomJid;
         this.xmppSession = xmppSession;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
+        this.multiUserChatManager = multiUserChatManager;
         xmppSession.addSessionStatusListener(this);
     }
 
@@ -292,6 +295,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
             xmppSession.removePresenceListener(this);
             throw e;
         }
+        multiUserChatManager.roomEntered(this, nick);
         entered = true;
     }
 
@@ -513,6 +517,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
         userHasExited();
 
         nick = null;
+        multiUserChatManager.roomExited(this);
         entered = false;
         occupantMap.clear();
     }

@@ -53,11 +53,14 @@ public final class ChatService implements Comparable<ChatService> {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    ChatService(Jid serviceAddress, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
+    private final MultiUserChatManager multiUserChatManager;
+
+    ChatService(Jid serviceAddress, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager, MultiUserChatManager multiUserChatManager) {
         this.xmppSession = xmppSession;
         this.serviceAddress = serviceAddress;
         this.name = name;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
+        this.multiUserChatManager = multiUserChatManager;
     }
 
     /**
@@ -85,7 +88,7 @@ public final class ChatService implements Comparable<ChatService> {
         List<ChatRoom> chatRooms = new ArrayList<>();
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(serviceAddress);
         for (Item item : itemNode.getItems()) {
-            chatRooms.add(new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager));
+            chatRooms.add(new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager, multiUserChatManager));
         }
         return chatRooms;
     }
@@ -97,7 +100,7 @@ public final class ChatService implements Comparable<ChatService> {
      * @return The chat room.
      */
     public ChatRoom createRoom(String room) {
-        return new ChatRoom(new Jid(room, serviceAddress.getDomain()), null, xmppSession, serviceDiscoveryManager);
+        return new ChatRoom(new Jid(room, serviceAddress.getDomain()), null, xmppSession, serviceDiscoveryManager, multiUserChatManager);
     }
 
     /**

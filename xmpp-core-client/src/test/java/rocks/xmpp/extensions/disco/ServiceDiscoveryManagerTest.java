@@ -38,6 +38,8 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
+import java.util.Arrays;
+
 /**
  * @author Christian Schudt
  */
@@ -109,8 +111,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
 
-        DefaultItemProvider defaultItemProvider = new DefaultItemProvider();
-        defaultItemProvider.getItems().add(new Item(Jid.valueOf("test"), "node1"));
+        DefaultItemProvider defaultItemProvider = new DefaultItemProvider(Arrays.asList(new Item(Jid.valueOf("test"), "node1")));
         serviceDiscoveryManager.setItemProvider("node1", defaultItemProvider);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);

@@ -83,7 +83,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ChatRoom extends Chat implements SessionStatusListener, MessageListener, PresenceListener {
+public final class ChatRoom extends Chat implements SessionStatusListener, MessageListener, PresenceListener, Comparable<ChatRoom> {
 
     private static final Logger logger = Logger.getLogger(ChatRoom.class.getName());
 
@@ -107,12 +107,11 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
 
     private volatile boolean entered;
 
-    ChatRoom(String name, final Jid roomJid, XmppSession xmppSession) {
+    ChatRoom(final Jid roomJid, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager) {
         this.name = name;
         this.roomJid = roomJid;
         this.xmppSession = xmppSession;
-        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-
+        this.serviceDiscoveryManager = serviceDiscoveryManager;
         xmppSession.addSessionStatusListener(this);
     }
 
@@ -849,11 +848,6 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
     }
 
     @Override
-    public String toString() {
-        return roomJid.toString();
-    }
-
-    @Override
     public void handleMessage(MessageEvent e) {
         if (e.isIncoming()) {
             Message message = e.getMessage();
@@ -955,6 +949,60 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
             occupantListeners.clear();
             messageListeners.clear();
             occupantMap.clear();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return roomJid != null ? roomJid.toString() : super.toString();
+    }
+
+    /**
+     * Compares this chat service first by their name and then by their service address.
+     *
+     * @param o The other chat service.
+     * @return The comparison result.
+     */
+    @Override
+    public int compareTo(ChatRoom o) {
+        if (this == o) {
+            return 0;
+        }
+        if (o != null) {
+            int result;
+            // First compare name.
+            if (name != null) {
+                if (o.name != null) {
+                    result = name.compareTo(o.name);
+                } else {
+                    result = -1;
+                }
+            } else {
+                if (o.name != null) {
+                    result = 1;
+                } else {
+                    result = 0;
+                }
+            }
+            // If the names are equal, compare addresses.
+            if (result == 0) {
+                if (roomJid != null) {
+                    if (o.roomJid != null) {
+                        result = roomJid.compareTo(o.roomJid);
+                    } else {
+                        result = -1;
+                    }
+                } else {
+                    if (o.roomJid != null) {
+                        result = 1;
+                    } else {
+                        result = 0;
+                    }
+                }
+            }
+            return result;
+        } else {
+            return -1;
         }
     }
 }

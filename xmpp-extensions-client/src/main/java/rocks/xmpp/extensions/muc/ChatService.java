@@ -43,7 +43,7 @@ import java.util.List;
  * @author Christian Schudt
  * @see MultiUserChatManager#createChatService(rocks.xmpp.core.Jid)
  */
-public final class ChatService {
+public final class ChatService implements Comparable<ChatService> {
 
     private final XmppSession xmppSession;
 
@@ -85,7 +85,7 @@ public final class ChatService {
         List<ChatRoom> chatRooms = new ArrayList<>();
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(serviceAddress);
         for (Item item : itemNode.getItems()) {
-            chatRooms.add(new ChatRoom(item.getName(), item.getJid(), xmppSession));
+            chatRooms.add(new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager));
         }
         return chatRooms;
     }
@@ -97,7 +97,7 @@ public final class ChatService {
      * @return The chat room.
      */
     public ChatRoom createRoom(String room) {
-        return new ChatRoom(null, new Jid(room, serviceAddress.getDomain()), xmppSession);
+        return new ChatRoom(new Jid(room, serviceAddress.getDomain()), null, xmppSession, serviceDiscoveryManager);
     }
 
     /**
@@ -109,11 +109,6 @@ public final class ChatService {
         return serviceAddress;
     }
 
-    @Override
-    public String toString() {
-        return serviceAddress.toString();
-    }
-
     /**
      * Gets the name of this service.
      *
@@ -121,5 +116,59 @@ public final class ChatService {
      */
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return serviceAddress != null ? serviceAddress.toString() : super.toString();
+    }
+
+    /**
+     * Compares this chat service first by their name and then by their service address.
+     *
+     * @param o The other chat service.
+     * @return The comparison result.
+     */
+    @Override
+    public int compareTo(ChatService o) {
+        if (this == o) {
+            return 0;
+        }
+        if (o != null) {
+            int result;
+            // First compare name.
+            if (name != null) {
+                if (o.name != null) {
+                    result = name.compareTo(o.name);
+                } else {
+                    result = -1;
+                }
+            } else {
+                if (o.name != null) {
+                    result = 1;
+                } else {
+                    result = 0;
+                }
+            }
+            // If the names are equal, compare addresses.
+            if (result == 0) {
+                if (serviceAddress != null) {
+                    if (o.serviceAddress != null) {
+                        result = serviceAddress.compareTo(o.serviceAddress);
+                    } else {
+                        result = -1;
+                    }
+                } else {
+                    if (o.serviceAddress != null) {
+                        result = 1;
+                    } else {
+                        result = 0;
+                    }
+                }
+            }
+            return result;
+        } else {
+            return -1;
+        }
     }
 }

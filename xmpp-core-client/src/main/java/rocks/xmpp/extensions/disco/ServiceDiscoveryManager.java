@@ -486,11 +486,11 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
                     ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
                     if (itemProvider != null) {
                         ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
-                        ItemDiscovery itemDiscoveryResult = new ItemDiscovery(resultSet.getItems(), resultSet.getResultSetManagement());
+                        ItemDiscovery itemDiscoveryResult = new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement());
                         xmppSession.send(iq.createResult(itemDiscoveryResult));
                     } else {
                         // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                        xmppSession.send(iq.createResult(new ItemDiscovery()));
+                        xmppSession.send(iq.createResult(new ItemDiscovery(itemDiscovery.getNode())));
                     }
                     e.consume();
                 }

@@ -675,7 +675,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
      */
-    public rocks.xmpp.extensions.muc.RoomInfo getRoomInfo() throws XmppException {
+    public RoomInformation getRoomInformation() throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid);
 
         Identity identity = null;
@@ -705,7 +705,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
             }
         }
 
-        return new rocks.xmpp.extensions.muc.RoomInfo(identity, mucFeatures, roomInfo);
+        return new RoomInformation(identity, mucFeatures, roomInfo);
     }
 
     /**

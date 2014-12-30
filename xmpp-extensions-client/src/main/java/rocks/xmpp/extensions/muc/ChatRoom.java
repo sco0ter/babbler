@@ -464,7 +464,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
-    public String getReservedNickname() throws XmppException {
+    public String discoverReservedNickname() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid, "x-roomuser-item");
         if (infoNode != null) {
@@ -845,6 +845,18 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      */
     public Jid getAddress() {
         return roomJid;
+    }
+
+    /**
+     * Discovers the allowable traffic, i.e. the allowed extensions.
+     *
+     * @return The list of allowable features.
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @see <a href="http://www.xmpp.org/extensions/xep-0045.html#impl-service-traffic">17.1.1 Allowable Traffic</a>
+     */
+    public Set<Feature> discoverAllowableTraffic() throws XmppException {
+        return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").getFeatures();
     }
 
     @Override

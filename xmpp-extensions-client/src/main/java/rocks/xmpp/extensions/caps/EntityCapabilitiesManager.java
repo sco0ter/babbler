@@ -35,6 +35,7 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
+import rocks.xmpp.core.util.cache.DirectoryCache;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -94,7 +95,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
 
     private final Map<String, Verification> publishedNodes;
 
-    private final DirectoryCapsCache directoryCapsCache;
+    private final DirectoryCache directoryCapsCache;
 
     private boolean capsSent;
 
@@ -106,7 +107,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
         serviceDiscoveryManager.addPropertyChangeListener(this);
         xmppSession.addSessionStatusListener(this);
         xmppSession.addPresenceListener(this);
-        directoryCapsCache = new DirectoryCapsCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "caps"));
+        directoryCapsCache = new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "caps"));
         serviceDiscoverer = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -247,14 +248,14 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
             XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream);
             XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
             xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
-            directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()), byteArrayOutputStream.toByteArray());
+            directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage());
         }
     }
 
     private InfoNode readFromCache(Verification verification) {
-        String fileName = XmppUtils.hash(verification.toString().getBytes());
+        String fileName = XmppUtils.hash(verification.toString().getBytes()) + ".caps";
         byte[] bytes = directoryCapsCache.get(fileName);
         if (bytes != null) {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);

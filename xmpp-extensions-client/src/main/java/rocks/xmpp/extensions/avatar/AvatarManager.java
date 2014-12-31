@@ -37,6 +37,7 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.util.cache.DirectoryCache;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
@@ -106,7 +107,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
         super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
         vCardManager = xmppSession.getExtensionManager(VCardManager.class);
-        avatarCache = new DirectoryAvatarCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "avatars"));
+        avatarCache = new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "avatars"));
 
         avatarRequester = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
@@ -204,16 +205,11 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
     }
 
     private synchronized byte[] loadFromCache(String hash) {
-        if (avatarCache != null) {
-            return avatarCache.get(hash);
-        }
-        return null;
+        return avatarCache.get(hash + ".avatar");
     }
 
     private synchronized void storeToCache(String hash, byte[] image) {
-        if (avatarCache != null) {
-            avatarCache.put(hash, image);
-        }
+        avatarCache.put(hash + ".avatar", image);
     }
 
     /**

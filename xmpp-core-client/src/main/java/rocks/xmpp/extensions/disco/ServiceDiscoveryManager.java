@@ -91,17 +91,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    private final List<Item> items = new CopyOnWriteArrayList<>();
-
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
-
-        itemProviders.put("", new DefaultItemProvider(items));
-
         xmppSession.addSessionStatusListener(this);
-
         xmppSession.addIQListener(this);
-
         setEnabled(true);
     }
 
@@ -129,8 +122,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * Gets an unmodifiable list of items.
      *
      * @return The items.
-     * @see #addItem(rocks.xmpp.extensions.disco.model.items.Item)
-     * @see #removeItem(rocks.xmpp.extensions.disco.model.items.Item)
      */
     public List<Item> getItems() {
         ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
@@ -181,32 +172,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      */
     public List<DataForm> getExtensions() {
         return Collections.unmodifiableList(extensions);
-    }
-
-    /**
-     * Adds an item.
-     *
-     * @param item The item.
-     * @see #removeItem(Item)
-     * @see #getItems() ()
-     */
-    public synchronized void addItem(Item item) {
-        List<Item> oldList = Collections.unmodifiableList(items);
-        items.add(item);
-        this.pcs.firePropertyChange("items", oldList, getItems());
-    }
-
-    /**
-     * Removes an item.
-     *
-     * @param item The item.
-     * @see #addItem(Item)
-     * @see #getItems()
-     */
-    public synchronized void removeItem(Item item) {
-        List<Item> oldList = Collections.unmodifiableList(items);
-        items.remove(item);
-        this.pcs.firePropertyChange("items", oldList, getItems());
     }
 
     /**
@@ -421,8 +386,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
     }
 
     /**
-     * Sets an item provider for the root node. This method is similar to {@link #addItem(Item)}.
-     * The difference is that this method adds a new items to a specified node to the item hierarchy, whereas {@link #addItem(Item)} adds new items to the root node.
+     * Sets an item provider for the root node.
      * <p>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
@@ -437,8 +401,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
     }
 
     /**
-     * Sets an item provider for a node. This method is similar to {@link #addItem(Item)}.
-     * The difference is that this method adds a new items to a specified node to the item hierarchy, whereas {@link #addItem(Item)} adds new items to the root node.
+     * Sets an item provider for a node.
      * <p>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
@@ -497,5 +460,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
                 pcs.removePropertyChangeListener(propertyChangeListener);
             }
         }
+        infoNodeMap.clear();
+        itemProviders.clear();
     }
 }

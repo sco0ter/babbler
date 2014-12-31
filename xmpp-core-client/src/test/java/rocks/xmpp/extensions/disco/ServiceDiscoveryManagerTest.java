@@ -38,7 +38,9 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -94,7 +96,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "root", "name"));
+        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(Arrays.asList(new Item(Jid.valueOf("test"), "root", "name"))));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO);
@@ -127,9 +129,11 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
 
+        List<Item> items = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "item" + i));
+            items.add(new Item(Jid.valueOf("test"), "item" + i));
         }
+        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
 
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
@@ -169,11 +173,11 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
-
+        List<Item> items = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
-            serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "item" + i));
+            items.add(new Item(Jid.valueOf("test"), "item" + i));
         }
-
+        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode resultItemCount = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forItemCount());

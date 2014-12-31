@@ -159,7 +159,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see #removeFeature(rocks.xmpp.extensions.disco.model.info.Feature)
      */
     public Set<Feature> getFeatures() {
-        return Collections.unmodifiableSet(features);
+        return Collections.unmodifiableSet(new HashSet<>(features));
     }
 
     /**
@@ -171,7 +171,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public List<DataForm> getExtensions() {
-        return Collections.unmodifiableList(extensions);
+        return Collections.unmodifiableList(new ArrayList<>(extensions));
     }
 
     /**
@@ -182,7 +182,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see #getIdentities()
      */
     public synchronized void addIdentity(Identity identity) {
-        Set<Identity> oldList = Collections.unmodifiableSet(identities);
+        Set<Identity> oldList = getIdentities();
         identities.add(identity);
         this.pcs.firePropertyChange("identities", oldList, getIdentities());
     }
@@ -195,7 +195,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see #getIdentities()
      */
     public synchronized void removeIdentity(Identity identity) {
-        Set<Identity> oldList = Collections.unmodifiableSet(identities);
+        Set<Identity> oldList = getIdentities();
         identities.remove(identity);
         this.pcs.firePropertyChange("identities", oldList, getIdentities());
     }
@@ -209,7 +209,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see #getFeatures()
      */
     public synchronized void addFeature(Feature feature) {
-        Set<Feature> oldList = Collections.unmodifiableSet(features);
+        Set<Feature> oldList = getFeatures();
         features.add(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
@@ -222,7 +222,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see #getFeatures()
      */
     public synchronized void removeFeature(Feature feature) {
-        Set<Feature> oldList = Collections.unmodifiableSet(features);
+        Set<Feature> oldList = getFeatures();
         features.remove(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
@@ -236,7 +236,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public synchronized void addExtension(DataForm extension) {
-        List<DataForm> oldList = Collections.unmodifiableList(extensions);
+        List<DataForm> oldList = getExtensions();
         extensions.add(extension);
         this.pcs.firePropertyChange("extensions", oldList, getExtensions());
     }
@@ -250,7 +250,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public synchronized void removeExtension(DataForm extension) {
-        List<DataForm> oldList = Collections.unmodifiableList(extensions);
+        List<DataForm> oldList = getExtensions();
         extensions.remove(extension);
         this.pcs.firePropertyChange("extensions", oldList, getExtensions());
     }

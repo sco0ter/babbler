@@ -31,6 +31,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -38,6 +39,8 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -219,4 +222,27 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertEquals(page6.getResultSetManagement().getItemCount(), Integer.valueOf(30));
         Assert.assertEquals(page6.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(5));
     }
+
+    @Test
+    public void testPropertyChangeHandler() {
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        final int[] listenerCalled = {0};
+        serviceDiscoveryManager.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                listenerCalled[0]++;
+            }
+        });
+        serviceDiscoveryManager.addFeature(new Feature("dummy"));
+        serviceDiscoveryManager.removeFeature(new Feature("dummy"));
+        serviceDiscoveryManager.addIdentity(new Identity("cat", "type"));
+        serviceDiscoveryManager.removeIdentity(new Identity("cat", "type"));
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
+        serviceDiscoveryManager.addExtension(dataForm);
+        serviceDiscoveryManager.removeExtension(dataForm);
+        if (listenerCalled[0] != 6) {
+            Assert.fail();
+        }
+    }
+
 }

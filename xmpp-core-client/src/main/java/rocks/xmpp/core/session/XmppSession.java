@@ -948,7 +948,8 @@ public class XmppSession implements Closeable {
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
-        if (streamFeaturesManager.getFeatures().containsKey(Session.class)) {
+        Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
+        if (session != null && session.isMandatory()) {
             try {
                 query(new IQ(IQ.Type.SET, new Session()));
             } catch (StanzaException e) {

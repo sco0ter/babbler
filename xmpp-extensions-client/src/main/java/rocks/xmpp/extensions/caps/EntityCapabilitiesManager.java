@@ -106,7 +106,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
         serviceDiscoveryManager.addPropertyChangeListener(this);
         xmppSession.addSessionStatusListener(this);
         xmppSession.addPresenceListener(this);
-        directoryCapsCache = new DirectoryCapsCache(new File(System.getProperty("user.dir"), "caps"));
+        directoryCapsCache = new DirectoryCapsCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "caps"));
         serviceDiscoverer = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {

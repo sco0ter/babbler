@@ -29,6 +29,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -58,6 +59,8 @@ public final class XmppSessionConfiguration {
 
     private final String[] authenticationMechanisms;
 
+    private final File cacheDirectory;
+
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
@@ -67,6 +70,7 @@ public final class XmppSessionConfiguration {
         this.xmppDebugger = builder.xmppDebugger;
         this.defaultResponseTimeout = builder.defaultResponseTimeout;
         this.authenticationMechanisms = builder.authenticationMechanisms;
+        this.cacheDirectory = builder.cacheDirectory;
 
         CoreContext context = builder.context;
 
@@ -177,6 +181,21 @@ public final class XmppSessionConfiguration {
     }
 
     /**
+     * Sets the caching directory for directory-based caches used for:
+     * <ul>
+     * <li><a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a></li>
+     * <li><a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
+     * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
+     * </ul>
+     * By default this directory is called "cache" in the application's executing directory.
+     *
+     * @return The directory.
+     */
+    public File getCacheDirectory() {
+        return cacheDirectory;
+    }
+
+    /**
      * A builder to create an {@link XmppSessionConfiguration} instance.
      */
     public static final class Builder {
@@ -186,6 +205,8 @@ public final class XmppSessionConfiguration {
         private CoreContext context;
 
         private int defaultResponseTimeout;
+
+        private File cacheDirectory;
 
         /**
          * The default preferred SASL mechanisms.
@@ -198,7 +219,7 @@ public final class XmppSessionConfiguration {
                 "ANONYMOUS"};
 
         private Builder() {
-            defaultResponseTimeout(5000);
+            defaultResponseTimeout(5000).cacheDirectory(new File("cache"));
         }
 
         /**
@@ -254,6 +275,22 @@ public final class XmppSessionConfiguration {
          */
         public Builder authenticationMechanisms(String... authenticationMechanisms) {
             this.authenticationMechanisms = authenticationMechanisms;
+            return this;
+        }
+
+        /**
+         * Sets the caching directory for directory-based caches used for:
+         * <ul>
+         * <li><a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a></li>
+         * <li><a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
+         * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
+         * </ul>.
+         *
+         * @param file The directory.
+         * @return The builder.
+         */
+        public Builder cacheDirectory(File file) {
+            this.cacheDirectory = file;
             return this;
         }
 

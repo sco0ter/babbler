@@ -93,7 +93,7 @@ final class DirectoryCapsCache implements Map<String, byte[]> {
     public byte[] put(String hash, byte[] bytes) {
         boolean exists = cacheDirectory.exists();
         if (!exists) {
-            exists = cacheDirectory.mkdir();
+            exists = cacheDirectory.mkdirs();
         }
         File file = new File(cacheDirectory, hash + ".caps");
         if (file.exists()) {

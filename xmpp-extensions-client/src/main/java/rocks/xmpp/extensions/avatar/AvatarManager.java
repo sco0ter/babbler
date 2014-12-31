@@ -106,7 +106,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
         super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
         vCardManager = xmppSession.getExtensionManager(VCardManager.class);
-        avatarCache = new DirectoryAvatarCache(new File(System.getProperty("user.dir"), "avatars"));
+        avatarCache = new DirectoryAvatarCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "avatars"));
 
         avatarRequester = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override

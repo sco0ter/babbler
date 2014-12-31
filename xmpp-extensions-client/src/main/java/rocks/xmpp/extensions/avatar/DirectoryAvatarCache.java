@@ -93,7 +93,7 @@ final class DirectoryAvatarCache implements Map<String, byte[]> {
     public byte[] put(String hash, byte[] imageData) {
         boolean exists = cacheDirectory.exists();
         if (!exists) {
-            exists = cacheDirectory.mkdir();
+            exists = cacheDirectory.mkdirs();
         }
         File file = new File(cacheDirectory, hash + ".avatar");
         if (file.exists()) {

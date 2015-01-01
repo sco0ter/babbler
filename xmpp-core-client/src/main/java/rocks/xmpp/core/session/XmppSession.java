@@ -497,11 +497,11 @@ public class XmppSession implements Closeable {
         final IQListener listener = new IQListener() {
             @Override
             public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && iq.getId() != null && iq.getId().equals(iq.getId()) && (iq.getType() == IQ.Type.RESULT || iq.getType() == IQ.Type.ERROR)) {
+                IQ responseIQ = e.getIQ();
+                if (e.isIncoming() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId()) && responseIQ.isResponse()) {
                     lock.lock();
                     try {
-                        result[0] = iq;
+                        result[0] = responseIQ;
                     } finally {
                         resultReceived.signal();
                         lock.unlock();

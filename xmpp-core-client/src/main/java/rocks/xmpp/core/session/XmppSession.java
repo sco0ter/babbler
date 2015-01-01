@@ -498,7 +498,7 @@ public class XmppSession implements Closeable {
             @Override
             public void handleIQ(IQEvent e) {
                 IQ responseIQ = e.getIQ();
-                if (e.isIncoming() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId()) && responseIQ.isResponse()) {
+                if (e.isIncoming() && responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
                     lock.lock();
                     try {
                         result[0] = responseIQ;

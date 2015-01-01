@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.messagecorrect.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <replace/>} element in the {@code urn:xmpp:message-correct:0} namespace.
@@ -52,7 +53,7 @@ public final class Replace {
      * @param id The id of the message which shall be corrected.
      */
     public Replace(String id) {
-        this.id = id;
+        this.id = Objects.requireNonNull(id, "id must not be null");
     }
 
     /**

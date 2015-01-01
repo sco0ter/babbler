@@ -29,6 +29,8 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 
+import java.util.Objects;
+
 /**
  * This manager allows to correct last sent messages as specified by <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>.
  * <p>
@@ -62,13 +64,7 @@ public final class MessageCorrectionManager extends ExtensionManager {
      * @param message The new message, which will replace the old message.
      */
     public void correctMessage(String id, Message message) {
-        if (id == null) {
-            throw new IllegalArgumentException("id must not be null");
-        }
-        if (message == null) {
-            throw new IllegalArgumentException("message must not be null");
-        }
-
+        Objects.requireNonNull(message, "message must not be null");
         message.getExtensions().add(new Replace(id));
         xmppSession.send(message);
     }

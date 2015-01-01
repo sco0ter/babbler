@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -91,9 +92,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
      * @return The presence.
      */
     public Presence getPresence(Jid jid) {
-        if (jid == null) {
-            throw new IllegalArgumentException("jid must not be null.");
-        }
+        Objects.requireNonNull(jid, "jid must not be null.");
 
         if (jid.isBareJid()) {
             Map<String, Presence> presencesPerResource = presenceMap.get(jid);

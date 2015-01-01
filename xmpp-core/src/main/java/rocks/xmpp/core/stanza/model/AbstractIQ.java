@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -86,10 +87,7 @@ public abstract class AbstractIQ extends Stanza {
      */
     protected AbstractIQ(Jid to, Type type, Object extension, String id, Jid from, String language, StanzaError error) {
         super(to, from, id == null ? UUID.randomUUID().toString() : id, language, error);
-        if (type == null) {
-            throw new IllegalArgumentException("type must not be null.");
-        }
-        this.type = type;
+        this.type = Objects.requireNonNull(type, "type must not be null.");
         this.extension = extension;
     }
 

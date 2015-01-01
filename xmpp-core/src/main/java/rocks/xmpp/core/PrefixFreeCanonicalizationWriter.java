@@ -300,9 +300,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
         @Override
         public String getNamespaceURI(String prefix) {
-            if (prefix == null) {
-                throw new IllegalArgumentException("prefix must not be null.");
-            }
+            Objects.requireNonNull(prefix, "prefix must not be null.");
             if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix)) {
                 return defaultNS;
             }

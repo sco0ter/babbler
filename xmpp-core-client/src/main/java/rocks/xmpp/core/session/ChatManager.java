@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.model.client.Message;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -133,10 +134,7 @@ public final class ChatManager implements SessionStatusListener, MessageListener
      * @return The chat session.
      */
     public ChatSession createChatSession(Jid chatPartner) {
-        if (chatPartner == null) {
-            throw new IllegalArgumentException("chatPartner must not be null.");
-        }
-        ChatSession chatSession = new ChatSession(chatPartner, UUID.randomUUID().toString(), xmppSession);
+        ChatSession chatSession = new ChatSession(Objects.requireNonNull(chatPartner, "chatPartner must not be null."), UUID.randomUUID().toString(), xmppSession);
         notifyChatSessionCreated(chatSession, false);
         return chatSession;
     }
@@ -147,10 +145,7 @@ public final class ChatManager implements SessionStatusListener, MessageListener
      * @param chatSession The chat session.
      */
     public void destroyChatSession(ChatSession chatSession) {
-        if (chatSession == null) {
-            throw new IllegalArgumentException("chatSession must not be null.");
-        }
-        Jid user = chatSession.getChatPartner().asBareJid();
+        Jid user = Objects.requireNonNull(chatSession, "chatSession must not be null.").getChatPartner().asBareJid();
         synchronized (chatSessions) {
             if (chatSessions.containsKey(user)) {
                 Map<String, ChatSession> chatSessionMap = chatSessions.get(user);

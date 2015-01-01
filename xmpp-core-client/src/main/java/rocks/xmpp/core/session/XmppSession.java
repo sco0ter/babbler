@@ -80,6 +80,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -811,12 +812,9 @@ public class XmppSession implements Closeable {
      * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
      */
     public final void login(String authorizationId, final String user, final String password, String resource) throws LoginException {
-        if (user == null) {
-            throw new IllegalArgumentException("user must not be null.");
-        }
-        if (password == null) {
-            throw new IllegalArgumentException("password must not be null.");
-        }
+        Objects.requireNonNull(user, "user must not be null.");
+        Objects.requireNonNull(password, "password must not be null.");
+
         // A default callback handler for username/password retrieval:
         login(authorizationId, new CallbackHandler() {
             @Override

@@ -73,6 +73,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
@@ -268,9 +269,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public synchronized void enter(final String nick, String password, History history) throws XmppException {
-        if (nick == null) {
-            throw new IllegalArgumentException("nick must not be null.");
-        }
+        Objects.requireNonNull(nick, "nick must not be null.");
 
         if (entered) {
             throw new IllegalStateException("You already entered this room.");
@@ -446,9 +445,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
     public void register(Registration registration) throws XmppException {
-        if (registration == null) {
-            throw new IllegalArgumentException("registration must not be null.");
-        }
+        Objects.requireNonNull(registration, "registration must not be null.");
         if (registration.getRegistrationForm() != null) {
             if (registration.getRegistrationForm().getType() != DataForm.Type.SUBMIT) {
                 throw new IllegalArgumentException("Data Form must be of type 'submit'");
@@ -788,9 +785,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      */
     @Deprecated
     public void submitConfigurationForm(DataForm dataForm) throws XmppException {
-        if (dataForm == null) {
-            throw new IllegalArgumentException("dataForm must not be null.");
-        }
+        Objects.requireNonNull(dataForm, "dataForm must not be null.");
         if (dataForm.getType() != DataForm.Type.SUBMIT && dataForm.getType() != DataForm.Type.CANCEL) {
             throw new IllegalArgumentException("Data Form must be of type 'submit' or 'cancel'");
         }
@@ -812,9 +807,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @see #getConfigurationForm()
      */
     public void configure(RoomConfiguration roomConfiguration) throws XmppException {
-        if (roomConfiguration == null) {
-            throw new IllegalArgumentException("roomConfiguration must not be null.");
-        }
+        Objects.requireNonNull(roomConfiguration, "roomConfiguration must not be null.");
         MucOwner mucOwner = new MucOwner(roomConfiguration.getDataForm());
         IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
         xmppSession.query(iq);

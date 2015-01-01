@@ -50,6 +50,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
@@ -127,13 +128,8 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
      * @throws java.io.IOException                          If the file could not be read.
      */
     public FileTransfer offerFile(File file, String description, Jid recipient, long timeout) throws XmppException, IOException {
-
-        if (file == null) {
-            throw new IllegalArgumentException("file must not be null.");
-        }
-        if (recipient == null) {
-            throw new IllegalArgumentException("jid must not be null.");
-        }
+        Objects.requireNonNull(file, "file must not be null. ");
+        Objects.requireNonNull(recipient, "jid must not be null.");
 
         if (!file.exists()) {
             throw new FileNotFoundException(file.getName());

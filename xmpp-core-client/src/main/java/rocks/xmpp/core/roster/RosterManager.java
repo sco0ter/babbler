@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -154,10 +155,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
      * @return The contact or null, if it does not exist.
      */
     public Contact getContact(Jid jid) {
-        if (jid == null) {
-            throw new IllegalArgumentException("jid must not be null");
-        }
-        return contactMap.get(jid.asBareJid());
+        return contactMap.get(Objects.requireNonNull(jid, "jid must not be null").asBareJid());
     }
 
     void updateRoster(Roster roster, boolean isRosterPush) {
@@ -397,9 +395,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void addContact(Contact contact, boolean requestSubscription, String status) throws XmppException {
-        if (contact == null) {
-            throw new IllegalArgumentException("contact must not be null.");
-        }
+        Objects.requireNonNull(contact, "contact must not be null.");
         xmppSession.query(new IQ(IQ.Type.SET, new Roster(contact)));
         if (requestSubscription) {
             xmppSession.getPresenceManager().requestSubscription(contact.getJid(), status);

@@ -33,6 +33,8 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
+import java.util.Objects;
+
 /**
  * This manager allows to retrieve or save one owns vCard or retrieve another user's vCard.
  * <p>
@@ -68,9 +70,6 @@ public final class VCardManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void setVCard(VCard vCard) throws XmppException {
-        if (vCard == null) {
-            throw new IllegalArgumentException("vCard must not be null.");
-        }
         // Update the vCard
         xmppSession.query(new IQ(IQ.Type.SET, vCard));
 
@@ -95,9 +94,7 @@ public final class VCardManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public VCard getVCard(Jid jid) throws XmppException {
-        if (jid == null) {
-            throw new IllegalArgumentException("jid must not be null.");
-        }
+        Objects.requireNonNull(jid, "jid must not be null.");
         IQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
         return result.getExtension(VCard.class);
     }

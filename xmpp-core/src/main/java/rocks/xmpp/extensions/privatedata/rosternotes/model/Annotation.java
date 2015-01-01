@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <storage/>} element in the {@code storage:rosternotes} namespace.
@@ -117,11 +118,8 @@ public final class Annotation {
          * @param modificationDate The modification date (optional).
          */
         public Note(String note, Jid jid, Date creationDate, Date modificationDate) {
-            if (jid == null) {
-                throw new IllegalArgumentException("jid must not be null.");
-            }
             this.value = note;
-            this.jid = jid.asBareJid();
+            this.jid = Objects.requireNonNull(jid, "jid must not be null.").asBareJid();
             this.creationDate = creationDate;
             this.modificationDate = modificationDate;
         }

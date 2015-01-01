@@ -140,7 +140,7 @@ public class JidTest {
         Jid.valueOf("domain/");
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = NullPointerException.class)
     public void testJidNull() {
         Jid.valueOf(null);
     }

@@ -28,6 +28,8 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
 
+import java.util.Objects;
+
 /**
  * Implements a one-to-one chat session. They are described in <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="http://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
  * <blockquote>
@@ -47,14 +49,8 @@ public final class ChatSession extends Chat {
     volatile Jid chatPartner;
 
     ChatSession(Jid chatPartner, String thread, XmppSession xmppSession) {
-        if (chatPartner == null) {
-            throw new IllegalArgumentException("chatPartner must not be null.");
-        }
-        if (xmppSession == null) {
-            throw new IllegalArgumentException("connection must not be null.");
-        }
         // The user's client SHOULD address the initial message in a chat session to the bare JID <contact@domainpart> of the contact (rather than attempting to guess an appropriate full JID <contact@domainpart/resourcepart> based on the <show/>, <status/>, or <priority/> value of any presence notifications it might have received from the contact).
-        this.chatPartner = chatPartner.asBareJid();
+        this.chatPartner = Objects.requireNonNull(chatPartner, "chatPartner must not be null.").asBareJid();
         this.thread = thread;
         this.xmppSession = xmppSession;
     }

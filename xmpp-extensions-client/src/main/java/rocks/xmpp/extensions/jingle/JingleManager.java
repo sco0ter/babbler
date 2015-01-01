@@ -43,6 +43,7 @@ import rocks.xmpp.extensions.jingle.model.errors.UnknownSession;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -74,9 +75,7 @@ public final class JingleManager extends ExtensionManager implements SessionStat
     }
 
     public JingleSession createSession(Jid responder, Jingle.Content... contents) throws XmppException {
-        if (responder == null) {
-            throw new IllegalArgumentException("responder must not be null.");
-        }
+        Objects.requireNonNull(responder, "responder must not be null.");
         if (contents.length == 0) {
             throw new IllegalArgumentException("no content provided.");
         }

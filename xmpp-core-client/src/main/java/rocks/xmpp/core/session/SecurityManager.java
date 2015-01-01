@@ -46,9 +46,6 @@ final class SecurityManager extends StreamFeatureNegotiator {
         super(StartTls.class);
         this.isSecure = isSecure;
         addFeatureListener(streamFeatureListener);
-        if (xmppSession == null) {
-            throw new IllegalArgumentException("connection must not be null.");
-        }
         this.xmppSession = xmppSession;
     }
 

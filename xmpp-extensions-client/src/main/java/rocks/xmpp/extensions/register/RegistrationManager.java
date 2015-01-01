@@ -92,9 +92,6 @@ public final class RegistrationManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      */
     public void register(Registration registration) throws XmppException {
-        if (registration == null) {
-            throw new IllegalArgumentException("registration must not be null.");
-        }
         xmppSession.query(new IQ(IQ.Type.SET, registration));
     }
 

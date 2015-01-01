@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -123,12 +124,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      */
     public AuthenticationManager(final XmppSession xmppSession, Lock lock, String[] mechanisms) {
         super(Mechanisms.class);
-
-        if (xmppSession == null) {
-            throw new IllegalArgumentException("connection must not be null.");
-        }
-
-        this.xmppSession = xmppSession;
+        this.xmppSession = Objects.requireNonNull(xmppSession, "xmppSession must not be null.");
         this.lock = lock;
         this.authenticationComplete = lock.newCondition();
         this.supportedMechanisms = new LinkedHashSet<>();

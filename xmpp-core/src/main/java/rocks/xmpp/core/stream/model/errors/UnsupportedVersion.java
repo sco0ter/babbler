@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unsupported-version/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "unsupported-version")
+@XmlType(factoryMethod = "create")
 public final class UnsupportedVersion extends Condition {
+    /**
+     * The {@code <unsupported-version/>} element.
+     */
+    public static final UnsupportedVersion INSTANCE = new UnsupportedVersion();
+
+    private UnsupportedVersion() {
+    }
+
+    private static UnsupportedVersion create() {
+        return INSTANCE;
+    }
 }

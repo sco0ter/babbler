@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <reset/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "reset")
+@XmlType(factoryMethod = "create")
 public final class Reset extends Condition {
+    /**
+     * The {@code <reset/>} element.
+     */
+    public static final Reset INSTANCE = new Reset();
+
+    private Reset() {
+    }
+
+    private static Reset create() {
+        return INSTANCE;
+    }
 }

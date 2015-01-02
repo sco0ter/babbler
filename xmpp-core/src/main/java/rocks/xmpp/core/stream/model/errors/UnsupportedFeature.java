@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unsupported-feature/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "unsupported-feature")
+@XmlType(factoryMethod = "create")
 public final class UnsupportedFeature extends Condition {
+    /**
+     * The {@code <unsupported-feature/>} element.
+     */
+    public static final UnsupportedFeature INSTANCE = new UnsupportedFeature();
+
+    private UnsupportedFeature() {
+    }
+
+    private static UnsupportedFeature create() {
+        return INSTANCE;
+    }
 }

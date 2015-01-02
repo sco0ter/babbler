@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-xml/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "invalid-xml")
+@XmlType(factoryMethod = "create")
 public final class InvalidXml extends Condition {
+    /**
+     * The {@code <invalid-xml/>} element.
+     */
+    public static final InvalidXml INSTANCE = new InvalidXml();
+
+    private InvalidXml() {
+    }
+
+    private static InvalidXml create() {
+        return INSTANCE;
+    }
 }

@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <remote-connection-failed/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "remote-connection-failed")
+@XmlType(factoryMethod = "create")
 public final class RemoteConnectionFailed extends Condition {
+    /**
+     * The {@code <remote-connection-failed/>} element.
+     */
+    public static final RemoteConnectionFailed INSTANCE = new RemoteConnectionFailed();
+
+    private RemoteConnectionFailed() {
+    }
+
+    private static RemoteConnectionFailed create() {
+        return INSTANCE;
+    }
 }

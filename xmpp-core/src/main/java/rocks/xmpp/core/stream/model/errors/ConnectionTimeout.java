@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <connection-timeout/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "connection-timeout")
+@XmlType(factoryMethod = "create")
 public final class ConnectionTimeout extends Condition {
+    /**
+     * The {@code <connection-timeout/>} element.
+     */
+    public static final ConnectionTimeout INSTANCE = new ConnectionTimeout();
+
+    private ConnectionTimeout() {
+    }
+
+    private static ConnectionTimeout create() {
+        return INSTANCE;
+    }
 }

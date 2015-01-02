@@ -25,14 +25,27 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <bad-format/>} stream error.
+ * The implementation of the {@code <undefined-condition/>} stream error.
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-undefined-condition">4.9.3.21.  undefined-condition</a></cite></p>
  * <p>The error condition is not one of those defined by the other conditions in this list; this error condition SHOULD NOT be used except in conjunction with an application-specific condition.</p>
  * </blockquote>
  */
 @XmlRootElement(name = "undefined-condition")
+@XmlType(factoryMethod = "create")
 public final class UndefinedCondition extends Condition {
+    /**
+     * The {@code <undefined-condition/>} element.
+     */
+    public static final UndefinedCondition INSTANCE = new UndefinedCondition();
+
+    private UndefinedCondition() {
+    }
+
+    private static UndefinedCondition create() {
+        return INSTANCE;
+    }
 }

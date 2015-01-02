@@ -26,6 +26,7 @@ package rocks.xmpp.core.stream.model.errors;
 
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <restricted-xml/>} stream error.
@@ -35,5 +36,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "restricted-xml")
+@XmlType(factoryMethod = "create")
 public final class RestrictedXml extends Condition {
+    /**
+     * The {@code <restricted-xml/>} element.
+     */
+    public static final RestrictedXml INSTANCE = new RestrictedXml();
+
+    private RestrictedXml() {
+    }
+
+    private static RestrictedXml create() {
+        return INSTANCE;
+    }
 }

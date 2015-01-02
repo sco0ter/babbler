@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <not-authorized/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "not-authorized")
+@XmlType(factoryMethod = "create")
 public final class NotAuthorized extends Condition {
+    /**
+     * The {@code <not-authorized/>} element.
+     */
+    public static final NotAuthorized INSTANCE = new NotAuthorized();
+
+    private NotAuthorized() {
+    }
+
+    private static NotAuthorized create() {
+        return INSTANCE;
+    }
 }

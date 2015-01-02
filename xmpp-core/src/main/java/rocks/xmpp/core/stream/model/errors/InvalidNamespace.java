@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-namespace/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "invalid-namespace")
+@XmlType(factoryMethod = "create")
 public final class InvalidNamespace extends Condition {
+    /**
+     * The {@code <invalid-namespace/>} element.
+     */
+    public static final InvalidNamespace INSTANCE = new InvalidNamespace();
+
+    private InvalidNamespace() {
+    }
+
+    private static InvalidNamespace create() {
+        return INSTANCE;
+    }
 }

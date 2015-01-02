@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <improper-addressing/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "improper-addressing")
+@XmlType(factoryMethod = "create")
 public final class ImproperAddressing extends Condition {
+    /**
+     * The {@code <improper-addressing/>} element.
+     */
+    public static final ImproperAddressing INSTANCE = new ImproperAddressing();
+
+    private ImproperAddressing() {
+    }
+
+    private static ImproperAddressing create() {
+        return INSTANCE;
+    }
 }

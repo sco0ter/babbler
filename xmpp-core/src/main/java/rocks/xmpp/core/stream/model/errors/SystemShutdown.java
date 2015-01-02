@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <system-shutdown/>} stream error.<blockquote>
@@ -33,5 +34,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "system-shutdown")
+@XmlType(factoryMethod = "create")
 public final class SystemShutdown extends Condition {
+    /**
+     * The {@code <system-shutdown/>} element.
+     */
+    public static final SystemShutdown INSTANCE = new SystemShutdown();
+
+    private SystemShutdown() {
+    }
+
+    private static SystemShutdown create() {
+        return INSTANCE;
+    }
 }

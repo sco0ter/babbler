@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unsupported-stanza-type/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "unsupported-stanza-type")
+@XmlType(factoryMethod = "create")
 public final class UnsupportedStanzaType extends Condition {
+    /**
+     * The {@code <unsupported-stanza-type/>} element.
+     */
+    public static final UnsupportedStanzaType INSTANCE = new UnsupportedStanzaType();
+
+    private UnsupportedStanzaType() {
+    }
+
+    private static UnsupportedStanzaType create() {
+        return INSTANCE;
+    }
 }

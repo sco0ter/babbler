@@ -26,6 +26,7 @@ package rocks.xmpp.core.stream.model.errors;
 
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unsupported-encoding/>} stream error.
@@ -35,5 +36,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "unsupported-encoding")
+@XmlType(factoryMethod = "create")
 public final class UnsupportedEncoding extends Condition {
+    /**
+     * The {@code <unsupported-encoding/>} element.
+     */
+    public static final UnsupportedEncoding INSTANCE = new UnsupportedEncoding();
+
+    private UnsupportedEncoding() {
+    }
+
+    private static UnsupportedEncoding create() {
+        return INSTANCE;
+    }
 }

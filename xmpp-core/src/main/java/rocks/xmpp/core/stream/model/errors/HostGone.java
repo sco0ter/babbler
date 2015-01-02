@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <host-gone/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "host-gone")
+@XmlType(factoryMethod = "create")
 public final class HostGone extends Condition {
+    /**
+     * The {@code <host-gone/>} element.
+     */
+    public static final HostGone INSTANCE = new HostGone();
+
+    private HostGone() {
+    }
+
+    private static HostGone create() {
+        return INSTANCE;
+    }
 }

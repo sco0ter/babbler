@@ -29,6 +29,7 @@ package rocks.xmpp.core.stream.model.errors;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <bad-format/>} stream error.
@@ -38,5 +39,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "bad-format")
+@XmlType(factoryMethod = "create")
 public final class BadFormat extends Condition {
+    /**
+     * The {@code <bad-format/>} element.
+     */
+    public static final BadFormat INSTANCE = new BadFormat();
+
+    private BadFormat() {
+    }
+
+    private static BadFormat create() {
+        return INSTANCE;
+    }
 }

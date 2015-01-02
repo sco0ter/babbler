@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-from/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "invalid-from")
+@XmlType(factoryMethod = "create")
 public final class InvalidFrom extends Condition {
+    /**
+     * The {@code <invalid-from/>} element.
+     */
+    public static final InvalidFrom INSTANCE = new InvalidFrom();
+
+    private InvalidFrom() {
+    }
+
+    private static InvalidFrom create() {
+        return INSTANCE;
+    }
 }

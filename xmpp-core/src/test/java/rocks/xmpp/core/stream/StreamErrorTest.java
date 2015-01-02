@@ -28,7 +28,31 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.errors.*;
+import rocks.xmpp.core.stream.model.errors.BadFormat;
+import rocks.xmpp.core.stream.model.errors.BadNamespacePrefix;
+import rocks.xmpp.core.stream.model.errors.Conflict;
+import rocks.xmpp.core.stream.model.errors.ConnectionTimeout;
+import rocks.xmpp.core.stream.model.errors.HostGone;
+import rocks.xmpp.core.stream.model.errors.HostUnknown;
+import rocks.xmpp.core.stream.model.errors.ImproperAddressing;
+import rocks.xmpp.core.stream.model.errors.InternalServerError;
+import rocks.xmpp.core.stream.model.errors.InvalidFrom;
+import rocks.xmpp.core.stream.model.errors.InvalidNamespace;
+import rocks.xmpp.core.stream.model.errors.InvalidXml;
+import rocks.xmpp.core.stream.model.errors.NotAuthorized;
+import rocks.xmpp.core.stream.model.errors.NotWellFormed;
+import rocks.xmpp.core.stream.model.errors.PolicyViolation;
+import rocks.xmpp.core.stream.model.errors.RemoteConnectionFailed;
+import rocks.xmpp.core.stream.model.errors.Reset;
+import rocks.xmpp.core.stream.model.errors.ResourceConstraint;
+import rocks.xmpp.core.stream.model.errors.RestrictedXml;
+import rocks.xmpp.core.stream.model.errors.SeeOtherHost;
+import rocks.xmpp.core.stream.model.errors.SystemShutdown;
+import rocks.xmpp.core.stream.model.errors.UndefinedCondition;
+import rocks.xmpp.core.stream.model.errors.UnsupportedEncoding;
+import rocks.xmpp.core.stream.model.errors.UnsupportedFeature;
+import rocks.xmpp.core.stream.model.errors.UnsupportedStanzaType;
+import rocks.xmpp.core.stream.model.errors.UnsupportedVersion;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -50,6 +74,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof BadFormat);
+        Assert.assertTrue(streamError.getCondition() == BadFormat.INSTANCE);
     }
 
     @Test
@@ -60,6 +85,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof BadNamespacePrefix);
+        Assert.assertTrue(streamError.getCondition() == BadNamespacePrefix.INSTANCE);
     }
 
     @Test
@@ -70,6 +96,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof Conflict);
+        Assert.assertTrue(streamError.getCondition() == Conflict.INSTANCE);
     }
 
     @Test
@@ -80,6 +107,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof ConnectionTimeout);
+        Assert.assertTrue(streamError.getCondition() == ConnectionTimeout.INSTANCE);
     }
 
     @Test
@@ -90,6 +118,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof HostGone);
+        Assert.assertTrue(streamError.getCondition() == HostGone.INSTANCE);
     }
 
     @Test
@@ -100,6 +129,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof HostUnknown);
+        Assert.assertTrue(streamError.getCondition() == HostUnknown.INSTANCE);
     }
 
     @Test
@@ -110,6 +140,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof ImproperAddressing);
+        Assert.assertTrue(streamError.getCondition() == ImproperAddressing.INSTANCE);
     }
 
     @Test
@@ -120,6 +151,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof InternalServerError);
+        Assert.assertTrue(streamError.getCondition() == InternalServerError.INSTANCE);
     }
 
     @Test
@@ -130,6 +162,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof InvalidFrom);
+        Assert.assertTrue(streamError.getCondition() == InvalidFrom.INSTANCE);
     }
 
     @Test
@@ -140,6 +173,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof InvalidNamespace);
+        Assert.assertTrue(streamError.getCondition() == InvalidNamespace.INSTANCE);
     }
 
     @Test
@@ -150,6 +184,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof InvalidXml);
+        Assert.assertTrue(streamError.getCondition() == InvalidXml.INSTANCE);
     }
 
     @Test
@@ -160,6 +195,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof NotAuthorized);
+        Assert.assertTrue(streamError.getCondition() == NotAuthorized.INSTANCE);
     }
 
     @Test
@@ -170,6 +206,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof NotWellFormed);
+        Assert.assertTrue(streamError.getCondition() == NotWellFormed.INSTANCE);
     }
 
     @Test
@@ -180,6 +217,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof PolicyViolation);
+        Assert.assertTrue(streamError.getCondition() == PolicyViolation.INSTANCE);
     }
 
     @Test
@@ -190,6 +228,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof RemoteConnectionFailed);
+        Assert.assertTrue(streamError.getCondition() == RemoteConnectionFailed.INSTANCE);
     }
 
     @Test
@@ -200,6 +239,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof Reset);
+        Assert.assertTrue(streamError.getCondition() == Reset.INSTANCE);
     }
 
     @Test
@@ -210,6 +250,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof ResourceConstraint);
+        Assert.assertTrue(streamError.getCondition() == ResourceConstraint.INSTANCE);
     }
 
     @Test
@@ -220,6 +261,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof RestrictedXml);
+        Assert.assertTrue(streamError.getCondition() == RestrictedXml.INSTANCE);
     }
 
     @Test
@@ -241,6 +283,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof SystemShutdown);
+        Assert.assertTrue(streamError.getCondition() == SystemShutdown.INSTANCE);
     }
 
     @Test
@@ -251,6 +294,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof UndefinedCondition);
+        Assert.assertTrue(streamError.getCondition() == UndefinedCondition.INSTANCE);
     }
 
     @Test
@@ -261,6 +305,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof UnsupportedEncoding);
+        Assert.assertTrue(streamError.getCondition() == UnsupportedEncoding.INSTANCE);
     }
 
     @Test
@@ -271,6 +316,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof UnsupportedFeature);
+        Assert.assertTrue(streamError.getCondition() == UnsupportedFeature.INSTANCE);
     }
 
     @Test
@@ -281,6 +327,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof UnsupportedStanzaType);
+        Assert.assertTrue(streamError.getCondition() == UnsupportedStanzaType.INSTANCE);
     }
 
     @Test
@@ -291,6 +338,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertTrue(streamError.getCondition() instanceof UnsupportedVersion);
+        Assert.assertTrue(streamError.getCondition() == UnsupportedVersion.INSTANCE);
     }
 
     @Test
@@ -305,5 +353,6 @@ public class StreamErrorTest extends XmlTest {
         Assert.assertEquals(streamError.getText(), "OPTIONAL descriptive text");
         Assert.assertEquals(streamError.getLanguage(), "en");
         Assert.assertTrue(streamError.getCondition() instanceof HostUnknown);
+        Assert.assertTrue(streamError.getCondition() == HostUnknown.INSTANCE);
     }
 }

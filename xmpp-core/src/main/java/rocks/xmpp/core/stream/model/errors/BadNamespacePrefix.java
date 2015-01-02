@@ -29,6 +29,7 @@ package rocks.xmpp.core.stream.model.errors;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <bad-namespace-prefix/>} stream error.
@@ -38,5 +39,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "bad-namespace-prefix")
+@XmlType(factoryMethod = "create")
 public final class BadNamespacePrefix extends Condition {
+    /**
+     * The {@code <bad-namespace-prefix/>} element.
+     */
+    public static final BadNamespacePrefix INSTANCE = new BadNamespacePrefix();
+
+    private BadNamespacePrefix() {
+    }
+
+    private static BadNamespacePrefix create() {
+        return INSTANCE;
+    }
 }

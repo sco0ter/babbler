@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <not-well-formed/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "not-well-formed")
+@XmlType(factoryMethod = "create")
 public final class NotWellFormed extends Condition {
+    /**
+     * The {@code <not-well-formed/>} element.
+     */
+    public static final NotWellFormed INSTANCE = new NotWellFormed();
+
+    private NotWellFormed() {
+    }
+
+    private static NotWellFormed create() {
+        return INSTANCE;
+    }
 }

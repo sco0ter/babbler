@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <policy-violation/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "policy-violation")
+@XmlType(factoryMethod = "create")
 public final class PolicyViolation extends Condition {
+    /**
+     * The {@code <policy-violation/>} element.
+     */
+    public static final PolicyViolation INSTANCE = new PolicyViolation();
+
+    private PolicyViolation() {
+    }
+
+    private static PolicyViolation create() {
+        return INSTANCE;
+    }
 }

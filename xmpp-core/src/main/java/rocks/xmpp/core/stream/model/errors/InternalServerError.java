@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <internal-server-error/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "internal-server-error")
+@XmlType(factoryMethod = "create")
 public final class InternalServerError extends Condition {
+    /**
+     * The {@code <internal-server-error/>} element.
+     */
+    public static final InternalServerError INSTANCE = new InternalServerError();
+
+    private InternalServerError() {
+    }
+
+    private static InternalServerError create() {
+        return INSTANCE;
+    }
 }

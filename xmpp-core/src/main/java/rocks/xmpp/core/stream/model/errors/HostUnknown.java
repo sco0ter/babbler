@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <host-unknown/>} stream error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "host-unknown")
+@XmlType(factoryMethod = "create")
 public final class HostUnknown extends Condition {
+    /**
+     * The {@code <host-unknown/>} element.
+     */
+    public static final HostUnknown INSTANCE = new HostUnknown();
+
+    private HostUnknown() {
+    }
+
+    private static HostUnknown create() {
+        return INSTANCE;
+    }
 }

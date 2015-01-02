@@ -27,6 +27,7 @@ package rocks.xmpp.core.tls.model;
 import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Represents the TLS proceed case.
@@ -36,7 +37,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement
+@XmlType(factoryMethod = "create")
 public final class Proceed implements ServerStreamElement {
+
+    /**
+     * The {@code <proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>} element.
+     */
+    public static final Proceed INSTANCE = new Proceed();
+
     private Proceed() {
+    }
+
+    private static Proceed create() {
+        return INSTANCE;
     }
 }

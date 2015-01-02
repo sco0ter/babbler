@@ -28,6 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.roster.RosterManager;
+import rocks.xmpp.core.sasl.model.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.Session;
@@ -63,10 +64,6 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.login.AccountLockedException;
-import javax.security.auth.login.CredentialExpiredException;
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.LoginException;
 import javax.security.sasl.RealmCallback;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -638,10 +635,10 @@ public class XmppSession implements Closeable {
     /**
      * Reconnects to the XMPP server and automatically logs in by using the last known information (e.g. user name, password and bound resource).
      *
-     * @throws IOException    If an exception occurred while connecting.
-     * @throws LoginException If an exception occurred while logging in.
+     * @throws IOException   If an exception occurred while connecting.
+     * @throws XmppException If an exception occurred during login.
      */
-    public final synchronized void reconnect() throws IOException, LoginException {
+    public final synchronized void reconnect() throws IOException, XmppException {
         if (status == Status.DISCONNECTED) {
             connect();
             if (wasLoggedIn) {
@@ -649,7 +646,7 @@ public class XmppSession implements Closeable {
                     updateStatus(Status.AUTHENTICATING);
                     authenticationManager.reAuthenticate();
                     bindResource(resource);
-                } catch (Exception e) {
+                } catch (AuthenticationException e) {
                     updateStatus(Status.DISCONNECTED);
                     throw e;
                 }
@@ -723,7 +720,6 @@ public class XmppSession implements Closeable {
         updateStatus(Status.CONNECTED);
     }
 
-
     /**
      * Explicitly closes the connection and performs a clean up of all listeners.
      *
@@ -775,12 +771,10 @@ public class XmppSession implements Closeable {
      *
      * @param user     The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password The password. Must not be null.
-     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
-     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
-     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
-     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
+     * @throws XmppException           If the login failed, due to a XMPP-level error.
      */
-    public final void login(String user, String password) throws LoginException {
+    public final void login(String user, String password) throws XmppException {
         login(user, password, null);
     }
 
@@ -790,12 +784,9 @@ public class XmppSession implements Closeable {
      * @param user     The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password The password. Must not be null.
      * @param resource The resource. If null or empty, the resource is randomly assigned by the server.
-     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
-     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
-     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
-     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
      */
-    public final void login(String user, String password, String resource) throws LoginException {
+    public final void login(String user, String password, String resource) throws XmppException {
         login(null, user, password, resource);
     }
 
@@ -806,12 +797,9 @@ public class XmppSession implements Closeable {
      * @param user            The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password        The password. Must not be null.
      * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
-     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
-     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
-     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
-     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
      */
-    public final void login(String authorizationId, final String user, final String password, String resource) throws LoginException {
+    public final void login(String authorizationId, final String user, final String password, String resource) throws XmppException {
         Objects.requireNonNull(user, "user must not be null.");
         Objects.requireNonNull(password, "password must not be null.");
 
@@ -840,25 +828,22 @@ public class XmppSession implements Closeable {
      * @param authorizationId The authorization id.
      * @param callbackHandler The callback handler.
      * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
-     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
-     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
-     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
-     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.             If the login failed, due to a SASL error reported by the server.
      */
-    public final void login(String authorizationId, CallbackHandler callbackHandler, String resource) throws LoginException {
+    public final void login(String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
         loginInternal(null, authorizationId, callbackHandler, resource);
     }
 
     /**
      * Logs in anonymously and binds a resource.
      *
-     * @throws LoginException If the anonymous login failed.
+     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server. If the anonymous login failed.
      */
-    public final void loginAnonymously() throws LoginException {
+    public final void loginAnonymously() throws XmppException {
         loginInternal(new String[]{"ANONYMOUS"}, null, null, null);
     }
 
-    private synchronized void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws LoginException {
+    private synchronized void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
         if (getStatus() == Status.AUTHENTICATED) {
             throw new IllegalStateException("You are already logged in.");
         }
@@ -881,6 +866,8 @@ public class XmppSession implements Closeable {
             if (callbackHandler != null && getRosterManager().isRetrieveRosterOnLogin()) {
                 getRosterManager().requestRoster();
             }
+        } catch (AuthenticationException e) {
+            throw e;
         } catch (Exception e) {
             // Revert status
             updateStatus(Status.CONNECTED);
@@ -891,13 +878,9 @@ public class XmppSession implements Closeable {
                 }
                 ex.initCause(exception);
             }
-            if (e instanceof LoginException) {
-                throw (LoginException) e;
-            } else {
-                LoginException loginException = new LoginException("Login failed");
-                loginException.initCause(e);
-                throw loginException;
-            }
+            AuthenticationException authenticationException = new AuthenticationException("Authentication failed");
+            authenticationException.initCause(e);
+            throw authenticationException;
         }
         updateStatus(Status.AUTHENTICATED);
     }
@@ -906,9 +889,8 @@ public class XmppSession implements Closeable {
      * Binds a resource to the connection.
      *
      * @param resource The resource to bind. If the resource is null and random resource is bound by the server.
-     * @throws LoginException If the resource binding failed as described in <a href="http://xmpp.org/rfcs/rfc6120.html#bind-servergen-error">7.6.2.  Error Cases</a>
      */
-    private void bindResource(String resource) throws LoginException {
+    private void bindResource(String resource) throws XmppException {
         this.resource = resource;
 
         // Then wait until the bind feature is received, if it hasn't yet.
@@ -917,7 +899,7 @@ public class XmppSession implements Closeable {
             try {
                 // Double check Bind feature. Theoretically it could be put in the features list after checking for the first time, which would lead to a dead lock here.
                 if (!streamFeaturesManager.getFeatures().containsKey(Bind.class) && !streamNegotiatedUntilResourceBinding.await(5, TimeUnit.SECONDS)) {
-                    throw new LoginException("Timeout reached during resource binding.");
+                    throw new NoResponseException("Timeout reached during resource binding.");
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -927,18 +909,7 @@ public class XmppSession implements Closeable {
         }
         // Bind the resource
         IQ iq = new IQ(IQ.Type.SET, new Bind(this.resource));
-        IQ result;
-        try {
-            result = query(iq);
-        } catch (StanzaException e) {
-            LoginException loginException = new LoginException("Error during resource binding: " + e.getStanza().toString());
-            loginException.initCause(e);
-            throw loginException;
-        } catch (XmppException e) {
-            LoginException loginException = new LoginException(e.getMessage());
-            loginException.initCause(e);
-            throw loginException;
-        }
+        IQ result = query(iq);
 
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
@@ -948,17 +919,7 @@ public class XmppSession implements Closeable {
         // But some old server implementation still require it.
         Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
-            try {
-                query(new IQ(IQ.Type.SET, new Session()));
-            } catch (StanzaException e) {
-                LoginException loginException = new LoginException("Error during session establishment: " + e.getStanza().toString());
-                loginException.initCause(e);
-                throw loginException;
-            } catch (XmppException e) {
-                LoginException loginException = new LoginException(e.getMessage());
-                loginException.initCause(e);
-                throw loginException;
-            }
+            query(new IQ(IQ.Type.SET, new Session()));
         }
     }
 

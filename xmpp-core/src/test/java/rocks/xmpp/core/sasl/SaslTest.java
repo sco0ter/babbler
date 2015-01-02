@@ -27,7 +27,13 @@ package rocks.xmpp.core.sasl;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.sasl.model.*;
+import rocks.xmpp.core.sasl.model.Abort;
+import rocks.xmpp.core.sasl.model.Auth;
+import rocks.xmpp.core.sasl.model.AuthenticationException;
+import rocks.xmpp.core.sasl.model.Challenge;
+import rocks.xmpp.core.sasl.model.Failure;
+import rocks.xmpp.core.sasl.model.Response;
+import rocks.xmpp.core.sasl.model.Success;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

@@ -27,13 +27,7 @@ package rocks.xmpp.extensions.httpbind;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.httpbind.model.Body;
-
-import javax.security.auth.login.LoginException;
-import java.io.IOException;
 
 /**
  * @author Christian Schudt

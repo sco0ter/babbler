@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.sasl.XmppSaslClientFactory;
 import rocks.xmpp.core.sasl.model.Auth;
+import rocks.xmpp.core.sasl.model.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Challenge;
 import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Mechanisms;
@@ -34,10 +35,6 @@ import rocks.xmpp.core.sasl.model.Success;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.login.AccountLockedException;
-import javax.security.auth.login.CredentialExpiredException;
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.LoginException;
 import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
@@ -135,13 +132,10 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @param mechanisms      The mechanisms to use.
      * @param authorizationId The authorization identity.
      * @param callbackHandler The callback handler.
-     * @throws SaslException              If a {@link SaslClient} could not be created.
-     * @throws LoginException             If the login failed, due to a SASL error reported by the server.
-     * @throws FailedLoginException       If the login failed, due to a wrong username or password. It is thrown if the server reports a {@code <not-authorized/>} SASL error.
-     * @throws AccountLockedException     If the login failed, because the account has been disabled.  It is thrown if the server reports a {@code <account-disabled/>} SASL error.
-     * @throws CredentialExpiredException If the login failed, because the credentials have expired. It is thrown if the server reports a {@code <credentials-expired/>} SASL error.
+     * @throws SaslException           If a {@link SaslClient} could not be created.
+     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
      */
-    public void authenticate(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws SaslException, LoginException {
+    public void authenticate(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws SaslException, AuthenticationException {
         Collection<String> clientMechanisms;
         if (mechanisms == null) {
             clientMechanisms = new ArrayList<>(Arrays.asList(preferredMechanisms));
@@ -181,27 +175,16 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
         } finally {
             lock.unlock();
         }
-
         // At this point we should be authenticated. If not, throw an exception.
         if (!authenticated) {
             if (authenticationFailure != null) {
-                String failureText;
+                String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
                 if (authenticationFailure.getText() != null) {
-                    failureText = saslClient.getMechanismName() + " authentication failed: " + authenticationFailure.getText();
-                } else {
-                    failureText = saslClient.getMechanismName() + " authentication failed.";
+                    failureText += " (" + authenticationFailure.getText() + ")";
                 }
-                if (authenticationFailure.getCondition() instanceof Failure.NotAuthorized) {
-                    throw new FailedLoginException(failureText);
-                } else if (authenticationFailure.getCondition() instanceof Failure.AccountDisabled) {
-                    throw new AccountLockedException(failureText);
-                } else if (authenticationFailure.getCondition() instanceof Failure.CredentialsExpired) {
-                    throw new CredentialExpiredException(failureText);
-                } else {
-                    throw new LoginException(saslClient.getMechanismName() + " authentication failed with condition: " + (authenticationFailure.getCondition() != null ? authenticationFailure.getCondition().getClass().getSimpleName() : "unknown"));
-                }
+                throw new AuthenticationException(failureText, authenticationFailure);
             } else {
-                throw new LoginException(saslClient.getMechanismName() + " authentication failed for an unknown reason, but probably due to timeout.");
+                throw new AuthenticationException(saslClient.getMechanismName() + " authentication failed for an unknown reason, but probably due to timeout.");
             }
         }
     }
@@ -209,10 +192,10 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     /**
      * Re-authenticates after a connection has disconnected and reconnected. The parameters from the last authentication process is used to re-authenticate.
      *
-     * @throws SaslException  If the SASL mechanism could not be created.
-     * @throws LoginException If the login failed.
+     * @throws SaslException           If the SASL mechanism could not be created.
+     * @throws AuthenticationException If the login failed.
      */
-    public void reAuthenticate() throws SaslException, LoginException {
+    public void reAuthenticate() throws SaslException, AuthenticationException {
         authenticate(lastMechanisms, lastAuthorizationId, lastCallbackHandler);
     }
 

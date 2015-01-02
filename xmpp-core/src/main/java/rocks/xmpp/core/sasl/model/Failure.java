@@ -27,7 +27,12 @@ package rocks.xmpp.core.sasl.model;
 import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <failure/>} element, which indicates a SASL failure.
@@ -85,6 +90,12 @@ public final class Failure implements ServerStreamElement {
             return text.language;
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        String text = getText();
+        return condition.toString() + (text != null ? " (" + text + ")" : "");
     }
 
     /**
@@ -234,6 +245,14 @@ public final class Failure implements ServerStreamElement {
      * A general class for a SASL failure condition.
      */
     public abstract static class Condition {
+
+        private Condition() {
+        }
+
+        @Override
+        public final String toString() {
+            return "<" + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
+        }
     }
 
     /**

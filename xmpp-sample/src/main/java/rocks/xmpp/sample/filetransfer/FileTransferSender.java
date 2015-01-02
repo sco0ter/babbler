@@ -33,7 +33,6 @@ import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 
-import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -43,7 +42,7 @@ import java.util.concurrent.Executors;
  */
 public class FileTransferSender {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override

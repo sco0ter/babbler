@@ -24,17 +24,21 @@
 
 package rocks.xmpp.sample;
 
-import rocks.xmpp.core.session.*;
-import rocks.xmpp.core.session.context.CoreContext;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
-import rocks.xmpp.extensions.compress.model.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
-import javax.net.ssl.*;
-import javax.security.auth.login.LoginException;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -42,7 +46,6 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 
 /**
@@ -50,7 +53,7 @@ import java.util.concurrent.Executors;
  */
 public class SampleApplication {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
@@ -120,7 +123,7 @@ public class SampleApplication {
                     xmppSession.login("admin", "admin", "xmpp");
                     // Send initial presence
                     xmppSession.send(new Presence());
-                } catch (IOException | LoginException | NoSuchAlgorithmException | KeyManagementException e) {
+                } catch (IOException | XmppException | NoSuchAlgorithmException | KeyManagementException e) {
                     e.printStackTrace();
                 }
             }

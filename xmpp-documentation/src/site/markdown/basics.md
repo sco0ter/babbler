@@ -140,8 +140,8 @@ After connecting, you have to authenticate and bind a resource, in order to beco
 ```java
 try {
    xmppSession.login("username", "password", "resource");
-} catch (FailedLoginException e) {
-   // Login failed, due to wrong username/password
+} catch (AuthenticationException e) {
+   // Login failed
 }
 ```
 

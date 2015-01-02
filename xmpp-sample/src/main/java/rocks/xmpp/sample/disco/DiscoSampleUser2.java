@@ -34,7 +34,6 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
@@ -43,7 +42,7 @@ import java.util.concurrent.Executors;
  */
 public class DiscoSampleUser2 {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override

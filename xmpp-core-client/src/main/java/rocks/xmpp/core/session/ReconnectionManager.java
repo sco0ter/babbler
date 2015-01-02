@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stream.model.StreamException;
 import rocks.xmpp.core.stream.model.errors.Conflict;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.Executors;
@@ -108,7 +108,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
                 public void run() {
                     try {
                         xmppSession.reconnect();
-                    } catch (IOException | LoginException e1) {
+                    } catch (IOException | XmppException e1) {
                         scheduleReconnection(attempt + 1);
                     }
                 }

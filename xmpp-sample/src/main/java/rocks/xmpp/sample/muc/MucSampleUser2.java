@@ -28,13 +28,14 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
-import rocks.xmpp.extensions.muc.*;
+import rocks.xmpp.extensions.muc.ChatRoom;
+import rocks.xmpp.extensions.muc.ChatService;
+import rocks.xmpp.extensions.muc.MultiUserChatManager;
+import rocks.xmpp.extensions.muc.OccupantEvent;
+import rocks.xmpp.extensions.muc.OccupantListener;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
@@ -43,7 +44,7 @@ import java.util.concurrent.Executors;
  */
 public class MucSampleUser2 {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override

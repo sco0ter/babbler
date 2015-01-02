@@ -24,6 +24,7 @@
 
 package rocks.xmpp.sample.geolocation;
 
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -32,7 +33,6 @@ import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
@@ -41,7 +41,7 @@ import java.util.concurrent.Executors;
  */
 public class GeolocationPublisher {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
@@ -79,7 +79,7 @@ public class GeolocationPublisher {
 //                    GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
 //                    geoLocationManager.publish(new GeoLocation(123, 321));
 
-                } catch (IOException | LoginException e) {
+                } catch (IOException | XmppException e) {
                     e.printStackTrace();
                 }
             }

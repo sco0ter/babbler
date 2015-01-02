@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -110,7 +111,7 @@ public final class Contact implements Comparable<Contact> {
      * @param name   The name.
      * @param groups The groups for this contact.
      */
-    public Contact(Jid jid, String name, List<String> groups) {
+    public Contact(Jid jid, String name, Collection<String> groups) {
         this.jid = jid;
         this.name = name;
         if (groups != null) {

@@ -27,8 +27,11 @@ package rocks.xmpp.extensions.chatstates.model;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 /**
+ * Represents a chat state, i.e. composing, active, inactive, paused or gone.
+ *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
  * @see <a href="http://xmpp.org/extensions/xep-0085.html#schema">XML Schema</a>
@@ -74,8 +77,13 @@ public abstract class ChatState {
      * The implementation of the {@code <active/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents an active chat state.
      */
     @XmlRootElement
-    public static final class Active extends ChatState {
+    @XmlType(factoryMethod = "create")
+    static final class Active extends ChatState {
         private Active() {
+        }
+
+        private static Active create() {
+            return (Active) ChatState.ACTIVE;
         }
     }
 
@@ -83,8 +91,13 @@ public abstract class ChatState {
      * The implementation of the {@code <composing/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents a composing chat state.
      */
     @XmlRootElement
-    public static final class Composing extends ChatState {
+    @XmlType(factoryMethod = "create")
+    static final class Composing extends ChatState {
         private Composing() {
+        }
+
+        private static Composing create() {
+            return (Composing) ChatState.COMPOSING;
         }
     }
 
@@ -92,8 +105,13 @@ public abstract class ChatState {
      * The implementation of the {@code <gone/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents a gone chat state.
      */
     @XmlRootElement
-    public static final class Gone extends ChatState {
+    @XmlType(factoryMethod = "create")
+    static final class Gone extends ChatState {
         private Gone() {
+        }
+
+        private static Gone create() {
+            return (Gone) ChatState.GONE;
         }
     }
 
@@ -101,8 +119,13 @@ public abstract class ChatState {
      * The implementation of the {@code <inactive/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents an inactive chat state.
      */
     @XmlRootElement
-    public static final class Inactive extends ChatState {
+    @XmlType(factoryMethod = "create")
+    static final class Inactive extends ChatState {
         private Inactive() {
+        }
+
+        private static Inactive create() {
+            return (Inactive) ChatState.INACTIVE;
         }
     }
 
@@ -110,8 +133,13 @@ public abstract class ChatState {
      * The implementation of the {@code <paused/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents a paused chat state.
      */
     @XmlRootElement
-    public static final class Paused extends ChatState {
+    @XmlType(factoryMethod = "create")
+    static final class Paused extends ChatState {
         private Paused() {
+        }
+
+        private static Paused create() {
+            return (Paused) ChatState.PAUSED;
         }
     }
 }

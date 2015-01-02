@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.attention.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <attention/>} element in the {@code urn:xmpp:attention:0} namespace.
@@ -34,10 +35,23 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0224.html#schema">XML Schema</a>
  */
 @XmlRootElement
+@XmlType(factoryMethod = "create")
 public final class Attention {
+
+    /**
+     * The {@code <attention/>} element.
+     */
+    public static final Attention INSTANCE = new Attention();
 
     /**
      * urn:xmpp:attention:0
      */
     public static final String NAMESPACE = "urn:xmpp:attention:0";
+
+    private Attention() {
+    }
+
+    private static Attention create() {
+        return INSTANCE;
+    }
 }

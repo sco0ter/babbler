@@ -62,9 +62,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * <pre>
  * {@code
  * ChatState chatState = message.getExtension(ChatState.class);
- * if (chatState instanceof ChatState.Composing) {
+ * if (chatState == ChatState.COMPOSING) {
  *     // Contact is typing.
- * } else if (chatState instanceof ChatState.Paused) {
+ * } else if (chatState == ChatState.PAUSED) {
  *     // Contact has paused typing.
  * }
  * }

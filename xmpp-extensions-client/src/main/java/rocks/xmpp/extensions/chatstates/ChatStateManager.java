@@ -97,7 +97,7 @@ public final class ChatStateManager extends ExtensionManager implements SessionS
         // Avoid repetition.
         // See XEP-0085 § 5.3 Repetition
         ChatState previousChatState = chatMap.put(chat, chatState);
-        if (isEnabled() || (previousChatState != null && previousChatState.getClass() == chatState.getClass())) {
+        if (!isEnabled() || (previousChatState != null && previousChatState.getClass() == chatState.getClass())) {
             return;
         }
 

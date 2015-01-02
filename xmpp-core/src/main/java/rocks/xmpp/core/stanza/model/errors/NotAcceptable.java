@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <not-acceptable/>} stanza error.
@@ -34,6 +35,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "not-acceptable")
+@XmlType(factoryMethod = "create")
 public final class NotAcceptable extends Condition {
+    /**
+     * The {@code <not-acceptable/>} element.
+     */
+    public static final NotAcceptable INSTANCE = new NotAcceptable();
+
+    private NotAcceptable() {
+    }
+
+    private static NotAcceptable create() {
+        return INSTANCE;
+    }
 }
 

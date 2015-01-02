@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <item-not-found/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "item-not-found")
+@XmlType(factoryMethod = "create")
 public final class ItemNotFound extends Condition {
+    /**
+     * The {@code <item-not-found/>} element.
+     */
+    public static final ItemNotFound INSTANCE = new ItemNotFound();
+
+    private ItemNotFound() {
+    }
+
+    private static ItemNotFound create() {
+        return INSTANCE;
+    }
 }

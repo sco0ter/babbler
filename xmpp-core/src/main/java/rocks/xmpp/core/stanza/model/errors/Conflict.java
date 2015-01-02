@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <conflict/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "conflict")
+@XmlType(factoryMethod = "create")
 public final class Conflict extends Condition {
+    /**
+     * The {@code <conflict/>} element.
+     */
+    public static final Conflict INSTANCE = new Conflict();
+
+    private Conflict() {
+    }
+
+    private static Conflict create() {
+        return INSTANCE;
+    }
 }

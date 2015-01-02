@@ -118,7 +118,7 @@ public final class StanzaError {
      */
     @SuppressWarnings("unused")
     private StanzaError() {
-        this(null, new UndefinedCondition(), null, null, null, null);
+        this(null, UndefinedCondition.INSTANCE, null, null, null, null);
     }
 
     /**

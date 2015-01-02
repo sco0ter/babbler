@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <feature-not-implemented/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "feature-not-implemented")
+@XmlType(factoryMethod = "create")
 public final class FeatureNotImplemented extends Condition {
+    /**
+     * The {@code <feature-not-implemented/>} element.
+     */
+    public static final FeatureNotImplemented INSTANCE = new FeatureNotImplemented();
+
+    private FeatureNotImplemented() {
+    }
+
+    private static FeatureNotImplemented create() {
+        return INSTANCE;
+    }
 }

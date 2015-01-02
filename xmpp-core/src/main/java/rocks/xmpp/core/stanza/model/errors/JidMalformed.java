@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <jid-malformed/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "jid-malformed")
+@XmlType(factoryMethod = "create")
 public final class JidMalformed extends Condition {
+    /**
+     * The {@code <jid-malformed/>} element.
+     */
+    public static final JidMalformed INSTANCE = new JidMalformed();
+
+    private JidMalformed() {
+    }
+
+    private static JidMalformed create() {
+        return INSTANCE;
+    }
 }

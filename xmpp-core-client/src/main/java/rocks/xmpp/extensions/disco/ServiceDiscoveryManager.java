@@ -431,7 +431,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
                     } else {
                         // Returns <feature-not-implemented/> here.
                         // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
-                        xmppSession.send(iq.createError(new StanzaError(new FeatureNotImplemented())));
+                        xmppSession.send(iq.createError(new StanzaError(FeatureNotImplemented.INSTANCE)));
                     }
                 }
                 e.consume();

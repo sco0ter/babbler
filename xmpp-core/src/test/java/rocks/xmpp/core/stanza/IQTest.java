@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Roster;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
@@ -96,7 +95,7 @@ public class IQTest extends XmlTest {
 
     @Test
     public void marshalIQWithError() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(new Jid("to", "domain"), IQ.Type.GET, null, "id", new Jid("from", "domain"), null, new StanzaError(StanzaError.Type.MODIFY, new ServiceUnavailable()));
+        IQ iq = new IQ(new Jid("to", "domain"), IQ.Type.GET, null, "id", new Jid("from", "domain"), null, new StanzaError(StanzaError.Type.MODIFY, ServiceUnavailable.INSTANCE));
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"><error type=\"modify\"><service-unavailable xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></service-unavailable></error></iq>");
     }
@@ -104,7 +103,7 @@ public class IQTest extends XmlTest {
     @Test
     public void testErrorIQ() throws JAXBException, XMLStreamException {
         IQ iq = new IQ(new Jid("to", "domain"), IQ.Type.GET, null, "id", new Jid("from", "domain"), null, null);
-        IQ error = iq.createError(new StanzaError(new UndefinedCondition()));
+        IQ error = iq.createError(new StanzaError(UndefinedCondition.INSTANCE));
         Assert.assertEquals(error.getType(), IQ.Type.ERROR);
         Assert.assertEquals(error.getId(), iq.getId());
         Assert.assertEquals(error.getTo(), iq.getFrom());

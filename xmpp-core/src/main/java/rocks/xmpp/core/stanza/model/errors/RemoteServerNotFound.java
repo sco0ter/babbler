@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <remote-server-not-found/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "remote-server-not-found")
+@XmlType(factoryMethod = "create")
 public final class RemoteServerNotFound extends Condition {
+    /**
+     * The {@code <remote-server-not-found/>} element.
+     */
+    public static final RemoteServerNotFound INSTANCE = new RemoteServerNotFound();
+
+    private RemoteServerNotFound() {
+    }
+
+    private static RemoteServerNotFound create() {
+        return INSTANCE;
+    }
 }

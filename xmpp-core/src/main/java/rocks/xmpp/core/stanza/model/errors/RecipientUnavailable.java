@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <recipient-unavailable/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "recipient-unavailable")
+@XmlType(factoryMethod = "create")
 public final class RecipientUnavailable extends Condition {
+    /**
+     * The {@code <recipient-unavailable/>} element.
+     */
+    public static final RecipientUnavailable INSTANCE = new RecipientUnavailable();
+
+    private RecipientUnavailable() {
+    }
+
+    private static RecipientUnavailable create() {
+        return INSTANCE;
+    }
 }

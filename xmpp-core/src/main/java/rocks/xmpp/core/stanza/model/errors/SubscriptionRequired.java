@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <subscription-required/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "subscription-required")
+@XmlType(factoryMethod = "create")
 public final class SubscriptionRequired extends Condition {
+    /**
+     * The {@code <subscription-required/>} element.
+     */
+    public static final SubscriptionRequired INSTANCE = new SubscriptionRequired();
+
+    private SubscriptionRequired() {
+    }
+
+    private static SubscriptionRequired create() {
+        return INSTANCE;
+    }
 }

@@ -135,7 +135,7 @@ public final class RpcManager extends ExtensionManager implements SessionStatusL
                                     xmppSession.send(iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString()))));
                                 } catch (Throwable e1) {
                                     logger.log(Level.WARNING, e1.getMessage(), e1);
-                                    xmppSession.send(iq.createError(new StanzaError(new InternalServerError())));
+                                    xmppSession.send(iq.createError(new StanzaError(InternalServerError.INSTANCE)));
                                 }
                             }
                         });

@@ -82,7 +82,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                         fileTransfer.removeFileTransferStatusListener(this);
                     } else if (e.getStatus() == FileTransfer.Status.CANCELED ||
                             e.getStatus() == FileTransfer.Status.FAILED) {
-                        xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                        xmppSession.send(iq.createError(new StanzaError(ItemNotFound.INSTANCE)));
                         fileTransfer.removeFileTransferStatusListener(this);
                     }
                 }
@@ -96,7 +96,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
     @Override
     public void reject(IQ iq) {
         // If the recipient rejects the request outright, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Acceptable condition:
-        xmppSession.send(iq.createError(new StanzaError(new NotAcceptable())));
+        xmppSession.send(iq.createError(new StanzaError(NotAcceptable.INSTANCE)));
     }
 
     @Override
@@ -164,7 +164,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                             }, OutOfBandFileTransferManager.this);
                         } else {
                             // If the URL is no HTTP URL, return a stanza error.
-                            xmppSession.send(iq.createError(new StanzaError(new NotAcceptable())));
+                            xmppSession.send(iq.createError(new StanzaError(NotAcceptable.INSTANCE)));
                         }
                     } catch (ProtocolException e1) {
                         throw new IOException(e1);
@@ -175,7 +175,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                     }
                 } catch (IOException e1) {
                     // If the recipient attempts to retrieve the file but is unable to do so, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Found condition:
-                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                    xmppSession.send(iq.createError(new StanzaError(ItemNotFound.INSTANCE)));
                 }
                 e.consume();
             }

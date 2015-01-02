@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <registration-required/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "registration-required")
+@XmlType(factoryMethod = "create")
 public final class RegistrationRequired extends Condition {
+    /**
+     * The {@code <registration-required/>} element.
+     */
+    public static final RegistrationRequired INSTANCE = new RegistrationRequired();
+
+    private RegistrationRequired() {
+    }
+
+    private static RegistrationRequired create() {
+        return INSTANCE;
+    }
 }

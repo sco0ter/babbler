@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <resource-constraint/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "resource-constraint")
+@XmlType(factoryMethod = "create")
 public final class ResourceConstraint extends Condition {
+    /**
+     * The {@code <resource-constraint/>} element.
+     */
+    public static final ResourceConstraint INSTANCE = new ResourceConstraint();
+
+    private ResourceConstraint() {
+    }
+
+    private static ResourceConstraint create() {
+        return INSTANCE;
+    }
 }

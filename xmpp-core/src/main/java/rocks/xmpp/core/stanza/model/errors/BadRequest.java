@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <bad-request/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "bad-request")
+@XmlType(factoryMethod = "create")
 public final class BadRequest extends Condition {
+    /**
+     * The {@code <bad-request/>} element.
+     */
+    public static final BadRequest INSTANCE = new BadRequest();
+
+    private BadRequest() {
+    }
+
+    private static BadRequest create() {
+        return INSTANCE;
+    }
 }

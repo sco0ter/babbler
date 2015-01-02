@@ -222,7 +222,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
     @Override
     public void reject(IQ iq) {
-        xmppSession.send(iq.createError(new StanzaError(new Forbidden())));
+        xmppSession.send(iq.createError(new StanzaError(Forbidden.INSTANCE)));
     }
 
     @Override
@@ -251,12 +251,12 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                     }
                 }
                 if (noValidStreams) {
-                    xmppSession.send(iq.createError(new StanzaError(new BadRequest(), new NoValidStreams())));
+                    xmppSession.send(iq.createError(new StanzaError(BadRequest.INSTANCE, new NoValidStreams())));
                 } else {
                     ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
 
                     if (profileManager == null) {
-                        xmppSession.send(iq.createError(new StanzaError(new BadRequest(), new BadProfile())));
+                        xmppSession.send(iq.createError(new StanzaError(BadRequest.INSTANCE, new BadProfile())));
                     } else {
                         profileManager.handle(iq, streamInitiation);
                     }

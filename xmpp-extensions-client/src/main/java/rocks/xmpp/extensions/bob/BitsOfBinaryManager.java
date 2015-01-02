@@ -95,7 +95,7 @@ class BitsOfBinaryManager extends ExtensionManager implements SessionStatusListe
                     IQ result = iq.createResult(cachedData);
                     xmppSession.send(result);
                 } else {
-                    xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                    xmppSession.send(iq.createError(new StanzaError(ItemNotFound.INSTANCE)));
                 }
                 e.consume();
             }

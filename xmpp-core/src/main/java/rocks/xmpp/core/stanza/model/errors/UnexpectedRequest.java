@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unexpected-request/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "unexpected-request")
+@XmlType(factoryMethod = "create")
 public final class UnexpectedRequest extends Condition {
+    /**
+     * The {@code <unexpected-request/>} element.
+     */
+    public static final UnexpectedRequest INSTANCE = new UnexpectedRequest();
+
+    private UnexpectedRequest() {
+    }
+
+    private static UnexpectedRequest create() {
+        return INSTANCE;
+    }
 }

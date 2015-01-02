@@ -440,7 +440,7 @@ public class XmppSession implements Closeable {
             }
             if (incoming && (iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET) && !iqEvent.isConsumed()) {
                 // return <service-unavailble/> if the <iq/> is not understood or has not been handles by an event listener.
-                IQ error = iq.createError(new StanzaError(new ServiceUnavailable()));
+                IQ error = iq.createError(new StanzaError(ServiceUnavailable.INSTANCE));
                 send(error);
             }
         }

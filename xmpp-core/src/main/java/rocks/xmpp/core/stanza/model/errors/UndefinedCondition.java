@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <undefined-condition/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "undefined-condition")
+@XmlType(factoryMethod = "create")
 public final class UndefinedCondition extends Condition {
+    /**
+     * The {@code <undefined-condition/>} element.
+     */
+    public static final UndefinedCondition INSTANCE = new UndefinedCondition();
+
+    private UndefinedCondition() {
+    }
+
+    private static UndefinedCondition create() {
+        return INSTANCE;
+    }
 }

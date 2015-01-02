@@ -183,7 +183,7 @@ public class MessageTest extends XmlTest {
 
     @Test
     public void marshalErrorMessage() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.ERROR, "test", null, null, null, null, null, null, null, new StanzaError(new Conflict()));
+        Message message = new Message(Jid.valueOf("juliet@example.com"), Message.Type.ERROR, "test", null, null, null, null, null, null, null, new StanzaError(Conflict.INSTANCE));
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"error\"><body>test</body><error type=\"cancel\"><conflict xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></conflict></error></message>");
     }

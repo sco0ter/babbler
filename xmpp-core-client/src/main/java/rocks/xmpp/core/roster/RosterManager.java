@@ -559,7 +559,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
                         updateRoster(roster, true);
                     } else {
                         // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
-                        xmppSession.send(iq.createError(new StanzaError(new ServiceUnavailable())));
+                        xmppSession.send(iq.createError(new StanzaError(ServiceUnavailable.INSTANCE)));
                     }
                 } else if (iq.getType() == IQ.Type.RESULT) {
                     updateRoster(roster, false);

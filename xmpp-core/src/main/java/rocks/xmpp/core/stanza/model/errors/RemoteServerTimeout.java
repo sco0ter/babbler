@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <remote-server-timeout/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "remote-server-timeout")
+@XmlType(factoryMethod = "create")
 public final class RemoteServerTimeout extends Condition {
+    /**
+     * The {@code <remote-server-timeout/>} element.
+     */
+    public static final RemoteServerTimeout INSTANCE = new RemoteServerTimeout();
+
+    private RemoteServerTimeout() {
+    }
+
+    private static RemoteServerTimeout create() {
+        return INSTANCE;
+    }
 }

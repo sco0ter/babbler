@@ -273,7 +273,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager implements 
             if (socks5ByteStream != null) {
                 if (socks5ByteStream.getSessionId() == null) {
                     // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
-                    xmppSession.send(iq.createError(new StanzaError(new BadRequest())));
+                    xmppSession.send(iq.createError(new StanzaError(BadRequest.INSTANCE)));
                 } else {
                     notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
                 }

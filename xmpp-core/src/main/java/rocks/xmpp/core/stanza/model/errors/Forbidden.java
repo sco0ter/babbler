@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <forbidden/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "forbidden")
+@XmlType(factoryMethod = "create")
 public final class Forbidden extends Condition {
+    /**
+     * The {@code <forbidden/>} element.
+     */
+    public static final Forbidden INSTANCE = new Forbidden();
+
+    private Forbidden() {
+    }
+
+    private static Forbidden create() {
+        return INSTANCE;
+    }
 }

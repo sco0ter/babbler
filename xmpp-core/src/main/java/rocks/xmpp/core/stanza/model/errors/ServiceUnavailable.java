@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <service-unavailable/>} stanza error.
@@ -34,5 +35,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </blockquote>
  */
 @XmlRootElement(name = "service-unavailable")
+@XmlType(factoryMethod = "create")
 public final class ServiceUnavailable extends Condition {
+    /**
+     * The {@code <service-unavailable/>} element.
+     */
+    public static final ServiceUnavailable INSTANCE = new ServiceUnavailable();
+
+    private ServiceUnavailable() {
+    }
+
+    private static ServiceUnavailable create() {
+        return INSTANCE;
+    }
 }

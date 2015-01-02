@@ -286,7 +286,7 @@ public final class ContactExchangeManager extends ExtensionManager implements Se
             if (contactExchange != null) {
                 if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
                     // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
-                    xmppSession.send(iq.createError(new StanzaError(new NotAuthorized())));
+                    xmppSession.send(iq.createError(new StanzaError(NotAuthorized.INSTANCE)));
                 } else {
                     List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
                     if (!items.isEmpty()) {

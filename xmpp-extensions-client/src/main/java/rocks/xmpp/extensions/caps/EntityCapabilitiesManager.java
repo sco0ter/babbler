@@ -65,6 +65,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,6 +95,8 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
 
     // Cache the capabilities of an entity.
     private static final Map<Jid, InfoNode> ENTITY_CAPABILITIES = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<Jid, Lock> requestingLocks = new ConcurrentHashMap<>();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -211,9 +215,28 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
     public InfoNode discoverCapabilities(Jid jid) throws XmppException {
         InfoNode infoNode = ENTITY_CAPABILITIES.get(jid);
         if (infoNode == null) {
-            synchronized (ENTITY_CAPABILITIES) {
+            // Make sure, that for the same JID no multiple concurrent queries are sent. One is enough.
+            // Use the double-checked locking idiom.
+
+            // Acquire the lock for the JID.
+            Lock lock = new ReentrantLock();
+            Lock existingLock = requestingLocks.putIfAbsent(jid, lock);
+            if (existingLock != null) {
+                lock = existingLock;
+            }
+
+            lock.lock();
+            // Recheck the cache (this is the double-check), maybe it has been inserted by another thread.
+            infoNode = ENTITY_CAPABILITIES.get(jid);
+            if (infoNode != null) {
+                return infoNode;
+            }
+            try {
                 infoNode = serviceDiscoveryManager.discoverInformation(jid);
                 ENTITY_CAPABILITIES.put(jid, infoNode);
+            } finally {
+                lock.unlock();
+                requestingLocks.remove(jid);
             }
         }
         return infoNode;

@@ -30,7 +30,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stanza.model.errors.RemoteServerNotFound;
 
@@ -218,7 +217,7 @@ public class PresenceTest extends XmlTest {
                 "  <priority>1</priority>\n" +
                 "</presence>";
         Presence presence = unmarshal(xml, Presence.class);
-        Assert.assertEquals(presence.getPriority(), 1);
+        Assert.assertEquals(presence.getPriority(), Byte.valueOf((byte) 1));
     }
 
     @Test

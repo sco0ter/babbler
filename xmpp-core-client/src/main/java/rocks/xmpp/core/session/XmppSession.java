@@ -489,26 +489,26 @@ public class XmppSession implements Closeable {
         }
 
         final IQ[] result = new IQ[1];
-
-        final Condition resultReceived = lock.newCondition();
+        final Lock queryLock = new ReentrantLock();
+        final Condition resultReceived = queryLock.newCondition();
 
         final IQListener listener = new IQListener() {
             @Override
             public void handleIQ(IQEvent e) {
                 IQ responseIQ = e.getIQ();
                 if (e.isIncoming() && responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
-                    lock.lock();
+                    queryLock.lock();
                     try {
                         result[0] = responseIQ;
                     } finally {
                         resultReceived.signal();
-                        lock.unlock();
+                        queryLock.unlock();
                     }
                 }
             }
         };
 
-        lock.lock();
+        queryLock.lock();
         try {
             addIQListener(listener);
             send(iq);
@@ -519,7 +519,7 @@ public class XmppSession implements Closeable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            lock.unlock();
+            queryLock.unlock();
             removeIQListener(listener);
         }
         IQ response = result[0];
@@ -540,26 +540,26 @@ public class XmppSession implements Closeable {
      */
     public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
         final Presence[] result = new Presence[1];
-
-        final Condition resultReceived = lock.newCondition();
+        final Lock presenceLock = new ReentrantLock();
+        final Condition resultReceived = presenceLock.newCondition();
 
         final PresenceListener listener = new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
                 if (e.isIncoming() && filter.accept(presence)) {
-                    lock.lock();
+                    presenceLock.lock();
                     try {
                         result[0] = presence;
                     } finally {
                         resultReceived.signal();
-                        lock.unlock();
+                        presenceLock.unlock();
                     }
                 }
             }
         };
 
-        lock.lock();
+        presenceLock.lock();
         try {
             addPresenceListener(listener);
             send(stanza);
@@ -570,7 +570,7 @@ public class XmppSession implements Closeable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            lock.unlock();
+            presenceLock.unlock();
             removePresenceListener(listener);
         }
         Presence response = result[0];
@@ -592,26 +592,26 @@ public class XmppSession implements Closeable {
     public Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws NoResponseException, StanzaException {
 
         final Message[] result = new Message[1];
-
-        final Condition resultReceived = lock.newCondition();
+        final Lock messageLock = new ReentrantLock();
+        final Condition resultReceived = messageLock.newCondition();
 
         final MessageListener listener = new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
                 if (e.isIncoming() && filter.accept(message)) {
-                    lock.lock();
+                    messageLock.lock();
                     try {
                         result[0] = message;
                     } finally {
                         resultReceived.signal();
-                        lock.unlock();
+                        messageLock.unlock();
                     }
                 }
             }
         };
 
-        lock.lock();
+        messageLock.lock();
         try {
             addMessageListener(listener);
             send(stanza);
@@ -622,7 +622,7 @@ public class XmppSession implements Closeable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {
-            lock.unlock();
+            messageLock.unlock();
             removeMessageListener(listener);
         }
         Message response = result[0];
@@ -969,6 +969,7 @@ public class XmppSession implements Closeable {
         lock.lock();
         try {
             streamNegotiatedUntilSasl.signalAll();
+            streamNegotiatedUntilResourceBinding.signalAll();
         } finally {
             lock.unlock();
         }

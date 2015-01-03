@@ -573,8 +573,9 @@ public final class BoshConnection extends Connection {
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8"), true);
 
                                     // Then write the XML to the output stream by marshalling the object to the writer.
-                                    getXmppSession().getMarshaller().marshal(body, xmlStreamWriter);
-
+                                    synchronized (getXmppSession().getMarshaller()) {
+                                        getXmppSession().getMarshaller().marshal(body, xmlStreamWriter);
+                                    }
                                     if (debugger != null) {
                                         debugger.writeStanza(byteArrayOutputStreamRequest.toString(), body);
                                     }
@@ -606,13 +607,14 @@ public final class BoshConnection extends Connection {
 
                                         // Parse the <body/> element.
                                         if (xmlEvent.isStartElement()) {
-                                            synchronized (httpBindExecutor) {
-                                                final JAXBElement<Body> element = getXmppSession().getUnmarshaller().unmarshal(xmlEventReader, Body.class);
-                                                if (debugger != null) {
-                                                    debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
-                                                }
-                                                unpackBody(element.getValue(), body.getRid());
+                                            JAXBElement<Body> element;
+                                            synchronized (getXmppSession().getUnmarshaller()) {
+                                                element = getXmppSession().getUnmarshaller().unmarshal(xmlEventReader, Body.class);
                                             }
+                                            if (debugger != null) {
+                                                debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
+                                            }
+                                            unpackBody(element.getValue(), body.getRid());
                                         } else {
                                             xmlEventReader.next();
                                         }

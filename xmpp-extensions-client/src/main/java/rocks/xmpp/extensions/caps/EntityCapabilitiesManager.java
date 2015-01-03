@@ -247,7 +247,9 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream);
             XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-            xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
+            synchronized (xmppSession.getMarshaller()) {
+                xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
+            }
             directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage());
@@ -260,7 +262,9 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
         if (bytes != null) {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
             try {
-                return (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
+                synchronized (xmppSession.getUnmarshaller()) {
+                    return (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
+                }
             } catch (JAXBException e) {
                 logger.log(Level.WARNING, "Could not read e entity capabilities from persistent cache (file: " + fileName + ")");
             }

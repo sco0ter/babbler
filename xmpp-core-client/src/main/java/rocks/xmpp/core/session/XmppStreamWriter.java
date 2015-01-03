@@ -163,7 +163,7 @@ final class XmppStreamWriter {
                 @Override
                 public void run() {
                     try {
-                        synchronized (xmlOutputFactory) {
+                        synchronized (marshaller) {
                             marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                         }
                         prefixFreeCanonicalizationWriter.flush();

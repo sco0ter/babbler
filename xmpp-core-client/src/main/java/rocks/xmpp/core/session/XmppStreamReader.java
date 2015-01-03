@@ -120,17 +120,19 @@ final class XmppStreamReader {
 
                                 xmlEventReader.next();
                             } else {
-                                Object object = xmppSession.getUnmarshaller().unmarshal(xmlEventReader);
-
+                                Object object;
+                                synchronized (xmppSession.getUnmarshaller()) {
+                                    object = xmppSession.getUnmarshaller().unmarshal(xmlEventReader);
+                                }
                                 if (debugger != null) {
-                                    if (isFirstPass) {
+                                    if (isFirstPass && byteArrayOutputStream != null) {
                                         // If it's the first pass, include the stream header with the <features/>, which are both in the byteArrayOutputStream at this point.
                                         debugger.readStanza(byteArrayOutputStream.toString(), object);
                                     } else {
                                         // Otherwise marshal the incoming stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
                                         StringWriter stringWriter = new StringWriter();
                                         XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
-                                        synchronized (xmlOutputFactory) {
+                                        synchronized (xmppSession.getMarshaller()) {
                                             xmppSession.getMarshaller().marshal(object, xmlStreamWriter);
                                         }
                                         debugger.readStanza(stringWriter.toString(), object);

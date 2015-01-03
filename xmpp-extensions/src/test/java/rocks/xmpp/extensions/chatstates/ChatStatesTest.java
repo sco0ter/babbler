@@ -36,9 +36,9 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class ChatStateManagerTest extends XmlTest {
+public class ChatStatesTest extends XmlTest {
 
-    protected ChatStateManagerTest() throws JAXBException, XMLStreamException {
+    protected ChatStatesTest() throws JAXBException, XMLStreamException {
         super(Message.class, ChatState.class);
     }
 

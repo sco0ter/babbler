@@ -36,6 +36,7 @@ import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.util.cache.DirectoryCache;
+import rocks.xmpp.core.util.cache.LruCache;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -87,9 +88,13 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
 
     private static final String HASH_ALGORITHM = "sha-1";
 
-    private final ServiceDiscoveryManager serviceDiscoveryManager;
+    // Cache up to 100 verification strings in memory.
+    private static final Map<Verification, InfoNode> CAPS_CACHE = new LruCache<>(100);
 
-    private final Map<Jid, InfoNode> jidInfos = new ConcurrentHashMap<>();
+    // Cache the capabilities of an entity.
+    private static final Map<Jid, InfoNode> ENTITY_CAPABILITIES = new ConcurrentHashMap<>();
+
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     private final ExecutorService serviceDiscoverer;
 
@@ -204,11 +209,11 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      * @see <a href="http://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
     public InfoNode discoverCapabilities(Jid jid) throws XmppException {
-        InfoNode infoNode = jidInfos.get(jid);
+        InfoNode infoNode = ENTITY_CAPABILITIES.get(jid);
         if (infoNode == null) {
-            synchronized (jidInfos) {
+            synchronized (ENTITY_CAPABILITIES) {
                 infoNode = serviceDiscoveryManager.discoverInformation(jid);
-                jidInfos.put(jid, infoNode);
+                ENTITY_CAPABILITIES.put(jid, infoNode);
             }
         }
         return infoNode;
@@ -243,6 +248,10 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
     }
 
     private void writeToCache(Verification verification, InfoNode infoNode) {
+        // Write to in-memory cache.
+        CAPS_CACHE.put(verification, infoNode);
+
+        // Write to persistent cache.
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream);
@@ -252,23 +261,32 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
             }
             directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage());
+            logger.log(Level.WARNING, "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage(), e);
         }
     }
 
     private InfoNode readFromCache(Verification verification) {
+        // First check the in-memory cache.
+        InfoNode infoNode = CAPS_CACHE.get(verification);
+        if (infoNode != null) {
+            return infoNode;
+        }
+        // If it's not present, check the persistent cache.
         String fileName = XmppUtils.hash(verification.toString().getBytes()) + ".caps";
         byte[] bytes = directoryCapsCache.get(fileName);
         if (bytes != null) {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
             try {
                 synchronized (xmppSession.getUnmarshaller()) {
-                    return (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
+                    infoNode = (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
+                    CAPS_CACHE.put(verification, infoNode);
+                    return infoNode;
                 }
             } catch (JAXBException e) {
-                logger.log(Level.WARNING, "Could not read e entity capabilities from persistent cache (file: " + fileName + ")");
+                logger.log(Level.WARNING, "Could not read entity capabilities from persistent cache (file: " + fileName + ")", e);
             }
         }
+        // The verification string is unknown, Service Discovery needs to be done.
         return null;
     }
 
@@ -301,7 +319,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
                     InfoNode infoNode = readFromCache(verification);
                     if (entityCapabilities.getHashingAlgorithm() != null && infoNode != null) {
                         // If its known, just update the information for this entity.
-                        jidInfos.put(presence.getFrom(), infoNode);
+                        ENTITY_CAPABILITIES.put(presence.getFrom(), infoNode);
                     } else {
                         // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver'
                         final String hashAlgorithm = entityCapabilities.getHashingAlgorithm();
@@ -356,7 +374,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
                                                 if (verificationString.equals(entityCapabilities.getVerificationString())) {
                                                     writeToCache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
                                                 }
-                                                jidInfos.put(presence.getFrom(), infoDiscovery);
+                                                ENTITY_CAPABILITIES.put(presence.getFrom(), infoDiscovery);
 
                                                 // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
                                             } catch (XmppException e1) {
@@ -368,7 +386,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
                                                     // 2.2 Receive a service discovery information response from the generating entity.
                                                     InfoNode infoNode = serviceDiscoveryManager.discoverInformation(presence.getFrom(), entityCapabilities.getNode());
                                                     // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
-                                                    jidInfos.put(presence.getFrom(), infoNode);
+                                                    ENTITY_CAPABILITIES.put(presence.getFrom(), infoNode);
                                                 } catch (XmppException e2) {
                                                     logger.log(Level.WARNING, e2.getMessage(), e2);
                                                 }
@@ -387,7 +405,6 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
     @Override
     public void sessionStatusChanged(SessionStatusEvent e) {
         if (e.getStatus() == XmppSession.Status.CLOSED) {
-            jidInfos.clear();
             synchronized (serviceDiscoverer) {
                 serviceDiscoverer.shutdown();
             }

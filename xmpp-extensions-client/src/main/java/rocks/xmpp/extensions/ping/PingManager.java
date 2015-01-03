@@ -95,7 +95,7 @@ public final class PingManager extends ExtensionManager implements SessionStatus
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void ping(Jid jid) throws XmppException {
-        xmppSession.query(new IQ(jid, IQ.Type.GET, new Ping()));
+        xmppSession.query(new IQ(jid, IQ.Type.GET, Ping.INSTANCE));
     }
 
     /**

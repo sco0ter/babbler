@@ -24,11 +24,18 @@
 
 package rocks.xmpp.core.session;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.EventObject;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
-
-import java.util.Objects;
 
 /**
  * Implements a one-to-one chat session. They are described in <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="http://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
@@ -41,12 +48,132 @@ import java.util.Objects;
  * </p>
  */
 public final class ChatSession extends Chat {
+	
+	private static final Logger LOGGER = Logger.getLogger(ChatSession.class.getName());
+
+	/**
+	 * A {@code ChatPartnerEvent} is fired, whenever a {@link ChatSession}'s partner was
+	 * replaced.
+	 * 
+	 * @since 0.5.0
+	 * @author Markus KARG (markus@headcrashing.eu)
+	 * @see ChatSession#addChatPartnerListener(ChatPartnerListener)
+	 * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
+	 * @see ChatPartnerListener
+	 */
+	@SuppressWarnings("serial")
+	public static final class ChatPartnerEvent extends EventObject {
+		
+		/**
+		 * Constructs a {@link ChatPartnerEvent}.
+		 * 
+		 * @param source The {@link ChatSession} on which the event initially occurred.
+		 * @param oldChatPartner The {@link JID} of the old chat partner. Must not be {@code null}.
+		 * @param newChatPartner The {@link JID} of the new chat partner. Must not be {@code null}.
+		 * @see #getOldChatPartner()
+		 * @see #getNewChatPartner()
+		 */
+		private ChatPartnerEvent(final ChatSession source, final Jid oldChatPartner, final Jid newChatPartner) {
+			super(requireNonNull(source, "source must not be null"));
+			this.oldChatPartner = requireNonNull(oldChatPartner, "oldChatPartner must not be null");
+			this.newChatPartner = requireNonNull(newChatPartner, "newChatPartner must not be null");
+		}
+		
+		private final Jid oldChatPartner;
+
+		/**
+		 * Gets the JID of the new chat partner. Will never be {@code null}.
+		 * 
+		 * @return The JID of the new chat partner.
+		 * @see #getOldChatPartner()
+		 */
+		public final Jid getNewChatPartner() {
+			return newChatPartner;
+		}
+		
+		private final Jid newChatPartner;
+		
+		/**
+		 * Gets the JID of the old chat partner. Will never be {@code null}.
+		 * 
+		 * @return The JID of the old chat partner.
+		 * @see #getNewChatPartner()
+		 */
+		public final Jid getOldChatPartner() {
+			return oldChatPartner;
+		}
+	}
+	
+	/**
+	 * A listener interface which allows to listen for partner changes in chat sessions.
+	 * 
+	 * @since 0.50
+	 * @author Markus KARG (markus@headcrashing.eu)
+	 * @see ChatPartnerEvent
+	 * @see ChatSession#addChatPartnerListener(ChatPartnerListener)
+	 * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
+	 */
+	public static interface ChatPartnerListener {
+
+		/**
+		 * Called, whenever the {@link ChatSession}'s partner was replaced.
+		 *
+		 * @param chatPartnerEvent
+		 *            The chat partner event.
+		 */
+		void chatPartnerChanged(ChatPartnerEvent chatPartnerEvent);
+	}
+
+    private final Set<ChatPartnerListener> chatPartnerListeners = new CopyOnWriteArraySet<>();
+    
+	/**
+	 * Adds a chat partner listener.
+	 * 
+	 * @param chatPartnerListener
+	 *            The listener to add. Must not be {@code null}.
+	 * @since 0.5.0
+	 * @see #removeChatPartnerListener(ChatPartnerListener)
+	 * @see ChatPartnerListener
+	 * @see ChatPartnerEvent
+	 */
+    public final void addChatPartnerListener(final ChatPartnerListener chatPartnerListener) {
+    	chatPartnerListeners.add(requireNonNull(chatPartnerListener, "chatPartnerListener must not be null"));
+    }
+    
+	/**
+	 * Removes a chat partner listener.
+	 * 
+	 * @param chatPartnerListener
+	 *            The listener to remove. Must not be {@code null}.
+	 * @since 0.5.0
+	 * @see #addChatPartnerListener(ChatPartnerListener)
+	 * @see ChatPartnerListener
+	 * @see ChatPartnerEvent
+	 */
+    public final void removeChatPartnerListener(final ChatPartnerListener chatPartnerListener) {
+    	chatPartnerListeners.remove(requireNonNull(chatPartnerListener, "chatPartnerListener must not be nulll"));
+    }
+    
+    private final void notifyChatPartnerListeners(final ChatPartnerEvent chatPartnerEvent) {
+    	requireNonNull(chatPartnerEvent, "chatPartnerEvent must not be null");
+		for (final ChatPartnerListener chatPartnerListener : chatPartnerListeners) {
+			try {
+				chatPartnerListener.chatPartnerChanged(chatPartnerEvent);
+			} catch (final Exception e) {
+				LOGGER.log(Level.WARNING, e.getMessage(), e);
+			}
+		}
+    }
+    
+    private final void notifyChatPartnerListeners(final Jid oldChatPartner, final Jid newChatPartner) {
+		notifyChatPartnerListeners(new ChatPartnerEvent(this, requireNonNull(oldChatPartner, "oldChatPartner must not be null"), requireNonNull(newChatPartner, "newChatPartner must not be null")));
+    }
 
     private final String thread;
 
     private final XmppSession xmppSession;
 
-    volatile Jid chatPartner;
+    private volatile Jid chatPartner;
 
     ChatSession(Jid chatPartner, String thread, XmppSession xmppSession) {
         // The user's client SHOULD address the initial message in a chat session to the bare JID <contact@domainpart> of the contact (rather than attempting to guess an appropriate full JID <contact@domainpart/resourcepart> based on the <show/>, <status/>, or <priority/> value of any presence notifications it might have received from the contact).
@@ -102,6 +229,13 @@ public final class ChatSession extends Chat {
      */
     public Jid getChatPartner() {
         return chatPartner;
+    }
+    
+    public final void setChatPartner(final Jid chatPartner) {
+    	final Jid oldChatPartner = this.chatPartner;
+    	this.chatPartner = chatPartner;
+    	if (!Objects.equals(oldChatPartner, chatPartner))
+    		notifyChatPartnerListeners(oldChatPartner, chatPartner);
     }
 
     /**

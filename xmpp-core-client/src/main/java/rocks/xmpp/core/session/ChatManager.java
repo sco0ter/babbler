@@ -181,7 +181,7 @@ public final class ChatManager implements SessionStatusListener, MessageListener
                     ChatSession chatSession = chatSessionMap.get(threadId);
                     if (e.isIncoming()) {
                         // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
-                        chatSession.chatPartner = message.getFrom();
+                        chatSession.setChatPartner(message.getFrom());
                     }
                     chatSession.notifyMessageListeners(new MessageEvent(chatSession, message, e.isIncoming()));
                 }
@@ -198,7 +198,7 @@ public final class ChatManager implements SessionStatusListener, MessageListener
                 Jid contact = presence.getFrom().asBareJid();
                 if (chatSessions.containsKey(contact)) {
                     for (ChatSession chatSession : chatSessions.get(contact).values()) {
-                        chatSession.chatPartner = contact;
+                        chatSession.setChatPartner(contact);
                     }
                 }
             }

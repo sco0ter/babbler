@@ -91,6 +91,11 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertFalse(serviceDiscoveryManager.isEnabled());
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureInfo));
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureItems));
+
+        // Enable it by adding the features.
+        serviceDiscoveryManager.addFeature(featureInfo);
+        serviceDiscoveryManager.addFeature(featureItems);
+        Assert.assertTrue(serviceDiscoveryManager.isEnabled());
     }
 
     @Test

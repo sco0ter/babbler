@@ -53,6 +53,15 @@ public abstract class ExtensionManager extends Manager {
         }
     }
 
+    @Override
+    public boolean isEnabled() {
+        Collection<Feature> f = new ArrayList<>();
+        for (String namespace : features) {
+            f.add(new Feature(namespace));
+        }
+        return serviceDiscoveryManager.getFeatures().containsAll(f);
+    }
+
     /**
      * Enables or disables support for the extension.
      *

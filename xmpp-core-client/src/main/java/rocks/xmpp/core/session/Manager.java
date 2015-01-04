@@ -39,7 +39,7 @@ public abstract class Manager {
      * @return True, if this manager is enabled.
      * @see #setEnabled(boolean)
      */
-    public final boolean isEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 

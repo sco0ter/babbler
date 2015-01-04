@@ -119,7 +119,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
      *
      * @param file        The file.
      * @param description The description of the file.
-     * @param recipient   The recipient's JID (must be a full JID).
+     * @param recipient   The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The file transfer object.
      * @throws FileTransferRejectedException                If the recipient rejected the file.
@@ -130,6 +130,9 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
     public FileTransfer offerFile(File file, String description, Jid recipient, long timeout) throws XmppException, IOException {
         Objects.requireNonNull(file, "file must not be null. ");
         Objects.requireNonNull(recipient, "jid must not be null.");
+        
+        if (!recipient.isFullJid())
+        	throw new IllegalArgumentException("recipient must be a full JID (including resource)");
 
         if (!file.exists()) {
             throw new FileNotFoundException(file.getName());

@@ -231,7 +231,7 @@ public final class ChatSession extends Chat {
         return chatPartner;
     }
     
-    public final void setChatPartner(final Jid chatPartner) {
+    final void setChatPartner(final Jid chatPartner) {
     	final Jid oldChatPartner = this.chatPartner;
     	this.chatPartner = chatPartner;
     	if (!Objects.equals(oldChatPartner, chatPartner))

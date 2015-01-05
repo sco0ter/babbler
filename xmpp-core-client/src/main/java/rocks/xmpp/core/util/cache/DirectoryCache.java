@@ -24,10 +24,14 @@
 
 package rocks.xmpp.core.util.cache;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -90,9 +94,9 @@ public final class DirectoryCache implements Map<String, byte[]> {
         if (key != null && !key.toString().isEmpty()) {
             File file = new File(cacheDirectory, key.toString());
             if (file.exists()) {
-                try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
                     byte[] data = new byte[(int) file.length()];
-                    if (fileInputStream.read(data, 0, data.length) > -1) {
+                    if (inputStream.read(data, 0, data.length) > -1) {
                         return data;
                     }
                 } catch (IOException e) {
@@ -107,8 +111,8 @@ public final class DirectoryCache implements Map<String, byte[]> {
     public byte[] put(String key, byte[] value) {
         File file = new File(cacheDirectory, key);
         byte[] data = get(key);
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            fileOutputStream.write(value);
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
+            outputStream.write(value);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

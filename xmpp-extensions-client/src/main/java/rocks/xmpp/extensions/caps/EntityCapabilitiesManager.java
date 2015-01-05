@@ -96,7 +96,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
     // Cache the capabilities of an entity.
     private static final Map<Jid, InfoNode> ENTITY_CAPABILITIES = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<Jid, Lock> requestingLocks = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Jid, Lock> REQUESTING_LOCKS = new ConcurrentHashMap<>();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -220,7 +220,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
 
             // Acquire the lock for the JID.
             Lock lock = new ReentrantLock();
-            Lock existingLock = requestingLocks.putIfAbsent(jid, lock);
+            Lock existingLock = REQUESTING_LOCKS.putIfAbsent(jid, lock);
             if (existingLock != null) {
                 lock = existingLock;
             }
@@ -236,7 +236,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
                 ENTITY_CAPABILITIES.put(jid, infoNode);
             } finally {
                 lock.unlock();
-                requestingLocks.remove(jid);
+                REQUESTING_LOCKS.remove(jid);
             }
         }
         return infoNode;

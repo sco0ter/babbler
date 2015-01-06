@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-not-allowed">8.3.3.10.  not-allowed</a></cite></p>
  * <p>The recipient or server does not allow any entity to perform the action (e.g., sending to entities at a blacklisted domain); the associated error type SHOULD be "cancel".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #NOT_ALLOWED
  */
 @XmlRootElement(name = "not-allowed")
 @XmlType(factoryMethod = "create")
 public final class NotAllowed extends Condition {
-    /**
-     * The {@code <not-allowed/>} element.
-     */
-    public static final NotAllowed INSTANCE = new NotAllowed();
 
-    private NotAllowed() {
+    NotAllowed() {
     }
 
     private static NotAllowed create() {
-        return INSTANCE;
+        return NOT_ALLOWED;
     }
 }

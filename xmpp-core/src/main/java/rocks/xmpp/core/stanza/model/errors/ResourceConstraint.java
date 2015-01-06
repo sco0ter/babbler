@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-resource-constraint">8.3.3.18.  resource-constraint</a></cite></p>
  * <p>The server or recipient is busy or lacks the system resources necessary to service the request; the associated error type SHOULD be "wait".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #RESOURCE_CONSTRAINT
  */
 @XmlRootElement(name = "resource-constraint")
 @XmlType(factoryMethod = "create")
 public final class ResourceConstraint extends Condition {
-    /**
-     * The {@code <resource-constraint/>} element.
-     */
-    public static final ResourceConstraint INSTANCE = new ResourceConstraint();
 
-    private ResourceConstraint() {
+    ResourceConstraint() {
     }
 
     private static ResourceConstraint create() {
-        return INSTANCE;
+        return RESOURCE_CONSTRAINT;
     }
 }

@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-subscription-required">8.3.3.20.  subscription-required</a></cite></p>
  * <p>The requesting entity is not authorized to access the requested service because a prior subscription is necessary (examples of prior subscription include authorization to receive presence information as defined in [XMPP-IM] and opt-in data feeds for XMPP publish-subscribe as defined in [XEP-0060]); the associated error type SHOULD be "auth".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #SUBSCRIPTION_REQUIRED
  */
 @XmlRootElement(name = "subscription-required")
 @XmlType(factoryMethod = "create")
 public final class SubscriptionRequired extends Condition {
-    /**
-     * The {@code <subscription-required/>} element.
-     */
-    public static final SubscriptionRequired INSTANCE = new SubscriptionRequired();
 
-    private SubscriptionRequired() {
+    SubscriptionRequired() {
     }
 
     private static SubscriptionRequired create() {
-        return INSTANCE;
+        return SUBSCRIPTION_REQUIRED;
     }
 }

@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-internal-server-error">8.3.3.6.  internal-server-error</a></cite></p>
  * <p>The server has experienced a misconfiguration or other internal error that prevents it from processing the stanza; the associated error type SHOULD be "cancel".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #INTERNAL_SERVER_ERROR
  */
 @XmlRootElement(name = "internal-server-error")
 @XmlType(factoryMethod = "create")
 public final class InternalServerError extends Condition {
-    /**
-     * The {@code <internal-server-error/>} element.
-     */
-    public static final InternalServerError INSTANCE = new InternalServerError();
 
-    private InternalServerError() {
+    InternalServerError() {
     }
 
     private static InternalServerError create() {
-        return INSTANCE;
+        return INTERNAL_SERVER_ERROR;
     }
 }

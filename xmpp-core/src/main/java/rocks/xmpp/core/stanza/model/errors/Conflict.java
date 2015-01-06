@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-conflict">8.3.3.2.  conflict</a></cite></p>
  * <p>Access cannot be granted because an existing resource exists with the same name or address; the associated error type SHOULD be "cancel".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #CONFLICT
  */
 @XmlRootElement(name = "conflict")
 @XmlType(factoryMethod = "create")
 public final class Conflict extends Condition {
-    /**
-     * The {@code <conflict/>} element.
-     */
-    public static final Conflict INSTANCE = new Conflict();
 
-    private Conflict() {
+    Conflict() {
     }
 
     private static Conflict create() {
-        return INSTANCE;
+        return CONFLICT;
     }
 }

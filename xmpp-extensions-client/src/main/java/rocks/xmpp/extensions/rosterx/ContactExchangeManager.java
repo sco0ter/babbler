@@ -40,7 +40,7 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.stanza.model.errors.NotAuthorized;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
@@ -286,7 +286,7 @@ public final class ContactExchangeManager extends ExtensionManager implements Se
             if (contactExchange != null) {
                 if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
                     // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
-                    xmppSession.send(iq.createError(new StanzaError(NotAuthorized.INSTANCE)));
+                    xmppSession.send(iq.createError(new StanzaError(Condition.NOT_AUTHORIZED)));
                 } else {
                     List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
                     if (!items.isEmpty()) {

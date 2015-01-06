@@ -32,8 +32,6 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.BadRequest;
-import rocks.xmpp.core.stanza.model.errors.Forbidden;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
@@ -222,7 +220,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
     @Override
     public void reject(IQ iq) {
-        xmppSession.send(iq.createError(new StanzaError(Forbidden.INSTANCE)));
+        xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.FORBIDDEN)));
     }
 
     @Override
@@ -251,12 +249,12 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                     }
                 }
                 if (noValidStreams) {
-                    xmppSession.send(iq.createError(new StanzaError(BadRequest.INSTANCE, new NoValidStreams())));
+                    xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, new NoValidStreams())));
                 } else {
                     ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
 
                     if (profileManager == null) {
-                        xmppSession.send(iq.createError(new StanzaError(BadRequest.INSTANCE, new BadProfile())));
+                        xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, new BadProfile())));
                     } else {
                         profileManager.handle(iq, streamInitiation);
                     }

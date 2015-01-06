@@ -33,7 +33,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.BadRequest;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
@@ -273,7 +273,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager implements 
             if (socks5ByteStream != null) {
                 if (socks5ByteStream.getSessionId() == null) {
                     // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
-                    xmppSession.send(iq.createError(new StanzaError(BadRequest.INSTANCE)));
+                    xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST)));
                 } else {
                     notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
                 }

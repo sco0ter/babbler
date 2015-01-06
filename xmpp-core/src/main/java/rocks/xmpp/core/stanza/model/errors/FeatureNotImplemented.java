@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-feature-not-implemented">8.3.3.3.  feature-not-implemented</a></cite></p>
  * <p>The feature represented in the XML stanza is not implemented by the intended recipient or an intermediate server and therefore the stanza cannot be processed (e.g., the entity understands the namespace but does not recognize the element name); the associated error type SHOULD be "cancel" or "modify".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #FEATURE_NOT_IMPLEMENTED
  */
 @XmlRootElement(name = "feature-not-implemented")
 @XmlType(factoryMethod = "create")
 public final class FeatureNotImplemented extends Condition {
-    /**
-     * The {@code <feature-not-implemented/>} element.
-     */
-    public static final FeatureNotImplemented INSTANCE = new FeatureNotImplemented();
 
-    private FeatureNotImplemented() {
+    FeatureNotImplemented() {
     }
 
     private static FeatureNotImplemented create() {
-        return INSTANCE;
+        return FEATURE_NOT_IMPLEMENTED;
     }
 }

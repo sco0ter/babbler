@@ -34,9 +34,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
-import rocks.xmpp.core.stanza.model.errors.ResourceConstraint;
-import rocks.xmpp.core.stanza.model.errors.UnexpectedRequest;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
@@ -77,7 +75,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
         IbbSession ibbSession = ibbSessionMap.get(sessionId);
         if (ibbSession == null) {
             // 1. Because the session ID is unknown, the recipient returns an <item-not-found/> error with a type of 'cancel'.
-            xmppSession.send(iq.createError(new StanzaError(ItemNotFound.INSTANCE)));
+            xmppSession.send(iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND)));
         }
         return ibbSession;
     }
@@ -129,7 +127,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                         xmppSession.send(iq.createResult());
                     } else {
                         // 2. Because the sequence number has already been used, the recipient returns an <unexpected-request/> error with a type of 'cancel'.
-                        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, UnexpectedRequest.INSTANCE)));
+                        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, Condition.UNEXPECTED_REQUEST)));
                     }
                 }
                 e.consume();
@@ -137,7 +135,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                 InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
                 if (open != null) {
                     if (open.getBlockSize() > 65535) {
-                        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.MODIFY, ResourceConstraint.INSTANCE)));
+                        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.MODIFY, Condition.RESOURCE_CONSTRAINT)));
                     } else {
                         // Somebody wants to create a IBB session with me.
                         // Notify the listeners.
@@ -175,10 +173,10 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                 if (ibbSession != null) {
                     if (!ibbSession.dataReceived(data)) {
                         // 2. Because the sequence number has already been used, the recipient returns an <unexpected-request/> error with a type of 'cancel'.
-                        xmppSession.send(e.getMessage().createError(new StanzaError(StanzaError.Type.CANCEL, UnexpectedRequest.INSTANCE)));
+                        xmppSession.send(e.getMessage().createError(new StanzaError(StanzaError.Type.CANCEL, Condition.UNEXPECTED_REQUEST)));
                     }
                 } else {
-                    xmppSession.send(e.getMessage().createError(new StanzaError(ItemNotFound.INSTANCE)));
+                    xmppSession.send(e.getMessage().createError(new StanzaError(Condition.ITEM_NOT_FOUND)));
                 }
             }
         }

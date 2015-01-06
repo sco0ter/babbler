@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-remote-server-timeout">8.3.3.17.  remote-server-timeout</a></cite></p>
  * <p>A remote server or service specified as part or all of the JID of the intended recipient (or needed to fulfill a request) was resolved but communications could not be established within a reasonable amount of time (e.g., an XML stream cannot be established at the resolved IP address and port, or an XML stream can be established but stream negotiation fails because of problems with TLS, SASL, Server Dialback, etc.); the associated error type SHOULD be "wait" (unless the error is of a more permanent nature, e.g., the remote server is found but it cannot be authenticated or it violates security policies).</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #REMOTE_SERVER_TIMEOUT
  */
 @XmlRootElement(name = "remote-server-timeout")
 @XmlType(factoryMethod = "create")
 public final class RemoteServerTimeout extends Condition {
-    /**
-     * The {@code <remote-server-timeout/>} element.
-     */
-    public static final RemoteServerTimeout INSTANCE = new RemoteServerTimeout();
 
-    private RemoteServerTimeout() {
+    RemoteServerTimeout() {
     }
 
     private static RemoteServerTimeout create() {
-        return INSTANCE;
+        return REMOTE_SERVER_TIMEOUT;
     }
 }

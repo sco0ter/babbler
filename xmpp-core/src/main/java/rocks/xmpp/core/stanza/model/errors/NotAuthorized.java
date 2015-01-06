@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-not-authorized">8.3.3.11.  not-authorized</a></cite></p>
  * <p>The sender needs to provide credentials before being allowed to perform the action, or has provided improper credentials (the name "not-authorized", which was borrowed from the "401 Unauthorized" error of [HTTP], might lead the reader to think that this condition relates to authorization, but instead it is typically used in relation to authentication); the associated error type SHOULD be "auth".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #NOT_AUTHORIZED
  */
 @XmlRootElement(name = "not-authorized")
 @XmlType(factoryMethod = "create")
 public final class NotAuthorized extends Condition {
-    /**
-     * The {@code <not-authorized/>} element.
-     */
-    public static final NotAuthorized INSTANCE = new NotAuthorized();
 
-    private NotAuthorized() {
+    NotAuthorized() {
     }
 
     private static NotAuthorized create() {
-        return INSTANCE;
+        return NOT_AUTHORIZED;
     }
 }

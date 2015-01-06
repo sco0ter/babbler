@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-jid-malformed">8.3.3.8.  jid-malformed</a></cite></p>
  * <p>The sending entity has provided (e.g., during resource binding) or communicated (e.g., in the 'to' address of a stanza) an XMPP address or aspect thereof that violates the rules defined in [XMPP-ADDR]; the associated error type SHOULD be "modify".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #JID_MALFORMED
  */
 @XmlRootElement(name = "jid-malformed")
 @XmlType(factoryMethod = "create")
 public final class JidMalformed extends Condition {
-    /**
-     * The {@code <jid-malformed/>} element.
-     */
-    public static final JidMalformed INSTANCE = new JidMalformed();
 
-    private JidMalformed() {
+    JidMalformed() {
     }
 
     private static JidMalformed create() {
-        return INSTANCE;
+        return JID_MALFORMED;
     }
 }

@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-recipient-unavailable">8.3.3.13.  recipient-unavailable</a></cite></p>
  * <p>The intended recipient is temporarily unavailable, undergoing maintenance, etc.; the associated error type SHOULD be "wait".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #RECIPIENT_UNAVAILABLE
  */
 @XmlRootElement(name = "recipient-unavailable")
 @XmlType(factoryMethod = "create")
 public final class RecipientUnavailable extends Condition {
-    /**
-     * The {@code <recipient-unavailable/>} element.
-     */
-    public static final RecipientUnavailable INSTANCE = new RecipientUnavailable();
 
-    private RecipientUnavailable() {
+    RecipientUnavailable() {
     }
 
     private static RecipientUnavailable create() {
-        return INSTANCE;
+        return RECIPIENT_UNAVAILABLE;
     }
 }

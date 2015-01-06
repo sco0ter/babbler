@@ -33,20 +33,19 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-not-acceptable">8.3.3.9.  not-acceptable</a></cite></p>
  * <p>The recipient or server understands the request but cannot process it because the request does not meet criteria defined by the recipient or server (e.g., a request to subscribe to information that does not simultaneously include configuration parameters needed by the recipient); the associated error type SHOULD be "modify".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #NOT_ACCEPTABLE
  */
 @XmlRootElement(name = "not-acceptable")
 @XmlType(factoryMethod = "create")
 public final class NotAcceptable extends Condition {
-    /**
-     * The {@code <not-acceptable/>} element.
-     */
-    public static final NotAcceptable INSTANCE = new NotAcceptable();
 
-    private NotAcceptable() {
+    NotAcceptable() {
     }
 
     private static NotAcceptable create() {
-        return INSTANCE;
+        return NOT_ACCEPTABLE;
     }
 }
 

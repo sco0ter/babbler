@@ -45,7 +45,6 @@ import rocks.xmpp.core.stanza.model.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
 import rocks.xmpp.core.stream.StreamFeatureEvent;
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
@@ -440,7 +439,7 @@ public class XmppSession implements Closeable {
             }
             if (incoming && (iq.getType() == IQ.Type.GET || iq.getType() == IQ.Type.SET) && !iqEvent.isConsumed()) {
                 // return <service-unavailble/> if the <iq/> is not understood or has not been handles by an event listener.
-                IQ error = iq.createError(new StanzaError(ServiceUnavailable.INSTANCE));
+                IQ error = iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
                 send(error);
             }
         }

@@ -34,7 +34,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.FeatureNotImplemented;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -431,7 +431,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager implements S
                     } else {
                         // Returns <feature-not-implemented/> here.
                         // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
-                        xmppSession.send(iq.createError(new StanzaError(FeatureNotImplemented.INSTANCE)));
+                        xmppSession.send(iq.createError(new StanzaError(Condition.FEATURE_NOT_IMPLEMENTED)));
                     }
                 }
                 e.consume();

@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
 import rocks.xmpp.extensions.bob.model.Data;
 
@@ -95,7 +96,7 @@ class BitsOfBinaryManager extends ExtensionManager implements SessionStatusListe
                     IQ result = iq.createResult(cachedData);
                     xmppSession.send(result);
                 } else {
-                    xmppSession.send(iq.createError(new StanzaError(ItemNotFound.INSTANCE)));
+                    xmppSession.send(iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND)));
                 }
                 e.consume();
             }

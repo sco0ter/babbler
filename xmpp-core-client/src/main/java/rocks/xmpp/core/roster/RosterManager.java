@@ -36,7 +36,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 
@@ -559,7 +559,7 @@ public final class RosterManager implements SessionStatusListener, IQListener {
                         updateRoster(roster, true);
                     } else {
                         // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
-                        xmppSession.send(iq.createError(new StanzaError(ServiceUnavailable.INSTANCE)));
+                        xmppSession.send(iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE)));
                     }
                 } else if (iq.getType() == IQ.Type.RESULT) {
                     updateRoster(roster, false);

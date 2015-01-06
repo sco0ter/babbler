@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-remote-server-not-found">8.3.3.16.  remote-server-not-found</a></cite></p>
  * <p>A remote server or service specified as part or all of the JID of the intended recipient does not exist or cannot be resolved (e.g., there is no _xmpp-server._tcp DNS SRV record, the A or AAAA fallback resolution fails, or A/AAAA lookups succeed but there is no response on the IANA-registered port 5269); the associated error type SHOULD be "cancel".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #REMOTE_SERVER_NOT_FOUND
  */
 @XmlRootElement(name = "remote-server-not-found")
 @XmlType(factoryMethod = "create")
 public final class RemoteServerNotFound extends Condition {
-    /**
-     * The {@code <remote-server-not-found/>} element.
-     */
-    public static final RemoteServerNotFound INSTANCE = new RemoteServerNotFound();
 
-    private RemoteServerNotFound() {
+    RemoteServerNotFound() {
     }
 
     private static RemoteServerNotFound create() {
-        return INSTANCE;
+        return REMOTE_SERVER_NOT_FOUND;
     }
 }

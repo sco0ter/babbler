@@ -34,7 +34,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.InternalServerError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 
@@ -135,7 +135,7 @@ public final class RpcManager extends ExtensionManager implements SessionStatusL
                                     xmppSession.send(iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString()))));
                                 } catch (Throwable e1) {
                                     logger.log(Level.WARNING, e1.getMessage(), e1);
-                                    xmppSession.send(iq.createError(new StanzaError(InternalServerError.INSTANCE)));
+                                    xmppSession.send(iq.createError(new StanzaError(Condition.INTERNAL_SERVER_ERROR)));
                                 }
                             }
                         });

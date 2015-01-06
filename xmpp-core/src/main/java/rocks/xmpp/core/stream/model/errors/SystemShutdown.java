@@ -32,19 +32,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-system-shutdown">4.9.3.20.  system-shutdown</a></cite></p>
  * <p>The server is being shut down and all active streams are being statusChanged.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #SYSTEM_SHUTDOWN
  */
 @XmlRootElement(name = "system-shutdown")
 @XmlType(factoryMethod = "create")
 public final class SystemShutdown extends Condition {
-    /**
-     * The {@code <system-shutdown/>} element.
-     */
-    public static final SystemShutdown INSTANCE = new SystemShutdown();
 
-    private SystemShutdown() {
+    SystemShutdown() {
     }
 
     private static SystemShutdown create() {
-        return INSTANCE;
+        return SYSTEM_SHUTDOWN;
     }
 }

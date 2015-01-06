@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-improper-addressing">4.9.3.7.  improper-addressing</a></cite></p>
  * <p>A stanza sent between two servers lacks a 'to' or 'from' attribute, the 'from' or 'to' attribute has no value, or the value violates the rules for XMPP addresses.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #IMPROPER_ADDRESSING
  */
 @XmlRootElement(name = "improper-addressing")
 @XmlType(factoryMethod = "create")
 public final class ImproperAddressing extends Condition {
-    /**
-     * The {@code <improper-addressing/>} element.
-     */
-    public static final ImproperAddressing INSTANCE = new ImproperAddressing();
 
-    private ImproperAddressing() {
+    ImproperAddressing() {
     }
 
     private static ImproperAddressing create() {
-        return INSTANCE;
+        return IMPROPER_ADDRESSING;
     }
 }

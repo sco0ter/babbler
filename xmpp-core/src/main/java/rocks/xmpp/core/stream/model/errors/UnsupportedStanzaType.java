@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-stanza-type">4.9.3.24.  unsupported-stanza-type</a></cite></p>
  * <p>The initiating entity has sent a first-level child of the stream that is not supported by the server, either because the receiving entity does not understand the namespace or because the receiving entity does not understand the element name for the applicable namespace (which might be the content namespace declared as the default namespace).</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNSUPPORTED_STANZA_TYPE
  */
 @XmlRootElement(name = "unsupported-stanza-type")
 @XmlType(factoryMethod = "create")
 public final class UnsupportedStanzaType extends Condition {
-    /**
-     * The {@code <unsupported-stanza-type/>} element.
-     */
-    public static final UnsupportedStanzaType INSTANCE = new UnsupportedStanzaType();
 
-    private UnsupportedStanzaType() {
+    UnsupportedStanzaType() {
     }
 
     private static UnsupportedStanzaType create() {
-        return INSTANCE;
+        return UNSUPPORTED_STANZA_TYPE;
     }
 }

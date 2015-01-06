@@ -34,19 +34,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-encoding">4.9.3.22.  unsupported-encoding</a></cite></p>
  * <p>The initiating entity has encoded the stream in an encoding that is not supported by the server (see Section 11.6) or has otherwise improperly encoded the stream (e.g., by violating the rules of the [UTF-8] encoding).</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNSUPPORTED_ENCODING
  */
 @XmlRootElement(name = "unsupported-encoding")
 @XmlType(factoryMethod = "create")
 public final class UnsupportedEncoding extends Condition {
-    /**
-     * The {@code <unsupported-encoding/>} element.
-     */
-    public static final UnsupportedEncoding INSTANCE = new UnsupportedEncoding();
 
-    private UnsupportedEncoding() {
+    UnsupportedEncoding() {
     }
 
     private static UnsupportedEncoding create() {
-        return INSTANCE;
+        return UNSUPPORTED_ENCODING;
     }
 }

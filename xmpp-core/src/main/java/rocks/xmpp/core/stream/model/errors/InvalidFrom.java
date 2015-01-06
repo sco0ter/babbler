@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-from">4.9.3.9.  invalid-from</a></cite></p>
  * <p>The data provided in a 'from' attribute does not match an authorized Jid or validated domain as negotiated (1) between two servers using SASL or Server Dialback, or (2) between a client and a server via SASL authentication and resource binding.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #INVALID_FROM
  */
 @XmlRootElement(name = "invalid-from")
 @XmlType(factoryMethod = "create")
 public final class InvalidFrom extends Condition {
-    /**
-     * The {@code <invalid-from/>} element.
-     */
-    public static final InvalidFrom INSTANCE = new InvalidFrom();
 
-    private InvalidFrom() {
+    InvalidFrom() {
     }
 
     private static InvalidFrom create() {
-        return INSTANCE;
+        return INVALID_FROM;
     }
 }

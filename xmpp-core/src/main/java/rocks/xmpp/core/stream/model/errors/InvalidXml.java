@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-xml">4.9.3.11.  invalid-xml</a></cite></p>
  * <p>The entity has sent invalid XML over the stream to a server that performs validation (see Section 11.4).</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #INVALID_XML
  */
 @XmlRootElement(name = "invalid-xml")
 @XmlType(factoryMethod = "create")
 public final class InvalidXml extends Condition {
-    /**
-     * The {@code <invalid-xml/>} element.
-     */
-    public static final InvalidXml INSTANCE = new InvalidXml();
 
-    private InvalidXml() {
+    InvalidXml() {
     }
 
     private static InvalidXml create() {
-        return INSTANCE;
+        return INVALID_XML;
     }
 }

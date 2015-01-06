@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-resource-constraint">4.9.3.17.  resource-constraint</a></cite></p>
  * <p>The server lacks the system resources necessary to service the stream.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #RESOURCE_CONSTRAINT
  */
 @XmlRootElement(name = "resource-constraint")
 @XmlType(factoryMethod = "create")
 public final class ResourceConstraint extends Condition {
-    /**
-     * The {@code <resource-constraint/>} element.
-     */
-    public static final ResourceConstraint INSTANCE = new ResourceConstraint();
 
-    private ResourceConstraint() {
+    ResourceConstraint() {
     }
 
     private static ResourceConstraint create() {
-        return INSTANCE;
+        return RESOURCE_CONSTRAINT;
     }
 }

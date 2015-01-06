@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-not-authorized">4.9.3.12.  not-authorized</a></cite></p>
  * <p>The entity has attempted to send XML stanzas or other outbound data before the stream has been authenticated, or otherwise is not authorized to perform an action related to stream negotiation; the receiving entity MUST NOT process the offending data before sending the stream error.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #NOT_AUTHORIZED
  */
 @XmlRootElement(name = "not-authorized")
 @XmlType(factoryMethod = "create")
 public final class NotAuthorized extends Condition {
-    /**
-     * The {@code <not-authorized/>} element.
-     */
-    public static final NotAuthorized INSTANCE = new NotAuthorized();
 
-    private NotAuthorized() {
+    NotAuthorized() {
     }
 
     private static NotAuthorized create() {
-        return INSTANCE;
+        return NOT_AUTHORIZED;
     }
 }

@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-not-well-formed">4.9.3.13.  not-well-formed</a></cite></p>
  * <p>The initiating entity has sent XML that violates the well-formedness rules of [XML] or [XML-NAMES].</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #NOT_WELL_FORMED
  */
 @XmlRootElement(name = "not-well-formed")
 @XmlType(factoryMethod = "create")
 public final class NotWellFormed extends Condition {
-    /**
-     * The {@code <not-well-formed/>} element.
-     */
-    public static final NotWellFormed INSTANCE = new NotWellFormed();
 
-    private NotWellFormed() {
+    NotWellFormed() {
     }
 
     private static NotWellFormed create() {
-        return INSTANCE;
+        return NOT_WELL_FORMED;
     }
 }

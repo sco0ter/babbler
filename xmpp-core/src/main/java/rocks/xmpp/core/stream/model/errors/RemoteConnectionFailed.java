@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-remote-connection-failed">4.9.3.15.  remote-connection-failed</a></cite></p>
  * <p>The server is unable to properly connect to a remote entity that is needed for authentication or authorization (e.g., in certain scenarios related to Server Dialback [XEP-0220]); this condition is not to be used when the cause of the error is within the administrative domain of the XMPP service provider, in which case the {@code <internal-server-error/>} condition is more appropriate.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #REMOTE_CONNECTION_FAILED
  */
 @XmlRootElement(name = "remote-connection-failed")
 @XmlType(factoryMethod = "create")
 public final class RemoteConnectionFailed extends Condition {
-    /**
-     * The {@code <remote-connection-failed/>} element.
-     */
-    public static final RemoteConnectionFailed INSTANCE = new RemoteConnectionFailed();
 
-    private RemoteConnectionFailed() {
+    RemoteConnectionFailed() {
     }
 
     private static RemoteConnectionFailed create() {
-        return INSTANCE;
+        return REMOTE_CONNECTION_FAILED;
     }
 }

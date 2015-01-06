@@ -37,19 +37,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-bad-format">4.9.3.1.  bad-format</a></cite></p>
  * <p>The entity has sent XML that cannot be processed.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #BAD_FORMAT
  */
 @XmlRootElement(name = "bad-format")
 @XmlType(factoryMethod = "create")
 public final class BadFormat extends Condition {
-    /**
-     * The {@code <bad-format/>} element.
-     */
-    public static final BadFormat INSTANCE = new BadFormat();
 
-    private BadFormat() {
+    BadFormat() {
     }
 
     private static BadFormat create() {
-        return INSTANCE;
+        return BAD_FORMAT;
     }
 }

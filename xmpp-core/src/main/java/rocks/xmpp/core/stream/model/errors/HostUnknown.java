@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-host-unknown">4.9.3.6.  host-unknown</a></cite></p>
  * <p>The value of the 'to' attribute provided in the initial stream header does not correspond to an FQDN that is serviced by the receiving entity.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #HOST_UNKNOWN
  */
 @XmlRootElement(name = "host-unknown")
 @XmlType(factoryMethod = "create")
 public final class HostUnknown extends Condition {
-    /**
-     * The {@code <host-unknown/>} element.
-     */
-    public static final HostUnknown INSTANCE = new HostUnknown();
 
-    private HostUnknown() {
+    HostUnknown() {
     }
 
     private static HostUnknown create() {
-        return INSTANCE;
+        return HOST_UNKNOWN;
     }
 }

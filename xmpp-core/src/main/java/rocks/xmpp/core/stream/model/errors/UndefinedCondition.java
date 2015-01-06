@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-undefined-condition">4.9.3.21.  undefined-condition</a></cite></p>
  * <p>The error condition is not one of those defined by the other conditions in this list; this error condition SHOULD NOT be used except in conjunction with an application-specific condition.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNDEFINED_CONDITION
  */
 @XmlRootElement(name = "undefined-condition")
 @XmlType(factoryMethod = "create")
 public final class UndefinedCondition extends Condition {
-    /**
-     * The {@code <undefined-condition/>} element.
-     */
-    public static final UndefinedCondition INSTANCE = new UndefinedCondition();
 
-    private UndefinedCondition() {
+    UndefinedCondition() {
     }
 
     private static UndefinedCondition create() {
-        return INSTANCE;
+        return UNDEFINED_CONDITION;
     }
 }

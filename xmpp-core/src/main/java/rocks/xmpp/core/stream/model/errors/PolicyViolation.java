@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-policy-violation">4.9.3.14.  policy-violation</a></cite></p>
  * <p>The entity has violated some local service policy (e.g., a stanza exceeds a configured size limit); the server MAY choose to specify the policy in the {@code <text/>} element or in an application-specific condition element.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #POLICY_VIOLATION
  */
 @XmlRootElement(name = "policy-violation")
 @XmlType(factoryMethod = "create")
 public final class PolicyViolation extends Condition {
-    /**
-     * The {@code <policy-violation/>} element.
-     */
-    public static final PolicyViolation INSTANCE = new PolicyViolation();
 
-    private PolicyViolation() {
+    PolicyViolation() {
     }
 
     private static PolicyViolation create() {
-        return INSTANCE;
+        return POLICY_VIOLATION;
     }
 }

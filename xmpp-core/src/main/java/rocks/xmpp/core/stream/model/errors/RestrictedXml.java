@@ -34,19 +34,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-restricted-xml">4.9.3.18.  restricted-xml</a></cite></p>
  * <p>The entity has attempted to send restricted XML features such as a comment, processing instruction, DTD subset, or XML entity reference (see Section 11.1).</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #RESTRICTED_XML
  */
 @XmlRootElement(name = "restricted-xml")
 @XmlType(factoryMethod = "create")
 public final class RestrictedXml extends Condition {
-    /**
-     * The {@code <restricted-xml/>} element.
-     */
-    public static final RestrictedXml INSTANCE = new RestrictedXml();
 
-    private RestrictedXml() {
+    RestrictedXml() {
     }
 
     private static RestrictedXml create() {
-        return INSTANCE;
+        return RESTRICTED_XML;
     }
 }

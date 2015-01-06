@@ -33,19 +33,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-feature">4.9.3.23.  unsupported-feature</a></cite></p>
  * <p>The receiving entity has advertised a mandatory-to-negotiate stream feature that the initiating entity does not support, and has offered no other mandatory-to-negotiate feature alongside the unsupported feature.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNSUPPORTED_FEATURE
  */
 @XmlRootElement(name = "unsupported-feature")
 @XmlType(factoryMethod = "create")
 public final class UnsupportedFeature extends Condition {
-    /**
-     * The {@code <unsupported-feature/>} element.
-     */
-    public static final UnsupportedFeature INSTANCE = new UnsupportedFeature();
 
-    private UnsupportedFeature() {
+    UnsupportedFeature() {
     }
 
     private static UnsupportedFeature create() {
-        return INSTANCE;
+        return UNSUPPORTED_FEATURE;
     }
 }

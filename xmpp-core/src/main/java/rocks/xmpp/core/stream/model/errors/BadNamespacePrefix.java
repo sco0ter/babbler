@@ -37,19 +37,18 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-bad-namespace-prefix">4.9.3.2.  bad-namespace-prefix</a></cite></p>
  * <p>The entity has sent a namespace prefix that is unsupported, or has sent no namespace prefix on an element that needs such a prefix.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #BAD_NAMESPACE_PREFIX
  */
 @XmlRootElement(name = "bad-namespace-prefix")
 @XmlType(factoryMethod = "create")
 public final class BadNamespacePrefix extends Condition {
-    /**
-     * The {@code <bad-namespace-prefix/>} element.
-     */
-    public static final BadNamespacePrefix INSTANCE = new BadNamespacePrefix();
 
-    private BadNamespacePrefix() {
+    BadNamespacePrefix() {
     }
 
     private static BadNamespacePrefix create() {
-        return INSTANCE;
+        return BAD_NAMESPACE_PREFIX;
     }
 }

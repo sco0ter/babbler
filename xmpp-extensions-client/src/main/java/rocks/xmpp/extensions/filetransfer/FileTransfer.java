@@ -158,7 +158,7 @@ public final class FileTransfer {
         Thread thread = new Thread() {
             @Override
             public void run() {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[8192];
                 int len;
                 bytesTransferred = 0;
 

@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.sasl.model.Abort;
 import rocks.xmpp.core.sasl.model.Auth;
-import rocks.xmpp.core.sasl.model.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Challenge;
 import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Response;
@@ -91,7 +90,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.AccountDisabled);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.ACCOUNT_DISABLED);
         Assert.assertEquals(failure.getLanguage(), "en");
         Assert.assertEquals(failure.getText(), "Call 212-555-1212 for assistance.");
     }
@@ -103,7 +102,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.CredentialsExpired);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.CREDENTIALS_EXPIRED);
     }
 
     @Test
@@ -113,7 +112,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.EncryptionRequired);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.ENCRYPTION_REQUIRED);
     }
 
     @Test
@@ -123,7 +122,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.IncorrectEncoding);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.INCORRECT_ENCODING);
     }
 
     @Test
@@ -133,7 +132,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.InvalidAuthzid);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.INVALID_AUTHZID);
     }
 
     @Test
@@ -143,7 +142,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.MalformedRequest);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.MALFORMED_REQUEST);
     }
 
     @Test
@@ -153,7 +152,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.MechanismTooWeak);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.MECHANISM_TOO_WEAK);
     }
 
     @Test
@@ -163,7 +162,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.InvalidMechanism);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.INVALID_MECHANISM);
     }
 
     @Test
@@ -173,7 +172,7 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.NotAuthorized);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.NOT_AUTHORIZED);
     }
 
     @Test
@@ -183,6 +182,6 @@ public class SaslTest extends XmlTest {
                 "   </failure>";
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.TemporaryAuthFailure);
+        Assert.assertTrue(failure.getCondition() == Failure.Condition.TEMPORARY_AUTH_FAILURE);
     }
 }

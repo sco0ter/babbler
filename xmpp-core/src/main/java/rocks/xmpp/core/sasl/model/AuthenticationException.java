@@ -35,7 +35,7 @@ import rocks.xmpp.core.XmppException;
  * <pre>
  * {@code
  * catch (AuthenticationException e) {
- *     if (e.getCondition() instanceof Failure.NotAuthorized) {
+ *     if (e.getCondition() == Failure.Condition.NOT_AUTHORIZED) {
  *         //...
  *     }
  * }

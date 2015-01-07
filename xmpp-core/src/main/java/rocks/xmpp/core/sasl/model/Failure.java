@@ -29,7 +29,7 @@ import rocks.xmpp.core.stream.model.ServerStreamElement;
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
@@ -45,10 +45,20 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Christian Schudt
  */
 @XmlRootElement
-@XmlSeeAlso({Failure.Aborted.class, Failure.AccountDisabled.class, Failure.CredentialsExpired.class, Failure.EncryptionRequired.class, Failure.IncorrectEncoding.class, Failure.InvalidAuthzid.class, Failure.InvalidMechanism.class, Failure.MalformedRequest.class, Failure.MechanismTooWeak.class, Failure.NotAuthorized.class, Failure.TemporaryAuthFailure.class})
 public final class Failure implements ServerStreamElement {
 
-    @XmlElementRef
+    @XmlElements({@XmlElement(name = "aborted", type = Aborted.class),
+            @XmlElement(name = "account-disabled", type = AccountDisabled.class),
+            @XmlElement(name = "credentials-expired", type = CredentialsExpired.class),
+            @XmlElement(name = "encryption-required", type = EncryptionRequired.class),
+            @XmlElement(name = "incorrect-encoding", type = IncorrectEncoding.class),
+            @XmlElement(name = "invalid-authzid", type = InvalidAuthzid.class),
+            @XmlElement(name = "invalid-mechanism", type = InvalidMechanism.class),
+            @XmlElement(name = "malformed-request", type = MalformedRequest.class),
+            @XmlElement(name = "mechanism-too-weak", type = MechanismTooWeak.class),
+            @XmlElement(name = "not-authorized", type = NotAuthorized.class),
+            @XmlElement(name = "temporary-auth-failure", type = TemporaryAuthFailure.class)
+    })
     private Condition condition;
 
     @XmlElement(name = "text")
@@ -106,7 +116,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The receiving entity acknowledges that the authentication handshake has been aborted by the initiating entity; sent in reply to the {@code <abort/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "aborted")
     @XmlType(factoryMethod = "create")
     static final class Aborted extends Condition {
         private Aborted() {
@@ -124,7 +133,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The account of the initiating entity has been temporarily disabled; sent in reply to an {@code <auth/>} element (with or without initial response data) or a {@code <response/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "account-disabled")
     @XmlType(factoryMethod = "create")
     static final class AccountDisabled extends Condition {
         private AccountDisabled() {
@@ -142,7 +150,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The authentication failed because the initiating entity provided credentials that have expired; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "credentials-expired")
     @XmlType(factoryMethod = "create")
     static final class CredentialsExpired extends Condition {
         private CredentialsExpired() {
@@ -160,7 +167,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The mechanism requested by the initiating entity cannot be used unless the confidentiality and integrity of the underlying stream are protected (typically via TLS); sent in reply to an {@code <auth/>} element (with or without initial response data).</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "encryption-required")
     @XmlType(factoryMethod = "create")
     static final class EncryptionRequired extends Condition {
         private EncryptionRequired() {
@@ -178,7 +184,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The data provided by the initiating entity could not be processed because the base 64 encoding is incorrect (e.g., because the encoding does not adhere to the definition in Section 4 of [BASE64]); sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "incorrect-encoding")
     @XmlType(factoryMethod = "create")
     static final class IncorrectEncoding extends Condition {
         private IncorrectEncoding() {
@@ -196,7 +201,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The authzid provided by the initiating entity is invalid, either because it is incorrectly formatted or because the initiating entity does not have permissions to authorize that ID; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "invalid-authzid")
     @XmlType(factoryMethod = "create")
     static final class InvalidAuthzid extends Condition {
         private InvalidAuthzid() {
@@ -214,7 +218,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The initiating entity did not specify a mechanism, or requested a mechanism that is not supported by the receiving entity; sent in reply to an {@code <auth/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "invalid-mechanism")
     @XmlType(factoryMethod = "create")
     static final class InvalidMechanism extends Condition {
         private InvalidMechanism() {
@@ -232,7 +235,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The request is malformed (e.g., the {@code <auth/>} element includes initial response data but the mechanism does not allow that, or the data sent violates the syntax for the specified SASL mechanism); sent in reply to an {@code <abort/>}, {@code <auth/>}, {@code <challenge/>}, or {@code <response/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "malformed-request")
     @XmlType(factoryMethod = "create")
     static class MalformedRequest extends Condition {
         private MalformedRequest() {
@@ -250,7 +252,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The mechanism requested by the initiating entity is weaker than server policy permits for that initiating entity; sent in reply to an {@code <auth/>} element (with or without initial response data).</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "mechanism-too-weak")
     @XmlType(factoryMethod = "create")
     static final class MechanismTooWeak extends Condition {
         private MechanismTooWeak() {
@@ -268,7 +269,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The authentication failed because the initiating entity did not provide proper credentials, or because some generic authentication failure has occurred but the receiving entity does not wish to disclose specific information about the cause of the failure; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "not-authorized")
     @XmlType(factoryMethod = "create")
     static final class NotAuthorized extends Condition {
         private NotAuthorized() {
@@ -286,7 +286,6 @@ public final class Failure implements ServerStreamElement {
      * <p>The authentication failed because of a temporary error condition within the receiving entity, and it is advisable for the initiating entity to try again later; sent in reply to an {@code <auth/>} element or a {@code <response/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "temporary-auth-failure")
     @XmlType(factoryMethod = "create")
     static final class TemporaryAuthFailure extends Condition {
         private TemporaryAuthFailure() {

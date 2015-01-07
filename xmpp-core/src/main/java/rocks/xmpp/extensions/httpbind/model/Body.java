@@ -142,9 +142,6 @@ public final class Body {
     private String route;
 
     @XmlAttribute
-    private Boolean secure;
-
-    @XmlAttribute
     private String sid;
 
     @XmlAttribute

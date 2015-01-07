@@ -37,7 +37,7 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.preapproval.model.SubscriptionPreApproval;
 import rocks.xmpp.core.tls.model.StartTls;
-import rocks.xmpp.extensions.compress.model.Compress;
+import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
@@ -103,7 +103,7 @@ public class CoreContext {
                 Body.class,
 
                 // XEP-0138: Stream Compression
-                Compress.class,
+                StreamCompression.class,
 
                 // XEP-0141: Data Forms Layout
                 Page.class,

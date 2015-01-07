@@ -40,7 +40,7 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-stream">XML Schema</a>
  */
 @XmlRootElement(name = "compression")
-public final class Compression extends StreamFeature {
+public final class CompressionFeature extends StreamFeature {
 
     @XmlElement(name = "method")
     private final List<CompressionMethod> methods = new ArrayList<>();

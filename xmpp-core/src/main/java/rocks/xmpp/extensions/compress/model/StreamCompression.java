@@ -1,0 +1,204 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2015 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package rocks.xmpp.extensions.compress.model;
+
+import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
+
+/**
+ * An abstract base class for all stream compression classes in the {@code http://jabber.org/protocol/compress} namespace.
+ *
+ * @author Christian Schudt
+ */
+@XmlSeeAlso({CompressionFeature.class, StreamCompression.Compress.class, StreamCompression.Compressed.class, StreamCompression.Failure.class})
+public abstract class StreamCompression {
+
+    /**
+     * http://jabber.org/protocol/compress
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/compress";
+
+    /**
+     * The implementation of the {@code <compressed/>} element.
+     */
+    public static final StreamCompression COMPRESSED = new Compressed();
+
+    private StreamCompression() {
+    }
+
+    /**
+     * The implementation of the {@code <failure/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates failure during compression negotiation.
+     *
+     * @author Christian Schudt
+     * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
+     */
+    @XmlRootElement(name = "failure")
+    public static final class Failure extends StreamCompression implements ServerStreamElement {
+
+        @XmlElements({@XmlElement(name = "setup-failed", type = SetupFailed.class),
+                @XmlElement(name = "processing-failed", type = ProcessingFailed.class),
+                @XmlElement(name = "unsupported-method", type = UnsupportedMethod.class)})
+        private Condition condition;
+
+        private Failure() {
+        }
+
+        /**
+         * Gets the failure condition.
+         *
+         * @return The condition.
+         * @see rocks.xmpp.extensions.compress.model.StreamCompression.Failure.UnsupportedMethod
+         * @see rocks.xmpp.extensions.compress.model.StreamCompression.Failure.SetupFailed
+         * @see rocks.xmpp.extensions.compress.model.StreamCompression.Failure.ProcessingFailed
+         */
+        public Condition getCondition() {
+            return condition;
+        }
+
+        /**
+         * An abstract base class for a compression failure condition.
+         */
+        public abstract static class Condition {
+            /**
+             * If the receiving entity finds the requested method unacceptable or unworkable for any other reason.
+             */
+            public static final Condition SETUP_FAILED = new SetupFailed();
+
+            /**
+             * If compression processing fails after the new (compressed) stream has been established.
+             */
+            public static final Condition PROCESSING_FAILED = new ProcessingFailed();
+
+            /**
+             * If the initiating entity requests a stream compression method that is not supported by the receiving entity.
+             */
+            public static final Condition UNSUPPORTED_METHOD = new UnsupportedMethod();
+
+            private String name;
+
+            private Condition(String name) {
+                this.name = name;
+            }
+
+            @Override
+            public String toString() {
+                return name;
+            }
+        }
+
+        /**
+         * If the receiving entity finds the requested method unacceptable or unworkable for any other reason.
+         */
+        @XmlType(factoryMethod = "create")
+        private static final class SetupFailed extends Condition {
+            private SetupFailed() {
+                super("setup-failed");
+            }
+
+            private static SetupFailed create() {
+                return (SetupFailed) SETUP_FAILED;
+            }
+        }
+
+        /**
+         * If compression processing fails after the new (compressed) stream has been established.
+         */
+        @XmlType(factoryMethod = "create")
+        private static final class ProcessingFailed extends Condition {
+            private ProcessingFailed() {
+                super("processing-failed");
+            }
+
+            private static ProcessingFailed create() {
+                return (ProcessingFailed) PROCESSING_FAILED;
+            }
+        }
+
+        /**
+         * If the initiating entity requests a stream compression method that is not supported by the receiving entity.
+         */
+        @XmlType(factoryMethod = "create")
+        private static final class UnsupportedMethod extends Condition {
+            private UnsupportedMethod() {
+                super("unsupported-method");
+            }
+
+            private static UnsupportedMethod create() {
+                return (UnsupportedMethod) UNSUPPORTED_METHOD;
+            }
+        }
+    }
+
+    /**
+     * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress} namespace.
+     *
+     * @author Christian Schudt
+     * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
+     */
+    @XmlRootElement(name = "compress")
+    public static final class Compress implements ClientStreamElement {
+
+        @XmlElement
+        private CompressionMethod method;
+
+        private Compress() {
+        }
+
+        public Compress(CompressionMethod method) {
+            this.method = method;
+        }
+    }
+
+    /**
+     * The implementation of the {@code <compressed/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates that the stream is now compressed.
+     *
+     * @author Christian Schudt
+     * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
+     */
+    @XmlRootElement(name = "compressed")
+    @XmlType(factoryMethod = "create")
+    static final class Compressed extends StreamCompression implements ServerStreamElement {
+        private Compressed() {
+        }
+
+        private static Compressed create() {
+            return (Compressed) COMPRESSED;
+        }
+    }
+}

@@ -27,11 +27,9 @@ package rocks.xmpp.extensions.compress;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.extensions.compress.model.Compress;
-import rocks.xmpp.extensions.compress.model.Compressed;
 import rocks.xmpp.extensions.compress.model.CompressionMethod;
-import rocks.xmpp.extensions.compress.model.Failure;
-import rocks.xmpp.extensions.compress.model.feature.Compression;
+import rocks.xmpp.extensions.compress.model.StreamCompression;
+import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
 /**
  * Manages stream compression as described in <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
@@ -51,7 +49,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
     private final CompressionMethod method;
 
     public CompressionManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, CompressionMethod compressionMethod) {
-        super(Compression.class);
+        super(CompressionFeature.class);
         addFeatureListener(streamFeatureListener);
         this.xmppSession = xmppSession;
         this.method = compressionMethod;
@@ -61,18 +59,18 @@ public final class CompressionManager extends StreamFeatureNegotiator {
     public Status processNegotiation(Object element) throws Exception {
         Status status = Status.INCOMPLETE;
         try {
-            if (element instanceof Compression) {
+            if (element instanceof CompressionFeature) {
                 if (method != null) {
-                    xmppSession.send(new Compress(method));
+                    xmppSession.send(new StreamCompression.Compress(method));
                     status = Status.INCOMPLETE;
                 } else {
                     status = Status.IGNORE;
                 }
-            } else if (element instanceof Compressed) {
+            } else if (element == StreamCompression.COMPRESSED) {
                 status = Status.SUCCESS;
-            } else if (element instanceof Failure) {
+            } else if (element instanceof StreamCompression.Failure) {
                 status = Status.FAILURE;
-                throw new Exception("Failure during compression negotiation: " + ((Failure) element).getCondition());
+                throw new Exception("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
             }
         } finally {
             notifyFeatureNegotiated(status, element);
@@ -91,6 +89,6 @@ public final class CompressionManager extends StreamFeatureNegotiator {
 
     @Override
     public boolean canProcess(Object element) {
-        return element instanceof Compressed || element instanceof Failure;
+        return element instanceof StreamCompression;
     }
 }

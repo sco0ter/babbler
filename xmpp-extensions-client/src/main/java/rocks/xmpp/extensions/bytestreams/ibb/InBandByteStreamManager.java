@@ -118,8 +118,9 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
         IQ iq = e.getIQ();
         if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
             // Check, if the IQ carries some IBB related payload.
-            InBandByteStream.Data data = iq.getExtension(InBandByteStream.Data.class);
-            if (data != null) {
+            InBandByteStream ibbElement = iq.getExtension(InBandByteStream.class);
+            if (ibbElement instanceof InBandByteStream.Data) {
+                InBandByteStream.Data data = (InBandByteStream.Data) ibbElement;
                 IbbSession ibbSession = getIbbSession(iq, data.getSessionId());
                 // Data has been received for a session, so notify the IBB session about it.
                 if (ibbSession != null) {
@@ -131,35 +132,30 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                     }
                 }
                 e.consume();
-            } else {
-                InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
-                if (open != null) {
-                    if (open.getBlockSize() > 65535) {
-                        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.MODIFY, Condition.RESOURCE_CONSTRAINT)));
-                    } else {
-                        // Somebody wants to create a IBB session with me.
-                        // Notify the listeners.
-                        notifyByteStreamEvent(new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize()));
-                    }
-                    e.consume();
+            } else if (ibbElement instanceof InBandByteStream.Open) {
+                InBandByteStream.Open open = (InBandByteStream.Open) ibbElement;
+                if (open.getBlockSize() > 65535) {
+                    xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.MODIFY, Condition.RESOURCE_CONSTRAINT)));
                 } else {
-                    InBandByteStream.Close close = iq.getExtension(InBandByteStream.Close.class);
-                    // The session got closed.
-                    if (close != null) {
-                        IbbSession ibbSession = getIbbSession(iq, close.getSessionId());
-                        if (ibbSession != null) {
-                            try {
-                                ibbSessionMap.remove(close.getSessionId());
-                                ibbSession.closedByPeer();
-                            } catch (IOException e1) {
-                                logger.log(Level.WARNING, e1.getMessage(), e1);
-                            } finally {
-                                xmppSession.send(iq.createResult());
-                            }
-                        }
-                        e.consume();
+                    // Somebody wants to create a IBB session with me.
+                    // Notify the listeners.
+                    notifyByteStreamEvent(new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize()));
+                }
+                e.consume();
+            } else if (ibbElement instanceof InBandByteStream.Close) {
+                InBandByteStream.Close close = (InBandByteStream.Close) ibbElement;
+                IbbSession ibbSession = getIbbSession(iq, close.getSessionId());
+                if (ibbSession != null) {
+                    try {
+                        ibbSessionMap.remove(close.getSessionId());
+                        ibbSession.closedByPeer();
+                    } catch (IOException e1) {
+                        logger.log(Level.WARNING, e1.getMessage(), e1);
+                    } finally {
+                        xmppSession.send(iq.createResult());
                     }
                 }
+                e.consume();
             }
         }
     }

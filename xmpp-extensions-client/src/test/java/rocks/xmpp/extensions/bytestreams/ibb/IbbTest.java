@@ -97,7 +97,7 @@ public class IbbTest extends ExtensionTest {
         }
     }
 
-    //@Test
+    @Test
     public void testInBandBytestreamManager() throws IOException {
         MockServer mockServer = new MockServer();
         final Lock lock = new ReentrantLock();

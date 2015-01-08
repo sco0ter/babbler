@@ -308,6 +308,14 @@ public class XmppSession implements Closeable {
         }
     }
 
+    private static void throwExceptionIfNotNull(Exception e) throws AuthenticationException {
+        if (e != null) {
+            AuthenticationException authenticationException = new AuthenticationException("Authentication failed");
+            authenticationException.initCause(e);
+            throw authenticationException;
+        }
+    }
+
     /**
      * Gets the actively used connection.
      *
@@ -866,6 +874,8 @@ public class XmppSession implements Closeable {
                 getRosterManager().requestRoster();
             }
         } catch (AuthenticationException e) {
+            // Revert status
+            updateStatus(Status.CONNECTED);
             throw e;
         } catch (Exception e) {
             // Revert status
@@ -877,9 +887,7 @@ public class XmppSession implements Closeable {
                 }
                 ex.initCause(exception);
             }
-            AuthenticationException authenticationException = new AuthenticationException("Authentication failed");
-            authenticationException.initCause(e);
-            throw authenticationException;
+            throwExceptionIfNotNull(e);
         }
         updateStatus(Status.AUTHENTICATED);
     }
@@ -906,6 +914,10 @@ public class XmppSession implements Closeable {
                 lock.unlock();
             }
         }
+
+        // Check if stream feature negotiation failed with an exception.
+        throwExceptionIfNotNull(exception);
+
         // Bind the resource
         IQ iq = new IQ(IQ.Type.SET, new Bind(this.resource));
         IQ result = query(iq);

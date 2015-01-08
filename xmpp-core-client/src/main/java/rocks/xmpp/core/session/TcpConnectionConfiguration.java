@@ -28,6 +28,7 @@ import rocks.xmpp.extensions.compress.CompressionMethod;
 
 import javax.net.SocketFactory;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -129,7 +130,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
         private SocketFactory socketFactory;
 
-        private List<CompressionMethod> compressionMethods;
+        private List<CompressionMethod> compressionMethods = Collections.emptyList();
 
         private Builder() {
             // default values.

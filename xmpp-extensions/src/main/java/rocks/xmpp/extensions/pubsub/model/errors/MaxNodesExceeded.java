@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <max-nodes-exceeded/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #MAX_NODES_EXCEEDED
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-batch">12.10 Batch Processing</a>
  */
 @XmlRootElement(name = "max-nodes-exceeded")
+@XmlType(factoryMethod = "create")
 public final class MaxNodesExceeded extends PubSubError {
-    private MaxNodesExceeded() {
+    MaxNodesExceeded() {
+    }
+
+    private static MaxNodesExceeded create() {
+        return MAX_NODES_EXCEEDED;
     }
 }

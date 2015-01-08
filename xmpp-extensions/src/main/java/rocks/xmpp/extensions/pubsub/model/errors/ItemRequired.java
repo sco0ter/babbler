@@ -25,16 +25,24 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <item-required/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #ITEM_REQUIRED
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badrequest">7.1.3.6 Request Does Not Match Configuration</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete-error-itemid">7.2.3.4 Item or ItemID Required</a>
  */
 @XmlRootElement(name = "item-required")
+@XmlType(factoryMethod = "create")
 public final class ItemRequired extends PubSubError {
-    private ItemRequired() {
+    ItemRequired() {
+    }
+
+    private static ItemRequired create() {
+        return ITEM_REQUIRED;
     }
 }

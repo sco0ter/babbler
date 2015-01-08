@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-options/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #INVALID_OPTIONS
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-process-failure">6.3.6.2 Failure</a>
  */
 @XmlRootElement(name = "invalid-options")
+@XmlType(factoryMethod = "create")
 public final class InvalidOptions extends PubSubError {
-    private InvalidOptions() {
+    InvalidOptions() {
+    }
+
+    private static InvalidOptions create() {
+        return INVALID_OPTIONS;
     }
 }

@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-jid/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #INVALID_JID
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-nomatch">6.1.3.1 JIDs Do Not Match</a>
  */
 @XmlRootElement(name = "invalid-jid")
+@XmlType(factoryMethod = "create")
 public final class InvalidJid extends PubSubError {
-    private InvalidJid() {
+    InvalidJid() {
+    }
+
+    private static InvalidJid create() {
+        return INVALID_JID;
     }
 }

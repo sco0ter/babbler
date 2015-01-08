@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-payload/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #INVALID_PAYLOAD
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badpayload">7.1.3.5 Bad Payload</a>
  */
 @XmlRootElement(name = "invalid-payload")
+@XmlType(factoryMethod = "create")
 public final class InvalidPayload extends PubSubError {
-    private InvalidPayload() {
+    InvalidPayload() {
+    }
+
+    private static InvalidPayload create() {
+        return INVALID_PAYLOAD;
     }
 }

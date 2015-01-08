@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <pending-subscription/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #PENDING_SUBSCRIPTION
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-pending">6.1.3.7 Subscription Pending</a>
  */
 @XmlRootElement(name = "pending-subscription")
+@XmlType(factoryMethod = "create")
 public final class PendingSubscription extends PubSubError {
-    private PendingSubscription() {
+    PendingSubscription() {
+    }
+
+    private static PendingSubscription create() {
+        return PENDING_SUBSCRIPTION;
     }
 }

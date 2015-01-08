@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <jid-required/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #JID_REQUIRED
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-error-jid">6.3.4.3 Subscriber JID Required</a>
  */
 @XmlRootElement(name = "jid-required")
+@XmlType(factoryMethod = "create")
 public final class JidRequired extends PubSubError {
-    private JidRequired() {
+    JidRequired() {
+    }
+
+    private static JidRequired create() {
+        return JID_REQUIRED;
     }
 }

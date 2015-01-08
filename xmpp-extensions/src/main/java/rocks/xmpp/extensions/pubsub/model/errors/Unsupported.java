@@ -43,6 +43,10 @@ public final class Unsupported extends PubSubError {
     private Unsupported() {
     }
 
+    Unsupported(PubSubFeature pubSubFeature) {
+        this.feature = pubSubFeature;
+    }
+
     /**
      * Gets the unsupported feature.
      *

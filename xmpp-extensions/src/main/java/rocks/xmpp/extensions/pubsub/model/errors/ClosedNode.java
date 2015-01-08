@@ -25,16 +25,24 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <closed-node/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #CLOSED_NODE
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-whitelist">6.1.3.4 Not on Whitelist</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-whitelist">6.5.9.8 Not on Whitelist</a>
  */
 @XmlRootElement(name = "closed-node")
+@XmlType(factoryMethod = "create")
 public final class ClosedNode extends PubSubError {
-    private ClosedNode() {
+    ClosedNode() {
+    }
+
+    private static ClosedNode create() {
+        return CLOSED_NODE;
     }
 }

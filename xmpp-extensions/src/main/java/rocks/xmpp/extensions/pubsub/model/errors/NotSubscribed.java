@@ -25,17 +25,25 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <not-subscribed/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #NOT_SUBSCRIBED
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe-error-nosub">6.2.3.2 No Such Subscriber</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-error-nosub">6.3.4.2 No Such Subscriber</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-notsubscribed">6.5.9.3 Entity Not Subscribed</a>
  */
 @XmlRootElement(name = "not-subscribed")
+@XmlType(factoryMethod = "create")
 public final class NotSubscribed extends PubSubError {
-    private NotSubscribed() {
+    NotSubscribed() {
+    }
+
+    private static NotSubscribed create() {
+        return NOT_SUBSCRIBED;
     }
 }

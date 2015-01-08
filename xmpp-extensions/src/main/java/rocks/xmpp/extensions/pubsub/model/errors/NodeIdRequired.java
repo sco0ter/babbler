@@ -25,16 +25,24 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <nodeid-required/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #NODE_ID_REQUIRED
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete-error-nodeid">7.2.3.3 NodeID Required</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-error-nodeid">8.2.3.3 NodeID Required</a>
  */
 @XmlRootElement(name = "nodeid-required")
+@XmlType(factoryMethod = "create")
 public final class NodeIdRequired extends PubSubError {
-    private NodeIdRequired() {
+    NodeIdRequired() {
+    }
+
+    private static NodeIdRequired create() {
+        return NODE_ID_REQUIRED;
     }
 }

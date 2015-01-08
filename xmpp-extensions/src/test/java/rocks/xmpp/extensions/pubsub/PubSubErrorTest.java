@@ -91,6 +91,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof InvalidJid);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.INVALID_JID);
     }
 
     @Test
@@ -106,6 +107,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof PresenceSubscriptionRequired);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.PRESENCE_SUBSCRIPTION_REQUIRED);
     }
 
     @Test
@@ -121,6 +123,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof NotInRosterGroup);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.NOT_IN_ROSTER_GROUP);
     }
 
     @Test
@@ -136,6 +139,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof ClosedNode);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.CLOSED_NODE);
     }
 
     @Test
@@ -151,6 +155,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof PendingSubscription);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.PENDING_SUBSCRIPTION);
     }
 
     @Test
@@ -166,6 +171,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof TooManySubscriptions);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.TOO_MANY_SUBSCRIPTIONS);
     }
 
     @Test
@@ -218,6 +224,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof ConfigurationRequired);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.CONFIGURATION_REQUIRED);
     }
 
     @Test
@@ -233,6 +240,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof SubIdRequired);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.SUB_ID_REQUIRED);
     }
 
     @Test
@@ -248,6 +256,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof NotSubscribed);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.NOT_SUBSCRIBED);
     }
 
     @Test
@@ -263,6 +272,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof InvalidSubId);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.INVALID_SUB_ID);
     }
 
     @Test
@@ -278,6 +288,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof JidRequired);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.JID_REQUIRED);
     }
 
     @Test
@@ -310,6 +321,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof InvalidOptions);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.INVALID_OPTIONS);
     }
 
     @Test
@@ -359,6 +371,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof PayloadTooBig);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.PAYLOAD_TOO_BIG);
     }
 
     @Test
@@ -374,6 +387,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof InvalidPayload);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.INVALID_PAYLOAD);
     }
 
     @Test
@@ -389,6 +403,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof ItemRequired);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.ITEM_REQUIRED);
     }
 
     @Test
@@ -404,6 +419,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof PayloadRequired);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.PAYLOAD_REQUIRED);
     }
 
     @Test
@@ -419,6 +435,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof ItemForbidden);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.ITEM_FORBIDDEN);
     }
 
     @Test
@@ -434,6 +451,7 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof NodeIdRequired);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.NODE_ID_REQUIRED);
     }
 
     @Test
@@ -599,5 +617,6 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof MaxItemsExceeded);
+        Assert.assertTrue(iq.getError().getExtension() == PubSubError.MAX_ITEMS_EXCEEDED);
     }
 }

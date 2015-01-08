@@ -25,11 +25,11 @@
 package rocks.xmpp.extensions.compress.model.feature;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
-import rocks.xmpp.extensions.compress.model.CompressionMethod;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,15 +43,15 @@ import java.util.List;
 public final class CompressionFeature extends StreamFeature {
 
     @XmlElement(name = "method")
-    private final List<CompressionMethod> methods = new ArrayList<>();
+    private final List<String> methods = new ArrayList<>();
 
     /**
      * Gets the available compression methods.
      *
      * @return The compression methods.
      */
-    public List<CompressionMethod> getMethods() {
-        return methods;
+    public List<String> getMethods() {
+        return Collections.unmodifiableList(methods);
     }
 
     @Override

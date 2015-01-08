@@ -25,11 +25,18 @@
 package rocks.xmpp.extensions.compress;
 
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.extensions.compress.model.CompressionMethod;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
 /**
  * Manages stream compression as described in <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
@@ -43,16 +50,40 @@ import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
  */
 public final class CompressionManager extends StreamFeatureNegotiator {
 
+    static {
+        ZLIB = new CompressionMethod() {
+            @Override
+            public String getName() {
+                return "zlib";
+            }
+
+            @Override
+            public InputStream decompress(InputStream inputStream) {
+                return new InflaterInputStream(inputStream);
+            }
+
+            @Override
+            public OutputStream compress(OutputStream outputStream) {
+                return new DeflaterOutputStream(outputStream, true);
+            }
+        };
+    }
+
+    /**
+     * The "zlib" compression method.
+     */
+    public static final CompressionMethod ZLIB;
+
     private final XmppSession xmppSession;
 
-    // Currently only support zlib compression.
-    private final CompressionMethod method;
+    private final List<CompressionMethod> compressionMethods;
 
-    public CompressionManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, CompressionMethod compressionMethod) {
+    private CompressionMethod negotiatedCompressionMethod;
+
+    public CompressionManager(XmppSession xmppSession, List<CompressionMethod> compressionMethods) {
         super(CompressionFeature.class);
-        addFeatureListener(streamFeatureListener);
         this.xmppSession = xmppSession;
-        this.method = compressionMethod;
+        this.compressionMethods = compressionMethods;
     }
 
     @Override
@@ -60,8 +91,17 @@ public final class CompressionManager extends StreamFeatureNegotiator {
         Status status = Status.INCOMPLETE;
         try {
             if (element instanceof CompressionFeature) {
-                if (method != null) {
-                    xmppSession.send(new StreamCompression.Compress(method));
+                List<String> advertisedCompressionMethods = ((CompressionFeature) element).getMethods();
+                Map<String, CompressionMethod> clientMethods = new LinkedHashMap<>();
+                for (CompressionMethod compressionMethod : compressionMethods) {
+                    clientMethods.put(compressionMethod.getName(), compressionMethod);
+                }
+                clientMethods.keySet().retainAll(advertisedCompressionMethods);
+                if (!clientMethods.isEmpty()) {
+                    // Use the first configured compression method, which is also advertised by the server.
+                    CompressionMethod compressionMethod = clientMethods.values().iterator().next();
+                    xmppSession.send(new StreamCompression.Compress(compressionMethod.getName()));
+                    negotiatedCompressionMethod = compressionMethod;
                     status = Status.INCOMPLETE;
                 } else {
                     status = Status.IGNORE;
@@ -70,7 +110,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
                 status = Status.SUCCESS;
             } else if (element instanceof StreamCompression.Failure) {
                 status = Status.FAILURE;
-                throw new Exception("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
+                throw new IOException("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
             }
         } finally {
             notifyFeatureNegotiated(status, element);
@@ -90,5 +130,14 @@ public final class CompressionManager extends StreamFeatureNegotiator {
     @Override
     public boolean canProcess(Object element) {
         return element instanceof StreamCompression;
+    }
+
+    /**
+     * Gets the negotiated compression method.
+     *
+     * @return The negotiated compression method.
+     */
+    public CompressionMethod getNegotiatedCompressionMethod() {
+        return negotiatedCompressionMethod;
     }
 }

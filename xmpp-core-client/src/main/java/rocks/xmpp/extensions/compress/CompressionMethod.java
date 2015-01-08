@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,38 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.compress.model;
+package rocks.xmpp.extensions.compress;
 
-import javax.xml.bind.annotation.XmlEnumValue;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * Defines a compression method.
+ * An interface to describe a compression method.
  *
  * @author Christian Schudt
  */
-public enum CompressionMethod {
+public interface CompressionMethod {
+
     /**
-     * The standard zlib compression method.
+     * Gets the compression method name, e.g. "zlib", "lzw", "exi", ...
+     *
+     * @return The compression method name.
      */
-    @XmlEnumValue("zlib")
-    ZLIB
+    String getName();
+
+    /**
+     * Decompresses an input stream.
+     *
+     * @param inputStream The compressed input stream.
+     * @return The decompressed input stream.
+     */
+    InputStream decompress(InputStream inputStream);
+
+    /**
+     * Gets the compressed output stream.
+     *
+     * @param outputStream The uncompressed output stream.
+     * @return The compressed output stream.
+     */
+    OutputStream compress(OutputStream outputStream);
 }

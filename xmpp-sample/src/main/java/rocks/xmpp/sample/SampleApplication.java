@@ -32,6 +32,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
+import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.net.ssl.HostnameVerifier;
@@ -81,6 +82,7 @@ public class SampleApplication {
                     TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                             .port(5222)
                             .sslContext(sslContext)
+                            .compressionMethods(CompressionManager.ZLIB)
                             .secure(false)
                             .build();
 
@@ -88,8 +90,8 @@ public class SampleApplication {
                     BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
                             .port(5280)
-                            //.secure(true)
-                            //.sslContext(sslContext)
+                                    //.secure(true)
+                                    //.sslContext(sslContext)
                             .hostnameVerifier(new HostnameVerifier() {
                                 @Override
                                 public boolean verify(String s, SSLSession sslSession) {

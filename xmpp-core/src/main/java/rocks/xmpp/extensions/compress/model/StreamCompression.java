@@ -33,10 +33,6 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
 /**
  * An abstract base class for all stream compression classes in the {@code http://jabber.org/protocol/compress} namespace.
@@ -174,12 +170,12 @@ public abstract class StreamCompression {
     public static final class Compress implements ClientStreamElement {
 
         @XmlElement
-        private CompressionMethod method;
+        private String method;
 
         private Compress() {
         }
 
-        public Compress(CompressionMethod method) {
+        public Compress(String method) {
             this.method = method;
         }
     }

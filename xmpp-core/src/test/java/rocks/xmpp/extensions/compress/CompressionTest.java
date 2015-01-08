@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.compress;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.compress.model.CompressionMethod;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
@@ -52,7 +51,8 @@ public class CompressionTest extends XmlTest {
 
         Assert.assertNotNull(compressionFeature);
         Assert.assertEquals(compressionFeature.getMethods().size(), 2);
-        Assert.assertEquals(compressionFeature.getMethods().get(0), CompressionMethod.ZLIB);
+        Assert.assertEquals(compressionFeature.getMethods().get(0), "zlib");
+        Assert.assertEquals(compressionFeature.getMethods().get(1), "lzw");
     }
 
     @Test
@@ -65,7 +65,7 @@ public class CompressionTest extends XmlTest {
 
     @Test
     public void marshalCompress() throws JAXBException, XMLStreamException {
-        StreamCompression.Compress compress = new StreamCompression.Compress(CompressionMethod.ZLIB);
+        StreamCompression.Compress compress = new StreamCompression.Compress("zlib");
         String xml = marshal(compress);
         Assert.assertEquals(xml, "<compress xmlns=\"http://jabber.org/protocol/compress\"><method>zlib</method></compress>");
     }

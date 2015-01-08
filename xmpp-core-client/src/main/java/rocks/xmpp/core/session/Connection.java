@@ -133,12 +133,6 @@ public abstract class Connection implements Closeable {
     public abstract void send(ClientStreamElement clientStreamElement);
 
     /**
-     * Compresses the stream.
-     */
-    protected void compressStream() {
-    }
-
-    /**
      * Connects to the server.
      *
      * @throws IOException If no connection could be established, e.g. due to unknown host.

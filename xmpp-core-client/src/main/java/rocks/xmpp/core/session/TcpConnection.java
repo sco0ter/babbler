@@ -30,6 +30,7 @@ import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -61,8 +62,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
@@ -106,14 +105,18 @@ public final class TcpConnection extends Connection {
             }
         }, configuration.isSecure()));
 
-        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new CompressionManager(xmppSession, new StreamFeatureListener() {
+        final CompressionManager compressionManager = new CompressionManager(xmppSession, configuration.getCompressionMethods());
+        compressionManager.addFeatureListener(new StreamFeatureListener() {
             @Override
             public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) {
                 if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.SUCCESS) {
-                    compressStream();
+                    CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
+                    inputStream = compressionMethod.decompress(inputStream);
+                    outputStream = compressionMethod.compress(outputStream);
                 }
             }
-        }, configuration.getCompressionMethod()));
+        });
+        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(compressionManager);
     }
 
 
@@ -219,19 +222,6 @@ public final class TcpConnection extends Connection {
         }
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
-    }
-
-    @Override
-    protected void compressStream() {
-
-        if (tcpConnectionConfiguration.getCompressionMethod() != null) {
-            switch (tcpConnectionConfiguration.getCompressionMethod()) {
-                case ZLIB:
-                    inputStream = new InflaterInputStream(inputStream);
-                    outputStream = new DeflaterOutputStream(outputStream, true);
-                    break;
-            }
-        }
     }
 
     @Override

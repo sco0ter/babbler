@@ -43,10 +43,7 @@ import rocks.xmpp.extensions.carbons.model.Disable;
 import rocks.xmpp.extensions.carbons.model.Enable;
 import rocks.xmpp.extensions.carbons.model.Private;
 import rocks.xmpp.extensions.carbons.model.Sent;
-import rocks.xmpp.extensions.chatstates.model.*;
-import rocks.xmpp.extensions.data.layout.model.Page;
-import rocks.xmpp.extensions.data.mediaelement.model.Media;
-import rocks.xmpp.extensions.data.validate.model.Validation;
+import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.forward.model.Forwarded;
@@ -55,8 +52,7 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.hashes.HashManager;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
-import rocks.xmpp.extensions.invisible.model.Invisible;
-import rocks.xmpp.extensions.invisible.model.Visible;
+import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
@@ -78,9 +74,6 @@ import rocks.xmpp.extensions.oob.model.x.OobX;
 import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.extensions.privacy.model.Privacy;
-import rocks.xmpp.extensions.privatedata.model.PrivateData;
-import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
-import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
 import rocks.xmpp.extensions.reach.model.Reachability;
@@ -92,7 +85,6 @@ import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.extensions.rpc.model.Rpc;
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.extensions.search.model.Search;
 import rocks.xmpp.extensions.shim.model.Headers;
@@ -247,7 +239,7 @@ public class ExtensionContext extends CoreContext {
                 Received.class, Request.class,
 
                 // XEP-0186: Invisible Command
-                Invisible.class, Visible.class,
+                InvisibleCommand.class,
 
                 // XEP-0191: Blocking Command
                 BlockList.class,

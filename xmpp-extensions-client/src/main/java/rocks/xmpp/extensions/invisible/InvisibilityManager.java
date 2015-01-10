@@ -30,15 +30,14 @@ import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
-import rocks.xmpp.extensions.invisible.model.Invisible;
-import rocks.xmpp.extensions.invisible.model.Visible;
+import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 
 /**
  * @author Christian Schudt
  */
 public final class InvisibilityManager extends ExtensionManager {
 
-    private volatile boolean invisible;
+    private boolean invisible;
 
     private InvisibilityManager(XmppSession xmppSession) {
         super(xmppSession);
@@ -50,8 +49,8 @@ public final class InvisibilityManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
-    public void becomeInvisible() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, new Invisible()));
+    public synchronized void becomeInvisible() throws XmppException {
+        xmppSession.query(new IQ(IQ.Type.SET, InvisibleCommand.INVISIBLE));
         invisible = true;
     }
 
@@ -61,8 +60,8 @@ public final class InvisibilityManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
-    public void becomeVisible() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, new Visible()));
+    public synchronized void becomeVisible() throws XmppException {
+        xmppSession.query(new IQ(IQ.Type.SET, InvisibleCommand.VISIBLE));
         invisible = false;
     }
 
@@ -71,7 +70,7 @@ public final class InvisibilityManager extends ExtensionManager {
      *
      * @return True, of the current session is invisible.
      */
-    public boolean isInvisible() {
+    public synchronized boolean isInvisible() {
         return invisible;
     }
 
@@ -84,6 +83,6 @@ public final class InvisibilityManager extends ExtensionManager {
      */
     public boolean isSupported() throws XmppException {
         EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
-        return entityCapabilitiesManager.isSupported(Invisible.NAMESPACE, Jid.valueOf(xmppSession.getDomain()));
+        return entityCapabilitiesManager.isSupported(InvisibleCommand.NAMESPACE, Jid.valueOf(xmppSession.getDomain()));
     }
 }

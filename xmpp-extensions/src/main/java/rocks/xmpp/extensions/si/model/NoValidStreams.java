@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.si.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <si:no-valid-streams/>} error condition.
@@ -37,5 +38,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0095.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "no-valid-streams")
-public final class NoValidStreams {
+@XmlType(factoryMethod = "create")
+final class NoValidStreams {
+    NoValidStreams() {
+    }
+
+    private static NoValidStreams create() {
+        return (NoValidStreams) StreamInitiation.NO_VALID_STREAMS;
+    }
+
+    @Override
+    public String toString() {
+        return "<si:no-valid-streams/>";
+    }
 }

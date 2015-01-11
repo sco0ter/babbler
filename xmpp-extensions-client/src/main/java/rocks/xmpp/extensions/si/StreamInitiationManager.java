@@ -45,8 +45,6 @@ import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.filetransfer.FileTransferNegotiator;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
-import rocks.xmpp.extensions.si.model.BadProfile;
-import rocks.xmpp.extensions.si.model.NoValidStreams;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
@@ -249,12 +247,12 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                     }
                 }
                 if (noValidStreams) {
-                    xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, new NoValidStreams())));
+                    xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.NO_VALID_STREAMS)));
                 } else {
                     ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
 
                     if (profileManager == null) {
-                        xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, new BadProfile())));
+                        xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.BAD_PROFILE)));
                     } else {
                         profileManager.handle(iq, streamInitiation);
                     }

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.si.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <si:bad-profile/>} error condition.
@@ -37,5 +38,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0095.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "bad-profile")
-public final class BadProfile {
+@XmlType(factoryMethod = "create")
+final class BadProfile {
+
+    BadProfile() {
+    }
+
+    private static BadProfile create() {
+        return (BadProfile) StreamInitiation.BAD_PROFILE;
+    }
+
+    @Override
+    public String toString() {
+        return "<si:bad-profile/>";
+    }
 }

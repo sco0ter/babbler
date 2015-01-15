@@ -103,10 +103,16 @@ public class IQTest extends XmlTest {
     public void testErrorIQ() throws JAXBException, XMLStreamException {
         IQ iq = new IQ(new Jid("to", "domain"), IQ.Type.GET, null, "id", new Jid("from", "domain"), null, null);
         IQ error = iq.createError(new StanzaError(Condition.UNDEFINED_CONDITION));
+        IQ error2 = iq.createError(Condition.UNDEFINED_CONDITION);
         Assert.assertEquals(error.getType(), IQ.Type.ERROR);
         Assert.assertEquals(error.getId(), iq.getId());
         Assert.assertEquals(error.getTo(), iq.getFrom());
         Assert.assertEquals(error.getFrom(), iq.getTo());
+        Assert.assertEquals(error2.getType(), IQ.Type.ERROR);
+        Assert.assertEquals(error2.getId(), iq.getId());
+        Assert.assertEquals(error2.getTo(), iq.getFrom());
+        Assert.assertEquals(error2.getFrom(), iq.getTo());
+        Assert.assertEquals(marshal(error2), "<iq from=\"to@domain\" id=\"id\" to=\"from@domain\" type=\"error\"><error type=\"cancel\"><undefined-condition xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></undefined-condition></error></iq>");
     }
 
     @Test

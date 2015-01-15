@@ -79,7 +79,7 @@ public final class OutOfBandFileTransferManager extends IQExtensionManager imple
                         fileTransfer.removeFileTransferStatusListener(this);
                     } else if (e.getStatus() == FileTransfer.Status.CANCELED ||
                             e.getStatus() == FileTransfer.Status.FAILED) {
-                        xmppSession.send(iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND)));
+                        xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
                         fileTransfer.removeFileTransferStatusListener(this);
                     }
                 }
@@ -93,7 +93,7 @@ public final class OutOfBandFileTransferManager extends IQExtensionManager imple
     @Override
     public void reject(IQ iq) {
         // If the recipient rejects the request outright, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Acceptable condition:
-        xmppSession.send(iq.createError(new StanzaError(Condition.NOT_ACCEPTABLE)));
+        xmppSession.send(iq.createError(Condition.NOT_ACCEPTABLE));
     }
 
     @Override
@@ -156,7 +156,7 @@ public final class OutOfBandFileTransferManager extends IQExtensionManager imple
                     return null;
                 } else {
                     // If the URL is no HTTP URL, return a stanza error.
-                    return iq.createError(new StanzaError(Condition.NOT_ACCEPTABLE));
+                    return iq.createError(Condition.NOT_ACCEPTABLE);
                 }
             } finally {
                 if (connection != null) {
@@ -165,7 +165,7 @@ public final class OutOfBandFileTransferManager extends IQExtensionManager imple
             }
         } catch (IOException e1) {
             // If the recipient attempts to retrieve the file but is unable to do so, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Found condition:
-            return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND));
+            return iq.createError(Condition.ITEM_NOT_FOUND);
         }
     }
 }

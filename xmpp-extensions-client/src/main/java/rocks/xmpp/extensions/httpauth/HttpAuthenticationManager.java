@@ -32,7 +32,6 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -107,7 +106,7 @@ public final class HttpAuthenticationManager extends IQExtensionManager implemen
         if (notifyHttpAuthListeners(iq, confirmationRequest)) {
             return null;
         }
-        return iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE));
+        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 
     @Override

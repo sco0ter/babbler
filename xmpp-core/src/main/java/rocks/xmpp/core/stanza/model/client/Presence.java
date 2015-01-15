@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.client;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -159,6 +160,11 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
     @Override
     public Presence createError(StanzaError error) {
         return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(), getLanguage(), getExtensions(), error);
+    }
+
+    @Override
+    public Presence createError(Condition condition) {
+        return createError(new StanzaError(condition));
     }
 
     @Override

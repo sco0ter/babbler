@@ -230,7 +230,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
             // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
             return iq.createResult();
         }
-        return iq.createError(new StanzaError(Condition.NOT_ACCEPTABLE));
+        return iq.createError(Condition.NOT_ACCEPTABLE);
     }
 
     @Override

@@ -557,10 +557,10 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
                 return iq.createResult();
             } else {
                 // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
-                return iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE));
+                return iq.createError(Condition.SERVICE_UNAVAILABLE);
             }
         }
-        return iq.createError(new StanzaError(Condition.BAD_REQUEST));
+        return iq.createError(Condition.BAD_REQUEST);
     }
 
     @Override

@@ -91,7 +91,7 @@ class BitsOfBinaryManager extends IQExtensionManager implements SessionStatusLis
         if (cachedData != null) {
             return iq.createResult(cachedData);
         } else {
-            return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND));
+            return iq.createError(Condition.ITEM_NOT_FOUND);
         }
     }
 

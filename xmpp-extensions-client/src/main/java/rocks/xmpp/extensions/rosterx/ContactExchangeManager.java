@@ -280,7 +280,7 @@ public final class ContactExchangeManager extends IQExtensionManager implements 
         ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
         if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
             // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
-            return iq.createError(new StanzaError(Condition.NOT_AUTHORIZED));
+            return iq.createError(Condition.NOT_AUTHORIZED);
         } else {
             List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
             if (!items.isEmpty()) {

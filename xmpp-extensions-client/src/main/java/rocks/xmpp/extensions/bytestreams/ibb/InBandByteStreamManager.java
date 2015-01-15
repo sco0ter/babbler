@@ -119,7 +119,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                     return iq.createError(new StanzaError(StanzaError.Type.CANCEL, rocks.xmpp.core.stanza.model.errors.Condition.UNEXPECTED_REQUEST));
                 }
             } else {
-                return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND));
+                return iq.createError(Condition.ITEM_NOT_FOUND);
             }
         } else if (ibbElement instanceof InBandByteStream.Open) {
             InBandByteStream.Open open = (InBandByteStream.Open) ibbElement;
@@ -145,7 +145,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                     return iq.createResult();
                 }
             } else {
-                return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND));
+                return iq.createError(Condition.ITEM_NOT_FOUND);
             }
         }
     }
@@ -162,7 +162,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                         xmppSession.send(e.getMessage().createError(new StanzaError(StanzaError.Type.CANCEL, Condition.UNEXPECTED_REQUEST)));
                     }
                 } else {
-                    xmppSession.send(e.getMessage().createError(new StanzaError(Condition.ITEM_NOT_FOUND)));
+                    xmppSession.send(e.getMessage().createError(Condition.ITEM_NOT_FOUND));
                 }
             }
         }

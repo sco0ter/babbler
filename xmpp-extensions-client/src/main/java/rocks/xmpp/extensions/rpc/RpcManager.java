@@ -127,10 +127,10 @@ public final class RpcManager extends IQExtensionManager implements SessionStatu
                 return iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
             } catch (Throwable e1) {
                 logger.log(Level.WARNING, e1.getMessage(), e1);
-                return iq.createError(new StanzaError(Condition.INTERNAL_SERVER_ERROR));
+                return iq.createError(Condition.INTERNAL_SERVER_ERROR);
             }
         }
-        return iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE));
+        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 
     @Override

@@ -93,6 +93,6 @@ public final class SoftwareVersionManager extends IQExtensionManager {
                 return iq.createResult(softwareVersion);
             }
         }
-        return iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE));
+        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 }

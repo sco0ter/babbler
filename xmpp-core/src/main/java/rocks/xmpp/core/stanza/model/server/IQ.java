@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.server;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -128,6 +129,11 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
     @Override
     public final IQ createError(StanzaError error) {
         return new IQ(getFrom(), Type.ERROR, null, getId(), getTo(), getLanguage(), error);
+    }
+
+    @Override
+    public final IQ createError(Condition condition) {
+        return createError(new StanzaError(condition));
     }
 
     @Override

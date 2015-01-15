@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -222,6 +223,15 @@ public abstract class Stanza {
      * @see #getError()
      */
     public abstract Stanza createError(StanzaError error);
+
+    /**
+     * Creates an error response for this stanza.
+     *
+     * @param condition The error condition which is appended to the stanza.
+     * @return The error response.
+     * @see #getError()
+     */
+    public abstract Stanza createError(Condition condition);
 
     /**
      * Gets an extension by type.

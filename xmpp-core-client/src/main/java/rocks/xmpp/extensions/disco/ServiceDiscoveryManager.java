@@ -431,7 +431,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
                 } else {
                     // Returns <feature-not-implemented/> here.
                     // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
-                    return iq.createError(new StanzaError(Condition.FEATURE_NOT_IMPLEMENTED));
+                    return iq.createError(Condition.FEATURE_NOT_IMPLEMENTED);
                 }
             }
         } else {

@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.client;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -144,6 +145,11 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
     @Override
     public Message createError(StanzaError error) {
         return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), error);
+    }
+
+    @Override
+    public Message createError(Condition condition) {
+        return createError(new StanzaError(condition));
     }
 
     @Override

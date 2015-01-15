@@ -108,7 +108,7 @@ public final class HttpAuthenticationEvent extends EventObject {
             // If the user wishes to deny the request, the <iq/> response stanza MUST be of type "error",
             // MAY contain the original <confirm/> child element (although this is not necessary since the XMPP 'id' attribute can be used for tracking purposes),
             // and MUST specify an error, which SHOULD be <not-authorized/>
-            xmppSession.send(((IQ) stanza).createError(new StanzaError(Condition.NOT_AUTHORIZED)));
+            xmppSession.send(((IQ) stanza).createError(Condition.NOT_AUTHORIZED));
         } else if (stanza instanceof Message) {
             // If the user wishes to deny the request, the <message/> response stanza MUST be of type "error",
             // MUST mirror the <thread/> ID (if provided by the XMPP Server),

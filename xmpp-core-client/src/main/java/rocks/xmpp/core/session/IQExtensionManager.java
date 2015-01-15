@@ -57,10 +57,10 @@ public abstract class IQExtensionManager extends ExtensionManager implements IQH
             if (iq.getType() == type) {
                 return processRequest(iq);
             } else {
-                return iq.createError(new StanzaError(Condition.BAD_REQUEST));
+                return iq.createError(Condition.BAD_REQUEST);
             }
         }
-        return iq.createError(new StanzaError(Condition.SERVICE_UNAVAILABLE));
+        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 
     /**

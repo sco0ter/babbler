@@ -217,7 +217,7 @@ public final class StreamInitiationManager extends IQExtensionManager implements
 
     @Override
     public void reject(IQ iq) {
-        xmppSession.send(iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.FORBIDDEN)));
+        xmppSession.send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.FORBIDDEN));
     }
 
     @Override

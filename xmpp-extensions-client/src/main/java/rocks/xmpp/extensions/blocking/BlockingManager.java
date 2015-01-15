@@ -188,7 +188,7 @@ public final class BlockingManager extends IQExtensionManager implements Session
                 }
             }
         }
-        return iq.createError(new StanzaError(Condition.NOT_ACCEPTABLE));
+        return iq.createError(Condition.NOT_ACCEPTABLE);
     }
 
     @Override

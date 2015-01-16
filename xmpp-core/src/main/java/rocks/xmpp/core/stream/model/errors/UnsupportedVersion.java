@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "unsupported-version")
 @XmlType(factoryMethod = "create")
-public final class UnsupportedVersion extends Condition {
+final class UnsupportedVersion extends Condition {
 
     UnsupportedVersion() {
     }
 
     private static UnsupportedVersion create() {
-        return UNSUPPORTED_VERSION;
+        return (UnsupportedVersion) UNSUPPORTED_VERSION;
     }
 }

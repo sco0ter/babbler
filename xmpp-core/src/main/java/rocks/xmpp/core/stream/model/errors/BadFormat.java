@@ -43,12 +43,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "bad-format")
 @XmlType(factoryMethod = "create")
-public final class BadFormat extends Condition {
+final class BadFormat extends Condition {
 
     BadFormat() {
     }
 
     private static BadFormat create() {
-        return BAD_FORMAT;
+        return (BadFormat) BAD_FORMAT;
     }
 }

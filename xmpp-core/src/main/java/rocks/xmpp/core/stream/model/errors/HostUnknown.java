@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "host-unknown")
 @XmlType(factoryMethod = "create")
-public final class HostUnknown extends Condition {
+final class HostUnknown extends Condition {
 
     HostUnknown() {
     }
 
     private static HostUnknown create() {
-        return HOST_UNKNOWN;
+        return (HostUnknown)HOST_UNKNOWN;
     }
 }

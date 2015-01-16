@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "invalid-namespace")
 @XmlType(factoryMethod = "create")
-public final class InvalidNamespace extends Condition {
+final class InvalidNamespace extends Condition {
 
     InvalidNamespace() {
     }
 
     private static InvalidNamespace create() {
-        return INVALID_NAMESPACE;
+        return (InvalidNamespace) INVALID_NAMESPACE;
     }
 }

@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "policy-violation")
 @XmlType(factoryMethod = "create")
-public final class PolicyViolation extends Condition {
+final class PolicyViolation extends Condition {
 
     PolicyViolation() {
     }
 
     private static PolicyViolation create() {
-        return POLICY_VIOLATION;
+        return (PolicyViolation) POLICY_VIOLATION;
     }
 }

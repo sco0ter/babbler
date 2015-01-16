@@ -33,15 +33,15 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>The recipient or server can no longer be contacted at this address, typically on a permanent basis (as opposed to the {@code <redirect/>} error condition, which is used for temporary addressing failures); the associated error type SHOULD be "cancel" and the error stanza SHOULD include a new address (if available) as the XML character data of the {@code <gone/>} element (which MUST be a Uniform Resource Identifier [URI] or Internationalized Resource Identifier [IRI] at which the entity can be contacted, typically an XMPP IRI as specified in [XMPP-URI]).</p>
  * </blockquote>
  *
- * @see #GONE
  * @see #gone(String)
  */
 @XmlRootElement(name = "gone")
 public final class Gone extends Condition {
-    public Gone() {
+
+    Gone() {
     }
 
-    public Gone(String newAddress) {
+    Gone(String newAddress) {
         this.value = newAddress;
     }
 

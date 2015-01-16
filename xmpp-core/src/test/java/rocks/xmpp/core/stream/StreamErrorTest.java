@@ -28,32 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.errors.BadFormat;
-import rocks.xmpp.core.stream.model.errors.BadNamespacePrefix;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.core.stream.model.errors.Conflict;
-import rocks.xmpp.core.stream.model.errors.ConnectionTimeout;
-import rocks.xmpp.core.stream.model.errors.HostGone;
-import rocks.xmpp.core.stream.model.errors.HostUnknown;
-import rocks.xmpp.core.stream.model.errors.ImproperAddressing;
-import rocks.xmpp.core.stream.model.errors.InternalServerError;
-import rocks.xmpp.core.stream.model.errors.InvalidFrom;
-import rocks.xmpp.core.stream.model.errors.InvalidNamespace;
-import rocks.xmpp.core.stream.model.errors.InvalidXml;
-import rocks.xmpp.core.stream.model.errors.NotAuthorized;
-import rocks.xmpp.core.stream.model.errors.NotWellFormed;
-import rocks.xmpp.core.stream.model.errors.PolicyViolation;
-import rocks.xmpp.core.stream.model.errors.RemoteConnectionFailed;
-import rocks.xmpp.core.stream.model.errors.Reset;
-import rocks.xmpp.core.stream.model.errors.ResourceConstraint;
-import rocks.xmpp.core.stream.model.errors.RestrictedXml;
 import rocks.xmpp.core.stream.model.errors.SeeOtherHost;
-import rocks.xmpp.core.stream.model.errors.SystemShutdown;
-import rocks.xmpp.core.stream.model.errors.UndefinedCondition;
-import rocks.xmpp.core.stream.model.errors.UnsupportedEncoding;
-import rocks.xmpp.core.stream.model.errors.UnsupportedFeature;
-import rocks.xmpp.core.stream.model.errors.UnsupportedStanzaType;
-import rocks.xmpp.core.stream.model.errors.UnsupportedVersion;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -74,7 +50,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof BadFormat);
         Assert.assertTrue(streamError.getCondition() == Condition.BAD_FORMAT);
     }
 
@@ -85,7 +60,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof BadNamespacePrefix);
         Assert.assertTrue(streamError.getCondition() == Condition.BAD_NAMESPACE_PREFIX);
     }
 
@@ -96,7 +70,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof Conflict);
         Assert.assertTrue(streamError.getCondition() == Condition.CONFLICT);
     }
 
@@ -107,7 +80,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof ConnectionTimeout);
         Assert.assertTrue(streamError.getCondition() == Condition.CONNECTION_TIMEOUT);
     }
 
@@ -118,7 +90,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof HostGone);
         Assert.assertTrue(streamError.getCondition() == Condition.HOST_GONE);
     }
 
@@ -129,7 +100,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof HostUnknown);
         Assert.assertTrue(streamError.getCondition() == Condition.HOST_UNKNOWN);
     }
 
@@ -140,7 +110,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof ImproperAddressing);
         Assert.assertTrue(streamError.getCondition() == Condition.IMPROPER_ADDRESSING);
     }
 
@@ -151,7 +120,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof InternalServerError);
         Assert.assertTrue(streamError.getCondition() == Condition.INTERNAL_SERVER_ERROR);
     }
 
@@ -162,7 +130,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof InvalidFrom);
         Assert.assertTrue(streamError.getCondition() == Condition.INVALID_FROM);
     }
 
@@ -173,7 +140,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof InvalidNamespace);
         Assert.assertTrue(streamError.getCondition() == Condition.INVALID_NAMESPACE);
     }
 
@@ -184,7 +150,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof InvalidXml);
         Assert.assertTrue(streamError.getCondition() == Condition.INVALID_XML);
     }
 
@@ -195,7 +160,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof NotAuthorized);
         Assert.assertTrue(streamError.getCondition() == Condition.NOT_AUTHORIZED);
     }
 
@@ -206,7 +170,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof NotWellFormed);
         Assert.assertTrue(streamError.getCondition() == Condition.NOT_WELL_FORMED);
     }
 
@@ -217,7 +180,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof PolicyViolation);
         Assert.assertTrue(streamError.getCondition() == Condition.POLICY_VIOLATION);
     }
 
@@ -228,7 +190,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof RemoteConnectionFailed);
         Assert.assertTrue(streamError.getCondition() == Condition.REMOTE_CONNECTION_FAILED);
     }
 
@@ -239,7 +200,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof Reset);
         Assert.assertTrue(streamError.getCondition() == Condition.RESET);
     }
 
@@ -250,7 +210,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof ResourceConstraint);
         Assert.assertTrue(streamError.getCondition() == Condition.RESOURCE_CONSTRAINT);
     }
 
@@ -261,7 +220,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof RestrictedXml);
         Assert.assertTrue(streamError.getCondition() == Condition.RESTRICTED_XML);
     }
 
@@ -283,7 +241,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof SystemShutdown);
         Assert.assertTrue(streamError.getCondition() == Condition.SYSTEM_SHUTDOWN);
     }
 
@@ -294,7 +251,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof UndefinedCondition);
         Assert.assertTrue(streamError.getCondition() == Condition.UNDEFINED_CONDITION);
     }
 
@@ -305,7 +261,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof UnsupportedEncoding);
         Assert.assertTrue(streamError.getCondition() == Condition.UNSUPPORTED_ENCODING);
     }
 
@@ -316,7 +271,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof UnsupportedFeature);
         Assert.assertTrue(streamError.getCondition() == Condition.UNSUPPORTED_FEATURE);
     }
 
@@ -327,7 +281,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof UnsupportedStanzaType);
         Assert.assertTrue(streamError.getCondition() == Condition.UNSUPPORTED_STANZA_TYPE);
     }
 
@@ -338,7 +291,6 @@ public class StreamErrorTest extends XmlTest {
                 "         xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
-        Assert.assertTrue(streamError.getCondition() instanceof UnsupportedVersion);
         Assert.assertTrue(streamError.getCondition() == Condition.UNSUPPORTED_VERSION);
     }
 
@@ -353,7 +305,6 @@ public class StreamErrorTest extends XmlTest {
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertEquals(streamError.getText(), "OPTIONAL descriptive text");
         Assert.assertEquals(streamError.getLanguage(), "en");
-        Assert.assertTrue(streamError.getCondition() instanceof HostUnknown);
         Assert.assertTrue(streamError.getCondition() == Condition.HOST_UNKNOWN);
     }
 }

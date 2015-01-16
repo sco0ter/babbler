@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "unsupported-feature")
 @XmlType(factoryMethod = "create")
-public final class UnsupportedFeature extends Condition {
+final class UnsupportedFeature extends Condition {
 
     UnsupportedFeature() {
     }
 
     private static UnsupportedFeature create() {
-        return UNSUPPORTED_FEATURE;
+        return (UnsupportedFeature) UNSUPPORTED_FEATURE;
     }
 }

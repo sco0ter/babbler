@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "conflict")
 @XmlType(factoryMethod = "create")
-public final class Conflict extends Condition {
+final class Conflict extends Condition {
 
     Conflict() {
     }
 
     private static Conflict create() {
-        return CONFLICT;
+        return (Conflict) CONFLICT;
     }
 }

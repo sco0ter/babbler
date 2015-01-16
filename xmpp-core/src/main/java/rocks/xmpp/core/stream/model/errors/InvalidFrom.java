@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "invalid-from")
 @XmlType(factoryMethod = "create")
-public final class InvalidFrom extends Condition {
+final class InvalidFrom extends Condition {
 
     InvalidFrom() {
     }
 
     private static InvalidFrom create() {
-        return INVALID_FROM;
+        return (InvalidFrom) INVALID_FROM;
     }
 }

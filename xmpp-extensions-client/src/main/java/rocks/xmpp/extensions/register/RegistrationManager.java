@@ -49,7 +49,7 @@ public final class RegistrationManager extends ExtensionManager {
      * Determines, if in-band registration is supported by the server.
      *
      * @return True if registration is supported by the server; otherwise false.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Conflict} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.NotAcceptable} (some required information not provided).
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Condition#CONFLICT} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.Condition#NOT_ACCEPTABLE} (some required information not provided).
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      */
     public boolean isRegistrationSupported() throws XmppException {
@@ -87,7 +87,7 @@ public final class RegistrationManager extends ExtensionManager {
      * Registers a new account. Call this method before authenticating.
      *
      * @param registration The registration.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Conflict} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.NotAcceptable} (some required information not provided).
+     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Condition#CONFLICT} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.Condition#NOT_ACCEPTABLE} (some required information not provided).
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      */

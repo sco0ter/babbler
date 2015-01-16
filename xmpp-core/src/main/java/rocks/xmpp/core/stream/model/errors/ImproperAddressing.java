@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "improper-addressing")
 @XmlType(factoryMethod = "create")
-public final class ImproperAddressing extends Condition {
+final class ImproperAddressing extends Condition {
 
     ImproperAddressing() {
     }
 
     private static ImproperAddressing create() {
-        return IMPROPER_ADDRESSING;
+        return (ImproperAddressing) IMPROPER_ADDRESSING;
     }
 }

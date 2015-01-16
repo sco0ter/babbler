@@ -26,7 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stream.model.StreamException;
-import rocks.xmpp.core.stream.model.errors.Conflict;
+import rocks.xmpp.core.stream.model.errors.Condition;
 
 import java.io.IOException;
 import java.util.Date;
@@ -157,7 +157,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
         switch (e.getStatus()) {
             case DISCONNECTED:
                 // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
-                if ((!(e.getException() instanceof StreamException) || !(((StreamException) e.getException()).getStreamError().getCondition() instanceof Conflict)) && e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
+                if ((!(e.getException() instanceof StreamException) || !(((StreamException) e.getException()).getStreamError().getCondition() == Condition.CONFLICT)) && e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
                     scheduleReconnection(0);
                 }
                 break;

@@ -24,38 +24,12 @@
 
 package rocks.xmpp.core.stream.model;
 
-import rocks.xmpp.core.stream.model.errors.BadFormat;
-import rocks.xmpp.core.stream.model.errors.BadNamespacePrefix;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.core.stream.model.errors.Conflict;
-import rocks.xmpp.core.stream.model.errors.ConnectionTimeout;
-import rocks.xmpp.core.stream.model.errors.HostGone;
-import rocks.xmpp.core.stream.model.errors.HostUnknown;
-import rocks.xmpp.core.stream.model.errors.ImproperAddressing;
-import rocks.xmpp.core.stream.model.errors.InternalServerError;
-import rocks.xmpp.core.stream.model.errors.InvalidFrom;
-import rocks.xmpp.core.stream.model.errors.InvalidNamespace;
-import rocks.xmpp.core.stream.model.errors.InvalidXml;
-import rocks.xmpp.core.stream.model.errors.NotAuthorized;
-import rocks.xmpp.core.stream.model.errors.NotWellFormed;
-import rocks.xmpp.core.stream.model.errors.PolicyViolation;
-import rocks.xmpp.core.stream.model.errors.RemoteConnectionFailed;
-import rocks.xmpp.core.stream.model.errors.Reset;
-import rocks.xmpp.core.stream.model.errors.ResourceConstraint;
-import rocks.xmpp.core.stream.model.errors.RestrictedXml;
-import rocks.xmpp.core.stream.model.errors.SeeOtherHost;
-import rocks.xmpp.core.stream.model.errors.SystemShutdown;
 import rocks.xmpp.core.stream.model.errors.Text;
-import rocks.xmpp.core.stream.model.errors.UndefinedCondition;
-import rocks.xmpp.core.stream.model.errors.UnsupportedEncoding;
-import rocks.xmpp.core.stream.model.errors.UnsupportedFeature;
-import rocks.xmpp.core.stream.model.errors.UnsupportedStanzaType;
-import rocks.xmpp.core.stream.model.errors.UnsupportedVersion;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * The implementation of the {@code <stream:error/>} element.
@@ -64,7 +38,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * </p>
  */
 @XmlRootElement(name = "error")
-@XmlSeeAlso({BadFormat.class, BadNamespacePrefix.class, Conflict.class, ConnectionTimeout.class, HostGone.class, HostUnknown.class, ImproperAddressing.class, InternalServerError.class, InvalidFrom.class, InvalidNamespace.class, InvalidXml.class, NotAuthorized.class, NotWellFormed.class, PolicyViolation.class, RemoteConnectionFailed.class, Reset.class, ResourceConstraint.class, RestrictedXml.class, SeeOtherHost.class, SystemShutdown.class, UndefinedCondition.class, UnsupportedEncoding.class, UnsupportedFeature.class, UnsupportedStanzaType.class, UnsupportedVersion.class})
 public final class StreamError implements ServerStreamElement {
 
     @XmlElementRef

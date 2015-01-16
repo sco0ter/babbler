@@ -38,12 +38,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "system-shutdown")
 @XmlType(factoryMethod = "create")
-public final class SystemShutdown extends Condition {
+final class SystemShutdown extends Condition {
 
     SystemShutdown() {
     }
 
     private static SystemShutdown create() {
-        return SYSTEM_SHUTDOWN;
+        return (SystemShutdown) SYSTEM_SHUTDOWN;
     }
 }

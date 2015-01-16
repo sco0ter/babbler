@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "connection-timeout")
 @XmlType(factoryMethod = "create")
-public final class ConnectionTimeout extends Condition {
+final class ConnectionTimeout extends Condition {
 
     ConnectionTimeout() {
     }
 
     private static ConnectionTimeout create() {
-        return CONNECTION_TIMEOUT;
+        return (ConnectionTimeout) CONNECTION_TIMEOUT;
     }
 }

@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "remote-connection-failed")
 @XmlType(factoryMethod = "create")
-public final class RemoteConnectionFailed extends Condition {
+final class RemoteConnectionFailed extends Condition {
 
     RemoteConnectionFailed() {
     }
 
     private static RemoteConnectionFailed create() {
-        return REMOTE_CONNECTION_FAILED;
+        return (RemoteConnectionFailed) REMOTE_CONNECTION_FAILED;
     }
 }

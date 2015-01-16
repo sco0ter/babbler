@@ -22,7 +22,7 @@ xmppSession.addSessionStatusListener(new SessionStatusListener() {
     public void sessionStatusChanged(SessionStatusEvent e) {
         if (e.getException() instanceof StreamException) {
             StreamException streamException = (StreamException) e.getException();
-            if (streamException.getStreamError().getCondition() instanceof SystemShutdown) {
+            if (streamException.getStreamError().getCondition() == Condition.SYSTEM_SHUTDOWN) {
                 // Server was shut down.
             }
         }

@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "host-gone")
 @XmlType(factoryMethod = "create")
-public final class HostGone extends Condition {
+final class HostGone extends Condition {
 
     HostGone() {
     }
 
     private static HostGone create() {
-        return HOST_GONE;
+        return (HostGone) HOST_GONE;
     }
 }

@@ -40,12 +40,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "unsupported-encoding")
 @XmlType(factoryMethod = "create")
-public final class UnsupportedEncoding extends Condition {
+final class UnsupportedEncoding extends Condition {
 
     UnsupportedEncoding() {
     }
 
     private static UnsupportedEncoding create() {
-        return UNSUPPORTED_ENCODING;
+        return (UnsupportedEncoding) UNSUPPORTED_ENCODING;
     }
 }

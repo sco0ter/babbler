@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "not-well-formed")
 @XmlType(factoryMethod = "create")
-public final class NotWellFormed extends Condition {
+final class NotWellFormed extends Condition {
 
     NotWellFormed() {
     }
 
     private static NotWellFormed create() {
-        return NOT_WELL_FORMED;
+        return (NotWellFormed) NOT_WELL_FORMED;
     }
 }

@@ -43,12 +43,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "bad-namespace-prefix")
 @XmlType(factoryMethod = "create")
-public final class BadNamespacePrefix extends Condition {
+final class BadNamespacePrefix extends Condition {
 
     BadNamespacePrefix() {
     }
 
     private static BadNamespacePrefix create() {
-        return BAD_NAMESPACE_PREFIX;
+        return (BadNamespacePrefix) BAD_NAMESPACE_PREFIX;
     }
 }

@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "reset")
 @XmlType(factoryMethod = "create")
-public final class Reset extends Condition {
+final class Reset extends Condition {
 
     Reset() {
     }
 
     private static Reset create() {
-        return RESET;
+        return (Reset) RESET;
     }
 }

@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "internal-server-error")
 @XmlType(factoryMethod = "create")
-public final class InternalServerError extends Condition {
+final class InternalServerError extends Condition {
 
     InternalServerError() {
     }
 
     private static InternalServerError create() {
-        return INTERNAL_SERVER_ERROR;
+        return (InternalServerError) INTERNAL_SERVER_ERROR;
     }
 }

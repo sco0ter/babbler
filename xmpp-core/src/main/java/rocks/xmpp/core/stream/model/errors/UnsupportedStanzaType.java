@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "unsupported-stanza-type")
 @XmlType(factoryMethod = "create")
-public final class UnsupportedStanzaType extends Condition {
+final class UnsupportedStanzaType extends Condition {
 
     UnsupportedStanzaType() {
     }
 
     private static UnsupportedStanzaType create() {
-        return UNSUPPORTED_STANZA_TYPE;
+        return (UnsupportedStanzaType) UNSUPPORTED_STANZA_TYPE;
     }
 }

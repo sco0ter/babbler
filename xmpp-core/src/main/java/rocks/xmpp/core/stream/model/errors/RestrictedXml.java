@@ -40,12 +40,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "restricted-xml")
 @XmlType(factoryMethod = "create")
-public final class RestrictedXml extends Condition {
+final class RestrictedXml extends Condition {
 
     RestrictedXml() {
     }
 
     private static RestrictedXml create() {
-        return RESTRICTED_XML;
+        return (RestrictedXml) RESTRICTED_XML;
     }
 }

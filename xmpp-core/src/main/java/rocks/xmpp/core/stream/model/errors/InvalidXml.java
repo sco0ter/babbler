@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "invalid-xml")
 @XmlType(factoryMethod = "create")
-public final class InvalidXml extends Condition {
+final class InvalidXml extends Condition {
 
     InvalidXml() {
     }
 
     private static InvalidXml create() {
-        return INVALID_XML;
+        return (InvalidXml) INVALID_XML;
     }
 }

@@ -70,6 +70,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -113,7 +114,7 @@ public final class BoshConnection extends Connection {
     /**
      * The current request count, i.e. the current number of simultaneous requests.
      */
-    private int requestCount;
+    private final AtomicInteger requestCount = new AtomicInteger();
 
     /**
      *
@@ -284,7 +285,7 @@ public final class BoshConnection extends Connection {
         }
 
         sessionId = null;
-        requestCount = 0;
+        requestCount.set(0);
 
         // Set the initial request id with a large random number.
         // The largest possible number for a RID is (2^53)-1
@@ -521,8 +522,8 @@ public final class BoshConnection extends Connection {
                         HttpURLConnection httpConnection = null;
                         try {
                             // Synchronize the requests, so that nearly parallel requests are still sent in the same order (to prevent <item-not-found/> errors).
-                            synchronized (httpBindExecutor) {
-                                requestCount++;
+                            synchronized (xmlInputFactory) {
+                                requestCount.getAndIncrement();
 
                                 if (usingAcknowledgments) {
                                     unacknowledgedRequests.put(body.getRid(), body);
@@ -632,22 +633,20 @@ public final class BoshConnection extends Connection {
                             // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
                             Thread.sleep(100);
 
-                            synchronized (httpBindExecutor) {
-                                // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
-                                if (--requestCount == 0) {
-                                    Body.Builder bodyBuilder = Body.builder()
-                                            .requestId(rid.getAndIncrement())
-                                            .sessionId(getSessionId());
+                            // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
+                            if (requestCount.decrementAndGet() == 0) {
+                                Body.Builder bodyBuilder = Body.builder()
+                                        .requestId(rid.getAndIncrement())
+                                        .sessionId(getSessionId());
 
-                                    appendKey(bodyBuilder);
+                                appendKey(bodyBuilder);
 
-                                    // Acknowledge the highest received rid.
-                                    // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
-                                    if (!unacknowledgedRequests.isEmpty()) {
-                                        bodyBuilder.ack(highestReceivedRid);
-                                    }
-                                    sendNewRequest(bodyBuilder.build());
+                                // Acknowledge the highest received rid.
+                                // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
+                                if (!unacknowledgedRequests.isEmpty()) {
+                                    bodyBuilder.ack(highestReceivedRid);
                                 }
+                                sendNewRequest(bodyBuilder.build());
                             }
                         } catch (Exception e) {
                             getXmppSession().notifyException(e);

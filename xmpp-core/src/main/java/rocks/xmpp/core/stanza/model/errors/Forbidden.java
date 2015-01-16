@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "forbidden")
 @XmlType(factoryMethod = "create")
-public final class Forbidden extends Condition {
+final class Forbidden extends Condition {
 
     Forbidden() {
     }
 
     private static Forbidden create() {
-        return Condition.FORBIDDEN;
+        return (Forbidden) FORBIDDEN;
     }
 }

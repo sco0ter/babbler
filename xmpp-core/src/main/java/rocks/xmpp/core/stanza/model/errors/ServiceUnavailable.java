@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "service-unavailable")
 @XmlType(factoryMethod = "create")
-public final class ServiceUnavailable extends Condition {
+final class ServiceUnavailable extends Condition {
 
     ServiceUnavailable() {
     }
 
     private static ServiceUnavailable create() {
-        return SERVICE_UNAVAILABLE;
+        return (ServiceUnavailable)SERVICE_UNAVAILABLE;
     }
 }

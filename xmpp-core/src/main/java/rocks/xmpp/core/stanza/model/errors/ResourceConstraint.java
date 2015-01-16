@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "resource-constraint")
 @XmlType(factoryMethod = "create")
-public final class ResourceConstraint extends Condition {
+final class ResourceConstraint extends Condition {
 
     ResourceConstraint() {
     }
 
     private static ResourceConstraint create() {
-        return RESOURCE_CONSTRAINT;
+        return (ResourceConstraint)RESOURCE_CONSTRAINT;
     }
 }

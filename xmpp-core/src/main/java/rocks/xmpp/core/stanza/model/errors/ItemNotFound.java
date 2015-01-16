@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "item-not-found")
 @XmlType(factoryMethod = "create")
-public final class ItemNotFound extends Condition {
+final class ItemNotFound extends Condition {
 
     ItemNotFound() {
     }
 
     private static ItemNotFound create() {
-        return ITEM_NOT_FOUND;
+        return (ItemNotFound)ITEM_NOT_FOUND;
     }
 }

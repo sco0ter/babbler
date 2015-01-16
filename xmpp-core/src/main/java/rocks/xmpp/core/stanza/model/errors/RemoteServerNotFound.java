@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "remote-server-not-found")
 @XmlType(factoryMethod = "create")
-public final class RemoteServerNotFound extends Condition {
+final class RemoteServerNotFound extends Condition {
 
     RemoteServerNotFound() {
     }
 
     private static RemoteServerNotFound create() {
-        return REMOTE_SERVER_NOT_FOUND;
+        return (RemoteServerNotFound)REMOTE_SERVER_NOT_FOUND;
     }
 }

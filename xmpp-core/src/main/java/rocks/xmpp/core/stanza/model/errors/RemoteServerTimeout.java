@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "remote-server-timeout")
 @XmlType(factoryMethod = "create")
-public final class RemoteServerTimeout extends Condition {
+final class RemoteServerTimeout extends Condition {
 
     RemoteServerTimeout() {
     }
 
     private static RemoteServerTimeout create() {
-        return REMOTE_SERVER_TIMEOUT;
+        return (RemoteServerTimeout)REMOTE_SERVER_TIMEOUT;
     }
 }

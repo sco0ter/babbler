@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "bad-request")
 @XmlType(factoryMethod = "create")
-public final class BadRequest extends Condition {
+final class BadRequest extends Condition {
 
     BadRequest() {
     }
 
     private static BadRequest create() {
-        return BAD_REQUEST;
+        return (BadRequest) BAD_REQUEST;
     }
 }

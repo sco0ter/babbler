@@ -25,39 +25,15 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stanza.model.errors.BadRequest;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stanza.model.errors.Conflict;
-import rocks.xmpp.core.stanza.model.errors.FeatureNotImplemented;
-import rocks.xmpp.core.stanza.model.errors.Forbidden;
-import rocks.xmpp.core.stanza.model.errors.Gone;
-import rocks.xmpp.core.stanza.model.errors.InternalServerError;
-import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
-import rocks.xmpp.core.stanza.model.errors.JidMalformed;
-import rocks.xmpp.core.stanza.model.errors.NotAcceptable;
-import rocks.xmpp.core.stanza.model.errors.NotAllowed;
-import rocks.xmpp.core.stanza.model.errors.NotAuthorized;
-import rocks.xmpp.core.stanza.model.errors.PolicyViolation;
-import rocks.xmpp.core.stanza.model.errors.RecipientUnavailable;
-import rocks.xmpp.core.stanza.model.errors.Redirect;
-import rocks.xmpp.core.stanza.model.errors.RegistrationRequired;
-import rocks.xmpp.core.stanza.model.errors.RemoteServerNotFound;
-import rocks.xmpp.core.stanza.model.errors.RemoteServerTimeout;
-import rocks.xmpp.core.stanza.model.errors.ResourceConstraint;
-import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
-import rocks.xmpp.core.stanza.model.errors.SubscriptionRequired;
 import rocks.xmpp.core.stanza.model.errors.Text;
-import rocks.xmpp.core.stanza.model.errors.UndefinedCondition;
-import rocks.xmpp.core.stanza.model.errors.UnexpectedRequest;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * The implementation of a stanza's {@code <error/>} element.
@@ -65,35 +41,7 @@ import java.util.Map;
  * See <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-syntax">8.3.2.  Syntax</a>
  * </p>
  */
-@XmlSeeAlso({Text.class, BadRequest.class, Conflict.class, FeatureNotImplemented.class, Conflict.class, Forbidden.class, Gone.class, InternalServerError.class, ItemNotFound.class, JidMalformed.class, NotAcceptable.class, NotAllowed.class, NotAuthorized.class, PolicyViolation.class, RecipientUnavailable.class, Redirect.class, RegistrationRequired.class, RemoteServerNotFound.class, RemoteServerTimeout.class, ResourceConstraint.class, ServiceUnavailable.class, SubscriptionRequired.class, UndefinedCondition.class, UnexpectedRequest.class})
 public final class StanzaError {
-
-    private static final Map<Class<? extends Condition>, Type> ASSOCIATED_ERROR_TYPE = new HashMap<>();
-
-    static {
-        ASSOCIATED_ERROR_TYPE.put(BadRequest.class, StanzaError.Type.MODIFY);
-        ASSOCIATED_ERROR_TYPE.put(Conflict.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(FeatureNotImplemented.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(Forbidden.class, StanzaError.Type.AUTH);
-        ASSOCIATED_ERROR_TYPE.put(Gone.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(InternalServerError.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(ItemNotFound.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(JidMalformed.class, StanzaError.Type.MODIFY);
-        ASSOCIATED_ERROR_TYPE.put(NotAcceptable.class, StanzaError.Type.MODIFY);
-        ASSOCIATED_ERROR_TYPE.put(NotAllowed.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(NotAuthorized.class, StanzaError.Type.AUTH);
-        ASSOCIATED_ERROR_TYPE.put(PolicyViolation.class, StanzaError.Type.MODIFY);
-        ASSOCIATED_ERROR_TYPE.put(RecipientUnavailable.class, StanzaError.Type.WAIT);
-        ASSOCIATED_ERROR_TYPE.put(Redirect.class, StanzaError.Type.MODIFY);
-        ASSOCIATED_ERROR_TYPE.put(RegistrationRequired.class, StanzaError.Type.AUTH);
-        ASSOCIATED_ERROR_TYPE.put(RemoteServerNotFound.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(RemoteServerTimeout.class, StanzaError.Type.WAIT);
-        ASSOCIATED_ERROR_TYPE.put(ResourceConstraint.class, StanzaError.Type.WAIT);
-        ASSOCIATED_ERROR_TYPE.put(ServiceUnavailable.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(SubscriptionRequired.class, StanzaError.Type.AUTH);
-        ASSOCIATED_ERROR_TYPE.put(UndefinedCondition.class, StanzaError.Type.CANCEL);
-        ASSOCIATED_ERROR_TYPE.put(UnexpectedRequest.class, StanzaError.Type.WAIT);
-    }
 
     @XmlAttribute(name = "by")
     private Jid by;
@@ -193,8 +141,9 @@ public final class StanzaError {
      * @param by        The entity which returns the error.
      */
     public StanzaError(Type type, Condition condition, String text, String language, Object extension, Jid by) {
+        Objects.requireNonNull(condition);
         if (type == null) {
-            this.type = ASSOCIATED_ERROR_TYPE.get(condition.getClass());
+            this.type = Condition.getErrorTypeByCondition(condition);
         } else {
             this.type = type;
         }

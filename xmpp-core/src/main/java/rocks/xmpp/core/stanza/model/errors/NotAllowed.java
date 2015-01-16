@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "not-allowed")
 @XmlType(factoryMethod = "create")
-public final class NotAllowed extends Condition {
+final class NotAllowed extends Condition {
 
     NotAllowed() {
     }
 
     private static NotAllowed create() {
-        return NOT_ALLOWED;
+        return (NotAllowed) NOT_ALLOWED;
     }
 }

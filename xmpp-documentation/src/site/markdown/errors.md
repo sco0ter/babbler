@@ -55,7 +55,7 @@ try {
         // The entity did not respond
     } else if (e instanceof StanzaException) {
         StanzaError stanzaError = ((StanzaException) e).getStanza().getError();
-        if (stanzaError.getCondition() instanceof ServiceUnavailable) {
+        if (stanzaError.getCondition() == Condition.SERVICE_UNAVAILABLE) {
             // The entity returned a <service-unavailable/> stanza error.
         }
     }

@@ -33,29 +33,9 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.stanza.model.errors.BadRequest;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stanza.model.errors.Conflict;
-import rocks.xmpp.core.stanza.model.errors.FeatureNotImplemented;
-import rocks.xmpp.core.stanza.model.errors.Forbidden;
 import rocks.xmpp.core.stanza.model.errors.Gone;
-import rocks.xmpp.core.stanza.model.errors.InternalServerError;
-import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
-import rocks.xmpp.core.stanza.model.errors.JidMalformed;
-import rocks.xmpp.core.stanza.model.errors.NotAcceptable;
-import rocks.xmpp.core.stanza.model.errors.NotAllowed;
-import rocks.xmpp.core.stanza.model.errors.NotAuthorized;
-import rocks.xmpp.core.stanza.model.errors.PolicyViolation;
-import rocks.xmpp.core.stanza.model.errors.RecipientUnavailable;
 import rocks.xmpp.core.stanza.model.errors.Redirect;
-import rocks.xmpp.core.stanza.model.errors.RegistrationRequired;
-import rocks.xmpp.core.stanza.model.errors.RemoteServerNotFound;
-import rocks.xmpp.core.stanza.model.errors.RemoteServerTimeout;
-import rocks.xmpp.core.stanza.model.errors.ResourceConstraint;
-import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
-import rocks.xmpp.core.stanza.model.errors.SubscriptionRequired;
-import rocks.xmpp.core.stanza.model.errors.UndefinedCondition;
-import rocks.xmpp.core.stanza.model.errors.UnexpectedRequest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -83,7 +63,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(iq.getType(), IQ.Type.ERROR);
         Assert.assertNotNull(iq.getError());
         Assert.assertEquals(iq.getError().getType(), StanzaError.Type.MODIFY);
-        Assert.assertTrue(iq.getError().getCondition() instanceof BadRequest);
         Assert.assertTrue(iq.getError().getCondition() == Condition.BAD_REQUEST);
     }
 
@@ -98,7 +77,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(iq.getType(), IQ.Type.ERROR);
         Assert.assertNotNull(iq.getError());
         Assert.assertEquals(iq.getError().getType(), StanzaError.Type.CANCEL);
-        Assert.assertTrue(iq.getError().getCondition() instanceof Conflict);
         Assert.assertTrue(iq.getError().getCondition() == Condition.CONFLICT);
     }
 
@@ -120,7 +98,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(iq.getType(), IQ.Type.ERROR);
         Assert.assertNotNull(iq.getError());
         Assert.assertEquals(iq.getError().getType(), StanzaError.Type.CANCEL);
-        Assert.assertTrue(iq.getError().getCondition() instanceof FeatureNotImplemented);
         Assert.assertTrue(iq.getError().getCondition() == Condition.FEATURE_NOT_IMPLEMENTED);
     }
 
@@ -139,7 +116,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.AUTH);
-        Assert.assertTrue(presence.getError().getCondition() instanceof Forbidden);
         Assert.assertTrue(presence.getError().getCondition() == Condition.FORBIDDEN);
     }
 
@@ -179,7 +155,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.CANCEL);
-        Assert.assertTrue(presence.getError().getCondition() instanceof InternalServerError);
         Assert.assertTrue(presence.getError().getCondition() == Condition.INTERNAL_SERVER_ERROR);
     }
 
@@ -197,7 +172,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.CANCEL);
-        Assert.assertTrue(presence.getError().getCondition() instanceof ItemNotFound);
         Assert.assertTrue(presence.getError().getCondition() == Condition.ITEM_NOT_FOUND);
     }
 
@@ -218,7 +192,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.MODIFY);
-        Assert.assertTrue(presence.getError().getCondition() instanceof JidMalformed);
         Assert.assertTrue(presence.getError().getCondition() == Condition.JID_MALFORMED);
     }
 
@@ -233,7 +206,6 @@ public class StanzaErrorTest extends XmlTest {
         Message message = unmarshal(xml, Message.class);
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.MODIFY);
-        Assert.assertTrue(message.getError().getCondition() instanceof NotAcceptable);
         Assert.assertTrue(message.getError().getCondition() == Condition.NOT_ACCEPTABLE);
     }
 
@@ -252,7 +224,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.CANCEL);
-        Assert.assertTrue(presence.getError().getCondition() instanceof NotAllowed);
         Assert.assertTrue(presence.getError().getCondition() == Condition.NOT_ALLOWED);
     }
 
@@ -269,7 +240,6 @@ public class StanzaErrorTest extends XmlTest {
         Presence presence = unmarshal(xml, Presence.class);
         Assert.assertNotNull(presence.getError());
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.AUTH);
-        Assert.assertTrue(presence.getError().getCondition() instanceof NotAuthorized);
         Assert.assertTrue(presence.getError().getCondition() == Condition.NOT_AUTHORIZED);
     }
 
@@ -286,7 +256,6 @@ public class StanzaErrorTest extends XmlTest {
         Message message = unmarshal(xml, Message.class);
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.MODIFY);
-        Assert.assertTrue(message.getError().getCondition() instanceof PolicyViolation);
         Assert.assertTrue(message.getError().getCondition() == Condition.POLICY_VIOLATION);
     }
 
@@ -304,7 +273,6 @@ public class StanzaErrorTest extends XmlTest {
         Presence presence = unmarshal(xml, Presence.class);
         Assert.assertNotNull(presence.getError());
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.WAIT);
-        Assert.assertTrue(presence.getError().getCondition() instanceof RecipientUnavailable);
         Assert.assertTrue(presence.getError().getCondition() == Condition.RECIPIENT_UNAVAILABLE);
     }
 
@@ -341,7 +309,6 @@ public class StanzaErrorTest extends XmlTest {
         Presence presence = unmarshal(xml, Presence.class);
         Assert.assertNotNull(presence.getError());
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.AUTH);
-        Assert.assertTrue(presence.getError().getCondition() instanceof RegistrationRequired);
         Assert.assertTrue(presence.getError().getCondition() == Condition.REGISTRATION_REQUIRED);
     }
 
@@ -360,7 +327,6 @@ public class StanzaErrorTest extends XmlTest {
         Message message = unmarshal(xml, Message.class);
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.CANCEL);
-        Assert.assertTrue(message.getError().getCondition() instanceof RemoteServerNotFound);
         Assert.assertTrue(message.getError().getCondition() == Condition.REMOTE_SERVER_NOT_FOUND);
     }
 
@@ -379,7 +345,6 @@ public class StanzaErrorTest extends XmlTest {
         Message message = unmarshal(xml, Message.class);
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.WAIT);
-        Assert.assertTrue(message.getError().getCondition() instanceof RemoteServerTimeout);
         Assert.assertTrue(message.getError().getCondition() == Condition.REMOTE_SERVER_TIMEOUT);
     }
 
@@ -398,7 +363,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertNotNull(iq.getError());
         Assert.assertEquals(iq.getType(), IQ.Type.ERROR);
         Assert.assertEquals(iq.getError().getType(), StanzaError.Type.WAIT);
-        Assert.assertTrue(iq.getError().getCondition() instanceof ResourceConstraint);
         Assert.assertTrue(iq.getError().getCondition() == Condition.RESOURCE_CONSTRAINT);
     }
 
@@ -414,7 +378,6 @@ public class StanzaErrorTest extends XmlTest {
         Message message = unmarshal(xml, Message.class);
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.CANCEL);
-        Assert.assertTrue(message.getError().getCondition() instanceof ServiceUnavailable);
         Assert.assertTrue(message.getError().getCondition() == Condition.SERVICE_UNAVAILABLE);
     }
 
@@ -434,7 +397,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getType(), Message.Type.ERROR);
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.AUTH);
-        Assert.assertTrue(message.getError().getCondition() instanceof SubscriptionRequired);
         Assert.assertTrue(message.getError().getCondition() == Condition.SUBSCRIPTION_REQUIRED);
     }
 
@@ -466,7 +428,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getType(), Message.Type.ERROR);
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.MODIFY);
-        Assert.assertTrue(message.getError().getCondition() instanceof UndefinedCondition);
         Assert.assertTrue(message.getError().getCondition() == Condition.UNDEFINED_CONDITION);
     }
 
@@ -487,7 +448,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertNotNull(iq.getError());
         Assert.assertEquals(iq.getType(), IQ.Type.ERROR);
         Assert.assertEquals(iq.getError().getType(), StanzaError.Type.MODIFY);
-        Assert.assertTrue(iq.getError().getCondition() instanceof UnexpectedRequest);
         Assert.assertTrue(iq.getError().getCondition() == Condition.UNEXPECTED_REQUEST);
     }
 
@@ -504,7 +464,6 @@ public class StanzaErrorTest extends XmlTest {
                 "</message>";
         Message message = unmarshal(xml, Message.class);
         Assert.assertNotNull(message.getError());
-        Assert.assertTrue(message.getError().getCondition() instanceof UndefinedCondition);
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.MODIFY);
         Assert.assertEquals(message.getError().getText(), "[ ... application-specific information ... ]");
         Assert.assertEquals(message.getError().getLanguage(), "en");
@@ -527,7 +486,6 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(iq.getType(), IQ.Type.ERROR);
         Assert.assertNotNull(iq.getError());
         Assert.assertEquals(iq.getError().getType(), StanzaError.Type.CONTINUE);
-        Assert.assertTrue(iq.getError().getCondition() instanceof UndefinedCondition);
         Assert.assertTrue(iq.getError().getCondition() == Condition.UNDEFINED_CONDITION);
     }
 

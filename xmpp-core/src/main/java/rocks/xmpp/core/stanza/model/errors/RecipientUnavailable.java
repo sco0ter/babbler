@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "recipient-unavailable")
 @XmlType(factoryMethod = "create")
-public final class RecipientUnavailable extends Condition {
+final class RecipientUnavailable extends Condition {
 
     RecipientUnavailable() {
     }
 
     private static RecipientUnavailable create() {
-        return RECIPIENT_UNAVAILABLE;
+        return (RecipientUnavailable)RECIPIENT_UNAVAILABLE;
     }
 }

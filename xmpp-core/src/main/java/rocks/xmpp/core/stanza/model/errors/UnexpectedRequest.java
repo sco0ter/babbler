@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "unexpected-request")
 @XmlType(factoryMethod = "create")
-public final class UnexpectedRequest extends Condition {
+final class UnexpectedRequest extends Condition {
 
     UnexpectedRequest() {
     }
 
     private static UnexpectedRequest create() {
-        return UNEXPECTED_REQUEST;
+        return (UnexpectedRequest) UNEXPECTED_REQUEST;
     }
 }

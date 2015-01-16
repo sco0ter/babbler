@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "undefined-condition")
 @XmlType(factoryMethod = "create")
-public final class UndefinedCondition extends Condition {
+final class UndefinedCondition extends Condition {
 
     UndefinedCondition() {
     }
 
     private static UndefinedCondition create() {
-        return UNDEFINED_CONDITION;
+        return (UndefinedCondition)UNDEFINED_CONDITION;
     }
 }

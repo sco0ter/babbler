@@ -80,7 +80,7 @@ import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.avatar.AvatarChangeEvent;
 import rocks.xmpp.extensions.avatar.AvatarChangeListener;
 import rocks.xmpp.extensions.avatar.AvatarManager;
@@ -121,7 +121,6 @@ import javax.imageio.ImageIO;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.swing.event.EventListenerList;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -648,7 +647,7 @@ public class JavaFXApp extends Application {
                                             // The entity did not respond
                                         } else if (e instanceof StanzaException) {
                                             StanzaError stanzaError = ((StanzaException) e).getStanza().getError();
-                                            if (stanzaError.getCondition() instanceof ServiceUnavailable) {
+                                            if (stanzaError.getCondition() == Condition.SERVICE_UNAVAILABLE) {
                                                 // The entity returned a <service-unavailable/> stanza error.
                                             }
                                         }

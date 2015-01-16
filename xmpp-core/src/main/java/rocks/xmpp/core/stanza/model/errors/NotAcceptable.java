@@ -39,13 +39,13 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "not-acceptable")
 @XmlType(factoryMethod = "create")
-public final class NotAcceptable extends Condition {
+final class NotAcceptable extends Condition {
 
     NotAcceptable() {
     }
 
     private static NotAcceptable create() {
-        return NOT_ACCEPTABLE;
+        return (NotAcceptable) NOT_ACCEPTABLE;
     }
 }
 

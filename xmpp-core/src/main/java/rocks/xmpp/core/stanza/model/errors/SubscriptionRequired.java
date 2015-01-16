@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "subscription-required")
 @XmlType(factoryMethod = "create")
-public final class SubscriptionRequired extends Condition {
+final class SubscriptionRequired extends Condition {
 
     SubscriptionRequired() {
     }
 
     private static SubscriptionRequired create() {
-        return SUBSCRIPTION_REQUIRED;
+        return (SubscriptionRequired)SUBSCRIPTION_REQUIRED;
     }
 }

@@ -32,8 +32,7 @@ import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.Forbidden;
-import rocks.xmpp.core.stanza.model.errors.NotAcceptable;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
@@ -105,7 +104,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
         try {
             xmppSession.query(new IQ(recipient, IQ.Type.SET, new OobIQ(url, description)), timeout);
         } catch (StanzaException e) {
-            if (e.getStanza().getError().getCondition() instanceof NotAcceptable) {
+            if (e.getStanza().getError().getCondition() == Condition.NOT_ACCEPTABLE) {
                 throw new FileTransferRejectedException();
             } else {
                 throw e;
@@ -130,9 +129,9 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
     public FileTransfer offerFile(File file, String description, Jid recipient, long timeout) throws XmppException, IOException {
         Objects.requireNonNull(file, "file must not be null. ");
         Objects.requireNonNull(recipient, "jid must not be null.");
-        
+
         if (!recipient.isFullJid())
-        	throw new IllegalArgumentException("recipient must be a full JID (including resource)");
+            throw new IllegalArgumentException("recipient must be a full JID (including resource)");
 
         if (!file.exists()) {
             throw new FileNotFoundException(file.getName());
@@ -154,7 +153,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
                 InputStream inputStream = new FileInputStream(file);
                 return new FileTransfer(inputStream, outputStream, file.length());
             } catch (StanzaException e) {
-                if (e.getStanza().getError().getCondition() instanceof Forbidden) {
+                if (e.getStanza().getError().getCondition() == Condition.FORBIDDEN) {
                     throw new FileTransferRejectedException();
                 } else {
                     throw e;

@@ -31,7 +31,7 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.stanza.model.errors.RemoteServerNotFound;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -45,7 +45,7 @@ import java.util.List;
  */
 public class PresenceTest extends XmlTest {
     protected PresenceTest() throws JAXBException, XMLStreamException {
-        super(Presence.class, RemoteServerNotFound.class);
+        super(Presence.class);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getFrom().toString(), "juliet@example.com");
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
-        Assert.assertNotNull(presence.getError().getCondition() instanceof RemoteServerNotFound);
+        Assert.assertNotNull(presence.getError().getCondition() == Condition.REMOTE_SERVER_NOT_FOUND);
     }
 
     @Test

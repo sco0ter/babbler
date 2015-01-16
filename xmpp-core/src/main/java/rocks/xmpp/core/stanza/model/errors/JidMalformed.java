@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "jid-malformed")
 @XmlType(factoryMethod = "create")
-public final class JidMalformed extends Condition {
+final class JidMalformed extends Condition {
 
     JidMalformed() {
     }
 
     private static JidMalformed create() {
-        return JID_MALFORMED;
+        return (JidMalformed) JID_MALFORMED;
     }
 }

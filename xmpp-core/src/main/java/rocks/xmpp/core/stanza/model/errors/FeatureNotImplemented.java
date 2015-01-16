@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "feature-not-implemented")
 @XmlType(factoryMethod = "create")
-public final class FeatureNotImplemented extends Condition {
+final class FeatureNotImplemented extends Condition {
 
     FeatureNotImplemented() {
     }
 
     private static FeatureNotImplemented create() {
-        return FEATURE_NOT_IMPLEMENTED;
+        return (FeatureNotImplemented)FEATURE_NOT_IMPLEMENTED;
     }
 }

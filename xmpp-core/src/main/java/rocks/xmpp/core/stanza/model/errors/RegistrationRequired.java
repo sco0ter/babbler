@@ -39,12 +39,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "registration-required")
 @XmlType(factoryMethod = "create")
-public final class RegistrationRequired extends Condition {
+final class RegistrationRequired extends Condition {
 
     RegistrationRequired() {
     }
 
     private static RegistrationRequired create() {
-        return REGISTRATION_REQUIRED;
+        return (RegistrationRequired)REGISTRATION_REQUIRED;
     }
 }

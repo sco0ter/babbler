@@ -31,7 +31,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.StanzaException;
-import rocks.xmpp.core.stanza.model.errors.Forbidden;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.filetransfer.FileTransferOfferEvent;
@@ -99,7 +99,7 @@ public class StreamInitiationManagerTest extends ExtensionTest {
         try {
             streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000);
         } catch (StanzaException e) {
-            if (!(e.getStanza().getError().getCondition() instanceof Forbidden)) {
+            if (!(e.getStanza().getError().getCondition() == Condition.FORBIDDEN)) {
                 Assert.fail();
             } else {
                 return;

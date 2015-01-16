@@ -183,10 +183,10 @@ public final class TcpConnection extends Connection {
             } else {
                 socket = new Socket();
             }
-            socket.connect(new InetSocketAddress(inetAddress, port));
         } else {
-            socket = tcpConnectionConfiguration.getSocketFactory().createSocket(inetAddress, port);
+            socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
         }
+        socket.connect(new InetSocketAddress(inetAddress, port));
     }
 
     private void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {

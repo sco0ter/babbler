@@ -91,12 +91,6 @@ public final class BoshConnection extends Connection {
     private final AtomicLong rid = new AtomicLong();
 
     /**
-     * A queue of objects, which will wait for the next request available to be send to the server in one {@code <body/>} element.
-     * Every time a new request is made, this queue is cleared.
-     */
-    //private final Queue<Object> queue = new ConcurrentLinkedQueue<>();
-
-    /**
      * The executor, which will execute HTTP requests.
      */
     private final ExecutorService httpBindExecutor;
@@ -327,31 +321,32 @@ public final class BoshConnection extends Connection {
      * </p>
      * The contents are delegated to the {@link rocks.xmpp.core.session.XmppSession#handleElement(Object)} method, where they are treated as normal XMPP elements, i.e. the same way as in a normal TCP connection.
      *
-     * @param body The body.
-     * @param rid  The request id, which was used for the request. If the body contains no 'ack' attribute, it means it's the response to the request with that 'rid'.
+     * @param responseBody The body.
      * @throws Exception If any exception occurred during handling the inner XMPP elements.
      */
-    private void unpackBody(Body body, long rid) throws Exception {
+    private void unpackBody(Body responseBody) throws Exception {
         // It's the session creation response.
-        if (body.getSid() != null) {
-            sessionId = body.getSid();
+        if (responseBody.getSid() != null) {
+            sessionId = responseBody.getSid();
 
-            if (body.getAck() != null) {
+            if (responseBody.getAck() != null) {
                 usingAcknowledgments = true;
             }
 
-            if (body.getFrom() != null) {
-                getXmppSession().setXmppServiceDomain(body.getFrom().getDomain());
+            if (responseBody.getFrom() != null) {
+                getXmppSession().setXmppServiceDomain(responseBody.getFrom().getDomain());
             }
         }
 
-        highestReceivedRid = body.getRid() != null ? body.getRid() : rid;
-        unacknowledgedRequests.remove(highestReceivedRid);
+        if (responseBody.getAck() != null) {
+            // The response has acknowledged another request.
+            unacknowledgedRequests.remove(responseBody.getAck());
+        }
 
         // If the body contains an error condition, which is not a stream error, terminate the connection by throwing an exception.
-        if (body.getType() == Body.Type.TERMINATE && body.getCondition() != null && body.getCondition() != Body.Condition.REMOTE_STREAM_ERROR) {
-            throw new BoshException(body.getCondition(), body.getUri());
-        } else if (body.getType() == Body.Type.ERROR) {
+        if (responseBody.getType() == Body.Type.TERMINATE && responseBody.getCondition() != null && responseBody.getCondition() != Body.Condition.REMOTE_STREAM_ERROR) {
+            throw new BoshException(responseBody.getCondition(), responseBody.getUri());
+        } else if (responseBody.getType() == Body.Type.ERROR) {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting a 'type' attribute of the <body/> element to "error". These errors do not imply that the HTTP session is terminated.
             // If it decides to recover from the error, then the client MUST repeat the HTTP request that resulted in the error, as well as all the preceding HTTP requests that have not received responses. The content of these requests MUST be identical to the <body/> elements of the original requests. This enables the connection manager to recover a session after the previous request was lost due to a communication failure.
             for (Body unacknowledgedRequest : unacknowledgedRequests.values()) {
@@ -359,7 +354,7 @@ public final class BoshConnection extends Connection {
             }
         }
 
-        for (Object wrappedObject : body.getWrappedObjects()) {
+        for (Object wrappedObject : responseBody.getWrappedObjects()) {
             if (getXmppSession().handleElement(wrappedObject)) {
                 restartStream();
             }
@@ -588,6 +583,10 @@ public final class BoshConnection extends Connection {
                             }
                             // Wait for the response
                             if ((httpConnection.getResponseCode()) == HttpURLConnection.HTTP_OK) {
+
+                                // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
+                                highestReceivedRid = body.getRid();
+
                                 // This is for logging only.
                                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                                 XMLEventReader xmlEventReader = null;
@@ -615,12 +614,14 @@ public final class BoshConnection extends Connection {
                                             if (debugger != null) {
                                                 debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
                                             }
-                                            unpackBody(element.getValue(), body.getRid());
+                                            unpackBody(element.getValue());
                                         } else {
                                             xmlEventReader.next();
                                         }
                                     }
                                 } finally {
+                                    // The response itself acknowledges the request, so we can remove the request.
+                                    unacknowledgedRequests.remove(body.getRid());
                                     if (xmlEventReader != null) {
                                         xmlEventReader.close();
                                     }

@@ -28,6 +28,7 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -86,6 +87,9 @@ final class IbbInputStream extends InputStream {
                 buffer = data.getBytes();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                InterruptedIOException ie = new InterruptedIOException();
+                ie.initCause(e);
+                throw ie;
             }
         }
 

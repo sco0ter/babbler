@@ -24,7 +24,11 @@
 
 package rocks.xmpp.core.sasl.scram;
 
-import javax.security.auth.callback.*;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.SaslException;
 import javax.security.sasl.SaslServer;
 import javax.xml.bind.DatatypeConverter;
@@ -40,6 +44,8 @@ import java.util.regex.Pattern;
 
 /**
  * The server implementation of the SCRAM-SHA-1 SASL mechanism.
+ * <p>
+ * This class is not thread-safe.
  *
  * @author Christian Schudt
  * @see <a href="http://tools.ietf.org/html/rfc5802">Salted Challenge Response Authentication Mechanism (SCRAM)</a>
@@ -76,7 +82,7 @@ final class ScramServer extends ScramBase implements SaslServer {
     }
 
     @Override
-    public byte[] evaluateResponse(byte[] response) throws SaslException {
+    public final byte[] evaluateResponse(byte[] response) throws SaslException {
 
         String clientMessage = new String(response);
         Map<Character, String> attributes = getAttributes(clientMessage);
@@ -202,31 +208,31 @@ final class ScramServer extends ScramBase implements SaslServer {
     }
 
     @Override
-    public boolean isComplete() {
+    public final boolean isComplete() {
         return isComplete;
     }
 
     @Override
-    public String getAuthorizationID() {
+    public final String getAuthorizationID() {
         return authorizationId;
     }
 
     @Override
-    public byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
+    public final byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
         return new byte[0];
     }
 
     @Override
-    public byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
+    public final byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
         return new byte[0];
     }
 
     @Override
-    public Object getNegotiatedProperty(String propName) {
+    public final Object getNegotiatedProperty(String propName) {
         return null;
     }
 
     @Override
-    public void dispose() throws SaslException {
+    public final void dispose() throws SaslException {
     }
 }

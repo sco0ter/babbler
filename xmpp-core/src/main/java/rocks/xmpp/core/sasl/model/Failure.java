@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -41,6 +40,8 @@ import javax.xml.bind.annotation.XmlValue;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-failure">6.4.5.  SASL Failure</a></cite></p>
  * <p>The receiving entity reports failure of the handshake for this authentication mechanism by sending a {@code <failure/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace.</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
@@ -59,15 +60,17 @@ public final class Failure implements ServerStreamElement {
             @XmlElement(name = "not-authorized", type = NotAuthorized.class),
             @XmlElement(name = "temporary-auth-failure", type = TemporaryAuthFailure.class)
     })
-    private Condition condition;
+    private final Condition condition;
 
     @XmlElement(name = "text")
-    private Text text;
+    private final Text text;
 
     /**
      * Private default constructor, needed for unmarshalling.
      */
     private Failure() {
+        this.condition = null;
+        this.text = null;
     }
 
     /**
@@ -75,7 +78,7 @@ public final class Failure implements ServerStreamElement {
      *
      * @return The error condition.
      */
-    public Condition getCondition() {
+    public final Condition getCondition() {
         return condition;
     }
 
@@ -84,7 +87,7 @@ public final class Failure implements ServerStreamElement {
      *
      * @return The text.
      */
-    public String getText() {
+    public final String getText() {
         if (text != null) {
             return text.text;
         }
@@ -96,7 +99,7 @@ public final class Failure implements ServerStreamElement {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         if (text != null) {
             return text.language;
         }
@@ -104,7 +107,7 @@ public final class Failure implements ServerStreamElement {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         String text = getText();
         return condition.toString() + (text != null ? " (" + text + ")" : "");
     }
@@ -412,11 +415,16 @@ public final class Failure implements ServerStreamElement {
     /**
      * The text element of the failure.
      */
-    private static class Text {
+    private static final class Text {
         @XmlValue
         private String text;
 
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
         private String language;
+
+        private Text() {
+            this.text = null;
+            this.language = null;
+        }
     }
 }

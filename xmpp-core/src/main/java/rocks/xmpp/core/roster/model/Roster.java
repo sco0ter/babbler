@@ -39,6 +39,8 @@ import java.util.List;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax">2.1.  Syntax and Semantics</a></cite></p>
  * <p>Rosters are managed using {@code <iq/>} stanzas (see Section 8.2.3 of [XMPP-CORE]), specifically by means of a {@code <query/>} child element qualified by the 'jabber:iq:roster' namespace. The detailed syntax and semantics are defined in the following sections.</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
@@ -50,19 +52,25 @@ public final class Roster {
 
     @XmlAttribute
     @SuppressWarnings("unused") // Only set by server.
-    private String ver;
+    private final String ver;
 
     public Roster() {
+        this(null, null);
     }
 
     public Roster(Collection<Contact> contacts) {
+        this(contacts, null);
+    }
+
+    public Roster(Collection<Contact> contacts, String version) {
         if (contacts != null) {
             item.addAll(contacts);
         }
+        this.ver = version;
     }
 
     public Roster(Contact... contacts) {
-        item.addAll(Arrays.asList(contacts));
+        this(Arrays.asList(contacts));
     }
 
     /**
@@ -70,7 +78,7 @@ public final class Roster {
      *
      * @return The roster version.
      */
-    public String getVersion() {
+    public final String getVersion() {
         return ver;
     }
 
@@ -79,12 +87,12 @@ public final class Roster {
      *
      * @return The contacts.
      */
-    public List<Contact> getContacts() {
+    public final List<Contact> getContacts() {
         return Collections.unmodifiableList(item);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return item.toString();
     }
 }

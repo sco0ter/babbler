@@ -33,7 +33,6 @@ import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.privatedata.PrivateDataManager;
@@ -422,7 +421,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void removeContact(Jid jid) throws XmppException {
-        Roster roster = new Roster(new Contact(jid, null, false, Contact.Subscription.REMOVE));
+        Roster roster = new Roster(new Contact(jid, null, null, null, Contact.Subscription.REMOVE, Collections.<String>emptyList()));
         xmppSession.query(new IQ(IQ.Type.SET, roster));
     }
 

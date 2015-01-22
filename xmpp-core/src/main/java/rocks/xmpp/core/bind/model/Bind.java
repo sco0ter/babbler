@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>A client requests a server-generated resourcepart by sending an IQ stanza of type "set" (see Section 8.2.3) containing an empty {@code <bind/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-bind' namespace.</p>
  * <p>Once the server has generated an XMPP resourcepart for the client, it MUST return an IQ stanza of type "result" to the client, which MUST include a {@code <jid/>} child element that specifies the full JID for the connected resource as determined by the server. </p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
@@ -51,15 +53,17 @@ public final class Bind extends StreamFeature {
 
     @XmlElement
     @XmlJavaTypeAdapter(JidAdapter.class)
-    private Jid jid;
+    private final Jid jid;
 
     @XmlElement
-    private String resource;
+    private final String resource;
 
     /**
-     * Creates a {@code <bind/>} element.
+     * Creates an empty {@code <bind/>} element.
      */
     public Bind() {
+        this.resource = null;
+        this.jid = null;
     }
 
     /**
@@ -69,6 +73,17 @@ public final class Bind extends StreamFeature {
      */
     public Bind(String resource) {
         this.resource = resource;
+        this.jid = null;
+    }
+
+    /**
+     * Creates a {@code <bind/>} element with a JID.
+     *
+     * @param jid The JID.
+     */
+    public Bind(Jid jid) {
+        this.resource = null;
+        this.jid = jid;
     }
 
     /**
@@ -76,17 +91,31 @@ public final class Bind extends StreamFeature {
      *
      * @return The JID.
      */
-    public Jid getJid() {
+    public final Jid getJid() {
         return jid;
     }
 
+    /**
+     * Gets the resource.
+     *
+     * @return The resource.
+     */
+    public final String getResource() {
+        return resource;
+    }
+
     @Override
-    public boolean isMandatory() {
+    public final boolean isMandatory() {
         return true;
     }
 
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 3;
+    }
+
+    @Override
+    public final String toString() {
+        return resource != null ? "Resource: " + resource : jid != null ? "JID: " + jid.toString() : "";
     }
 }

@@ -39,21 +39,30 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>
  * <b>Note:</b> <i>Session establishment has been removed from the <a href="http://xmpp.org/rfcs/rfc6120.html#diffs">updated specification</a>.</i>
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 @XmlRootElement
 public final class Session extends StreamFeature {
     @XmlElement
-    private String optional;
+    private final String optional;
+
+    public Session() {
+        this.optional = null;
+    }
+
+    public Session(Boolean optional) {
+        this.optional = optional != null && optional ? "" : null;
+    }
 
     @Override
-    public boolean isMandatory() {
+    public final boolean isMandatory() {
         return optional == null;
     }
 
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 4;
     }
 }

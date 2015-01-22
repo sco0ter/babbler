@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,35 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.sasl.model;
+package rocks.xmpp.core.bind;
 
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.bind.model.Bind;
+import rocks.xmpp.core.stanza.model.client.IQ;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 /**
- * The implementation of the {@code <abort/>} element to abort SASL negotiation.
- * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-abort">6.4.4.  Abort</a></cite></p>
- * <p>The initiating entity aborts the handshake for this authentication mechanism by sending an {@code <abort/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace.</p>
- * <p>Upon receiving an {@code <abort/>} element, the receiving entity MUST return a {@code <failure/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace and containing an {@code <aborted/>} child element.</p>
- * </blockquote>
- * <p>
- * This class is immutable.
- *
  * @author Christian Schudt
  */
-@XmlRootElement
-public final class Abort implements ClientStreamElement {
+public class BindTest extends XmlTest {
+
+    protected BindTest() throws JAXBException, XMLStreamException {
+        super(IQ.class, Bind.class);
+    }
+
+    @Test
+    public void testBind() throws XMLStreamException, JAXBException, NoSuchFieldException {
+        String xml = "<iq id='wy2xa82b4' type='set'>\n" +
+                "     <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>\n" +
+                "       <resource>balcony</resource>\n" +
+                "     </bind>\n" +
+                "   </iq>";
+        IQ iq = unmarshal(xml, IQ.class);
+        Bind bind = iq.getExtension(Bind.class);
+        Assert.assertEquals(bind.getResource(), "balcony");
+    }
 }

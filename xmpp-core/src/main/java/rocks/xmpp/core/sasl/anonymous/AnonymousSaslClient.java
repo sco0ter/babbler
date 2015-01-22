@@ -35,41 +35,41 @@ import javax.security.sasl.SaslException;
  */
 public final class AnonymousSaslClient implements SaslClient {
     @Override
-    public String getMechanismName() {
+    public final String getMechanismName() {
         return "ANONYMOUS";
     }
 
     @Override
-    public boolean hasInitialResponse() {
+    public final boolean hasInitialResponse() {
         return true;
     }
 
     @Override
-    public byte[] evaluateChallenge(byte[] challenge) throws SaslException {
+    public final byte[] evaluateChallenge(byte[] challenge) throws SaslException {
         return new byte[0];
     }
 
     @Override
-    public boolean isComplete() {
+    public final boolean isComplete() {
         return true;
     }
 
     @Override
-    public byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
+    public final byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
         return new byte[0];
     }
 
     @Override
-    public byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
+    public final byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
         return new byte[0];
     }
 
     @Override
-    public Object getNegotiatedProperty(String propName) {
+    public final Object getNegotiatedProperty(String propName) {
         return null;
     }
 
     @Override
-    public void dispose() throws SaslException {
+    public final void dispose() throws SaslException {
     }
 }

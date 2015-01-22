@@ -45,33 +45,40 @@ import java.util.Objects;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items">2.1.2.  Roster Items</a></cite></p>
  * <p>The {@code <query/>} element inside a roster set contains one {@code <item/>} child, and a roster result typically contains multiple {@code <item/>} children. Each {@code <item/>} element describes a unique "roster item" (sometimes also called a "contact").</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  */
 public final class Contact implements Comparable<Contact> {
+
+    @XmlAttribute
+    private final Boolean approved;
+
+    @XmlJavaTypeAdapter(PendingAdapter.class)
+    @XmlAttribute
+    private final Boolean ask;
 
     @XmlElement
     private final List<String> group = new ArrayList<>();
 
     @XmlAttribute
-    Boolean approved;
-
-    @XmlJavaTypeAdapter(PendingAdapter.class)
-    @XmlAttribute
-    Boolean ask;
+    private final Jid jid;
 
     @XmlAttribute
-    private Jid jid;
+    private final String name;
 
     @XmlAttribute
-    private String name;
-
-    @XmlAttribute
-    private Subscription subscription;
+    private final Subscription subscription;
 
     /**
      * Private default constructor for unmarshalling.
      */
     @SuppressWarnings("unused")
     private Contact() {
+        this.jid = null;
+        this.name = null;
+        this.ask = null;
+        this.subscription = null;
+        this.approved = null;
     }
 
     /**
@@ -112,11 +119,7 @@ public final class Contact implements Comparable<Contact> {
      * @param groups The groups for this contact.
      */
     public Contact(Jid jid, String name, Collection<String> groups) {
-        this.jid = jid;
-        this.name = name;
-        if (groups != null) {
-            this.group.addAll(groups);
-        }
+        this(jid, name, null, null, null, groups);
     }
 
     /**
@@ -125,15 +128,19 @@ public final class Contact implements Comparable<Contact> {
      * @param jid          The JID.
      * @param name         The name.
      * @param isPending    Indicates, whether the contact's subscription approval is pending.
+     * @param approved     Indicates, whether the contact is pre-approved.
      * @param subscription The subscription.
      * @param groups       The groups for this contact.
      */
-    public Contact(Jid jid, String name, boolean isPending, Subscription subscription, String... groups) {
-        this.jid = jid;
+    public Contact(Jid jid, String name, Boolean isPending, Boolean approved, Subscription subscription, Collection<String> groups) {
+        this.jid = Objects.requireNonNull(jid);
         this.name = name;
         this.ask = isPending;
         this.subscription = subscription;
-        this.group.addAll(Arrays.asList(groups));
+        if (groups != null) {
+            this.group.addAll(groups);
+        }
+        this.approved = approved;
     }
 
     /**
@@ -141,7 +148,7 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return The JID.
      */
-    public Jid getJid() {
+    public final Jid getJid() {
         return jid;
     }
 
@@ -155,24 +162,8 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return The name.
      */
-    public String getName() {
+    public final String getName() {
         return name;
-    }
-
-    /**
-     * Sets the name of the contact.
-     * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-name">2.1.2.4.  Name Attribute</a></cite></p>
-     * <p>The 'name' attribute of the {@code <item/>} element specifies the "handle" to be associated with the JID, as determined by the user (not the contact). Although the value of the 'name' attribute MAY have meaning to a human user, it is opaque to the server. However, the 'name' attribute MAY be used by the server for matching purposes within the context of various XMPP extensions (one possible comparison method is that described for XMPP resourceparts in [XMPP-ADDR]).</p>
-     * <p>It is OPTIONAL for a client to include the 'name' attribute when adding or updating a roster item.</p>
-     * </blockquote>
-     *
-     * @param name The name.
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -180,19 +171,8 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return The subscription attribute.
      */
-    public Subscription getSubscription() {
+    public final Subscription getSubscription() {
         return subscription;
-    }
-
-    /**
-     * Sets the subscription state of the contact. A client should only set {@link Subscription#REMOVE} as other states are managed via presence stanzas.
-     *
-     * @param subscription The subscription.
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setSubscription(Subscription subscription) {
-        this.subscription = subscription;
     }
 
     /**
@@ -200,7 +180,7 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return The groups.
      */
-    public List<String> getGroups() {
+    public final List<String> getGroups() {
         return Collections.unmodifiableList(group);
     }
 
@@ -214,7 +194,7 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return True, if a subscription request for the contact is pending, i.e. the contact has not yet approved or denied a subscription request.
      */
-    public boolean isPending() {
+    public final boolean isPending() {
         return ask != null && ask;
     }
 
@@ -227,12 +207,12 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return True, if the contact is pre approved.
      */
-    public boolean isApproved() {
+    public final boolean isApproved() {
         return approved != null && approved;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -250,7 +230,7 @@ public final class Contact implements Comparable<Contact> {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(jid, name, subscription, approved, ask, group);
     }
 
@@ -261,7 +241,7 @@ public final class Contact implements Comparable<Contact> {
      * @return The result of the comparison.
      */
     @Override
-    public int compareTo(Contact o) {
+    public final int compareTo(Contact o) {
         if (this == o) {
             return 0;
         }
@@ -306,7 +286,7 @@ public final class Contact implements Comparable<Contact> {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder(jid.toString());
         if (name != null) {
             sb.append(" (").append(name).append(")");

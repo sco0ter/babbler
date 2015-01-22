@@ -333,7 +333,7 @@ public class XmppSession implements Closeable {
      *
      * @return The actively used connection.
      */
-    public Connection getActiveConnection() {
+    public final Connection getActiveConnection() {
         return activeConnection;
     }
 
@@ -342,7 +342,7 @@ public class XmppSession implements Closeable {
      *
      * @param xmppServiceDomain The XMPP service domain.
      */
-    public void setXmppServiceDomain(String xmppServiceDomain) {
+    public final void setXmppServiceDomain(String xmppServiceDomain) {
         this.xmppServiceDomain = xmppServiceDomain;
     }
 
@@ -554,7 +554,7 @@ public class XmppSession implements Closeable {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws NoResponseException                          If the entity did not respond.
      */
-    public IQ query(final IQ iq, long timeout) throws XmppException {
+    public final IQ query(final IQ iq, long timeout) throws XmppException {
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
@@ -609,7 +609,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException If no presence stanza has arrived in time.
      * @throws StanzaException     If the returned presence contains a stanza error.
      */
-    public Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
+    public final Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
         final Presence[] result = new Presence[1];
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
@@ -660,7 +660,7 @@ public class XmppSession implements Closeable {
      * @throws NoResponseException If no message stanza has arrived in time.
      * @throws StanzaException     If the returned message contains a stanza error.
      */
-    public Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws NoResponseException, StanzaException {
+    public final Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws NoResponseException, StanzaException {
 
         final Message[] result = new Message[1];
         final Lock messageLock = new ReentrantLock();
@@ -731,7 +731,7 @@ public class XmppSession implements Closeable {
      *
      * @throws IOException If anything went wrong, e.g. the host was not found.
      */
-    public synchronized void connect() throws IOException {
+    public final void connect() throws IOException {
         connect(null);
     }
 
@@ -741,7 +741,7 @@ public class XmppSession implements Closeable {
      * @param from The 'from' attribute.
      * @throws IOException If anything went wrong, e.g. the host was not found.
      */
-    public synchronized void connect(Jid from) throws IOException {
+    public final synchronized void connect(Jid from) throws IOException {
         if (status == Status.CLOSED) {
             throw new IllegalStateException("Session is already closed. Create a new one.");
         }
@@ -1158,7 +1158,7 @@ public class XmppSession implements Closeable {
         return status;
     }
 
-    void updateStatus(Status status) {
+    final void updateStatus(Status status) {
         updateStatus(status, null);
     }
 
@@ -1187,7 +1187,7 @@ public class XmppSession implements Closeable {
      *
      * @return The connections.
      */
-    public List<Connection> getConnections() {
+    public final List<Connection> getConnections() {
         return Collections.unmodifiableList(connections);
     }
 
@@ -1196,7 +1196,7 @@ public class XmppSession implements Closeable {
      *
      * @return The unmarshaller.
      */
-    public Unmarshaller getUnmarshaller() {
+    public final Unmarshaller getUnmarshaller() {
         return unmarshaller;
     }
 
@@ -1205,7 +1205,7 @@ public class XmppSession implements Closeable {
      *
      * @return The marshaller.
      */
-    public Marshaller getMarshaller() {
+    public final Marshaller getMarshaller() {
         return marshaller;
     }
 

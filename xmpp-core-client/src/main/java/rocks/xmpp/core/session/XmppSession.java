@@ -1256,7 +1256,7 @@ public class XmppSession implements Closeable {
      * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link Status#AUTHENTICATING}.
      * @see #getStatus()
      */
-    public final synchronized boolean isConnected() {
+    public final boolean isConnected() {
         return status == Status.CONNECTED || status == Status.AUTHENTICATED || status == Status.AUTHENTICATING;
     }
 

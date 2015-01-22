@@ -74,9 +74,10 @@ public final class BlockingManager extends IQExtensionManager implements Session
     }
 
     private void notifyListeners(List<Jid> blockedContacts, List<Jid> unblockedContacts) {
+        BlockingEvent blockingEvent = new BlockingEvent(BlockingManager.this, blockedContacts, unblockedContacts);
         for (BlockingListener blockingListener : blockingListeners) {
             try {
-                blockingListener.blockListChanged(new BlockingEvent(BlockingManager.this, blockedContacts, unblockedContacts));
+                blockingListener.blockListChanged(blockingEvent);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, ex.getMessage(), ex);
             }

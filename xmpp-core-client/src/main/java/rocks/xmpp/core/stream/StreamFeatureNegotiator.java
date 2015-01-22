@@ -81,8 +81,9 @@ public abstract class StreamFeatureNegotiator {
      * @throws Exception If an exception occurred during feature negotiation.
      */
     protected void notifyFeatureNegotiated(Status status, Object element) throws Exception {
+        StreamFeatureEvent streamFeatureEvent = new StreamFeatureEvent(this, status, element);
         for (StreamFeatureListener streamFeatureListener : streamFeatureListeners) {
-            streamFeatureListener.negotiationStatusChanged(new StreamFeatureEvent(this, status, element));
+            streamFeatureListener.negotiationStatusChanged(streamFeatureEvent);
         }
     }
 

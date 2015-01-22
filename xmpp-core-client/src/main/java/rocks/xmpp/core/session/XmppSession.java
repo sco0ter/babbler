@@ -518,9 +518,10 @@ public class XmppSession implements Closeable {
     }
 
     private void notifyConnectionListeners(Status status, Status oldStatus, Exception exception) {
+        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, exception);
         for (SessionStatusListener connectionListener : sessionStatusListeners) {
             try {
-                connectionListener.sessionStatusChanged(new SessionStatusEvent(this, status, oldStatus, exception));
+                connectionListener.sessionStatusChanged(sessionStatusEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -1255,7 +1256,7 @@ public class XmppSession implements Closeable {
      * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link Status#AUTHENTICATING}.
      * @see #getStatus()
      */
-    public final boolean isConnected() {
+    public final synchronized boolean isConnected() {
         return status == Status.CONNECTED || status == Status.AUTHENTICATED || status == Status.AUTHENTICATING;
     }
 
@@ -1269,9 +1270,10 @@ public class XmppSession implements Closeable {
     }
 
     /**
-     * Gets the debugger.
+     * Gets the debugger or null if no debugger class was specified in the configuration.
      *
      * @return The debugger.
+     * @see XmppSessionConfiguration#getDebugger()
      */
     public final XmppDebugger getDebugger() {
         return debugger;

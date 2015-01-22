@@ -107,9 +107,10 @@ public final class ReachabilityManager extends IQExtensionManager implements Ses
     }
 
     private void notifyReachabilityListeners(Jid from, List<Address> reachabilityAddresses) {
+        ReachabilityEvent reachabilityEvent = new ReachabilityEvent(ReachabilityManager.this, from, reachabilityAddresses);
         for (ReachabilityListener reachabilityListener : reachabilityListeners) {
             try {
-                reachabilityListener.reachabilityChanged(new ReachabilityEvent(ReachabilityManager.this, from, reachabilityAddresses));
+                reachabilityListener.reachabilityChanged(reachabilityEvent);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, ex.getMessage(), ex);
             }

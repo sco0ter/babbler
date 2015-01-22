@@ -138,9 +138,10 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
 
     private void notifyListeners(Jid contact, byte[] avatar) {
 
+        AvatarChangeEvent avatarChangeEvent = new AvatarChangeEvent(AvatarManager.this, contact, avatar);
         for (AvatarChangeListener avatarChangeListener : avatarChangeListeners) {
             try {
-                avatarChangeListener.avatarChanged(new AvatarChangeEvent(AvatarManager.this, contact, avatar));
+                avatarChangeListener.avatarChanged(avatarChangeEvent);
             } catch (Exception e1) {
                 logger.log(Level.WARNING, e1.getMessage(), e1);
             }

@@ -118,9 +118,10 @@ public final class ChatManager implements SessionStatusListener, MessageListener
     }
 
     private void notifyChatSessionCreated(ChatSession chatSession, boolean createdByIncomingMessage) {
+        ChatSessionEvent chatSessionEvent = new ChatSessionEvent(this, chatSession, createdByIncomingMessage);
         for (ChatSessionListener chatSessionListener : chatSessionListeners) {
             try {
-                chatSessionListener.chatSessionCreated(new ChatSessionEvent(this, chatSession, createdByIncomingMessage));
+                chatSessionListener.chatSessionCreated(chatSessionEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }

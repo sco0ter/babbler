@@ -27,19 +27,33 @@ package rocks.xmpp.core.roster.versioning.model;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the roster versioning feature.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "ver")
+@XmlType(factoryMethod = "create")
 public final class RosterVersioning extends StreamFeature {
+
+    /**
+     * The {@code <ver/>} element.
+     */
+    public static final RosterVersioning INSTANCE = new RosterVersioning();
+
     private RosterVersioning() {
     }
 
+    private static RosterVersioning create() {
+        return INSTANCE;
+    }
+
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 0;
     }
 }

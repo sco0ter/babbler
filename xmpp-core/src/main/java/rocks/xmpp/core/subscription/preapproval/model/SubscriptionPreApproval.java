@@ -30,16 +30,28 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the subscription pre-approval feature.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "sub")
 public final class SubscriptionPreApproval extends StreamFeature {
+
+    /**
+     * The {@code <sub/>} element.
+     */
+    public static final SubscriptionPreApproval INSTANCE = new SubscriptionPreApproval();
+
     private SubscriptionPreApproval() {
     }
 
+    private static SubscriptionPreApproval create() {
+        return INSTANCE;
+    }
+
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 0;
     }
 }

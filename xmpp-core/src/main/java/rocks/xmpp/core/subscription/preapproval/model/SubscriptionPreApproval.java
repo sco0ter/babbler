@@ -27,6 +27,7 @@ package rocks.xmpp.core.subscription.preapproval.model;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the subscription pre-approval feature.
@@ -36,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "sub")
+@XmlType(factoryMethod = "create")
 public final class SubscriptionPreApproval extends StreamFeature {
 
     /**

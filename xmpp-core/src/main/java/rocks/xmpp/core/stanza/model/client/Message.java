@@ -143,17 +143,17 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
     }
 
     @Override
-    public Message createError(StanzaError error) {
+    public final Message createError(StanzaError error) {
         return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), error);
     }
 
     @Override
-    public Message createError(Condition condition) {
+    public final Message createError(Condition condition) {
         return createError(new StanzaError(condition));
     }
 
     @Override
-    public Message withFrom(Jid from) {
+    public final Message withFrom(Jid from) {
         return new Message(getTo(), getType(), getBodies(), getSubjects(), getThread(), getParentThread(), getId(), from, getLanguage(), getExtensions(), getError());
     }
 }

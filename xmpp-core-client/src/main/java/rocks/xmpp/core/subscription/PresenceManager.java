@@ -51,6 +51,7 @@ import java.util.logging.Logger;
  * <p>
  * This class allows to request, approve, deny and unsubscribe subscriptions.
  * </p>
+ * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
  */
@@ -67,11 +68,8 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
     private final Map<String, Presence> lastSentPresences = new ConcurrentHashMap<>();
 
     public PresenceManager(final XmppSession xmppSession) {
-
         this.xmppSession = xmppSession;
-
         xmppSession.addPresenceListener(this);
-
         xmppSession.addSessionStatusListener(this);
     }
 
@@ -91,10 +89,9 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
      * @param jid The JID.
      * @return The presence.
      */
-    public Presence getPresence(Jid jid) {
-        Objects.requireNonNull(jid, "jid must not be null.");
+    public final Presence getPresence(Jid jid) {
 
-        if (jid.isBareJid()) {
+        if (Objects.requireNonNull(jid, "jid must not be null.").isBareJid()) {
             Map<String, Presence> presencesPerResource = presenceMap.get(jid);
             if (presencesPerResource != null) {
                 List<Presence> presences = new ArrayList<>(presencesPerResource.values());
@@ -126,7 +123,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
      * @param status The status, which is used for additional information during the subscription request.
      * @return The id, which is used for the request.
      */
-    public String requestSubscription(Jid jid, String status) {
+    public final String requestSubscription(Jid jid, String status) {
         // the value of the 'to' attribute MUST be a bare JID
         Presence presence = new Presence(jid.asBareJid(), Presence.Type.SUBSCRIBE, status, UUID.randomUUID().toString());
         xmppSession.send(presence);
@@ -142,7 +139,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
      * @param jid The contact's JID, who has previously requested a subscription.
      * @return The id, which is used for the approval.
      */
-    public String approveSubscription(Jid jid) {
+    public final String approveSubscription(Jid jid) {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         Presence presence = new Presence(jid, Presence.Type.SUBSCRIBED, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
@@ -159,7 +156,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
      * @param jid The contact's JID, whose subscription is denied or canceled.
      * @return The id, which is used for the subscription denial.
      */
-    public String denySubscription(Jid jid) {
+    public final String denySubscription(Jid jid) {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         Presence presence = new Presence(jid, Presence.Type.UNSUBSCRIBED, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
@@ -176,7 +173,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
      * @param jid The contact's JID.
      * @return The id, which is used for the unsubscription.
      */
-    public String unsubscribe(Jid jid) {
+    public final String unsubscribe(Jid jid) {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         Presence presence = new Presence(jid, Presence.Type.UNSUBSCRIBE, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
@@ -188,12 +185,12 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
      *
      * @return The presence.
      */
-    public Presence getLastSentPresence() {
+    public final Presence getLastSentPresence() {
         return lastSentPresences.get("");
     }
 
     @Override
-    public void handlePresence(PresenceEvent e) {
+    public final void handlePresence(PresenceEvent e) {
         Presence presence = e.getPresence();
         if (e.isIncoming()) {
 
@@ -217,7 +214,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
     }
 
     @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
+    public final void sessionStatusChanged(SessionStatusEvent e) {
         // Resend the last presences, as soon as we are reconnected.
         if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
             for (Presence presence : lastSentPresences.values()) {

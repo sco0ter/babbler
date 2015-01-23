@@ -45,6 +45,6 @@ final class PolicyViolation extends Condition {
     }
 
     private static PolicyViolation create() {
-        return (PolicyViolation)POLICY_VIOLATION;
+        return (PolicyViolation) POLICY_VIOLATION;
     }
 }

@@ -26,10 +26,11 @@ package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Objects;
 
 /**
  * An abstract implementation of a defined stream error condition.
+ * <p>
+ * All conditions are immutable.
  *
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
  */
@@ -251,9 +252,14 @@ public abstract class Condition {
     public static final Condition UNSUPPORTED_VERSION = new UnsupportedVersion();
 
     @XmlValue
-    String value;
+    final String value;
 
     Condition() {
+        this(null);
+    }
+
+    Condition(String value) {
+        this.value = value;
     }
 
     /**
@@ -268,11 +274,11 @@ public abstract class Condition {
      */
     public static SeeOtherHost seeOtherHost(String otherHost) {
         //  The XML character data of the <see-other-host/> element returned by the server MUST specify the alternate FQDN or IP address
-        return new SeeOtherHost(Objects.requireNonNull(otherHost));
+        return new SeeOtherHost(otherHost);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "<" + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
     }
 }

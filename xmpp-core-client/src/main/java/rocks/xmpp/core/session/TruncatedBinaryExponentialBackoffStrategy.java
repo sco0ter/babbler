@@ -43,6 +43,8 @@ import java.util.Random;
  * behaves equally to the fifth attempt.
  * <p>
  * This "truncated binary exponential backoff" is the <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">recommended reconnection strategy by the XMPP specification</a>.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)

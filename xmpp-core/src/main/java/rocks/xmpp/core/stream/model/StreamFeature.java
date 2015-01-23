@@ -64,7 +64,7 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
      * @see <a href="http://xmpp.org/extensions/xep-0170.html">XEP-0170: Recommended Order of Stream Feature Negotiation</a>
      */
     @Override
-    public int compareTo(StreamFeature o) {
+    public final int compareTo(StreamFeature o) {
         // First compare by their priority.
         int result = Integer.compare(getPriority(), o.getPriority());
         // If this is equal, put volunteer-to-negotiate features before mandatory ones.

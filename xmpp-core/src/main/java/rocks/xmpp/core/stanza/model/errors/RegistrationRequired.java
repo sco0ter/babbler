@@ -45,6 +45,6 @@ final class RegistrationRequired extends Condition {
     }
 
     private static RegistrationRequired create() {
-        return (RegistrationRequired)REGISTRATION_REQUIRED;
+        return (RegistrationRequired) REGISTRATION_REQUIRED;
     }
 }

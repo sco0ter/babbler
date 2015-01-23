@@ -45,6 +45,6 @@ final class RecipientUnavailable extends Condition {
     }
 
     private static RecipientUnavailable create() {
-        return (RecipientUnavailable)RECIPIENT_UNAVAILABLE;
+        return (RecipientUnavailable) RECIPIENT_UNAVAILABLE;
     }
 }

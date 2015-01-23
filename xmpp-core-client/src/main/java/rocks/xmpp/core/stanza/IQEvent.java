@@ -28,6 +28,8 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 
 /**
  * An IQ event is fired whenever an IQ stanza is received or sent.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see IQListener
@@ -53,7 +55,7 @@ public final class IQEvent extends StanzaEvent<IQ> {
      *
      * @return The IQ stanza.
      */
-    public IQ getIQ() {
+    public final IQ getIQ() {
         return stanza;
     }
 
@@ -62,14 +64,14 @@ public final class IQEvent extends StanzaEvent<IQ> {
      *
      * @return True, if this event has been consumed.
      */
-    public boolean isConsumed() {
+    public final boolean isConsumed() {
         return consumed;
     }
 
     /**
      * Consumes this event, which basically indicates, that an IQ response has been sent by an event handler.
      */
-    public void consume() {
+    public final void consume() {
         consumed = true;
     }
 }

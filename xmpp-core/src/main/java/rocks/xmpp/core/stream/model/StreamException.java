@@ -28,6 +28,12 @@ import rocks.xmpp.core.XmppException;
 
 /**
  * Represents a stream error.
+ * This is exception is thrown if client receives a stream error.
+ * <p>
+ * This class is immutable.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 public final class StreamException extends XmppException {
 
@@ -48,7 +54,7 @@ public final class StreamException extends XmppException {
      *
      * @return The stream error.
      */
-    public StreamError getStreamError() {
+    public final StreamError getStreamError() {
         return streamError;
     }
 }

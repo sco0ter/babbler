@@ -45,6 +45,6 @@ final class UndefinedCondition extends Condition {
     }
 
     private static UndefinedCondition create() {
-        return (UndefinedCondition)UNDEFINED_CONDITION;
+        return (UndefinedCondition) UNDEFINED_CONDITION;
     }
 }

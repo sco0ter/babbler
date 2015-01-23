@@ -45,6 +45,6 @@ final class RemoteServerNotFound extends Condition {
     }
 
     private static RemoteServerNotFound create() {
-        return (RemoteServerNotFound)REMOTE_SERVER_NOT_FOUND;
+        return (RemoteServerNotFound) REMOTE_SERVER_NOT_FOUND;
     }
 }

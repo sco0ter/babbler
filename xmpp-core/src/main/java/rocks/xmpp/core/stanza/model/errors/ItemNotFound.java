@@ -45,6 +45,6 @@ final class ItemNotFound extends Condition {
     }
 
     private static ItemNotFound create() {
-        return (ItemNotFound)ITEM_NOT_FOUND;
+        return (ItemNotFound) ITEM_NOT_FOUND;
     }
 }

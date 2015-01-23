@@ -30,34 +30,46 @@ import rocks.xmpp.core.stream.model.errors.Text;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <stream:error/>} element.
  * <p>
- * See <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
- * </p>
+ * This class is immutable.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 @XmlRootElement(name = "error")
 public final class StreamError implements ServerStreamElement {
 
     @XmlElementRef
-    private Condition condition;
+    private final Condition condition;
 
     @XmlElementRef
-    private Text text;
+    private final Text text;
 
     @XmlAnyElement(lax = true)
-    private Object extension;
+    private final Object extension;
 
     /**
      * Private default constructor for unmarshalling.
      */
     @SuppressWarnings("unused")
     private StreamError() {
+        this.condition = null;
+        this.text = null;
+        this.extension = null;
     }
 
     public StreamError(Condition condition) {
-        this.condition = condition;
+        this(condition, null, null);
+    }
+
+    public StreamError(Condition condition, Text text, Object extension) {
+        this.condition = Objects.requireNonNull(condition);
+        this.text = text;
+        this.extension = extension;
     }
 
     /**
@@ -65,7 +77,7 @@ public final class StreamError implements ServerStreamElement {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         if (text != null) {
             return text.getLanguage();
         }
@@ -77,7 +89,7 @@ public final class StreamError implements ServerStreamElement {
      *
      * @return The text.
      */
-    public String getText() {
+    public final String getText() {
         if (text != null) {
             return text.getText();
         }
@@ -100,12 +112,12 @@ public final class StreamError implements ServerStreamElement {
      * @return The error condition.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
      */
-    public Condition getCondition() {
+    public final Condition getCondition() {
         return condition;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getCondition().toString());
 

@@ -137,7 +137,7 @@ public final class IQ extends AbstractIQ implements ClientStreamElement {
     }
 
     @Override
-    public IQ withFrom(Jid from) {
+    public final IQ withFrom(Jid from) {
         return new IQ(getTo(), getType(), getExtension(Object.class), getId(), from, getLanguage(), getError());
     }
 }

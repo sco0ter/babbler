@@ -34,6 +34,7 @@ import java.util.Map;
 /**
  * An abstract implementation of a defined stanza error condition.
  *
+ * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions">8.3.3.  Defined Conditions</a>
  */
 @XmlSeeAlso({Text.class, BadRequest.class, Conflict.class, FeatureNotImplemented.class, Conflict.class, Forbidden.class, Gone.class, InternalServerError.class, ItemNotFound.class, JidMalformed.class, NotAcceptable.class, NotAllowed.class, NotAuthorized.class, PolicyViolation.class, RecipientUnavailable.class, Redirect.class, RegistrationRequired.class, RemoteServerNotFound.class, RemoteServerTimeout.class, ResourceConstraint.class, ServiceUnavailable.class, SubscriptionRequired.class, UndefinedCondition.class, UnexpectedRequest.class})
@@ -247,9 +248,14 @@ public abstract class Condition {
     }
 
     @XmlValue
-    String value;
+    final String value;
 
     Condition() {
+        this(null);
+    }
+
+    Condition(String value) {
+        this.value = value;
     }
 
     /**
@@ -300,7 +306,7 @@ public abstract class Condition {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "<" + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
     }
 }

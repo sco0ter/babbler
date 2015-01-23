@@ -28,6 +28,8 @@ import rocks.xmpp.core.stanza.model.client.Message;
 
 /**
  * A message event is fired whenever a message is received or sent.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see MessageListener
@@ -50,7 +52,7 @@ public final class MessageEvent extends StanzaEvent<Message> {
      *
      * @return The message.
      */
-    public Message getMessage() {
+    public final Message getMessage() {
         return stanza;
     }
 }

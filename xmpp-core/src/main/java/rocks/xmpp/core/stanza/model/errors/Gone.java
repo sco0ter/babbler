@@ -42,7 +42,7 @@ public final class Gone extends Condition {
     }
 
     Gone(String newAddress) {
-        this.value = newAddress;
+        super(newAddress);
     }
 
     /**
@@ -50,7 +50,7 @@ public final class Gone extends Condition {
      *
      * @return The new address.
      */
-    public String getNewAddress() {
+    public final String getNewAddress() {
         return value;
     }
 }

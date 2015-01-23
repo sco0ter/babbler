@@ -45,6 +45,6 @@ final class FeatureNotImplemented extends Condition {
     }
 
     private static FeatureNotImplemented create() {
-        return (FeatureNotImplemented)FEATURE_NOT_IMPLEMENTED;
+        return (FeatureNotImplemented) FEATURE_NOT_IMPLEMENTED;
     }
 }

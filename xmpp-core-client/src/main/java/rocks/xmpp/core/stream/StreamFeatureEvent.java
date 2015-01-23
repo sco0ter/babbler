@@ -59,7 +59,7 @@ public final class StreamFeatureEvent extends EventObject {
      *
      * @return The negotiation status.
      */
-    public StreamFeatureNegotiator.Status getStatus() {
+    public final StreamFeatureNegotiator.Status getStatus() {
         return status;
     }
 
@@ -68,7 +68,7 @@ public final class StreamFeatureEvent extends EventObject {
      *
      * @return The element.
      */
-    public Object getElement() {
+    public final Object getElement() {
         return element;
     }
 }

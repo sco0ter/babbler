@@ -65,7 +65,7 @@ import java.util.UUID;
 public abstract class AbstractIQ extends Stanza {
 
     @XmlAttribute
-    private Type type;
+    private final Type type;
 
     @XmlAnyElement(lax = true)
     private Object extension;
@@ -75,6 +75,7 @@ public abstract class AbstractIQ extends Stanza {
      */
     @SuppressWarnings("unused")
     protected AbstractIQ() {
+        this.type = null;
     }
 
     /**

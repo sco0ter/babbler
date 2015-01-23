@@ -45,6 +45,6 @@ final class NotAuthorized extends Condition {
     }
 
     private static NotAuthorized create() {
-        return (NotAuthorized)NOT_AUTHORIZED;
+        return (NotAuthorized) NOT_AUTHORIZED;
     }
 }

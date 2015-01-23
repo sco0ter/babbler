@@ -45,6 +45,6 @@ final class HostUnknown extends Condition {
     }
 
     private static HostUnknown create() {
-        return (HostUnknown)HOST_UNKNOWN;
+        return (HostUnknown) HOST_UNKNOWN;
     }
 }

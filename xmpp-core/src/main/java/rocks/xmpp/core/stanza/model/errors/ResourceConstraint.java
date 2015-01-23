@@ -45,6 +45,6 @@ final class ResourceConstraint extends Condition {
     }
 
     private static ResourceConstraint create() {
-        return (ResourceConstraint)RESOURCE_CONSTRAINT;
+        return (ResourceConstraint) RESOURCE_CONSTRAINT;
     }
 }

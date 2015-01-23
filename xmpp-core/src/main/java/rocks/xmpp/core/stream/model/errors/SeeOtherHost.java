@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <see-other-host/>} stream error.
@@ -42,7 +43,7 @@ public final class SeeOtherHost extends Condition {
     }
 
     SeeOtherHost(String otherHost) {
-        this.value = otherHost;
+        super(Objects.requireNonNull(otherHost));
     }
 
     /**
@@ -50,7 +51,7 @@ public final class SeeOtherHost extends Condition {
      *
      * @return The other host.
      */
-    public String getOtherHost() {
+    public final String getOtherHost() {
         return value;
     }
 }

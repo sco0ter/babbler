@@ -166,7 +166,7 @@ public final class XmppSessionConfiguration {
      *
      * @return The response timeout.
      */
-    public int getDefaultResponseTimeout() {
+    public final int getDefaultResponseTimeout() {
         return defaultResponseTimeout;
     }
 
@@ -176,7 +176,7 @@ public final class XmppSessionConfiguration {
      * @return The mechanisms.
      * @see Builder#authenticationMechanisms(String...)
      */
-    public String[] getAuthenticationMechanisms() {
+    public final String[] getAuthenticationMechanisms() {
         return authenticationMechanisms;
     }
 
@@ -191,7 +191,7 @@ public final class XmppSessionConfiguration {
      *
      * @return The directory.
      */
-    public File getCacheDirectory() {
+    public final File getCacheDirectory() {
         return cacheDirectory;
     }
 
@@ -228,7 +228,7 @@ public final class XmppSessionConfiguration {
          * @param xmppDebugger The debugger or null, if you don't want to use a debugger.
          * @return The debugger.
          */
-        public Builder debugger(Class<? extends XmppDebugger> xmppDebugger) {
+        public final Builder debugger(Class<? extends XmppDebugger> xmppDebugger) {
             this.xmppDebugger = xmppDebugger;
             return this;
         }
@@ -239,7 +239,7 @@ public final class XmppSessionConfiguration {
          * @param context The context.
          * @return The builder.
          */
-        public Builder context(CoreContext context) {
+        public final Builder context(CoreContext context) {
             this.context = context;
             return this;
         }
@@ -250,7 +250,7 @@ public final class XmppSessionConfiguration {
          * @param defaultResponseTimeout The default response timeout.
          * @return The builder.
          */
-        public Builder defaultResponseTimeout(int defaultResponseTimeout) {
+        public final Builder defaultResponseTimeout(int defaultResponseTimeout) {
             this.defaultResponseTimeout = defaultResponseTimeout;
             return this;
         }
@@ -273,7 +273,7 @@ public final class XmppSessionConfiguration {
          * @param authenticationMechanisms The preferred mechanisms.
          * @return The builder.
          */
-        public Builder authenticationMechanisms(String... authenticationMechanisms) {
+        public final Builder authenticationMechanisms(String... authenticationMechanisms) {
             this.authenticationMechanisms = authenticationMechanisms;
             return this;
         }
@@ -289,7 +289,7 @@ public final class XmppSessionConfiguration {
          * @param file The directory.
          * @return The builder.
          */
-        public Builder cacheDirectory(File file) {
+        public final Builder cacheDirectory(File file) {
             this.cacheDirectory = file;
             return this;
         }
@@ -299,7 +299,7 @@ public final class XmppSessionConfiguration {
          *
          * @return The configuration.
          */
-        public XmppSessionConfiguration build() {
+        public final XmppSessionConfiguration build() {
             return new XmppSessionConfiguration(this);
         }
     }

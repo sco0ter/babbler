@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <redirect/>} stanza error.
@@ -42,7 +43,7 @@ public final class Redirect extends Condition {
     }
 
     Redirect(String alternateAddress) {
-        this.value = alternateAddress;
+        super(Objects.requireNonNull(alternateAddress));
     }
 
     /**
@@ -50,7 +51,7 @@ public final class Redirect extends Condition {
      *
      * @return The alternate address.
      */
-    public String getAlternateAddress() {
+    public final String getAlternateAddress() {
         return value;
     }
 }

@@ -53,6 +53,8 @@ import java.util.concurrent.TimeUnit;
  * You can also {@linkplain #setReconnectionStrategy(ReconnectionStrategy) set} your own reconnection strategy.
  * </p>
  * Use {@link #getNextReconnectionAttempt()} if you want to find out, when the next reconnection attempt will happen.
+ * <p>
+ * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
@@ -65,9 +67,9 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
 
     private ReconnectionStrategy reconnectionStrategy;
 
-    private volatile ScheduledFuture<?> scheduledFuture;
+    private ScheduledFuture<?> scheduledFuture;
 
-    private volatile Date nextReconnectionAttempt;
+    private Date nextReconnectionAttempt;
 
     ReconnectionManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
@@ -91,7 +93,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
     /**
      * Cancels the next reconnection attempt.
      */
-    private void cancel() {
+    private synchronized void cancel() {
         if (scheduledFuture != null) {
             // Cancel / unschedule any scheduled reconnection task, if the connection is established (e.g. manually) before the next reconnection attempt.
             scheduledFuture.cancel(false);
@@ -99,7 +101,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
         }
     }
 
-    private void scheduleReconnection(final int attempt) {
+    private synchronized void scheduleReconnection(final int attempt) {
         if (isEnabled()) {
             int seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
             nextReconnectionAttempt = new Date(System.currentTimeMillis() + seconds * 1000);
@@ -121,7 +123,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
      *
      * @return The reconnection strategy.
      */
-    public ReconnectionStrategy getReconnectionStrategy() {
+    public final synchronized ReconnectionStrategy getReconnectionStrategy() {
         return reconnectionStrategy;
     }
 
@@ -130,7 +132,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
      *
      * @param reconnectionStrategy The reconnection strategy.
      */
-    public void setReconnectionStrategy(ReconnectionStrategy reconnectionStrategy) {
+    public final synchronized void setReconnectionStrategy(ReconnectionStrategy reconnectionStrategy) {
         this.reconnectionStrategy = reconnectionStrategy;
     }
 
@@ -139,12 +141,12 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
      *
      * @return The next reconnection attempt or null if there is none.
      */
-    public Date getNextReconnectionAttempt() {
+    public final synchronized Date getNextReconnectionAttempt() {
         return nextReconnectionAttempt;
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         if (!enabled) {
             cancel();
@@ -152,7 +154,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
     }
 
     @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
+    public final void sessionStatusChanged(SessionStatusEvent e) {
 
         switch (e.getStatus()) {
             case DISCONNECTED:

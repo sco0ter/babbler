@@ -38,25 +38,27 @@ import java.util.Objects;
 /**
  * The implementation of a stanza's {@code <error/>} element.
  * <p>
- * See <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-syntax">8.3.2.  Syntax</a>
- * </p>
+ * This class is immutable.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
  */
 public final class StanzaError {
 
     @XmlAttribute(name = "by")
-    private Jid by;
+    private final Jid by;
 
     @XmlAttribute(name = "type")
-    private Type type;
+    private final Type type;
 
     @XmlElementRef
-    private Condition condition;
+    private final Condition condition;
 
     @XmlElementRef
-    private Text text;
+    private final Text text;
 
     @XmlAnyElement(lax = true)
-    private Object extension;
+    private final Object extension;
 
     /**
      * Private default constructor for unmarshalling.
@@ -141,16 +143,13 @@ public final class StanzaError {
      * @param by        The entity which returns the error.
      */
     public StanzaError(Type type, Condition condition, String text, String language, Object extension, Jid by) {
-        Objects.requireNonNull(condition);
+        this.condition = Objects.requireNonNull(condition);
         if (type == null) {
             this.type = Condition.getErrorTypeByCondition(condition);
         } else {
             this.type = type;
         }
-        this.condition = condition;
-        if (text != null) {
-            this.text = new Text(text, language);
-        }
+        this.text = text != null ? new Text(text, language) : null;
         this.extension = extension;
         this.by = by;
     }
@@ -164,20 +163,8 @@ public final class StanzaError {
      *
      * @return The JID.
      */
-    public Jid getBy() {
+    public final Jid getBy() {
         return by;
-    }
-
-    /**
-     * Sets the 'by' attribute.
-     *
-     * @param by The JID.
-     * @see #getBy()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setBy(Jid by) {
-        this.by = by;
     }
 
     /**
@@ -185,7 +172,7 @@ public final class StanzaError {
      *
      * @return The type.
      */
-    public Type getType() {
+    public final Type getType() {
         return type;
     }
 
@@ -194,7 +181,7 @@ public final class StanzaError {
      *
      * @return The text.
      */
-    public String getText() {
+    public final String getText() {
         if (text != null) {
             return text.getText();
         }
@@ -202,40 +189,11 @@ public final class StanzaError {
     }
 
     /**
-     * Sets the optional error text.
-     *
-     * @param text The text.
-     * @see #getText()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setText(String text) {
-        setText(text, null);
-    }
-
-    /**
-     * Sets the optional error text and a language.
-     *
-     * @param text     The text.
-     * @param language The language.
-     * @see #getText()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setText(String text, String language) {
-        if (text != null) {
-            this.text = new Text(text, language);
-        } else {
-            this.text = null;
-        }
-    }
-
-    /**
      * Gets the language of the error text.
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         if (text != null) {
             return text.getLanguage();
         }
@@ -251,20 +209,8 @@ public final class StanzaError {
      *
      * @return The application specific condition.
      */
-    public Object getExtension() {
+    public final Object getExtension() {
         return extension;
-    }
-
-    /**
-     * Sets an application specific condition.
-     *
-     * @param extension The application specific condition.
-     * @see #getExtension()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setExtension(Object extension) {
-        this.extension = extension;
     }
 
     /**
@@ -273,12 +219,12 @@ public final class StanzaError {
      * @return The error condition.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions">8.3.3.  Defined Conditions</a>
      */
-    public Condition getCondition() {
+    public final Condition getCondition() {
         return condition;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(condition);
         sb.append("  -  (");
@@ -348,7 +294,7 @@ public final class StanzaError {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return "type '" + name().toLowerCase() + "': " + errorText;
         }
     }

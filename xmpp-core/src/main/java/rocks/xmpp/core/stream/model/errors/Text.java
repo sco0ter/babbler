@@ -28,35 +28,50 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * The {@code <text/>} element.
+ * <p>
+ * This class is immutable.
  */
 @XmlRootElement(name = "text")
 public final class Text {
     @XmlValue
-    private String text;
+    private final String text;
 
     @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private String language;
+    private final String language;
 
     /**
      * Default constructor for unmarshalling.
      */
     @SuppressWarnings("unused")
     private Text() {
+        this.text = null;
+        this.language = null;
     }
 
     public Text(String text, String language) {
-        this.text = text;
+        this.text = Objects.requireNonNull(text);
         this.language = language;
     }
 
-    public String getText() {
+    /**
+     * Gets the text.
+     *
+     * @return The text.
+     */
+    public final String getText() {
         return text;
     }
 
-    public String getLanguage() {
+    /**
+     * Gets the language.
+     *
+     * @return The language.
+     */
+    public final String getLanguage() {
         return language;
     }
 }

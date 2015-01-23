@@ -45,6 +45,6 @@ final class ServiceUnavailable extends Condition {
     }
 
     private static ServiceUnavailable create() {
-        return (ServiceUnavailable)SERVICE_UNAVAILABLE;
+        return (ServiceUnavailable) SERVICE_UNAVAILABLE;
     }
 }

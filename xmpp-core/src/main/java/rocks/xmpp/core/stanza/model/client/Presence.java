@@ -158,17 +158,17 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
     }
 
     @Override
-    public Presence createError(StanzaError error) {
+    public final Presence createError(StanzaError error) {
         return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(), getLanguage(), getExtensions(), error);
     }
 
     @Override
-    public Presence createError(Condition condition) {
+    public final Presence createError(Condition condition) {
         return createError(new StanzaError(condition));
     }
 
     @Override
-    public Presence withFrom(Jid from) {
+    public final Presence withFrom(Jid from) {
         return new Presence(getTo(), getType(), getShow(), getStatuses(), getPriority(), getId(), from, getLanguage(), getExtensions(), getError());
     }
 }

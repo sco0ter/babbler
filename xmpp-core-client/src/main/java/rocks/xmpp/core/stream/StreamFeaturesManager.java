@@ -33,11 +33,13 @@ import rocks.xmpp.core.tls.model.StartTls;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Manages the various features, which are advertised during stream negotiation.
@@ -61,14 +63,14 @@ public final class StreamFeaturesManager implements SessionStatusListener {
     /**
      * The list of features, which the server advertised and have not yet been negotiated.
      */
-    private final List<StreamFeature> featuresToNegotiate = new ArrayList<>();
+    private final List<StreamFeature> featuresToNegotiate = new CopyOnWriteArrayList<>();
 
-    private final Set<Class<? extends StreamFeature>> negotiatedFeatures = new HashSet<>();
+    private final Set<Class<? extends StreamFeature>> negotiatedFeatures = new CopyOnWriteArraySet<>();
 
     /**
      * The feature negotiators, which are responsible to negotiate each individual feature.
      */
-    private final List<StreamFeatureNegotiator> streamFeatureNegotiators = new ArrayList<>();
+    private final Set<StreamFeatureNegotiator> streamFeatureNegotiators = new CopyOnWriteArraySet<>();
 
     /**
      * Creates a feature manager.
@@ -76,7 +78,6 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * @param xmppSession The connection, features will be negotiated for.
      */
     public StreamFeaturesManager(XmppSession xmppSession) {
-
         xmppSession.addSessionStatusListener(this);
     }
 
@@ -85,8 +86,9 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      *
      * @return The features.
      */
-    public Map<Class<? extends StreamFeature>, StreamFeature> getFeatures() {
-        return Collections.unmodifiableMap(features);
+    public final Map<Class<? extends StreamFeature>, StreamFeature> getFeatures() {
+        // return defensive copies of mutable internal fields
+        return Collections.unmodifiableMap(new HashMap<>(features));
     }
 
     /**
@@ -94,7 +96,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      *
      * @param streamFeatureNegotiator The feature negotiator, which is responsible for the feature.
      */
-    public void addFeatureNegotiator(StreamFeatureNegotiator streamFeatureNegotiator) {
+    public final void addFeatureNegotiator(StreamFeatureNegotiator streamFeatureNegotiator) {
         streamFeatureNegotiators.add(streamFeatureNegotiator);
     }
 
@@ -104,7 +106,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * @param featuresElement The {@code <stream:features/>} element.
      * @throws Exception If an exception occurred during feature negotiation.
      */
-    public void processFeatures(StreamFeatures featuresElement) throws Exception {
+    public final void processFeatures(StreamFeatures featuresElement) throws Exception {
         List<Object> featureList = featuresElement.getFeatures();
         List<StreamFeature> sortedFeatureList = new ArrayList<>();
 
@@ -139,7 +141,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * @return True, if the stream needs restarted, after a feature has been negotiated.
      * @throws Exception If an exception occurred during feature negotiation.
      */
-    public boolean processElement(Object element) throws Exception {
+    public final boolean processElement(Object element) throws Exception {
         // Check if the element is known to any feature negotiator.
         for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
             if (streamFeatureNegotiator.getFeatureClass() == element || streamFeatureNegotiator.canProcess(element)) {
@@ -165,8 +167,8 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      *
      * @throws Exception If an exception occurred during feature negotiation.
      */
-    public void negotiateNextFeature() throws Exception {
-        if (featuresToNegotiate.size() > 0) {
+    private void negotiateNextFeature() throws Exception {
+        if (!featuresToNegotiate.isEmpty()) {
             StreamFeature advertisedFeature = featuresToNegotiate.remove(0);
 
             if (!negotiatedFeatures.contains(advertisedFeature.getClass())) {
@@ -186,7 +188,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
     }
 
     @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
+    public final void sessionStatusChanged(SessionStatusEvent e) {
         switch (e.getStatus()) {
             // If we're (re)connecting, make sure any previous features are forgotten.
             case CONNECTING:

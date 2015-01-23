@@ -45,7 +45,7 @@ public abstract class ConnectionConfiguration {
 
     private final SSLContext sslContext;
 
-    private HostnameVerifier hostnameVerifier;
+    private final HostnameVerifier hostnameVerifier;
 
     protected ConnectionConfiguration(Builder builder) {
         this.hostname = builder.hostname;
@@ -96,7 +96,7 @@ public abstract class ConnectionConfiguration {
      *
      * @return If the connection is to be secured.
      */
-    public boolean isSecure() {
+    public final boolean isSecure() {
         return secure;
     }
 
@@ -114,7 +114,7 @@ public abstract class ConnectionConfiguration {
      *
      * @return The hostname verifier.
      */
-    public HostnameVerifier getHostnameVerifier() {
+    public final HostnameVerifier getHostnameVerifier() {
         return hostnameVerifier;
     }
 

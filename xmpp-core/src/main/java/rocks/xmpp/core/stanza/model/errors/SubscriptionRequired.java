@@ -45,6 +45,6 @@ final class SubscriptionRequired extends Condition {
     }
 
     private static SubscriptionRequired create() {
-        return (SubscriptionRequired)SUBSCRIPTION_REQUIRED;
+        return (SubscriptionRequired) SUBSCRIPTION_REQUIRED;
     }
 }

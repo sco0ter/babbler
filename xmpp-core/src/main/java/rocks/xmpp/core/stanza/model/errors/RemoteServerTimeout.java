@@ -45,6 +45,6 @@ final class RemoteServerTimeout extends Condition {
     }
 
     private static RemoteServerTimeout create() {
-        return (RemoteServerTimeout)REMOTE_SERVER_TIMEOUT;
+        return (RemoteServerTimeout) REMOTE_SERVER_TIMEOUT;
     }
 }

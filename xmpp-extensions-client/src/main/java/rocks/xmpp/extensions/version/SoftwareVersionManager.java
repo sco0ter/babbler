@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;

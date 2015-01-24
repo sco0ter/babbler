@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -58,17 +58,12 @@ public final class ScramClient extends ScramBase implements SaslClient {
 
     private char[] passwd;
 
-    public ScramClient(String hashAlgorithm, String authorizationId, CallbackHandler callbackHandler) throws SaslException {
+    public ScramClient(String hashAlgorithm, String authorizationId, CallbackHandler callbackHandler) {
         super(hashAlgorithm, callbackHandler);
 
         // authzID can only be encoded in UTF8 - RFC 2222
         if (authorizationId != null) {
-            this.authorizationId = authorizationId;
-            try {
-                authorizationId.getBytes("UTF8");
-            } catch (UnsupportedEncodingException e) {
-                throw new SaslException("SCRAM: Error encoding authzid value into UTF-8", e);
-            }
+            this.authorizationId = new String(authorizationId.getBytes(StandardCharsets.UTF_8));
         }
         this.gs2Header = GS2_CBIND_FLAG + "," + (authorizationId != null ? "a=" + authorizationId : "") + ",";
     }

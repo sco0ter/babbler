@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -104,7 +104,7 @@ public abstract class StreamCompression {
              */
             public static final Condition UNSUPPORTED_METHOD = new UnsupportedMethod();
 
-            private String name;
+            private final String name;
 
             private Condition(String name) {
                 this.name = name;

@@ -28,7 +28,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.carbons.model.*;
+import rocks.xmpp.extensions.carbons.model.Disable;
+import rocks.xmpp.extensions.carbons.model.Enable;
+import rocks.xmpp.extensions.carbons.model.Private;
+import rocks.xmpp.extensions.carbons.model.Received;
+import rocks.xmpp.extensions.carbons.model.Sent;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

@@ -26,7 +26,6 @@ package rocks.xmpp.core.sasl.scram;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.sasl.model.AuthenticationException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 

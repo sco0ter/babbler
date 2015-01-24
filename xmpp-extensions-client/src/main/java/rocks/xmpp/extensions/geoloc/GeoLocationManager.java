@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ public final class GeoLocationManager extends ExtensionManager implements Sessio
      */
     public void publish(GeoLocation geoLocation) throws XmppException {
         PubSubService pepService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
-        pepService.getNode(GeoLocation.NAMESPACE).publish(geoLocation);
+        pepService.node(GeoLocation.NAMESPACE).publish(geoLocation);
     }
 
     /**

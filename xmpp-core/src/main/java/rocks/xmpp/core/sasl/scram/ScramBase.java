@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package rocks.xmpp.core.sasl.scram;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.callback.CallbackHandler;
-import javax.security.sasl.SaslException;
 import javax.xml.bind.DatatypeConverter;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -66,7 +65,7 @@ abstract class ScramBase {
 
     private String mechanism;
 
-    public ScramBase(String hashAlgorithm, CallbackHandler callbackHandler) throws SaslException {
+    public ScramBase(String hashAlgorithm, CallbackHandler callbackHandler) {
         mechanism = "SCRAM-";
         hashAlgorithm = hashAlgorithm.toUpperCase();
 
@@ -118,7 +117,7 @@ abstract class ScramBase {
      * @return The attributes.
      */
     public static Map<Character, String> getAttributes(String str) {
-        Map<Character, String> map = new HashMap<Character, String>();
+        Map<Character, String> map = new HashMap<>();
         String[] parts = str.split(",");
         for (String part : parts) {
             if (part.length() > 1) {

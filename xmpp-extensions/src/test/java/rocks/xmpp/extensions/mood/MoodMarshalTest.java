@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.mood;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.mood.model.Mood;
 
 import javax.xml.bind.JAXBException;

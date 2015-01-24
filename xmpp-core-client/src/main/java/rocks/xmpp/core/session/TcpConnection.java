@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,9 +43,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -178,19 +176,12 @@ public final class TcpConnection extends Connection {
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        try {
-            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory, tcpConnectionConfiguration.getKeepAliveInterval());
-        } catch (XMLStreamException e) {
-            throw new IOException(e);
-        }
+        xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory, tcpConnectionConfiguration.getKeepAliveInterval());
+
         xmppStreamWriter.openStream(from);
 
         // Start reading from the input stream.
-        try {
-            xmppStreamReader = new XmppStreamReader(this, this.getXmppSession(), xmlOutputFactory);
-        } catch (JAXBException e) {
-            throw new IOException(e);
-        }
+        xmppStreamReader = new XmppStreamReader(this, this.getXmppSession(), xmlOutputFactory);
         xmppStreamReader.startReading(inputStream);
     }
 

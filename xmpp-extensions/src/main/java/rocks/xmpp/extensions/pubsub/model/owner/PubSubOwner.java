@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -494,7 +494,7 @@ public final class PubSubOwner {
     private static final class Subscriptions extends PubSubOwnerChildElement {
 
         @XmlElement(name = "subscription")
-        private List<SubscriptionOwner> subscriptions = new ArrayList<>();
+        private final List<SubscriptionOwner> subscriptions = new ArrayList<>();
 
         private Subscriptions() {
         }

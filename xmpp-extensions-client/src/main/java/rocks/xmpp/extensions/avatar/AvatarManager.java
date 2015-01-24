@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -290,12 +290,12 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
         if (avatar != null) {
             if (info.getUrl() == null) {
                 // Publish image.
-                personalEventingService.getNode(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar));
+                personalEventingService.node(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar));
             }
             // Publish meta data.
-            personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(info));
+            personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(info));
         } else {
-            personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata());
+            personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata());
         }
     }
 
@@ -360,7 +360,6 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
 
                                     if (chosenInfo != null && chosenInfo.getUrl() != null) {
                                         URLConnection urlConnection = chosenInfo.getUrl().openConnection();
-                                        String type = urlConnection.getContentType();
                                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                         // Download the image file.
                                         try (InputStream in = urlConnection.getInputStream()) {
@@ -377,7 +376,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
                                     } else {
                                         PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
 
-                                        List<Item> items = pubSubService.getNode(AvatarData.NAMESPACE).getItems(item.getId());
+                                        List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
                                         if (!items.isEmpty()) {
                                             Item i = items.get(0);
                                             if (i.getPayload() instanceof AvatarData) {

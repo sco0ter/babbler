@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -108,7 +108,7 @@ public class SampleApplication {
                             .defaultResponseTimeout(5000)
                             .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                    XmppSession xmppSession = new XmppSession("localhost", configuration, boshConnectionConfiguration);
 
                     // Listen for incoming messages.
                     xmppSession.addMessageListener(new MessageListener() {

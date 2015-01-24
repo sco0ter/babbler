@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,10 +36,14 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Christian Schudt
@@ -68,7 +72,7 @@ final class XmppStreamWriter {
 
     private volatile boolean streamOpened;
 
-    public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory, int keepAliveInterval) throws XMLStreamException, IOException {
+    public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory, int keepAliveInterval) {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.getMarshaller();

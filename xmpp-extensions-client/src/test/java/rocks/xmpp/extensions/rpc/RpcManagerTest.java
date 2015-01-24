@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;

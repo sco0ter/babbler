@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -66,7 +65,7 @@ final class XmppStreamReader {
 
     private final XmppDebugger debugger;
 
-    public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) throws JAXBException {
+    public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();

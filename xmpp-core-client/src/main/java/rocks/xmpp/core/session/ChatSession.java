@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,9 @@
 
 package rocks.xmpp.core.session;
 
-import static java.util.Objects.requireNonNull;
+import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
+import rocks.xmpp.core.stanza.model.client.Message;
 
 import java.util.EventObject;
 import java.util.Objects;
@@ -33,9 +35,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.client.Message;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Implements a one-to-one chat session. They are described in <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="http://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
@@ -68,8 +68,8 @@ public final class ChatSession extends Chat {
 		 * Constructs a {@link ChatPartnerEvent}.
 		 * 
 		 * @param source The {@link ChatSession} on which the event initially occurred.
-		 * @param oldChatPartner The {@link JID} of the old chat partner. Must not be {@code null}.
-		 * @param newChatPartner The {@link JID} of the new chat partner. Must not be {@code null}.
+		 * @param oldChatPartner The {@link Jid} of the old chat partner. Must not be {@code null}.
+		 * @param newChatPartner The {@link Jid} of the new chat partner. Must not be {@code null}.
 		 * @see #getOldChatPartner()
 		 * @see #getNewChatPartner()
 		 */

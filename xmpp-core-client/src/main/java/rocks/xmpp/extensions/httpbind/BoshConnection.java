@@ -381,6 +381,7 @@ public final class BoshConnection extends Connection {
                 .to(getXmppSession().getDomain())
                 .language(Locale.getDefault().getLanguage())
                 .sessionId(getSessionId())
+                .from(from)
                 .requestId(rid.getAndIncrement());
 
         appendKey(bodyBuilder);

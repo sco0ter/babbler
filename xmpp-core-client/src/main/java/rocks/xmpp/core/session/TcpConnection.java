@@ -69,6 +69,8 @@ import java.util.List;
  * Unless specified otherwise, this connection sends a whitespace keep-alive every 60 seconds.
  * </p>
  * If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.
+ * <p>
+ * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
@@ -82,14 +84,29 @@ public final class TcpConnection extends Connection {
      */
     volatile String streamId;
 
-    private volatile Socket socket;
+    /**
+     * guarded by "this"
+     */
+    private Socket socket;
 
+    /**
+     * guarded by "this"
+     */
     private XmppStreamWriter xmppStreamWriter;
 
+    /**
+     * guarded by "this"
+     */
     private XmppStreamReader xmppStreamReader;
 
+    /**
+     * guarded by "this"
+     */
     private InputStream inputStream;
 
+    /**
+     * guarded by "this"
+     */
     private OutputStream outputStream;
 
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
@@ -122,7 +139,7 @@ public final class TcpConnection extends Connection {
 
     @Override
     @Deprecated
-    public synchronized void connect() throws IOException {
+    public final synchronized void connect() throws IOException {
         connect(null);
     }
 
@@ -139,7 +156,7 @@ public final class TcpConnection extends Connection {
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public synchronized void connect(Jid from) throws IOException {
+    public final synchronized void connect(Jid from) throws IOException {
 
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
@@ -156,6 +173,7 @@ public final class TcpConnection extends Connection {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
         }
 
+        this.from = from;
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
@@ -189,7 +207,10 @@ public final class TcpConnection extends Connection {
         socket.connect(new InetSocketAddress(inetAddress, port));
     }
 
-    private void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
+    /**
+     * This method is called from the reader thread. Because it accesses shared data (socket, outputStream, inputStream) it should be synchronized.
+     */
+    private synchronized void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
 
         SSLContext sslContext = tcpConnectionConfiguration.getSSLContext();
         if (sslContext == null) {
@@ -225,19 +246,19 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public void send(ClientStreamElement element) {
+    public final synchronized void send(ClientStreamElement element) {
         xmppStreamWriter.send(element);
     }
 
     @Override
-    protected void restartStream() {
+    protected final synchronized void restartStream() {
         xmppStreamWriter.reset(outputStream);
-        xmppStreamWriter.openStream(null);
+        xmppStreamWriter.openStream(from);
         xmppStreamReader.startReading(inputStream);
     }
 
     @Override
-    public synchronized void close() throws IOException {
+    public final synchronized void close() throws IOException {
         // This call closes the stream and waits until everything has been sent to the server.
         if (xmppStreamWriter != null) {
             xmppStreamWriter.shutdown();

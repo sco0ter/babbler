@@ -47,6 +47,8 @@ public abstract class Connection implements Closeable {
 
     protected int port;
 
+    protected Jid from;
+
     private XmppSession xmppSession;
 
     /**

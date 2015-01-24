@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -80,7 +80,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     /**
      * Stores the supported and preferred SASL mechanisms of the server.
      */
-    private final LinkedHashSet<String> supportedMechanisms;
+    private final List<String> supportedMechanisms;
 
     /**
      * The lock, which used to create new waiting conditions.
@@ -90,7 +90,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     /**
      * Stores the preferred SASL mechanisms of the client.
      */
-    private String[] preferredMechanisms;
+    private final List<String> preferredMechanisms;
 
     /**
      * The SASL client which is used during an authentication process.
@@ -119,12 +119,12 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @param xmppSession The connection.
      * @param lock        The lock object, which is used to make the current thread wait during authentication.
      */
-    public AuthenticationManager(final XmppSession xmppSession, Lock lock, String[] mechanisms) {
+    public AuthenticationManager(final XmppSession xmppSession, Lock lock, List<String> mechanisms) {
         super(Mechanisms.class);
         this.xmppSession = Objects.requireNonNull(xmppSession, "xmppSession must not be null.");
         this.lock = lock;
         this.authenticationComplete = lock.newCondition();
-        this.supportedMechanisms = new LinkedHashSet<>();
+        this.supportedMechanisms = new ArrayList<>();
         this.preferredMechanisms = mechanisms;
     }
 
@@ -135,10 +135,10 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @throws SaslException           If a {@link SaslClient} could not be created.
      * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
      */
-    public void authenticate(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws SaslException, AuthenticationException {
+    public final void authenticate(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws SaslException, AuthenticationException {
         Collection<String> clientMechanisms;
         if (mechanisms == null) {
-            clientMechanisms = new ArrayList<>(Arrays.asList(preferredMechanisms));
+            clientMechanisms = new ArrayList<>(preferredMechanisms);
         } else {
             clientMechanisms = new ArrayList<>(Arrays.asList(mechanisms));
         }
@@ -195,12 +195,12 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @throws SaslException           If the SASL mechanism could not be created.
      * @throws AuthenticationException If the login failed.
      */
-    public void reAuthenticate() throws SaslException, AuthenticationException {
+    public final void reAuthenticate() throws SaslException, AuthenticationException {
         authenticate(lastMechanisms, lastAuthorizationId, lastCallbackHandler);
     }
 
     @Override
-    public Status processNegotiation(Object element) throws Exception {
+    public final Status processNegotiation(Object element) throws Exception {
         Status status = Status.INCOMPLETE;
         try {
             if (element instanceof Mechanisms) {
@@ -240,12 +240,12 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public boolean needsRestart() {
+    public final boolean needsRestart() {
         return true;
     }
 
     @Override
-    public boolean canProcess(Object element) {
+    public final boolean canProcess(Object element) {
         return element instanceof Challenge || element instanceof Failure || element instanceof Success;
     }
 }

@@ -26,6 +26,7 @@ package rocks.xmpp.core.sasl.scram;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.sasl.model.AuthenticationException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 
@@ -42,6 +43,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -70,7 +72,8 @@ public class ScramClientTest {
 
     @Test
     public void testSasl() throws SaslException {
-        String[] preferredMechanisms = XmppSessionConfiguration.getDefault().getAuthenticationMechanisms();
+        List<String> saslMechs = XmppSessionConfiguration.getDefault().getAuthenticationMechanisms();
+        String[] preferredMechanisms = saslMechs.toArray(new String[saslMechs.size()]);
         SaslClient sc = Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, new CallbackHandler() {
             @Override
             public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
@@ -123,7 +126,7 @@ public class ScramClientTest {
 
     @Test
     public void testClientServer() throws SaslException, ClassNotFoundException {
-        Class.forName(XmppSession.class.getName());
+        new XmppSession(null);
 
         SaslClient saslClient = Sasl.createSaslClient(new String[]{"SCRAM-SHA-1"}, "authzid", "xmpp", "servername", null, new CallbackHandler() {
             @Override

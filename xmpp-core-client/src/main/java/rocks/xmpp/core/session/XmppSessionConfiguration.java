@@ -30,8 +30,11 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * A configuration for an {@link XmppSession}.
@@ -41,6 +44,10 @@ import java.util.HashSet;
  * </p>
  * Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
  * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).
+ * <p>
+ * Use the {@link #builder()} to create instances of this class.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see XmppSession#XmppSession(String, XmppSessionConfiguration, ConnectionConfiguration...)
@@ -57,7 +64,7 @@ public final class XmppSessionConfiguration {
 
     private final int defaultResponseTimeout;
 
-    private final String[] authenticationMechanisms;
+    private final List<String> authenticationMechanisms;
 
     private final File cacheDirectory;
 
@@ -176,8 +183,8 @@ public final class XmppSessionConfiguration {
      * @return The mechanisms.
      * @see Builder#authenticationMechanisms(String...)
      */
-    public final String[] getAuthenticationMechanisms() {
-        return authenticationMechanisms;
+    public final List<String> getAuthenticationMechanisms() {
+        return Collections.unmodifiableList(authenticationMechanisms);
     }
 
     /**
@@ -211,12 +218,12 @@ public final class XmppSessionConfiguration {
         /**
          * The default preferred SASL mechanisms.
          */
-        private String[] authenticationMechanisms = new String[]{"SCRAM-SHA-1",
+        private List<String> authenticationMechanisms = Arrays.asList("SCRAM-SHA-1",
                 "DIGEST-MD5",
                 "GSSAPI",
                 "CRAM-MD5",
                 "PLAIN",
-                "ANONYMOUS"};
+                "ANONYMOUS");
 
         private Builder() {
             defaultResponseTimeout(5000).cacheDirectory(new File("cache"));
@@ -274,7 +281,7 @@ public final class XmppSessionConfiguration {
          * @return The builder.
          */
         public final Builder authenticationMechanisms(String... authenticationMechanisms) {
-            this.authenticationMechanisms = authenticationMechanisms;
+            this.authenticationMechanisms = Arrays.asList(authenticationMechanisms);
             return this;
         }
 

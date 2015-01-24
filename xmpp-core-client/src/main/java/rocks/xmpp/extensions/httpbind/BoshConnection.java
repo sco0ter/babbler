@@ -549,10 +549,11 @@ public final class BoshConnection extends Connection {
                                 httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
+                                httpConnection.setConnectTimeout(boshConnectionConfiguration.getConnectTimeout());
                                 // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
                                 if (getXmppSession().getStatus() == XmppSession.Status.CONNECTING) {
-                                    // If we are not yet connected, set a low timeout, in order to detect connection failure early.
-                                    httpConnection.setReadTimeout(10000);
+                                    // setConnectTimeout is unreliable. A read timeout for the initial BOSH response should be set, too.
+                                    httpConnection.setReadTimeout(boshConnectionConfiguration.getConnectTimeout());
                                 } else {
                                     httpConnection.setReadTimeout((boshConnectionConfiguration.getWait() + 5) * 1000);
                                 }

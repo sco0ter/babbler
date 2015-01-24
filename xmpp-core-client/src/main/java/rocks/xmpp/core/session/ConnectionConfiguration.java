@@ -47,6 +47,8 @@ public abstract class ConnectionConfiguration {
 
     private final HostnameVerifier hostnameVerifier;
 
+    private int connectTimeout;
+
     protected ConnectionConfiguration(Builder builder) {
         this.hostname = builder.hostname;
         this.port = builder.port;
@@ -54,6 +56,7 @@ public abstract class ConnectionConfiguration {
         this.secure = builder.secure;
         this.sslContext = builder.sslContext;
         this.hostnameVerifier = builder.hostnameVerifier;
+        this.connectTimeout = builder.connectTimeout;
     }
 
     /**
@@ -119,6 +122,15 @@ public abstract class ConnectionConfiguration {
     }
 
     /**
+     * Gets the timeout for connection establishment.
+     *
+     * @return The timeout.
+     */
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    /**
      * An abstract builder class for building immutable configuration objects.
      *
      * @param <T> The concrete builder class.
@@ -136,6 +148,8 @@ public abstract class ConnectionConfiguration {
         private SSLContext sslContext;
 
         private HostnameVerifier hostnameVerifier;
+
+        private int connectTimeout;
 
         protected Builder() {
         }
@@ -211,6 +225,17 @@ public abstract class ConnectionConfiguration {
          */
         public final T hostnameVerifier(HostnameVerifier hostnameVerifier) {
             this.hostnameVerifier = hostnameVerifier;
+            return self();
+        }
+
+        /**
+         * Sets a timeout for the connection establishment.
+         *
+         * @param connectTimeout The timeout in milliseconds.
+         * @return The builder.
+         */
+        public T connectTimeout(int connectTimeout) {
+            this.connectTimeout = connectTimeout;
             return self();
         }
 

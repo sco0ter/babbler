@@ -209,7 +209,7 @@ public final class TcpConnection extends Connection {
         } else {
             socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
         }
-        socket.connect(new InetSocketAddress(inetAddress, port));
+        socket.connect(new InetSocketAddress(inetAddress, port), tcpConnectionConfiguration.getConnectTimeout());
         this.port = port;
         this.hostname = inetAddress.getHostName();
     }

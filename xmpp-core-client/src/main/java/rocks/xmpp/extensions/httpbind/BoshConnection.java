@@ -240,7 +240,7 @@ public final class BoshConnection extends Connection {
 
     @Override
     @Deprecated
-    public void connect() throws IOException {
+    public final void connect() throws IOException {
         connect(null);
     }
 
@@ -251,7 +251,7 @@ public final class BoshConnection extends Connection {
      * @throws IOException If a connection could not be established.
      */
     @Override
-    public synchronized void connect(Jid from) throws IOException {
+    public final synchronized void connect(Jid from) throws IOException {
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
         }
@@ -312,6 +312,11 @@ public final class BoshConnection extends Connection {
 
         // Send the initial request.
         sendNewRequest(body.build());
+    }
+
+    @Override
+    public boolean isSecure() {
+        return boshConnectionConfiguration.isSecure();
     }
 
     /**
@@ -375,7 +380,7 @@ public final class BoshConnection extends Connection {
      * </blockquote>
      */
     @Override
-    protected void restartStream() {
+    protected final void restartStream() {
         Body.Builder bodyBuilder = Body.builder()
                 .restart(true)
                 .to(getXmppSession().getDomain())
@@ -408,7 +413,7 @@ public final class BoshConnection extends Connection {
      * @throws java.io.IOException If the underlying HTTP connection threw an exception.
      */
     @Override
-    public void close() throws IOException {
+    public final void close() throws IOException {
         synchronized (httpBindExecutor) {
             if (!httpBindExecutor.isShutdown() && sessionId != null) {
                 // Terminate the BOSH session.
@@ -439,7 +444,7 @@ public final class BoshConnection extends Connection {
      * @return The current request ID (RID) which was used for the last BOSH request.
      * @see <a href="https://conversejs.org/docs/html/#prebinding-and-single-session-support">https://conversejs.org/docs/html/#prebinding-and-single-session-support</a>
      */
-    public long detach() {
+    public final long detach() {
         synchronized (httpBindExecutor) {
             if (!httpBindExecutor.isShutdown()) {
                 httpBindExecutor.shutdown();
@@ -450,7 +455,7 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public void send(ClientStreamElement element) {
+    public final void send(ClientStreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
         Body.Builder bodyBuilder = Body.builder()
                 .wrappedObjects(Arrays.<Object>asList(element))
@@ -493,7 +498,7 @@ public final class BoshConnection extends Connection {
      *
      * @return The session id.
      */
-    public String getSessionId() {
+    public final String getSessionId() {
         return sessionId;
     }
 
@@ -671,7 +676,22 @@ public final class BoshConnection extends Connection {
      *
      * @return The route.
      */
-    public String getRoute() {
+    public final String getRoute() {
         return boshConnectionConfiguration.getRoute();
+    }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder("BOSH connection");
+        if (hostname != null) {
+            sb.append(String.format(" to %s", url));
+        }
+        if (sessionId != null) {
+            sb.append(" (").append(sessionId).append(")");
+        }
+        if (from != null) {
+            sb.append(", from: ").append(from);
+        }
+        return sb.toString();
     }
 }

@@ -89,7 +89,7 @@ public class SampleApplication {
 
                     BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(5280)
+                            .port(7070)
                                     //.secure(true)
                                     //.sslContext(sslContext)
                             .hostnameVerifier(new HostnameVerifier() {
@@ -125,6 +125,8 @@ public class SampleApplication {
                     xmppSession.login("admin", "admin", "xmpp");
                     // Send initial presence
                     xmppSession.send(new Presence());
+
+                    System.out.println(xmppSession.getActiveConnection());
                 } catch (IOException | XmppException | NoSuchAlgorithmException | KeyManagementException e) {
                     e.printStackTrace();
                 }

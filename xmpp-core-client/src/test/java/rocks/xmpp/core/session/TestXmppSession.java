@@ -95,6 +95,11 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
+            public boolean isSecure() {
+                return false;
+            }
+
+            @Override
             public void close() throws IOException {
 
             }

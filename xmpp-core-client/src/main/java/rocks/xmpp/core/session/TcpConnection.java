@@ -82,7 +82,7 @@ public final class TcpConnection extends Connection {
     /**
      * The stream id, which is assigned by the server.
      */
-    volatile String streamId;
+    String streamId;
 
     /**
      * guarded by "this"
@@ -194,6 +194,11 @@ public final class TcpConnection extends Connection {
         xmppStreamReader.startReading(inputStream);
     }
 
+    @Override
+    public synchronized boolean isSecure() {
+        return socket instanceof SSLSocket;
+    }
+
     private void connectToSocket(InetAddress inetAddress, int port, Proxy proxy) throws IOException {
         if (tcpConnectionConfiguration.getSocketFactory() == null) {
             if (proxy != null) {
@@ -205,6 +210,8 @@ public final class TcpConnection extends Connection {
             socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
         }
         socket.connect(new InetSocketAddress(inetAddress, port));
+        this.port = port;
+        this.hostname = inetAddress.getHostName();
     }
 
     /**
@@ -336,8 +343,6 @@ public final class TcpConnection extends Connection {
                         // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
                         // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
                         connectToSocket(inetAddress, dnsResourceRecord.port, getProxy());
-                        this.port = dnsResourceRecord.port;
-                        this.hostname = inetAddress.getHostName();
                         return true;
                     } catch (IOException e) {
                         // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
@@ -352,6 +357,31 @@ public final class TcpConnection extends Connection {
             return false;
         }
         return false;
+    }
+
+    /**
+     * Gets the stream id of this connection.
+     *
+     * @return The stream id.
+     */
+    public final synchronized String getStreamId() {
+        return streamId;
+    }
+
+    @Override
+    public final synchronized String toString() {
+        StringBuilder sb = new StringBuilder("TCP connection");
+        if (hostname != null) {
+            sb.append(String.format(" to %s:%s", hostname, port));
+        }
+        if (streamId != null) {
+            sb.append(" (").append(streamId).append(")");
+        }
+        sb.append(", secure: ").append(isSecure());
+        if (from != null) {
+            sb.append(", from: ").append(from);
+        }
+        return sb.toString();
     }
 
     /**

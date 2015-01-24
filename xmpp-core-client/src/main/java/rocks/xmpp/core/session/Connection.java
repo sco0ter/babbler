@@ -150,4 +150,11 @@ public abstract class Connection implements Closeable {
      * @throws IOException If no connection could be established, e.g. due to unknown host.
      */
     public abstract void connect(Jid from) throws IOException;
+
+    /**
+     * Indicates whether this connection is secured by TLS/SSL.
+     *
+     * @return True, if this connection is secured.
+     */
+    public abstract boolean isSecure();
 }

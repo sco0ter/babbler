@@ -176,9 +176,9 @@ public final class TcpConnection extends Connection {
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory, tcpConnectionConfiguration.getKeepAliveInterval());
-
-        xmppStreamWriter.openStream(from);
+        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), xmlOutputFactory);
+        xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
+        xmppStreamWriter.openStream(outputStream, from);
 
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(this, this.getXmppSession(), xmlOutputFactory);
@@ -250,8 +250,7 @@ public final class TcpConnection extends Connection {
 
     @Override
     protected final synchronized void restartStream() {
-        xmppStreamWriter.reset(outputStream);
-        xmppStreamWriter.openStream(from);
+        xmppStreamWriter.openStream(outputStream, from);
         xmppStreamReader.startReading(inputStream);
     }
 

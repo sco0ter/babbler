@@ -46,6 +46,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * This class is responsible for opening and closing the XMPP stream as well as writing any XML elements to the stream.
+ *
  * @author Christian Schudt
  */
 final class XmppStreamWriter {
@@ -60,19 +62,37 @@ final class XmppStreamWriter {
 
     private final XmppDebugger debugger;
 
+    /**
+     * An executor which periodically schedules a whitespace ping.
+     */
     private ScheduledExecutorService keepAliveExecutor;
 
-    private volatile XMLStreamWriter prefixFreeCanonicalizationWriter;
+    /**
+     * Will be accessed only by the writer thread.
+     */
+    private XMLStreamWriter prefixFreeCanonicalizationWriter;
 
+    /**
+     * Will be accessed only by the writer thread.
+     */
     private XMLStreamWriter xmlStreamWriter;
 
+    /**
+     * Will be accessed only by the writer thread.
+     */
     private OutputStream lastOutputStream;
 
+    /**
+     * Will be accessed only by the writer thread.
+     */
     private ByteArrayOutputStream byteArrayOutputStream;
 
-    private volatile boolean streamOpened;
+    /**
+     * Indicates whether the stream has been opened. Will be accessed only by the writer thread.
+     */
+    private boolean streamOpened;
 
-    public XmppStreamWriter(final OutputStream outputStream, final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory, int keepAliveInterval) {
+    XmppStreamWriter(final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.getMarshaller();
@@ -86,7 +106,9 @@ final class XmppStreamWriter {
                 return thread;
             }
         });
+    }
 
+    void initialize(int keepAliveInterval) {
         if (keepAliveInterval > 0) {
             keepAliveExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
                 @Override
@@ -116,49 +138,6 @@ final class XmppStreamWriter {
                 }
             }, 0, keepAliveInterval, TimeUnit.SECONDS);
         }
-
-        reset(outputStream);
-    }
-
-    void reset(final OutputStream outputStream) {
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Only recreate the writer, if the stream has changed (e.g. due to TLS or compression)
-                    if (lastOutputStream != outputStream) {
-                        lastOutputStream = outputStream;
-                        if (prefixFreeCanonicalizationWriter != null) {
-                            // This also closes the xmlStreamWriter
-                            prefixFreeCanonicalizationWriter.close();
-                        }
-
-                        if (xmlStreamWriter != null) {
-                            xmlStreamWriter.close();
-                        }
-                        if (prefixFreeCanonicalizationWriter != null) {
-                            prefixFreeCanonicalizationWriter.close();
-                        }
-
-
-                        OutputStream xmppOutputStream;
-
-                        if (debugger != null) {
-                            byteArrayOutputStream = new ByteArrayOutputStream();
-                            xmppOutputStream = debugger.createOutputStream(XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream));
-                        } else {
-                            xmppOutputStream = outputStream;
-                        }
-                        xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8");
-
-                        prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-                        streamOpened = false;
-                    }
-                } catch (Exception e) {
-                    xmppSession.notifyException(e);
-                }
-            }
-        });
     }
 
     void send(final ClientStreamElement clientStreamElement) {
@@ -183,13 +162,42 @@ final class XmppStreamWriter {
         }
     }
 
-    void openStream(final Jid from) {
+    void openStream(final OutputStream outputStream, final Jid from) {
         if (!executor.isShutdown()) {
             executor.execute(new Runnable() {
 
                 @Override
                 public void run() {
                     try {
+                        // Only recreate the writer, if the stream has changed (e.g. due to TLS or compression)
+                        if (lastOutputStream != outputStream) {
+                            lastOutputStream = outputStream;
+                            if (prefixFreeCanonicalizationWriter != null) {
+                                // This also closes the xmlStreamWriter
+                                prefixFreeCanonicalizationWriter.close();
+                            }
+
+                            if (xmlStreamWriter != null) {
+                                xmlStreamWriter.close();
+                            }
+                            if (prefixFreeCanonicalizationWriter != null) {
+                                prefixFreeCanonicalizationWriter.close();
+                            }
+
+                            OutputStream xmppOutputStream;
+
+                            if (debugger != null) {
+                                byteArrayOutputStream = new ByteArrayOutputStream();
+                                xmppOutputStream = debugger.createOutputStream(XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream));
+                            } else {
+                                xmppOutputStream = outputStream;
+                            }
+                            xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8");
+
+                            prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+                            streamOpened = false;
+                        }
+
                         xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
                         xmlStreamWriter.writeStartElement("stream", "stream", "http://etherx.jabber.org/streams");
                         xmlStreamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", Locale.getDefault().getLanguage());
@@ -243,7 +251,7 @@ final class XmppStreamWriter {
     /**
      * Closes the stream by sending a closing {@code </stream:stream>} to the server.
      * This method waits until this task is completed, but not more than 0.5 seconds.
-     * <p/>
+     * <p>
      * Make sure to synchronize this method.
      * Otherwise multiple threads could call {@link #closeStream()} which may result in a {@link RejectedExecutionException}, if it has been shutdown by another thread in the meantime.
      */

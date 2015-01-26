@@ -24,21 +24,28 @@
 
 package rocks.xmpp.extensions.rsm.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * A result set usually consists of a list of items and additional result set information (e.g. to mark first and last items).
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 public final class ResultSet<T extends ResultSetItem> {
 
-    private final List<T> items;
+    private final List<T> items = new ArrayList<>();
 
     private final ResultSetManagement resultSetManagement;
 
-    public ResultSet(List<T> items, ResultSetManagement resultSetManagement) {
-        this.items = items;
+    public ResultSet(Collection<T> items, ResultSetManagement resultSetManagement) {
+        if (items != null) {
+            this.items.addAll(items);
+        }
         this.resultSetManagement = resultSetManagement;
     }
 
@@ -47,8 +54,8 @@ public final class ResultSet<T extends ResultSetItem> {
      *
      * @return The items.
      */
-    public List<T> getItems() {
-        return items;
+    public final List<T> getItems() {
+        return Collections.unmodifiableList(items);
     }
 
     /**
@@ -56,7 +63,7 @@ public final class ResultSet<T extends ResultSetItem> {
      *
      * @return The result set info.
      */
-    public ResultSetManagement getResultSetManagement() {
+    public final ResultSetManagement getResultSetManagement() {
         return resultSetManagement;
     }
 }

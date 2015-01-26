@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Objects;
 
 /**
  * An abstract base class for all stream compression classes in the {@code http://jabber.org/protocol/compress} namespace.
@@ -57,6 +58,8 @@ public abstract class StreamCompression {
 
     /**
      * The implementation of the {@code <failure/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates failure during compression negotiation.
+     * <p>
+     * This class is immutable.
      *
      * @author Christian Schudt
      * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
@@ -68,9 +71,14 @@ public abstract class StreamCompression {
         @XmlElements({@XmlElement(name = "setup-failed", type = SetupFailed.class),
                 @XmlElement(name = "processing-failed", type = ProcessingFailed.class),
                 @XmlElement(name = "unsupported-method", type = UnsupportedMethod.class)})
-        private Condition condition;
+        private final Condition condition;
 
         private Failure() {
+            this.condition = null;
+        }
+
+        public Failure(Condition condition) {
+            this.condition = Objects.requireNonNull(condition);
         }
 
         /**
@@ -81,7 +89,7 @@ public abstract class StreamCompression {
          * @see rocks.xmpp.extensions.compress.model.StreamCompression.Failure.SetupFailed
          * @see rocks.xmpp.extensions.compress.model.StreamCompression.Failure.ProcessingFailed
          */
-        public Condition getCondition() {
+        public final Condition getCondition() {
             return condition;
         }
 
@@ -111,7 +119,7 @@ public abstract class StreamCompression {
             }
 
             @Override
-            public String toString() {
+            public final String toString() {
                 return name;
             }
         }
@@ -161,6 +169,8 @@ public abstract class StreamCompression {
 
     /**
      * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress} namespace.
+     * <p>
+     * This class is immutable.
      *
      * @author Christian Schudt
      * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
@@ -170,13 +180,23 @@ public abstract class StreamCompression {
     public static final class Compress implements ClientStreamElement {
 
         @XmlElement
-        private String method;
+        private final String method;
 
         private Compress() {
+            this.method = null;
         }
 
         public Compress(String method) {
-            this.method = method;
+            this.method = Objects.requireNonNull(method);
+        }
+
+        /**
+         * Gets the compression method.
+         *
+         * @return The compression method.
+         */
+        public String getMethod() {
+            return method;
         }
     }
 

@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.rsm.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * @author Christian Schudt
@@ -33,16 +34,18 @@ import javax.xml.bind.annotation.XmlValue;
 final class First {
 
     @XmlAttribute(name = "index")
-    Integer index;
+    final Integer index;
 
     @XmlValue
-    String value;
+    final String value;
 
     private First() {
+        this.index = null;
+        this.value = null;
     }
 
     First(Integer index, String value) {
         this.index = index;
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
     }
 }

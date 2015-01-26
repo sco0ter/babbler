@@ -36,6 +36,7 @@ import java.util.List;
  * <p>
  * A section is used to partition a page.
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
@@ -53,12 +54,14 @@ public final class Section {
     private final List<FieldReference> fieldReferences = new ArrayList<>();
 
     @XmlAttribute(name = "label")
-    private String label;
+    private final String label;
 
     @XmlElement(name = "reportedref")
-    private FieldReference reportedReference;
+    private final FieldReference reportedReference;
 
     private Section() {
+        this.label = null;
+        this.reportedReference = null;
     }
 
     /**

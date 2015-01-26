@@ -39,6 +39,8 @@ import java.util.TreeSet;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#info} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
@@ -63,12 +65,13 @@ public final class InfoDiscovery implements InfoNode {
     private final List<DataForm> extensions = new ArrayList<>();
 
     @XmlAttribute
-    private String node;
+    private final String node;
 
     /**
      * Creates an empty element, used for info discovery requests.
      */
     public InfoDiscovery() {
+        this(null);
     }
 
     /**
@@ -123,12 +126,12 @@ public final class InfoDiscovery implements InfoNode {
     }
 
     @Override
-    public Set<Identity> getIdentities() {
+    public final Set<Identity> getIdentities() {
         return Collections.unmodifiableSet(identities);
     }
 
     @Override
-    public Set<Feature> getFeatures() {
+    public final Set<Feature> getFeatures() {
         return Collections.unmodifiableSet(features);
     }
 
@@ -138,12 +141,12 @@ public final class InfoDiscovery implements InfoNode {
     }
 
     @Override
-    public List<DataForm> getExtensions() {
+    public final List<DataForm> getExtensions() {
         return Collections.unmodifiableList(extensions);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "Identity: " + identities + "; Features: " + features;
     }
 }

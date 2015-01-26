@@ -29,11 +29,14 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * The implementation of the {@code <compression/>} element in the {@code http://jabber.org/features/compress} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
@@ -45,17 +48,24 @@ public final class CompressionFeature extends StreamFeature {
     @XmlElement(name = "method")
     private final List<String> methods = new ArrayList<>();
 
+    private CompressionFeature() {
+    }
+
+    public CompressionFeature(Collection<String> methods) {
+        this.methods.addAll(methods);
+    }
+
     /**
      * Gets the available compression methods.
      *
      * @return The compression methods.
      */
-    public List<String> getMethods() {
+    public final List<String> getMethods() {
         return Collections.unmodifiableList(methods);
     }
 
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 2;
     }
 }

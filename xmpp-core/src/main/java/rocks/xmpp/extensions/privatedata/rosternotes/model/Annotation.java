@@ -45,6 +45,7 @@ import java.util.Objects;
  * <p>This specification defines a protocol for storing annotations about a given set of entities. Its primary goal is to enable users to store some personal piece of information with their roster items.</p>
  * <p>Annotations are stored using server-side private XML storage (the 'jabber:iq:private' namespace).</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>
@@ -75,7 +76,7 @@ public final class Annotation {
      *
      * @return The notes.
      */
-    public List<Note> getNotes() {
+    public final List<Note> getNotes() {
         return Collections.unmodifiableList(notes);
     }
 
@@ -85,18 +86,22 @@ public final class Annotation {
     public static final class Note {
 
         @XmlAttribute(name = "jid")
-        private Jid jid;
+        private final Jid jid;
 
         @XmlAttribute(name = "cdate")
-        private Date creationDate;
+        private final Date creationDate;
 
         @XmlAttribute(name = "mdate")
-        private Date modificationDate;
+        private final Date modificationDate;
 
         @XmlValue
-        private String value;
+        private final String value;
 
         private Note() {
+            this.value = null;
+            this.jid = null;
+            this.creationDate = null;
+            this.modificationDate = null;
         }
 
         /**
@@ -129,7 +134,7 @@ public final class Annotation {
          *
          * @return The value.
          */
-        public String getValue() {
+        public final String getValue() {
             return value;
         }
 
@@ -138,7 +143,7 @@ public final class Annotation {
          *
          * @return The modification date.
          */
-        public Date getModificationDate() {
+        public final Date getModificationDate() {
             return modificationDate;
         }
 
@@ -147,7 +152,7 @@ public final class Annotation {
          *
          * @return The creation date.
          */
-        public Date getCreationDate() {
+        public final Date getCreationDate() {
             return creationDate;
         }
 
@@ -156,12 +161,12 @@ public final class Annotation {
          *
          * @return The JID.
          */
-        public Jid getJid() {
+        public final Jid getJid() {
             return jid;
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return value;
         }
     }

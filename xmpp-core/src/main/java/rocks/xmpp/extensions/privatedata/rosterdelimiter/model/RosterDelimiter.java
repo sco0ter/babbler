@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlValue;
  * <p>Therefore, the delimiter SHOULD contain multiple characters in order to avoid inconveniencing the user, but single-character delimiters MUST be honored by the client. The exception is if the delimiter is a single alphanumeric character (a-z, A-Z, 0-9); in this case compliant clients MUST treat the situation as if nesting were disabled, to avoid malicious use of this element by setting 'e' or 'm' or some other common single character as a delimiter.</p>
  * <p>A compliant client SHOULD ask for the nested delimiter before requesting the user's roster, in order to know whether or not to parse the roster 'group' fields accordingly. If there is no delimiter stored, a client MAY set a delimiter but MUST either prompt the user for a delimiter, or use a user-configurable default.</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
@@ -50,21 +51,27 @@ public final class RosterDelimiter {
     public static final String NAMESPACE = "roster:delimiter";
 
     @XmlValue
-    private String rosterDelimiter;
+    private final String rosterDelimiter;
 
     public RosterDelimiter() {
+        this.rosterDelimiter = null;
     }
 
     public RosterDelimiter(String rosterDelimiter) {
         this.rosterDelimiter = rosterDelimiter;
     }
 
-    public String getRosterDelimiter() {
+    /**
+     * Gets the roster delimiter.
+     *
+     * @return The roster delimiter.
+     */
+    public final String getRosterDelimiter() {
         return rosterDelimiter;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return rosterDelimiter;
     }
 }

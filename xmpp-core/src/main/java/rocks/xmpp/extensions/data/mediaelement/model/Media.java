@@ -36,6 +36,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <media/>} element in the {@code urn:xmpp:media-element} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0221.html">XEP-0221: Data Forms Media Element</a>
@@ -54,12 +56,14 @@ public final class Media {
     private final List<Location> locations = new ArrayList<>();
 
     @XmlAttribute(name = "height")
-    private int height;
+    private final int height;
 
     @XmlAttribute(name = "width")
-    private int width;
+    private final int width;
 
     private Media() {
+        this.height = 0;
+        this.width = 0;
     }
 
     /**
@@ -69,6 +73,8 @@ public final class Media {
      */
     public Media(Location... locations) {
         this.locations.addAll(Arrays.asList(locations));
+        this.height = 0;
+        this.width = 0;
     }
 
     /**
@@ -89,7 +95,7 @@ public final class Media {
      *
      * @return The locations.
      */
-    public List<Location> getLocations() {
+    public final List<Location> getLocations() {
         return Collections.unmodifiableList(locations);
     }
 
@@ -98,7 +104,7 @@ public final class Media {
      *
      * @return The height.
      */
-    public int getHeight() {
+    public final int getHeight() {
         return height;
     }
 
@@ -107,20 +113,22 @@ public final class Media {
      *
      * @return The width.
      */
-    public int getWidth() {
+    public final int getWidth() {
         return width;
     }
 
     /**
      * Specifies the out-of-band location of the media data.
+     * <p>
+     * This class is immutable.
      */
     public static final class Location {
 
         @XmlValue
-        private URI uri;
+        private final URI uri;
 
         @XmlAttribute(name = "type")
-        private String type;
+        private final String type;
 
         /**
          * Creates a media location.
@@ -134,6 +142,8 @@ public final class Media {
         }
 
         private Location() {
+            this.type = null;
+            this.uri = null;
         }
 
         /**
@@ -141,7 +151,7 @@ public final class Media {
          *
          * @return The URI.
          */
-        public URI getUri() {
+        public final URI getUri() {
             return uri;
         }
 
@@ -154,7 +164,7 @@ public final class Media {
          *
          * @return The type.
          */
-        public String getType() {
+        public final String getType() {
             return type;
         }
     }

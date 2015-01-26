@@ -48,8 +48,12 @@ public final class SoftwareVersionManager extends IQExtensionManager {
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.GET, SoftwareVersion.NAMESPACE);
-        xmppSession.addIQHandler(SoftwareVersion.class, this);
         setEnabled(true);
+    }
+
+    @Override
+    protected void initialize() {
+        xmppSession.addIQHandler(SoftwareVersion.class, this);
     }
 
     /**

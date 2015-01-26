@@ -70,10 +70,6 @@ public final class PingManager extends IQExtensionManager implements SessionStat
      */
     private PingManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.GET, Ping.NAMESPACE);
-        xmppSession.addIQHandler(Ping.class, this);
-
-        xmppSession.addSessionStatusListener(this);
-
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -82,9 +78,15 @@ public final class PingManager extends IQExtensionManager implements SessionStat
                 return thread;
             }
         });
-
         setEnabled(true);
     }
+
+    @Override
+    protected void initialize() {
+        xmppSession.addIQHandler(Ping.class, this);
+        xmppSession.addSessionStatusListener(this);
+    }
+
 
     /**
      * Pings the given XMPP entity.

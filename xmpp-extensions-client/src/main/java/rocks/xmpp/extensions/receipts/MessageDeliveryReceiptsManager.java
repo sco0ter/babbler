@@ -84,6 +84,10 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager imple
      */
     private MessageDeliveryReceiptsManager(final XmppSession xmppSession) {
         super(xmppSession, Request.NAMESPACE);
+    }
+
+    @Override
+    protected void initialize() {
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
         messageFilters.add(new StanzaFilter<Message>() {
@@ -92,7 +96,6 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager imple
                 return message.getType() != Message.Type.ERROR;
             }
         });
-
         xmppSession.addSessionStatusListener(this);
         xmppSession.addMessageListener(this);
     }

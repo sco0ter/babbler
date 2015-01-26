@@ -65,7 +65,10 @@ public final class BlockingManager extends IQExtensionManager implements Session
 
     private BlockingManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.SET);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         // Listen for "un/block pushes"
         xmppSession.addIQHandler(Block.class, this);

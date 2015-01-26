@@ -67,9 +67,11 @@ public final class JingleManager extends ExtensionManager implements SessionStat
         super(xmppSession);
 
         supportedApplicationFormats.add(JingleFileTransfer.class);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
-
         xmppSession.addIQListener(this);
     }
 

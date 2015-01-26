@@ -57,7 +57,10 @@ public final class GeoLocationManager extends ExtensionManager implements Sessio
 
     private GeoLocationManager(XmppSession xmppSession) {
         super(xmppSession, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addMessageListener(this);
     }

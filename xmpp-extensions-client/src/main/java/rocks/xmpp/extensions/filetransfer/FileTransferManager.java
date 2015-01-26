@@ -82,9 +82,13 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
 
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession);
-        xmppSession.addSessionStatusListener(this);
         this.streamInitiationManager = xmppSession.getExtensionManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
+    }
+
+    @Override
+    protected void initialize() {
+        xmppSession.addSessionStatusListener(this);
     }
 
     /**

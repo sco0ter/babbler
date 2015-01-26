@@ -60,7 +60,10 @@ public final class HttpAuthenticationManager extends IQExtensionManager implemen
     private HttpAuthenticationManager(XmppSession xmppSession) {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
         super(xmppSession, AbstractIQ.Type.GET);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addIQHandler(ConfirmationRequest.class, this);
         xmppSession.addMessageListener(this);

@@ -66,6 +66,10 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
 
     private PrivacyListManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.SET);
+    }
+
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addIQHandler(Privacy.class, this);
     }

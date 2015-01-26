@@ -48,6 +48,10 @@ public abstract class ByteStreamManager extends IQExtensionManager implements Se
 
     protected ByteStreamManager(XmppSession xmppSession, String... features) {
         super(xmppSession, AbstractIQ.Type.SET, features);
+    }
+
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
     }
 

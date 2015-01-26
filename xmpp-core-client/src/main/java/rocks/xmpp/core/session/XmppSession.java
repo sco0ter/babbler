@@ -254,6 +254,7 @@ public class XmppSession implements Closeable {
         Runtime.getRuntime().addShutdownHook(shutdownHook);
 
         reconnectionManager = new ReconnectionManager(this);
+
         streamFeaturesManager = new StreamFeaturesManager(this);
         chatManager = new ChatManager(this);
         authenticationManager = new AuthenticationManager(this, lock, configuration.getAuthenticationMechanisms());
@@ -1073,6 +1074,7 @@ public class XmppSession implements Closeable {
                         Constructor<T> constructor = clazz.getDeclaredConstructor(XmppSession.class);
                         constructor.setAccessible(true);
                         instance = constructor.newInstance(this);
+                        instance.initialize();
                         instances.put(clazz, instance);
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                         throw new IllegalArgumentException(e);

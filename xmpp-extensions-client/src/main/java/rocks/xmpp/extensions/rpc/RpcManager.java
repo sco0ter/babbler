@@ -58,10 +58,12 @@ public final class RpcManager extends IQExtensionManager implements SessionStatu
 
     private RpcManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.SET, Rpc.NAMESPACE);
+    }
 
+    @Override
+    protected void initialize() {
         // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
         xmppSession.addSessionStatusListener(this);
-
         xmppSession.addIQHandler(Rpc.class, this);
     }
 

@@ -118,11 +118,16 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
             }
         });
 
+        setEnabled(false);
+    }
+
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addPresenceListener(this);
         xmppSession.addMessageListener(this);
-        setEnabled(false);
     }
+
 
     private void resetHash() {
         // Remove our own hash and send an empty presence.

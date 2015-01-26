@@ -66,7 +66,10 @@ public final class ContactExchangeManager extends IQExtensionManager implements 
 
     private ContactExchangeManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.SET, ContactExchange.NAMESPACE);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addMessageListener(this);
         xmppSession.addIQHandler(ContactExchange.class, this);

@@ -77,11 +77,14 @@ public final class LastActivityManager extends IQExtensionManager implements Ses
     private LastActivityManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.GET, LastActivity.NAMESPACE);
         lastActivityStrategy = new DefaultLastActivityStrategy(xmppSession);
+        setEnabled(true);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addPresenceListener(this);
         xmppSession.addIQHandler(LastActivity.class, this);
-        setEnabled(true);
     }
 
     private long getSecondsSince(Date date) {

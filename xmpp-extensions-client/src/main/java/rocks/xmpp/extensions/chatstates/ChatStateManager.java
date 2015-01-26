@@ -81,6 +81,10 @@ public final class ChatStateManager extends ExtensionManager implements SessionS
 
     private ChatStateManager(final XmppSession xmppSession) {
         super(xmppSession, ChatState.NAMESPACE);
+    }
+
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addMessageListener(this);
     }

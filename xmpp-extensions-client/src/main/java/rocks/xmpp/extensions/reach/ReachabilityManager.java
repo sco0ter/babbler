@@ -72,8 +72,11 @@ public final class ReachabilityManager extends IQExtensionManager implements Ses
 
     private ReachabilityManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.GET, Reachability.NAMESPACE);
-        xmppSession.addSessionStatusListener(this);
+    }
 
+    @Override
+    protected void initialize() {
+        xmppSession.addSessionStatusListener(this);
         xmppSession.addPresenceListener(this);
 
         // A user MAY send reachability addresses in an XMPP <message/> stanza.

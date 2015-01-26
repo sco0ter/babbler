@@ -69,13 +69,15 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
 
     private MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, Muc.NAMESPACE);
+        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
 
         // Listen for incoming invitations.
         xmppSession.addMessageListener(this);
-        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-
         serviceDiscoveryManager.setItemProvider(ROOMS_NODE, new DefaultItemProvider(enteredRoomsMap.values()));
     }
 

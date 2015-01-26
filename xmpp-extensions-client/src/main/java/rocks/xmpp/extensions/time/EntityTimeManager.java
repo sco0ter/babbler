@@ -47,8 +47,12 @@ public final class EntityTimeManager extends IQExtensionManager {
 
     private EntityTimeManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.GET, EntityTime.NAMESPACE);
-        xmppSession.addIQHandler(EntityTime.class, this);
         setEnabled(true);
+    }
+
+    @Override
+    protected void initialize() {
+        xmppSession.addIQHandler(EntityTime.class, this);
     }
 
     /**

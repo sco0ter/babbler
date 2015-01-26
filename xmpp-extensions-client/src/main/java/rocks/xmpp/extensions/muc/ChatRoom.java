@@ -116,6 +116,9 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
         this.xmppSession = xmppSession;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
         this.multiUserChatManager = multiUserChatManager;
+    }
+
+    void initialize() {
         xmppSession.addSessionStatusListener(this);
     }
 

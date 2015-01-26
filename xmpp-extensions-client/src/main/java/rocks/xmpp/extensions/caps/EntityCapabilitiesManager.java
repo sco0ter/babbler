@@ -113,9 +113,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
     private EntityCapabilitiesManager(final XmppSession xmppSession) {
         super(xmppSession, EntityCapabilities.NAMESPACE);
         serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.addPropertyChangeListener(this);
-        xmppSession.addSessionStatusListener(this);
-        xmppSession.addPresenceListener(this);
+
         directoryCapsCache = new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "caps"));
         serviceDiscoverer = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
@@ -139,6 +137,13 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
         };
 
         setEnabled(true);
+    }
+
+    @Override
+    protected void initialize() {
+        serviceDiscoveryManager.addPropertyChangeListener(this);
+        xmppSession.addSessionStatusListener(this);
+        xmppSession.addPresenceListener(this);
     }
 
     private void publishCapsNode() {

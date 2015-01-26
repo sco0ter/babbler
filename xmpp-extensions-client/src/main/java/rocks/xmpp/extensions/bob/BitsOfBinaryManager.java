@@ -47,7 +47,10 @@ class BitsOfBinaryManager extends IQExtensionManager implements SessionStatusLis
 
     private BitsOfBinaryManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.GET, Data.NAMESPACE);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addIQHandler(Data.class, this);
     }

@@ -92,8 +92,12 @@ public final class StreamInitiationManager extends IQExtensionManager implements
             }
         });
 
-        xmppSession.addIQHandler(StreamInitiation.class, this);
         setEnabled(true);
+    }
+
+    @Override
+    protected void initialize() {
+        xmppSession.addIQHandler(StreamInitiation.class, this);
     }
 
     /**

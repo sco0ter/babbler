@@ -34,12 +34,16 @@ import rocks.xmpp.core.tls.model.StartTls;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Manages the various features, which are advertised during stream negotiation.
@@ -50,22 +54,28 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * <p>Each feature is associated with a {@linkplain StreamFeatureNegotiator feature negotiator}, which negotiates the particular feature.</p>
  * <p>This class manages these negotiators, receives XML elements and delegates them to the responsible feature negotiator for further processing.</p>
  * <p>It negotiates the stream by sequentially negotiating each stream feature.</p>
+ * <p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
 public final class StreamFeaturesManager implements SessionStatusListener {
 
+    private final Lock lock = new ReentrantLock();
+
+    private final Map<Class<? extends StreamFeature>, Condition> streamFeatureNegotiatedConditions;
+
     /**
      * The features which have been advertised by the server.
      */
-    private final Map<Class<? extends StreamFeature>, StreamFeature> features = new ConcurrentHashMap<>();
+    private final Map<Class<? extends StreamFeature>, StreamFeature> features = new HashMap<>();
 
     /**
      * The list of features, which the server advertised and have not yet been negotiated.
      */
-    private final List<StreamFeature> featuresToNegotiate = new CopyOnWriteArrayList<>();
+    private final List<StreamFeature> featuresToNegotiate = new ArrayList<>();
 
-    private final Set<Class<? extends StreamFeature>> negotiatedFeatures = new CopyOnWriteArraySet<>();
+    private final Set<Class<? extends StreamFeature>> negotiatedFeatures = new HashSet<>();
 
     /**
      * The feature negotiators, which are responsible to negotiate each individual feature.
@@ -79,6 +89,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      */
     public StreamFeaturesManager(XmppSession xmppSession) {
         xmppSession.addSessionStatusListener(this);
+        streamFeatureNegotiatedConditions = new ConcurrentHashMap<>();
     }
 
     /**
@@ -106,7 +117,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * @param featuresElement The {@code <stream:features/>} element.
      * @throws Exception If an exception occurred during feature negotiation.
      */
-    public final void processFeatures(StreamFeatures featuresElement) throws Exception {
+    public final synchronized void processFeatures(StreamFeatures featuresElement) throws Exception {
         List<Object> featureList = featuresElement.getFeatures();
         List<StreamFeature> sortedFeatureList = new ArrayList<>();
 
@@ -141,7 +152,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * @return True, if the stream needs restarted, after a feature has been negotiated.
      * @throws Exception If an exception occurred during feature negotiation.
      */
-    public final boolean processElement(Object element) throws Exception {
+    public final synchronized boolean processElement(Object element) throws Exception {
         // Check if the element is known to any feature negotiator.
         for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
             if (streamFeatureNegotiator.getFeatureClass() == element || streamFeatureNegotiator.canProcess(element)) {
@@ -171,6 +182,17 @@ public final class StreamFeaturesManager implements SessionStatusListener {
         if (!featuresToNegotiate.isEmpty()) {
             StreamFeature advertisedFeature = featuresToNegotiate.remove(0);
 
+            // Check if there's a condition waiting for that feature to be negotiated.
+            Condition condition = streamFeatureNegotiatedConditions.get(advertisedFeature.getClass());
+            if (condition != null) {
+                lock.lock();
+                try {
+                    condition.signalAll();
+                } finally {
+                    lock.unlock();
+                }
+            }
+
             if (!negotiatedFeatures.contains(advertisedFeature.getClass())) {
                 // See if there's a feature negotiator associated with the feature.
                 for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
@@ -187,21 +209,54 @@ public final class StreamFeaturesManager implements SessionStatusListener {
         }
     }
 
+    /**
+     * This method negotiates all pending features until it reaches the specified feature.
+     *
+     * @param streamFeature The stream feature class.
+     */
+    public final void negotiateUntil(Class<? extends StreamFeature> streamFeature, long timeout) {
+        Condition condition = null;
+        synchronized (this) {
+            // Check if the feature is already negotiated and if there's no condition yet registered.
+            if (!negotiatedFeatures.contains(streamFeature) && !streamFeatureNegotiatedConditions.containsKey(streamFeature)) {
+                condition = lock.newCondition();
+                // Register a new "wait" condition.
+                streamFeatureNegotiatedConditions.put(streamFeature, condition);
+            }
+        }
+        if (condition != null) {
+            lock.lock();
+            try {
+                // Wait until the feature will be negotiated.
+                condition.await(timeout, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
     @Override
     public final void sessionStatusChanged(SessionStatusEvent e) {
         switch (e.getStatus()) {
             // If we're (re)connecting, make sure any previous features are forgotten.
             case CONNECTING:
-                features.clear();
-                featuresToNegotiate.clear();
-                negotiatedFeatures.clear();
+                synchronized (this) {
+                    features.clear();
+                    featuresToNegotiate.clear();
+                    negotiatedFeatures.clear();
+                }
                 break;
             // If the connection is closed, clear everything.
             case CLOSED:
-                streamFeatureNegotiators.clear();
-                featuresToNegotiate.clear();
-                negotiatedFeatures.clear();
-                features.clear();
+                synchronized (this) {
+                    streamFeatureNegotiatedConditions.clear();
+                    streamFeatureNegotiators.clear();
+                    featuresToNegotiate.clear();
+                    negotiatedFeatures.clear();
+                    features.clear();
+                }
                 break;
         }
     }

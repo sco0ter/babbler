@@ -936,6 +936,10 @@ public class XmppSession implements Closeable {
             } else {
                 authenticationManager.authenticate(mechanisms, authorizationId, callbackHandler);
             }
+            // Negotiate all pending features until <bind/> would be negotiated.
+            streamFeaturesManager.negotiateUntil(Bind.class, configuration.getDefaultResponseTimeout());
+
+            // Then negotiate resource binding manually.
             bindResource(resource);
 
             if (callbackHandler != null && getRosterManager().isRetrieveRosterOnLogin()) {

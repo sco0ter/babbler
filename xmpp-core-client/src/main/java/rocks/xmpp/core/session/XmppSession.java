@@ -187,6 +187,12 @@ public class XmppSession implements Closeable {
 
     private XmppDebugger debugger;
 
+    private String lastAuthorizationId;
+
+    private String[] lastMechanisms;
+
+    private CallbackHandler lastCallbackHandler;
+
     /**
      * Creates a session with the specified service domain, by using the default configuration.
      *
@@ -716,15 +722,7 @@ public class XmppSession implements Closeable {
         if (status == Status.DISCONNECTED) {
             connect();
             if (wasLoggedIn) {
-                try {
-                    updateStatus(Status.AUTHENTICATING);
-                    authenticationManager.reAuthenticate();
-                    bindResource(resource);
-                } catch (AuthenticationException e) {
-                    updateStatus(Status.DISCONNECTED);
-                    throw e;
-                }
-                updateStatus(Status.AUTHENTICATED);
+                loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
             }
         }
     }
@@ -929,6 +927,11 @@ public class XmppSession implements Closeable {
             throw new IllegalStateException("The XMPP domain must not be null.");
         }
         exception = null;
+        Status oldStatus = status;
+
+        lastMechanisms = mechanisms;
+        lastAuthorizationId = authorizationId;
+        lastCallbackHandler = callbackHandler;
         try {
             updateStatus(Status.AUTHENTICATING);
             if (callbackHandler == null) {
@@ -947,11 +950,11 @@ public class XmppSession implements Closeable {
             }
         } catch (AuthenticationException e) {
             // Revert status
-            updateStatus(Status.CONNECTED);
+            updateStatus(oldStatus);
             throw e;
         } catch (Exception e) {
             // Revert status
-            updateStatus(Status.CONNECTED);
+            updateStatus(oldStatus);
             if (exception != null) {
                 Throwable ex = e;
                 while (ex.getCause() != null) {
@@ -961,6 +964,7 @@ public class XmppSession implements Closeable {
             }
             throwExceptionIfNotNull(e);
         }
+        wasLoggedIn = true;
         updateStatus(Status.AUTHENTICATED);
     }
 
@@ -1184,9 +1188,6 @@ public class XmppSession implements Closeable {
         }
         if (status == Status.CLOSED) {
             sessionStatusListeners.clear();
-        }
-        if (status == Status.AUTHENTICATED) {
-            wasLoggedIn = true;
         }
     }
 

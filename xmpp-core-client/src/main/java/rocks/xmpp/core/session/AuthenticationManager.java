@@ -113,21 +113,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     private boolean authenticated;
 
     /**
-     * Guarded by "this".
-     */
-    private String lastAuthorizationId;
-
-    /**
-     * Guarded by "this".
-     */
-    private String[] lastMechanisms;
-
-    /**
-     * Guarded by "this".
-     */
-    private CallbackHandler lastCallbackHandler;
-
-    /**
      * Creates the authentication manager. Usually only the {@link rocks.xmpp.core.session.XmppSession} should create it implicitly.
      *
      * @param xmppSession The connection.
@@ -165,9 +150,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
             authenticationFailure = null;
             authenticated = false;
 
-            lastMechanisms = mechanisms;
-            lastAuthorizationId = authorizationId;
-            lastCallbackHandler = callbackHandler;
             saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
 
             if (saslClient == null) {
@@ -204,16 +186,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                 }
             }
         }
-    }
-
-    /**
-     * Re-authenticates after a connection has disconnected and reconnected. The parameters from the last authentication process is used to re-authenticate.
-     *
-     * @throws SaslException           If the SASL mechanism could not be created.
-     * @throws AuthenticationException If the login failed.
-     */
-    public final synchronized void reAuthenticate() throws SaslException, AuthenticationException {
-        authenticate(lastMechanisms, lastAuthorizationId, lastCallbackHandler);
     }
 
     @Override

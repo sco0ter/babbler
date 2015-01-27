@@ -30,7 +30,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * A simple debugger implementation, which uses {@code System.out} to print XMPP traffic.
+ *
  * @author Christian Schudt
+ * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#debugger(Class)
  */
 public final class ConsoleDebugger implements XmppDebugger {
 

@@ -30,6 +30,9 @@ import java.net.Proxy;
 
 /**
  * A base class for connection configurations.
+ * <p>
+ * All connection methods have a few properties in common, which are abstracted in this class.
+ * Among these common properties are hostname, port, proxy, security settings and a timeout.
  *
  * @author Christian Schudt
  */
@@ -126,7 +129,7 @@ public abstract class ConnectionConfiguration {
      *
      * @return The timeout.
      */
-    public int getConnectTimeout() {
+    public final int getConnectTimeout() {
         return connectTimeout;
     }
 

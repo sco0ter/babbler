@@ -27,12 +27,26 @@ package rocks.xmpp.extensions.httpbind;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.XmppSessionConfiguration;
 
 /**
- * A configuration for the BOSH connection.
+ * A configuration for a BOSH connection.
+ * It allows you to configure basic connection settings like hostname and port, but also BOSH specific settings like the wait interval, a route or the use of a key sequencing mechanism.
+ * <h3>Usage</h3>
+ * In order to create an instance of this class you have to use the builder pattern as shown below.
+ * <pre>
+ * {@code
+ * BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
+ *     .hostname("localhost")
+ *     .port(5280)
+ *     .file("/http-bind/")
+ *     .build();
+ * }
+ * </pre>
+ * The above sample configuration will connect to <code>http://localhost:5280/http-bind/</code>.
+ * <p>
+ * This class is immutable.
  *
- * @author Christian Schudt
+ * @see rocks.xmpp.core.session.TcpConnectionConfiguration
  * @see BoshConnection
  */
 public final class BoshConnectionConfiguration extends ConnectionConfiguration {
@@ -63,7 +77,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
     public static BoshConnectionConfiguration getDefault() {
         // Use double-checked locking idiom
         if (defaultConfiguration == null) {
-            synchronized (XmppSessionConfiguration.class) {
+            synchronized (BoshConnectionConfiguration.class) {
                 if (defaultConfiguration == null) {
                     defaultConfiguration = builder().build();
                 }
@@ -102,7 +116,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return The wait time.
      */
-    public int getWait() {
+    public final int getWait() {
         return wait;
     }
 
@@ -111,7 +125,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return The file on the host.
      */
-    public String getFile() {
+    public final String getFile() {
         return file;
     }
 
@@ -120,7 +134,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return The route.
      */
-    public String getRoute() {
+    public final String getRoute() {
         return route;
     }
 
@@ -129,7 +143,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return If the connection is secured via a key sequence mechanism.
      */
-    public boolean isUseKeySequence() {
+    public final boolean isUseKeySequence() {
         return useKeySequence;
     }
 

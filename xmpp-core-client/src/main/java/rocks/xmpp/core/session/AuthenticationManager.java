@@ -52,6 +52,8 @@ import java.util.concurrent.locks.Lock;
 
 /**
  * Manages SASL authentication as described in <a href="http://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
+ * <p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
@@ -94,23 +96,35 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
 
     /**
      * The SASL client which is used during an authentication process.
+     * Guarded by "this".
      */
     private SaslClient saslClient;
 
     /**
      * If the authentication failed, this variable is set (by the reader thread) and later read by the application thread.
+     * Guarded by "this".
      */
-    private volatile Failure authenticationFailure = null;
+    private Failure authenticationFailure;
 
     /**
      * Set to true if the authentication succeeded; or false, if it failed or not yet completed.
+     * Guarded by "this".
      */
-    private volatile boolean authenticated;
+    private boolean authenticated;
 
+    /**
+     * Guarded by "this".
+     */
     private String lastAuthorizationId;
 
+    /**
+     * Guarded by "this".
+     */
     private String[] lastMechanisms;
 
+    /**
+     * Guarded by "this".
+     */
     private CallbackHandler lastCallbackHandler;
 
     /**
@@ -125,7 +139,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
         this.lock = lock;
         this.authenticationComplete = lock.newCondition();
         this.supportedMechanisms = new ArrayList<>();
-        this.preferredMechanisms = mechanisms;
+        this.preferredMechanisms = new ArrayList<>(mechanisms);
     }
 
     /**
@@ -136,36 +150,37 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
      */
     public final void authenticate(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws SaslException, AuthenticationException {
-        Collection<String> clientMechanisms;
-        if (mechanisms == null) {
-            clientMechanisms = new ArrayList<>(preferredMechanisms);
-        } else {
-            clientMechanisms = new ArrayList<>(Arrays.asList(mechanisms));
+        synchronized (this) {
+            Collection<String> clientMechanisms;
+            if (mechanisms == null) {
+                clientMechanisms = new ArrayList<>(preferredMechanisms);
+            } else {
+                clientMechanisms = new ArrayList<>(Arrays.asList(mechanisms));
+            }
+
+            // Retain only the server-supported mechanisms.
+            clientMechanisms.retainAll(supportedMechanisms);
+
+            // Reset variables.
+            authenticationFailure = null;
+            authenticated = false;
+
+            lastMechanisms = mechanisms;
+            lastAuthorizationId = authorizationId;
+            lastCallbackHandler = callbackHandler;
+            saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
+
+            if (saslClient == null) {
+                throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);
+            }
+
+            byte[] initialResponse = new byte[0];
+            if (saslClient.hasInitialResponse()) {
+                initialResponse = saslClient.evaluateChallenge(new byte[0]);
+            }
+
+            xmppSession.send(new Auth(saslClient.getMechanismName(), initialResponse));
         }
-
-        // Retain only the server-supported mechanisms.
-        clientMechanisms.retainAll(supportedMechanisms);
-
-        // Reset variables.
-        authenticationFailure = null;
-        authenticated = false;
-
-        lastMechanisms = mechanisms;
-        lastAuthorizationId = authorizationId;
-        lastCallbackHandler = callbackHandler;
-        saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
-
-        if (saslClient == null) {
-            throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);
-        }
-
-        byte[] initialResponse = new byte[0];
-        if (saslClient.hasInitialResponse()) {
-            initialResponse = saslClient.evaluateChallenge(new byte[0]);
-        }
-
-        xmppSession.send(new Auth(saslClient.getMechanismName(), initialResponse));
-
         // Wait until the authentication succeeded or failed, but max. 10 seconds.
         lock.lock();
         try {
@@ -175,16 +190,18 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
         } finally {
             lock.unlock();
         }
-        // At this point we should be authenticated. If not, throw an exception.
-        if (!authenticated) {
-            if (authenticationFailure != null) {
-                String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
-                if (authenticationFailure.getText() != null) {
-                    failureText += " (" + authenticationFailure.getText() + ")";
+        synchronized (this) {
+            // At this point we should be authenticated. If not, throw an exception.
+            if (!authenticated) {
+                if (authenticationFailure != null) {
+                    String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
+                    if (authenticationFailure.getText() != null) {
+                        failureText += " (" + authenticationFailure.getText() + ")";
+                    }
+                    throw new AuthenticationException(failureText, authenticationFailure);
+                } else {
+                    throw new AuthenticationException(saslClient.getMechanismName() + " authentication failed for an unknown reason, but probably due to timeout.");
                 }
-                throw new AuthenticationException(failureText, authenticationFailure);
-            } else {
-                throw new AuthenticationException(saslClient.getMechanismName() + " authentication failed for an unknown reason, but probably due to timeout.");
             }
         }
     }
@@ -195,7 +212,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @throws SaslException           If the SASL mechanism could not be created.
      * @throws AuthenticationException If the login failed.
      */
-    public final void reAuthenticate() throws SaslException, AuthenticationException {
+    public final synchronized void reAuthenticate() throws SaslException, AuthenticationException {
         authenticate(lastMechanisms, lastAuthorizationId, lastCallbackHandler);
     }
 
@@ -203,20 +220,22 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     public final Status processNegotiation(Object element) throws Exception {
         Status status = Status.INCOMPLETE;
         try {
-            if (element instanceof Mechanisms) {
-                supportedMechanisms.clear();
-                supportedMechanisms.addAll(((Mechanisms) element).getMechanisms());
-            } else if (element instanceof Challenge) {
-                xmppSession.send(new Response(saslClient.evaluateChallenge(((Challenge) element).getValue())));
-            } else if (element instanceof Failure) {
-                authenticationFailure = (Failure) element;
-                authenticated = false;
-                releaseLock();
-                status = Status.FAILURE;
-            } else if (element instanceof Success) {
-                authenticated = true;
-                releaseLock();
-                status = Status.SUCCESS;
+            synchronized (this) {
+                if (element instanceof Mechanisms) {
+                    supportedMechanisms.clear();
+                    supportedMechanisms.addAll(((Mechanisms) element).getMechanisms());
+                } else if (element instanceof Challenge) {
+                    xmppSession.send(new Response(saslClient.evaluateChallenge(((Challenge) element).getValue())));
+                } else if (element instanceof Failure) {
+                    authenticationFailure = (Failure) element;
+                    authenticated = false;
+                    releaseLock();
+                    status = Status.FAILURE;
+                } else if (element instanceof Success) {
+                    authenticated = true;
+                    releaseLock();
+                    status = Status.SUCCESS;
+                }
             }
         } catch (Exception e) {
             releaseLock();

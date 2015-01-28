@@ -61,8 +61,6 @@ import java.util.List;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
- * <p>
- * Unless specified otherwise, this connection sends a whitespace keep-alive every 60 seconds.
  * </p>
  * If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.
  * <p>
@@ -77,6 +75,7 @@ public final class TcpConnection extends Connection {
 
     /**
      * The stream id, which is assigned by the server.
+     * guarded by "this"
      */
     String streamId;
 
@@ -121,8 +120,20 @@ public final class TcpConnection extends Connection {
             @Override
             public void featureSuccessfullyNegotiated() {
                 CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
-                inputStream = compressionMethod.decompress(inputStream);
-                outputStream = compressionMethod.compress(outputStream);
+                // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
+                // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
+                InputStream iStream;
+                OutputStream oStream;
+                synchronized (TcpConnection.this) {
+                    iStream = inputStream;
+                    oStream = outputStream;
+                }
+                iStream = compressionMethod.decompress(iStream);
+                oStream = compressionMethod.compress(oStream);
+                synchronized (TcpConnection.this) {
+                    inputStream = iStream;
+                    outputStream = oStream;
+                }
             }
         });
         xmppSession.getStreamFeaturesManager().addFeatureNegotiator(compressionManager);
@@ -169,7 +180,7 @@ public final class TcpConnection extends Connection {
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), xmlOutputFactory);
+        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), this, xmlOutputFactory);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 
@@ -201,20 +212,24 @@ public final class TcpConnection extends Connection {
     /**
      * This method is called from the reader thread. Because it accesses shared data (socket, outputStream, inputStream) it should be synchronized.
      */
-    private synchronized void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
+    private void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
 
         SSLContext sslContext = tcpConnectionConfiguration.getSSLContext();
         if (sslContext == null) {
             sslContext = SSLContext.getDefault();
         }
+        SSLSocket sslSocket;
 
-        socket = sslContext.getSocketFactory().createSocket(
-                socket,
-                getXmppSession().getDomain(),
-                socket.getPort(),
-                true);
+        // synchronize socket because it's also used by the isSecure() method.
+        synchronized (this) {
+            socket = sslContext.getSocketFactory().createSocket(
+                    socket,
+                    getXmppSession().getDomain(),
+                    socket.getPort(),
+                    true);
+            sslSocket = (SSLSocket) socket;
+        }
 
-        SSLSocket sslSocket = (SSLSocket) socket;
         HostnameVerifier verifier = tcpConnectionConfiguration.getHostnameVerifier();
 
         // See
@@ -228,12 +243,17 @@ public final class TcpConnection extends Connection {
             sslSocket.setSSLParameters(sslParameters);
         } else {
             sslSocket.startHandshake();
+            // We are calling an "alien" method here, i.e. code we don't control.
+            // Don't call alien methods from within synchronized regions, that's why the regions are split.
             if (!verifier.verify(getXmppSession().getDomain(), sslSocket.getSession())) {
                 throw new CertificateException("Server failed to authenticate as " + getXmppSession().getDomain());
             }
         }
-        outputStream = new BufferedOutputStream(socket.getOutputStream());
-        inputStream = new BufferedInputStream(socket.getInputStream());
+
+        synchronized (this) {
+            outputStream = new BufferedOutputStream(socket.getOutputStream());
+            inputStream = new BufferedInputStream(socket.getInputStream());
+        }
     }
 
     @Override
@@ -252,16 +272,21 @@ public final class TcpConnection extends Connection {
         // This call closes the stream and waits until everything has been sent to the server.
         if (xmppStreamWriter != null) {
             xmppStreamWriter.shutdown();
+            xmppStreamWriter = null;
         }
         // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
         if (xmppStreamReader != null) {
             xmppStreamReader.shutdown();
+            xmppStreamReader = null;
         }
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
         // Now close the socket.
         if (socket != null) {
             socket.close();
+            socket = null;
         }
+        inputStream = null;
+        outputStream = null;
     }
 
     /**

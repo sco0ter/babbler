@@ -30,12 +30,11 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -44,13 +43,19 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is responsible for opening and closing the XMPP stream as well as writing any XML elements to the stream.
+ * <p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
 final class XmppStreamWriter {
+
+    private static final Logger logger = Logger.getLogger(XmppStreamWriter.class.getName());
 
     private final XmppSession xmppSession;
 
@@ -62,8 +67,11 @@ final class XmppStreamWriter {
 
     private final XmppDebugger debugger;
 
+    private final Connection connection;
+
     /**
      * An executor which periodically schedules a whitespace ping.
+     * Guarded by "this".
      */
     private ScheduledExecutorService keepAliveExecutor;
 
@@ -92,11 +100,12 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
+    XmppStreamWriter(final XmppSession xmppSession, final Connection connection, XMLOutputFactory xmlOutputFactory) {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.getMarshaller();
         this.debugger = xmppSession.getDebugger();
+        this.connection = connection;
 
         executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
             @Override
@@ -110,37 +119,39 @@ final class XmppStreamWriter {
 
     void initialize(int keepAliveInterval) {
         if (keepAliveInterval > 0) {
-            keepAliveExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread thread = new Thread(r, "XMPP KeepAlive Thread");
-                    thread.setDaemon(true);
-                    return thread;
+            synchronized (this) {
+                keepAliveExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread thread = new Thread(r, "XMPP KeepAlive Thread");
+                        thread.setDaemon(true);
+                        return thread;
 
-                }
-            });
-            keepAliveExecutor.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    if (xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                        executor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    xmlStreamWriter.writeCharacters(" ");
-                                    xmlStreamWriter.flush();
-                                } catch (XMLStreamException e) {
-                                    xmppSession.notifyException(e);
-                                }
-                            }
-                        });
                     }
-                }
-            }, 0, keepAliveInterval, TimeUnit.SECONDS);
+                });
+                keepAliveExecutor.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                            executor.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        xmlStreamWriter.writeCharacters(" ");
+                                        xmlStreamWriter.flush();
+                                    } catch (Exception e) {
+                                        closeConnectionAndNotify(e);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }, 0, keepAliveInterval, TimeUnit.SECONDS);
+            }
         }
     }
 
-    void send(final ClientStreamElement clientStreamElement) {
+    synchronized void send(final ClientStreamElement clientStreamElement) {
         if (!executor.isShutdown() && clientStreamElement != null) {
             executor.execute(new Runnable() {
                 @Override
@@ -154,15 +165,15 @@ final class XmppStreamWriter {
                             debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), clientStreamElement);
                             byteArrayOutputStream.reset();
                         }
-                    } catch (XMLStreamException | JAXBException e) {
-                        xmppSession.notifyException(e);
+                    } catch (Exception e) {
+                        closeConnectionAndNotify(e);
                     }
                 }
             });
         }
     }
 
-    void openStream(final OutputStream outputStream, final Jid from) {
+    synchronized void openStream(final OutputStream outputStream, final Jid from) {
         if (!executor.isShutdown()) {
             executor.execute(new Runnable() {
 
@@ -174,13 +185,6 @@ final class XmppStreamWriter {
                             lastOutputStream = outputStream;
                             if (prefixFreeCanonicalizationWriter != null) {
                                 // This also closes the xmlStreamWriter
-                                prefixFreeCanonicalizationWriter.close();
-                            }
-
-                            if (xmlStreamWriter != null) {
-                                xmlStreamWriter.close();
-                            }
-                            if (prefixFreeCanonicalizationWriter != null) {
                                 prefixFreeCanonicalizationWriter.close();
                             }
 
@@ -217,8 +221,8 @@ final class XmppStreamWriter {
                             byteArrayOutputStream.reset();
                         }
                         streamOpened = true;
-                    } catch (XMLStreamException e) {
-                        xmppSession.notifyException(e);
+                    } catch (Exception e) {
+                        closeConnectionAndNotify(e);
                     }
                 }
             });
@@ -240,12 +244,46 @@ final class XmppStreamWriter {
                         }
                         xmlStreamWriter.close();
                         streamOpened = false;
-                    } catch (XMLStreamException e) {
-                        xmppSession.notifyException(e);
+                    } catch (Exception e) {
+                        closeConnectionAndNotify(e);
                     }
                 }
             }
         });
+    }
+
+    /**
+     * Shuts down the executors, cleans up resources and notifies the session about the exception.
+     *
+     * @param exception The exception which occurred during writing.
+     */
+    private void closeConnectionAndNotify(Exception exception) {
+
+        // Shutdown the executors.
+        synchronized (this) {
+            if (keepAliveExecutor != null) {
+                keepAliveExecutor.shutdown();
+            }
+            executor.shutdown();
+
+            if (prefixFreeCanonicalizationWriter != null) {
+                try {
+                    prefixFreeCanonicalizationWriter.close();
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
+            lastOutputStream = null;
+            byteArrayOutputStream = null;
+        }
+
+        try {
+            // Close the connection, which will only close the reader thread and the socket (because the writer is already shutdown).
+            connection.close();
+        } catch (IOException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+        }
+        xmppSession.notifyException(exception);
     }
 
     /**

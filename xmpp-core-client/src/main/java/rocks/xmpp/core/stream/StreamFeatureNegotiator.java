@@ -57,33 +57,19 @@ public abstract class StreamFeatureNegotiator {
      * Adds a feature listener, which will get notified about feature negotiation status changes.
      *
      * @param streamFeatureListener The feature listener.
-     * @see #removeFeatureListener(StreamFeatureListener)
      */
     public final void addFeatureListener(StreamFeatureListener streamFeatureListener) {
         streamFeatureListeners.add(streamFeatureListener);
     }
 
     /**
-     * Removes a previously added feature listener.
-     *
-     * @param streamFeatureListener The feature listener.
-     * @see #addFeatureListener(StreamFeatureListener)
-     */
-    public final void removeFeatureListener(StreamFeatureListener streamFeatureListener) {
-        streamFeatureListeners.remove(streamFeatureListener);
-    }
-
-    /**
      * Notifies the listener, if a feature negotiation has completed.
      *
-     * @param status  The status of the feature negotiation process.
-     * @param element The element, which triggered the feature status change.
      * @throws Exception If an exception occurred during feature negotiation.
      */
-    protected void notifyFeatureNegotiated(Status status, Object element) throws Exception {
-        StreamFeatureEvent streamFeatureEvent = new StreamFeatureEvent(this, status, element);
+    protected void notifyFeatureNegotiated() throws Exception {
         for (StreamFeatureListener streamFeatureListener : streamFeatureListeners) {
-            streamFeatureListener.negotiationStatusChanged(streamFeatureEvent);
+            streamFeatureListener.featureSuccessfullyNegotiated();
         }
     }
 

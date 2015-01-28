@@ -27,17 +27,17 @@ package rocks.xmpp.core.stream;
 import java.util.EventListener;
 
 /**
- * A feature listener, which listens for negotiation status changes.
+ * A feature listener, which listens for successful feature negotiation.
  *
  * @author Christian Schudt
+ * @see rocks.xmpp.core.stream.StreamFeatureNegotiator#addFeatureListener(StreamFeatureListener)
  */
 public interface StreamFeatureListener extends EventListener {
 
     /**
-     * Fired whenever the status of a feature negotiation has changed.
+     * Fired when the feature has been successfully negotiated.
      *
-     * @param streamFeatureEvent The feature event.
      * @throws Exception If any exception occurred during handling of the event.
      */
-    void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) throws Exception;
+    void featureSuccessfullyNegotiated() throws Exception;
 }

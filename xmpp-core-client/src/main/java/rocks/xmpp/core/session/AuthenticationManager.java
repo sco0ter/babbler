@@ -213,8 +213,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
         } catch (Exception e) {
             releaseLock();
             throw e;
-        } finally {
-            notifyFeatureNegotiated(status, element);
         }
         return status;
     }

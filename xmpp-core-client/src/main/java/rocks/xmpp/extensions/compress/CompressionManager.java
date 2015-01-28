@@ -89,31 +89,28 @@ public final class CompressionManager extends StreamFeatureNegotiator {
     @Override
     public Status processNegotiation(Object element) throws Exception {
         Status status = Status.INCOMPLETE;
-        try {
-            if (element instanceof CompressionFeature) {
-                List<String> advertisedCompressionMethods = ((CompressionFeature) element).getMethods();
-                Map<String, CompressionMethod> clientMethods = new LinkedHashMap<>();
-                for (CompressionMethod compressionMethod : compressionMethods) {
-                    clientMethods.put(compressionMethod.getName(), compressionMethod);
-                }
-                clientMethods.keySet().retainAll(advertisedCompressionMethods);
-                if (!clientMethods.isEmpty()) {
-                    // Use the first configured compression method, which is also advertised by the server.
-                    CompressionMethod compressionMethod = clientMethods.values().iterator().next();
-                    xmppSession.send(new StreamCompression.Compress(compressionMethod.getName()));
-                    negotiatedCompressionMethod = compressionMethod;
-                    status = Status.INCOMPLETE;
-                } else {
-                    status = Status.IGNORE;
-                }
-            } else if (element == StreamCompression.COMPRESSED) {
-                status = Status.SUCCESS;
-            } else if (element instanceof StreamCompression.Failure) {
-                status = Status.FAILURE;
-                throw new IOException("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
+
+        if (element instanceof CompressionFeature) {
+            List<String> advertisedCompressionMethods = ((CompressionFeature) element).getMethods();
+            Map<String, CompressionMethod> clientMethods = new LinkedHashMap<>();
+            for (CompressionMethod compressionMethod : compressionMethods) {
+                clientMethods.put(compressionMethod.getName(), compressionMethod);
             }
-        } finally {
-            notifyFeatureNegotiated(status, element);
+            clientMethods.keySet().retainAll(advertisedCompressionMethods);
+            if (!clientMethods.isEmpty()) {
+                // Use the first configured compression method, which is also advertised by the server.
+                CompressionMethod compressionMethod = clientMethods.values().iterator().next();
+                xmppSession.send(new StreamCompression.Compress(compressionMethod.getName()));
+                negotiatedCompressionMethod = compressionMethod;
+                status = Status.INCOMPLETE;
+            } else {
+                status = Status.IGNORE;
+            }
+        } else if (element == StreamCompression.COMPRESSED) {
+            notifyFeatureNegotiated();
+            status = Status.SUCCESS;
+        } else if (element instanceof StreamCompression.Failure) {
+            throw new IOException("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
         }
         return status;
     }

@@ -25,9 +25,7 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stream.StreamFeatureEvent;
 import rocks.xmpp.core.stream.StreamFeatureListener;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
@@ -113,27 +111,22 @@ public final class TcpConnection extends Connection {
 
         xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new SecurityManager(xmppSession, new StreamFeatureListener() {
             @Override
-            public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) throws Exception {
-                if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.SUCCESS) {
-                    secureConnection();
-                }
+            public void featureSuccessfullyNegotiated() throws Exception {
+                secureConnection();
             }
         }, configuration.isSecure()));
 
         final CompressionManager compressionManager = new CompressionManager(xmppSession, configuration.getCompressionMethods());
         compressionManager.addFeatureListener(new StreamFeatureListener() {
             @Override
-            public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) {
-                if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.SUCCESS) {
-                    CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
-                    inputStream = compressionMethod.decompress(inputStream);
-                    outputStream = compressionMethod.compress(outputStream);
-                }
+            public void featureSuccessfullyNegotiated() {
+                CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
+                inputStream = compressionMethod.decompress(inputStream);
+                outputStream = compressionMethod.compress(outputStream);
             }
         });
         xmppSession.getStreamFeaturesManager().addFeatureNegotiator(compressionManager);
     }
-
 
     @Override
     @Deprecated

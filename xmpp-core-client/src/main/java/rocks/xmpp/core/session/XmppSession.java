@@ -101,15 +101,6 @@ public class XmppSession implements Closeable {
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
     /**
-     * A lock object, used to create wait conditions.
-     */
-    private final Lock lock = new ReentrantLock();
-
-    private final Condition streamNegotiatedUntilSasl;
-
-    private final Condition streamNegotiatedUntilResourceBinding;
-
-    /**
      * The unmarshaller, which is used to unmarshal XML during reading from the input stream.
      */
     private final Unmarshaller unmarshaller;
@@ -263,37 +254,14 @@ public class XmppSession implements Closeable {
 
         streamFeaturesManager = new StreamFeaturesManager(this);
         chatManager = new ChatManager(this);
-        authenticationManager = new AuthenticationManager(this, lock, configuration.getAuthenticationMechanisms());
-        authenticationManager.addFeatureListener(new StreamFeatureListener() {
-            @Override
-            public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) {
-                if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.INCOMPLETE && streamFeatureEvent.getElement() instanceof Mechanisms) {
-                    // Release the waiting thread.
-                    lock.lock();
-                    try {
-                        streamNegotiatedUntilSasl.signal();
-                    } finally {
-                        lock.unlock();
-                    }
-                }
-            }
-        });
+        authenticationManager = new AuthenticationManager(this, configuration.getAuthenticationMechanisms());
         rosterManager = new RosterManager(this);
         presenceManager = new PresenceManager(this);
-
-        streamNegotiatedUntilSasl = lock.newCondition();
-        streamNegotiatedUntilResourceBinding = lock.newCondition();
 
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
         streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(Bind.class) {
             @Override
             public Status processNegotiation(Object element) throws Exception {
-                lock.lock();
-                try {
-                    streamNegotiatedUntilResourceBinding.signalAll();
-                } finally {
-                    lock.unlock();
-                }
                 // Resource binding will be negotiated manually
                 return Status.INCOMPLETE;
             }
@@ -780,11 +748,8 @@ public class XmppSession implements Closeable {
         }
 
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
-        try {
-            waitUntilSaslNegotiationStarted();
-        } catch (NoResponseException e) {
-            throw new IOException(e);
-        }
+        getStreamFeaturesManager().negotiateUntil(Mechanisms.class, 10000);
+
         if (exception != null) {
             updateStatus(oldStatus);
             throw new IOException(exception);
@@ -942,6 +907,9 @@ public class XmppSession implements Closeable {
             // Negotiate all pending features until <bind/> would be negotiated.
             streamFeaturesManager.negotiateUntil(Bind.class, configuration.getDefaultResponseTimeout());
 
+            // Check if stream feature negotiation failed with an exception.
+            throwExceptionIfNotNull(exception);
+
             // Then negotiate resource binding manually.
             bindResource(resource);
 
@@ -975,24 +943,6 @@ public class XmppSession implements Closeable {
      */
     private void bindResource(String resource) throws XmppException {
         this.resource = resource;
-
-        // Then wait until the bind feature is received, if it hasn't yet.
-        if (!streamFeaturesManager.getFeatures().containsKey(Bind.class)) {
-            lock.lock();
-            try {
-                // Double check Bind feature. Theoretically it could be put in the features list after checking for the first time, which would lead to a dead lock here.
-                if (!streamFeaturesManager.getFeatures().containsKey(Bind.class) && !streamNegotiatedUntilResourceBinding.await(5, TimeUnit.SECONDS)) {
-                    throw new NoResponseException("Timeout reached during resource binding.");
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } finally {
-                lock.unlock();
-            }
-        }
-
-        // Check if stream feature negotiation failed with an exception.
-        throwExceptionIfNotNull(exception);
 
         // Bind the resource
         IQ iq = new IQ(IQ.Type.SET, new Bind(this.resource));
@@ -1053,13 +1003,8 @@ public class XmppSession implements Closeable {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
         exception = e;
         // Release a potential waiting thread.
-        lock.lock();
-        try {
-            streamNegotiatedUntilSasl.signalAll();
-            streamNegotiatedUntilResourceBinding.signalAll();
-        } finally {
-            lock.unlock();
-        }
+        // TODO release locks
+
         synchronized (this) {
             if (status == Status.AUTHENTICATED || status == Status.AUTHENTICATING || status == Status.CONNECTED || status == Status.CONNECTING) {
                 updateStatus(Status.DISCONNECTED, e);
@@ -1216,35 +1161,6 @@ public class XmppSession implements Closeable {
      */
     public final Marshaller getMarshaller() {
         return marshaller;
-    }
-
-    /**
-     * Waits until SASL negotiation has started and then releases the lock. This method must be invoked at the end of the {@link #connect()} method.
-     *
-     * @throws NoResponseException If no response was received from the server.
-     * @throws IOException         If any exception occurred during stream negotiation.
-     */
-    private void waitUntilSaslNegotiationStarted() throws NoResponseException, IOException {
-        // Wait for the response and wait until all features have been negotiated.
-        lock.lock();
-        try {
-            if (!streamNegotiatedUntilSasl.await(10000, TimeUnit.SECONDS)) {
-                // Check if an exception has occurred during stream negotiation and throw it.
-                if (exception != null) {
-                    try {
-                        throw new IOException(exception);
-                    } finally {
-                        exception = null;
-                    }
-                } else {
-                    throw new NoResponseException("Timeout reached while connecting.");
-                }
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
-        }
     }
 
     /**

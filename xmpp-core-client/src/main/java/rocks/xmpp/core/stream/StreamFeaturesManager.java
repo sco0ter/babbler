@@ -183,7 +183,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
             StreamFeature advertisedFeature = featuresToNegotiate.remove(0);
 
             // Check if there's a condition waiting for that feature to be negotiated.
-            Condition condition = streamFeatureNegotiatedConditions.get(advertisedFeature.getClass());
+            Condition condition = streamFeatureNegotiatedConditions.remove(advertisedFeature.getClass());
             if (condition != null) {
                 lock.lock();
                 try {
@@ -213,6 +213,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * This method negotiates all pending features until it reaches the specified feature.
      *
      * @param streamFeature The stream feature class.
+     * @param timeout       The timeout.
      */
     public final void negotiateUntil(Class<? extends StreamFeature> streamFeature, long timeout) {
         Condition condition = null;

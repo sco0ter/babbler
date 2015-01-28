@@ -49,6 +49,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Manages SASL authentication as described in <a href="http://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
@@ -116,12 +117,12 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * Creates the authentication manager. Usually only the {@link rocks.xmpp.core.session.XmppSession} should create it implicitly.
      *
      * @param xmppSession The connection.
-     * @param lock        The lock object, which is used to make the current thread wait during authentication.
+     * @param mechanisms  The SASL mechanisms provided by the client.
      */
-    public AuthenticationManager(final XmppSession xmppSession, Lock lock, List<String> mechanisms) {
+    public AuthenticationManager(final XmppSession xmppSession, List<String> mechanisms) {
         super(Mechanisms.class);
         this.xmppSession = Objects.requireNonNull(xmppSession, "xmppSession must not be null.");
-        this.lock = lock;
+        this.lock = new ReentrantLock();
         this.authenticationComplete = lock.newCondition();
         this.supportedMechanisms = new ArrayList<>();
         this.preferredMechanisms = new ArrayList<>(mechanisms);

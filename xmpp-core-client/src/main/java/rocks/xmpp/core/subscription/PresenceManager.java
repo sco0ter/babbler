@@ -25,7 +25,6 @@
 package rocks.xmpp.core.subscription;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
@@ -63,7 +62,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
 
     private final XmppSession xmppSession;
 
-    private final Map<Jid, Map<String, Presence>> presenceMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Jid, Map<String, Presence>> presenceMap = new ConcurrentHashMap<>();
 
     private final Map<String, Presence> lastSentPresences = new ConcurrentHashMap<>();
 
@@ -193,11 +192,8 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
     public final void handlePresence(PresenceEvent e) {
         Presence presence = e.getPresence();
         if (e.isIncoming()) {
-
-            if (!presenceMap.containsKey(presence.getFrom().asBareJid())) {
-                // Store the user (bare JID) in the map, associated with different resources.
-                presenceMap.put(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());
-            }
+            // Store the user (bare JID) in the map, associated with different resources.
+            presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());
             Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
             // Update the contact's resource with the presence.
             presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
@@ -218,13 +214,14 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
         // Resend the last presences, as soon as we are reconnected.
         if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
             for (Presence presence : lastSentPresences.values()) {
+                presence.getExtensions().clear();
                 xmppSession.send(presence);
             }
         }
         if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
-            for (Contact contact : xmppSession.getRosterManager().getContacts()) {
+            for (Jid contact : presenceMap.keySet()) {
                 try {
-                    xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact.getJid()));
+                    xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact));
                 } catch (Exception e1) {
                     logger.log(Level.WARNING, e1.getMessage(), e1);
                 }

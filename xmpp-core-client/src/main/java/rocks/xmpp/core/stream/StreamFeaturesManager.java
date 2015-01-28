@@ -181,24 +181,24 @@ public final class StreamFeaturesManager implements SessionStatusListener {
     private void negotiateNextFeature() throws Exception {
         if (!featuresToNegotiate.isEmpty()) {
             StreamFeature advertisedFeature = featuresToNegotiate.remove(0);
-
-            // Check if there's a condition waiting for that feature to be negotiated.
-            Condition condition = streamFeatureNegotiatedConditions.remove(advertisedFeature.getClass());
-            if (condition != null) {
-                lock.lock();
-                try {
-                    condition.signalAll();
-                } finally {
-                    lock.unlock();
-                }
-            }
-
             if (!negotiatedFeatures.contains(advertisedFeature.getClass())) {
                 // See if there's a feature negotiator associated with the feature.
                 for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
                     if (streamFeatureNegotiator.getFeatureClass() == advertisedFeature.getClass()) {
+                        // Start negotiating the feature.
+                        StreamFeatureNegotiator.Status status = streamFeatureNegotiator.processNegotiation(advertisedFeature);
+                        // Check if there's a condition waiting for that feature to be negotiated.
+                        Condition condition = streamFeatureNegotiatedConditions.remove(advertisedFeature.getClass());
+                        if (condition != null) {
+                            lock.lock();
+                            try {
+                                condition.signalAll();
+                            } finally {
+                                lock.unlock();
+                            }
+                        }
                         // If feature negotiation is incomplete, return and wait until it is completed.
-                        if (streamFeatureNegotiator.processNegotiation(advertisedFeature) == StreamFeatureNegotiator.Status.INCOMPLETE) {
+                        if (status == StreamFeatureNegotiator.Status.INCOMPLETE) {
                             return;
                         }
                     }

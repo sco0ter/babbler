@@ -1145,7 +1145,7 @@ public class XmppSession implements Closeable {
     }
 
     /**
-     * Gets an unmodifiable list of connections.
+     * Gets an unmodifiable list of connections, which this session will try during connecting.
      *
      * @return The connections.
      */
@@ -1155,8 +1155,18 @@ public class XmppSession implements Closeable {
 
     /**
      * Gets the unmarshaller, which is used to unmarshal XML during reading from the input stream.
+     * <p>
+     * Since {@link javax.xml.bind.Unmarshaller} is not thread-safe it is crucial to synchronize unmarshal operations on the unmarshaller itself:
+     * <pre>
+     * {@code
+     * synchronized (xmppSession.getUnmarshaller()) {
+     *     Object object = xmppSession.getUnmarshaller().unmarshal(...);
+     * }
+     * }
+     * </pre>
      *
      * @return The unmarshaller.
+     * @see #getMarshaller()
      */
     public final Unmarshaller getUnmarshaller() {
         return unmarshaller;
@@ -1164,8 +1174,18 @@ public class XmppSession implements Closeable {
 
     /**
      * Gets the marshaller, which is used to marshal XML during writing to the output stream.
+     * <p>
+     * Since {@link javax.xml.bind.Marshaller} is not thread-safe it is crucial to synchronize marshal operations on the marshaller itself:
+     * <pre>
+     * {@code
+     * synchronized (xmppSession.getMarshaller()) {
+     *     xmppSession.getMarshaller().marshal(object, ...);
+     * }
+     * }
+     * </pre>
      *
      * @return The marshaller.
+     * @see #getUnmarshaller()
      */
     public final Marshaller getMarshaller() {
         return marshaller;

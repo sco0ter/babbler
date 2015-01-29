@@ -207,7 +207,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      *
      * @param streamFeature The stream feature class.
      * @param timeout       The timeout.
-     * @throws java.lang.InterruptedException
+     * @throws InterruptedException If the current thread is interrupted.
      */
     public final void awaitNegotiation(Class<? extends StreamFeature> streamFeature, long timeout) throws InterruptedException {
         Condition condition = null;

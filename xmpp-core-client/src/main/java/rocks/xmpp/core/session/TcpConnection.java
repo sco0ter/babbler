@@ -61,7 +61,7 @@ import java.util.List;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
- * </p>
+ * <p>
  * If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.
  * <p>
  * This class is unconditionally thread-safe.

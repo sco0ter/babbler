@@ -67,6 +67,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -250,7 +251,9 @@ public class XmppSession implements Closeable {
 
         reconnectionManager = new ReconnectionManager(this);
 
-        streamFeaturesManager = new StreamFeaturesManager(this);
+        streamFeaturesManager = new StreamFeaturesManager();
+        addSessionStatusListener(streamFeaturesManager);
+
         chatManager = new ChatManager(this);
         authenticationManager = new AuthenticationManager(this, configuration.getAuthenticationMechanisms());
         rosterManager = new RosterManager(this);
@@ -746,7 +749,14 @@ public class XmppSession implements Closeable {
         }
 
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
-        getStreamFeaturesManager().negotiateUntil(Mechanisms.class, 10000);
+        try {
+            getStreamFeaturesManager().awaitNegotiation(Mechanisms.class, 10000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            updateStatus(oldStatus);
+            activeConnection.close();
+            throw new InterruptedIOException();
+        }
 
         if (exception != null) {
             updateStatus(oldStatus);
@@ -903,7 +913,7 @@ public class XmppSession implements Closeable {
                 authenticationManager.authenticate(mechanisms, authorizationId, callbackHandler);
             }
             // Negotiate all pending features until <bind/> would be negotiated.
-            streamFeaturesManager.negotiateUntil(Bind.class, configuration.getDefaultResponseTimeout());
+            streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
 
             // Check if stream feature negotiation failed with an exception.
             throwExceptionIfNotNull(exception);

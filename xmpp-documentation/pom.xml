@@ -75,6 +75,7 @@
                     </reportSet>
                 </reportSets>
                 <configuration>
+                    <additionalparam>-Xdoclint:none</additionalparam>
                     <quiet>true</quiet>
                     <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
                     <includeDependencySources>true</includeDependencySources>

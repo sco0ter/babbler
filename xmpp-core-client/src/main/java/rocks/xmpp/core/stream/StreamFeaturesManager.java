@@ -257,4 +257,19 @@ public final class StreamFeaturesManager implements SessionStatusListener {
                 break;
         }
     }
+
+    /**
+     * Cancels negotiation and releases any locks.
+     */
+    public void cancelNegotiation() {
+        for (Condition condition : featureNegotiationStartedConditions.values()) {
+            lock.lock();
+            try {
+                condition.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
+        featureNegotiationStartedConditions.clear();
+    }
 }

@@ -1011,7 +1011,7 @@ public class XmppSession implements Closeable {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
         exception = e;
         // Release a potential waiting thread.
-        // TODO release locks
+        streamFeaturesManager.cancelNegotiation();
 
         synchronized (this) {
             if (status == Status.AUTHENTICATED || status == Status.AUTHENTICATING || status == Status.CONNECTED || status == Status.CONNECTING) {

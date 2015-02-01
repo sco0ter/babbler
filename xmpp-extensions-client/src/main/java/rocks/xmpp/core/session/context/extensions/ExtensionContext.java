@@ -78,8 +78,7 @@ import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
 import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.extensions.receipts.MessageDeliveryReceiptsManager;
-import rocks.xmpp.extensions.receipts.model.Received;
-import rocks.xmpp.extensions.receipts.model.Request;
+import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
@@ -236,7 +235,7 @@ public class ExtensionContext extends CoreContext {
                 IceUdpTransportMethod.class,
 
                 // XEP-0184: Message Delivery Receipts
-                Received.class, Request.class,
+                MessageDeliveryReceipts.class,
 
                 // XEP-0186: Invisible Command
                 InvisibleCommand.class,

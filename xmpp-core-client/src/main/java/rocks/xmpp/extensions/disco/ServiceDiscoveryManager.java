@@ -357,14 +357,25 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      */
     public Collection<Item> discoverServices(String feature) throws XmppException {
-        ItemNode itemDiscovery = discoverItems(null);
+        ItemNode itemDiscovery = discoverItems(Jid.valueOf(xmppSession.getDomain()));
         Collection<Item> services = new ArrayList<>();
+        XmppException exception = null;
         for (Item item : itemDiscovery.getItems()) {
-            InfoNode infoDiscovery = discoverInformation(item.getJid());
-            if (infoDiscovery.getFeatures().contains(new Feature(feature))) {
-                services.add(item);
+            try {
+                InfoNode infoDiscovery = discoverInformation(item.getJid());
+                if (infoDiscovery.getFeatures().contains(new Feature(feature))) {
+                    services.add(item);
+                }
+            } catch (XmppException e) {
+                // If a disco#info request returns with an error, ignore it for now and try the next item.
+                exception = e;
             }
         }
+        // If an exception occurred and no service could be discovered, rethrow the original exception.
+        if (exception != null && services.isEmpty()) {
+            throw exception;
+        }
+        // Otherwise return the successfully discovered services.
         return services;
     }
 

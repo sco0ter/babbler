@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.register;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
@@ -59,7 +60,7 @@ public final class RegistrationManager extends ExtensionManager {
         // Since the stream feature is only optional, discover the server features, too.
         if (!isSupported) {
             ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-            InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
+            InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
             isSupported = infoNode.getFeatures().contains(new Feature("jabber:iq:register"));
         }
         return isSupported;

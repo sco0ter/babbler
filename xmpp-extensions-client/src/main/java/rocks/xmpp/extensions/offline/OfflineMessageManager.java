@@ -66,7 +66,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      */
     public boolean isSupported() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
+        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
         return infoNode.getFeatures().contains(new Feature(OfflineMessage.NAMESPACE));
     }
 

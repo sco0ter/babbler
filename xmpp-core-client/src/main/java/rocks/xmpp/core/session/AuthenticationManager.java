@@ -108,12 +108,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     private Failure authenticationFailure;
 
     /**
-     * Set to true if the authentication succeeded; or false, if it failed or not yet completed.
-     * Guarded by "this".
-     */
-    private boolean authenticated;
-
-    /**
      * Creates the authentication manager. Usually only the {@link rocks.xmpp.core.session.XmppSession} should create it implicitly.
      *
      * @param xmppSession The connection.
@@ -135,7 +129,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @throws SaslException           If a {@link SaslClient} could not be created.
      * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
      */
-    public final void authenticate(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws SaslException, AuthenticationException {
+    public final void authenticate(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws SaslException, AuthenticationException, InterruptedException {
         synchronized (this) {
             Collection<String> clientMechanisms;
             if (mechanisms == null) {
@@ -149,7 +143,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
 
             // Reset variables.
             authenticationFailure = null;
-            authenticated = false;
 
             saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
 
@@ -167,24 +160,20 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
         // Wait until the authentication succeeded or failed, but max. 10 seconds.
         lock.lock();
         try {
-            authenticationComplete.await(20, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            if (!authenticationComplete.await(20, TimeUnit.SECONDS)) {
+                throw new AuthenticationException(saslClient.getMechanismName() + " authentication failed due to timeout.");
+            }
         } finally {
             lock.unlock();
         }
         synchronized (this) {
             // At this point we should be authenticated. If not, throw an exception.
-            if (!authenticated) {
-                if (authenticationFailure != null) {
-                    String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
-                    if (authenticationFailure.getText() != null) {
-                        failureText += " (" + authenticationFailure.getText() + ")";
-                    }
-                    throw new AuthenticationException(failureText, authenticationFailure);
-                } else {
-                    throw new AuthenticationException(saslClient.getMechanismName() + " authentication failed for an unknown reason, but probably due to timeout.");
+            if (authenticationFailure != null) {
+                String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
+                if (authenticationFailure.getText() != null) {
+                    failureText += " (" + authenticationFailure.getText() + ")";
                 }
+                throw new AuthenticationException(failureText, authenticationFailure);
             }
         }
     }
@@ -201,11 +190,9 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                     xmppSession.send(new Response(saslClient.evaluateChallenge(((Challenge) element).getValue())));
                 } else if (element instanceof Failure) {
                     authenticationFailure = (Failure) element;
-                    authenticated = false;
                     releaseLock();
                     status = Status.FAILURE;
                 } else if (element instanceof Success) {
-                    authenticated = true;
                     releaseLock();
                     status = Status.SUCCESS;
                 }

@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.stream;
 
+import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.stream.model.StreamFeature;
@@ -209,7 +210,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * @param timeout       The timeout.
      * @throws InterruptedException If the current thread is interrupted.
      */
-    public final void awaitNegotiation(Class<? extends StreamFeature> streamFeature, long timeout) throws InterruptedException {
+    public final void awaitNegotiation(Class<? extends StreamFeature> streamFeature, long timeout) throws InterruptedException, NoResponseException {
         Condition condition = null;
         synchronized (this) {
             // Check if the feature is already negotiated and if there's no condition yet registered.
@@ -223,7 +224,9 @@ public final class StreamFeaturesManager implements SessionStatusListener {
             lock.lock();
             try {
                 // Wait until the feature will be negotiated.
-                condition.await(timeout, TimeUnit.MILLISECONDS);
+                if (!condition.await(timeout, TimeUnit.MILLISECONDS)) {
+                    throw new NoResponseException("No response while waiting on feature: " + streamFeature.getSimpleName());
+                }
             } catch (InterruptedException e) {
                 // Restore the initial state before this method was called.
                 featureNegotiationStartedConditions.remove(streamFeature);

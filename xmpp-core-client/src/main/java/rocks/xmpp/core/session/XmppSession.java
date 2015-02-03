@@ -89,7 +89,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  * The base class for establishing an XMPP session with a server.
  *
@@ -756,10 +755,15 @@ public class XmppSession implements Closeable {
             updateStatus(oldStatus);
             activeConnection.close();
             throw new InterruptedIOException();
+        } catch (NoResponseException e) {
+            updateStatus(oldStatus);
+            activeConnection.close();
+            throw new IOException(e);
         }
 
         if (exception != null) {
             updateStatus(oldStatus);
+            activeConnection.close();
             throw new IOException(exception);
         }
         updateStatus(Status.CONNECTED);
@@ -924,6 +928,11 @@ public class XmppSession implements Closeable {
             if (callbackHandler != null && getRosterManager().isRetrieveRosterOnLogin()) {
                 getRosterManager().requestRoster();
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            // Revert status
+            updateStatus(oldStatus);
+            throwExceptionIfNotNull(e);
         } catch (AuthenticationException e) {
             // Revert status
             updateStatus(oldStatus);

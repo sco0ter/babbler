@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.filetransfer;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
@@ -54,7 +55,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -71,14 +71,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
 
     private final Set<FileTransferOfferListener> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
 
-    private final ExecutorService fileTransferOfferExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r, "File Transfer Offer Thread");
-            thread.setDaemon(true);
-            return thread;
-        }
-    });
+    private final ExecutorService fileTransferOfferExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Offer Thread"));
 
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession);

@@ -64,7 +64,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -109,14 +108,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
         vCardManager = xmppSession.getExtensionManager(VCardManager.class);
         avatarCache = new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "avatars"));
 
-        avatarRequester = Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "Avatar Request Thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
 
         setEnabled(false);
     }

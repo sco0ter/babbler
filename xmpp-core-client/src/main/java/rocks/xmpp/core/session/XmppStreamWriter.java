@@ -41,7 +41,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -107,28 +106,13 @@ final class XmppStreamWriter {
         this.debugger = xmppSession.getDebugger();
         this.connection = connection;
 
-        executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "XMPP Writer Thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        executor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
     }
 
     void initialize(int keepAliveInterval) {
         if (keepAliveInterval > 0) {
             synchronized (this) {
-                keepAliveExecutor = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-                    @Override
-                    public Thread newThread(Runnable r) {
-                        Thread thread = new Thread(r, "XMPP KeepAlive Thread");
-                        thread.setDaemon(true);
-                        return thread;
-
-                    }
-                });
+                keepAliveExecutor = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP KeepAlive Thread"));
                 keepAliveExecutor.scheduleAtFixedRate(new Runnable() {
                     @Override
                     public void run() {

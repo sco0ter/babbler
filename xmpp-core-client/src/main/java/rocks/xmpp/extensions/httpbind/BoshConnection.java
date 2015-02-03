@@ -68,7 +68,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -134,14 +133,7 @@ public final class BoshConnection extends Connection {
 
         // Threads created by this thread pool, will be used to do simultaneous requests.
         // Even in the unusual case, where the connection manager allows for more requests, two are enough.
-        httpBindExecutor = Executors.newFixedThreadPool(2, new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "XMPP BOSH request thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        httpBindExecutor = Executors.newFixedThreadPool(2, XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
         xmlOutputFactory = XMLOutputFactory.newFactory();
         xmlInputFactory = XMLInputFactory.newFactory();
     }

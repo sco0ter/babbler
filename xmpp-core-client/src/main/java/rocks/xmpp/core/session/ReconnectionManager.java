@@ -25,6 +25,7 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.stream.model.StreamException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
@@ -33,7 +34,6 @@ import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -78,14 +78,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
         // Enable by default.
         setEnabled(true);
 
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "XMPP Reconnection Thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
 
         xmppSession.addSessionStatusListener(this);
     }

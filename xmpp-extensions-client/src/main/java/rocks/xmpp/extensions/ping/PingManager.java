@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.ping;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
@@ -37,7 +38,6 @@ import rocks.xmpp.extensions.ping.model.Ping;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,14 +70,7 @@ public final class PingManager extends IQExtensionManager implements SessionStat
      */
     private PingManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.GET, Ping.NAMESPACE);
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "XMPP Scheduled Ping Thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
         setEnabled(true);
     }
 

@@ -64,7 +64,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -115,14 +114,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
         serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
 
         directoryCapsCache = new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "caps"));
-        serviceDiscoverer = Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "Automatic Service Discovery Thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        serviceDiscoverer = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Automatic Service Discovery Thread"));
         // no need for a synchronized map, since access to this is already synchronized by this class.
         publishedNodes = new LinkedHashMap<String, Verification>(10, 0.75F, false) {
             @Override

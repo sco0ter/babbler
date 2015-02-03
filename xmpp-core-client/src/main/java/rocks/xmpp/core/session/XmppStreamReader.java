@@ -46,7 +46,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,14 +78,7 @@ final class XmppStreamReader {
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();
 
-        executorService = Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "XMPP Reader Thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        executorService = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Reader Thread"));
         this.xmlInputFactory = XMLInputFactory.newFactory();
         this.xmlOutputFactory = xmlOutputFactory;
     }

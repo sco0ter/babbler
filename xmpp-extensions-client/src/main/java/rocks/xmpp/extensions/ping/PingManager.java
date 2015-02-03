@@ -168,7 +168,7 @@ public final class PingManager extends IQExtensionManager implements SessionStat
                     }
                     nextPing = scheduledExecutorService.schedule(this, pingInterval, TimeUnit.SECONDS);
                 }
-            }, 5, TimeUnit.SECONDS);
+            }, pingInterval, TimeUnit.SECONDS);
         }
     }
 

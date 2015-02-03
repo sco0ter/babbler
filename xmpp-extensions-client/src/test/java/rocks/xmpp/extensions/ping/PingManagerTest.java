@@ -48,14 +48,14 @@ public class PingManagerTest extends ExtensionTest {
         pingManager.ping(JULIET);
     }
 
-    @Test(expectedExceptions = StanzaException.class)
+    @Test
     public void testPingIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getExtensionManager(PingManager.class).setEnabled(false);
         PingManager pingManager = connection1.getExtensionManager(PingManager.class);
-        pingManager.ping(JULIET);
+        Assert.assertTrue(pingManager.ping(JULIET));
     }
 
     @Test

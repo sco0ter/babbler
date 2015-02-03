@@ -492,11 +492,8 @@ public class JavaFXApp extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     PingManager pingManager = xmppSession.getExtensionManager(PingManager.class);
-                                    try {
-                                        pingManager.pingServer();
-                                    } catch (XmppException e) {
-                                        e.printStackTrace();
-                                    }
+                                    pingManager.pingServer();
+
                                 }
                             });
                             MenuItem searchMenuItem = new MenuItem("Search");

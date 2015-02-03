@@ -28,6 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
@@ -45,7 +46,7 @@ import java.util.logging.Logger;
 /**
  * This class implements the application-level ping mechanism as specified in <a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
  * <p>
- * For <a href="http://xmpp.org/extensions/xep-0199.html#s2c">Server-To-Client Pings</a> it automatically responds with a result (pong), in enabled.
+ * For <a href="http://xmpp.org/extensions/xep-0199.html#s2c">Server-To-Client Pings</a> it automatically responds with a result (pong), if enabled.
  * </p>
  * <p>
  * It also allows to ping the server (<a href="http://xmpp.org/extensions/xep-0199.html#c2s">Client-To-Server Pings</a>) or to ping other XMPP entities (<a href="http://xmpp.org/extensions/xep-0199.html#e2e">Client-to-Client Pings</a>).
@@ -59,8 +60,14 @@ public final class PingManager extends IQExtensionManager implements SessionStat
 
     private final ScheduledExecutorService scheduledExecutorService;
 
-    private volatile ScheduledFuture<?> nextPing;
+    /**
+     * guarded by "this"
+     */
+    private ScheduledFuture<?> nextPing;
 
+    /**
+     * guarded by "this"
+     */
     private long pingInterval = 900; // 15 minutes
 
     /**
@@ -85,21 +92,28 @@ public final class PingManager extends IQExtensionManager implements SessionStat
      * Pings the given XMPP entity.
      *
      * @param jid The JID to ping.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @return True if a response has been received, false otherwise.
      */
-    public void ping(Jid jid) throws XmppException {
-        xmppSession.query(new IQ(jid, IQ.Type.GET, Ping.INSTANCE));
+    public boolean ping(Jid jid) {
+        try {
+            xmppSession.query(new IQ(jid, IQ.Type.GET, Ping.INSTANCE));
+        } catch (XmppException e) {
+            // Ignore stanza errors here, because these errors are a valid "pong", too.
+            // Only deal with no responses.
+            if (e instanceof NoResponseException) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
      * Pings the connected server.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @return True if a response has been received, false otherwise.
      */
-    public void pingServer() throws XmppException {
-        ping(null);
+    public boolean pingServer() {
+        return ping(new Jid(xmppSession.getDomain()));
     }
 
     /**
@@ -148,15 +162,13 @@ public final class PingManager extends IQExtensionManager implements SessionStat
                 @Override
                 public void run() {
                     if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                        try {
-                            pingServer();
-                        } catch (XmppException e) {
-                            logger.log(Level.WARNING, "Pinging server failed.", e);
+                        if (!pingServer()) {
+                            logger.log(Level.WARNING, "Timeout reached while pinging server.");
                         }
                     }
                     nextPing = scheduledExecutorService.schedule(this, pingInterval, TimeUnit.SECONDS);
                 }
-            }, pingInterval, TimeUnit.SECONDS);
+            }, 5, TimeUnit.SECONDS);
         }
     }
 

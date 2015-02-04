@@ -517,7 +517,7 @@ public class XmppSession implements Closeable {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws NoResponseException                          If the entity did not respond.
      */
-    public final IQ query(final IQ iq, long timeout) throws XmppException {
+    public IQ query(final IQ iq, long timeout) throws XmppException {
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }

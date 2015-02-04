@@ -145,6 +145,12 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
+    public IQ query(final IQ iq, long timeout) throws XmppException {
+        // Ignore timeout for tests.
+        return query(iq);
+    }
+
+    @Override
     public void close() throws IOException {
         super.close();
         updateStatus(Status.CLOSED, null);

@@ -135,7 +135,7 @@ public final class PingManager extends IQExtensionManager implements SessionStat
      * Pings the given XMPP entity.
      *
      * @param jid     The JID to ping.
-     * @param timeout The timeout.
+     * @param timeout The timeout in milliseconds.
      * @return True if a response has been received within the timeout and the recipient is available, false otherwise.
      */
     public final boolean ping(Jid jid, long timeout) {

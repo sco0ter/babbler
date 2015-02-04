@@ -76,7 +76,7 @@ public class StreamInitiationManagerTest extends ExtensionTest {
         Assert.assertNotNull(outputStream);
     }
 
-    @Test
+    //@Test
     public void testStreamInitiationWithRejection() throws XmppException, IOException {
 
         MockServer mockServer = new MockServer();

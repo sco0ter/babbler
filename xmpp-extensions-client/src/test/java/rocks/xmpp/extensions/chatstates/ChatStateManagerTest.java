@@ -51,7 +51,7 @@ public class ChatStateManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET.asBareJid(), mockServer);
 
         final Collection<ChatState> chatStatesReceived = new ArrayList<>();
         xmppSession2.addMessageListener(new MessageListener() {
@@ -66,7 +66,7 @@ public class ChatStateManagerTest extends ExtensionTest {
 
         ChatStateManager chatStateManager = xmppSession1.getExtensionManager(ChatStateManager.class);
         chatStateManager.setEnabled(true);
-        Chat chat = xmppSession1.getChatManager().createChatSession(JULIET);
+        Chat chat = xmppSession1.getChatManager().createChatSession(JULIET.asBareJid());
         // At this point it is unknown if the chat partner supports chat states. Therefore send it.
         Assert.assertTrue(chatStateManager.setChatState(ChatState.COMPOSING, chat));
         Assert.assertTrue(chatStatesReceived.contains(ChatState.COMPOSING));

@@ -32,6 +32,12 @@ import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.ping.model.Ping;
@@ -46,11 +52,11 @@ import java.util.logging.Logger;
 /**
  * This class implements the application-level ping mechanism as specified in <a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
  * <p>
- * For <a href="http://xmpp.org/extensions/xep-0199.html#s2c">Server-To-Client Pings</a> it automatically responds with a result (pong), if enabled.
- * </p>
+ * If enabled, it periodically pings the server to ensure a stable connection. These pings are not sent as long as other stanzas are sent, because they serve the same purpose (telling the server, that we are still available).
  * <p>
- * It also allows to ping the server (<a href="http://xmpp.org/extensions/xep-0199.html#c2s">Client-To-Server Pings</a>) or to ping other XMPP entities (<a href="http://xmpp.org/extensions/xep-0199.html#e2e">Client-to-Client Pings</a>).
- * </p>
+ * For <a href="http://xmpp.org/extensions/xep-0199.html#s2c">Server-To-Client Pings</a> it automatically responds with a result (pong), if enabled.
+ * <p>
+ * It also allows to ping the server manually (<a href="http://xmpp.org/extensions/xep-0199.html#c2s">Client-To-Server Pings</a>) or to ping other XMPP entities (<a href="http://xmpp.org/extensions/xep-0199.html#e2e">Client-to-Client Pings</a>).
  *
  * @author Christian Schudt
  */
@@ -82,27 +88,67 @@ public final class PingManager extends IQExtensionManager implements SessionStat
     }
 
     @Override
-    protected void initialize() {
+    protected final void initialize() {
         xmppSession.addIQHandler(Ping.class, this);
         xmppSession.addSessionStatusListener(this);
-    }
 
+        // Reschedule server pings, whenever we send a stanza to the server.
+        // Pinging the server is only necessary to let him know, that we are still connected.
+        // Therefore sending a message and shortly after it sending a ping would add no value.
+        xmppSession.addMessageListener(new MessageListener() {
+            @Override
+            public void handleMessage(MessageEvent e) {
+                if (!e.isIncoming()) {
+                    rescheduleNextPing();
+                }
+            }
+        });
+        xmppSession.addPresenceListener(new PresenceListener() {
+            @Override
+            public void handlePresence(PresenceEvent e) {
+                if (!e.isIncoming()) {
+                    rescheduleNextPing();
+                }
+            }
+        });
+        xmppSession.addIQListener(new IQListener() {
+            @Override
+            public void handleIQ(IQEvent e) {
+                if (!e.isIncoming()) {
+                    rescheduleNextPing();
+                }
+            }
+        });
+    }
 
     /**
      * Pings the given XMPP entity.
      *
      * @param jid The JID to ping.
-     * @return True if a response has been received, false otherwise.
+     * @return True if a response has been received within the timeout and the recipient is available, false otherwise.
      */
-    public boolean ping(Jid jid) {
+    public final boolean ping(Jid jid) {
+        return ping(jid, xmppSession.getConfiguration().getDefaultResponseTimeout());
+    }
+
+    /**
+     * Pings the given XMPP entity.
+     *
+     * @param jid     The JID to ping.
+     * @param timeout The timeout.
+     * @return True if a response has been received within the timeout and the recipient is available, false otherwise.
+     */
+    public final boolean ping(Jid jid, long timeout) {
         try {
-            xmppSession.query(new IQ(jid, IQ.Type.GET, Ping.INSTANCE));
+            xmppSession.query(new IQ(jid, IQ.Type.GET, Ping.INSTANCE), timeout);
+        } catch (NoResponseException e) {
+            return false;
         } catch (XmppException e) {
-            // Ignore stanza errors here, because these errors are a valid "pong", too.
-            // Only deal with no responses.
-            if (e instanceof NoResponseException) {
-                return false;
-            }
+            // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
+            // In this case we want to return false, because the intended recipient is unavailable.
+            // If we pinged a bare JID, the server will respond. If it returned an error, it just means it doesn't understand the ping protocol.
+            // Nonetheless an error response is still a valid pong, hence always return true in this case.
+            return jid == null || jid.isBareJid();
         }
         return true;
     }
@@ -112,7 +158,7 @@ public final class PingManager extends IQExtensionManager implements SessionStat
      *
      * @return True if a response has been received, false otherwise.
      */
-    public boolean pingServer() {
+    public final boolean pingServer() {
         return ping(new Jid(xmppSession.getDomain()));
     }
 
@@ -122,7 +168,7 @@ public final class PingManager extends IQExtensionManager implements SessionStat
      * @return The ping interval in seconds.
      * @see #setPingInterval(long)
      */
-    public synchronized long getPingInterval() {
+    public final synchronized long getPingInterval() {
         return pingInterval;
     }
 
@@ -132,31 +178,25 @@ public final class PingManager extends IQExtensionManager implements SessionStat
      * @param pingInterval The ping interval in seconds.
      * @see #getPingInterval()
      */
-    public synchronized void setPingInterval(long pingInterval) {
+    public final synchronized void setPingInterval(long pingInterval) {
         this.pingInterval = pingInterval;
-        if (nextPing != null) {
-            nextPing.cancel(false);
-        }
-        startPinging();
+        rescheduleNextPing();
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(boolean enabled) {
         boolean wasEnabled = isEnabled();
         super.setEnabled(enabled);
 
         if (enabled && !wasEnabled) {
-            startPinging();
+            rescheduleNextPing();
         } else if (!enabled && wasEnabled) {
-            synchronized (this) {
-                if (nextPing != null) {
-                    nextPing.cancel(false);
-                }
-            }
+            cancelNextPing();
         }
     }
 
-    private synchronized void startPinging() {
+    private synchronized void rescheduleNextPing() {
+        cancelNextPing();
         if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
             nextPing = scheduledExecutorService.schedule(new Runnable() {
                 @Override
@@ -173,21 +213,28 @@ public final class PingManager extends IQExtensionManager implements SessionStat
     }
 
     @Override
-    protected IQ processRequest(final IQ iq) {
+    protected final IQ processRequest(final IQ iq) {
         return iq.createResult();
     }
 
     @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
+    public final void sessionStatusChanged(SessionStatusEvent e) {
         if (e.getStatus() == XmppSession.Status.CLOSED) {
             // Shutdown the ping executor service and cancel the next ping.
-            synchronized (PingManager.this) {
-                if (nextPing != null) {
-                    nextPing.cancel(false);
-                }
-                nextPing = null;
+            synchronized (this) {
+                cancelNextPing();
                 scheduledExecutorService.shutdown();
             }
+        }
+    }
+
+    /**
+     * If a ping has been scheduled, it will be canceled.
+     */
+    private synchronized void cancelNextPing() {
+        if (nextPing != null) {
+            nextPing.cancel(true);
+            nextPing = null;
         }
     }
 }

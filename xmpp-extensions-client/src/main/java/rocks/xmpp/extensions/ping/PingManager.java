@@ -39,7 +39,9 @@ import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.model.Ping;
 
 import java.util.concurrent.Executors;
@@ -143,12 +145,15 @@ public final class PingManager extends IQExtensionManager implements SessionStat
             xmppSession.query(new IQ(jid, IQ.Type.GET, Ping.INSTANCE), timeout);
         } catch (NoResponseException e) {
             return false;
-        } catch (XmppException e) {
+        } catch (StanzaException e) {
             // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
             // In this case we want to return false, because the intended recipient is unavailable.
-            // If we pinged a bare JID, the server will respond. If it returned an error, it just means it doesn't understand the ping protocol.
+            // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> error, it just means it doesn't understand the ping protocol.
             // Nonetheless an error response is still a valid pong, hence always return true in this case.
-            return jid == null || jid.isBareJid();
+            // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
+            return (jid == null || jid.isBareJid()) && e.getStanza().getError().getCondition() == Condition.SERVICE_UNAVAILABLE;
+        } catch (XmppException e) {
+            return false;
         }
         return true;
     }

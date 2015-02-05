@@ -213,11 +213,6 @@ public class XmppSession implements Closeable {
             throw new IllegalArgumentException(e);
         }
 
-        for (Class<? extends ExtensionManager> cls : configuration.getInitialExtensionManagers()) {
-            // Initialize the managers.
-            getExtensionManager(cls);
-        }
-
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
         shutdownHook = new Thread() {
             @Override
@@ -278,6 +273,11 @@ public class XmppSession implements Closeable {
             for (ConnectionConfiguration connectionConfiguration : connectionConfigurations) {
                 connections.add(connectionConfiguration.createConnection(this));
             }
+        }
+
+        for (Class<? extends ExtensionManager> cls : configuration.getInitialExtensionManagers()) {
+            // Initialize the managers.
+            getExtensionManager(cls);
         }
     }
 

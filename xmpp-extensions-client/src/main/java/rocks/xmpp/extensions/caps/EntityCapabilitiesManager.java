@@ -34,6 +34,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.util.cache.DirectoryCache;
 import rocks.xmpp.core.util.cache.LruCache;
@@ -333,89 +334,92 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
             } else {
                 final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
                 if (entityCapabilities != null) {
+                    handleEntityCaps(entityCapabilities, presence.getFrom());
+                }
+            }
+        }
+    }
 
-                    Verification verification = new Verification(entityCapabilities.getHashingAlgorithm(), entityCapabilities.getVerificationString());
-                    // Check if the verification string is already known.
-                    InfoNode infoNode = readFromCache(verification);
-                    if (entityCapabilities.getHashingAlgorithm() != null && infoNode != null) {
-                        // If its known, just update the information for this entity.
-                        ENTITY_CAPABILITIES.put(presence.getFrom(), infoNode);
-                    } else {
-                        // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver'
-                        final String hashAlgorithm = entityCapabilities.getHashingAlgorithm();
-                        if (hashAlgorithm != null) {
-                            synchronized (serviceDiscoverer) {
-                                // Ask for being shutdown to prevent possible RejectedExecutionException.
-                                // Need to synchronize this.
-                                if (!serviceDiscoverer.isShutdown()) {
-                                    serviceDiscoverer.execute(new Runnable() {
-                                        @Override
-                                        public void run() {
+    private void handleEntityCaps(final EntityCapabilities entityCapabilities, final Jid entity) {
+        Verification verification = new Verification(entityCapabilities.getHashingAlgorithm(), entityCapabilities.getVerificationString());
+        // Check if the verification string is already known.
+        InfoNode infoNode = readFromCache(verification);
+        if (entityCapabilities.getHashingAlgorithm() != null && infoNode != null) {
+            // If its known, just update the information for this entity.
+            ENTITY_CAPABILITIES.put(entity, infoNode);
+        } else {
+            // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver'
+            final String hashAlgorithm = entityCapabilities.getHashingAlgorithm();
+            if (hashAlgorithm != null) {
+                synchronized (serviceDiscoverer) {
+                    // Ask for being shutdown to prevent possible RejectedExecutionException.
+                    // Need to synchronize this.
+                    if (!serviceDiscoverer.isShutdown()) {
+                        serviceDiscoverer.execute(new Runnable() {
+                            @Override
+                            public void run() {
 
-                                            try {
-                                                // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
-                                                final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
+                                try {
+                                    // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
+                                    final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
 
-                                                // 3.1 Send a service discovery information request to the generating entity.
-                                                // 3.2 Receive a service discovery information response from the generating entity.
-                                                InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(presence.getFrom(), entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString());
-                                                // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
-                                                // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
-                                                // => not possible due to java.util.Set semantics and equals method.
-                                                // If the response had duplicates, just check the hash.
+                                    // 3.1 Send a service discovery information request to the generating entity.
+                                    // 3.2 Receive a service discovery information response from the generating entity.
+                                    InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(entity, entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString());
+                                    // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
+                                    // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
+                                    // => not possible due to java.util.Set semantics and equals method.
+                                    // If the response had duplicates, just check the hash.
 
-                                                // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
-                                                List<String> ftValues = new ArrayList<>();
-                                                for (DataForm dataForm : infoDiscovery.getExtensions()) {
-                                                    DataForm.Field formType = dataForm.findField(DataForm.FORM_TYPE);
-                                                    // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
-                                                    if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
-                                                        List<String> values = new ArrayList<>();
-                                                        for (String value : formType.getValues()) {
-                                                            if (values.contains(value)) {
-                                                                // ill-formed
-                                                                return;
-                                                            }
-                                                            values.add(value);
-                                                        }
-                                                        String value = formType.getValues().get(0);
-                                                        if (ftValues.contains(value)) {
-                                                            // ill-formed
-                                                            return;
-                                                        }
-                                                        ftValues.add(value);
-                                                    }
+                                    // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
+                                    List<String> ftValues = new ArrayList<>();
+                                    for (DataForm dataForm : infoDiscovery.getExtensions()) {
+                                        DataForm.Field formType = dataForm.findField(DataForm.FORM_TYPE);
+                                        // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
+                                        if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
+                                            List<String> values = new ArrayList<>();
+                                            for (String value : formType.getValues()) {
+                                                if (values.contains(value)) {
+                                                    // ill-formed
+                                                    return;
                                                 }
-
-                                                // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
-                                                String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
-
-                                                // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
-                                                if (verificationString.equals(entityCapabilities.getVerificationString())) {
-                                                    writeToCache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
-                                                }
-                                                ENTITY_CAPABILITIES.put(presence.getFrom(), infoDiscovery);
-
-                                                // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
-                                            } catch (XmppException e1) {
-                                                logger.log(Level.WARNING, e1.getMessage(), e1);
-                                            } catch (NoSuchAlgorithmException e1) {
-                                                // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
-                                                try {
-                                                    // 2.1 Send a service discovery information request to the generating entity.
-                                                    // 2.2 Receive a service discovery information response from the generating entity.
-                                                    InfoNode infoNode = serviceDiscoveryManager.discoverInformation(presence.getFrom(), entityCapabilities.getNode());
-                                                    // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
-                                                    ENTITY_CAPABILITIES.put(presence.getFrom(), infoNode);
-                                                } catch (XmppException e2) {
-                                                    logger.log(Level.WARNING, e2.getMessage(), e2);
-                                                }
+                                                values.add(value);
                                             }
+                                            String value = formType.getValues().get(0);
+                                            if (ftValues.contains(value)) {
+                                                // ill-formed
+                                                return;
+                                            }
+                                            ftValues.add(value);
                                         }
-                                    });
+                                    }
+
+                                    // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
+                                    String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
+
+                                    // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
+                                    if (verificationString.equals(entityCapabilities.getVerificationString())) {
+                                        writeToCache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
+                                    }
+                                    ENTITY_CAPABILITIES.put(entity, infoDiscovery);
+
+                                    // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
+                                } catch (XmppException e1) {
+                                    logger.log(Level.WARNING, e1.getMessage(), e1);
+                                } catch (NoSuchAlgorithmException e1) {
+                                    // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
+                                    try {
+                                        // 2.1 Send a service discovery information request to the generating entity.
+                                        // 2.2 Receive a service discovery information response from the generating entity.
+                                        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(entity, entityCapabilities.getNode());
+                                        // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
+                                        ENTITY_CAPABILITIES.put(entity, infoNode);
+                                    } catch (XmppException e2) {
+                                        logger.log(Level.WARNING, e2.getMessage(), e2);
+                                    }
                                 }
                             }
-                        }
+                        });
                     }
                 }
             }
@@ -424,10 +428,20 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
 
     @Override
     public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            synchronized (serviceDiscoverer) {
-                serviceDiscoverer.shutdown();
-            }
+        switch (e.getStatus()) {
+            case AUTHENTICATED:
+                // As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
+                EntityCapabilities serverCapabilities = (EntityCapabilities) xmppSession.getStreamFeaturesManager().getFeatures().get(EntityCapabilities.class);
+                // If yes, treat it as other caps.
+                if (serverCapabilities != null) {
+                    handleEntityCaps(serverCapabilities, Jid.valueOf(xmppSession.getDomain()));
+                }
+                break;
+            case CLOSED:
+                synchronized (serviceDiscoverer) {
+                    serviceDiscoverer.shutdown();
+                }
+                break;
         }
     }
 

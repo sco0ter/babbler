@@ -181,6 +181,9 @@ public final class StreamFeaturesManager implements SessionStatusListener {
                     if (streamFeatureNegotiator.getFeatureClass() == advertisedFeature.getClass()) {
                         // Start negotiating the feature.
                         StreamFeatureNegotiator.Status status = streamFeatureNegotiator.processNegotiation(advertisedFeature);
+                        if (status == StreamFeatureNegotiator.Status.SUCCESS || status == StreamFeatureNegotiator.Status.IGNORE) {
+                            negotiatedFeatures.add(advertisedFeature.getClass());
+                        }
                         // Check if there's a condition waiting for that feature to be negotiated.
                         Condition condition = featureNegotiationStartedConditions.remove(advertisedFeature.getClass());
                         if (condition != null) {
@@ -194,6 +197,8 @@ public final class StreamFeaturesManager implements SessionStatusListener {
                         // If feature negotiation is incomplete, return and wait until it is completed.
                         if (status == StreamFeatureNegotiator.Status.INCOMPLETE) {
                             return;
+                        } else {
+                            break;
                         }
                     }
                 }

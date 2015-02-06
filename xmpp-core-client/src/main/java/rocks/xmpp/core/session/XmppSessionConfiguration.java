@@ -30,6 +30,9 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,6 +56,33 @@ import java.util.List;
  * @see XmppSession#XmppSession(String, XmppSessionConfiguration, ConnectionConfiguration...)
  */
 public final class XmppSessionConfiguration {
+
+    private static final Path DEFAULT_APPLICATION_DATA_PATH;
+
+    static {
+        Path path;
+        String appName = "xmpp.rocks";
+        try {
+            // This is for Windows
+            String appData = System.getenv("APPDATA");
+            if (appData != null) {
+                path = Paths.get(appData);
+            } else {
+                // We are not on Windows, try user.home.
+                appData = System.getProperty("user.home");
+                // specifically try Mac's application data folder.
+                path = Paths.get(appData, "Library", "Application Support");
+                if (!Files.exists(path)) {
+                    // Seems like we are not on a Mac, use user.home then.
+                    path = Paths.get(appData);
+                }
+            }
+            path = path.resolve(appName);
+        } catch (Exception e) {
+            path = Paths.get(appName);
+        }
+        DEFAULT_APPLICATION_DATA_PATH = path;
+    }
 
     private static volatile XmppSessionConfiguration defaultConfiguration;
 
@@ -188,13 +218,17 @@ public final class XmppSessionConfiguration {
     }
 
     /**
-     * Sets the caching directory for directory-based caches used for:
+     * Gets the caching directory for directory-based caches used for:
      * <ul>
      * <li><a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a></li>
      * <li><a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
      * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
      * </ul>
-     * By default this directory is called "cache" in the application's executing directory.
+     * By default this directory is called <code>xmpp.rocks</code> and is located in the operating system's application data folder:<br>
+     * <p>
+     * For Windows it is <code>%APPDATA%</code>, which usually is <code>C:\Users\{USERNAME}\AppData\Roaming</code><br>
+     * For Mac it is <code>~/Library/Application Support</code><br>
+     * Else it is the user's home directory.
      *
      * @return The directory.
      */
@@ -226,7 +260,7 @@ public final class XmppSessionConfiguration {
                 "ANONYMOUS");
 
         private Builder() {
-            defaultResponseTimeout(5000).cacheDirectory(new File("cache"));
+            defaultResponseTimeout(5000).cacheDirectory(DEFAULT_APPLICATION_DATA_PATH.toFile());
         }
 
         /**
@@ -291,10 +325,11 @@ public final class XmppSessionConfiguration {
          * <li><a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a></li>
          * <li><a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
          * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
-         * </ul>.
+         * </ul>
          *
          * @param file The directory.
          * @return The builder.
+         * @see #getCacheDirectory()
          */
         public final Builder cacheDirectory(File file) {
             this.cacheDirectory = file;

@@ -12,9 +12,9 @@
 * PubSub: Add API to retrieve subscription options for a specific subscription id.
 * Add helper classes to work with [standardized MUC](http://xmpp.org/extensions/xep-0045.html#registrar-formtype) and [PubSub data forms](http://xmpp.org/extensions/xep-0060.html#registrar-formtypes), e.g. to configure a node.
 * Rename some methods to better resemble the terminology of the specifications (e.g. `discover*` instead of `get*`).
-* Refactor Chat State Notifications.
+* Refactor Chat State Notifications, Message Delivery Receipts, PingManager
 * Refactor [XEP-0107](http://xmpp.org/extensions/xep-0107.html): Mood values can now take specific (custom) moods.
-* Most classes are now immutable.
+* Most classes are now (effectively) immutable.
 * Couple RosterManager more tightly with [XEP-0083: Nested Roster Groups](http://xmpp.org/extensions/xep-0083.html).
 * Add new `connect(Jid from)` method to set the 'from' attribute in the stream header.
 * Add new `login()` method, which allows to pass an authorization id and a `CallbackHandler`.
@@ -22,6 +22,9 @@
 * MUC: Add API to discover [allowable traffic](http://xmpp.org/extensions/xep-0045.html#impl-service-traffic) in a chat room.
 * MUC: Add support for [`http://jabber.org/protocol/muc#rooms`](http://xmpp.org/extensions/xep-0045.html#disco-client)
 * Add support for [optional session establishment](http://tools.ietf.org/html/draft-cridland-xmpp-session-01).
+* Add persistent (directory-based) cache support for [Entity Capabilities](http://xmpp.org/extensions/xep-0115.html) and [Avatars](http://xmpp.org/extensions/xep-0084.html).
+* Use Singleton pattern for XML elements where appropriate (e.g. most stanza errors).
+* Various minor tweaks and bug fixes (e.g. thread-safety, Objects.requireNonNull())
 
 
 ## Version 0.4.0 (2014-11-01)

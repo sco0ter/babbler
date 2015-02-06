@@ -106,7 +106,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
         super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
         vCardManager = xmppSession.getExtensionManager(VCardManager.class);
-        avatarCache = new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "avatars"));
+        avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "avatars")) : null;
 
         avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
 
@@ -203,11 +203,16 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
     }
 
     private synchronized byte[] loadFromCache(String hash) {
-        return avatarCache.get(hash + ".avatar");
+        if (avatarCache != null) {
+            return avatarCache.get(hash + ".avatar");
+        }
+        return null;
     }
 
     private synchronized void storeToCache(String hash, byte[] image) {
-        avatarCache.put(hash + ".avatar", image);
+        if (avatarCache != null) {
+            avatarCache.put(hash + ".avatar", image);
+        }
     }
 
     /**

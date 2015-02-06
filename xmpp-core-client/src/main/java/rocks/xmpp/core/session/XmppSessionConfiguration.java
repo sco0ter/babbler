@@ -326,6 +326,7 @@ public final class XmppSessionConfiguration {
          * <li><a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
          * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
          * </ul>
+         * If you want to disable the use of directory caching, pass null.
          *
          * @param file The directory.
          * @return The builder.

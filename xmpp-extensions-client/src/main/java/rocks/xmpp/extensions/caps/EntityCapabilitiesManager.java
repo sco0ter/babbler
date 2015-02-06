@@ -34,7 +34,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.util.cache.DirectoryCache;
 import rocks.xmpp.core.util.cache.LruCache;
@@ -114,7 +113,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
         super(xmppSession, EntityCapabilities.NAMESPACE);
         serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
 
-        directoryCapsCache = new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "caps"));
+        directoryCapsCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "caps")) : null;
         serviceDiscoverer = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Automatic Service Discovery Thread"));
         // no need for a synchronized map, since access to this is already synchronized by this class.
         publishedNodes = new LinkedHashMap<String, Verification>(10, 0.75F, false) {
@@ -269,42 +268,46 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
     }
 
     private void writeToCache(Verification verification, InfoNode infoNode) {
-        // Write to in-memory cache.
-        CAPS_CACHE.put(verification, infoNode);
+        if (directoryCapsCache != null) {
+            // Write to in-memory cache.
+            CAPS_CACHE.put(verification, infoNode);
 
-        // Write to persistent cache.
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream);
-            XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-            synchronized (xmppSession.getMarshaller()) {
-                xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
+            // Write to persistent cache.
+            try {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream);
+                XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+                synchronized (xmppSession.getMarshaller()) {
+                    xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
+                }
+                directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage(), e);
             }
-            directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage(), e);
         }
     }
 
     private InfoNode readFromCache(Verification verification) {
-        // First check the in-memory cache.
-        InfoNode infoNode = CAPS_CACHE.get(verification);
-        if (infoNode != null) {
-            return infoNode;
-        }
-        // If it's not present, check the persistent cache.
-        String fileName = XmppUtils.hash(verification.toString().getBytes()) + ".caps";
-        byte[] bytes = directoryCapsCache.get(fileName);
-        if (bytes != null) {
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-            try {
-                synchronized (xmppSession.getUnmarshaller()) {
-                    infoNode = (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
-                    CAPS_CACHE.put(verification, infoNode);
-                    return infoNode;
+        if (directoryCapsCache != null) {
+            // First check the in-memory cache.
+            InfoNode infoNode = CAPS_CACHE.get(verification);
+            if (infoNode != null) {
+                return infoNode;
+            }
+            // If it's not present, check the persistent cache.
+            String fileName = XmppUtils.hash(verification.toString().getBytes()) + ".caps";
+            byte[] bytes = directoryCapsCache.get(fileName);
+            if (bytes != null) {
+                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+                try {
+                    synchronized (xmppSession.getUnmarshaller()) {
+                        infoNode = (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
+                        CAPS_CACHE.put(verification, infoNode);
+                        return infoNode;
+                    }
+                } catch (JAXBException e) {
+                    logger.log(Level.WARNING, "Could not read entity capabilities from persistent cache (file: " + fileName + ")", e);
                 }
-            } catch (JAXBException e) {
-                logger.log(Level.WARNING, "Could not read entity capabilities from persistent cache (file: " + fileName + ")", e);
             }
         }
         // The verification string is unknown, Service Discovery needs to be done.

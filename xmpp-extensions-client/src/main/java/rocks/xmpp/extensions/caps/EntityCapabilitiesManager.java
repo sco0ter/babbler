@@ -335,9 +335,11 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
                     }
                 }
             } else {
-                final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
-                if (entityCapabilities != null) {
-                    handleEntityCaps(entityCapabilities, presence.getFrom());
+                if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
+                    final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
+                    if (entityCapabilities != null) {
+                        handleEntityCaps(entityCapabilities, presence.getFrom());
+                    }
                 }
             }
         }

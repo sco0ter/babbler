@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.IQExtensionManager;
-import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
@@ -143,8 +142,7 @@ public final class PingManager extends IQExtensionManager implements SessionStat
     public final boolean ping(Jid jid, long timeout) {
         try {
             xmppSession.query(new IQ(jid, IQ.Type.GET, Ping.INSTANCE), timeout);
-        } catch (NoResponseException e) {
-            return false;
+            return true;
         } catch (StanzaException e) {
             // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
             // In this case we want to return false, because the intended recipient is unavailable.
@@ -155,7 +153,6 @@ public final class PingManager extends IQExtensionManager implements SessionStat
         } catch (XmppException e) {
             return false;
         }
-        return true;
     }
 
     /**

@@ -399,7 +399,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
 
     /**
      * Sets an item provider for the root node.
-     * <p>
+     * <p/>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
      * @param itemProvider The item provider.
@@ -414,7 +414,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
 
     /**
      * Sets an item provider for a node.
-     * <p>
+     * <p/>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
      * @param node         The node name.
@@ -451,8 +451,13 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
                 ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
                 return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
             } else {
-                // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                return iq.createResult(new ItemDiscovery(itemDiscovery.getNode()));
+                if (itemDiscovery.getNode() == null) {
+                    // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                    return iq.createResult(new ItemDiscovery(itemDiscovery.getNode()));
+                } else {
+                    // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
+                    return iq.createError(Condition.ITEM_NOT_FOUND);
+                }
             }
         }
     }

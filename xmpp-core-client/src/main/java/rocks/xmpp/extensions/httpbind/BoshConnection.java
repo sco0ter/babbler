@@ -110,23 +110,31 @@ public final class BoshConnection extends Connection {
     private final AtomicInteger requestCount = new AtomicInteger();
 
     /**
-     *
+     * Guarded by "this".
      */
-    private volatile long highestReceivedRid;
+    private long highestReceivedRid;
 
     /**
      * The SID MUST be unique within the context of the connection manager application.
+     * Guarded by "this".
      */
-    private volatile String sessionId;
+    private String sessionId;
 
-    private volatile String authId;
+    /**
+     * Guarded by "this".
+     */
+    private String authId;
 
     /**
      * True, if the connection manager sends acknowledgments.
+     * Guarded by "this".
      */
-    private volatile boolean usingAcknowledgments;
+    private boolean usingAcknowledgments;
 
-    private volatile URL url;
+    /**
+     * Guarded by "this".
+     */
+    private URL url;
 
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
@@ -272,6 +280,7 @@ public final class BoshConnection extends Connection {
             }
         }
 
+        this.from = from;
         sessionId = null;
         authId = null;
         requestCount.set(0);
@@ -327,14 +336,16 @@ public final class BoshConnection extends Connection {
     private void unpackBody(Body responseBody) throws Exception {
         // It's the session creation response.
         if (responseBody.getSid() != null) {
-            sessionId = responseBody.getSid();
-            authId = responseBody.getAuthId();
-            if (responseBody.getAck() != null) {
-                usingAcknowledgments = true;
-            }
+            synchronized (this) {
+                sessionId = responseBody.getSid();
+                authId = responseBody.getAuthId();
+                if (responseBody.getAck() != null) {
+                    usingAcknowledgments = true;
+                }
 
-            if (responseBody.getFrom() != null) {
-                getXmppSession().setXmppServiceDomain(responseBody.getFrom().getDomain());
+                if (responseBody.getFrom() != null) {
+                    getXmppSession().setXmppServiceDomain(responseBody.getFrom().getDomain());
+                }
             }
         }
 
@@ -376,20 +387,23 @@ public final class BoshConnection extends Connection {
      */
     @Override
     protected final void restartStream() {
-        Body.Builder bodyBuilder = Body.builder()
-                .restart(true)
-                .to(getXmppSession().getDomain())
-                .language(Locale.getDefault().getLanguage())
-                .sessionId(getSessionId())
-                .from(from)
-                .requestId(rid.getAndIncrement());
+        Body.Builder bodyBuilder;
+        synchronized (this) {
+            bodyBuilder = Body.builder()
+                    .restart(true)
+                    .to(getXmppSession().getDomain())
+                    .language(Locale.getDefault().getLanguage())
+                    .sessionId(getSessionId())
+                    .from(from)
+                    .requestId(rid.getAndIncrement());
 
-        appendKey(bodyBuilder);
+            appendKey(bodyBuilder);
 
-        // Acknowledge the highest received rid.
-        // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
-        if (!unacknowledgedRequests.isEmpty()) {
-            bodyBuilder.ack(highestReceivedRid);
+            // Acknowledge the highest received rid.
+            // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
+            if (!unacknowledgedRequests.isEmpty()) {
+                bodyBuilder.ack(highestReceivedRid);
+            }
         }
         sendNewRequest(bodyBuilder.build());
     }
@@ -409,22 +423,24 @@ public final class BoshConnection extends Connection {
      */
     @Override
     public final void close() throws Exception {
-        synchronized (httpBindExecutor) {
-            if (!httpBindExecutor.isShutdown() && sessionId != null) {
-                // Terminate the BOSH session.
-                Body.Builder bodyBuilder = Body.builder()
-                        .requestId(rid.getAndIncrement())
-                        .sessionId(getSessionId())
-                        .type(Body.Type.TERMINATE);
+        if (getSessionId() != null) {
+            synchronized (httpBindExecutor) {
+                if (!httpBindExecutor.isShutdown()) {
+                    // Terminate the BOSH session.
+                    Body.Builder bodyBuilder = Body.builder()
+                            .requestId(rid.getAndIncrement())
+                            .sessionId(getSessionId())
+                            .type(Body.Type.TERMINATE);
 
-                appendKey(bodyBuilder);
+                    appendKey(bodyBuilder);
 
-                sendNewRequest(bodyBuilder.build());
+                    sendNewRequest(bodyBuilder.build());
 
-                // and then shut it down.
-                httpBindExecutor.shutdown();
-                // Wait shortly, until the "terminate" body has been sent.
-                httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
+                    // and then shut it down.
+                    httpBindExecutor.shutdown();
+                    // Wait shortly, until the "terminate" body has been sent.
+                    httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
+                }
             }
         }
     }
@@ -458,7 +474,9 @@ public final class BoshConnection extends Connection {
         // Acknowledge the highest received rid.
         // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
         if (!unacknowledgedRequests.isEmpty()) {
-            bodyBuilder.ack(highestReceivedRid);
+            synchronized (this) {
+                bodyBuilder.ack(highestReceivedRid);
+            }
         }
         sendNewRequest(bodyBuilder.build());
     }
@@ -489,12 +507,12 @@ public final class BoshConnection extends Connection {
      *
      * @return The session id.
      */
-    public final String getSessionId() {
+    public final synchronized String getSessionId() {
         return sessionId;
     }
 
     @Override
-    public final String getStreamId() {
+    public final synchronized String getStreamId() {
         // The same procedure applies to the obsolete XMPP-specific 'authid' attribute of the BOSH <body/> element, which contains the value of the XMPP stream ID generated by the XMPP server.
         return authId;
     }
@@ -520,7 +538,7 @@ public final class BoshConnection extends Connection {
                         HttpURLConnection httpConnection = null;
                         try {
                             // Synchronize the requests, so that nearly parallel requests are still sent in the same order (to prevent <item-not-found/> errors).
-                            synchronized (xmlInputFactory) {
+                            synchronized (BoshConnection.this) {
                                 requestCount.getAndIncrement();
 
                                 if (usingAcknowledgments) {
@@ -589,8 +607,9 @@ public final class BoshConnection extends Connection {
                             if ((httpConnection.getResponseCode()) == HttpURLConnection.HTTP_OK) {
 
                                 // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
-                                highestReceivedRid = body.getRid();
-
+                                synchronized (BoshConnection.this) {
+                                    highestReceivedRid = body.getRid();
+                                }
                                 // This is for logging only.
                                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                                 XMLEventReader xmlEventReader = null;
@@ -649,7 +668,9 @@ public final class BoshConnection extends Connection {
                                 // Acknowledge the highest received rid.
                                 // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
                                 if (!unacknowledgedRequests.isEmpty()) {
-                                    bodyBuilder.ack(highestReceivedRid);
+                                    synchronized (BoshConnection.this) {
+                                        bodyBuilder.ack(highestReceivedRid);
+                                    }
                                 }
                                 sendNewRequest(bodyBuilder.build());
                             }
@@ -679,7 +700,7 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public final String toString() {
+    public final synchronized String toString() {
         StringBuilder sb = new StringBuilder("BOSH connection");
         if (hostname != null) {
             sb.append(String.format(" to %s", url));

@@ -51,8 +51,9 @@ import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamException;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.stream.model.StreamNegotiationException;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
@@ -993,7 +994,7 @@ public class XmppSession implements AutoCloseable {
      *
      * @param element The XMPP element.
      * @return True, if the stream needs to be restarted; otherwise false.
-     * @throws rocks.xmpp.core.stream.model.StreamException If the element is a stream error.
+     * @throws rocks.xmpp.core.stream.model.StreamErrorException If the element is a stream error.
      * @throws Exception                                    If any exception occurred during feature negotiation.
      */
     public final boolean handleElement(final Object element) throws Exception {
@@ -1008,7 +1009,7 @@ public class XmppSession implements AutoCloseable {
         } else if (element instanceof StreamFeatures) {
             streamFeaturesManager.processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {
-            throw new StreamException((StreamError) element);
+            throw new StreamErrorException((StreamError) element);
         } else {
             // Let's see, if the element is known to any feature negotiator.
             return streamFeaturesManager.processElement(element);

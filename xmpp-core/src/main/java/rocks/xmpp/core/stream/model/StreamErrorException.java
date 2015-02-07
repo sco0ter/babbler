@@ -35,7 +35,7 @@ import rocks.xmpp.core.XmppException;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
-public final class StreamException extends XmppException {
+public final class StreamErrorException extends XmppException {
 
     private final StreamError streamError;
 
@@ -44,7 +44,7 @@ public final class StreamException extends XmppException {
      *
      * @param streamError The underlying stream error.
      */
-    public StreamException(StreamError streamError) {
+    public StreamErrorException(StreamError streamError) {
         super(streamError.toString());
         this.streamError = streamError;
     }

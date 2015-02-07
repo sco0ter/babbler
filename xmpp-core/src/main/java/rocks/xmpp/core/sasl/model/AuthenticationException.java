@@ -25,6 +25,7 @@
 package rocks.xmpp.core.sasl.model;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stream.model.StreamNegotiationException;
 
 /**
  * An exception thrown during the login process, if SASL negotiation with the XMPP server fails.
@@ -44,7 +45,7 @@ import rocks.xmpp.core.XmppException;
  *
  * @author Christian Schudt
  */
-public final class AuthenticationException extends XmppException {
+public final class AuthenticationException extends StreamNegotiationException {
 
     private final Failure.Condition condition;
 

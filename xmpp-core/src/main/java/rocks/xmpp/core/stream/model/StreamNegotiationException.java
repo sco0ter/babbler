@@ -31,7 +31,7 @@ import rocks.xmpp.core.XmppException;
  *
  * @author Christian Schudt
  */
-public final class StreamNegotiationException extends XmppException {
+public class StreamNegotiationException extends XmppException {
 
     public StreamNegotiationException(String message) {
         super(message);

@@ -48,7 +48,6 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
@@ -282,11 +281,13 @@ public class XmppSession implements AutoCloseable {
         }
     }
 
-    private static void throwExceptionIfNotNull(Exception e) throws AuthenticationException {
+    private static void throwExceptionIfNotNull(Exception e) throws StreamNegotiationException {
         if (e != null) {
-            AuthenticationException authenticationException = new AuthenticationException("Authentication failed");
-            authenticationException.initCause(e);
-            throw authenticationException;
+            if (e instanceof StreamNegotiationException) {
+                throw (StreamNegotiationException) e;
+            } else {
+                throw new StreamNegotiationException("Stream negotiation failed", e);
+            }
         }
     }
 
@@ -921,9 +922,9 @@ public class XmppSession implements AutoCloseable {
         try {
             updateStatus(Status.AUTHENTICATING);
             if (callbackHandler == null) {
-                authenticationManager.authenticate(mechanisms, null, null);
+                authenticationManager.startAuthentication(mechanisms, null, null);
             } else {
-                authenticationManager.authenticate(mechanisms, authorizationId, callbackHandler);
+                authenticationManager.startAuthentication(mechanisms, authorizationId, callbackHandler);
             }
             // Negotiate all pending features until <bind/> would be negotiated.
             streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
@@ -942,21 +943,10 @@ public class XmppSession implements AutoCloseable {
             // Revert status
             updateStatus(oldStatus);
             throwExceptionIfNotNull(e);
-        } catch (AuthenticationException e) {
+        } catch (StreamNegotiationException e) {
             // Revert status
             updateStatus(oldStatus);
             throw e;
-        } catch (Exception e) {
-            // Revert status
-            updateStatus(oldStatus);
-            if (exception != null) {
-                Throwable ex = e;
-                while (ex.getCause() != null) {
-                    ex = e.getCause();
-                }
-                ex.initCause(exception);
-            }
-            throwExceptionIfNotNull(e);
         }
         wasLoggedIn = true;
         updateStatus(Status.AUTHENTICATED);
@@ -995,7 +985,7 @@ public class XmppSession implements AutoCloseable {
      * @param element The XMPP element.
      * @return True, if the stream needs to be restarted; otherwise false.
      * @throws rocks.xmpp.core.stream.model.StreamErrorException If the element is a stream error.
-     * @throws Exception                                    If any exception occurred during feature negotiation.
+     * @throws Exception                                         If any exception occurred during feature negotiation.
      */
     public final boolean handleElement(final Object element) throws Exception {
 

@@ -122,10 +122,6 @@ public abstract class StreamFeatureNegotiator {
          */
         SUCCESS,
         /**
-         * If the feature negotiation has failed.
-         */
-        FAILURE,
-        /**
          * If the feature negotiation is in progress and has not yet completed.
          */
         INCOMPLETE,

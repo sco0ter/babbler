@@ -508,6 +508,15 @@ public final class Body {
     }
 
     /**
+     * Gets the 'authid' attribute.
+     *
+     * @return The 'authid' attribute.
+     */
+    public final String getAuthId() {
+        return authid;
+    }
+
+    /**
      * The implementation of the 'condition' attribute of the {@code <body/>} wrapper element, which indicates an error reported by the connection manager.
      */
     @XmlEnum

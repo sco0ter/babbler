@@ -99,6 +99,11 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
+            public String getStreamId() {
+                return null;
+            }
+
+            @Override
             public void close() throws IOException {
 
             }

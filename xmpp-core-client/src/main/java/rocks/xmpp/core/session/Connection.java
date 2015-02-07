@@ -156,4 +156,11 @@ public abstract class Connection implements AutoCloseable {
      * @return True, if this connection is secured.
      */
     public abstract boolean isSecure();
+
+    /**
+     * Gets the stream id of this connection.
+     *
+     * @return The stream id.
+     */
+    public abstract String getStreamId();
 }

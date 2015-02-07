@@ -267,8 +267,16 @@ public final class TcpConnection extends Connection {
         xmppStreamReader.startReading(inputStream);
     }
 
+    /**
+     * Closes the TCP connection.
+     * It first sends a {@code </stream:stream>}, then shuts down the writer so that no more stanzas can be sent.
+     * After that it shuts down the reader and awaits shortly for any stanzas from the server and the server gracefully closing the stream with {@code </stream:stream>}.
+     * Eventually the socket is closed.
+     *
+     * @throws IOException If the socket throws an I/O exception.
+     */
     @Override
-    public final synchronized void close() throws IOException {
+    public final synchronized void close() throws Exception {
         // This call closes the stream and waits until everything has been sent to the server.
         if (xmppStreamWriter != null) {
             xmppStreamWriter.shutdown();

@@ -264,7 +264,7 @@ final class XmppStreamWriter {
         try {
             // Close the connection, which will only close the reader thread and the socket (because the writer is already shutdown).
             connection.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.log(Level.WARNING, e.getMessage(), e);
         }
         xmppSession.notifyException(exception);
@@ -272,7 +272,7 @@ final class XmppStreamWriter {
 
     /**
      * Closes the stream by sending a closing {@code </stream:stream>} to the server.
-     * This method waits until this task is completed, but not more than 0.5 seconds.
+     * This method waits until this task is completed, but not more than 0.25 seconds.
      * <p>
      * Make sure to synchronize this method.
      * Otherwise multiple threads could call {@link #closeStream()} which may result in a {@link RejectedExecutionException}, if it has been shutdown by another thread in the meantime.

@@ -402,10 +402,10 @@ public final class BoshConnection extends Connection {
      * <li>The writer thread.</li>
      * </ol>
      *
-     * @throws java.io.IOException If the underlying HTTP connection threw an exception.
+     * @throws java.lang.InterruptedException If the current thread is interrupted.
      */
     @Override
-    public final void close() throws IOException {
+    public final void close() throws Exception {
         synchronized (httpBindExecutor) {
             if (!httpBindExecutor.isShutdown() && sessionId != null) {
                 // Terminate the BOSH session.
@@ -420,12 +420,8 @@ public final class BoshConnection extends Connection {
 
                 // and then shut it down.
                 httpBindExecutor.shutdown();
-                try {
-                    // Wait shortly, until the "terminate" body has been sent.
-                    httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                }
+                // Wait shortly, until the "terminate" body has been sent.
+                httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
             }
         }
     }

@@ -109,7 +109,11 @@ final class IbbInputStream extends InputStream {
         if (!closed) {
             super.close();
             closed = true;
-            ibbSession.close();
+            try {
+                ibbSession.close();
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
         }
     }
 }

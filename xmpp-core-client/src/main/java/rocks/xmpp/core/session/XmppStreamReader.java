@@ -188,7 +188,7 @@ final class XmppStreamReader {
                             // Then close the connection, which will only close the writer thread and the socket.
                             try {
                                 connection.close();
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 logger.log(Level.WARNING, e.getMessage(), e);
                             }
                         }

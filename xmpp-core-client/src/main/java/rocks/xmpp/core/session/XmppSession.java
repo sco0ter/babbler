@@ -66,7 +66,6 @@ import javax.security.sasl.RealmCallback;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.lang.reflect.Constructor;
@@ -94,7 +93,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public class XmppSession implements Closeable {
+public class XmppSession implements AutoCloseable {
 
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
@@ -222,7 +221,7 @@ public class XmppSession implements Closeable {
                     if (status == Status.CONNECTED) {
                         close();
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
             }
@@ -517,7 +516,7 @@ public class XmppSession implements Closeable {
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
      * @throws NoResponseException                          If the entity did not respond.
      */
-    public IQ query(final IQ iq, long timeout) throws XmppException {
+    public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
@@ -739,17 +738,32 @@ public class XmppSession implements Closeable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             updateStatus(oldStatus);
-            activeConnection.close();
+            // TODO clean this up.
+            try {
+                activeConnection.close();
+            } catch (Exception e1) {
+                throw new IOException(e1);
+            }
             throw new InterruptedIOException();
         } catch (NoResponseException e) {
             updateStatus(oldStatus);
-            activeConnection.close();
+            // TODO clean this up.
+            try {
+                activeConnection.close();
+            } catch (Exception e1) {
+                throw new IOException(e1);
+            }
             throw new IOException(e);
         }
 
         if (exception != null) {
             updateStatus(oldStatus);
-            activeConnection.close();
+            // TODO clean this up.
+            try {
+                activeConnection.close();
+            } catch (Exception e1) {
+                throw new IOException(e1);
+            }
             throw new IOException(exception);
         }
         updateStatus(Status.CONNECTED);
@@ -761,7 +775,7 @@ public class XmppSession implements Closeable {
      * @throws IOException If an exception occurs while closing the connection, e.g. the underlying socket connection.
      */
     @Override
-    public synchronized void close() throws IOException {
+    public synchronized void close() throws Exception {
         updateStatus(Status.CLOSING);
         // Clear everything.
         messageListeners.clear();
@@ -771,15 +785,16 @@ public class XmppSession implements Closeable {
             Runtime.getRuntime().removeShutdownHook(shutdownHook);
         }
 
-        if (activeConnection != null) {
-            activeConnection.close();
-            activeConnection = null;
+        try {
+            if (activeConnection != null) {
+                activeConnection.close();
+                activeConnection = null;
+            }
+        } finally {
+            stanzaListenerExecutor.shutdown();
+            iqHandlerExecutor.shutdown();
+            updateStatus(Status.CLOSED);
         }
-
-        stanzaListenerExecutor.shutdown();
-        iqHandlerExecutor.shutdown();
-
-        updateStatus(Status.CLOSED);
     }
 
     /**

@@ -27,7 +27,6 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.Stanza;
@@ -121,7 +120,7 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public IQ query(final IQ iq) throws XmppException {
+    public IQ query(final IQ iq) throws StanzaException, NoResponseException {
         final IQ[] result = new IQ[1];
 
         final IQListener iqListener = new IQListener() {
@@ -145,13 +144,13 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public IQ query(final IQ iq, long timeout) throws XmppException {
+    public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
         // Ignore timeout for tests.
         return query(iq);
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
         super.close();
         updateStatus(Status.CLOSED, null);
     }

@@ -58,7 +58,7 @@ final class S5bSession extends ByteStreamSession {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
         socket.close();
     }
 

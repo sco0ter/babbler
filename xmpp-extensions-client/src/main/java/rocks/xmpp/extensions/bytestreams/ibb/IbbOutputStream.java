@@ -81,7 +81,11 @@ final class IbbOutputStream extends OutputStream {
             super.close();
             flush();
             closed = true;
-            ibbSession.close();
+            try {
+                ibbSession.close();
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
         }
     }
 }

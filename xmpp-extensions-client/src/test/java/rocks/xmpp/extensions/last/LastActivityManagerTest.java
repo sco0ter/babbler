@@ -40,7 +40,6 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -49,7 +48,7 @@ import java.util.Date;
 public class LastActivityManagerTest extends ExtensionTest {
 
     @Test
-    public void testLastActivityManagerIsCleared() throws IOException {
+    public void testLastActivityManagerIsCleared() throws Exception {
         TestXmppSession xmppSession1 = new TestXmppSession();
         LastActivityManager lastActivityManager = xmppSession1.getExtensionManager(LastActivityManager.class);
         lastActivityManager.setLastActivityStrategy(new LastActivityStrategy() {

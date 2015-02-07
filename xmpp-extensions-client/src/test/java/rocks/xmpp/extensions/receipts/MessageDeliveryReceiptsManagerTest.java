@@ -37,7 +37,6 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
-import java.io.IOException;
 import java.util.Collections;
 
 /**
@@ -169,7 +168,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
     }
 
     @Test
-    public void testListeners() throws IOException {
+    public void testListeners() throws Exception {
         TestXmppSession connection1 = new TestXmppSession();
 
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);

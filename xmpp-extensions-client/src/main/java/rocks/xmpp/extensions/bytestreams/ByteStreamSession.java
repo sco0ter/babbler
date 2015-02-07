@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.bytestreams;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,7 +38,7 @@ import java.io.OutputStream;
  * @see rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager#initiateSession(rocks.xmpp.core.Jid, String)
  * @see ByteStreamEvent#accept()
  */
-public abstract class ByteStreamSession implements Closeable {
+public abstract class ByteStreamSession implements AutoCloseable {
 
     private final String sessionId;
 

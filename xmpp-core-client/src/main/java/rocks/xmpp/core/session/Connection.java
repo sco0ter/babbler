@@ -27,7 +27,6 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.Proxy;
 
@@ -36,7 +35,7 @@ import java.net.Proxy;
  *
  * @author Christian Schudt
  */
-public abstract class Connection implements Closeable {
+public abstract class Connection implements AutoCloseable {
 
     /**
      * The proxy, which is used while connecting to a host.

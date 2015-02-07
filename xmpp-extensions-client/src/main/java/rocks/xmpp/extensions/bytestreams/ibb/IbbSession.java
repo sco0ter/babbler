@@ -116,15 +116,13 @@ final class IbbSession extends ByteStreamSession {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
         if (!closed) {
             closed = true;
             try {
                 inputStream.close();
                 outputStream.close();
                 xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Close(getSessionId())));
-            } catch (XmppException e) {
-                throw new IOException(e);
             } finally {
                 // the party that sent the original <close/> element SHOULD wait to receive the IQ response from the receiving party before considering the bytestream to be closed.
                 // Remove this session from the map.

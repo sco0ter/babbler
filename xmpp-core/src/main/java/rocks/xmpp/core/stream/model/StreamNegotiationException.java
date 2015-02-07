@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,26 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stream;
+package rocks.xmpp.core.stream.model;
 
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
-
-import java.util.EventListener;
+import rocks.xmpp.core.XmppException;
 
 /**
- * A feature listener, which listens for successful feature negotiation.
+ * An exception which indicates a failure during stream negotiation, e.g. if TLS or SASL negotiation or compression or resource binding fails.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.stream.StreamFeatureNegotiator#addFeatureListener(StreamFeatureListener)
  */
-public interface StreamFeatureListener extends EventListener {
+public final class StreamNegotiationException extends XmppException {
 
-    /**
-     * Fired when the feature has been successfully negotiated.
-     *
-     * @throws rocks.xmpp.core.stream.model.StreamNegotiationException If any exception occurred during handling of the event.
-     */
-    void featureSuccessfullyNegotiated() throws StreamNegotiationException;
+    public StreamNegotiationException(String message) {
+        super(message);
+    }
+
+    public StreamNegotiationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public StreamNegotiationException(Throwable cause) {
+        super(cause);
+    }
 }

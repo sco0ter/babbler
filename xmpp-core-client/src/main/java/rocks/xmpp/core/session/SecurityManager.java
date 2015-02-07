@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.model.StreamNegotiationException;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -50,14 +51,14 @@ final class SecurityManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public Status processNegotiation(Object element) throws Exception {
+    public Status processNegotiation(Object element) throws StreamNegotiationException {
 
         Status status = Status.INCOMPLETE;
 
         if (element instanceof StartTls) {
             StartTls startTls = (StartTls) element;
             if (startTls.isMandatory() && !isSecure) {
-                throw new Exception("The server requires TLS, but you disabled it.");
+                throw new StreamNegotiationException("The server requires TLS, but you disabled it.");
             }
             if (isSecure) {
                 xmppSession.send(new StartTls());
@@ -68,7 +69,7 @@ final class SecurityManager extends StreamFeatureNegotiator {
             notifyFeatureNegotiated();
             status = Status.SUCCESS;
         } else if (element instanceof Failure) {
-            throw new Exception("Failure during TLS negotiation.");
+            throw new StreamNegotiationException("Failure during TLS negotiation.");
         }
 
         return status;

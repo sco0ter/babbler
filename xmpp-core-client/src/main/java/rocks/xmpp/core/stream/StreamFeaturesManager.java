@@ -29,6 +29,7 @@ import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.stream.model.StreamNegotiationException;
 import rocks.xmpp.core.tls.model.StartTls;
 
 import java.util.ArrayList;
@@ -172,7 +173,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      *
      * @throws Exception If an exception occurred during feature negotiation.
      */
-    private void negotiateNextFeature() throws Exception {
+    private void negotiateNextFeature() throws StreamNegotiationException {
         if (!featuresToNegotiate.isEmpty()) {
             StreamFeature advertisedFeature = featuresToNegotiate.remove(0);
             if (!negotiatedFeatures.contains(advertisedFeature.getClass())) {

@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
+import rocks.xmpp.core.stream.model.StreamNegotiationException;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -65,9 +66,9 @@ public abstract class StreamFeatureNegotiator {
     /**
      * Notifies the listener, if a feature negotiation has completed.
      *
-     * @throws Exception If an exception occurred during feature negotiation.
+     * @throws rocks.xmpp.core.stream.model.StreamNegotiationException If an exception occurred during feature negotiation.
      */
-    protected void notifyFeatureNegotiated() throws Exception {
+    protected void notifyFeatureNegotiated() throws StreamNegotiationException {
         for (StreamFeatureListener streamFeatureListener : streamFeatureListeners) {
             streamFeatureListener.featureSuccessfullyNegotiated();
         }
@@ -78,9 +79,9 @@ public abstract class StreamFeatureNegotiator {
      *
      * @param element The XML element, which belongs to the feature negotiation, e.g. {@code <challenge/>} for SASL negotiation or the feature element itself, e.g. {@code <mechanisms/>}.
      * @return The status of the feature negotiation.
-     * @throws Exception Any exception which might be thrown during a feature negotiation. Note that any exception thrown during the feature negotiation process is thrown by the {@link rocks.xmpp.core.session.XmppSession#connect()} method and therefore will abort the connection process.
+     * @throws StreamNegotiationException Any exception which might be thrown during a feature negotiation. Note that any exception thrown during the feature negotiation process is thrown by the {@link rocks.xmpp.core.session.XmppSession#connect()} method and therefore will abort the connection process.
      */
-    public abstract Status processNegotiation(Object element) throws Exception;
+    public abstract Status processNegotiation(Object element) throws StreamNegotiationException;
 
     /**
      * Checks, if the feature needs a stream restart after it has been successfully negotiated.

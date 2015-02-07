@@ -39,6 +39,10 @@ public abstract class XmppException extends Exception {
         super(message);
     }
 
+    public XmppException(Throwable cause) {
+        super(cause);
+    }
+
     public XmppException(String message, Throwable cause) {
         super(message, cause);
     }

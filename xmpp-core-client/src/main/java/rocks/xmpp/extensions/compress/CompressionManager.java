@@ -26,10 +26,10 @@ package rocks.xmpp.extensions.compress;
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.model.StreamNegotiationException;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
@@ -87,7 +87,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public Status processNegotiation(Object element) throws Exception {
+    public Status processNegotiation(Object element) throws StreamNegotiationException {
         Status status = Status.INCOMPLETE;
 
         if (element instanceof CompressionFeature) {
@@ -110,7 +110,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
             notifyFeatureNegotiated();
             status = Status.SUCCESS;
         } else if (element instanceof StreamCompression.Failure) {
-            throw new IOException("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
+            throw new StreamNegotiationException("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
         }
         return status;
     }

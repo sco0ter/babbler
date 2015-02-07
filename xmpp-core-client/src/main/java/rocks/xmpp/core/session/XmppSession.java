@@ -48,6 +48,7 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
+import rocks.xmpp.core.stream.model.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamException;
@@ -241,7 +242,7 @@ public class XmppSession implements AutoCloseable {
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
         streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(Bind.class) {
             @Override
-            public Status processNegotiation(Object element) throws Exception {
+            public Status processNegotiation(Object element) throws StreamNegotiationException {
                 // Resource binding will be negotiated manually
                 return Status.INCOMPLETE;
             }

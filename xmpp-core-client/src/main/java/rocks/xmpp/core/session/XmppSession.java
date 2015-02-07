@@ -497,10 +497,10 @@ public class XmppSession implements AutoCloseable {
      *
      * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain rocks.xmpp.core.stanza.model.AbstractIQ.Type#GET get} or {@linkplain rocks.xmpp.core.stanza.model.AbstractIQ.Type#SET set}.
      * @return The result {@code <iq/>} stanza.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
-     * @throws NoResponseException                          If the entity did not respond.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public IQ query(IQ iq) throws XmppException {
+    public IQ query(IQ iq) throws StanzaException, NoResponseException {
         return query(iq, configuration.getDefaultResponseTimeout());
     }
 
@@ -513,8 +513,8 @@ public class XmppSession implements AutoCloseable {
      * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain rocks.xmpp.core.stanza.model.AbstractIQ.Type#GET get} or {@linkplain rocks.xmpp.core.stanza.model.AbstractIQ.Type#SET set}.
      * @param timeout The timeout.
      * @return The result {@code <iq/>} stanza.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
-     * @throws NoResponseException                          If the entity did not respond.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
     public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
         if (!iq.isRequest()) {
@@ -551,6 +551,8 @@ public class XmppSession implements AutoCloseable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            // TODO Throw InterruptedException instead?
+            throw new NoResponseException("Thread is interrupted.");
         } finally {
             queryLock.unlock();
             removeIQListener(listener);
@@ -568,10 +570,10 @@ public class XmppSession implements AutoCloseable {
      * @param stanza The stanza, which is sent.
      * @param filter The presence filter.
      * @return The presence stanza.
-     * @throws NoResponseException If no presence stanza has arrived in time.
-     * @throws StanzaException     If the returned presence contains a stanza error.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public final Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws NoResponseException, StanzaException {
+    public final Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws StanzaException, NoResponseException {
         final Presence[] result = new Presence[1];
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
@@ -602,6 +604,8 @@ public class XmppSession implements AutoCloseable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            // TODO Throw InterruptedException instead?
+            throw new NoResponseException("Thread is interrupted.");
         } finally {
             presenceLock.unlock();
             removePresenceListener(listener);
@@ -619,10 +623,10 @@ public class XmppSession implements AutoCloseable {
      * @param stanza The stanza, which is sent.
      * @param filter The message filter.
      * @return The message stanza.
-     * @throws NoResponseException If no message stanza has arrived in time.
-     * @throws StanzaException     If the returned message contains a stanza error.
+     * @throws StanzaException     If the entity returned a stanza error.
+     * @throws NoResponseException If the entity did not respond.
      */
-    public final Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws NoResponseException, StanzaException {
+    public final Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws StanzaException, NoResponseException {
 
         final Message[] result = new Message[1];
         final Lock messageLock = new ReentrantLock();
@@ -654,6 +658,8 @@ public class XmppSession implements AutoCloseable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            // TODO Throw InterruptedException instead?
+            throw new NoResponseException("Thread is interrupted.");
         } finally {
             messageLock.unlock();
             removeMessageListener(listener);

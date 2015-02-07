@@ -398,7 +398,6 @@ public final class TcpConnection extends Connection {
         if (streamId != null) {
             sb.append(" (").append(streamId).append(")");
         }
-        sb.append(", secure: ").append(isSecure());
         if (from != null) {
             sb.append(", from: ").append(from);
         }

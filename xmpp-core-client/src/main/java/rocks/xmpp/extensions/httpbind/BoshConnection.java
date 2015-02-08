@@ -314,6 +314,18 @@ public final class BoshConnection extends Connection {
             body.to(getXmppSession().getDomain());
         }
 
+        // Try if we can connect in order to fail fast if we can't.
+        HttpURLConnection connection = null;
+        try {
+            connection = getConnection();
+            connection.setConnectTimeout(boshConnectionConfiguration.getConnectTimeout());
+            connection.setReadTimeout(boshConnectionConfiguration.getConnectTimeout());
+            connection.connect();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
         // Send the initial request.
         sendNewRequest(body.build());
     }
@@ -545,12 +557,7 @@ public final class BoshConnection extends Connection {
                                     unacknowledgedRequests.put(body.getRid(), body);
                                 }
 
-                                Proxy proxy = getProxy();
-                                if (proxy != null) {
-                                    httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-                                } else {
-                                    httpConnection = (HttpURLConnection) url.openConnection();
-                                }
+                                httpConnection = getConnection();
 
                                 if (httpConnection instanceof HttpsURLConnection) {
                                     if (boshConnectionConfiguration.getSSLContext() != null) {
@@ -564,14 +571,9 @@ public final class BoshConnection extends Connection {
                                 httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
-                                httpConnection.setConnectTimeout(boshConnectionConfiguration.getConnectTimeout());
                                 // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
-                                if (getXmppSession().getStatus() == XmppSession.Status.CONNECTING) {
-                                    // setConnectTimeout is unreliable. A read timeout for the initial BOSH response should be set, too.
-                                    httpConnection.setReadTimeout(boshConnectionConfiguration.getConnectTimeout());
-                                } else {
-                                    httpConnection.setReadTimeout((boshConnectionConfiguration.getWait() + 5) * 1000);
-                                }
+                                httpConnection.setReadTimeout((boshConnectionConfiguration.getWait() + 5) * 1000);
+
                                 // This is for logging only.
                                 ByteArrayOutputStream byteArrayOutputStreamRequest = new ByteArrayOutputStream();
 
@@ -684,6 +686,15 @@ public final class BoshConnection extends Connection {
                     }
                 });
             }
+        }
+    }
+
+    private HttpURLConnection getConnection() throws IOException {
+        Proxy proxy = getProxy();
+        if (proxy != null) {
+            return (HttpURLConnection) url.openConnection(proxy);
+        } else {
+            return (HttpURLConnection) url.openConnection();
         }
     }
 

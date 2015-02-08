@@ -109,7 +109,7 @@ public final class Failure implements ServerStreamElement {
     @Override
     public final String toString() {
         String text = getText();
-        return condition.toString() + (text != null ? " (" + text + ")" : "");
+        return condition != null ? condition.toString() : "" + (text != null ? " (" + text + ")" : "");
     }
 
     /**

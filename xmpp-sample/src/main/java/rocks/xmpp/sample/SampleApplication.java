@@ -127,7 +127,7 @@ public class SampleApplication {
                     xmppSession.send(new Presence());
 
                     System.out.println(xmppSession.getActiveConnection());
-                } catch (IOException | XmppException | NoSuchAlgorithmException | KeyManagementException e) {
+                } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {
                     e.printStackTrace();
                 }
             }

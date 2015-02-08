@@ -79,7 +79,7 @@ public class GeolocationPublisher {
 //                    GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
 //                    geoLocationManager.publish(new GeoLocation(123, 321));
 
-                } catch (IOException | XmppException e) {
+                } catch (XmppException e) {
                     e.printStackTrace();
                 }
             }

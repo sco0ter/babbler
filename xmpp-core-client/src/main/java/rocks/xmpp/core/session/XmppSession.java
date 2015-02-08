@@ -68,7 +68,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -281,12 +280,12 @@ public class XmppSession implements AutoCloseable {
         }
     }
 
-    private static void throwExceptionIfNotNull(Exception e) throws StreamNegotiationException {
+    private static void throwAsXmppExceptionIfNotNull(Exception e) throws XmppException {
         if (e != null) {
-            if (e instanceof StreamNegotiationException) {
-                throw (StreamNegotiationException) e;
+            if (e instanceof XmppException) {
+                throw (XmppException) e;
             } else {
-                throw new StreamNegotiationException("Stream negotiation failed", e);
+                throw new XmppException(e);
             }
         }
     }
@@ -677,10 +676,9 @@ public class XmppSession implements AutoCloseable {
     /**
      * Reconnects to the XMPP server and automatically logs in by using the last known information (e.g. user name, password and bound resource).
      *
-     * @throws IOException   If an exception occurred while connecting.
      * @throws XmppException If an exception occurred during login.
      */
-    public final synchronized void reconnect() throws IOException, XmppException {
+    public final synchronized void reconnect() throws XmppException {
         if (status == Status.DISCONNECTED) {
             connect();
             if (wasLoggedIn) {
@@ -692,9 +690,9 @@ public class XmppSession implements AutoCloseable {
     /**
      * Connects to the XMPP server.
      *
-     * @throws IOException If anything went wrong, e.g. the host was not found.
+     * @throws XmppException If anything went wrong, e.g. the host was not found.
      */
-    public final void connect() throws IOException {
+    public final void connect() throws XmppException {
         connect(null);
     }
 
@@ -702,9 +700,9 @@ public class XmppSession implements AutoCloseable {
      * Connects to the XMPP server.
      *
      * @param from The 'from' attribute.
-     * @throws IOException If anything went wrong, e.g. the host was not found.
+     * @throws XmppException If anything went wrong, e.g. the host was not found.
      */
-    public final synchronized void connect(Jid from) throws IOException {
+    public final synchronized void connect(Jid from) throws XmppException {
         if (status == Status.CLOSED) {
             throw new IllegalStateException("Session is already closed. Create a new one.");
         }
@@ -732,7 +730,7 @@ public class XmppSession implements AutoCloseable {
                     logger.log(Level.WARNING, String.format("%s failed to connect. Trying alternative connection.", connection));
                 } else {
                     updateStatus(previousStatus, e);
-                    throw e;
+                    throw new ConnectionException(e);
                 }
             }
         }
@@ -742,34 +740,19 @@ public class XmppSession implements AutoCloseable {
             getStreamFeaturesManager().awaitNegotiation(Mechanisms.class, 10000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            updateStatus(oldStatus);
-            // TODO clean this up.
-            try {
-                activeConnection.close();
-            } catch (Exception e1) {
-                throw new IOException(e1);
-            }
-            throw new InterruptedIOException();
+            exception = e;
         } catch (NoResponseException e) {
-            updateStatus(oldStatus);
-            // TODO clean this up.
-            try {
-                activeConnection.close();
-            } catch (Exception e1) {
-                throw new IOException(e1);
-            }
-            throw new IOException(e);
+            exception = e;
         }
 
         if (exception != null) {
             updateStatus(oldStatus);
-            // TODO clean this up.
             try {
                 activeConnection.close();
             } catch (Exception e1) {
-                throw new IOException(e1);
+                exception.addSuppressed(e1);
             }
-            throw new IOException(exception);
+            throwAsXmppExceptionIfNotNull(exception);
         }
         updateStatus(Status.CONNECTED);
     }
@@ -777,10 +760,10 @@ public class XmppSession implements AutoCloseable {
     /**
      * Explicitly closes the connection and performs a clean up of all listeners.
      *
-     * @throws IOException If an exception occurs while closing the connection, e.g. the underlying socket connection.
+     * @throws XmppException If an exception occurs while closing the connection, e.g. the underlying socket connection.
      */
     @Override
-    public synchronized void close() throws Exception {
+    public synchronized void close() throws XmppException {
         updateStatus(Status.CLOSING);
         // Clear everything.
         messageListeners.clear();
@@ -795,6 +778,8 @@ public class XmppSession implements AutoCloseable {
                 activeConnection.close();
                 activeConnection = null;
             }
+        } catch (Exception e) {
+            throw new XmppException(e);
         } finally {
             stanzaListenerExecutor.shutdown();
             iqHandlerExecutor.shutdown();
@@ -926,7 +911,7 @@ public class XmppSession implements AutoCloseable {
             streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
 
             // Check if stream feature negotiation failed with an exception.
-            throwExceptionIfNotNull(exception);
+            throwAsXmppExceptionIfNotNull(exception);
 
             // Then negotiate resource binding manually.
             bindResource(resource);
@@ -938,7 +923,7 @@ public class XmppSession implements AutoCloseable {
             Thread.currentThread().interrupt();
             // Revert status
             updateStatus(oldStatus);
-            throwExceptionIfNotNull(e);
+            throwAsXmppExceptionIfNotNull(e);
         } catch (StreamNegotiationException e) {
             // Revert status
             updateStatus(oldStatus);

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,28 +22,30 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core;
+package rocks.xmpp.core.session;
+
+import rocks.xmpp.core.XmppException;
 
 /**
- * This is the base class for all kind of XMPP related exceptions.
+ * Indicates a failure while connecting to the server.
  *
  * @author Christian Schudt
  */
-public class XmppException extends Exception {
+public final class ConnectionException extends XmppException {
 
-    public XmppException() {
+    public ConnectionException() {
         super();
     }
 
-    public XmppException(String message) {
+    public ConnectionException(String message) {
         super(message);
     }
 
-    public XmppException(Throwable cause) {
+    public ConnectionException(Throwable cause) {
         super(cause);
     }
 
-    public XmppException(String message, Throwable cause) {
+    public ConnectionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

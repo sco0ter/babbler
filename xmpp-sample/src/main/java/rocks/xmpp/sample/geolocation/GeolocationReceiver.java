@@ -67,7 +67,7 @@ public class GeolocationReceiver {
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-                } catch (IOException | XmppException e) {
+                } catch (XmppException e) {
                     e.printStackTrace();
                 }
             }

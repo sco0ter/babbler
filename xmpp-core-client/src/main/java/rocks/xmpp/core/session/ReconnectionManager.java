@@ -103,7 +103,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
                 public void run() {
                     try {
                         xmppSession.reconnect();
-                    } catch (IOException | XmppException e1) {
+                    } catch (XmppException e1) {
                         scheduleReconnection(attempt + 1);
                     }
                 }

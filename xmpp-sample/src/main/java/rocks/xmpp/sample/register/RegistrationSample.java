@@ -73,7 +73,7 @@ public class RegistrationSample {
                     xmppSession.login("user", "pass", "register");
 
 
-                } catch (IOException | XmppException e) {
+                } catch (XmppException e) {
                     e.printStackTrace();
                 }
             }

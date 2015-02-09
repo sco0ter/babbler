@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
+import static java.util.Objects.requireNonNull;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
@@ -49,6 +50,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
@@ -122,43 +125,41 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
      * @throws rocks.xmpp.core.stanza.model.StanzaException If the user is unavailable or failed to download the file.
      * @throws rocks.xmpp.core.session.NoResponseException  If the recipient did not downloaded the file within the timeout.
      * @throws java.io.IOException                          If the file could not be read.
+     * 
+     * @deprecated Since 0.5.0 use {@link #offerFile(Path, String, Jid, long)} instead.
      */
-    public FileTransfer offerFile(File file, String description, Jid recipient, long timeout) throws XmppException, IOException {
-        Objects.requireNonNull(file, "file must not be null. ");
-        Objects.requireNonNull(recipient, "jid must not be null.");
-
-        if (!recipient.isFullJid())
-            throw new IllegalArgumentException("recipient must be a full JID (including resource)");
-
-        if (!file.exists()) {
-            throw new FileNotFoundException(file.getName());
-        }
-
-        // Before a Stream Initiation is attempted the Sender should be sure that the Receiver supports both Stream Initiation and the specific profile that they wish to use.
-        if (entityCapabilitiesManager.isSupported(StreamInitiation.NAMESPACE, recipient) && entityCapabilitiesManager.isSupported(SIFileTransferOffer.NAMESPACE, recipient)) {
-
-            SIFileTransferOffer fileTransfer = new SIFileTransferOffer(file.getName(), file.length(), new Date(file.lastModified()), null, description, null);
-            String mimeType;
-
-            try {
-                mimeType = URLConnection.guessContentTypeFromStream(new BufferedInputStream(new FileInputStream(file))); //Files.probeContentType(file.toPath());
-            } catch (IOException e) {
-                mimeType = null;
-            }
-            try {
-                OutputStream outputStream = streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout);
-                InputStream inputStream = new FileInputStream(file);
-                return new FileTransfer(inputStream, outputStream, file.length());
-            } catch (StanzaException e) {
-                if (e.getStanza().getError().getCondition() == Condition.FORBIDDEN) {
-                    throw new FileTransferRejectedException();
-                } else {
-                    throw e;
-                }
-            }
-        }
-        throw new UnsupportedOperationException("Feature not supported"); // TODO other exception!?
+    public final FileTransfer offerFile(final File file, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
+        return offerFile(file.toPath(), description, recipient, timeout);
     }
+
+	public final FileTransfer offerFile(final Path source, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
+		if (!requireNonNull(recipient, "jid must not be null.").isFullJid())
+			throw new IllegalArgumentException("recipient must be a full JID (including resource)");
+
+		if (Files.notExists(requireNonNull(source, "source must not be null.")))
+			throw new FileNotFoundException(source.getFileName().toString());
+
+		// Before a Stream Initiation is attempted the Sender should be sure that the Receiver supports both Stream Initiation and the specific profile that they wish to use.
+		if (!(this.entityCapabilitiesManager.isSupported(StreamInitiation.NAMESPACE, recipient) && this.entityCapabilitiesManager.isSupported(SIFileTransferOffer.NAMESPACE, recipient)))
+			throw new UnsupportedOperationException("Feature not supported"); // TODO other exception!?
+
+		final long fileSize = Files.size(source);
+		final SIFileTransferOffer fileTransfer = new SIFileTransferOffer(source.getFileName().toString(), fileSize, Date.from(Files.getLastModifiedTime(source).toInstant()), null, description, null);
+		final String mimeType;
+		try (final InputStream inputStream = new BufferedInputStream(Files.newInputStream(source))) {
+			mimeType = URLConnection.guessContentTypeFromStream(inputStream); // Files.probeContentType(file.toPath());
+		}
+		try {
+			final InputStream inputStream = Files.newInputStream(source);
+			final OutputStream outputStream = this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout);
+			return new FileTransfer(inputStream, outputStream, fileSize);
+		} catch (final StanzaException e) {
+			if (e.getStanza().getError().getCondition() == Condition.FORBIDDEN)
+				throw new FileTransferRejectedException();
+			else
+				throw e;
+		}
+	}
 
     public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {
         fileTransferOfferExecutor.execute(new Runnable() {

@@ -323,6 +323,7 @@ public final class TcpConnection extends Connection {
 
         Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
+        env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(tcpConnectionConfiguration.getConnectTimeout()));
         env.put(Context.PROVIDER_URL, "dns:");
         try {
             DirContext ctx = new InitialDirContext(env);

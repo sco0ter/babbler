@@ -179,15 +179,17 @@ public final class BoshConnection extends Connection {
      * Tries to find the BOSH URL by a DNS TXT lookup as described in <a href="http://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
      *
      * @param xmppServiceDomain The fully qualified domain name.
+     * @param timeout           The lookup timeout.
      * @return The BOSH URL, if it could be found or null.
      */
-    private static String findBoshUrl(String xmppServiceDomain) {
+    private static String findBoshUrl(String xmppServiceDomain, long timeout) {
 
         try {
             String query = "_xmppconnect." + xmppServiceDomain;
 
             Hashtable<String, String> env = new Hashtable<>();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
+            env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(timeout));
 
             DirContext ctx = new InitialDirContext(env);
 
@@ -265,7 +267,7 @@ public final class BoshConnection extends Connection {
                 url = new URL(protocol, getHostname(), getPort(), boshConnectionConfiguration.getFile());
             } else if (getXmppSession().getDomain() != null) {
                 // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                String resolvedUrl = findBoshUrl(getXmppSession().getDomain());
+                String resolvedUrl = findBoshUrl(getXmppSession().getDomain(), boshConnectionConfiguration.getConnectTimeout());
                 if (resolvedUrl != null) {
                     url = new URL(resolvedUrl);
                 } else {

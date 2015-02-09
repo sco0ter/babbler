@@ -558,16 +558,6 @@ public final class BoshConnection extends Connection {
                                 }
 
                                 httpConnection = getConnection();
-
-                                if (httpConnection instanceof HttpsURLConnection) {
-                                    if (boshConnectionConfiguration.getSSLContext() != null) {
-                                        ((HttpsURLConnection) httpConnection).setSSLSocketFactory(boshConnectionConfiguration.getSSLContext().getSocketFactory());
-                                    }
-                                    if (boshConnectionConfiguration.getHostnameVerifier() != null) {
-                                        ((HttpsURLConnection) httpConnection).setHostnameVerifier(boshConnectionConfiguration.getHostnameVerifier());
-                                    }
-                                }
-
                                 httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
@@ -691,11 +681,21 @@ public final class BoshConnection extends Connection {
 
     private HttpURLConnection getConnection() throws IOException {
         Proxy proxy = getProxy();
+        HttpURLConnection httpURLConnection;
         if (proxy != null) {
-            return (HttpURLConnection) url.openConnection(proxy);
+            httpURLConnection = (HttpURLConnection) url.openConnection(proxy);
         } else {
-            return (HttpURLConnection) url.openConnection();
+            httpURLConnection = (HttpURLConnection) url.openConnection();
         }
+        if (httpURLConnection instanceof HttpsURLConnection) {
+            if (boshConnectionConfiguration.getSSLContext() != null) {
+                ((HttpsURLConnection) httpURLConnection).setSSLSocketFactory(boshConnectionConfiguration.getSSLContext().getSocketFactory());
+            }
+            if (boshConnectionConfiguration.getHostnameVerifier() != null) {
+                ((HttpsURLConnection) httpURLConnection).setHostnameVerifier(boshConnectionConfiguration.getHostnameVerifier());
+            }
+        }
+        return httpURLConnection;
     }
 
     /**

@@ -34,9 +34,9 @@ import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.filetransfer.FileTransferOfferEvent;
 import rocks.xmpp.extensions.filetransfer.FileTransferOfferListener;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 
 /**
@@ -75,7 +75,7 @@ public class FileTransferReceiver {
                         @Override
                         public void fileTransferOffered(FileTransferOfferEvent e) {
                             try {
-                                FileTransfer fileTransfer = e.accept(new FileOutputStream(new File("test.png")));
+                                FileTransfer fileTransfer = e.accept(Files.newOutputStream(Paths.get("test.png")));
                                 fileTransfer.transfer();
                             } catch (IOException e1) {
                                 e1.printStackTrace();

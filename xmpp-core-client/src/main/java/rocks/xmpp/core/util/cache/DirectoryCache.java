@@ -24,15 +24,13 @@
 
 package rocks.xmpp.core.util.cache;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,59 +44,53 @@ import java.util.Set;
  */
 public final class DirectoryCache implements Map<String, byte[]> {
 
-    private final File cacheDirectory;
+    private final Path cacheDirectory;
 
-    public DirectoryCache(File cacheDirectory) {
+    public DirectoryCache(Path cacheDirectory) throws IOException {
         this.cacheDirectory = cacheDirectory;
         // Make sure the directory exists.
-        cacheDirectory.mkdirs();
+        Files.createDirectories(cacheDirectory);
     }
 
-    private static void deleteDirectory(File path) {
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        deleteDirectory(file);
-                    } else {
-                        file.delete();
-                    }
+    @Override
+    public final int size() {
+        final int[] size = {0};
+        try {
+            Files.walkFileTree(cacheDirectory, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    size[0]++;
+                    return FileVisitResult.CONTINUE;
                 }
-            }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        return size[0];
     }
 
     @Override
-    public int size() {
-        return cacheDirectory.list().length;
-    }
-
-    @Override
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
         return size() == 0;
     }
 
     @Override
-    public boolean containsKey(Object key) {
-        return Arrays.asList(cacheDirectory.list()).contains(key);
+    public final boolean containsKey(Object key) {
+        return Files.exists(cacheDirectory.resolve(key.toString()));
     }
 
     @Override
-    public boolean containsValue(Object value) {
+    public final boolean containsValue(Object value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public byte[] get(final Object key) {
+    public final byte[] get(final Object key) {
         if (key != null && !key.toString().isEmpty()) {
-            File file = new File(cacheDirectory, key.toString());
-            if (file.exists()) {
-                try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
-                    byte[] data = new byte[(int) file.length()];
-                    if (inputStream.read(data, 0, data.length) > -1) {
-                        return data;
-                    }
+            Path file = cacheDirectory.resolve(key.toString());
+            if (Files.isReadable(file)) {
+                try {
+                    return Files.readAllBytes(file);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -108,59 +100,79 @@ public final class DirectoryCache implements Map<String, byte[]> {
     }
 
     @Override
-    public byte[] put(String key, byte[] value) {
-        File file = new File(cacheDirectory, key);
+    public final byte[] put(String key, byte[] value) {
+        Path file = cacheDirectory.resolve(key);
         byte[] data = get(key);
-        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
-            outputStream.write(value);
+        try {
+            Files.write(file, value);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         return data;
     }
 
     @Override
-    public byte[] remove(Object key) {
-        File file = new File(cacheDirectory, key.toString());
+    public final byte[] remove(Object key) {
         byte[] data = get(key);
-        file.delete();
+        try {
+            Files.deleteIfExists(cacheDirectory.resolve(key.toString()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return data;
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends byte[]> m) {
+    public final void putAll(Map<? extends String, ? extends byte[]> m) {
         for (Map.Entry<? extends String, ? extends byte[]> entry : m.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }
 
     @Override
-    public void clear() {
-        File[] files = cacheDirectory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteDirectory(file);
-                } else {
-                    file.delete();
+    public final void clear() {
+        try {
+            Files.walkFileTree(cacheDirectory, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.deleteIfExists(file);
+                    return FileVisitResult.CONTINUE;
                 }
-            }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    // Don't delete the cache directory itself.
+                    if (!Files.isSameFile(dir, cacheDirectory)) {
+                        Files.deleteIfExists(dir);
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Set<String> keySet() {
-        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(cacheDirectory.list())));
+    public final Set<String> keySet() {
+        Set<String> fileNames = new HashSet<>();
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(cacheDirectory)) {
+            for (Path path : directoryStream) {
+                fileNames.add(path.getFileName().toString());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return Collections.unmodifiableSet(fileNames);
     }
 
     @Override
-    public Collection<byte[]> values() {
+    public final Collection<byte[]> values() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<Entry<String, byte[]>> entrySet() {
+    public final Set<Entry<String, byte[]>> entrySet() {
         throw new UnsupportedOperationException();
     }
 }

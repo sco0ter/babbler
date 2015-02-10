@@ -27,38 +27,42 @@ package rocks.xmpp.core.util.cache;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 
 /**
  * @author Christian Schudt
  */
 public class DirectoryCacheTest {
 
-    private static boolean deleteDirectory(File path) {
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        deleteDirectory(file);
-                    } else {
-                        if (!file.delete()) {
-                            return false;
-                        }
-                    }
+    private static void deleteDirectory(final Path path) throws IOException {
+        if (Files.exists(path)) {
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.deleteIfExists(file);
+                    return FileVisitResult.CONTINUE;
                 }
-            }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    Files.deleteIfExists(dir);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
         }
-        return (path.delete());
     }
 
     @Test
     public void testDirectoryCache() throws IOException {
 
         // Create a temp cache directory.
-        File file = Files.createTempDirectory(new File(".").toPath(), "cache_test").toFile();
+        Path file = Files.createTempDirectory(Paths.get("."), "cache_test");
         DirectoryCache cache = new DirectoryCache(file);
         try {
             byte[] data = new byte[]{1, 2, 3};

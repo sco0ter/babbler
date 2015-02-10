@@ -41,13 +41,13 @@ import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.Set;
@@ -144,7 +144,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
      */
     public final FileTransfer offerFile(final Path source, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
         if (Files.notExists(requireNonNull(source, "source must not be null."))) {
-            throw new FileNotFoundException(source.getFileName().toString());
+            throw new NoSuchFileException(source.getFileName().toString());
         }
         return offerFile(Files.newInputStream(source), source.getFileName().toString(), Files.size(source), new Date(Files.getLastModifiedTime(source).toMillis()), description, recipient, timeout);
     }

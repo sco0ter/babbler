@@ -29,7 +29,6 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -96,7 +95,7 @@ public final class XmppSessionConfiguration {
 
     private final List<String> authenticationMechanisms;
 
-    private final File cacheDirectory;
+    private final Path cacheDirectory;
 
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
@@ -232,7 +231,7 @@ public final class XmppSessionConfiguration {
      *
      * @return The directory.
      */
-    public final File getCacheDirectory() {
+    public final Path getCacheDirectory() {
         return cacheDirectory;
     }
 
@@ -247,7 +246,7 @@ public final class XmppSessionConfiguration {
 
         private int defaultResponseTimeout;
 
-        private File cacheDirectory;
+        private Path cacheDirectory;
 
         /**
          * The default preferred SASL mechanisms.
@@ -260,7 +259,7 @@ public final class XmppSessionConfiguration {
                 "ANONYMOUS");
 
         private Builder() {
-            defaultResponseTimeout(5000).cacheDirectory(DEFAULT_APPLICATION_DATA_PATH.toFile());
+            defaultResponseTimeout(5000).cacheDirectory(DEFAULT_APPLICATION_DATA_PATH);
         }
 
         /**
@@ -328,12 +327,15 @@ public final class XmppSessionConfiguration {
          * </ul>
          * If you want to disable the use of directory caching, pass null.
          *
-         * @param file The directory.
+         * @param path The directory.
          * @return The builder.
          * @see #getCacheDirectory()
          */
-        public final Builder cacheDirectory(File file) {
-            this.cacheDirectory = file;
+        public final Builder cacheDirectory(Path path) {
+            if (path != null && !Files.isDirectory(path)) {
+                throw new IllegalArgumentException("path is not a directory.");
+            }
+            this.cacheDirectory = path;
             return this;
         }
 

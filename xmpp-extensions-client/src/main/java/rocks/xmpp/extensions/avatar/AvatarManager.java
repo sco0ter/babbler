@@ -50,7 +50,6 @@ import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -106,7 +105,14 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
         super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
         vCardManager = xmppSession.getExtensionManager(VCardManager.class);
-        avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(new File(xmppSession.getConfiguration().getCacheDirectory(), "avatars")) : null;
+        Map<String, byte[]> cache;
+        try {
+            cache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Unable to instantiate directory cache.", e);
+            cache = null;
+        }
+        avatarCache = cache;
 
         avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
 

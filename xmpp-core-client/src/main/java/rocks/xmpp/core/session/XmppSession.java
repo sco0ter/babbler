@@ -502,7 +502,7 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public IQ query(IQ iq) throws StanzaException, NoResponseException {
+    public IQ query(IQ iq) throws XmppException {
         return query(iq, configuration.getDefaultResponseTimeout());
     }
 
@@ -518,7 +518,7 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
+    public IQ query(final IQ iq, long timeout) throws XmppException {
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
@@ -553,8 +553,7 @@ public class XmppSession implements AutoCloseable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            // TODO Throw InterruptedException instead?
-            throw new NoResponseException("Thread is interrupted.");
+            throw new XmppException("Thread is interrupted.", e);
         } finally {
             queryLock.unlock();
             removeIQListener(listener);
@@ -575,7 +574,7 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws StanzaException, NoResponseException {
+    public final Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws XmppException {
         final Presence[] result = new Presence[1];
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
@@ -606,8 +605,7 @@ public class XmppSession implements AutoCloseable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            // TODO Throw InterruptedException instead?
-            throw new NoResponseException("Thread is interrupted.");
+            throw new XmppException("Thread is interrupted.", e);
         } finally {
             presenceLock.unlock();
             removePresenceListener(listener);
@@ -628,7 +626,7 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws StanzaException, NoResponseException {
+    public final Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws XmppException {
 
         final Message[] result = new Message[1];
         final Lock messageLock = new ReentrantLock();
@@ -660,8 +658,7 @@ public class XmppSession implements AutoCloseable {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            // TODO Throw InterruptedException instead?
-            throw new NoResponseException("Thread is interrupted.");
+            throw new XmppException("Thread is interrupted.", e);
         } finally {
             messageLock.unlock();
             removeMessageListener(listener);
@@ -676,7 +673,12 @@ public class XmppSession implements AutoCloseable {
     /**
      * Reconnects to the XMPP server and automatically logs in by using the last known information (e.g. user name, password and bound resource).
      *
-     * @throws XmppException If an exception occurred during login.
+     * @throws ConnectionException        If a connection error occurred on the transport layer, e.g. the socket could not connect.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
+     * @throws XmppException              If any other XMPP exception occurs.
      */
     public final synchronized void reconnect() throws XmppException {
         if (status == Status.DISCONNECTED) {
@@ -690,7 +692,12 @@ public class XmppSession implements AutoCloseable {
     /**
      * Connects to the XMPP server.
      *
-     * @throws XmppException If anything went wrong, e.g. the host was not found.
+     * @throws ConnectionException        If a connection error occurred on the transport layer, e.g. the socket could not connect.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws XmppException              If any other XMPP exception occurs.
+     * @throws IllegalStateException      If the session is in a wrong state, e.g. closed or already connected.
      */
     public final void connect() throws XmppException {
         connect(null);
@@ -700,7 +707,12 @@ public class XmppSession implements AutoCloseable {
      * Connects to the XMPP server.
      *
      * @param from The 'from' attribute.
-     * @throws XmppException If anything went wrong, e.g. the host was not found.
+     * @throws ConnectionException        If a connection error occurred on the transport layer, e.g. the socket could not connect.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws XmppException              If any other XMPP exception occurs.
+     * @throws IllegalStateException      If the session is in a wrong state, e.g. closed or already connected.
      */
     public final synchronized void connect(Jid from) throws XmppException {
         if (status == Status.CLOSED) {
@@ -812,8 +824,12 @@ public class XmppSession implements AutoCloseable {
      *
      * @param user     The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password The password. Must not be null.
-     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
-     * @throws XmppException           If the login failed, due to a XMPP-level error.
+     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws XmppException              If the login failed, due to another error.
      */
     public final void login(String user, String password) throws XmppException {
         login(user, password, null);
@@ -825,7 +841,12 @@ public class XmppSession implements AutoCloseable {
      * @param user     The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password The password. Must not be null.
      * @param resource The resource. If null or empty, the resource is randomly assigned by the server.
-     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
+     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws XmppException              If the login failed, due to another error.
      */
     public final void login(String user, String password, String resource) throws XmppException {
         login(null, user, password, resource);
@@ -838,7 +859,12 @@ public class XmppSession implements AutoCloseable {
      * @param user            The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password        The password. Must not be null.
      * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
-     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.
+     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws XmppException              If the login failed, due to another error.
      */
     public final void login(String authorizationId, final String user, final String password, String resource) throws XmppException {
         Objects.requireNonNull(user, "user must not be null.");
@@ -869,7 +895,12 @@ public class XmppSession implements AutoCloseable {
      * @param authorizationId The authorization id.
      * @param callbackHandler The callback handler.
      * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
-     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server.             If the login failed, due to a SASL error reported by the server.
+     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws XmppException              If the login failed, due to another error.
      */
     public final void login(String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
         loginInternal(null, authorizationId, callbackHandler, resource);
@@ -878,7 +909,12 @@ public class XmppSession implements AutoCloseable {
     /**
      * Logs in anonymously and binds a resource.
      *
-     * @throws AuthenticationException If the login failed, due to a SASL error reported by the server. If the anonymous login failed.
+     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws StanzaException            If the server returned a stanza error during resource binding.
+     * @throws XmppException              If the login failed, due to another error.
      */
     public final void loginAnonymously() throws XmppException {
         loginInternal(new String[]{"ANONYMOUS"}, null, null, null);
@@ -958,17 +994,18 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Handles a XMPP element.
+     * Handles an XMPP element.
      * <p>
      * This method should be called on the reader thread.
      * </p>
      *
      * @param element The XMPP element.
      * @return True, if the stream needs to be restarted; otherwise false.
-     * @throws rocks.xmpp.core.stream.model.StreamErrorException If the element is a stream error.
-     * @throws Exception                                         If any exception occurred during feature negotiation.
+     * @throws StreamErrorException       If the element is a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws XmppException              If any other XMPP exception occurs.
      */
-    public final boolean handleElement(final Object element) throws Exception {
+    public final boolean handleElement(final Object element) throws XmppException {
 
         if (element instanceof Stanza) {
             stanzaListenerExecutor.execute(new Runnable() {
@@ -1028,7 +1065,7 @@ public class XmppSession implements AutoCloseable {
                         instance.initialize();
                         instances.put(clazz, instance);
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                        throw new IllegalArgumentException(e);
+                        throw new IllegalArgumentException("Can't instantiate the provided class.", e);
                     }
                 }
             }
@@ -1249,7 +1286,7 @@ public class XmppSession implements AutoCloseable {
      */
     public enum Status {
         /**
-         * The session is initial state.
+         * The session is in initial state.
          */
         INITIAL,
         /**

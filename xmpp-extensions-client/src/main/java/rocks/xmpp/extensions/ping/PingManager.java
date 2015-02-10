@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.IQExtensionManager;
-import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
@@ -151,7 +150,7 @@ public final class PingManager extends IQExtensionManager implements SessionStat
             // Nonetheless an error response is still a valid pong, hence always return true in this case.
             // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
             return (jid == null || jid.isBareJid()) && e.getStanza().getError().getCondition() == Condition.SERVICE_UNAVAILABLE;
-        } catch (NoResponseException e) {
+        } catch (XmppException e) {
             return false;
         }
     }

@@ -399,7 +399,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
 
     /**
      * Sets an item provider for the root node.
-     * <p/>
+     * <p>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
      * @param itemProvider The item provider.
@@ -414,7 +414,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
 
     /**
      * Sets an item provider for a node.
-     * <p/>
+     * <p>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
      * @param node         The node name.

@@ -109,9 +109,9 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * Processes the {@code <stream:features/>} element and immediately starts negotiating the first feature.
      *
      * @param featuresElement The {@code <stream:features/>} element.
-     * @throws Exception If an exception occurred during feature negotiation.
+     * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
-    public final synchronized void processFeatures(StreamFeatures featuresElement) throws Exception {
+    public final synchronized void processFeatures(StreamFeatures featuresElement) throws StreamNegotiationException {
         List<Object> featureList = featuresElement.getFeatures();
         List<StreamFeature> sortedFeatureList = new ArrayList<>();
 
@@ -144,9 +144,9 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      *
      * @param element The element.
      * @return True, if the stream needs restarted, after a feature has been negotiated.
-     * @throws Exception If an exception occurred during feature negotiation.
+     * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
-    public final synchronized boolean processElement(Object element) throws Exception {
+    public final synchronized boolean processElement(Object element) throws StreamNegotiationException {
         // Check if the element is known to any feature negotiator.
         for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
             if (streamFeatureNegotiator.getFeatureClass() == element || streamFeatureNegotiator.canProcess(element)) {
@@ -215,6 +215,7 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * @param streamFeature The stream feature class.
      * @param timeout       The timeout.
      * @throws InterruptedException If the current thread is interrupted.
+     * @throws NoResponseException  If the server didn't respond.
      */
     public final void awaitNegotiation(Class<? extends StreamFeature> streamFeature, long timeout) throws InterruptedException, NoResponseException {
         Condition condition = null;

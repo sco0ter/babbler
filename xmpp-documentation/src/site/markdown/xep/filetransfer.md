@@ -80,9 +80,8 @@ fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener()
     @Override
     public void fileTransferOffered(FileTransferOfferEvent e) {
         try {
-            OutputStream outputStream = Files.newOutputStream(Paths.get(("test.png"));
 
-            final FileTransfer fileTransfer = e.accept(outputStream);
+            final FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
             fileTransfer.transfer();
 
         } catch (IOException e1) {

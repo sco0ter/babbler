@@ -63,7 +63,7 @@ If accepted, you can transfer the file.
 
 ```java
 try {
-    FileTransfer fileTransfer = fileTransferManager.offerFile(new File("test.png"), "Description", Jid.valueOf("juliet@exampl.net/balcony"), 60000);
+    FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("test.png"), "Description", Jid.valueOf("juliet@exampl.net/balcony"), 60000);
     fileTransfer.transfer();
 } catch (FileTransferRejectedException e) {
     // The user rejected the file transfer.
@@ -80,7 +80,7 @@ fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener()
     @Override
     public void fileTransferOffered(FileTransferOfferEvent e) {
         try {
-            OutputStream outputStream = new FileOutputStream("test.png");
+            OutputStream outputStream = Files.newOutputStream(Paths.get(("test.png"));
 
             final FileTransfer fileTransfer = e.accept(outputStream);
             fileTransfer.transfer();

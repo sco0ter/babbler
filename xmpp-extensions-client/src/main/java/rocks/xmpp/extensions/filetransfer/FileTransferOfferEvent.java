@@ -28,6 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.hashes.model.Hash;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -108,7 +109,19 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
      * @throws java.io.IOException If the byte stream session could not be established.
      */
     public final FileTransfer accept(final Path destination) throws IOException {
-    	return accept(Files.newOutputStream(destination));
+        return accept(Files.newOutputStream(destination));
+    }
+
+    /**
+     * Accepts the incoming file transfer request.
+     * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
+     *
+     * @param target The file to be written.
+     * @return The file transfer object.
+     * @throws java.io.IOException If the byte stream session could not be established.
+     */
+    public final FileTransfer accept(final File target) throws IOException {
+        return accept(target.toPath());
     }
 
     /**

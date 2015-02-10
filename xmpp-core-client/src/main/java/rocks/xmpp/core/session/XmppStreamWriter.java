@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import javax.xml.XMLConstants;
@@ -145,6 +146,13 @@ final class XmppStreamWriter {
                             marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                         }
                         prefixFreeCanonicalizationWriter.flush();
+                        
+                        // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
+                        if (clientStreamElement instanceof Stanza) {
+                            prefixFreeCanonicalizationWriter.writeCharacters(" ");
+                            prefixFreeCanonicalizationWriter.flush();
+                        }
+                        
                         if (debugger != null) {
                             debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), clientStreamElement);
                             byteArrayOutputStream.reset();

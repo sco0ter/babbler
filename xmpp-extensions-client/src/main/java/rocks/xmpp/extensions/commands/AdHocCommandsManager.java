@@ -33,7 +33,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -108,13 +108,13 @@ public class AdHocCommandsManager extends ExtensionManager {
                         if (sessionId == null) {
                             AdHocCommand adHocCommand = commandMap.get(node);
                             if (adHocCommand == null) {
-                                xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+                                xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
                                 e.consume();
                             }
                         } else {
                             CommandSession commandSession = commandSessionMap.get(sessionId);
                             if (commandSession == null) {
-                                StanzaError stanzaError = new StanzaError(new ItemNotFound());
+                                StanzaError stanzaError = new StanzaError(Condition.ITEM_NOT_FOUND);
                                 // stanzaError.setExtension();
                                 xmppSession.send(iq.createError(stanzaError));
                                 e.consume();

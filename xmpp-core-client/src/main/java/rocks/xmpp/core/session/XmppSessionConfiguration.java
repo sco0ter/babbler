@@ -332,7 +332,7 @@ public final class XmppSessionConfiguration {
          * @see #getCacheDirectory()
          */
         public final Builder cacheDirectory(Path path) {
-            if (path != null && !Files.isDirectory(path)) {
+            if (path != null && Files.exists(path) && !Files.isDirectory(path)) {
                 throw new IllegalArgumentException("path is not a directory.");
             }
             this.cacheDirectory = path;

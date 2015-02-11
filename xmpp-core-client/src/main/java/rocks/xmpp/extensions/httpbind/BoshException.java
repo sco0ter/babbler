@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.httpbind;
 
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
 import java.net.URI;
@@ -34,7 +35,7 @@ import java.net.URI;
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.httpbind.model.Body.Condition
  */
-public final class BoshException extends Exception {
+public final class BoshException extends XmppException {
     private final Body.Condition condition;
 
     private URI uri;
@@ -62,7 +63,7 @@ public final class BoshException extends Exception {
      *
      * @return The BOSH error condition.
      */
-    public Body.Condition getCondition() {
+    public final Body.Condition getCondition() {
         return condition;
     }
 
@@ -71,7 +72,7 @@ public final class BoshException extends Exception {
      *
      * @return The URI.
      */
-    public URI getUri() {
+    public final URI getUri() {
         return uri;
     }
 
@@ -80,7 +81,7 @@ public final class BoshException extends Exception {
      *
      * @return The HTTP error code.
      */
-    public int getHttpErrorCode() {
+    public final int getHttpErrorCode() {
         return httpErrorCode;
     }
 }

@@ -302,7 +302,7 @@ public final class BoshConnection extends Connection {
                 .hold((byte) 1)
                 .route(boshConnectionConfiguration.getRoute())
                 .ack(1L)
-                .from(from) // TODO!?
+                .from(from)
                 .xmppVersion("1.0");
 
         if (boshConnectionConfiguration.isUseKeySequence()) {
@@ -333,7 +333,7 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public boolean isSecure() {
+    public final boolean isSecure() {
         return boshConnectionConfiguration.isSecure();
     }
 

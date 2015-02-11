@@ -75,7 +75,7 @@ public class FileTransferReceiver {
                         @Override
                         public void fileTransferOffered(FileTransferOfferEvent e) {
                             try {
-                                FileTransfer fileTransfer = e.accept(Files.newOutputStream(Paths.get("test.png")));
+                                FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
                                 fileTransfer.transfer();
                             } catch (IOException e1) {
                                 e1.printStackTrace();

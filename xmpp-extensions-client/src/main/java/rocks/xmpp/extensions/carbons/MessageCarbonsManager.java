@@ -54,7 +54,7 @@ public final class MessageCarbonsManager extends ExtensionManager {
     /**
      * Enables message carbons on the server for this session.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void enableCarbons() throws XmppException {
@@ -64,7 +64,7 @@ public final class MessageCarbonsManager extends ExtensionManager {
     /**
      * Enables message carbons on the server for this session.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void disableCarbons() throws XmppException {

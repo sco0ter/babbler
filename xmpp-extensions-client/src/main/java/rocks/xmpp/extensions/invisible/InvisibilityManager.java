@@ -46,7 +46,7 @@ public final class InvisibilityManager extends ExtensionManager {
     /**
      * Becomes invisible.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public synchronized void becomeInvisible() throws XmppException {
@@ -57,7 +57,7 @@ public final class InvisibilityManager extends ExtensionManager {
     /**
      * Becomes visible.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public synchronized void becomeVisible() throws XmppException {
@@ -78,7 +78,7 @@ public final class InvisibilityManager extends ExtensionManager {
      * Checks, whether invisibility is supported by the server.
      *
      * @return True, if invisibility is supported.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public boolean isSupported() throws XmppException {

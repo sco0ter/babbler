@@ -160,7 +160,7 @@ public final class ContactExchangeManager extends IQExtensionManager implements 
      *
      * @param jid      The recipient.
      * @param contacts The contacts
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void suggestContactAddition(Jid jid, Contact... contacts) throws XmppException {
@@ -207,7 +207,7 @@ public final class ContactExchangeManager extends IQExtensionManager implements 
      *
      * @param item The roster exchange item.
      * @return The action, which was actually performed. This may vary from the specified action, e.g. if you add a contact that already exists, only its groups are updated. If no action was performed, e.g. if you want to delete a contact, that does not exist, null is returned.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ContactExchange.Item.Action approve(ContactExchange.Item item) throws XmppException {

@@ -87,7 +87,7 @@ public final class PubSubNode {
      * Discovers the node info, which consists of a node name, type and meta data.
      *
      * @return The node info.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-info">5.3 Discover Node Information</a>
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
@@ -123,7 +123,7 @@ public final class PubSubNode {
      * Discovers the items for this node.
      *
      * @return The items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-discoveritems">5.5 Discover Items for a Node</a>
      */
@@ -161,7 +161,7 @@ public final class PubSubNode {
      * Gets the subscriptions for this node.
      *
      * @return The subscriptions for the node.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
      */
@@ -175,7 +175,7 @@ public final class PubSubNode {
      * Gets the affiliations for this node.
      *
      * @return The affiliations for all nodes.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
@@ -188,7 +188,7 @@ public final class PubSubNode {
      * Subscribes to this node.
      *
      * @return The subscription.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe">6.1 Subscribe to a Node</a>
      */
@@ -201,7 +201,7 @@ public final class PubSubNode {
      *
      * @param subscribeOptions The configuration form.
      * @return The subscription.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
      */
@@ -213,7 +213,7 @@ public final class PubSubNode {
     /**
      * Unsubscribes from this node.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
@@ -225,7 +225,7 @@ public final class PubSubNode {
      * Unsubscribes from this node.
      *
      * @param subscriptionId The subscription id.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
@@ -238,7 +238,7 @@ public final class PubSubNode {
      *
      * @param defaultOptions Whether to get the default options or not.
      * @return The data form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
@@ -257,7 +257,7 @@ public final class PubSubNode {
      * Gets the subscription options for this node.
      *
      * @return The data form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
      * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
@@ -271,7 +271,7 @@ public final class PubSubNode {
      *
      * @param subId The subscription id.
      * @return The data form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
      * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
@@ -285,7 +285,7 @@ public final class PubSubNode {
      * Submits subscription options for this node.
      *
      * @param dataForm The subscription options form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      * @deprecated Use {@link #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)}
@@ -299,7 +299,7 @@ public final class PubSubNode {
      * Configures the subscription options for this node.
      *
      * @param subscribeOptions The subscription options form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
@@ -311,7 +311,7 @@ public final class PubSubNode {
      * Gets the default subscription options for a specific node.
      *
      * @return The default subscription options.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      * @deprecated Use {@link #getSubscriptionOptions(boolean)}
@@ -326,7 +326,7 @@ public final class PubSubNode {
      * Gets all items for this node.
      *
      * @return The items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
      */
@@ -340,7 +340,7 @@ public final class PubSubNode {
      *
      * @param ids The item ids.
      * @return The items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning Notifications Only</a>
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestone">6.5.8 Requesting a Particular Item</a>
@@ -356,7 +356,7 @@ public final class PubSubNode {
      *
      * @param maxItems The maximal number of items.
      * @return The items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
@@ -370,7 +370,7 @@ public final class PubSubNode {
      *
      * @param item The item to be published. Note that this item must be known to the {@link rocks.xmpp.core.session.context.CoreContext}, so that it can be marshalled into XML.
      * @return The item id, generated by the pubsub service.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
@@ -384,7 +384,7 @@ public final class PubSubNode {
      * @param item           The item to be published. Note that this item must be known to the {@link rocks.xmpp.core.session.context.CoreContext}, so that it can be marshalled into XML.
      * @param publishOptions The optional publish options.
      * @return The item id, generated by the pubsub service.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
@@ -399,7 +399,7 @@ public final class PubSubNode {
      * @param id   The item's id.
      * @param item The item to be published. Note that this item must be known to the {@link rocks.xmpp.core.session.context.CoreContext}, so that it can be marshalled into XML.
      * @return The item id.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
@@ -414,7 +414,7 @@ public final class PubSubNode {
      * @param item           The item to be published. Note that this item must be known to the {@link rocks.xmpp.core.session.context.CoreContext}, so that it can be marshalled into XML.
      * @param publishOptions The optional publish options.
      * @return The item id.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-options">7.1.5 Publishing Options</a>
      */
@@ -432,7 +432,7 @@ public final class PubSubNode {
      *
      * @param id     The item id.
      * @param notify If the pubsub service shall notify the subscribers about the deletion.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
      */
@@ -444,7 +444,7 @@ public final class PubSubNode {
      * Creates the node on the remote pubsub service.
      *
      * @return The node id, if it wasn't already set.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
      */
@@ -457,7 +457,7 @@ public final class PubSubNode {
      *
      * @param nodeConfiguration The configuration form.
      * @return The node id.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
      */
@@ -480,7 +480,7 @@ public final class PubSubNode {
      * Gets the node configuration form.
      *
      * @return The configuration form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-request">8.2.1 Request</a>
      */
@@ -494,7 +494,7 @@ public final class PubSubNode {
      * Submits the node configuration form.
      *
      * @param dataForm The configuration form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
      * @deprecated Use {@link #configureNode(rocks.xmpp.extensions.pubsub.model.NodeConfiguration)}
@@ -508,7 +508,7 @@ public final class PubSubNode {
      * Configures the node by submitting the configuration form.
      *
      * @param nodeConfiguration The configuration form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
      */
@@ -519,7 +519,7 @@ public final class PubSubNode {
     /**
      * Deletes this node on the pubsub service.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
      */
@@ -531,7 +531,7 @@ public final class PubSubNode {
      * Deletes this node and specifies a replacement node.
      *
      * @param uri The replacement node.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
      */
@@ -542,7 +542,7 @@ public final class PubSubNode {
     /**
      * Purges this node of all published items.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-purge">8.5 Purge All Node Items</a>
      */
@@ -554,7 +554,7 @@ public final class PubSubNode {
      * Discovers the (sub-)nodes, which hierarchically reside under this node, e.g. the "second-level" nodes.
      *
      * @return The list of nodes.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
      */
@@ -571,7 +571,7 @@ public final class PubSubNode {
      * Gets the (sub-)nodes, which hierarchically reside under this node, e.g. the "second-level" nodes.
      *
      * @return The list of nodes.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
      * @deprecated Use {@link #discoverNodes()}

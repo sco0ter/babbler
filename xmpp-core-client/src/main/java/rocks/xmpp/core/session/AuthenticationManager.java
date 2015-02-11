@@ -26,14 +26,14 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.sasl.XmppSaslClientFactory;
 import rocks.xmpp.core.sasl.model.Auth;
-import rocks.xmpp.core.sasl.model.AuthenticationException;
+import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Challenge;
 import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.Sasl;

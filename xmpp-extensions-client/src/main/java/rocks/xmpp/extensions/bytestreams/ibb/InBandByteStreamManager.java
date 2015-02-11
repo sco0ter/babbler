@@ -91,7 +91,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
      * @param sessionId The session id.
      * @param blockSize The block size.
      * @return The in-band byte stream session.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ByteStreamSession initiateSession(Jid receiver, final String sessionId, int blockSize) throws XmppException {

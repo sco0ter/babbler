@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.compress;
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 

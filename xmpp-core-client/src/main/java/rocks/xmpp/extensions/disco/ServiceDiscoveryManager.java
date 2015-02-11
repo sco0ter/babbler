@@ -269,7 +269,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param jid The entity's JID.
      * @return The service discovery result.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public InfoNode discoverInformation(Jid jid) throws XmppException {
@@ -286,7 +286,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid  The entity's JID.
      * @param node The node.
      * @return The info discovery result or null, if info discovery is not supported.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see #discoverInformation(rocks.xmpp.core.Jid)
      */
@@ -300,7 +300,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param jid The JID.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid) throws XmppException {
@@ -313,7 +313,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid       The JID.
      * @param resultSet The result set management.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, ResultSetManagement resultSet) throws XmppException {
@@ -326,7 +326,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid  The JID.
      * @param node The node.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node) throws XmppException {
@@ -340,7 +340,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param node                The node.
      * @param resultSetManagement The result set management.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
@@ -353,7 +353,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param feature The feature namespace.
      * @return The services, that belong to the namespace.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      */
     public Collection<Item> discoverServices(String feature) throws XmppException {

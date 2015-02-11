@@ -226,7 +226,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
      *
      * @param contact The contact.
      * @return The contact's avatar or null, if it has no avatar.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public byte[] getAvatar(Jid contact) throws XmppException {
@@ -237,7 +237,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
      * Publishes an avatar to your VCard.
      *
      * @param imageData The avatar image data, which must be in PNG format.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */

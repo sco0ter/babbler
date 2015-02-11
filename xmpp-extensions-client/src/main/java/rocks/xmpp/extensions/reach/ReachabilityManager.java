@@ -145,7 +145,7 @@ public final class ReachabilityManager extends IQExtensionManager implements Ses
      *
      * @param contact The contact.
      * @return The reachability addresses.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public List<Address> requestReachabilityAddresses(Jid contact) throws XmppException {

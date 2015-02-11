@@ -98,7 +98,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
      * Gets the privacy lists.
      *
      * @return The privacy lists.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
@@ -123,7 +123,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
      *
      * @param name The privacy list name.
      * @return The privacy list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
@@ -140,7 +140,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
      * Changes the active list currently being applied.
      *
      * @param name The active list name.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the user attempts to set an active list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the user attempts to set an active list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
@@ -153,7 +153,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
     /**
      * Declines the use of any active list.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the request returned with an error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the request returned with an error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
@@ -165,7 +165,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
      * Change the default list (which applies to the user as a whole, not only the sending resource).
      *
      * @param name The list name.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException <ul>
+     * @throws rocks.xmpp.core.stanza.StanzaException <ul>
      *                                                      <li>If the user attempts to change which list is the default list but the default list is in use by at least one connected resource other than the sending resource, the server MUST return a {@code <conflict/>} stanza error to the sending resource</li>
      *                                                      <li>If the user attempts to set a default list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user</li>
      *                                                      </ul>
@@ -181,7 +181,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
     /**
      * Declines the use of any default list.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If one connected resource attempts to decline the use of a default list for the user as a whole but the default list currently applies to at least one other connected resource, the server MUST return a {@code <conflict/>} error to the sending resource.
+     * @throws rocks.xmpp.core.stanza.StanzaException If one connected resource attempts to decline the use of a default list for the user as a whole but the default list currently applies to at least one other connected resource, the server MUST return a {@code <conflict/>} error to the sending resource.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
@@ -193,7 +193,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
      * Creates or edits a privacy list.
      *
      * @param privacyList The privacy list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-edit">2.6 Editing a Privacy List</a>
      */
@@ -205,7 +205,7 @@ public final class PrivacyListManager extends IQExtensionManager implements Sess
      * Removes a privacy list.
      *
      * @param name The privacy list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-remove">2.8 Removing a Privacy List</a>
      */

@@ -110,7 +110,7 @@ public final class BlockingManager extends IQExtensionManager implements Session
      * Retrieves the blocked contacts.
      *
      * @return The block list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#blocklist">3.2 User Retrieves Block List</a>
      */
@@ -131,7 +131,7 @@ public final class BlockingManager extends IQExtensionManager implements Session
      * Blocks communications with contacts.
      *
      * @param jids The contacts.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
      */
@@ -145,7 +145,7 @@ public final class BlockingManager extends IQExtensionManager implements Session
      * Unblocks communications with specific contacts or with all contacts. If you want to unblock all communications, pass no arguments to this method.
      *
      * @param jids The contacts.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblock">3.4 User Unblocks Contact</a>
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblockall">3.5 User Unblocks All Contacts</a>

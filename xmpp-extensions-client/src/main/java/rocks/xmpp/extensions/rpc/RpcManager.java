@@ -75,7 +75,7 @@ public final class RpcManager extends IQExtensionManager implements SessionStatu
      * @param parameters The parameters.
      * @return The result.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the RPC returned with an XMPP stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the RPC returned with an XMPP stanza error.
      * @throws RpcException                                 If the RPC returned with an application-level error ({@code <fault/>} element).
      */
     public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {

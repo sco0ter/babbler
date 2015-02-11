@@ -100,7 +100,7 @@ public final class LastActivityManager extends IQExtensionManager implements Ses
      *
      * @param jid The JID for which the last activity is requested.
      * @return The last activity of the requested JID or null if the feature is not implemented or a time out has occurred.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public LastActivity getLastActivity(Jid jid) throws XmppException {

@@ -31,7 +31,7 @@ import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
@@ -94,7 +94,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
      * @param recipient   The recipient's JID (must be a full JID).
      * @param timeout     The timeout (indicates how long to wait until the file has been downloaded).
      * @throws FileTransferRejectedException                If the recipient rejected the file.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the user is unavailable or failed to download the file.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the user is unavailable or failed to download the file.
      * @throws rocks.xmpp.core.session.NoResponseException  If the recipient did not downloaded the file within the timeout.
      * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
      */
@@ -120,7 +120,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The file transfer object.
      * @throws FileTransferRejectedException                If the recipient rejected the file.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the user is unavailable or failed to download the file.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the user is unavailable or failed to download the file.
      * @throws rocks.xmpp.core.session.NoResponseException  If the recipient did not downloaded the file within the timeout.
      * @throws java.io.IOException                          If the file could not be read.
      */
@@ -138,7 +138,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The file transfer object.
      * @throws FileTransferRejectedException                If the recipient rejected the file.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the user is unavailable or failed to download the file.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the user is unavailable or failed to download the file.
      * @throws rocks.xmpp.core.session.NoResponseException  If the recipient did not downloaded the file within the timeout.
      * @throws java.io.IOException                          If the file could not be read.
      */
@@ -162,7 +162,7 @@ public final class FileTransferManager extends ExtensionManager implements Sessi
      * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The file transfer object.
      * @throws FileTransferRejectedException                If the recipient rejected the file.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the user is unavailable or failed to download the file.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the user is unavailable or failed to download the file.
      * @throws rocks.xmpp.core.session.NoResponseException  If the recipient did not downloaded the file within the timeout.
      * @throws java.io.IOException                          If the file could not be read.
      */

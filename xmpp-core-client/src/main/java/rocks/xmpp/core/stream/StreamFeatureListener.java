@@ -24,8 +24,6 @@
 
 package rocks.xmpp.core.stream;
 
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
-
 import java.util.EventListener;
 
 /**
@@ -39,7 +37,7 @@ public interface StreamFeatureListener extends EventListener {
     /**
      * Fired when the feature has been successfully negotiated.
      *
-     * @throws rocks.xmpp.core.stream.model.StreamNegotiationException If any exception occurred during handling of the event.
+     * @throws StreamNegotiationException If any exception occurred during handling of the event.
      */
     void featureSuccessfullyNegotiated() throws StreamNegotiationException;
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,40 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stream.model;
+package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stream.model.StreamError;
 
 /**
- * An exception which indicates a failure during stream negotiation, e.g. if TLS or SASL negotiation or compression or resource binding fails.
+ * Represents a stream error.
+ * This is exception is thrown if client receives a stream error.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
-public class StreamNegotiationException extends XmppException {
+public final class StreamErrorException extends XmppException {
 
-    public StreamNegotiationException(String message) {
-        super(message);
+    private final StreamError streamError;
+
+    /**
+     * Constructs a stanza exception.
+     *
+     * @param streamError The underlying stream error.
+     */
+    public StreamErrorException(StreamError streamError) {
+        super(streamError.toString());
+        this.streamError = streamError;
     }
 
-    public StreamNegotiationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public StreamNegotiationException(Throwable cause) {
-        super(cause);
+    /**
+     * Gets the stream error.
+     *
+     * @return The stream error.
+     */
+    public final StreamError getStreamError() {
+        return streamError;
     }
 }

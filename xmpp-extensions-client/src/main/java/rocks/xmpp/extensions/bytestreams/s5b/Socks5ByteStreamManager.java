@@ -152,7 +152,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * Discovers the SOCKS5 proxies.
      *
      * @return The proxies.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0065.html#disco">4. Discovering Proxies</a>
      */
@@ -203,7 +203,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * @param target    The target.
      * @param sessionId The session id.
      * @return The SOCKS5 byte stream session.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @throws java.io.IOException                          If the byte stream session could not be established.
      */

@@ -38,7 +38,7 @@ import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.model.Ping;

@@ -212,7 +212,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      *
      * @param jid The JID, which should usually be a full JID.
      * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
@@ -251,7 +251,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      *
      * @param jid The JID, which should usually be a full JID.
      * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @deprecated Use {@link #discoverCapabilities(rocks.xmpp.core.Jid)}
      */
@@ -266,7 +266,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      * @param feature The feature.
      * @param jid     The JID, which should usually be a full JID.
      * @return True, if this entity supports the feature.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public boolean isSupported(String feature, Jid jid) throws XmppException {

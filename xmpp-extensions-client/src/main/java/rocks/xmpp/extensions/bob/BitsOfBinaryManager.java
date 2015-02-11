@@ -61,7 +61,7 @@ class BitsOfBinaryManager extends IQExtensionManager implements SessionStatusLis
      * @param contentId Gets the data from
      * @param to        The recipient. This should be a full JID.
      * @return The data.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error, e.g. {@link rocks.xmpp.core.stanza.model.errors.ItemNotFound}, if the data was not found.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error, e.g. {@link rocks.xmpp.core.stanza.model.errors.ItemNotFound}, if the data was not found.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public Data getData(String contentId, Jid to) throws XmppException {

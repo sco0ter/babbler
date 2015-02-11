@@ -29,7 +29,7 @@ import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.tls.model.StartTls;
 
 import java.util.ArrayList;

@@ -69,7 +69,7 @@ public final class GeoLocationManager extends ExtensionManager implements Sessio
      * Publishes a geo location to the personal eventing service.
      *
      * @param geoLocation The geo location.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void publish(GeoLocation geoLocation) throws XmppException {

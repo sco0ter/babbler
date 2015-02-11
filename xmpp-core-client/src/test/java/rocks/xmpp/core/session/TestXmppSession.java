@@ -31,7 +31,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 

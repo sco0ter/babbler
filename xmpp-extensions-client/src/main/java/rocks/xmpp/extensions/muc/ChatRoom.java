@@ -231,7 +231,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Enters the room.
      *
      * @param nick The nickname.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void enter(String nick) throws XmppException {
@@ -243,7 +243,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      *
      * @param nick     The nickname.
      * @param password The password.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void enter(String nick, String password) throws XmppException {
@@ -255,7 +255,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      *
      * @param nick    The nickname.
      * @param history The history.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void enter(String nick, History history) throws XmppException {
@@ -268,7 +268,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @param nick     The nickname.
      * @param password The password.
      * @param history  The history.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public synchronized void enter(final String nick, String password, History history) throws XmppException {
@@ -305,7 +305,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Changes the room subject.
      *
      * @param subject The subject.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void changeSubject(final String subject) throws XmppException {
@@ -340,7 +340,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Changes the nickname.
      *
      * @param newNickname The new nickname.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#changenick">7.6 Changing Nickname</a>
      */
@@ -408,7 +408,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the data form necessary to register with the room.
      *
      * @return The data form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
@@ -427,7 +427,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Submits the registration form.
      *
      * @param dataForm The data form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
@@ -442,7 +442,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Registers with the room.
      *
      * @param registration The registration.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
@@ -465,7 +465,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets your reserved room nickname.
      *
      * @return The reserved nickname or null, if you don't have a reserved nickname.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public String discoverReservedNickname() throws XmppException {
@@ -526,7 +526,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the voice list.
      *
      * @return The voice list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      */
@@ -540,7 +540,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Changes multiple affiliations or roles.
      *
      * @param items The items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
@@ -556,7 +556,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the ban list.
      *
      * @return The ban list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
@@ -584,7 +584,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @param affiliation The new affiliation for the user.
      * @param user        The user.
      * @param reason      The reason.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
@@ -614,7 +614,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @param role     The new role for the user.
      * @param nickname The occupant's nickname.
      * @param reason   The reason.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
@@ -636,7 +636,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * </p>
      *
      * @return The members.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
@@ -650,7 +650,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the moderators.
      *
      * @return The moderators.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
@@ -663,7 +663,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
     /**
      * Creates an instant room.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant">10.1.2 Creating an Instant Room</a>
      */
@@ -676,7 +676,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the room information for this chat room.
      *
      * @return The room info.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
      */
@@ -717,7 +717,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the occupants in this room, i.e. their nicknames. This method should be used, when you are not yet in the room.
      *
      * @return The occupants.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roomitems">6.5 Querying for Room Items</a>
      * @see #getOccupants()
@@ -764,7 +764,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * </p>
      *
      * @return The configuration form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see rocks.xmpp.extensions.muc.model.RoomConfiguration
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
@@ -780,7 +780,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Submits the configuration form for this room.
      *
      * @param dataForm The data form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #getConfigurationForm()
@@ -804,7 +804,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Configures this room.
      *
      * @param roomConfiguration The room configuration form.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #getConfigurationForm()
@@ -829,7 +829,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Destroys the room.
      *
      * @param reason The reason for the room destruction.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
      */
@@ -852,7 +852,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Discovers the allowable traffic, i.e. the allowed extensions.
      *
      * @return The list of allowable features.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
      * @see <a href="http://www.xmpp.org/extensions/xep-0045.html#impl-service-traffic">17.1.1 Allowable Traffic</a>
      */

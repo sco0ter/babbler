@@ -27,7 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 

@@ -108,7 +108,7 @@ public final class StreamInitiationManager extends IQExtensionManager implements
      * @param mimeType The mime type of the stream.
      * @param timeout  The timeout, which wait until the stream has been negotiated.
      * @return The byte stream session which has been negotiated.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @throws java.io.IOException                          If an I/O error occurred during byte session establishment.
      */

@@ -25,7 +25,7 @@
 package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -66,7 +66,7 @@ public abstract class StreamFeatureNegotiator {
     /**
      * Notifies the listener, if a feature negotiation has completed.
      *
-     * @throws rocks.xmpp.core.stream.model.StreamNegotiationException If an exception occurred during feature negotiation.
+     * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
     protected void notifyFeatureNegotiated() throws StreamNegotiationException {
         for (StreamFeatureListener streamFeatureListener : streamFeatureListeners) {

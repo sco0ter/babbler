@@ -61,7 +61,7 @@ public final class PubSubManager extends ExtensionManager {
      * Discovers the publish-subscribe services for the current connection.
      *
      * @return The list of publish-subscribe services.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      * @deprecated Use {@link #discoverPubSubServices()}
      */
@@ -74,7 +74,7 @@ public final class PubSubManager extends ExtensionManager {
      * Discovers the publish-subscribe services for the current connection.
      *
      * @return The list of publish-subscribe services.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      */
     public Collection<PubSubService> discoverPubSubServices() throws XmppException {

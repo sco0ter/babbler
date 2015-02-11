@@ -46,7 +46,7 @@ public final class MoodManager extends ExtensionManager {
      * Publishes a mood to the personal eventing service.
      *
      * @param mood The mood.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void publish(Mood mood) throws XmppException {

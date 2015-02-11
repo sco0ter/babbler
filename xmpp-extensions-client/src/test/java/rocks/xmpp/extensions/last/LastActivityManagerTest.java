@@ -31,7 +31,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.ExtensionTest;

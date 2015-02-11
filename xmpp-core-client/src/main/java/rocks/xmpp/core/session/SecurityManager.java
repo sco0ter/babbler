@@ -26,7 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;

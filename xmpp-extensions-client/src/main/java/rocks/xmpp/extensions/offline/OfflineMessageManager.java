@@ -61,7 +61,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * Discovers support for flexible offline message retrieval.
      *
      * @return True, if the server supports flexible offline message retrieval; otherwise false.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      */
     public boolean isSupported() throws XmppException {
@@ -74,7 +74,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * Gets the number of offline messages.
      *
      * @return The number of offline messages.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-number">2.2 Requesting Number of Messages</a>
      */
@@ -99,7 +99,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * Gets the offline message headers.
      *
      * @return The list of message headers.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>
      */
@@ -117,7 +117,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * Requests a specific offline message. The message will be sent in a normal way and contains the {@link OfflineMessage} extension, which can be used to match the id {@link OfflineMessage#getId()}.
      *
      * @param id The offline message id, which corresponds to {@link OfflineMessageHeader#getId()}
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-specific">2.4 Retrieving Specific Messages</a>
      */
@@ -129,7 +129,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * Removes specific offline messages.
      *
      * @param ids The offline message ids, which correspond to {@link OfflineMessageHeader#getId()}
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-specific">2.5 Removing Specific Messages</a>
      */
@@ -144,7 +144,7 @@ public final class OfflineMessageManager extends ExtensionManager {
     /**
      * Requests all offline messages.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-all">2.6 Retrieving All Messages</a>
      */
@@ -155,7 +155,7 @@ public final class OfflineMessageManager extends ExtensionManager {
     /**
      * Removes all offline messages.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-all">2.7 Removing All Messages</a>
      */

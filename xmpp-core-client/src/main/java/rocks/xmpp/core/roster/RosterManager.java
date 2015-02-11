@@ -385,7 +385,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      * That means, you should first {@linkplain #addRosterListener(RosterListener) register} a {@link RosterListener} prior to calling this method.
      *
      * @return The roster.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public final Roster requestRoster() throws XmppException {
@@ -411,7 +411,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      * @param contact             The contact.
      * @param requestSubscription If true, the contact is also sent a subscription request.
      * @param status              The optional status text, which is sent together with a subscription request. May be null.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public final void addContact(Contact contact, boolean requestSubscription, String status) throws XmppException {
@@ -426,7 +426,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      * Updates a contact in the roster.
      *
      * @param contact The contact to update.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public final void updateContact(Contact contact) throws XmppException {
@@ -437,7 +437,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      * Removes a contact from the roster.
      *
      * @param jid The contact's JID.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public final void removeContact(Jid jid) throws XmppException {
@@ -450,7 +450,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      *
      * @param contactGroup The contact group.
      * @param name         The new name.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public final void renameContactGroup(ContactGroup contactGroup, String name) throws XmppException {
@@ -471,7 +471,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      * @param contactGroup The contact group.
      * @param name         The new group name,
      * @param index        The index of the group name.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     private synchronized void replaceGroupName(ContactGroup contactGroup, String name, int index) throws XmppException {
@@ -510,7 +510,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      * All contacts in this group and all sub groups are moved to the parent group (if present) or to no group at all.
      *
      * @param contactGroup The contact group.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public final void removeContactGroup(ContactGroup contactGroup) throws XmppException {
@@ -554,7 +554,7 @@ public final class RosterManager implements SessionStatusListener, IQHandler {
      * Stores the roster group delimiter in the private storage and afterwards sets it.
      *
      * @param groupDelimiter The group delimiter.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see #setGroupDelimiter(String)
      * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>

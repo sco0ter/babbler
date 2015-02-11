@@ -22,12 +22,13 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stanza.model;
+package rocks.xmpp.core.stanza;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stanza.model.Stanza;
 
 /**
- * A stanza exception represents a {@linkplain StanzaError stanza error}.
+ * A stanza exception represents a {@linkplain rocks.xmpp.core.stanza.model.StanzaError stanza error}.
  * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
  *
  * @author Christian Schudt

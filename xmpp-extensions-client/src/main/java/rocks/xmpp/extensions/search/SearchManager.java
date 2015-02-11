@@ -61,7 +61,7 @@ public final class SearchManager extends ExtensionManager {
      *
      * @param service The service address.
      * @return The possible search fields and instructions or null, if search is not supported. Search fields are supported if they are not null.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public Search discoverSearchFields(Jid service) throws XmppException {
@@ -76,7 +76,7 @@ public final class SearchManager extends ExtensionManager {
      * @param search  The search parameters.
      * @param service The service, which will perform the search, usually a server or server component.
      * @return The search result (see {@link Search#getItems()}) or null if search is not supported.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public Search search(Search search, Jid service) throws XmppException {

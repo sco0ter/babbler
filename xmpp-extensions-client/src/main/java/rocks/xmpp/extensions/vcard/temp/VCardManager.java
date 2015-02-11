@@ -54,7 +54,7 @@ public final class VCardManager extends ExtensionManager {
      * Gets the vCard of the current user.
      *
      * @return The vCard.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public VCard getVCard() throws XmppException {
@@ -66,7 +66,7 @@ public final class VCardManager extends ExtensionManager {
      * Saves or updates a vCard.
      *
      * @param vCard The vCard.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void setVCard(VCard vCard) throws XmppException {
@@ -90,7 +90,7 @@ public final class VCardManager extends ExtensionManager {
      *
      * @param jid The user's JID.
      * @return The vCard of the other user or null, if it does not exist.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public VCard getVCard(Jid jid) throws XmppException {

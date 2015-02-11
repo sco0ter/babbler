@@ -115,7 +115,7 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * Discovers the multi-user chat services hosted at the connected domain.
      *
      * @return The list of chat services.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      * @deprecated Use {@link #discoverChatServices()}
@@ -129,7 +129,7 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * Discovers the multi-user chat services hosted at the connected domain.
      *
      * @return The list of chat services.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
@@ -147,7 +147,7 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      *
      * @param contact The contact, which must be a full JID.
      * @return The items, {@link rocks.xmpp.extensions.disco.model.items.Item#getJid()} has the room address, and {@link rocks.xmpp.extensions.disco.model.items.Item#getName()}} has the nickname.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-client">6.7 Discovering Client Support for MUC</a>
      */

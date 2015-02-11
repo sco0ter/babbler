@@ -78,7 +78,7 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.avatar.AvatarChangeEvent;

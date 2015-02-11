@@ -52,7 +52,7 @@ public class SoapManager extends ExtensionManager {
      *
      * @param jid The entity.
      * @return True, if it support XEP-0072: SOAP Over XMPP.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public boolean isSupported(Jid jid) throws XmppException {

@@ -61,7 +61,7 @@ public final class SoftwareVersionManager extends IQExtensionManager {
      *
      * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to get the server's software version.
      * @return The software version or null, if this protocol is not supported.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {

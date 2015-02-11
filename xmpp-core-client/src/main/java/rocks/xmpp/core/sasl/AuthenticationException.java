@@ -22,10 +22,10 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.sasl.model;
+package rocks.xmpp.core.sasl;
 
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stream.model.StreamNegotiationException;
+import rocks.xmpp.core.sasl.model.Failure;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 
 /**
  * An exception thrown during the login process, if SASL negotiation with the XMPP server fails.

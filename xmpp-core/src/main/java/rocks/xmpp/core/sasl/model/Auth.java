@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlValue;
  * <p>In order to begin the SASL negotiation, the initiating entity sends an {@code <auth/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace and includes an appropriate value for the 'mechanism' attribute, thus starting the handshake for that particular authentication mechanism. This element MAY contain XML character data (in SASL terminology, the "initial response") if the mechanism supports or requires it. If the initiating entity needs to send a zero-length initial response, it MUST transmit the response as a single equals sign character ("="), which indicates that the response is present but contains no data.</p>
  * <p>If the initiating entity subsequently sends another {@code <auth/>} element and the ongoing authentication handshake has not yet completed, the receiving entity MUST discard the ongoing handshake and MUST process a new handshake for the subsequently requested SASL mechanism.</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
@@ -44,15 +46,16 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Auth implements ClientStreamElement {
 
     @XmlValue
-    private byte[] initialResponse;
+    private final byte[] initialResponse;
 
     @XmlAttribute
-    private String mechanism;
+    private final String mechanism;
 
     /**
      * Private default constructor, needed for unmarshalling.
      */
     private Auth() {
+        this(null, null);
     }
 
     /**
@@ -62,5 +65,23 @@ public final class Auth implements ClientStreamElement {
     public Auth(String mechanism, byte[] initialResponse) {
         this.mechanism = mechanism;
         this.initialResponse = initialResponse;
+    }
+
+    /**
+     * Gets the mechanism.
+     *
+     * @return The mechanism.
+     */
+    public final String getMechanism() {
+        return mechanism;
+    }
+
+    /**
+     * Gets the initial response.
+     *
+     * @return The initial response.
+     */
+    public final byte[] getInitialResponse() {
+        return initialResponse;
     }
 }

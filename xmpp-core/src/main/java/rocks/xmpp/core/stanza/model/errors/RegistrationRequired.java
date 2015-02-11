@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <registration-required/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-registration-required">8.3.3.15.  registration-required</a></cite></p>
  * <p>The requesting entity is not authorized to access the requested service because prior registration is necessary (examples of prior registration include members-only rooms in XMPP multi-user chat [XEP-0045] and gateways to non-XMPP instant messaging services, which traditionally required registration in order to use the gateway [XEP-0100]); the associated error type SHOULD be "auth".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #REGISTRATION_REQUIRED
  */
 @XmlRootElement(name = "registration-required")
-public final class RegistrationRequired extends Condition {
+@XmlType(factoryMethod = "create")
+final class RegistrationRequired extends Condition {
+
+    RegistrationRequired() {
+    }
+
+    private static RegistrationRequired create() {
+        return (RegistrationRequired) REGISTRATION_REQUIRED;
+    }
 }

@@ -54,19 +54,37 @@ public class TlsTest extends XmlTest {
     public void unmarshalProceed() throws XMLStreamException, JAXBException {
         String xml = "<proceed xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>";
         Proceed proceed = unmarshal(xml, Proceed.class);
+        Proceed proceed1 = unmarshal(xml, Proceed.class);
         Assert.assertNotNull(proceed);
+        Assert.assertTrue(proceed == proceed1);
     }
 
     @Test
     public void unmarshalFailure() throws XMLStreamException, JAXBException {
         String xml = "<failure xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>";
         Failure failure = unmarshal(xml, Failure.class);
+        Failure failure1 = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
+        Assert.assertTrue(failure == failure1);
     }
 
     @Test
     public void marshalStartTls() throws JAXBException, XMLStreamException {
         String xml = marshal(new StartTls());
         Assert.assertEquals(xml, "<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"></starttls>");
+    }
+
+    //@Test
+    public void unmarshalPerformanceTest() throws JAXBException, XMLStreamException {
+        String xml = "<failure xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>";
+
+        long now = System.currentTimeMillis();
+
+        for (int i = 0; i < 100000; i++) {
+            Failure failure = unmarshal(xml, Failure.class);
+            boolean t = failure == Failure.INSTANCE;
+        }
+
+        System.out.println(System.currentTimeMillis() - now);
     }
 }

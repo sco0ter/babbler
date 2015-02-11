@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.server;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -141,27 +142,33 @@ public final class Presence extends AbstractPresence implements ServerStreamElem
     /**
      * Constructs a presence with all possible values.
      *
-     * @param to       The recipient.
-     * @param type     The type.
-     * @param show     The 'show' value.
-     * @param status   The status.
-     * @param priority The priority.
-     * @param id       The id.
-     * @param from     The 'from' attribute.
-     * @param language The language.
-     * @param error    The stanza error.
+     * @param to         The recipient.
+     * @param type       The type.
+     * @param show       The 'show' value.
+     * @param status     The status.
+     * @param priority   The priority.
+     * @param id         The id.
+     * @param from       The 'from' attribute.
+     * @param language   The language.
+     * @param extensions The extensions.
+     * @param error      The stanza error.
      */
     public Presence(Jid to, Type type, Show show, Collection<Status> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
         super(to, type, show, status, priority, id, from, language, extensions, error);
     }
 
     @Override
-    public Presence createError(StanzaError error) {
+    public final Presence createError(StanzaError error) {
         return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(), getLanguage(), getExtensions(), error);
     }
 
     @Override
-    public Presence withFrom(Jid from) {
+    public final Presence createError(Condition condition) {
+        return createError(new StanzaError(condition));
+    }
+
+    @Override
+    public final Presence withFrom(Jid from) {
         return new Presence(getTo(), getType(), getShow(), getStatuses(), getPriority(), getId(), from, getLanguage(), getExtensions(), getError());
     }
 }

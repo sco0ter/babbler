@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -517,7 +517,7 @@ public final class Jingle {
         /**
          * The base class for the defined conditions for a reason.
          */
-        public static abstract class Condition {
+        public abstract static class Condition {
             private Condition() {
             }
         }

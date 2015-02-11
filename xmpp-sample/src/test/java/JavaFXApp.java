@@ -78,9 +78,9 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.stanza.model.errors.ServiceUnavailable;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.avatar.AvatarChangeEvent;
 import rocks.xmpp.extensions.avatar.AvatarChangeListener;
 import rocks.xmpp.extensions.avatar.AvatarManager;
@@ -261,7 +261,7 @@ public class JavaFXApp extends Application {
 
                                 chatSession.addMessageListener(new MessageListener() {
                                     @Override
-                                    public void handle(final MessageEvent e) {
+                                    public void handleMessage(final MessageEvent e) {
                                         Platform.runLater(new Runnable() {
                                             @Override
                                             public void run() {
@@ -309,7 +309,7 @@ public class JavaFXApp extends Application {
 
                         xmppSession.addPresenceListener(new PresenceListener() {
                             @Override
-                            public void handle(final PresenceEvent e) {
+                            public void handlePresence(final PresenceEvent e) {
                                 if (e.isIncoming()) {
                                     if (e.getPresence().isAvailable()) {
                                         Platform.runLater(new Runnable() {
@@ -492,11 +492,8 @@ public class JavaFXApp extends Application {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
                                     PingManager pingManager = xmppSession.getExtensionManager(PingManager.class);
-                                    try {
-                                        pingManager.pingServer();
-                                    } catch (XmppException e) {
-                                        e.printStackTrace();
-                                    }
+                                    pingManager.pingServer();
+
                                 }
                             });
                             MenuItem searchMenuItem = new MenuItem("Search");
@@ -647,7 +644,7 @@ public class JavaFXApp extends Application {
                                             // The entity did not respond
                                         } else if (e instanceof StanzaException) {
                                             StanzaError stanzaError = ((StanzaException) e).getStanza().getError();
-                                            if (stanzaError.getCondition() instanceof ServiceUnavailable) {
+                                            if (stanzaError.getCondition() == Condition.SERVICE_UNAVAILABLE) {
                                                 // The entity returned a <service-unavailable/> stanza error.
                                             }
                                         }
@@ -703,6 +700,7 @@ public class JavaFXApp extends Application {
                 }
             }
         });
+
         Button btn = new Button("Misc");
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override

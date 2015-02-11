@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,12 @@ package rocks.xmpp.extensions.jingle.apps.rtp.model;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.errors.CryptoRequired;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.errors.InvalidCrypto;
-import rocks.xmpp.extensions.jingle.apps.rtp.model.info.*;
+import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Active;
+import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Hold;
+import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Mute;
+import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Ringing;
+import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Unhold;
+import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Unmute;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -44,6 +49,11 @@ import java.util.List;
 @XmlRootElement(name = "description")
 @XmlSeeAlso({InvalidCrypto.class, CryptoRequired.class, Active.class, Hold.class, Unhold.class, Mute.class, Unmute.class, Ringing.class})
 public final class Rtp extends ApplicationFormat {
+
+    /**
+     * urn:xmpp:jingle:apps:rtp:1
+     */
+    public static final String NAMESPACE = "urn:xmpp:jingle:apps:rtp:1";
 
     @XmlAttribute(name = "media")
     private String media;

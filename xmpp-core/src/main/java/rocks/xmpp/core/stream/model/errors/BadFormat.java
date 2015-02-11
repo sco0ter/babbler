@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ package rocks.xmpp.core.stream.model.errors;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <bad-format/>} stream error.
@@ -36,7 +37,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-bad-format">4.9.3.1.  bad-format</a></cite></p>
  * <p>The entity has sent XML that cannot be processed.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #BAD_FORMAT
  */
 @XmlRootElement(name = "bad-format")
-public final class BadFormat extends Condition {
+@XmlType(factoryMethod = "create")
+final class BadFormat extends Condition {
+
+    BadFormat() {
+    }
+
+    private static BadFormat create() {
+        return (BadFormat) BAD_FORMAT;
+    }
 }

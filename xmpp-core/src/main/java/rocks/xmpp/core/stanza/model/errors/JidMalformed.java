@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <jid-malformed/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-jid-malformed">8.3.3.8.  jid-malformed</a></cite></p>
  * <p>The sending entity has provided (e.g., during resource binding) or communicated (e.g., in the 'to' address of a stanza) an XMPP address or aspect thereof that violates the rules defined in [XMPP-ADDR]; the associated error type SHOULD be "modify".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #JID_MALFORMED
  */
 @XmlRootElement(name = "jid-malformed")
-public final class JidMalformed extends Condition {
+@XmlType(factoryMethod = "create")
+final class JidMalformed extends Condition {
+
+    JidMalformed() {
+    }
+
+    private static JidMalformed create() {
+        return (JidMalformed) JID_MALFORMED;
+    }
 }

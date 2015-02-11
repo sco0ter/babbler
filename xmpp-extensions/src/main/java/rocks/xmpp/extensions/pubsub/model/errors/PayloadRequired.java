@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <payload-required/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #PAYLOAD_REQUIRED
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badrequest">7.1.3.6 Request Does Not Match Configuration</a>
  */
 @XmlRootElement(name = "payload-required")
+@XmlType(factoryMethod = "create")
 public final class PayloadRequired extends PubSubError {
-    private PayloadRequired() {
+    PayloadRequired() {
+    }
+
+    private static PayloadRequired create() {
+        return PAYLOAD_REQUIRED;
     }
 }

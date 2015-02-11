@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,11 @@
 package rocks.xmpp.core;
 
 /**
- * This is the abstract base class for all kind of XMPP related exceptions.
+ * This is the base class for all kind of XMPP related exceptions.
  *
  * @author Christian Schudt
  */
-public abstract class XmppException extends Exception {
+public class XmppException extends Exception {
 
     public XmppException() {
         super();
@@ -37,6 +37,10 @@ public abstract class XmppException extends Exception {
 
     public XmppException(String message) {
         super(message);
+    }
+
+    public XmppException(Throwable cause) {
+        super(cause);
     }
 
     public XmppException(String message, Throwable cause) {

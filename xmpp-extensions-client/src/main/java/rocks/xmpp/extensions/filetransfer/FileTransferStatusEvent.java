@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import java.util.EventObject;
 /**
  * @author Christian Schudt
  */
+@SuppressWarnings("serial")
 public final class FileTransferStatusEvent extends EventObject {
 
     private final FileTransfer.Status status;
@@ -37,11 +38,13 @@ public final class FileTransferStatusEvent extends EventObject {
      * Constructs a prototypical Event.
      *
      * @param source The object on which the Event initially occurred.
+     * @param bytesTransferred The number of bytes transferred so far.
      * @throws IllegalArgumentException if source is null.
      */
-    FileTransferStatusEvent(Object source, FileTransfer.Status status) {
+    FileTransferStatusEvent(Object source, FileTransfer.Status status, final long bytesTransferred) {
         super(source);
         this.status = status;
+        this.bytesTransferred = bytesTransferred;
     }
 
     /**
@@ -52,4 +55,25 @@ public final class FileTransferStatusEvent extends EventObject {
     public FileTransfer.Status getStatus() {
         return status;
     }
+    
+    private final long bytesTransferred;
+
+    /**
+     * Gets the number of bytes transferred so far.
+     * 
+     * @return The number of bytes transferred so far.
+     */
+    public final long getBytesTransferred() {
+    	return bytesTransferred;
+    }
+    
+	/**
+	 * Returns a {@code String} representation of this {@code FileTransferStatusEvent} object.
+	 * 
+	 * @since 0.5.0
+	 */
+	@Override
+	public final String toString() {
+		return String.format("%s[source=%s, status=%s, bytesTransferred=%d]", FileTransferStatusEvent.class.getName(), source, status, bytesTransferred);
+	}
 }

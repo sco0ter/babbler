@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,13 +26,13 @@ package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -48,14 +48,16 @@ import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Manages <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
@@ -71,13 +73,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends ExtensionManager {
+public final class ServiceDiscoveryManager extends IQExtensionManager implements SessionStatusListener {
 
     private static Identity defaultIdentity = new Identity("client", "pc");
 
-    private final Set<Identity> identities = new CopyOnWriteArraySet<>();
+    private final Set<Identity> identities = new ConcurrentSkipListSet<>();
 
-    private final Set<Feature> features = new CopyOnWriteArraySet<>();
+    private final Set<Feature> features = new ConcurrentSkipListSet<>();
 
     private final List<DataForm> extensions = new CopyOnWriteArrayList<>();
 
@@ -88,62 +90,13 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
-        super(xmppSession, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
+        super(xmppSession, AbstractIQ.Type.GET, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
 
-        itemProviders.put("", new DefaultItemProvider());
+        xmppSession.addSessionStatusListener(this);
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
-                        pcs.removePropertyChangeListener(propertyChangeListener);
-                    }
-                }
-            }
-        });
-
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handle(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
-                    InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
-                    if (infoDiscovery != null) {
-                        if (infoDiscovery.getNode() == null) {
-                            xmppSession.send(iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions())));
-                        } else {
-                            InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
-                            if (infoNode != null) {
-                                xmppSession.send(iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions())));
-                            } else {
-                                // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                                // Treat info discovery the same as item discovery.
-                                xmppSession.send(iq.createResult(new InfoDiscovery()));
-                            }
-                        }
-                        e.consume();
-                    } else {
-                        ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
-                        if (itemDiscovery != null) {
-                            ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
-                            if (itemProvider != null) {
-                                ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
-                                ItemDiscovery itemDiscoveryResult = new ItemDiscovery(resultSet.getItems(), resultSet.getResultSetManagement());
-                                xmppSession.send(iq.createResult(itemDiscoveryResult));
-                            } else {
-                                // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                                xmppSession.send(iq.createResult(new ItemDiscovery()));
-                            }
-                            e.consume();
-                        }
-                    }
-                }
-            }
-        });
-
+        xmppSession.addIQHandler(InfoDiscovery.class, this);
+        xmppSession.addIQHandler(ItemDiscovery.class, this);
         setEnabled(true);
-
     }
 
     /**
@@ -170,8 +123,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * Gets an unmodifiable list of items.
      *
      * @return The items.
-     * @see #addItem(rocks.xmpp.extensions.disco.model.items.Item)
-     * @see #removeItem(rocks.xmpp.extensions.disco.model.items.Item)
      */
     public List<Item> getItems() {
         ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
@@ -209,7 +160,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #removeFeature(rocks.xmpp.extensions.disco.model.info.Feature)
      */
     public Set<Feature> getFeatures() {
-        return Collections.unmodifiableSet(features);
+        return Collections.unmodifiableSet(new HashSet<>(features));
     }
 
     /**
@@ -221,43 +172,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public List<DataForm> getExtensions() {
-        return Collections.unmodifiableList(extensions);
-    }
-
-    /**
-     * Adds an item.
-     *
-     * @param item The item.
-     * @see #removeItem(Item)
-     * @see #getItems() ()
-     */
-    public synchronized void addItem(Item item) {
-        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
-        if (rootItemProvider != null) {
-            List<Item> oldList = Collections.unmodifiableList(rootItemProvider.getItems());
-            rootItemProvider.getItems().add(item);
-            this.pcs.firePropertyChange("items", oldList, getItems());
-        } else {
-            throw new IllegalStateException("Root item provider is null");
-        }
-    }
-
-    /**
-     * Removes an item.
-     *
-     * @param item The item.
-     * @see #addItem(Item)
-     * @see #getItems()
-     */
-    public synchronized void removeItem(Item item) {
-        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
-        if (rootItemProvider != null) {
-            List<Item> oldList = Collections.unmodifiableList(rootItemProvider.getItems());
-            rootItemProvider.getItems().remove(item);
-            this.pcs.firePropertyChange("items", oldList, getItems());
-        } else {
-            throw new IllegalStateException("Root item provider is null");
-        }
+        return Collections.unmodifiableList(new ArrayList<>(extensions));
     }
 
     /**
@@ -268,7 +183,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #getIdentities()
      */
     public synchronized void addIdentity(Identity identity) {
-        Set<Identity> oldList = Collections.unmodifiableSet(identities);
+        Set<Identity> oldList = getIdentities();
         identities.add(identity);
         this.pcs.firePropertyChange("identities", oldList, getIdentities());
     }
@@ -281,7 +196,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #getIdentities()
      */
     public synchronized void removeIdentity(Identity identity) {
-        Set<Identity> oldList = Collections.unmodifiableSet(identities);
+        Set<Identity> oldList = getIdentities();
         identities.remove(identity);
         this.pcs.firePropertyChange("identities", oldList, getIdentities());
     }
@@ -295,7 +210,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #getFeatures()
      */
     public synchronized void addFeature(Feature feature) {
-        Set<Feature> oldList = Collections.unmodifiableSet(features);
+        Set<Feature> oldList = getFeatures();
         features.add(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
@@ -308,7 +223,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #getFeatures()
      */
     public synchronized void removeFeature(Feature feature) {
-        Set<Feature> oldList = Collections.unmodifiableSet(features);
+        Set<Feature> oldList = getFeatures();
         features.remove(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
@@ -322,7 +237,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public synchronized void addExtension(DataForm extension) {
-        List<DataForm> oldList = Collections.unmodifiableList(extensions);
+        List<DataForm> oldList = getExtensions();
         extensions.add(extension);
         this.pcs.firePropertyChange("extensions", oldList, getExtensions());
     }
@@ -336,7 +251,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public synchronized void removeExtension(DataForm extension) {
-        List<DataForm> oldList = Collections.unmodifiableList(extensions);
+        List<DataForm> oldList = getExtensions();
         extensions.remove(extension);
         this.pcs.firePropertyChange("extensions", oldList, getExtensions());
     }
@@ -354,7 +269,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @param jid The entity's JID.
      * @return The service discovery result.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public InfoNode discoverInformation(Jid jid) throws XmppException {
@@ -371,7 +286,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @param jid  The entity's JID.
      * @param node The node.
      * @return The info discovery result or null, if info discovery is not supported.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see #discoverInformation(rocks.xmpp.core.Jid)
      */
@@ -385,7 +300,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @param jid The JID.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid) throws XmppException {
@@ -398,7 +313,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @param jid       The JID.
      * @param resultSet The result set management.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, ResultSetManagement resultSet) throws XmppException {
@@ -411,7 +326,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @param jid  The JID.
      * @param node The node.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node) throws XmppException {
@@ -425,12 +340,43 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @param node                The node.
      * @param resultSetManagement The result set management.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
         return result.getExtension(ItemDiscovery.class);
+    }
+
+    /**
+     * Discovers a service on the connected server by its feature namespace.
+     *
+     * @param feature The feature namespace.
+     * @return The services, that belong to the namespace.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     */
+    public Collection<Item> discoverServices(String feature) throws XmppException {
+        ItemNode itemDiscovery = discoverItems(Jid.valueOf(xmppSession.getDomain()));
+        Collection<Item> services = new ArrayList<>();
+        XmppException exception = null;
+        for (Item item : itemDiscovery.getItems()) {
+            try {
+                InfoNode infoDiscovery = discoverInformation(item.getJid());
+                if (infoDiscovery.getFeatures().contains(new Feature(feature))) {
+                    services.add(item);
+                }
+            } catch (XmppException e) {
+                // If a disco#info request returns with an error, ignore it for now and try the next item.
+                exception = e;
+            }
+        }
+        // If an exception occurred and no service could be discovered, rethrow the original exception.
+        if (exception != null && services.isEmpty()) {
+            throw exception;
+        }
+        // Otherwise return the successfully discovered services.
+        return services;
     }
 
     /**
@@ -452,8 +398,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     }
 
     /**
-     * Sets an item provider for the root node. This method is similar to {@link #addItem(Item)}.
-     * The difference is that this method adds a new items to a specified node to the item hierarchy, whereas {@link #addItem(Item)} adds new items to the root node.
+     * Sets an item provider for the root node.
      * <p>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
@@ -468,8 +413,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     }
 
     /**
-     * Sets an item provider for a node. This method is similar to {@link #addItem(Item)}.
-     * The difference is that this method adds a new items to a specified node to the item hierarchy, whereas {@link #addItem(Item)} adds new items to the root node.
+     * Sets an item provider for a node.
      * <p>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
@@ -482,5 +426,50 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
         } else {
             itemProviders.put(node, itemProvider);
         }
+    }
+
+    @Override
+    protected IQ processRequest(final IQ iq) {
+        InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
+        if (infoDiscovery != null) {
+            if (infoDiscovery.getNode() == null) {
+                return iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
+            } else {
+                InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
+                if (infoNode != null) {
+                    return iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
+                } else {
+                    // Returns <feature-not-implemented/> here.
+                    // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
+                    return iq.createError(Condition.FEATURE_NOT_IMPLEMENTED);
+                }
+            }
+        } else {
+            ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
+            ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
+            if (itemProvider != null) {
+                ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
+                return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
+            } else {
+                if (itemDiscovery.getNode() == null) {
+                    // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                    return iq.createResult(new ItemDiscovery(itemDiscovery.getNode()));
+                } else {
+                    // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
+                    return iq.createError(Condition.ITEM_NOT_FOUND);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
+                pcs.removePropertyChangeListener(propertyChangeListener);
+            }
+        }
+        infoNodeMap.clear();
+        itemProviders.clear();
     }
 }

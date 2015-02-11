@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,11 @@ package rocks.xmpp.extensions.version;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 /**
@@ -42,28 +42,18 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
  *
  * @author Christian Schudt
  */
-public final class SoftwareVersionManager extends ExtensionManager {
+public final class SoftwareVersionManager extends IQExtensionManager {
 
     private SoftwareVersion softwareVersion;
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
-        super(xmppSession, SoftwareVersion.NAMESPACE);
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handle(IQEvent e) {
-                IQ iq = e.getIQ();
-                // If an entity asks us for our software version, reply.
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(SoftwareVersion.class) != null) {
-                    synchronized (SoftwareVersionManager.this) {
-                        if (softwareVersion != null) {
-                            xmppSession.send(iq.createResult(softwareVersion));
-                            e.consume();
-                        }
-                    }
-                }
-            }
-        });
+        super(xmppSession, AbstractIQ.Type.GET, SoftwareVersion.NAMESPACE);
         setEnabled(true);
+    }
+
+    @Override
+    protected void initialize() {
+        xmppSession.addIQHandler(SoftwareVersion.class, this);
     }
 
     /**
@@ -71,7 +61,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
      *
      * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to get the server's software version.
      * @return The software version or null, if this protocol is not supported.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {
@@ -97,5 +87,15 @@ public final class SoftwareVersionManager extends ExtensionManager {
      */
     public synchronized void setSoftwareVersion(SoftwareVersion softwareVersion) {
         this.softwareVersion = softwareVersion;
+    }
+
+    @Override
+    protected IQ processRequest(final IQ iq) {
+        synchronized (SoftwareVersionManager.this) {
+            if (softwareVersion != null) {
+                return iq.createResult(softwareVersion);
+            }
+        }
+        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 }

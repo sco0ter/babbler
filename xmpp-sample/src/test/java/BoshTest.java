@@ -24,17 +24,14 @@
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
-
-import javax.security.auth.login.LoginException;
 
 /**
  * @author Christian Schudt
  */
 public class BoshTest {
 
-    public static void main(String args[]) throws LoginException {
+    public static void main(String args[]) {
 
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 //.debugger(VisualDebugger.class)

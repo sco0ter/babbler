@@ -35,9 +35,8 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
-import rocks.xmpp.extensions.receipts.model.Request;
+import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
-import java.io.IOException;
 import java.util.Collections;
 
 /**
@@ -114,8 +113,8 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
-                Assert.assertNull(e.getMessage().getExtension(Request.class));
+            public void handleMessage(MessageEvent e) {
+                Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));
             }
         });
 
@@ -135,8 +134,8 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
-                Assert.assertNull(e.getMessage().getExtension(Request.class));
+            public void handleMessage(MessageEvent e) {
+                Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));
             }
         });
 
@@ -152,8 +151,8 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
-            public void handle(MessageEvent e) {
-                Assert.assertNull(e.getMessage().getExtension(Request.class));
+            public void handleMessage(MessageEvent e) {
+                Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));
             }
         });
 
@@ -169,7 +168,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
     }
 
     @Test
-    public void testListeners() throws IOException {
+    public void testListeners() throws Exception {
         TestXmppSession connection1 = new TestXmppSession();
 
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>The initiating entity aborts the handshake for this authentication mechanism by sending an {@code <abort/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace.</p>
  * <p>Upon receiving an {@code <abort/>} element, the receiving entity MUST return a {@code <failure/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace and containing an {@code <aborted/>} child element.</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */

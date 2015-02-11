@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ import rocks.xmpp.extensions.attention.model.Attention;
  * <code>
  * xmppSession.addMessageListener(new MessageListener() {
  *     {@literal @}Override
- *     public void handle(MessageEvent e) {
+ *     public void handleMessage(MessageEvent e) {
  *         if (e.isIncoming() &amp;&amp; e.getMessage().getExtension(Attention.class) != null) {
  *             // Handle attention request.
  *         }
@@ -73,7 +73,7 @@ public final class AttentionManager extends ExtensionManager {
      */
     public void captureAttention(Jid jid) {
         Message message = new Message(jid, Message.Type.HEADLINE);
-        message.getExtensions().add(new Attention());
+        message.getExtensions().add(Attention.INSTANCE);
         xmppSession.send(message);
     }
 }

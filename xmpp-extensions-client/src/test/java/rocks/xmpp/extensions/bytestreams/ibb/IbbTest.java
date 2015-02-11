@@ -30,8 +30,7 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.StanzaException;
-import rocks.xmpp.core.stanza.model.errors.NotAcceptable;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
@@ -86,7 +85,7 @@ public class IbbTest extends ExtensionTest {
             inBandBytestreamManager1.initiateSession(JULIET, UUID.randomUUID().toString(), 4096);
         } catch (XmppException e) {
             if (e instanceof StanzaException) {
-                if (((StanzaException) e).getStanza().getError().getCondition() instanceof NotAcceptable) {
+                if (((StanzaException) e).getStanza().getError().getCondition() == rocks.xmpp.core.stanza.model.errors.Condition.NOT_ACCEPTABLE) {
                     rejected = true;
                 }
             }
@@ -98,6 +97,7 @@ public class IbbTest extends ExtensionTest {
     }
 
     //@Test
+    // Runs locally, but not on CI server...
     public void testInBandBytestreamManager() throws IOException {
         MockServer mockServer = new MockServer();
         final Lock lock = new ReentrantLock();

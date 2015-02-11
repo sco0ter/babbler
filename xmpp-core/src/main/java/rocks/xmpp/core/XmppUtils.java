@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Utility class with static factory methods.
@@ -130,5 +131,22 @@ public final class XmppUtils {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Creates a thread factory which creates named daemon threads.
+     *
+     * @param threadName The thread name.
+     * @return The thread factory.
+     */
+    public static ThreadFactory createNamedThreadFactory(final String threadName) {
+        return new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r, threadName);
+                thread.setDaemon(true);
+                return thread;
+            }
+        };
     }
 }

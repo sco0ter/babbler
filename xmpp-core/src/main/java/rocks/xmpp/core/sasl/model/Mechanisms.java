@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,15 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Represents the {@code <mechanisms/>} element as described in <a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-stream">Exchange of Stream Headers and Stream Features</a>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
@@ -42,15 +47,22 @@ import java.util.List;
 public final class Mechanisms extends StreamFeature implements ServerStreamElement {
 
     @XmlElement
-    private List<String> mechanism;
+    private final List<String> mechanism = new ArrayList<>();
+
+    private Mechanisms() {
+    }
+
+    public Mechanisms(Collection<String> mechanisms) {
+        this.mechanism.addAll(mechanisms);
+    }
 
     /**
      * Gets the list of mechanisms supported by the server.
      *
      * @return The list of mechanisms.s
      */
-    public List<String> getMechanisms() {
-        return mechanism;
+    public final List<String> getMechanisms() {
+        return Collections.unmodifiableList(mechanism);
     }
 
     /**
@@ -62,12 +74,12 @@ public final class Mechanisms extends StreamFeature implements ServerStreamEleme
      * @return True. This feature is always mandatory to negotiate.
      */
     @Override
-    public boolean isMandatory() {
+    public final boolean isMandatory() {
         return true;
     }
 
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 1;
     }
 }

@@ -31,7 +31,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
@@ -90,11 +90,26 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
+            public void connect(Jid from) throws IOException {
+
+            }
+
+            @Override
+            public boolean isSecure() {
+                return false;
+            }
+
+            @Override
+            public String getStreamId() {
+                return null;
+            }
+
+            @Override
             public void close() throws IOException {
 
             }
         };
-        stanzaListenerExecutor = new SameThreadExecutorService();
+        stanzaListenerExecutor = iqHandlerExecutor= new SameThreadExecutorService();
         this.mockServer = mockServer;
         mockServer.registerConnection(this);
 
@@ -111,13 +126,13 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public IQ query(final IQ iq) throws XmppException {
+    public IQ query(final IQ iq) throws StanzaException, NoResponseException {
         final IQ[] result = new IQ[1];
 
         final IQListener iqListener = new IQListener() {
             @Override
-            public void handle(IQEvent e) {
-                if (e.isIncoming() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
+            public void handleIQ(IQEvent e) {
+                if (e.isIncoming() && e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
                     result[0] = e.getIQ();
                 }
             }
@@ -135,7 +150,13 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public void close() throws IOException {
+    public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
+        // Ignore timeout for tests.
+        return query(iq);
+    }
+
+    @Override
+    public void close() throws XmppException {
         super.close();
         updateStatus(Status.CLOSED, null);
     }

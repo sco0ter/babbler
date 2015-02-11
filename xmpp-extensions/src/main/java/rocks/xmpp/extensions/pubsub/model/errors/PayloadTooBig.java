@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <payload-too-big/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #PAYLOAD_TOO_BIG
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-bigpayload">7.1.3.4 Payload Too Big</a>
  */
 @XmlRootElement(name = "payload-too-big")
+@XmlType(factoryMethod = "create")
 public final class PayloadTooBig extends PubSubError {
-    private PayloadTooBig() {
+    PayloadTooBig() {
+    }
+
+    private static PayloadTooBig create() {
+        return PAYLOAD_TOO_BIG;
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unsupported-feature/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-feature">4.9.3.23.  unsupported-feature</a></cite></p>
  * <p>The receiving entity has advertised a mandatory-to-negotiate stream feature that the initiating entity does not support, and has offered no other mandatory-to-negotiate feature alongside the unsupported feature.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNSUPPORTED_FEATURE
  */
 @XmlRootElement(name = "unsupported-feature")
-public final class UnsupportedFeature extends Condition {
+@XmlType(factoryMethod = "create")
+final class UnsupportedFeature extends Condition {
+
+    UnsupportedFeature() {
+    }
+
+    private static UnsupportedFeature create() {
+        return (UnsupportedFeature) UNSUPPORTED_FEATURE;
+    }
 }

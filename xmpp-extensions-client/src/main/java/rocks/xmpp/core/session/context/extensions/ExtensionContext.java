@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,10 +43,7 @@ import rocks.xmpp.extensions.carbons.model.Disable;
 import rocks.xmpp.extensions.carbons.model.Enable;
 import rocks.xmpp.extensions.carbons.model.Private;
 import rocks.xmpp.extensions.carbons.model.Sent;
-import rocks.xmpp.extensions.chatstates.model.*;
-import rocks.xmpp.extensions.data.layout.model.Page;
-import rocks.xmpp.extensions.data.mediaelement.model.Media;
-import rocks.xmpp.extensions.data.validate.model.Validation;
+import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.forward.model.Forwarded;
@@ -55,8 +52,7 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.hashes.HashManager;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
-import rocks.xmpp.extensions.invisible.model.Invisible;
-import rocks.xmpp.extensions.invisible.model.Visible;
+import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
@@ -78,21 +74,16 @@ import rocks.xmpp.extensions.oob.model.x.OobX;
 import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.extensions.privacy.model.Privacy;
-import rocks.xmpp.extensions.privatedata.model.PrivateData;
-import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
-import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
 import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.extensions.receipts.MessageDeliveryReceiptsManager;
-import rocks.xmpp.extensions.receipts.model.Received;
-import rocks.xmpp.extensions.receipts.model.Request;
+import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.extensions.rpc.model.Rpc;
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.extensions.search.model.Search;
 import rocks.xmpp.extensions.shim.model.Headers;
@@ -168,17 +159,11 @@ public class ExtensionContext extends CoreContext {
                 // XEP-0048: BookmarkStorage
                 BookmarkStorage.class,
 
-                // XEP-0049: Private XML Storage
-                PrivateData.class,
-
                 // XEP-0054: vcard-temp
                 VCard.class,
 
                 // XEP-0055: Jabber Search
                 Search.class,
-
-                // XEP-0059: Result Set Management
-                ResultSetManagement.class,
 
                 // XEP-0060: Publish-Subscribe
                 PubSub.class,
@@ -197,9 +182,6 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0080: User Location
                 GeoLocation.class,
-
-                // XEP-0083: Nested Roster Groups
-                RosterDelimiter.class,
 
                 // XEP-0084: User Avatar
                 AvatarData.class, AvatarMetadata.class,
@@ -228,20 +210,11 @@ public class ExtensionContext extends CoreContext {
                 // XEP-0118: User Tune
                 Tune.class,
 
-                // XEP-0122: Data Forms Validation
-                Validation.class,
-
                 // XEP-0131: Stanza Headers and Internet Metadata
                 Headers.class,
 
-                // XEP-0141: Data Forms Layout
-                Page.class,
-
                 // XEP-0144: Roster Item Exchange
                 ContactExchange.class,
-
-                // XEP-0145: Annotations
-                Annotation.class,
 
                 // XEP-0152: Reachability Addresses
                 Reachability.class,
@@ -262,10 +235,10 @@ public class ExtensionContext extends CoreContext {
                 IceUdpTransportMethod.class,
 
                 // XEP-0184: Message Delivery Receipts
-                Received.class, Request.class,
+                MessageDeliveryReceipts.class,
 
                 // XEP-0186: Invisible Command
-                Invisible.class, Visible.class,
+                InvisibleCommand.class,
 
                 // XEP-0191: Blocking Command
                 BlockList.class,
@@ -281,9 +254,6 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0203: Delayed Delivery
                 DelayedDelivery.class,
-
-                // XEP-0221: Data Forms Media Element
-                Media.class,
 
                 // XEP-0224: Attention
                 Attention.class,

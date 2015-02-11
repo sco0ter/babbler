@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <service-unavailable/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-service-unavailable">8.3.3.19.  service-unavailable</a></cite></p>
  * <p>The server or recipient does not currently provide the requested service; the associated error type SHOULD be "cancel".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #SERVICE_UNAVAILABLE
  */
 @XmlRootElement(name = "service-unavailable")
-public final class ServiceUnavailable extends Condition {
+@XmlType(factoryMethod = "create")
+final class ServiceUnavailable extends Condition {
+
+    ServiceUnavailable() {
+    }
+
+    private static ServiceUnavailable create() {
+        return (ServiceUnavailable) SERVICE_UNAVAILABLE;
+    }
 }

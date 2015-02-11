@@ -50,7 +50,10 @@ public class AttentionTest extends XmlTest {
                 "  <body>Why don't you answer, Herbie?</body>\n" +
                 "</message>";
         Message message = unmarshal(xml, Message.class);
+        Message message2 = unmarshal(xml, Message.class);
         Attention attention = message.getExtension(Attention.class);
+        Attention attention2 = message2.getExtension(Attention.class);
         Assert.assertNotNull(attention);
+        Assert.assertTrue(attention == attention2);
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.ping.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <ping/>} element in the {@code urn:xmpp:ping} namespace.
@@ -34,10 +35,23 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0199.html#schema">XML Schema</a>
  */
 @XmlRootElement
+@XmlType(factoryMethod = "create")
 public final class Ping {
 
     /**
      * urn:xmpp:ping
      */
     public static final String NAMESPACE = "urn:xmpp:ping";
+
+    /**
+     * The {@code <ping/>} element.
+     */
+    public static final Ping INSTANCE = new Ping();
+
+    private Ping() {
+    }
+
+    private static Ping create() {
+        return INSTANCE;
+    }
 }

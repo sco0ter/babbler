@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -105,7 +105,7 @@ public final class VisualDebugger implements XmppDebugger {
 
         final PresenceListener presenceListener = new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 if (!e.isIncoming()) {
                     final Presence presence = e.getPresence();
                     if (presence.getTo() == null) {
@@ -167,14 +167,14 @@ public final class VisualDebugger implements XmppDebugger {
                                     if (outputStreamIncoming != null) {
                                         String incoming = outputStreamIncoming.toString();
                                         if (!incoming.isEmpty()) {
-                                            debugController.appendTextIncoming(incoming);
+                                            debugController.appendTextInbound(incoming);
                                             outputStreamIncoming.reset();
                                         }
                                     }
                                     if (outputStreamOutgoing != null) {
                                         String outgoing = outputStreamOutgoing.toString();
                                         if (!outgoing.isEmpty()) {
-                                            debugController.appendTextOutgoing(outgoing);
+                                            debugController.appendTextOutbound(outgoing);
                                             outputStreamOutgoing.reset();
                                         }
                                     }
@@ -236,7 +236,7 @@ public final class VisualDebugger implements XmppDebugger {
             public void run() {
                 debugController.addStanza(new StanzaEntry(false, xml, stanza));
                 if (!outgoing.isEmpty()) {
-                    debugController.appendTextOutgoing(outgoing);
+                    debugController.appendTextOutbound(outgoing);
                 }
             }
         });
@@ -259,7 +259,7 @@ public final class VisualDebugger implements XmppDebugger {
             public void run() {
                 debugController.addStanza(new StanzaEntry(true, xml, stanza));
                 if (!incoming.isEmpty()) {
-                    debugController.appendTextIncoming(incoming);
+                    debugController.appendTextInbound(incoming);
                 }
             }
         });

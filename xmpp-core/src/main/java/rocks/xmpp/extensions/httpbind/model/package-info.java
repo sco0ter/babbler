@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,10 +34,14 @@
 // Some server BOSH implementations require the prefix to be "xmpp" for namespace "urn:xmpp:xbosh"
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/httpbind", elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = Body.XBOSH_NAMESPACE)}) package rocks.xmpp.extensions.httpbind.model;
+@XmlSchema(namespace = Body.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = Body.XBOSH_NAMESPACE)}) package rocks.xmpp.extensions.httpbind.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

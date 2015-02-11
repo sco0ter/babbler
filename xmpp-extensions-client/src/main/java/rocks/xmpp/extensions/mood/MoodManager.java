@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,10 +46,10 @@ public final class MoodManager extends ExtensionManager {
      * Publishes a mood to the personal eventing service.
      *
      * @param mood The mood.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void publish(Mood mood) throws XmppException {
-        pubSubManager.createPersonalEventingService().getNode(Mood.NAMESPACE).publish(mood);
+        pubSubManager.createPersonalEventingService().node(Mood.NAMESPACE).publish(mood);
     }
 }

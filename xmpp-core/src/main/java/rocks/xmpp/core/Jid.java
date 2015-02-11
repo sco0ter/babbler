@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -181,9 +181,8 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     public static Jid valueOf(String jid, boolean doUnescape) {
-        if (jid == null) {
-            throw new IllegalArgumentException("jid must not be null.");
-        }
+        Objects.requireNonNull(jid, "jid must not be null.");
+
         jid = jid.trim();
 
         if (jid.isEmpty()) {
@@ -328,9 +327,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     private void validateDomain(String domain) {
-        if (domain == null) {
-            throw new IllegalArgumentException("domain must not be null.");
-        }
+        Objects.requireNonNull(domain, "domain must not be null.");
         if (domain.contains("@")) {
             // Prevent misuse of API.
             throw new IllegalArgumentException("domain must not contain a '@' sign");

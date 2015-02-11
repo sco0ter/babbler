@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,8 @@ import java.util.TreeSet;
 /**
  * Represents a contact group in the user's roster.
  * A group consists of contacts and may contain nested sub-groups.
+ * <p>
+ * This class is conditionally thread-safe.
  *
  * @author Christian Schudt
  */
@@ -60,7 +62,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
      *
      * @return The name.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -69,25 +71,25 @@ public final class ContactGroup implements Comparable<ContactGroup> {
      *
      * @return The full name.
      */
-    public String getFullName() {
+    public final String getFullName() {
         return fullName;
     }
 
     /**
-     * Gets the nested sub-groups of this group.
+     * Gets the nested sub-groups of this group. The returned collection is mutable and not thread-safe.
      *
      * @return The nested groups.
      */
-    public Collection<ContactGroup> getGroups() {
+    public final Collection<ContactGroup> getGroups() {
         return groups;
     }
 
     /**
-     * Gets the contacts in this group.
+     * Gets the contacts in this group. The returned collection is mutable and not thread-safe.
      *
      * @return The contacts.
      */
-    public Collection<Contact> getContacts() {
+    public final Collection<Contact> getContacts() {
         return contacts;
     }
 
@@ -96,13 +98,12 @@ public final class ContactGroup implements Comparable<ContactGroup> {
      *
      * @return The parent group or null, if it has no parent.
      */
-    public ContactGroup getParentGroup() {
+    public final ContactGroup getParentGroup() {
         return parentGroup;
     }
 
-
     @Override
-    public int compareTo(ContactGroup o) {
+    public final int compareTo(ContactGroup o) {
         if (this == o) {
             return 0;
         }
@@ -129,7 +130,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -142,12 +143,12 @@ public final class ContactGroup implements Comparable<ContactGroup> {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(fullName);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return name;
     }
 }

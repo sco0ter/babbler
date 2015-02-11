@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,15 +36,14 @@ import java.util.Map;
 /**
  * A factory which creates {@linkplain SaslClient}s, which are used in XMPP context and are not natively provided by the default security provider.
  * <p>
- * For example, the <a href="http://www.ietf.org/rfc/rfc2245.txt">ANONYMOUS</a> mechanism is not provided by default.
+ * For example, the <a href="http://tools.ietf.org/html/rfc2245">ANONYMOUS</a> and <a href="http://tools.ietf.org/html/rfc5802">SCRAM-SHA-1</a> mechanisms are not provided by default.
  * </p>
- * Other mechanisms required by XMPP, like the SCRAM-SHA-1 mechanism should be registered here, too.
  *
  * @author Christian Schudt
  */
 public final class XmppSaslClientFactory implements SaslClientFactory {
     @Override
-    public SaslClient createSaslClient(String[] mechanisms, String authorizationId, String protocol, String serverName, Map<String, ?> props, CallbackHandler cbh) throws SaslException {
+    public final SaslClient createSaslClient(String[] mechanisms, String authorizationId, String protocol, String serverName, Map<String, ?> props, CallbackHandler cbh) throws SaslException {
 
         for (String mechanism : mechanisms) {
             if ("ANONYMOUS".equals(mechanism)) {
@@ -58,7 +57,7 @@ public final class XmppSaslClientFactory implements SaslClientFactory {
     }
 
     @Override
-    public String[] getMechanismNames(Map<String, ?> props) {
+    public final String[] getMechanismNames(Map<String, ?> props) {
         return new String[]{"ANONYMOUS", "SCRAM-SHA-1"};
     }
 }

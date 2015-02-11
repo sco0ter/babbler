@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,67 +24,52 @@
 
 package rocks.xmpp.core.stream.model;
 
-import rocks.xmpp.core.stream.model.errors.BadFormat;
-import rocks.xmpp.core.stream.model.errors.BadNamespacePrefix;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.core.stream.model.errors.Conflict;
-import rocks.xmpp.core.stream.model.errors.ConnectionTimeout;
-import rocks.xmpp.core.stream.model.errors.HostGone;
-import rocks.xmpp.core.stream.model.errors.HostUnknown;
-import rocks.xmpp.core.stream.model.errors.ImproperAddressing;
-import rocks.xmpp.core.stream.model.errors.InternalServerError;
-import rocks.xmpp.core.stream.model.errors.InvalidFrom;
-import rocks.xmpp.core.stream.model.errors.InvalidNamespace;
-import rocks.xmpp.core.stream.model.errors.InvalidXml;
-import rocks.xmpp.core.stream.model.errors.NotAuthorized;
-import rocks.xmpp.core.stream.model.errors.NotWellFormed;
-import rocks.xmpp.core.stream.model.errors.PolicyViolation;
-import rocks.xmpp.core.stream.model.errors.RemoteConnectionFailed;
-import rocks.xmpp.core.stream.model.errors.Reset;
-import rocks.xmpp.core.stream.model.errors.ResourceConstraint;
-import rocks.xmpp.core.stream.model.errors.RestrictedXml;
-import rocks.xmpp.core.stream.model.errors.SeeOtherHost;
-import rocks.xmpp.core.stream.model.errors.SystemShutdown;
 import rocks.xmpp.core.stream.model.errors.Text;
-import rocks.xmpp.core.stream.model.errors.UndefinedCondition;
-import rocks.xmpp.core.stream.model.errors.UnsupportedEncoding;
-import rocks.xmpp.core.stream.model.errors.UnsupportedFeature;
-import rocks.xmpp.core.stream.model.errors.UnsupportedStanzaType;
-import rocks.xmpp.core.stream.model.errors.UnsupportedVersion;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <stream:error/>} element.
  * <p>
- * See <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
- * </p>
+ * This class is immutable.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 @XmlRootElement(name = "error")
-@XmlSeeAlso({BadFormat.class, BadNamespacePrefix.class, Conflict.class, ConnectionTimeout.class, HostGone.class, HostUnknown.class, ImproperAddressing.class, InternalServerError.class, InvalidFrom.class, InvalidNamespace.class, InvalidXml.class, NotAuthorized.class, NotWellFormed.class, PolicyViolation.class, RemoteConnectionFailed.class, Reset.class, ResourceConstraint.class, RestrictedXml.class, SeeOtherHost.class, SystemShutdown.class, UndefinedCondition.class, UnsupportedEncoding.class, UnsupportedFeature.class, UnsupportedStanzaType.class, UnsupportedVersion.class})
 public final class StreamError implements ServerStreamElement {
 
     @XmlElementRef
-    private Condition condition;
+    private final Condition condition;
 
     @XmlElementRef
-    private Text text;
+    private final Text text;
 
     @XmlAnyElement(lax = true)
-    private Object extension;
+    private final Object extension;
 
     /**
      * Private default constructor for unmarshalling.
      */
     @SuppressWarnings("unused")
     private StreamError() {
+        this.condition = null;
+        this.text = null;
+        this.extension = null;
     }
 
     public StreamError(Condition condition) {
-        this.condition = condition;
+        this(condition, null, null);
+    }
+
+    public StreamError(Condition condition, Text text, Object extension) {
+        this.condition = Objects.requireNonNull(condition);
+        this.text = text;
+        this.extension = extension;
     }
 
     /**
@@ -92,7 +77,7 @@ public final class StreamError implements ServerStreamElement {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         if (text != null) {
             return text.getLanguage();
         }
@@ -104,7 +89,7 @@ public final class StreamError implements ServerStreamElement {
      *
      * @return The text.
      */
-    public String getText() {
+    public final String getText() {
         if (text != null) {
             return text.getText();
         }
@@ -127,12 +112,12 @@ public final class StreamError implements ServerStreamElement {
      * @return The error condition.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
      */
-    public Condition getCondition() {
+    public final Condition getCondition() {
         return condition;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getCondition().toString());
 

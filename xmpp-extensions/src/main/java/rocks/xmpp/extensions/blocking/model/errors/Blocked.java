@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.blocking.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <blocked/>} element in the {@code urn:xmpp:blocking:errors} namespace.
@@ -34,5 +35,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking-errors">XML Schema</a>
  */
 @XmlRootElement(name = "blocked")
+@XmlType(factoryMethod = "create")
 public final class Blocked {
+
+    /**
+     * The {@code <blocked/>} element.
+     */
+    public static final Blocked INSTANCE = new Blocked();
+
+    private Blocked() {
+    }
+
+    private static Blocked create() {
+        return INSTANCE;
+    }
 }

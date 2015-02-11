@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,25 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <system-shutdown/>} stream error.<blockquote>
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-system-shutdown">4.9.3.20.  system-shutdown</a></cite></p>
  * <p>The server is being shut down and all active streams are being statusChanged.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #SYSTEM_SHUTDOWN
  */
 @XmlRootElement(name = "system-shutdown")
-public final class SystemShutdown extends Condition {
+@XmlType(factoryMethod = "create")
+final class SystemShutdown extends Condition {
+
+    SystemShutdown() {
+    }
+
+    private static SystemShutdown create() {
+        return (SystemShutdown) SYSTEM_SHUTDOWN;
+    }
 }

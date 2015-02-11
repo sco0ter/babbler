@@ -31,7 +31,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.ExtensionTest;
@@ -40,7 +40,6 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -49,7 +48,7 @@ import java.util.Date;
 public class LastActivityManagerTest extends ExtensionTest {
 
     @Test
-    public void testLastActivityManagerIsCleared() throws IOException {
+    public void testLastActivityManagerIsCleared() throws Exception {
         TestXmppSession xmppSession1 = new TestXmppSession();
         LastActivityManager lastActivityManager = xmppSession1.getExtensionManager(LastActivityManager.class);
         lastActivityManager.setLastActivityStrategy(new LastActivityStrategy() {
@@ -93,7 +92,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 xmppSession1.removePresenceListener(this);
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
             }
@@ -108,7 +107,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });
@@ -122,7 +121,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });
@@ -135,7 +134,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });
@@ -148,7 +147,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         xmppSession1.getExtensionManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addPresenceListener(new PresenceListener() {
             @Override
-            public void handle(PresenceEvent e) {
+            public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });

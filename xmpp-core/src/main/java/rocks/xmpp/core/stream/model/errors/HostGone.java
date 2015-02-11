@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <host-gone/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-host-gone">4.9.3.5.  host-gone</a></cite></p>
  * <p>The value of the 'to' attribute provided in the initial stream header corresponds to an FQDN that is no longer serviced by the receiving entity.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #HOST_GONE
  */
 @XmlRootElement(name = "host-gone")
-public final class HostGone extends Condition {
+@XmlType(factoryMethod = "create")
+final class HostGone extends Condition {
+
+    HostGone() {
+    }
+
+    private static HostGone create() {
+        return (HostGone) HOST_GONE;
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -624,6 +624,11 @@ public final class PubSub {
         }
     }
 
+    /**
+     * The (subscribe) {@code <options/>} element.
+     *
+     * @see #withOptions(String, rocks.xmpp.core.Jid, String, rocks.xmpp.extensions.data.model.DataForm)
+     */
     public static final class Options {
         @XmlAttribute(name = "node")
         private String node;
@@ -651,6 +656,11 @@ public final class PubSub {
             this.dataForm = dataForm;
         }
 
+        /**
+         * Gets the data form.
+         *
+         * @return The data form.
+         */
         public DataForm getDataForm() {
             return dataForm;
         }
@@ -700,6 +710,11 @@ public final class PubSub {
         }
     }
 
+    /**
+     * The {@code <default/>} element.
+     *
+     * @see #withDefault()
+     */
     public static final class Default extends PubSubChildElement {
 
         @XmlAttribute(name = "type")
@@ -769,6 +784,11 @@ public final class PubSub {
         }
     }
 
+    /**
+     * The {@code <publish/>} element.
+     *
+     * @see #withPublish(String, String, Object, rocks.xmpp.extensions.data.model.DataForm)
+     */
     public static final class Publish extends PubSubChildElement {
 
         @XmlElement(name = "item")
@@ -782,6 +802,11 @@ public final class PubSub {
             this.item = item;
         }
 
+        /**
+         * Gets the published item.
+         *
+         * @return The item.
+         */
         public Item getItem() {
             return item;
         }
@@ -951,7 +976,7 @@ public final class PubSub {
         }
     }
 
-    public static final class ItemElement implements Item {
+    private static final class ItemElement implements Item {
 
         @XmlAnyElement(lax = true)
         private Object object;
@@ -962,7 +987,7 @@ public final class PubSub {
         private ItemElement() {
         }
 
-        public ItemElement(String id) {
+        private ItemElement(String id) {
             this.id = id;
         }
 
@@ -992,7 +1017,7 @@ public final class PubSub {
         }
     }
 
-    private static abstract class PubSubChildElement {
+    private abstract static class PubSubChildElement {
 
         @XmlAttribute(name = "node")
         private String node;

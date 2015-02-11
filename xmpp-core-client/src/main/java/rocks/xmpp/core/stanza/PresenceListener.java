@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,20 @@
 
 package rocks.xmpp.core.stanza;
 
+import java.util.EventListener;
+
 /**
  * A listener interface, which allows to listen for received or sent presence stanzas.
  *
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.XmppSession#addPresenceListener(PresenceListener)
  */
-public interface PresenceListener extends StanzaListener<PresenceEvent> {
+public interface PresenceListener extends EventListener {
+
+    /**
+     * Handles the incoming or outgoing presence.
+     *
+     * @param e The presence event.
+     */
+    void handlePresence(PresenceEvent e);
 }

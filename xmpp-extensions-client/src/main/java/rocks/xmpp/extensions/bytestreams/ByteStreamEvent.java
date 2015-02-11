@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,13 @@ import java.io.IOException;
 import java.util.EventObject;
 
 /**
+ * A byte stream event, which notifies a listener about incoming byte stream requests.
+ * <p>
+ * In order to accept an incoming byte stream, use {@link #accept()}, which will return a {@link rocks.xmpp.extensions.bytestreams.ByteStreamSession}.
+ * To reject the byte stream, use {@link #reject()}, which will return a {@code <not-acceptable/>} error to the sender.
+ *
  * @author Christian Schudt
+ * @see rocks.xmpp.extensions.bytestreams.ByteStreamListener
  */
 public abstract class ByteStreamEvent extends EventObject {
 

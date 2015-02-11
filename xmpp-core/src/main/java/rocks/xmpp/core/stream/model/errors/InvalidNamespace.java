@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-namespace/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-namespace">4.9.3.10.  invalid-namespace</a></cite></p>
  * <p>The stream namespace name is something other than "http://etherx.jabber.org/streams" (see Section 11.2) or the content namespace declared as the default namespace is not supported (e.g., something other than "jabber:client" or "jabber:server").</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #INVALID_NAMESPACE
  */
 @XmlRootElement(name = "invalid-namespace")
-public final class InvalidNamespace extends Condition {
+@XmlType(factoryMethod = "create")
+final class InvalidNamespace extends Condition {
+
+    InvalidNamespace() {
+    }
+
+    private static InvalidNamespace create() {
+        return (InvalidNamespace) INVALID_NAMESPACE;
+    }
 }

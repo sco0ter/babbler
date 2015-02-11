@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.stanza.model.StanzaException;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
@@ -48,14 +48,14 @@ public class PingManagerTest extends ExtensionTest {
         pingManager.ping(JULIET);
     }
 
-    @Test(expectedExceptions = StanzaException.class)
+    @Test
     public void testPingIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getExtensionManager(PingManager.class).setEnabled(false);
         PingManager pingManager = connection1.getExtensionManager(PingManager.class);
-        pingManager.ping(JULIET);
+        Assert.assertFalse(pingManager.ping(JULIET));
     }
 
     @Test

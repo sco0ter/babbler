@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author Christian Schudt
  */
 public final class FileTransfer {
-
+	
     private final long length;
 
     private final InputStream inputStream;
@@ -77,6 +77,24 @@ public final class FileTransfer {
     public void removeFileTransferStatusListener(FileTransferStatusListener fileTransferStatusListener) {
         fileTransferStatusListeners.remove(fileTransferStatusListener);
     }
+    
+    private final void notifyFileTransferStatusListeners(final FileTransferStatusEvent fileTransferStatusEvent) {
+        for (final FileTransferStatusListener fileTransferStatusListener : fileTransferStatusListeners) {
+            try {
+                fileTransferStatusListener.fileTransferStatusChanged(fileTransferStatusEvent);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private final void notifyFileTransferStatusListeners(final Status status, final long bytesTransferred) {
+    	notifyFileTransferStatusListeners(new FileTransferStatusEvent(this, status, bytesTransferred));
+    }
+    
+    private final void notifyFileTransferStatusListeners() {
+    	notifyFileTransferStatusListeners(status, bytesTransferred);
+    }
 
     /**
      * Gets the status of the file transfer.
@@ -90,16 +108,9 @@ public final class FileTransfer {
     private void updateStatus(Status status) {
         if (this.status != status) {
             this.status = status;
-            for (FileTransferStatusListener fileTransferStatusListener : fileTransferStatusListeners) {
-                try {
-                    fileTransferStatusListener.fileTransferStatusChanged(new FileTransferStatusEvent(this, status));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            notifyFileTransferStatusListeners();
         }
     }
-
 
     public boolean isDone() {
         return status != Status.IN_PROGRESS;
@@ -114,6 +125,19 @@ public final class FileTransfer {
         return bytesTransferred;
     }
 
+    private final void setBytesTransferred(final long bytesTransferred) {
+    	if (this.bytesTransferred == bytesTransferred)
+    		return;
+    	
+    	this.bytesTransferred = bytesTransferred;
+    	
+    	notifyFileTransferStatusListeners();
+    }
+    
+    private final void addBytesTransferred(final long bytesTransferredAdditionally) {
+    	setBytesTransferred(bytesTransferred + bytesTransferredAdditionally);
+    }
+    
     /**
      * Gets the progress of the file transfer.
      *
@@ -125,7 +149,7 @@ public final class FileTransfer {
         }
         return -1;
     }
-
+    
     /**
      * Transfers the file in its own thread.
      */
@@ -134,7 +158,7 @@ public final class FileTransfer {
         Thread thread = new Thread() {
             @Override
             public void run() {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[8192];
                 int len;
                 bytesTransferred = 0;
 
@@ -143,7 +167,7 @@ public final class FileTransfer {
                 try {
                     while ((len = inputStream.read(buffer)) > -1 && status != Status.CANCELED) {
                         outputStream.write(buffer, 0, len);
-                        bytesTransferred += len;
+                        addBytesTransferred(len);
                     }
 
                     if (bytesTransferred != length) {

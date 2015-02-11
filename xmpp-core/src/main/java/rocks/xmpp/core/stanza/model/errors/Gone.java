@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,16 +32,25 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-gone">8.3.3.5.  gone</a></cite></p>
  * <p>The recipient or server can no longer be contacted at this address, typically on a permanent basis (as opposed to the {@code <redirect/>} error condition, which is used for temporary addressing failures); the associated error type SHOULD be "cancel" and the error stanza SHOULD include a new address (if available) as the XML character data of the {@code <gone/>} element (which MUST be a Uniform Resource Identifier [URI] or Internationalized Resource Identifier [IRI] at which the entity can be contacted, typically an XMPP IRI as specified in [XMPP-URI]).</p>
  * </blockquote>
+ *
+ * @see #gone(String)
  */
 @XmlRootElement(name = "gone")
 public final class Gone extends Condition {
+
+    Gone() {
+    }
+
+    Gone(String newAddress) {
+        super(newAddress);
+    }
 
     /**
      * Gets the new address.
      *
      * @return The new address.
      */
-    public String getNewAddress() {
+    public final String getNewAddress() {
         return value;
     }
 }

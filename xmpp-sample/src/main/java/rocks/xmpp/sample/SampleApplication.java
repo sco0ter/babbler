@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,22 @@
 
 package rocks.xmpp.sample;
 
-import rocks.xmpp.core.session.*;
-import rocks.xmpp.core.session.context.CoreContext;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
-import rocks.xmpp.extensions.compress.model.CompressionMethod;
+import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
-import javax.net.ssl.*;
-import javax.security.auth.login.LoginException;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -42,7 +47,6 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 
 /**
@@ -50,7 +54,7 @@ import java.util.concurrent.Executors;
  */
 public class SampleApplication {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
@@ -78,15 +82,16 @@ public class SampleApplication {
                     TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                             .port(5222)
                             .sslContext(sslContext)
+                            .compressionMethods(CompressionManager.ZLIB)
                             .secure(false)
                             .build();
 
 
                     BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(5280)
-                            //.secure(true)
-                            //.sslContext(sslContext)
+                            .port(7070)
+                                    //.secure(true)
+                                    //.sslContext(sslContext)
                             .hostnameVerifier(new HostnameVerifier() {
                                 @Override
                                 public boolean verify(String s, SSLSession sslSession) {
@@ -103,12 +108,12 @@ public class SampleApplication {
                             .defaultResponseTimeout(5000)
                             .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                    XmppSession xmppSession = new XmppSession("localhost", configuration, boshConnectionConfiguration);
 
                     // Listen for incoming messages.
                     xmppSession.addMessageListener(new MessageListener() {
                         @Override
-                        public void handle(MessageEvent e) {
+                        public void handleMessage(MessageEvent e) {
                             if (e.isIncoming()) {
                                 System.out.println(e.getMessage());
                             }
@@ -120,7 +125,9 @@ public class SampleApplication {
                     xmppSession.login("admin", "admin", "xmpp");
                     // Send initial presence
                     xmppSession.send(new Presence());
-                } catch (IOException | LoginException | NoSuchAlgorithmException | KeyManagementException e) {
+
+                    System.out.println(xmppSession.getActiveConnection());
+                } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {
                     e.printStackTrace();
                 }
             }

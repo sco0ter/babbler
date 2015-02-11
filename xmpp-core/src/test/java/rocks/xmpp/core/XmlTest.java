@@ -28,8 +28,17 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.*;
-import java.io.*;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * @author Christian Schudt
@@ -67,6 +76,11 @@ public abstract class XmlTest {
     protected <T> T unmarshal(String xml, Class<T> type) throws XMLStreamException, JAXBException {
         XMLEventReader xmlEventReader = getStream(xml);
         return unmarshaller.unmarshal(xmlEventReader, type).getValue();
+    }
+
+    protected Object unmarshal(String xml) throws XMLStreamException, JAXBException {
+        XMLEventReader xmlEventReader = getStream(xml);
+        return unmarshaller.unmarshal(xmlEventReader);
     }
 
     protected String marshal(Object object) throws XMLStreamException, JAXBException {

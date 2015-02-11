@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.si.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <si:bad-profile/>} error condition.
@@ -37,5 +38,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="http://xmpp.org/extensions/xep-0095.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "bad-profile")
-public final class BadProfile {
+@XmlType(factoryMethod = "create")
+final class BadProfile {
+
+    BadProfile() {
+    }
+
+    private static BadProfile create() {
+        return (BadProfile) StreamInitiation.BAD_PROFILE;
+    }
+
+    @Override
+    public String toString() {
+        return "<si:bad-profile/>";
+    }
 }

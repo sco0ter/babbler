@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
@@ -65,7 +64,7 @@ public class RpcManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
-        rpcManager.executorService = new SameThreadExecutorService();
+        //rpcManager.executorService = new SameThreadExecutorService();
         rpcManager.setEnabled(true);
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override
@@ -91,7 +90,7 @@ public class RpcManagerTest extends ExtensionTest {
         RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
         rpcManager.setEnabled(true);
 
-        rpcManager.executorService = new SameThreadExecutorService();
+        //rpcManager.executorService = new SameThreadExecutorService();
 
         rpcManager.setRpcHandler(new RpcHandler() {
             @Override

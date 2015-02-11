@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.client;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -115,6 +116,7 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param from         The sender.
      * @param id           The id.
      * @param language     The language.
+     * @param extensions   The extensions.
      * @param error        The error.
      */
     public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
@@ -133,19 +135,25 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param from         The sender.
      * @param id           The id.
      * @param language     The language.
-     * @param error        The error..
+     * @param extensions   The extensions.
+     * @param error        The error.
      */
     public Message(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
         super(to, type, bodies, subjects, thread, parentThread, from, id, language, extensions, error);
     }
 
     @Override
-    public Message createError(StanzaError error) {
+    public final Message createError(StanzaError error) {
         return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), error);
     }
 
     @Override
-    public Message withFrom(Jid from) {
+    public final Message createError(Condition condition) {
+        return createError(new StanzaError(condition));
+    }
+
+    @Override
+    public final Message withFrom(Jid from) {
         return new Message(getTo(), getType(), getBodies(), getSubjects(), getThread(), getParentThread(), getId(), from, getLanguage(), getExtensions(), getError());
     }
 }

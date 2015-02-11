@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,7 @@ import java.util.List;
  * <p>
  * Each page in a data form contains references to a field in the data form, in order to know which fields should be displayed on this page.
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
@@ -51,6 +52,11 @@ import java.util.List;
 @XmlRootElement(name = "page")
 public final class Page {
 
+    /**
+     * http://jabber.org/protocol/xdata-layout
+     */
+    public static final String NAMESPACE = "http://jabber.org/protocol/xdata-layout";
+
     @XmlElement(name = "text")
     private final List<String> text = new ArrayList<>();
 
@@ -61,12 +67,14 @@ public final class Page {
     private final List<Section> sections = new ArrayList<>();
 
     @XmlAttribute(name = "label")
-    private String label;
+    private final String label;
 
     @XmlElement(name = "reportedref")
-    private FieldReference reportedReference;
+    private final FieldReference reportedReference;
 
     private Page() {
+        label = null;
+        reportedReference = null;
     }
 
     /**
@@ -114,7 +122,7 @@ public final class Page {
      *
      * @return Additional information.
      */
-    public List<String> getText() {
+    public final List<String> getText() {
         return Collections.unmodifiableList(text);
     }
 
@@ -123,7 +131,7 @@ public final class Page {
      *
      * @return The field references.
      */
-    public List<FieldReference> getFieldReferences() {
+    public final List<FieldReference> getFieldReferences() {
         return Collections.unmodifiableList(fieldReferences);
     }
 
@@ -132,7 +140,7 @@ public final class Page {
      *
      * @return The sections.
      */
-    public List<Section> getSections() {
+    public final List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
 
@@ -141,7 +149,7 @@ public final class Page {
      *
      * @return The reported field reference.
      */
-    public FieldReference getReportedReference() {
+    public final FieldReference getReportedReference() {
         return reportedReference;
     }
 
@@ -150,7 +158,7 @@ public final class Page {
      *
      * @return The label.
      */
-    public String getLabel() {
+    public final String getLabel() {
         return label;
     }
 }

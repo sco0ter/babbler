@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ public final class JingleFileTransferManager extends ExtensionManager {
     private final JingleManager jingleManager;
 
     private JingleFileTransferManager(XmppSession xmppSession) {
-        super(xmppSession, "urn:xmpp:jingle:apps:file-transfer:3");
+        super(xmppSession, JingleFileTransfer.NAMESPACE);
         jingleManager = xmppSession.getExtensionManager(JingleManager.class);
     }
 

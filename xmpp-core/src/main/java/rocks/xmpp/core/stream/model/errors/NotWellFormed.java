@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <not-well-formed/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-not-well-formed">4.9.3.13.  not-well-formed</a></cite></p>
  * <p>The initiating entity has sent XML that violates the well-formedness rules of [XML] or [XML-NAMES].</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #NOT_WELL_FORMED
  */
 @XmlRootElement(name = "not-well-formed")
-public final class NotWellFormed extends Condition {
+@XmlType(factoryMethod = "create")
+final class NotWellFormed extends Condition {
+
+    NotWellFormed() {
+    }
+
+    private static NotWellFormed create() {
+        return (NotWellFormed) NOT_WELL_FORMED;
+    }
 }

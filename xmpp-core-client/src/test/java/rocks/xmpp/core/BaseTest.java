@@ -41,9 +41,9 @@ import java.io.IOException;
  */
 public class BaseTest {
 
-    protected static final Jid JULIET = Jid.valueOf("juliet@example.com");
+    protected static final Jid JULIET = Jid.valueOf("juliet@example.com/resource");
 
-    protected static final Jid ROMEO = Jid.valueOf("romeo@example.com");
+    protected static final Jid ROMEO = Jid.valueOf("romeo@example.com/resource");
 
     protected Marshaller marshaller;
 

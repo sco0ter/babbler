@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,11 @@ import java.util.List;
 @XmlRootElement(name = "description")
 @XmlSeeAlso({JingleFileTransfer.Checksum.class})
 public final class JingleFileTransfer extends ApplicationFormat {
+
+    /**
+     * urn:xmpp:jingle:apps:file-transfer:4
+     */
+    public static final String NAMESPACE = "urn:xmpp:jingle:apps:file-transfer:4";
 
     @XmlElement(name = "file")
     private File file;

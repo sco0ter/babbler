@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,8 @@
 package rocks.xmpp.extensions.muc;
 
 /**
+ * Allows to listen for subject changes within a chat room.
+ *
  * @author Christian Schudt
  * @see ChatRoom#addSubjectChangeListener(rocks.xmpp.extensions.muc.SubjectChangeListener)
  */

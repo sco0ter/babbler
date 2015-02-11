@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,17 @@
 
 package rocks.xmpp.extensions.httpauth;
 
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 
 import java.util.Set;
@@ -51,7 +51,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
  */
-public final class HttpAuthenticationManager extends ExtensionManager {
+public final class HttpAuthenticationManager extends IQExtensionManager implements SessionStatusListener, MessageListener {
 
     private static final Logger logger = Logger.getLogger(HttpAuthenticationManager.class.getName());
 
@@ -59,46 +59,14 @@ public final class HttpAuthenticationManager extends ExtensionManager {
 
     private HttpAuthenticationManager(XmppSession xmppSession) {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
-        super(xmppSession);
+        super(xmppSession, AbstractIQ.Type.GET);
+    }
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    httpAuthenticationListeners.clear();
-                }
-            }
-        });
-
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handle(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.GET) {
-                    ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
-                    if (confirmationRequest != null) {
-                        if (notifyHttpAuthListeners(iq, confirmationRequest)) {
-                            e.consume();
-                        }
-                    }
-                }
-            }
-        });
-
-        xmppSession.addMessageListener(new MessageListener() {
-            @Override
-            public void handle(MessageEvent e) {
-                if (e.isIncoming()) {
-                    Message message = e.getMessage();
-                    if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
-                        ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
-                        if (confirmationRequest != null) {
-                            notifyHttpAuthListeners(message, confirmationRequest);
-                        }
-                    }
-                }
-            }
-        });
+    @Override
+    protected void initialize() {
+        xmppSession.addSessionStatusListener(this);
+        xmppSession.addIQHandler(ConfirmationRequest.class, this);
+        xmppSession.addMessageListener(this);
     }
 
     private boolean notifyHttpAuthListeners(Stanza stanza, ConfirmationRequest confirmationRequest) {
@@ -132,5 +100,35 @@ public final class HttpAuthenticationManager extends ExtensionManager {
      */
     public void removeHttpAuthenticationListener(HttpAuthenticationListener httpAuthenticationListener) {
         httpAuthenticationListeners.remove(httpAuthenticationListener);
+    }
+
+    @Override
+    protected IQ processRequest(final IQ iq) {
+
+        ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
+        if (notifyHttpAuthListeners(iq, confirmationRequest)) {
+            return null;
+        }
+        return iq.createError(Condition.SERVICE_UNAVAILABLE);
+    }
+
+    @Override
+    public void handleMessage(MessageEvent e) {
+        if (e.isIncoming()) {
+            Message message = e.getMessage();
+            if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
+                ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
+                if (confirmationRequest != null) {
+                    notifyHttpAuthListeners(message, confirmationRequest);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            httpAuthenticationListeners.clear();
+        }
     }
 }

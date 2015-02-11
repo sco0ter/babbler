@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.hashes;
 
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.extensions.hashes.model.Hash;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -38,7 +39,7 @@ public final class HashManager extends ExtensionManager {
     private static final String[] REGISTERED_HASH_ALGORITHMS = new String[]{"md5", "sha-1", "sha-224", "sha-256", "sha-384", "sha-512"};
 
     private HashManager(XmppSession xmppSession) {
-        super(xmppSession, "urn:xmpp:hashes:1");
+        super(xmppSession, Hash.NAMESPACE);
         for (String algorithm : REGISTERED_HASH_ALGORITHMS) {
             try {
                 MessageDigest.getInstance(algorithm);

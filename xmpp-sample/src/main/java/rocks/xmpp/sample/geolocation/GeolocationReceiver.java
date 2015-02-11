@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,11 @@
 
 package rocks.xmpp.sample.geolocation;
 
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
  */
 public class GeolocationReceiver {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
@@ -67,7 +67,7 @@ public class GeolocationReceiver {
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-                } catch (IOException | LoginException e) {
+                } catch (XmppException e) {
                     e.printStackTrace();
                 }
             }

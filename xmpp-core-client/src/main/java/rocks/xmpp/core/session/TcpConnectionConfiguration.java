@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,34 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.extensions.compress.model.CompressionMethod;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 
 import javax.net.SocketFactory;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * A configuration for the TCP connection.
+ * A configuration for a TCP connection.
+ * It allows you to configure various connection settings for a TCP socket connection, most importantly the host address and port,
+ * but also a whitespace keep-alive interval, a custom socket factory, a custom SSL context and compression methods.
+ * <h3>Usage</h3>
+ * In order to create an instance of this class you have to use the builder pattern as shown below.
+ * <pre>
+ * {@code
+ * TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+ *     .hostname("localhost")
+ *     .port(5222)
+ *     .sslContext(sslContext)
+ *     .secure(false)
+ *     .build();
+ * }
+ * </pre>
+ * This class is immutable.
  *
  * @author Christian Schudt
+ * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
+ * @see TcpConnection
  */
 public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
@@ -41,13 +61,13 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
     private final SocketFactory socketFactory;
 
-    private final CompressionMethod compressionMethod;
+    private final List<CompressionMethod> compressionMethods;
 
     private TcpConnectionConfiguration(Builder builder) {
         super(builder);
         this.keepAliveInterval = builder.keepAliveInterval;
         this.socketFactory = builder.socketFactory;
-        this.compressionMethod = builder.compressionMethod;
+        this.compressionMethods = builder.compressionMethods;
     }
 
     /**
@@ -67,7 +87,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
     public static TcpConnectionConfiguration getDefault() {
         // Use double-checked locking idiom
         if (defaultConfiguration == null) {
-            synchronized (XmppSessionConfiguration.class) {
+            synchronized (TcpConnectionConfiguration.class) {
                 if (defaultConfiguration == null) {
                     defaultConfiguration = builder().build();
                 }
@@ -88,7 +108,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
     }
 
     @Override
-    public Connection createConnection(XmppSession xmppSession) {
+    public final Connection createConnection(XmppSession xmppSession) {
         return new TcpConnection(xmppSession, this);
     }
 
@@ -97,7 +117,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return The whitespace keep-alive interval.
      */
-    public int getKeepAliveInterval() {
+    public final int getKeepAliveInterval() {
         return keepAliveInterval;
     }
 
@@ -106,7 +126,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return The socket factory.
      */
-    public SocketFactory getSocketFactory() {
+    public final SocketFactory getSocketFactory() {
         return socketFactory;
     }
 
@@ -115,8 +135,8 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return The compression method.
      */
-    public CompressionMethod getCompressionMethod() {
-        return compressionMethod;
+    public final List<CompressionMethod> getCompressionMethods() {
+        return compressionMethods;
     }
 
     /**
@@ -127,7 +147,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
         private SocketFactory socketFactory;
 
-        private CompressionMethod compressionMethod;
+        private List<CompressionMethod> compressionMethods = Collections.emptyList();
 
         private Builder() {
             // default values.
@@ -150,11 +170,12 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
         /**
          * Sets the compression method.
          *
-         * @param compressionMethod The compression method.
+         * @param compressionMethods The compression method.
          * @return The builder.
+         * @see rocks.xmpp.extensions.compress.CompressionManager#ZLIB
          */
-        public Builder compressionMethod(CompressionMethod compressionMethod) {
-            this.compressionMethod = compressionMethod;
+        public Builder compressionMethods(CompressionMethod... compressionMethods) {
+            this.compressionMethods = Arrays.asList(compressionMethods);
             return this;
         }
 

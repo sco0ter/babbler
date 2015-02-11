@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <not-acceptable/>} stanza error.
@@ -32,8 +33,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-not-acceptable">8.3.3.9.  not-acceptable</a></cite></p>
  * <p>The recipient or server understands the request but cannot process it because the request does not meet criteria defined by the recipient or server (e.g., a request to subscribe to information that does not simultaneously include configuration parameters needed by the recipient); the associated error type SHOULD be "modify".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #NOT_ACCEPTABLE
  */
 @XmlRootElement(name = "not-acceptable")
-public final class NotAcceptable extends Condition {
+@XmlType(factoryMethod = "create")
+final class NotAcceptable extends Condition {
+
+    NotAcceptable() {
+    }
+
+    private static NotAcceptable create() {
+        return (NotAcceptable) NOT_ACCEPTABLE;
+    }
 }
 

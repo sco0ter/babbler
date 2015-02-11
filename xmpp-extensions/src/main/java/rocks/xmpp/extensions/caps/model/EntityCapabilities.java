@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.caps.model;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
@@ -36,6 +37,8 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The implementation of the {@code <c/>} element in the {@code http://jabber.org/protocol/caps}.
@@ -90,15 +93,15 @@ public final class EntityCapabilities extends StreamFeature {
      */
     public static String getVerificationString(InfoNode infoNode, MessageDigest messageDigest) {
 
-        List<Identity> identities = new ArrayList<>(infoNode.getIdentities());
-        List<rocks.xmpp.extensions.disco.model.info.Feature> features = new ArrayList<>(infoNode.getFeatures());
+        Set<Identity> identities = new TreeSet<>(infoNode.getIdentities());
+        Set<Feature> features = new TreeSet<>(infoNode.getFeatures());
         List<DataForm> dataForms = new ArrayList<>(infoNode.getExtensions());
 
         // 1. Initialize an empty string S.
         StringBuilder sb = new StringBuilder();
 
         // 2. Sort the service discovery identities [15] by category and then by type and then by xml:lang (if it exists), formatted as CATEGORY '/' [TYPE] '/' [LANG] '/' [NAME]. [16] Note that each slash is included even if the LANG or NAME is not included (in accordance with XEP-0030, the category and type MUST be included.
-        Collections.sort(identities);
+        // This is done by TreeSet.
 
         // 3. For each identity, append the 'category/type/lang/name' to S, followed by the '<' character.
         for (Identity identity : identities) {
@@ -121,7 +124,7 @@ public final class EntityCapabilities extends StreamFeature {
         }
 
         // 4. Sort the supported service discovery features.
-        Collections.sort(features);
+        // This is done by TreeSet.
 
         // 5. For each feature, append the feature to S, followed by the '<' character.
         for (rocks.xmpp.extensions.disco.model.info.Feature feature : features) {
@@ -136,38 +139,38 @@ public final class EntityCapabilities extends StreamFeature {
 
         // 7. For each extended service discovery information form:
         for (DataForm dataForm : dataForms) {
-
+            List<DataForm.Field> fields = new ArrayList<>(dataForm.getFields());
             // 7.2. Sort the fields by the value of the "var" attribute.
             // This makes sure, that FORM_TYPE fields are always on zero position.
-            Collections.sort(dataForm.getFields());
+            Collections.sort(fields);
 
-            if (!dataForm.getFields().isEmpty()) {
+            if (!fields.isEmpty()) {
 
                 // Also make sure, that we don't send an ill-formed verification string.
                 // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
-                if (!"FORM_TYPE".equals(dataForm.getFields().get(0).getVar()) || dataForm.getFields().get(0).getType() != DataForm.Field.Type.HIDDEN) {
+                if (!DataForm.FORM_TYPE.equals(fields.get(0).getVar()) || fields.get(0).getType() != DataForm.Field.Type.HIDDEN) {
                     // => Don't include this form in the verification string.
                     continue;
                 }
 
-                for (DataForm.Field field : dataForm.getFields()) {
+                for (DataForm.Field field : fields) {
+                    List<String> values = new ArrayList<>(field.getValues());
                     // 7.3. For each field other than FORM_TYPE:
-                    if (!"FORM_TYPE".equals(field.getVar())) {
+                    if (!DataForm.FORM_TYPE.equals(field.getVar())) {
                         // 7.3.1. Append the value of the "var" attribute, followed by the '<' character.
                         sb.append(field.getVar());
                         sb.append("<");
 
                         // 7.3.2. Sort values by the XML character data of the <value/> element.
-                        Collections.sort(field.getValues());
+                        Collections.sort(values);
                     }
                     // 7.1. Append the XML character data of the FORM_TYPE field's <value/> element, followed by the '<' character.
                     // 7.3.3. For each <value/> element, append the XML character data, followed by the '<' character.
-                    for (String value : field.getValues()) {
+                    for (String value : values) {
                         sb.append(value);
                         sb.append("<");
                     }
                 }
-
             }
         }
 

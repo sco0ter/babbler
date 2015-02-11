@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ class LocalSocks5Server {
 
     private static final Logger logger = Logger.getLogger(LocalSocks5Server.class.getName());
 
-    List<String> allowedAddresses = new CopyOnWriteArrayList<>();
+    final List<String> allowedAddresses = new CopyOnWriteArrayList<>();
 
     private int port = 1080; // The default port for SOCKS5.
 

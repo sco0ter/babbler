@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#item} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
@@ -54,15 +56,16 @@ public final class ItemDiscovery implements ItemNode {
     private final List<Item> items = new ArrayList<>();
 
     @XmlAttribute(name = "node")
-    private String node;
+    private final String node;
 
     @XmlElementRef
-    private ResultSetManagement resultSetManagement;
+    private final ResultSetManagement resultSetManagement;
 
     /**
      * Creates an empty element, used for item discovery requests.
      */
     public ItemDiscovery() {
+        this(null, null, null);
     }
 
     /**
@@ -71,7 +74,7 @@ public final class ItemDiscovery implements ItemNode {
      * @param node The node.
      */
     public ItemDiscovery(String node) {
-        this.node = node;
+        this(node, null, null);
     }
 
     /**
@@ -81,8 +84,7 @@ public final class ItemDiscovery implements ItemNode {
      * @param resultSetManagement The result set management extension.
      */
     public ItemDiscovery(String node, ResultSetManagement resultSetManagement) {
-        this.node = node;
-        this.resultSetManagement = resultSetManagement;
+        this(node, null, resultSetManagement);
     }
 
     /**
@@ -130,22 +132,22 @@ public final class ItemDiscovery implements ItemNode {
     }
 
     @Override
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         return Collections.unmodifiableList(items);
     }
 
     @Override
-    public ResultSetManagement getResultSetManagement() {
+    public final ResultSetManagement getResultSetManagement() {
         return resultSetManagement;
     }
 
     @Override
-    public String getNode() {
+    public final String getNode() {
         return node;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         if (node != null) {
             sb.append(node);

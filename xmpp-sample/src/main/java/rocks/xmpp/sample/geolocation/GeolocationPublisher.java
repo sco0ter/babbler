@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 
 package rocks.xmpp.sample.geolocation;
 
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -32,7 +33,6 @@ import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 
@@ -41,7 +41,7 @@ import java.util.concurrent.Executors;
  */
 public class GeolocationPublisher {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
@@ -62,7 +62,7 @@ public class GeolocationPublisher {
                     // Listen for incoming messages.
                     xmppSession.addMessageListener(new MessageListener() {
                         @Override
-                        public void handle(MessageEvent e) {
+                        public void handleMessage(MessageEvent e) {
                             if (e.isIncoming()) {
                                 System.out.println(e.getMessage());
                             }
@@ -79,7 +79,7 @@ public class GeolocationPublisher {
 //                    GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
 //                    geoLocationManager.publish(new GeoLocation(123, 321));
 
-                } catch (IOException | LoginException e) {
+                } catch (XmppException e) {
                     e.printStackTrace();
                 }
             }

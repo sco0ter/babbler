@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.model.client.Message;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,7 +60,7 @@ import java.util.logging.Logger;
  *         ChatSession chatSession = chatSessionEvent.getChatSession();
  *         chatSession.addMessageListener(new MessageListener() {
  *             {@literal @}Override
- *             public void handle(MessageEvent e) {
+ *             public void handleMessage(MessageEvent e) {
  *                 Message message = e.getMessage();
  *             }
  *         });
@@ -68,7 +69,7 @@ import java.util.logging.Logger;
  * </code>
  * </pre>
  */
-public final class ChatManager {
+public final class ChatManager implements SessionStatusListener, MessageListener, PresenceListener {
 
     private static final Logger logger = Logger.getLogger(ChatManager.class.getName());
 
@@ -91,66 +92,9 @@ public final class ChatManager {
     public ChatManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
 
-        xmppSession.addMessageListener(new MessageListener() {
-            @Override
-            public void handle(MessageEvent e) {
-                Message message = e.getMessage();
-                if (message.getType() == Message.Type.CHAT) {
-                    Jid chatPartner = e.isIncoming() ? message.getFrom() : message.getTo();
-                    // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
-                    // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).
-                    String threadId = message.getThread() != null ? message.getThread() : UUID.randomUUID().toString();
-                    if (chatPartner != null) {
-                        Jid contact = chatPartner.asBareJid();
-                        synchronized (chatSessions) {
-                            // If there are no chat sessions with that contact yet, put the contact into the map.
-                            if (!chatSessions.containsKey(contact)) {
-                                chatSessions.put(contact, new HashMap<String, ChatSession>());
-                            }
-                            Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
-                            if (!chatSessionMap.containsKey(threadId)) {
-                                ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession);
-                                chatSessionMap.put(threadId, chatSession);
-                                notifyChatSessionCreated(chatSession, e.isIncoming());
-                            }
-                            ChatSession chatSession = chatSessionMap.get(threadId);
-                            if (e.isIncoming()) {
-                                // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
-                                chatSession.chatPartner = message.getFrom();
-                            }
-                            chatSession.notifyMessageListeners(new MessageEvent(chatSession, message, e.isIncoming()));
-                        }
-                    }
-                }
-            }
-        });
-        xmppSession.addPresenceListener(new PresenceListener() {
-            @Override
-            public void handle(PresenceEvent e) {
-                if (e.isIncoming()) {
-                    // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
-                    AbstractPresence presence = e.getPresence();
-                    synchronized (chatSessions) {
-                        Jid contact = presence.getFrom().asBareJid();
-                        if (chatSessions.containsKey(contact)) {
-                            for (ChatSession chatSession : chatSessions.get(contact).values()) {
-                                chatSession.chatPartner = contact;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    chatSessionListeners.clear();
-                    chatSessions.clear();
-                }
-            }
-        });
+        xmppSession.addMessageListener(this);
+        xmppSession.addPresenceListener(this);
+        xmppSession.addSessionStatusListener(this);
     }
 
     /**
@@ -174,9 +118,10 @@ public final class ChatManager {
     }
 
     private void notifyChatSessionCreated(ChatSession chatSession, boolean createdByIncomingMessage) {
+        ChatSessionEvent chatSessionEvent = new ChatSessionEvent(this, chatSession, createdByIncomingMessage);
         for (ChatSessionListener chatSessionListener : chatSessionListeners) {
             try {
-                chatSessionListener.chatSessionCreated(new ChatSessionEvent(this, chatSession, createdByIncomingMessage));
+                chatSessionListener.chatSessionCreated(chatSessionEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -190,24 +135,33 @@ public final class ChatManager {
      * @return The chat session.
      */
     public ChatSession createChatSession(Jid chatPartner) {
-        if (chatPartner == null) {
-            throw new IllegalArgumentException("chatPartner must not be null.");
+        synchronized (this.chatSessions) {
+        	return buildChatSession(Objects.requireNonNull(chatPartner, "chatPartner must not be null."), UUID.randomUUID().toString(), xmppSession, false);
         }
-        ChatSession chatSession = new ChatSession(chatPartner, UUID.randomUUID().toString(), xmppSession);
-        notifyChatSessionCreated(chatSession, false);
-        return chatSession;
     }
 
+    private final ChatSession buildChatSession(final Jid chatPartner, final String threadId, final XmppSession xmppSession, final boolean isIncoming) {
+    	Jid contact = chatPartner.asBareJid();
+		// If there are no chat sessions with that contact yet, put the contact into the map.
+		if (!chatSessions.containsKey(contact)) {
+		    chatSessions.put(contact, new HashMap<String, ChatSession>());
+		}
+		Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
+    	if (!chatSessionMap.containsKey(threadId)) {
+			ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession);
+			chatSessionMap.put(threadId, chatSession);
+			notifyChatSessionCreated(chatSession, isIncoming);
+		}
+		return chatSessionMap.get(threadId);
+    }
+    
     /**
      * Destroys the chat session.
      *
      * @param chatSession The chat session.
      */
     public void destroyChatSession(ChatSession chatSession) {
-        if (chatSession == null) {
-            throw new IllegalArgumentException("chatSession must not be null.");
-        }
-        Jid user = chatSession.getChatPartner().asBareJid();
+        Jid user = Objects.requireNonNull(chatSession, "chatSession must not be null.").getChatPartner().asBareJid();
         synchronized (chatSessions) {
             if (chatSessions.containsKey(user)) {
                 Map<String, ChatSession> chatSessionMap = chatSessions.get(user);
@@ -216,6 +170,51 @@ public final class ChatManager {
                     chatSessions.remove(user);
                 }
             }
+        }
+    }
+
+    @Override
+    public void handleMessage(MessageEvent e) {
+        Message message = e.getMessage();
+        if (message.getType() == Message.Type.CHAT) {
+            Jid chatPartner = e.isIncoming() ? message.getFrom() : message.getTo();
+            // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
+            // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).
+            String threadId = message.getThread() != null ? message.getThread() : UUID.randomUUID().toString();
+            if (chatPartner != null) {
+                synchronized (chatSessions) {
+                    ChatSession chatSession = buildChatSession(chatPartner, threadId, xmppSession, e.isIncoming());
+                    if (e.isIncoming()) {
+                        // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
+                        chatSession.setChatPartner(message.getFrom());
+                    }
+                    chatSession.notifyMessageListeners(new MessageEvent(chatSession, message, e.isIncoming()));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void handlePresence(PresenceEvent e) {
+        if (e.isIncoming()) {
+            // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
+            AbstractPresence presence = e.getPresence();
+            synchronized (chatSessions) {
+                Jid contact = presence.getFrom().asBareJid();
+                if (chatSessions.containsKey(contact)) {
+                    for (ChatSession chatSession : chatSessions.get(contact).values()) {
+                        chatSession.setChatPartner(contact);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sessionStatusChanged(SessionStatusEvent e) {
+        if (e.getStatus() == XmppSession.Status.CLOSED) {
+            chatSessionListeners.clear();
+            chatSessions.clear();
         }
     }
 }

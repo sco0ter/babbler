@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -211,7 +211,7 @@ public final class NodeConfiguration {
     }
 
     /**
-     * Who may associate leaf nodes with a collection
+     * Who may associate leaf nodes with a collection.
      *
      * @return The children association policy.
      */
@@ -509,7 +509,7 @@ public final class NodeConfiguration {
      *
      * @return The title.
      */
-    public String getTitle() {
+    public String getNodeTitle() {
         return dataForm.findValue(TITLE);
     }
 
@@ -590,7 +590,7 @@ public final class NodeConfiguration {
 
         private Boolean allowSubscriptions;
 
-        private String title;
+        private String nodeTitle;
 
         private String type;
 
@@ -949,13 +949,13 @@ public final class NodeConfiguration {
         }
 
         /**
-         * A friendly name for the node
+         * A friendly name for the node.
          *
          * @param title The title.
          * @return The name.
          */
-        public Builder title(String title) {
-            this.title = title;
+        public Builder nodeTitle(String title) {
+            this.nodeTitle = title;
             return this;
         }
 
@@ -1071,8 +1071,8 @@ public final class NodeConfiguration {
             if (allowSubscriptions != null) {
                 fields.add(DataForm.Field.builder().var(SUBSCRIBE).value(allowSubscriptions).build());
             }
-            if (title != null) {
-                fields.add(DataForm.Field.builder().var(TITLE).value(title).build());
+            if (nodeTitle != null) {
+                fields.add(DataForm.Field.builder().var(TITLE).value(nodeTitle).build());
             }
             if (type != null) {
                 fields.add(DataForm.Field.builder().var(TYPE).value(type).build());

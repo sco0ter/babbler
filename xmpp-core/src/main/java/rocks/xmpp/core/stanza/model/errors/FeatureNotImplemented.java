@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <feature-not-implemented/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-feature-not-implemented">8.3.3.3.  feature-not-implemented</a></cite></p>
  * <p>The feature represented in the XML stanza is not implemented by the intended recipient or an intermediate server and therefore the stanza cannot be processed (e.g., the entity understands the namespace but does not recognize the element name); the associated error type SHOULD be "cancel" or "modify".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #FEATURE_NOT_IMPLEMENTED
  */
 @XmlRootElement(name = "feature-not-implemented")
-public final class FeatureNotImplemented extends Condition {
+@XmlType(factoryMethod = "create")
+final class FeatureNotImplemented extends Condition {
+
+    FeatureNotImplemented() {
+    }
+
+    private static FeatureNotImplemented create() {
+        return (FeatureNotImplemented) FEATURE_NOT_IMPLEMENTED;
+    }
 }

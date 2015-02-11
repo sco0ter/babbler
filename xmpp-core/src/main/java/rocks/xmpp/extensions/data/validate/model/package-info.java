@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,10 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/xdata-validate", xmlns = {@XmlNs(prefix = "xdv", namespaceURI = "http://jabber.org/protocol/xdata-validate")}, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.data.validate.model;
+@XmlSchema(namespace = Validation.NAMESPACE, xmlns = {@XmlNs(prefix = "xdv", namespaceURI = "http://jabber.org/protocol/xdata-validate")}, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.data.validate.model;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

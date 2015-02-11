@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,11 @@ import java.util.List;
  */
 @XmlRootElement(name = "transport")
 public final class IceUdpTransportMethod extends TransportMethod {
+
+    /**
+     * urn:xmpp:jingle:transports:ice-udp:1
+     */
+    public static final String NAMESPACE = "urn:xmpp:jingle:transports:ice-udp:1";
 
     @XmlElement(name = "candidate")
     private final List<Candidate> candidates = new ArrayList<>();

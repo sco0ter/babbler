@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,12 +31,14 @@ import java.util.EventObject;
 import java.util.List;
 
 /**
- * A roster event which holds information about added, updated and removed contacts.
+ * A roster event which holds information about added, updated and removed contacts of the roster.
  * <p>
  * This event is dispatched by the {@link RosterManager}, whenever a roster push or result is received.
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
+ * @see RosterListener
  */
 public final class RosterEvent extends EventObject {
 
@@ -67,7 +69,7 @@ public final class RosterEvent extends EventObject {
      *
      * @return The added contacts.
      */
-    public List<Contact> getAddedContacts() {
+    public final List<Contact> getAddedContacts() {
         return addedContacts;
     }
 
@@ -76,7 +78,7 @@ public final class RosterEvent extends EventObject {
      *
      * @return The updated contacts.
      */
-    public List<Contact> getUpdatedContacts() {
+    public final List<Contact> getUpdatedContacts() {
         return updatedContacts;
     }
 
@@ -85,7 +87,7 @@ public final class RosterEvent extends EventObject {
      *
      * @return The removed contacts.
      */
-    public List<Contact> getRemovedContacts() {
+    public final List<Contact> getRemovedContacts() {
         return removedContacts;
     }
 }

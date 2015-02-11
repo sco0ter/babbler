@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -222,6 +223,15 @@ public abstract class Stanza {
      * @see #getError()
      */
     public abstract Stanza createError(StanzaError error);
+
+    /**
+     * Creates an error response for this stanza.
+     *
+     * @param condition The error condition which is appended to the stanza.
+     * @return The error response.
+     * @see #getError()
+     */
+    public abstract Stanza createError(Condition condition);
 
     /**
      * Gets an extension by type.

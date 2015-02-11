@@ -44,6 +44,6 @@ public class RosterVersioningTest extends XmlTest {
     public void unmarshalPreApproval() throws JAXBException, XMLStreamException {
         String xml = "<ver xmlns='urn:xmpp:features:rosterver'/>";
         RosterVersioning rosterVersioning = unmarshal(xml, RosterVersioning.class);
-        Assert.assertNotNull(rosterVersioning);
+        Assert.assertTrue(rosterVersioning == RosterVersioning.INSTANCE);
     }
 }

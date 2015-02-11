@@ -60,7 +60,7 @@ final class StanzaEntry {
         return stanza;
     }
 
-    public boolean isIncoming() {
+    public boolean isInbound() {
         return incoming;
     }
 
@@ -81,5 +81,10 @@ final class StanzaEntry {
                 || stanza instanceof Message && ((Message) stanza).getType() == Message.Type.ERROR
                 || stanza instanceof Presence && ((Presence) stanza).getType() == Presence.Type.ERROR
                 || stanza instanceof StreamError;
+    }
+
+    @Override
+    public String toString() {
+        return (incoming ? "IN : " : "OUT: ") + xml;
     }
 }

@@ -43,21 +43,6 @@
 <?import javafx.scene.text.Text?>
 <TabPane xmlns:fx="http://javafx.com/fxml" fx:controller="rocks.xmpp.debug.gui.DebugController"
          tabClosingPolicy="UNAVAILABLE">
-    <Tab text="Connection Info">
-        <GridPane hgap="10" vgap="10">
-            <padding>
-                <Insets bottom="20" top="20" left="20" right="20"/>
-            </padding>
-            <Label text="Server:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-            <Label text="Port:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            <Label text="Status:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-            <Label text="Presence:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-            <Text fx:id="lblServer" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-            <Text fx:id="lblPort" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-            <Text fx:id="lblStatus" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-            <Circle fx:id="circlePresence" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-        </GridPane>
-    </Tab>
     <Tab text="Stanzas">
         <VBox alignment="center" spacing="10" styleClass="root">
             <padding>
@@ -72,11 +57,11 @@
                         </padding>
                         <left>
                             <HBox spacing="10" alignment="CENTER">
-                                <CheckBox fx:id="cbOutgoing" text="Outgoing" selected="true"
-                                          styleClass="outgoing-stanza"
+                                <CheckBox fx:id="cbOutbound" text="Outbound" selected="true"
+                                          styleClass="outbound-stanza"
                                           onAction="#filter"/>
-                                <CheckBox fx:id="cbIncoming" text="Incoming" selected="true"
-                                          styleClass="incoming-stanza"
+                                <CheckBox fx:id="cbInbound" text="Inbound" selected="true"
+                                          styleClass="inbound-stanza"
                                           onAction="#filter"/>
                             </HBox>
                         </left>
@@ -91,7 +76,10 @@
                             </HBox>
                         </center>
                         <right>
-                            <Button text="Clear" onAction="#clear" alignment="CENTER"/>
+                            <HBox spacing="10" alignment="CENTER">
+                                <Button text="Copy To Clipboard" onAction="#copyToClipboard" alignment="CENTER"/>
+                                <Button text="Clear" onAction="#clear" alignment="CENTER"/>
+                            </HBox>
                         </right>
                     </BorderPane>
                     <TableView fx:id="stanzaTableView" VBox.vgrow="ALWAYS" maxHeight="Infinity">
@@ -99,7 +87,7 @@
                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
                         </columnResizePolicy>
                         <columns>
-                            <TableColumn fx:id="columnIncoming" maxWidth="20" minWidth="20" resizable="false">
+                            <TableColumn fx:id="columnInbound" maxWidth="20" minWidth="20" resizable="false">
 
                             </TableColumn>
                             <TableColumn fx:id="columnStanza" text="Stanza">
@@ -135,13 +123,13 @@
                         <Insets bottom="0" top="0" left="10" right="0"/>
                     </padding>
                     <left>
-                        <Label text="Outgoing" BorderPane.alignment="CENTER"/>
+                        <Label text="Outbound" BorderPane.alignment="CENTER"/>
                     </left>
                     <right>
-                        <Button text="Clear" onAction="#clearOutgoing"/>
+                        <Button text="Clear" onAction="#clearOutbound"/>
                     </right>
                 </BorderPane>
-                <TextArea fx:id="txtOutgoing" styleClass="outgoing-stanza" VBox.vgrow="ALWAYS" editable="false"
+                <TextArea fx:id="txtOutbound" styleClass="outbound-stanza" VBox.vgrow="ALWAYS" editable="false"
                           wrapText="true"/>
             </VBox>
             <VBox spacing="10" alignment="CENTER">
@@ -153,15 +141,30 @@
                         <Insets bottom="0" top="0" left="10" right="0"/>
                     </padding>
                     <left>
-                        <Label text="Incoming" BorderPane.alignment="CENTER"/>
+                        <Label text="Inbound" BorderPane.alignment="CENTER"/>
                     </left>
                     <right>
-                        <Button text="Clear" onAction="#clearIncoming"/>
+                        <Button text="Clear" onAction="#clearInbound"/>
                     </right>
                 </BorderPane>
-                <TextArea fx:id="txtIncoming" styleClass="incoming-stanza" VBox.vgrow="ALWAYS" editable="false"
+                <TextArea fx:id="txtInbound" styleClass="inbound-stanza" VBox.vgrow="ALWAYS" editable="false"
                           wrapText="true"/>
             </VBox>
         </SplitPane>
+    </Tab>
+    <Tab text="Connection Info">
+        <GridPane hgap="10" vgap="10">
+            <padding>
+                <Insets bottom="20" top="20" left="20" right="20"/>
+            </padding>
+            <Label text="Server:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label text="Port:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label text="Status:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label text="Presence:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <Text fx:id="lblServer" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            <Text fx:id="lblPort" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Text fx:id="lblStatus" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Circle fx:id="circlePresence" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        </GridPane>
     </Tab>
 </TabPane>

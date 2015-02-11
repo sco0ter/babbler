@@ -68,6 +68,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
@@ -81,9 +84,9 @@ import java.util.function.Predicate;
  */
 public final class DebugController implements Initializable {
 
-    private static final String CSS_INCOMING_STANZA = "incoming-stanza";
+    private static final String CSS_INBOUND_STANZA = "inbound-stanza";
 
-    private static final String CSS_OUTGOING_STANZA = "outgoing-stanza";
+    private static final String CSS_OUTBOUND_STANZA = "outbound-stanza";
 
     private static final String CSS_ERROR_STANZA = "error-stanza";
 
@@ -124,25 +127,25 @@ public final class DebugController implements Initializable {
     private TextField searchField;
 
     @FXML
-    private CheckBox cbIncoming;
+    private CheckBox cbInbound;
 
     @FXML
-    private CheckBox cbOutgoing;
+    private CheckBox cbOutbound;
 
     @FXML
     private TextArea stanzaView;
 
     @FXML
-    private TextArea txtOutgoing;
+    private TextArea txtOutbound;
 
     @FXML
-    private TextArea txtIncoming;
+    private TextArea txtInbound;
 
     @FXML
     private TableView<StanzaEntry> stanzaTableView;
 
     @FXML
-    private TableColumn<StanzaEntry, Boolean> columnIncoming;
+    private TableColumn<StanzaEntry, Boolean> columnInbound;
 
     @FXML
     private TableColumn<StanzaEntry, Date> columnDate;
@@ -327,12 +330,12 @@ public final class DebugController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends StanzaEntry> observable, StanzaEntry oldValue, StanzaEntry newValue) {
                 viewModel.highlightedItems.clear();
-                stanzaView.getStyleClass().removeAll(CSS_INCOMING_STANZA, CSS_OUTGOING_STANZA, CSS_ERROR_STANZA);
+                stanzaView.getStyleClass().removeAll(CSS_INBOUND_STANZA, CSS_OUTBOUND_STANZA, CSS_ERROR_STANZA);
                 if (newValue != null) {
-                    if (newValue.isIncoming()) {
-                        stanzaView.getStyleClass().add(CSS_INCOMING_STANZA);
+                    if (newValue.isInbound()) {
+                        stanzaView.getStyleClass().add(CSS_INBOUND_STANZA);
                     } else {
-                        stanzaView.getStyleClass().add(CSS_OUTGOING_STANZA);
+                        stanzaView.getStyleClass().add(CSS_OUTBOUND_STANZA);
                     }
 
                     try {
@@ -394,16 +397,16 @@ public final class DebugController implements Initializable {
                     @Override
                     protected void updateItem(StanzaEntry item, boolean empty) {
                         super.updateItem(item, empty);
-                        getStyleClass().removeAll(CSS_INCOMING_STANZA, CSS_OUTGOING_STANZA, CSS_ERROR_STANZA, CSS_HIGHLIGHT_ROW);
+                        getStyleClass().removeAll(CSS_INBOUND_STANZA, CSS_OUTBOUND_STANZA, CSS_ERROR_STANZA, CSS_HIGHLIGHT_ROW);
                         setContextMenu(null);
                         if (!empty) {
                             if (item.isError()) {
                                 getStyleClass().add(CSS_ERROR_STANZA);
                             }
-                            if (item.isIncoming()) {
-                                getStyleClass().add(CSS_INCOMING_STANZA);
+                            if (item.isInbound()) {
+                                getStyleClass().add(CSS_INBOUND_STANZA);
                             } else {
-                                getStyleClass().add(CSS_OUTGOING_STANZA);
+                                getStyleClass().add(CSS_OUTBOUND_STANZA);
                             }
                             if (item.getStanza() instanceof IQ && ((IQ) item.getStanza()).isRequest()) {
                                 setContextMenu(iqContextMenu);
@@ -422,13 +425,13 @@ public final class DebugController implements Initializable {
 
         // Do not use PropertyValueFactory for columns, because it requires the item class to be public
 
-        columnIncoming.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StanzaEntry, Boolean>, ObservableValue<Boolean>>() {
+        columnInbound.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StanzaEntry, Boolean>, ObservableValue<Boolean>>() {
             @Override
             public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<StanzaEntry, Boolean> param) {
-                return new SimpleObjectProperty<>(param.getValue().isIncoming());
+                return new SimpleObjectProperty<>(param.getValue().isInbound());
             }
         });
-        columnIncoming.setCellFactory(new Callback<TableColumn<StanzaEntry, Boolean>, TableCell<StanzaEntry, Boolean>>() {
+        columnInbound.setCellFactory(new Callback<TableColumn<StanzaEntry, Boolean>, TableCell<StanzaEntry, Boolean>>() {
             @Override
             public TableCell<StanzaEntry, Boolean> call(TableColumn<StanzaEntry, Boolean> booleanStanzaEntryTableColumn) {
                 TableCell<StanzaEntry, Boolean> cell = new TableCell<StanzaEntry, Boolean>() {
@@ -561,7 +564,7 @@ public final class DebugController implements Initializable {
             }
         });
 
-        txtIncoming.setText("");
+        txtInbound.setText("");
     }
 
     @FXML
@@ -584,38 +587,52 @@ public final class DebugController implements Initializable {
     }
 
     private boolean isVisible(StanzaEntry stanzaEntry) {
-        return (cbIncoming.isSelected() && stanzaEntry.isIncoming()
-                || cbOutgoing.isSelected() && !stanzaEntry.isIncoming())
+        return (cbInbound.isSelected() && stanzaEntry.isInbound()
+                || cbOutbound.isSelected() && !stanzaEntry.isInbound())
                 && (searchField.getText() == null || searchField.getText().equals("")
                 || stanzaEntry.getXml().contains(searchField.getText()) && !cbIgnoreCase.isSelected()
                 || containsIgnoreCase(stanzaEntry.getXml(), searchField.getText()) && cbIgnoreCase.isSelected());
     }
 
 
-    void appendTextIncoming(final String s) {
+    void appendTextInbound(final String s) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                txtIncoming.appendText(s);
+                txtInbound.appendText(s);
             }
         });
     }
 
-    void appendTextOutgoing(final String s) {
+    void appendTextOutbound(final String s) {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                txtOutgoing.appendText(s);
+                txtOutbound.appendText(s);
             }
         });
     }
 
-    public void clearOutgoing(ActionEvent actionEvent) {
-        txtOutgoing.clear();
+    public void clearOutbound(ActionEvent actionEvent) {
+        txtOutbound.clear();
     }
 
-    public void clearIncoming(ActionEvent actionEvent) {
-        txtIncoming.clear();
+    public void clearInbound(ActionEvent actionEvent) {
+        txtInbound.clear();
+    }
+
+    public void copyToClipboard(ActionEvent actionEvent) {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (StanzaEntry stanzaEntry : filteredList) {
+            sb.append(stanzaEntry).append("\n");
+        }
+
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Clipboard clipboard = toolkit.getSystemClipboard();
+        StringSelection strSel = new StringSelection(sb.toString());
+        clipboard.setContents(strSel, null);
     }
 }
 

@@ -27,8 +27,15 @@ package rocks.xmpp.extensions.sm;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.errors.UnexpectedRequest;
-import rocks.xmpp.extensions.sm.model.*;
+import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.sm.model.Answer;
+import rocks.xmpp.extensions.sm.model.Enable;
+import rocks.xmpp.extensions.sm.model.Enabled;
+import rocks.xmpp.extensions.sm.model.Failed;
+import rocks.xmpp.extensions.sm.model.Request;
+import rocks.xmpp.extensions.sm.model.Resume;
+import rocks.xmpp.extensions.sm.model.Resumed;
+import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -38,7 +45,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class StreamManagementTest extends XmlTest {
     protected StreamManagementTest() throws JAXBException, XMLStreamException {
-        super(StreamManagement.class, UnexpectedRequest.class);
+        super(StreamManagement.class);
     }
 
     @Test
@@ -81,7 +88,7 @@ public class StreamManagementTest extends XmlTest {
                 "   </failed>";
         Failed failed = unmarshal(xml, Failed.class);
         Assert.assertNotNull(failed);
-        Assert.assertTrue(failed.getError() instanceof UnexpectedRequest);
+        Assert.assertTrue(failed.getError() == Condition.UNEXPECTED_REQUEST);
     }
 
     @Test

@@ -53,6 +53,6 @@ public class BlockingErrorsTest extends XmlTest {
                 "  </error>\n" +
                 "</message>\n";
         Message message = unmarshal(xml, Message.class);
-        Assert.assertTrue(message.getError().getExtension() instanceof Blocked);
+        Assert.assertTrue(message.getError().getExtension() == Blocked.INSTANCE);
     }
 }

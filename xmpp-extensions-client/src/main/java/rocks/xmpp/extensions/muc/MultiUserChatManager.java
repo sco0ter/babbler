@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
@@ -42,7 +43,9 @@ import rocks.xmpp.extensions.muc.model.user.MucUser;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,18 +59,26 @@ import java.util.logging.Logger;
 public final class MultiUserChatManager extends ExtensionManager implements SessionStatusListener, MessageListener {
     private static final Logger logger = Logger.getLogger(MultiUserChatManager.class.getName());
 
+    private static final String ROOMS_NODE = "http://jabber.org/protocol/muc#rooms";
+
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     private final Set<InvitationListener> invitationListeners = new CopyOnWriteArraySet<>();
 
+    private final Map<Jid, Item> enteredRoomsMap = new ConcurrentHashMap<>();
+
     private MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, Muc.NAMESPACE);
+        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
 
         // Listen for incoming invitations.
         xmppSession.addMessageListener(this);
-        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, new DefaultItemProvider(enteredRoomsMap.values()));
     }
 
     private void notifyListeners(InvitationEvent invitationEvent) {
@@ -104,17 +115,44 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * Discovers the multi-user chat services hosted at the connected domain.
      *
      * @return The list of chat services.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
+     * @deprecated Use {@link #discoverChatServices()}
+     */
+    @Deprecated
+    public Collection<ChatService> getChatServices() throws XmppException {
+        return discoverChatServices();
+    }
+
+    /**
+     * Discovers the multi-user chat services hosted at the connected domain.
+     *
+     * @return The list of chat services.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
-    public Collection<ChatService> getChatServices() throws XmppException {
+    public Collection<ChatService> discoverChatServices() throws XmppException {
         Collection<Item> services = serviceDiscoveryManager.discoverServices(Muc.NAMESPACE);
         Collection<ChatService> chatServices = new ArrayList<>();
         for (Item service : services) {
-            chatServices.add(new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager));
+            chatServices.add(new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager, this));
         }
         return chatServices;
+    }
+
+    /**
+     * Discovers the rooms, where a contact is in.
+     *
+     * @param contact The contact, which must be a full JID.
+     * @return The items, {@link rocks.xmpp.extensions.disco.model.items.Item#getJid()} has the room address, and {@link rocks.xmpp.extensions.disco.model.items.Item#getName()}} has the nickname.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-client">6.7 Discovering Client Support for MUC</a>
+     */
+    public Collection<Item> discoverEnteredRooms(Jid contact) throws XmppException {
+        return serviceDiscoveryManager.discoverItems(contact, ROOMS_NODE).getItems();
     }
 
     /**
@@ -124,7 +162,7 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * @return The chat service.
      */
     public ChatService createChatService(Jid chatService) {
-        return new ChatService(chatService, null, xmppSession, serviceDiscoveryManager);
+        return new ChatService(chatService, null, xmppSession, serviceDiscoveryManager, this);
     }
 
     @Override
@@ -152,5 +190,13 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
         if (e.getStatus() == XmppSession.Status.CLOSED) {
             invitationListeners.clear();
         }
+    }
+
+    void roomEntered(ChatRoom chatRoom, String nick) {
+        enteredRoomsMap.put(chatRoom.getAddress(), new Item(chatRoom.getAddress(), null, nick));
+    }
+
+    void roomExited(ChatRoom chatRoom) {
+        enteredRoomsMap.remove(chatRoom.getAddress());
     }
 }

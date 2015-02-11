@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <too-many-subscriptions/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #TOO_MANY_SUBSCRIPTIONS
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-toomany">6.1.3.9 Too Many Subscriptions</a>
  */
 @XmlRootElement(name = "too-many-subscriptions")
+@XmlType(factoryMethod = "create")
 public final class TooManySubscriptions extends PubSubError {
-    private TooManySubscriptions() {
+    TooManySubscriptions() {
+    }
+
+    private static TooManySubscriptions create() {
+        return TOO_MANY_SUBSCRIPTIONS;
     }
 }

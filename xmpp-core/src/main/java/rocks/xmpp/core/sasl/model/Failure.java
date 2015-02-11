@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,12 @@ package rocks.xmpp.core.sasl.model;
 import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <failure/>} element, which indicates a SASL failure.
@@ -35,23 +40,37 @@ import javax.xml.bind.annotation.*;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-failure">6.4.5.  SASL Failure</a></cite></p>
  * <p>The receiving entity reports failure of the handshake for this authentication mechanism by sending a {@code <failure/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace.</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 @XmlRootElement
-@XmlSeeAlso({Failure.Aborted.class, Failure.AccountDisabled.class, Failure.CredentialsExpired.class, Failure.EncryptionRequired.class, Failure.IncorrectEncoding.class, Failure.InvalidAuthzid.class, Failure.InvalidMechanism.class, Failure.MalformedRequest.class, Failure.MechanismTooWeak.class, Failure.NotAuthorized.class, Failure.TemporaryAuthFailure.class})
 public final class Failure implements ServerStreamElement {
 
-    @XmlElementRef
-    private Condition condition;
+    @XmlElements({@XmlElement(name = "aborted", type = Aborted.class),
+            @XmlElement(name = "account-disabled", type = AccountDisabled.class),
+            @XmlElement(name = "credentials-expired", type = CredentialsExpired.class),
+            @XmlElement(name = "encryption-required", type = EncryptionRequired.class),
+            @XmlElement(name = "incorrect-encoding", type = IncorrectEncoding.class),
+            @XmlElement(name = "invalid-authzid", type = InvalidAuthzid.class),
+            @XmlElement(name = "invalid-mechanism", type = InvalidMechanism.class),
+            @XmlElement(name = "malformed-request", type = MalformedRequest.class),
+            @XmlElement(name = "mechanism-too-weak", type = MechanismTooWeak.class),
+            @XmlElement(name = "not-authorized", type = NotAuthorized.class),
+            @XmlElement(name = "temporary-auth-failure", type = TemporaryAuthFailure.class)
+    })
+    private final Condition condition;
 
     @XmlElement(name = "text")
-    private Text text;
+    private final Text text;
 
     /**
      * Private default constructor, needed for unmarshalling.
      */
     private Failure() {
+        this.condition = null;
+        this.text = null;
     }
 
     /**
@@ -59,7 +78,7 @@ public final class Failure implements ServerStreamElement {
      *
      * @return The error condition.
      */
-    public Condition getCondition() {
+    public final Condition getCondition() {
         return condition;
     }
 
@@ -68,7 +87,7 @@ public final class Failure implements ServerStreamElement {
      *
      * @return The text.
      */
-    public String getText() {
+    public final String getText() {
         if (text != null) {
             return text.text;
         }
@@ -80,11 +99,17 @@ public final class Failure implements ServerStreamElement {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         if (text != null) {
             return text.language;
         }
         return null;
+    }
+
+    @Override
+    public final String toString() {
+        String text = getText();
+        return condition != null ? condition.toString() : "" + (text != null ? " (" + text + ")" : "");
     }
 
     /**
@@ -94,9 +119,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The receiving entity acknowledges that the authentication handshake has been aborted by the initiating entity; sent in reply to the {@code <abort/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "aborted")
-    public static final class Aborted extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class Aborted extends Condition {
         private Aborted() {
+        }
+
+        private static Aborted create() {
+            return (Aborted) ABORTED;
         }
     }
 
@@ -107,9 +136,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The account of the initiating entity has been temporarily disabled; sent in reply to an {@code <auth/>} element (with or without initial response data) or a {@code <response/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "account-disabled")
-    public static final class AccountDisabled extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class AccountDisabled extends Condition {
         private AccountDisabled() {
+        }
+
+        private static AccountDisabled create() {
+            return (AccountDisabled) ACCOUNT_DISABLED;
         }
     }
 
@@ -120,9 +153,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The authentication failed because the initiating entity provided credentials that have expired; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "credentials-expired")
-    public static final class CredentialsExpired extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class CredentialsExpired extends Condition {
         private CredentialsExpired() {
+        }
+
+        private static CredentialsExpired create() {
+            return (CredentialsExpired) CREDENTIALS_EXPIRED;
         }
     }
 
@@ -133,9 +170,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The mechanism requested by the initiating entity cannot be used unless the confidentiality and integrity of the underlying stream are protected (typically via TLS); sent in reply to an {@code <auth/>} element (with or without initial response data).</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "encryption-required")
-    public static final class EncryptionRequired extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class EncryptionRequired extends Condition {
         private EncryptionRequired() {
+        }
+
+        private static EncryptionRequired create() {
+            return (EncryptionRequired) ENCRYPTION_REQUIRED;
         }
     }
 
@@ -146,9 +187,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The data provided by the initiating entity could not be processed because the base 64 encoding is incorrect (e.g., because the encoding does not adhere to the definition in Section 4 of [BASE64]); sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "incorrect-encoding")
-    public static final class IncorrectEncoding extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class IncorrectEncoding extends Condition {
         private IncorrectEncoding() {
+        }
+
+        private static IncorrectEncoding create() {
+            return (IncorrectEncoding) INCORRECT_ENCODING;
         }
     }
 
@@ -159,9 +204,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The authzid provided by the initiating entity is invalid, either because it is incorrectly formatted or because the initiating entity does not have permissions to authorize that ID; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "invalid-authzid")
-    public static final class InvalidAuthzid extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class InvalidAuthzid extends Condition {
         private InvalidAuthzid() {
+        }
+
+        private static InvalidAuthzid create() {
+            return (InvalidAuthzid) INVALID_AUTHZID;
         }
     }
 
@@ -172,9 +221,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The initiating entity did not specify a mechanism, or requested a mechanism that is not supported by the receiving entity; sent in reply to an {@code <auth/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "invalid-mechanism")
-    public static final class InvalidMechanism extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class InvalidMechanism extends Condition {
         private InvalidMechanism() {
+        }
+
+        private static InvalidMechanism create() {
+            return (InvalidMechanism) INVALID_MECHANISM;
         }
     }
 
@@ -185,9 +238,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The request is malformed (e.g., the {@code <auth/>} element includes initial response data but the mechanism does not allow that, or the data sent violates the syntax for the specified SASL mechanism); sent in reply to an {@code <abort/>}, {@code <auth/>}, {@code <challenge/>}, or {@code <response/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "malformed-request")
-    public static class MalformedRequest extends Condition {
+    @XmlType(factoryMethod = "create")
+    static class MalformedRequest extends Condition {
         private MalformedRequest() {
+        }
+
+        private static MalformedRequest create() {
+            return (MalformedRequest) MALFORMED_REQUEST;
         }
     }
 
@@ -198,9 +255,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The mechanism requested by the initiating entity is weaker than server policy permits for that initiating entity; sent in reply to an {@code <auth/>} element (with or without initial response data).</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "mechanism-too-weak")
-    public static final class MechanismTooWeak extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class MechanismTooWeak extends Condition {
         private MechanismTooWeak() {
+        }
+
+        private static MechanismTooWeak create() {
+            return (MechanismTooWeak) MECHANISM_TOO_WEAK;
         }
     }
 
@@ -211,9 +272,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The authentication failed because the initiating entity did not provide proper credentials, or because some generic authentication failure has occurred but the receiving entity does not wish to disclose specific information about the cause of the failure; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "not-authorized")
-    public static final class NotAuthorized extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class NotAuthorized extends Condition {
         private NotAuthorized() {
+        }
+
+        private static NotAuthorized create() {
+            return (NotAuthorized) NOT_AUTHORIZED;
         }
     }
 
@@ -224,9 +289,13 @@ public final class Failure implements ServerStreamElement {
      * <p>The authentication failed because of a temporary error condition within the receiving entity, and it is advisable for the initiating entity to try again later; sent in reply to an {@code <auth/>} element or a {@code <response/>} element.</p>
      * </blockquote>
      */
-    @XmlRootElement(name = "temporary-auth-failure")
-    public static final class TemporaryAuthFailure extends Condition {
+    @XmlType(factoryMethod = "create")
+    static final class TemporaryAuthFailure extends Condition {
         private TemporaryAuthFailure() {
+        }
+
+        private static TemporaryAuthFailure create() {
+            return (TemporaryAuthFailure) TEMPORARY_AUTH_FAILURE;
         }
     }
 
@@ -234,16 +303,128 @@ public final class Failure implements ServerStreamElement {
      * A general class for a SASL failure condition.
      */
     public abstract static class Condition {
+
+        /**
+         * The implementation of the {@code <aborted/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-aborted">6.5.1.  aborted</a></cite></p>
+         * <p>The receiving entity acknowledges that the authentication handshake has been aborted by the initiating entity; sent in reply to the {@code <abort/>} element.</p>
+         * </blockquote>
+         */
+        public static final Condition ABORTED = new Aborted();
+
+        /**
+         * The implementation of the {@code <account-disabled/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-account-disabled">6.5.2.  account-disabled</a></cite></p>
+         * <p>The account of the initiating entity has been temporarily disabled; sent in reply to an {@code <auth/>} element (with or without initial response data) or a {@code <response/>} element.</p>
+         * </blockquote>
+         */
+        public static final Condition ACCOUNT_DISABLED = new AccountDisabled();
+
+        /**
+         * The implementation of the {@code <credentials-expired/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-credentials-expired">6.5.3.  credentials-expired</a></cite></p>
+         * <p>The authentication failed because the initiating entity provided credentials that have expired; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
+         * </blockquote>
+         */
+        public static final Condition CREDENTIALS_EXPIRED = new CredentialsExpired();
+
+        /**
+         * The implementation of the {@code <encryption-required/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-encryption-required">6.5.4.  encryption-required</a></cite></p>
+         * <p>The mechanism requested by the initiating entity cannot be used unless the confidentiality and integrity of the underlying stream are protected (typically via TLS); sent in reply to an {@code <auth/>} element (with or without initial response data).</p>
+         * </blockquote>
+         */
+        public static final Condition ENCRYPTION_REQUIRED = new EncryptionRequired();
+
+        /**
+         * The implementation of the {@code <incorrect-encoding/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-incorrect-encoding">6.5.5.  incorrect-encoding</a></cite></p>
+         * <p>The data provided by the initiating entity could not be processed because the base 64 encoding is incorrect (e.g., because the encoding does not adhere to the definition in Section 4 of [BASE64]); sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
+         * </blockquote>
+         */
+        public static final Condition INCORRECT_ENCODING = new IncorrectEncoding();
+
+        /**
+         * The implementation of the {@code <invalid-authzid/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-invalid-authzid">6.5.6.  invalid-authzid</a></cite></p>
+         * <p>The authzid provided by the initiating entity is invalid, either because it is incorrectly formatted or because the initiating entity does not have permissions to authorize that ID; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
+         * </blockquote>
+         */
+        public static final Condition INVALID_AUTHZID = new InvalidAuthzid();
+
+        /**
+         * The implementation of the {@code <invalid-mechanism/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-invalid-mechanism">6.5.7.  invalid-mechanism</a></cite></p>
+         * <p>The initiating entity did not specify a mechanism, or requested a mechanism that is not supported by the receiving entity; sent in reply to an {@code <auth/>} element.</p>
+         * </blockquote>
+         */
+        public static final Condition INVALID_MECHANISM = new InvalidMechanism();
+
+        /**
+         * The implementation of the {@code <malformed-request/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-malformed-request">6.5.8.  malformed-request</a></cite></p>
+         * <p>The request is malformed (e.g., the {@code <auth/>} element includes initial response data but the mechanism does not allow that, or the data sent violates the syntax for the specified SASL mechanism); sent in reply to an {@code <abort/>}, {@code <auth/>}, {@code <challenge/>}, or {@code <response/>} element.</p>
+         * </blockquote>
+         */
+        public static final Condition MALFORMED_REQUEST = new MalformedRequest();
+
+        /**
+         * The implementation of the {@code <mechanism-too-weak/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-mechanism-too-weak">6.5.9.  mechanism-too-weak</a></cite></p>
+         * <p>The mechanism requested by the initiating entity is weaker than server policy permits for that initiating entity; sent in reply to an {@code <auth/>} element (with or without initial response data).</p>
+         * </blockquote>
+         */
+        public static final Condition MECHANISM_TOO_WEAK = new MechanismTooWeak();
+
+        /**
+         * The implementation of the {@code <not-authorized/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-not-authorized">6.5.10.  not-authorized</a></cite></p>
+         * <p>The authentication failed because the initiating entity did not provide proper credentials, or because some generic authentication failure has occurred but the receiving entity does not wish to disclose specific information about the cause of the failure; sent in reply to a {@code <response/>} element or an {@code <auth/>} element with initial response data.</p>
+         * </blockquote>
+         */
+        public static final Condition NOT_AUTHORIZED = new NotAuthorized();
+
+        /**
+         * The implementation of the {@code <temporary-auth-failure/>} SASL failure.
+         * <blockquote>
+         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors-temporary-auth-failure">6.5.11.  temporary-auth-failure</a></cite></p>
+         * <p>The authentication failed because of a temporary error condition within the receiving entity, and it is advisable for the initiating entity to try again later; sent in reply to an {@code <auth/>} element or a {@code <response/>} element.</p>
+         * </blockquote>
+         */
+        public static final Condition TEMPORARY_AUTH_FAILURE = new TemporaryAuthFailure();
+
+        private Condition() {
+        }
+
+        @Override
+        public final String toString() {
+            return "<" + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
+        }
     }
 
     /**
      * The text element of the failure.
      */
-    private static class Text {
+    private static final class Text {
         @XmlValue
         private String text;
 
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
         private String language;
+
+        private Text() {
+            this.text = null;
+            this.language = null;
+        }
     }
 }

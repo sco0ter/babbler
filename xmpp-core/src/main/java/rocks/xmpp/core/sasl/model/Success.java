@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlValue;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-success">6.4.6.  SASL Success</a></cite></p>
  * <p>The receiving entity reports success of the handshake by sending a {@code <success/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace; this element MAY contain XML character data (in SASL terminology, "additional data with success") if the chosen SASL mechanism supports or requires it.</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
@@ -40,12 +42,14 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Success {
 
     @XmlValue
-    private byte[] additionalData;
+    private final byte[] additionalData;
 
-    /**
-     * Default constructor, needed for unmarshalling.
-     */
-    private Success() {
+    public Success() {
+        this(null);
+    }
+
+    public Success(byte[] additionalData) {
+        this.additionalData = additionalData;
     }
 
     /**
@@ -54,7 +58,7 @@ public final class Success {
      *
      * @return Additional data.
      */
-    public byte[] getAdditionalData() {
+    public final byte[] getAdditionalData() {
         return additionalData;
     }
 }

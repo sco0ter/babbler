@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <remote-server-timeout/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-remote-server-timeout">8.3.3.17.  remote-server-timeout</a></cite></p>
  * <p>A remote server or service specified as part or all of the JID of the intended recipient (or needed to fulfill a request) was resolved but communications could not be established within a reasonable amount of time (e.g., an XML stream cannot be established at the resolved IP address and port, or an XML stream can be established but stream negotiation fails because of problems with TLS, SASL, Server Dialback, etc.); the associated error type SHOULD be "wait" (unless the error is of a more permanent nature, e.g., the remote server is found but it cannot be authenticated or it violates security policies).</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #REMOTE_SERVER_TIMEOUT
  */
 @XmlRootElement(name = "remote-server-timeout")
-public final class RemoteServerTimeout extends Condition {
+@XmlType(factoryMethod = "create")
+final class RemoteServerTimeout extends Condition {
+
+    RemoteServerTimeout() {
+    }
+
+    private static RemoteServerTimeout create() {
+        return (RemoteServerTimeout) REMOTE_SERVER_TIMEOUT;
+    }
 }

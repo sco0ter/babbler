@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <not-allowed/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-not-allowed">8.3.3.10.  not-allowed</a></cite></p>
  * <p>The recipient or server does not allow any entity to perform the action (e.g., sending to entities at a blacklisted domain); the associated error type SHOULD be "cancel".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #NOT_ALLOWED
  */
 @XmlRootElement(name = "not-allowed")
-public final class NotAllowed extends Condition {
+@XmlType(factoryMethod = "create")
+final class NotAllowed extends Condition {
+
+    NotAllowed() {
+    }
+
+    private static NotAllowed create() {
+        return (NotAllowed) NOT_ALLOWED;
+    }
 }

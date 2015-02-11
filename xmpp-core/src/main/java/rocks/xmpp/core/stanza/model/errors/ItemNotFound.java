@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <item-not-found/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-item-not-found">8.3.3.7.  item-not-found</a></cite></p>
  * <p>The addressed JID or item requested cannot be found; the associated error type SHOULD be "cancel".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #ITEM_NOT_FOUND
  */
 @XmlRootElement(name = "item-not-found")
-public final class ItemNotFound extends Condition {
+@XmlType(factoryMethod = "create")
+final class ItemNotFound extends Condition {
+
+    ItemNotFound() {
+    }
+
+    private static ItemNotFound create() {
+        return (ItemNotFound) ITEM_NOT_FOUND;
+    }
 }

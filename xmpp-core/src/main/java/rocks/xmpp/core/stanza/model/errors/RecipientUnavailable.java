@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <recipient-unavailable/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-recipient-unavailable">8.3.3.13.  recipient-unavailable</a></cite></p>
  * <p>The intended recipient is temporarily unavailable, undergoing maintenance, etc.; the associated error type SHOULD be "wait".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #RECIPIENT_UNAVAILABLE
  */
 @XmlRootElement(name = "recipient-unavailable")
-public final class RecipientUnavailable extends Condition {
+@XmlType(factoryMethod = "create")
+final class RecipientUnavailable extends Condition {
+
+    RecipientUnavailable() {
+    }
+
+    private static RecipientUnavailable create() {
+        return (RecipientUnavailable) RECIPIENT_UNAVAILABLE;
+    }
 }

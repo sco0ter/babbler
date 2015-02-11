@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,8 @@
 package rocks.xmpp.extensions.bytestreams.s5b;
 
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
-import rocks.xmpp.core.stanza.model.errors.NotAcceptable;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
@@ -67,7 +65,7 @@ final class S5bEvent extends ByteStreamEvent {
             return s5bSession;
         } catch (IOException e) {
             // If the Target tries but is unable to connect to any of the StreamHosts and it does not wish to attempt a connection from its side, it MUST return an <item-not-found/> error to the Requester.
-            xmppSession.send(iq.createError(new StanzaError(new ItemNotFound())));
+            xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
             throw e;
         }
     }
@@ -75,6 +73,6 @@ final class S5bEvent extends ByteStreamEvent {
     @Override
     public void reject() {
         // Else if the Target is unwilling to accept the bytestream, it MUST return an error of <not-acceptable/> to the Requester.
-        xmppSession.send(iq.createError(new StanzaError(new NotAcceptable())));
+        xmppSession.send(iq.createError(Condition.NOT_ACCEPTABLE));
     }
 }

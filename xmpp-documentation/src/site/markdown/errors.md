@@ -22,7 +22,7 @@ xmppSession.addSessionStatusListener(new SessionStatusListener() {
     public void sessionStatusChanged(SessionStatusEvent e) {
         if (e.getException() instanceof StreamException) {
             StreamException streamException = (StreamException) e.getException();
-            if (streamException.getStreamError().getCondition() instanceof SystemShutdown) {
+            if (streamException.getStreamError().getCondition() == Condition.SYSTEM_SHUTDOWN) {
                 // Server was shut down.
             }
         }
@@ -55,7 +55,7 @@ try {
         // The entity did not respond
     } else if (e instanceof StanzaException) {
         StanzaError stanzaError = ((StanzaException) e).getStanza().getError();
-        if (stanzaError.getCondition() instanceof ServiceUnavailable) {
+        if (stanzaError.getCondition() == Condition.SERVICE_UNAVAILABLE) {
             // The entity returned a <service-unavailable/> stanza error.
         }
     }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,9 @@ package rocks.xmpp.extensions.time;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
 
@@ -44,12 +43,16 @@ import java.util.TimeZone;
  *
  * @author Christian Schudt
  */
-public final class EntityTimeManager extends ExtensionManager implements IQListener {
+public final class EntityTimeManager extends IQExtensionManager {
 
     private EntityTimeManager(final XmppSession xmppSession) {
-        super(xmppSession, EntityTime.NAMESPACE);
-        xmppSession.addIQListener(this);
+        super(xmppSession, AbstractIQ.Type.GET, EntityTime.NAMESPACE);
         setEnabled(true);
+    }
+
+    @Override
+    protected void initialize() {
+        xmppSession.addIQHandler(EntityTime.class, this);
     }
 
     /**
@@ -57,7 +60,7 @@ public final class EntityTimeManager extends ExtensionManager implements IQListe
      *
      * @param jid The entity's JID.
      * @return The entity time or null if this protocol is not supported by the entity.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public EntityTime getEntityTime(Jid jid) throws XmppException {
@@ -66,11 +69,7 @@ public final class EntityTimeManager extends ExtensionManager implements IQListe
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(EntityTime.class) != null) {
-            xmppSession.send(iq.createResult(new EntityTime(TimeZone.getDefault(), new Date())));
-            e.consume();
-        }
+    protected IQ processRequest(final IQ iq) {
+        return iq.createResult(new EntityTime(TimeZone.getDefault(), new Date()));
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.Proxy;
 
@@ -36,7 +35,7 @@ import java.net.Proxy;
  *
  * @author Christian Schudt
  */
-public abstract class Connection implements Closeable {
+public abstract class Connection implements AutoCloseable {
 
     /**
      * The proxy, which is used while connecting to a host.
@@ -46,6 +45,8 @@ public abstract class Connection implements Closeable {
     protected String hostname;
 
     protected int port;
+
+    protected Jid from;
 
     private XmppSession xmppSession;
 
@@ -133,12 +134,6 @@ public abstract class Connection implements Closeable {
     public abstract void send(ClientStreamElement clientStreamElement);
 
     /**
-     * Compresses the stream.
-     */
-    protected void compressStream() {
-    }
-
-    /**
      * Connects to the server.
      *
      * @throws IOException If no connection could be established, e.g. due to unknown host.
@@ -154,4 +149,18 @@ public abstract class Connection implements Closeable {
      * @throws IOException If no connection could be established, e.g. due to unknown host.
      */
     public abstract void connect(Jid from) throws IOException;
+
+    /**
+     * Indicates whether this connection is secured by TLS/SSL.
+     *
+     * @return True, if this connection is secured.
+     */
+    public abstract boolean isSecure();
+
+    /**
+     * Gets the stream id of this connection.
+     *
+     * @return The stream id.
+     */
+    public abstract String getStreamId();
 }

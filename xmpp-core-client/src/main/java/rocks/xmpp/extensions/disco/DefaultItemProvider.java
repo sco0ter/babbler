@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,8 @@ import java.util.List;
 /**
  * A default item provider for Service Discovery. When items are requested via Service Discovery, this class provides the items
  * and if requested with Result Set Management, it also takes care of providing the correct number of items or the total count of items.
+ * <p>
+ * This class is a view on a collection, if the underlying collection changes, the view on the collection will yield different results.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0030.html#items-nodes">XEP-0030: Service Discovery 4.2 Items Nodes</a>
@@ -42,18 +44,15 @@ import java.util.List;
  */
 public final class DefaultItemProvider implements ResultSetProvider<Item> {
 
-    private final List<Item> items = Collections.synchronizedList(new ArrayList<Item>());
-
-    public DefaultItemProvider() {
-    }
+    private final Collection<Item> items;
 
     public DefaultItemProvider(Collection<Item> items) {
-        this.items.addAll(items);
+        this.items = items;
     }
 
     @Override
     public List<Item> getItems() {
-        return items;
+        return Collections.unmodifiableList(new ArrayList<>(items));
     }
 
     @Override
@@ -68,7 +67,7 @@ public final class DefaultItemProvider implements ResultSetProvider<Item> {
             if (index < 0 || toIndex > items.size() || index > toIndex) {
                 return Collections.emptyList();
             }
-            return items.subList(index, toIndex);
+            return Collections.unmodifiableList(new ArrayList<>(items).subList(index, toIndex));
         }
     }
 
@@ -86,7 +85,7 @@ public final class DefaultItemProvider implements ResultSetProvider<Item> {
     public int indexOf(String itemId) {
         synchronized (items) {
             for (int i = 0; i < items.size(); i++) {
-                Item item = items.get(i);
+                Item item = new ArrayList<>(items).get(i);
                 if (item.getId() != null && item.getId().equals(itemId)) {
                     return i;
                 }

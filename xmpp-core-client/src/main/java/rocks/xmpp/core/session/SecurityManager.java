@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -46,36 +47,31 @@ final class SecurityManager extends StreamFeatureNegotiator {
         super(StartTls.class);
         this.isSecure = isSecure;
         addFeatureListener(streamFeatureListener);
-        if (xmppSession == null) {
-            throw new IllegalArgumentException("connection must not be null.");
-        }
         this.xmppSession = xmppSession;
     }
 
     @Override
-    public Status processNegotiation(Object element) throws Exception {
+    public Status processNegotiation(Object element) throws StreamNegotiationException {
 
         Status status = Status.INCOMPLETE;
-        try {
-            if (element instanceof StartTls) {
-                StartTls startTls = (StartTls) element;
-                if (startTls.isMandatory() && !isSecure) {
-                    throw new Exception("The server requires TLS, but you disabled it.");
-                }
-                if (isSecure) {
-                    xmppSession.send(new StartTls());
-                } else {
-                    status = Status.IGNORE;
-                }
-            } else if (element instanceof Proceed) {
-                status = Status.SUCCESS;
-            } else if (element instanceof Failure) {
-                status = Status.FAILURE;
-                throw new Exception("Failure during TLS negotiation.");
+
+        if (element instanceof StartTls) {
+            StartTls startTls = (StartTls) element;
+            if (startTls.isMandatory() && !isSecure) {
+                throw new StreamNegotiationException("The server requires TLS, but you disabled it.");
             }
-        } finally {
-            notifyFeatureNegotiated(status, element);
+            if (isSecure) {
+                xmppSession.send(new StartTls());
+            } else {
+                status = Status.IGNORE;
+            }
+        } else if (element instanceof Proceed) {
+            notifyFeatureNegotiated();
+            status = Status.SUCCESS;
+        } else if (element instanceof Failure) {
+            throw new StreamNegotiationException("Failure during TLS negotiation.");
         }
+
         return status;
     }
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <improper-addressing/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-improper-addressing">4.9.3.7.  improper-addressing</a></cite></p>
  * <p>A stanza sent between two servers lacks a 'to' or 'from' attribute, the 'from' or 'to' attribute has no value, or the value violates the rules for XMPP addresses.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #IMPROPER_ADDRESSING
  */
 @XmlRootElement(name = "improper-addressing")
-public final class ImproperAddressing extends Condition {
+@XmlType(factoryMethod = "create")
+final class ImproperAddressing extends Condition {
+
+    ImproperAddressing() {
+    }
+
+    private static ImproperAddressing create() {
+        return (ImproperAddressing) IMPROPER_ADDRESSING;
+    }
 }

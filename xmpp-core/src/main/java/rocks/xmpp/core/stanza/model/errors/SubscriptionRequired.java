@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <subscription-required/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-subscription-required">8.3.3.20.  subscription-required</a></cite></p>
  * <p>The requesting entity is not authorized to access the requested service because a prior subscription is necessary (examples of prior subscription include authorization to receive presence information as defined in [XMPP-IM] and opt-in data feeds for XMPP publish-subscribe as defined in [XEP-0060]); the associated error type SHOULD be "auth".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #SUBSCRIPTION_REQUIRED
  */
 @XmlRootElement(name = "subscription-required")
-public final class SubscriptionRequired extends Condition {
+@XmlType(factoryMethod = "create")
+final class SubscriptionRequired extends Condition {
+
+    SubscriptionRequired() {
+    }
+
+    private static SubscriptionRequired create() {
+        return (SubscriptionRequired) SUBSCRIPTION_REQUIRED;
+    }
 }

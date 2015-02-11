@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,6 +53,16 @@ public abstract class ExtensionManager extends Manager {
         }
     }
 
+    @Override
+    public final boolean isEnabled() {
+        Collection<Feature> f = new ArrayList<>();
+        for (String namespace : features) {
+            f.add(new Feature(namespace));
+        }
+        return serviceDiscoveryManager.getFeatures().containsAll(f);
+
+    }
+
     /**
      * Enables or disables support for the extension.
      *
@@ -71,5 +81,14 @@ public abstract class ExtensionManager extends Manager {
                 }
             }
         }
+    }
+
+    /**
+     * Initializes the manager. Logic which shouldn't be in the constructor can go here.
+     * This allows thread-safe construction of objects, e.g. when you need to publish the "this" reference.
+     *
+     * @see <a href="http://www.ibm.com/developerworks/library/j-jtp0618/">Java theory and practice: Safe construction techniques</a>
+     */
+    protected void initialize() {
     }
 }

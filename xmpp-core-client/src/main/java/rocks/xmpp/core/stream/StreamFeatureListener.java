@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,17 +27,17 @@ package rocks.xmpp.core.stream;
 import java.util.EventListener;
 
 /**
- * A feature listener, which listens for negotiation status changes.
+ * A feature listener, which listens for successful feature negotiation.
  *
  * @author Christian Schudt
+ * @see rocks.xmpp.core.stream.StreamFeatureNegotiator#addFeatureListener(StreamFeatureListener)
  */
 public interface StreamFeatureListener extends EventListener {
 
     /**
-     * Fired whenever the status of a feature negotiation has changed.
+     * Fired when the feature has been successfully negotiated.
      *
-     * @param streamFeatureEvent The feature event.
-     * @throws Exception If any exception occurred during handling of the event.
+     * @throws StreamNegotiationException If any exception occurred during handling of the event.
      */
-    void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) throws Exception;
+    void featureSuccessfullyNegotiated() throws StreamNegotiationException;
 }

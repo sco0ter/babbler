@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,13 @@
 package rocks.xmpp.extensions.privacy;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
 
@@ -61,13 +61,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Christian Schudt
  */
-public final class PrivacyListManager extends ExtensionManager implements SessionStatusListener, IQListener {
+public final class PrivacyListManager extends IQExtensionManager implements SessionStatusListener {
     private final Set<PrivacyListListener> privacyListListeners = new CopyOnWriteArraySet<>();
 
     private PrivacyListManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, AbstractIQ.Type.SET);
+    }
+
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
-        xmppSession.addIQListener(this);
+        xmppSession.addIQHandler(Privacy.class, this);
     }
 
     /**
@@ -94,7 +98,7 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
      * Gets the privacy lists.
      *
      * @return The privacy lists.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
@@ -119,7 +123,7 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
      *
      * @param name The privacy list name.
      * @return The privacy list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
@@ -136,7 +140,7 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
      * Changes the active list currently being applied.
      *
      * @param name The active list name.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the user attempts to set an active list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the user attempts to set an active list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
@@ -149,7 +153,7 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
     /**
      * Declines the use of any active list.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the request returned with an error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the request returned with an error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
@@ -161,7 +165,7 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
      * Change the default list (which applies to the user as a whole, not only the sending resource).
      *
      * @param name The list name.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException <ul>
+     * @throws rocks.xmpp.core.stanza.StanzaException <ul>
      *                                                      <li>If the user attempts to change which list is the default list but the default list is in use by at least one connected resource other than the sending resource, the server MUST return a {@code <conflict/>} stanza error to the sending resource</li>
      *                                                      <li>If the user attempts to set a default list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user</li>
      *                                                      </ul>
@@ -177,7 +181,7 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
     /**
      * Declines the use of any default list.
      *
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If one connected resource attempts to decline the use of a default list for the user as a whole but the default list currently applies to at least one other connected resource, the server MUST return a {@code <conflict/>} error to the sending resource.
+     * @throws rocks.xmpp.core.stanza.StanzaException If one connected resource attempts to decline the use of a default list for the user as a whole but the default list currently applies to at least one other connected resource, the server MUST return a {@code <conflict/>} error to the sending resource.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
@@ -189,7 +193,7 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
      * Creates or edits a privacy list.
      *
      * @param privacyList The privacy list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-edit">2.6 Editing a Privacy List</a>
      */
@@ -201,7 +205,7 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
      * Removes a privacy list.
      *
      * @param name The privacy list.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-remove">2.8 Removing a Privacy List</a>
      */
@@ -214,13 +218,8 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && !e.isConsumed() && iq.getType() == IQ.Type.SET && (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid()))) {
-            // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
-            xmppSession.send(iq.createResult());
-            e.consume();
-
+    protected IQ processRequest(final IQ iq) {
+        if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
             Privacy privacy = iq.getExtension(Privacy.class);
             if (privacy != null) {
                 List<PrivacyList> privacyLists = privacy.getPrivacyLists();
@@ -231,7 +230,10 @@ public final class PrivacyListManager extends ExtensionManager implements Sessio
                     }
                 }
             }
+            // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
+            return iq.createResult();
         }
+        return iq.createError(Condition.NOT_ACCEPTABLE);
     }
 
     @Override

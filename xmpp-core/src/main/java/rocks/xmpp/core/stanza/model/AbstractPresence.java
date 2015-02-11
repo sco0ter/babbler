@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -137,10 +137,10 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      * </blockquote>
      *
      * @return The priority.
-     * @see #setPriority(byte)
+     * @see #setPriority(Byte)
      */
-    public final byte getPriority() {
-        return priority != null ? priority : 0;
+    public final Byte getPriority() {
+        return priority;
     }
 
     /**
@@ -151,7 +151,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      * @deprecated Use constructor.
      */
     @Deprecated
-    public final void setPriority(byte priority) {
+    public final void setPriority(Byte priority) {
         this.priority = priority;
     }
 
@@ -271,7 +271,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
         }
 
         // First compare the priority.
-        int result = Byte.compare(getPriority(), o.getPriority());
+        int result = Byte.compare(priority != null ? priority : 0, o.getPriority() != null ? o.getPriority() : 0);
         // If priority is equal, compare the show element.
         if (result == 0) {
             // If we have no show attribute, but the other one has, we are available and are better than the other.

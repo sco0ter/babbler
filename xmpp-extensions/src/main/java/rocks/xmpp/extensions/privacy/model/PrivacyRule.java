@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import rocks.xmpp.core.roster.model.Contact;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
+import java.util.Objects;
 
 /**
  * A privacy rule for privacy lists, which is applied by the server.
@@ -96,9 +97,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *               </ul>
      */
     private PrivacyRule(Action action, long order, Type type, String value, boolean filterMessage, boolean filterPresenceIn, boolean filterPresenceOut, boolean filterIQ) {
-        if (action == null) {
-            throw new IllegalArgumentException("action must not be null.");
-        }
+        Objects.requireNonNull(action, "action must not be null.");
         if (order < 0) {
             throw new IllegalArgumentException("order must be greater 0.");
         }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,20 @@ package rocks.xmpp.extensions.bytestreams;
 import java.util.EventListener;
 
 /**
+ * A listener which allows to listen for incoming byte stream requests.
+ * Byte stream requests can either be from <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a> or <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
+ * <p>
+ * This interface is an abstraction to both kind of requests.
+ *
  * @author Christian Schudt
+ * @see rocks.xmpp.extensions.bytestreams.ByteStreamManager#addByteStreamListener(ByteStreamListener)
  */
 public interface ByteStreamListener extends EventListener {
 
+    /**
+     * Called when a byte stream is requested.
+     *
+     * @param e The byte stream event.
+     */
     void byteStreamRequested(ByteStreamEvent e);
 }

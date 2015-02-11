@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ import java.util.Objects;
  * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
  * <p>This information helps requesting entities determine what actions are possible with regard to this entity (registration, search, join, etc.), what protocols the entity supports, and specific feature types of interest, if any (e.g., for the purpose of feature negotiation).</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
@@ -42,9 +43,10 @@ public final class Feature implements Comparable<Feature> {
      * Each {@code <feature/>} element MUST possess a 'var' attribute whose value is a protocol namespace or other feature offered by the entity.
      */
     @XmlAttribute
-    private String var;
+    private final String var;
 
     private Feature() {
+        this.var = null;
     }
 
     /**
@@ -53,7 +55,7 @@ public final class Feature implements Comparable<Feature> {
      * @param var A protocol namespace or other feature offered by the entity.
      */
     public Feature(String var) {
-        this.var = var;
+        this.var = Objects.requireNonNull(var);
     }
 
     /**
@@ -61,7 +63,7 @@ public final class Feature implements Comparable<Feature> {
      *
      * @return A protocol namespace or other feature offered by the entity.
      */
-    public String getVar() {
+    public final String getVar() {
         return var;
     }
 
@@ -72,7 +74,7 @@ public final class Feature implements Comparable<Feature> {
      * @return True, if the both features are equal.
      */
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -84,7 +86,7 @@ public final class Feature implements Comparable<Feature> {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(var);
     }
 
@@ -96,7 +98,7 @@ public final class Feature implements Comparable<Feature> {
      * @return The result of the comparison.
      */
     @Override
-    public int compareTo(Feature o) {
+    public final int compareTo(Feature o) {
         int result;
         if (o == null) {
             result = 1;
@@ -113,7 +115,7 @@ public final class Feature implements Comparable<Feature> {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return var;
     }
 }

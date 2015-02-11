@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,13 +33,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#info} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
@@ -64,12 +65,13 @@ public final class InfoDiscovery implements InfoNode {
     private final List<DataForm> extensions = new ArrayList<>();
 
     @XmlAttribute
-    private String node;
+    private final String node;
 
     /**
      * Creates an empty element, used for info discovery requests.
      */
     public InfoDiscovery() {
+        this(null);
     }
 
     /**
@@ -124,12 +126,12 @@ public final class InfoDiscovery implements InfoNode {
     }
 
     @Override
-    public Set<Identity> getIdentities() {
+    public final Set<Identity> getIdentities() {
         return Collections.unmodifiableSet(identities);
     }
 
     @Override
-    public Set<Feature> getFeatures() {
+    public final Set<Feature> getFeatures() {
         return Collections.unmodifiableSet(features);
     }
 
@@ -139,12 +141,12 @@ public final class InfoDiscovery implements InfoNode {
     }
 
     @Override
-    public List<DataForm> getExtensions() {
+    public final List<DataForm> getExtensions() {
         return Collections.unmodifiableList(extensions);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "Identity: " + identities + "; Features: " + features;
     }
 }

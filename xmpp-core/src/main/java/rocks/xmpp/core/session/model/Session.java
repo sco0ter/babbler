@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package rocks.xmpp.core.session.model;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -38,18 +39,30 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>
  * <b>Note:</b> <i>Session establishment has been removed from the <a href="http://xmpp.org/rfcs/rfc6120.html#diffs">updated specification</a>.</i>
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 @XmlRootElement
 public final class Session extends StreamFeature {
-    @Override
-    public boolean isMandatory() {
-        return true;
+    @XmlElement
+    private final String optional;
+
+    public Session() {
+        this.optional = null;
+    }
+
+    public Session(Boolean optional) {
+        this.optional = optional != null && optional ? "" : null;
     }
 
     @Override
-    public int getPriority() {
+    public final boolean isMandatory() {
+        return optional == null;
+    }
+
+    @Override
+    public final int getPriority() {
         return 4;
     }
 }

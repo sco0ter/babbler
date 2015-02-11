@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,8 +53,7 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.hashes.HashManager;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
-import rocks.xmpp.extensions.invisible.model.Invisible;
-import rocks.xmpp.extensions.invisible.model.Visible;
+import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
@@ -80,8 +79,7 @@ import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
 import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.extensions.receipts.MessageDeliveryReceiptsManager;
-import rocks.xmpp.extensions.receipts.model.Received;
-import rocks.xmpp.extensions.receipts.model.Request;
+import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
@@ -241,10 +239,10 @@ public class ExtensionContext extends CoreContext {
                 IceUdpTransportMethod.class,
 
                 // XEP-0184: Message Delivery Receipts
-                Received.class, Request.class,
+                MessageDeliveryReceipts.class,
 
                 // XEP-0186: Invisible Command
-                Invisible.class, Visible.class,
+                InvisibleCommand.class,
 
                 // XEP-0191: Blocking Command
                 BlockList.class,

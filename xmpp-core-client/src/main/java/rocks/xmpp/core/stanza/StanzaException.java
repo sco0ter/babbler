@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,38 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.receipts.model;
+package rocks.xmpp.core.stanza;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stanza.model.Stanza;
 
 /**
- * The implementation of the {@code <received/>} element in the {@code urn:xmpp:receipts} namespace.
+ * A stanza exception represents a {@linkplain rocks.xmpp.core.stanza.model.StanzaError stanza error}.
+ * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>
- * @see <a href="http://xmpp.org/extensions/xep-0184.html#schema">XML Schema</a>
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
  */
-@XmlRootElement
-public final class Received {
+public final class StanzaException extends XmppException {
 
-    @XmlAttribute
-    public String id;
+    private final Stanza stanza;
 
-    private Received() {
-
+    /**
+     * Constructs a stanza exception.
+     *
+     * @param stanza The underlying stanza.
+     */
+    public StanzaException(Stanza stanza) {
+        super(stanza.getError().toString());
+        this.stanza = stanza;
     }
 
-    public Received(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
+    /**
+     * Gets the stanza, which includes the error.
+     *
+     * @return The stanza.
+     */
+    public final Stanza getStanza() {
+        return stanza;
     }
 }

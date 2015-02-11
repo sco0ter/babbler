@@ -27,7 +27,11 @@ package rocks.xmpp.extensions.soap.fault;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.soap.model.fault.*;
+import rocks.xmpp.extensions.soap.model.fault.DataEncodingUnknown;
+import rocks.xmpp.extensions.soap.model.fault.MustUnderstand;
+import rocks.xmpp.extensions.soap.model.fault.Receiver;
+import rocks.xmpp.extensions.soap.model.fault.Sender;
+import rocks.xmpp.extensions.soap.model.fault.VersionMismatch;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

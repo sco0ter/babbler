@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,26 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.compress.model;
+package rocks.xmpp.core.stream;
 
-import javax.xml.bind.annotation.XmlEnumValue;
+import rocks.xmpp.core.XmppException;
 
 /**
- * Defines a compression method.
+ * An exception which indicates a failure during stream negotiation, e.g. if TLS or SASL negotiation or compression or resource binding fails.
  *
  * @author Christian Schudt
  */
-public enum CompressionMethod {
-    /**
-     * The standard zlib compression method.
-     */
-    @XmlEnumValue("zlib")
-    ZLIB
+public class StreamNegotiationException extends XmppException {
+
+    public StreamNegotiationException(String message) {
+        super(message);
+    }
+
+    public StreamNegotiationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public StreamNegotiationException(Throwable cause) {
+        super(cause);
+    }
 }

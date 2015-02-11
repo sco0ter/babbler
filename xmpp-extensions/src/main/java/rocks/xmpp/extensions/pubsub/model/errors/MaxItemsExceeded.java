@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,23 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <max-items-exceeded/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #MAX_ITEMS_EXCEEDED
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-batch">12.10 Batch Processing</a>
  */
 @XmlRootElement(name = "max-items-exceeded")
+@XmlType(factoryMethod = "create")
 public final class MaxItemsExceeded extends PubSubError {
-    public MaxItemsExceeded() {
+    MaxItemsExceeded() {
+    }
+
+    private static MaxItemsExceeded create() {
+        return MAX_ITEMS_EXCEEDED;
     }
 }

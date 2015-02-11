@@ -28,8 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.extensions.receipts.model.Received;
-import rocks.xmpp.extensions.receipts.model.Request;
+import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -39,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class MessageDeliveryReceiptsTest extends XmlTest {
     protected MessageDeliveryReceiptsTest() throws JAXBException, XMLStreamException {
-        super(Message.class, Request.class, Received.class);
+        super(Message.class, MessageDeliveryReceipts.class);
     }
 
     @Test
@@ -53,8 +52,9 @@ public class MessageDeliveryReceiptsTest extends XmlTest {
                 "</message>\n";
 
         Message message = unmarshal(xml, Message.class);
-        Request request = message.getExtension(Request.class);
+        MessageDeliveryReceipts.Request request = message.getExtension(MessageDeliveryReceipts.Request.class);
         Assert.assertNotNull(request);
+        Assert.assertTrue(request == MessageDeliveryReceipts.REQUEST);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class MessageDeliveryReceiptsTest extends XmlTest {
                 "</message>\n";
 
         Message message = unmarshal(xml, Message.class);
-        Received received = message.getExtension(Received.class);
+        MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
         Assert.assertNotNull(received);
         Assert.assertEquals(received.getId(), "richard2-4.1.247");
     }

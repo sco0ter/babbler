@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-from/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-from">4.9.3.9.  invalid-from</a></cite></p>
  * <p>The data provided in a 'from' attribute does not match an authorized Jid or validated domain as negotiated (1) between two servers using SASL or Server Dialback, or (2) between a client and a server via SASL authentication and resource binding.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #INVALID_FROM
  */
 @XmlRootElement(name = "invalid-from")
-public final class InvalidFrom extends Condition {
+@XmlType(factoryMethod = "create")
+final class InvalidFrom extends Condition {
+
+    InvalidFrom() {
+    }
+
+    private static InvalidFrom create() {
+        return (InvalidFrom) INVALID_FROM;
+    }
 }

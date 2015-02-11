@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <forbidden/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-forbidden">8.3.3.4.  forbidden</a></cite></p>
  * <p>The requesting entity does not possess the necessary permissions to perform an action that only certain authorized roles or individuals are allowed to complete (i.e., it typically relates to authorization rather than authentication); the associated error type SHOULD be "auth".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #FORBIDDEN
  */
 @XmlRootElement(name = "forbidden")
-public final class Forbidden extends Condition {
+@XmlType(factoryMethod = "create")
+final class Forbidden extends Condition {
+
+    Forbidden() {
+    }
+
+    private static Forbidden create() {
+        return (Forbidden) FORBIDDEN;
+    }
 }

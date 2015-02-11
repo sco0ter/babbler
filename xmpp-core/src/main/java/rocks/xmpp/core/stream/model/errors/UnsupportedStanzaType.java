@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unsupported-stanza-type/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-stanza-type">4.9.3.24.  unsupported-stanza-type</a></cite></p>
  * <p>The initiating entity has sent a first-level child of the stream that is not supported by the server, either because the receiving entity does not understand the namespace or because the receiving entity does not understand the element name for the applicable namespace (which might be the content namespace declared as the default namespace).</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNSUPPORTED_STANZA_TYPE
  */
 @XmlRootElement(name = "unsupported-stanza-type")
-public final class UnsupportedStanzaType extends Condition {
+@XmlType(factoryMethod = "create")
+final class UnsupportedStanzaType extends Condition {
+
+    UnsupportedStanzaType() {
+    }
+
+    private static UnsupportedStanzaType create() {
+        return (UnsupportedStanzaType) UNSUPPORTED_STANZA_TYPE;
+    }
 }

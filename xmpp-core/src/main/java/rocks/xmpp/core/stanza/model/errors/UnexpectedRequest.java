@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unexpected-request/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-unexpected-request">8.3.3.22.  unexpected-request</a></cite></p>
  * <p>The recipient or server understood the request but was not expecting it at this time (e.g., the request was out of order); the associated error type SHOULD be "wait" or "modify".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNEXPECTED_REQUEST
  */
 @XmlRootElement(name = "unexpected-request")
-public final class UnexpectedRequest extends Condition {
+@XmlType(factoryMethod = "create")
+final class UnexpectedRequest extends Condition {
+
+    UnexpectedRequest() {
+    }
+
+    private static UnexpectedRequest create() {
+        return (UnexpectedRequest) UNEXPECTED_REQUEST;
+    }
 }

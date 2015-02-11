@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <storage/>} element in the {@code storage:rosternotes} namespace.
@@ -44,6 +45,7 @@ import java.util.List;
  * <p>This specification defines a protocol for storing annotations about a given set of entities. Its primary goal is to enable users to store some personal piece of information with their roster items.</p>
  * <p>Annotations are stored using server-side private XML storage (the 'jabber:iq:private' namespace).</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>
@@ -74,7 +76,7 @@ public final class Annotation {
      *
      * @return The notes.
      */
-    public List<Note> getNotes() {
+    public final List<Note> getNotes() {
         return Collections.unmodifiableList(notes);
     }
 
@@ -84,18 +86,22 @@ public final class Annotation {
     public static final class Note {
 
         @XmlAttribute(name = "jid")
-        private Jid jid;
+        private final Jid jid;
 
         @XmlAttribute(name = "cdate")
-        private Date creationDate;
+        private final Date creationDate;
 
         @XmlAttribute(name = "mdate")
-        private Date modificationDate;
+        private final Date modificationDate;
 
         @XmlValue
-        private String value;
+        private final String value;
 
         private Note() {
+            this.value = null;
+            this.jid = null;
+            this.creationDate = null;
+            this.modificationDate = null;
         }
 
         /**
@@ -117,11 +123,8 @@ public final class Annotation {
          * @param modificationDate The modification date (optional).
          */
         public Note(String note, Jid jid, Date creationDate, Date modificationDate) {
-            if (jid == null) {
-                throw new IllegalArgumentException("jid must not be null.");
-            }
             this.value = note;
-            this.jid = jid.asBareJid();
+            this.jid = Objects.requireNonNull(jid, "jid must not be null.").asBareJid();
             this.creationDate = creationDate;
             this.modificationDate = modificationDate;
         }
@@ -131,7 +134,7 @@ public final class Annotation {
          *
          * @return The value.
          */
-        public String getValue() {
+        public final String getValue() {
             return value;
         }
 
@@ -140,7 +143,7 @@ public final class Annotation {
          *
          * @return The modification date.
          */
-        public Date getModificationDate() {
+        public final Date getModificationDate() {
             return modificationDate;
         }
 
@@ -149,7 +152,7 @@ public final class Annotation {
          *
          * @return The creation date.
          */
-        public Date getCreationDate() {
+        public final Date getCreationDate() {
             return creationDate;
         }
 
@@ -158,12 +161,12 @@ public final class Annotation {
          *
          * @return The JID.
          */
-        public Jid getJid() {
+        public final Jid getJid() {
             return jid;
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return value;
         }
     }

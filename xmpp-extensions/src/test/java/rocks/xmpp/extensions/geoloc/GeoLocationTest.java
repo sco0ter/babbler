@@ -32,7 +32,6 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.URI;
-import java.util.Date;
 import java.util.TimeZone;
 
 /**

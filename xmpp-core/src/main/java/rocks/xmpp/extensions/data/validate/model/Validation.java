@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,8 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <validate/>} element in the {@code http://jabber.org/protocol/xdata-validate} namespace, which is used to validate form fields.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
@@ -46,18 +48,19 @@ public final class Validation {
     public static final String NAMESPACE = "http://jabber.org/protocol/xdata-validate";
 
     @XmlAttribute(name = "datatype")
-    private String dataType;
+    private final String dataType;
 
     @XmlElements({@XmlElement(name = "basic", type = ValidationMethod.Basic.class),
             @XmlElement(name = "open", type = ValidationMethod.Open.class),
             @XmlElement(name = "range", type = ValidationMethod.Range.class),
             @XmlElement(name = "regex", type = ValidationMethod.Regex.class)})
-    private ValidationMethod validationMethod;
+    private final ValidationMethod validationMethod;
 
     @XmlElement(name = "list-range")
-    private ListRange listRange;
+    private final ListRange listRange;
 
     private Validation() {
+        this(null, null, null);
     }
 
     /**
@@ -66,7 +69,7 @@ public final class Validation {
      * @param dataType The data type.
      */
     public Validation(String dataType) {
-        this.dataType = dataType;
+        this(dataType, null);
     }
 
     /**
@@ -75,7 +78,7 @@ public final class Validation {
      * @param validationMethod The validation method.
      */
     public Validation(ValidationMethod validationMethod) {
-        this.validationMethod = validationMethod;
+        this(null, validationMethod);
     }
 
     /**
@@ -85,8 +88,7 @@ public final class Validation {
      * @param validationMethod The validation method.
      */
     public Validation(String dataType, ValidationMethod validationMethod) {
-        this.dataType = dataType;
-        this.validationMethod = validationMethod;
+        this(dataType, validationMethod, null);
     }
 
     /**
@@ -111,7 +113,7 @@ public final class Validation {
      * @see ValidationMethod.Range
      * @see ValidationMethod.Regex
      */
-    public ValidationMethod getValidationMethod() {
+    public final ValidationMethod getValidationMethod() {
         return validationMethod;
     }
 
@@ -120,7 +122,7 @@ public final class Validation {
      *
      * @return The data type.
      */
-    public String getDataType() {
+    public final String getDataType() {
         return dataType;
     }
 
@@ -129,7 +131,7 @@ public final class Validation {
      *
      * @return The list range.
      */
-    public ListRange getListRange() {
+    public final ListRange getListRange() {
         return listRange;
     }
 
@@ -139,10 +141,16 @@ public final class Validation {
      * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-validation">3.2 Validation Methods</a>
      */
     public abstract static class ValidationMethod {
+
         @XmlValue
-        protected String value;
+        final String value;
 
         private ValidationMethod() {
+            this.value = null;
+        }
+
+        private ValidationMethod(String value) {
+            this.value = value;
         }
 
         /**
@@ -166,12 +174,14 @@ public final class Validation {
         public static final class Range extends ValidationMethod {
 
             @XmlAttribute(name = "min")
-            private String min;
+            private final String min;
 
             @XmlAttribute(name = "max")
-            private String max;
+            private final String max;
 
             private Range() {
+                this.min = null;
+                this.max = null;
             }
 
             /**
@@ -190,7 +200,7 @@ public final class Validation {
              *
              * @return The minimum.
              */
-            public String getMin() {
+            public final String getMin() {
                 return min;
             }
 
@@ -199,7 +209,7 @@ public final class Validation {
              *
              * @return The maximum.
              */
-            public String getMax() {
+            public final String getMax() {
                 return max;
             }
         }
@@ -208,11 +218,13 @@ public final class Validation {
          * Indicates that the value should be restricted to a regular expression.
          */
         public static final class Regex extends ValidationMethod {
+
             private Regex() {
+                super(null);
             }
 
             public Regex(String regex) {
-                this.value = regex;
+                super(regex);
             }
 
             /**
@@ -220,7 +232,7 @@ public final class Validation {
              *
              * @return The regular expression.
              */
-            public String getRegex() {
+            public final String getRegex() {
                 return value;
             }
         }
@@ -233,12 +245,14 @@ public final class Validation {
      */
     public static final class ListRange {
         @XmlAttribute(name = "min")
-        private Integer min;
+        private final Integer min;
 
         @XmlAttribute(name = "max")
-        private Integer max;
+        private final Integer max;
 
         private ListRange() {
+            this.min = null;
+            this.max = null;
         }
 
         /**
@@ -257,7 +271,7 @@ public final class Validation {
          *
          * @return The minimum allowable number of selected/entered values.
          */
-        public Integer getMin() {
+        public final Integer getMin() {
             return min;
         }
 
@@ -266,7 +280,7 @@ public final class Validation {
          *
          * @return The maximum allowable number of selected/entered values.
          */
-        public Integer getMax() {
+        public final Integer getMax() {
             return max;
         }
     }

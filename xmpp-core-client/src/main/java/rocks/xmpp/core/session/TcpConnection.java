@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,11 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stream.StreamFeatureEvent;
 import rocks.xmpp.core.stream.StreamFeatureListener;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.extensions.compress.CompressionManager;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -42,9 +42,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -61,15 +59,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
  * <p>
- * Unless specified otherwise, this connection sends a whitespace keep-alive every 60 seconds.
- * </p>
  * If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.
+ * <p>
+ * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
@@ -80,17 +76,33 @@ public final class TcpConnection extends Connection {
 
     /**
      * The stream id, which is assigned by the server.
+     * guarded by "this"
      */
-    volatile String streamId;
+    String streamId;
 
-    private volatile Socket socket;
+    /**
+     * guarded by "this"
+     */
+    private Socket socket;
 
+    /**
+     * guarded by "this"
+     */
     private XmppStreamWriter xmppStreamWriter;
 
+    /**
+     * guarded by "this"
+     */
     private XmppStreamReader xmppStreamReader;
 
+    /**
+     * guarded by "this"
+     */
     private InputStream inputStream;
 
+    /**
+     * guarded by "this"
+     */
     private OutputStream outputStream;
 
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
@@ -99,27 +111,42 @@ public final class TcpConnection extends Connection {
 
         xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new SecurityManager(xmppSession, new StreamFeatureListener() {
             @Override
-            public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) throws Exception {
-                if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.SUCCESS) {
+            public void featureSuccessfullyNegotiated() throws StreamNegotiationException {
+                try {
                     secureConnection();
+                } catch (Exception e) {
+                    throw new StreamNegotiationException(e);
                 }
             }
         }, configuration.isSecure()));
 
-        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new CompressionManager(xmppSession, new StreamFeatureListener() {
+        final CompressionManager compressionManager = new CompressionManager(xmppSession, configuration.getCompressionMethods());
+        compressionManager.addFeatureListener(new StreamFeatureListener() {
             @Override
-            public void negotiationStatusChanged(StreamFeatureEvent streamFeatureEvent) {
-                if (streamFeatureEvent.getStatus() == StreamFeatureNegotiator.Status.SUCCESS) {
-                    compressStream();
+            public void featureSuccessfullyNegotiated() {
+                CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
+                // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
+                // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
+                InputStream iStream;
+                OutputStream oStream;
+                synchronized (TcpConnection.this) {
+                    iStream = inputStream;
+                    oStream = outputStream;
+                }
+                iStream = compressionMethod.decompress(iStream);
+                oStream = compressionMethod.compress(oStream);
+                synchronized (TcpConnection.this) {
+                    inputStream = iStream;
+                    outputStream = oStream;
                 }
             }
-        }, configuration.getCompressionMethod()));
+        });
+        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(compressionManager);
     }
-
 
     @Override
     @Deprecated
-    public synchronized void connect() throws IOException {
+    public final synchronized void connect() throws IOException {
         connect(null);
     }
 
@@ -136,7 +163,7 @@ public final class TcpConnection extends Connection {
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public synchronized void connect(Jid from) throws IOException {
+    public final synchronized void connect(Jid from) throws IOException {
 
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
@@ -153,24 +180,23 @@ public final class TcpConnection extends Connection {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
         }
 
+        this.from = from;
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        try {
-            xmppStreamWriter = new XmppStreamWriter(outputStream, this.getXmppSession(), xmlOutputFactory, tcpConnectionConfiguration.getKeepAliveInterval());
-        } catch (XMLStreamException e) {
-            throw new IOException(e);
-        }
-        xmppStreamWriter.openStream(from);
+        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), this, xmlOutputFactory);
+        xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
+        xmppStreamWriter.openStream(outputStream, from);
 
         // Start reading from the input stream.
-        try {
-            xmppStreamReader = new XmppStreamReader(this, this.getXmppSession(), xmlOutputFactory);
-        } catch (JAXBException e) {
-            throw new IOException(e);
-        }
+        xmppStreamReader = new XmppStreamReader(this, this.getXmppSession(), xmlOutputFactory);
         xmppStreamReader.startReading(inputStream);
+    }
+
+    @Override
+    public synchronized boolean isSecure() {
+        return socket instanceof SSLSocket;
     }
 
     private void connectToSocket(InetAddress inetAddress, int port, Proxy proxy) throws IOException {
@@ -180,26 +206,35 @@ public final class TcpConnection extends Connection {
             } else {
                 socket = new Socket();
             }
-            socket.connect(new InetSocketAddress(inetAddress, port));
         } else {
-            socket = tcpConnectionConfiguration.getSocketFactory().createSocket(inetAddress, port);
+            socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
         }
+        socket.connect(new InetSocketAddress(inetAddress, port), tcpConnectionConfiguration.getConnectTimeout());
+        this.port = port;
+        this.hostname = inetAddress.getHostName();
     }
 
+    /**
+     * This method is called from the reader thread. Because it accesses shared data (socket, outputStream, inputStream) it should be synchronized.
+     */
     private void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
 
         SSLContext sslContext = tcpConnectionConfiguration.getSSLContext();
         if (sslContext == null) {
             sslContext = SSLContext.getDefault();
         }
+        SSLSocket sslSocket;
 
-        socket = sslContext.getSocketFactory().createSocket(
-                socket,
-                getXmppSession().getDomain(),
-                socket.getPort(),
-                true);
+        // synchronize socket because it's also used by the isSecure() method.
+        synchronized (this) {
+            socket = sslContext.getSocketFactory().createSocket(
+                    socket,
+                    getXmppSession().getDomain(),
+                    socket.getPort(),
+                    true);
+            sslSocket = (SSLSocket) socket;
+        }
 
-        SSLSocket sslSocket = (SSLSocket) socket;
         HostnameVerifier verifier = tcpConnectionConfiguration.getHostnameVerifier();
 
         // See
@@ -213,54 +248,58 @@ public final class TcpConnection extends Connection {
             sslSocket.setSSLParameters(sslParameters);
         } else {
             sslSocket.startHandshake();
+            // We are calling an "alien" method here, i.e. code we don't control.
+            // Don't call alien methods from within synchronized regions, that's why the regions are split.
             if (!verifier.verify(getXmppSession().getDomain(), sslSocket.getSession())) {
                 throw new CertificateException("Server failed to authenticate as " + getXmppSession().getDomain());
             }
         }
-        outputStream = new BufferedOutputStream(socket.getOutputStream());
-        inputStream = new BufferedInputStream(socket.getInputStream());
-    }
 
-    @Override
-    protected void compressStream() {
-
-        if (tcpConnectionConfiguration.getCompressionMethod() != null) {
-            switch (tcpConnectionConfiguration.getCompressionMethod()) {
-                case ZLIB:
-                    inputStream = new InflaterInputStream(inputStream);
-                    outputStream = new DeflaterOutputStream(outputStream, true);
-                    break;
-            }
+        synchronized (this) {
+            outputStream = new BufferedOutputStream(socket.getOutputStream());
+            inputStream = new BufferedInputStream(socket.getInputStream());
         }
     }
 
     @Override
-    public void send(ClientStreamElement element) {
+    public final synchronized void send(ClientStreamElement element) {
         xmppStreamWriter.send(element);
     }
 
     @Override
-    protected void restartStream() {
-        xmppStreamWriter.reset(outputStream);
-        xmppStreamWriter.openStream(null);
+    protected final synchronized void restartStream() {
+        xmppStreamWriter.openStream(outputStream, from);
         xmppStreamReader.startReading(inputStream);
     }
 
+    /**
+     * Closes the TCP connection.
+     * It first sends a {@code </stream:stream>}, then shuts down the writer so that no more stanzas can be sent.
+     * After that it shuts down the reader and awaits shortly for any stanzas from the server and the server gracefully closing the stream with {@code </stream:stream>}.
+     * Eventually the socket is closed.
+     *
+     * @throws IOException If the socket throws an I/O exception.
+     */
     @Override
-    public synchronized void close() throws IOException {
+    public final synchronized void close() throws Exception {
         // This call closes the stream and waits until everything has been sent to the server.
         if (xmppStreamWriter != null) {
             xmppStreamWriter.shutdown();
+            xmppStreamWriter = null;
         }
         // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
         if (xmppStreamReader != null) {
             xmppStreamReader.shutdown();
+            xmppStreamReader = null;
         }
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
         // Now close the socket.
         if (socket != null) {
             socket.close();
+            socket = null;
         }
+        inputStream = null;
+        outputStream = null;
     }
 
     /**
@@ -284,6 +323,7 @@ public final class TcpConnection extends Connection {
 
         Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
+        env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(tcpConnectionConfiguration.getConnectTimeout()));
         env.put(Context.PROVIDER_URL, "dns:");
         try {
             DirContext ctx = new InitialDirContext(env);
@@ -325,8 +365,6 @@ public final class TcpConnection extends Connection {
                         // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
                         // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
                         connectToSocket(inetAddress, dnsResourceRecord.port, getProxy());
-                        this.port = dnsResourceRecord.port;
-                        this.hostname = inetAddress.getHostName();
                         return true;
                     } catch (IOException e) {
                         // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
@@ -341,6 +379,26 @@ public final class TcpConnection extends Connection {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public final synchronized String getStreamId() {
+        return streamId;
+    }
+
+    @Override
+    public final synchronized String toString() {
+        StringBuilder sb = new StringBuilder("TCP connection");
+        if (hostname != null) {
+            sb.append(String.format(" to %s:%s", hostname, port));
+        }
+        if (streamId != null) {
+            sb.append(" (").append(streamId).append(")");
+        }
+        if (from != null) {
+            sb.append(", from: ").append(from);
+        }
+        return sb.toString();
     }
 
     /**

@@ -140,8 +140,8 @@ After connecting, you have to authenticate and bind a resource, in order to beco
 ```java
 try {
    xmppSession.login("username", "password", "resource");
-} catch (FailedLoginException e) {
-   // Login failed, due to wrong username/password
+} catch (AuthenticationException e) {
+   // Login failed
 }
 ```
 
@@ -179,7 +179,7 @@ Closing a session is simply done with:
 xmppSession.close();
 ```
 
-Note, that `XmppSession` implements `java.io.Closeable`, which means you can also use the try-with-resources statement, which automatically closes the session:
+Note, that `XmppSession` implements `java.lang.AutoCloseable`, which means you can also use the try-with-resources statement, which automatically closes the session:
 
 ```java
 try (XmppSession xmppSession = new XmppSession("domain")) {

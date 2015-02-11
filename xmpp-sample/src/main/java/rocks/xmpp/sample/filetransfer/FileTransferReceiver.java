@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,10 +34,9 @@ import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.filetransfer.FileTransferOfferEvent;
 import rocks.xmpp.extensions.filetransfer.FileTransferOfferListener;
 
-import javax.security.auth.login.LoginException;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 
 /**
@@ -45,7 +44,7 @@ import java.util.concurrent.Executors;
  */
 public class FileTransferReceiver {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
@@ -76,7 +75,7 @@ public class FileTransferReceiver {
                         @Override
                         public void fileTransferOffered(FileTransferOfferEvent e) {
                             try {
-                                FileTransfer fileTransfer = e.accept(new FileOutputStream(new File("test.png")));
+                                FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
                                 fileTransfer.transfer();
                             } catch (IOException e1) {
                                 e1.printStackTrace();

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <undefined-condition/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-undefined-condition">8.3.3.21.  undefined-condition</a></cite></p>
  * <p>The error condition is not one of those defined by the other conditions in this list; any error type can be associated with this condition, and it SHOULD NOT be used except in conjunction with an application-specific condition.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNDEFINED_CONDITION
  */
 @XmlRootElement(name = "undefined-condition")
-public final class UndefinedCondition extends Condition {
+@XmlType(factoryMethod = "create")
+final class UndefinedCondition extends Condition {
+
+    UndefinedCondition() {
+    }
+
+    private static UndefinedCondition create() {
+        return (UndefinedCondition) UNDEFINED_CONDITION;
+    }
 }

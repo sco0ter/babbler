@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,37 +25,47 @@
 package rocks.xmpp.extensions.compress.model.feature;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
-import rocks.xmpp.extensions.compress.model.CompressionMethod;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * The implementation of the {@code <compression/>} element in the {@code http://jabber.org/features/compress} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
  * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-stream">XML Schema</a>
  */
 @XmlRootElement(name = "compression")
-public final class Compression extends StreamFeature {
+public final class CompressionFeature extends StreamFeature {
 
     @XmlElement(name = "method")
-    private final List<CompressionMethod> methods = new ArrayList<>();
+    private final List<String> methods = new ArrayList<>();
+
+    private CompressionFeature() {
+    }
+
+    public CompressionFeature(Collection<String> methods) {
+        this.methods.addAll(methods);
+    }
 
     /**
      * Gets the available compression methods.
      *
      * @return The compression methods.
      */
-    public List<CompressionMethod> getMethods() {
-        return methods;
+    public final List<String> getMethods() {
+        return Collections.unmodifiableList(methods);
     }
 
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 2;
     }
 }

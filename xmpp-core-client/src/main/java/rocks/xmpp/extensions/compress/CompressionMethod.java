@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,36 +22,38 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stanza.model;
+package rocks.xmpp.extensions.compress;
 
-import rocks.xmpp.core.XmppException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * A stanza exception represents a {@linkplain StanzaError stanza error}.
- * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
+ * An interface to describe a compression method.
  *
  * @author Christian Schudt
  */
-public final class StanzaException extends XmppException {
-
-    private final Stanza stanza;
+public interface CompressionMethod {
 
     /**
-     * Constructs a stanza exception.
+     * Gets the compression method name, e.g. "zlib", "lzw", "exi", ...
      *
-     * @param stanza The underlying stanza.
+     * @return The compression method name.
      */
-    public StanzaException(Stanza stanza) {
-        super(stanza.getError().toString());
-        this.stanza = stanza;
-    }
+    String getName();
 
     /**
-     * Gets the stanza, which includes the error.
+     * Decompresses an input stream.
      *
-     * @return The stanza.
+     * @param inputStream The compressed input stream.
+     * @return The decompressed input stream.
      */
-    public Stanza getStanza() {
-        return stanza;
-    }
+    InputStream decompress(InputStream inputStream);
+
+    /**
+     * Gets the compressed output stream.
+     *
+     * @param outputStream The uncompressed output stream.
+     * @return The compressed output stream.
+     */
+    OutputStream compress(OutputStream outputStream);
 }

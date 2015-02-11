@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,8 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
+import java.util.Objects;
+
 /**
  * This manager allows to retrieve or save one owns vCard or retrieve another user's vCard.
  * <p>
@@ -52,7 +54,7 @@ public final class VCardManager extends ExtensionManager {
      * Gets the vCard of the current user.
      *
      * @return The vCard.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public VCard getVCard() throws XmppException {
@@ -64,13 +66,10 @@ public final class VCardManager extends ExtensionManager {
      * Saves or updates a vCard.
      *
      * @param vCard The vCard.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void setVCard(VCard vCard) throws XmppException {
-        if (vCard == null) {
-            throw new IllegalArgumentException("vCard must not be null.");
-        }
         // Update the vCard
         xmppSession.query(new IQ(IQ.Type.SET, vCard));
 
@@ -91,13 +90,11 @@ public final class VCardManager extends ExtensionManager {
      *
      * @param jid The user's JID.
      * @return The vCard of the other user or null, if it does not exist.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public VCard getVCard(Jid jid) throws XmppException {
-        if (jid == null) {
-            throw new IllegalArgumentException("jid must not be null.");
-        }
+        Objects.requireNonNull(jid, "jid must not be null.");
         IQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
         return result.getExtension(VCard.class);
     }

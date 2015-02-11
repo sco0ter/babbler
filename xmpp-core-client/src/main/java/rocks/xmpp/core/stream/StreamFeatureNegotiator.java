@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -57,35 +58,19 @@ public abstract class StreamFeatureNegotiator {
      * Adds a feature listener, which will get notified about feature negotiation status changes.
      *
      * @param streamFeatureListener The feature listener.
-     * @see #removeFeatureListener(StreamFeatureListener)
      */
     public final void addFeatureListener(StreamFeatureListener streamFeatureListener) {
         streamFeatureListeners.add(streamFeatureListener);
     }
 
     /**
-     * Removes a previously added feature listener.
-     *
-     * @param streamFeatureListener The feature listener.
-     * @see #addFeatureListener(StreamFeatureListener)
-     */
-    public final void removeFeatureListener(StreamFeatureListener streamFeatureListener) {
-        streamFeatureListeners.remove(streamFeatureListener);
-    }
-
-    /**
      * Notifies the listener, if a feature negotiation has completed.
      *
-     * @param status  The status of the feature negotiation process.
-     * @param element The element, which triggered the feature status change.
-     * @throws Exception If an exception occurred during feature negotiation.
+     * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
-    protected void notifyFeatureNegotiated(Status status, Object element) throws Exception {
-        if (status == null) {
-            throw new IllegalArgumentException("status must not be null");
-        }
+    protected void notifyFeatureNegotiated() throws StreamNegotiationException {
         for (StreamFeatureListener streamFeatureListener : streamFeatureListeners) {
-            streamFeatureListener.negotiationStatusChanged(new StreamFeatureEvent(this, status, element));
+            streamFeatureListener.featureSuccessfullyNegotiated();
         }
     }
 
@@ -94,9 +79,9 @@ public abstract class StreamFeatureNegotiator {
      *
      * @param element The XML element, which belongs to the feature negotiation, e.g. {@code <challenge/>} for SASL negotiation or the feature element itself, e.g. {@code <mechanisms/>}.
      * @return The status of the feature negotiation.
-     * @throws Exception Any exception which might be thrown during a feature negotiation. Note that any exception thrown during the feature negotiation process is thrown by the {@link rocks.xmpp.core.session.XmppSession#connect()} method and therefore will abort the connection process.
+     * @throws StreamNegotiationException Any exception which might be thrown during a feature negotiation. Note that any exception thrown during the feature negotiation process is thrown by the {@link rocks.xmpp.core.session.XmppSession#connect()} method and therefore will abort the connection process.
      */
-    public abstract Status processNegotiation(Object element) throws Exception;
+    public abstract Status processNegotiation(Object element) throws StreamNegotiationException;
 
     /**
      * Checks, if the feature needs a stream restart after it has been successfully negotiated.
@@ -136,10 +121,6 @@ public abstract class StreamFeatureNegotiator {
          * If the feature negotiation has been successful.
          */
         SUCCESS,
-        /**
-         * If the feature negotiation has failed.
-         */
-        FAILURE,
         /**
          * If the feature negotiation is in progress and has not yet completed.
          */

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,7 @@ import java.util.List;
  * <p>
  * A section is used to partition a page.
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
@@ -53,12 +54,14 @@ public final class Section {
     private final List<FieldReference> fieldReferences = new ArrayList<>();
 
     @XmlAttribute(name = "label")
-    private String label;
+    private final String label;
 
     @XmlElement(name = "reportedref")
-    private FieldReference reportedReference;
+    private final FieldReference reportedReference;
 
     private Section() {
+        this.label = null;
+        this.reportedReference = null;
     }
 
     /**

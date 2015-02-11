@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,9 @@ import java.net.Proxy;
 
 /**
  * A base class for connection configurations.
+ * <p>
+ * All connection methods have a few properties in common, which are abstracted in this class.
+ * Among these common properties are hostname, port, proxy, security settings and a timeout.
  *
  * @author Christian Schudt
  */
@@ -45,7 +48,9 @@ public abstract class ConnectionConfiguration {
 
     private final SSLContext sslContext;
 
-    private HostnameVerifier hostnameVerifier;
+    private final HostnameVerifier hostnameVerifier;
+
+    private final int connectTimeout;
 
     protected ConnectionConfiguration(Builder builder) {
         this.hostname = builder.hostname;
@@ -54,6 +59,7 @@ public abstract class ConnectionConfiguration {
         this.secure = builder.secure;
         this.sslContext = builder.sslContext;
         this.hostnameVerifier = builder.hostnameVerifier;
+        this.connectTimeout = builder.connectTimeout;
     }
 
     /**
@@ -96,7 +102,7 @@ public abstract class ConnectionConfiguration {
      *
      * @return If the connection is to be secured.
      */
-    public boolean isSecure() {
+    public final boolean isSecure() {
         return secure;
     }
 
@@ -114,8 +120,17 @@ public abstract class ConnectionConfiguration {
      *
      * @return The hostname verifier.
      */
-    public HostnameVerifier getHostnameVerifier() {
+    public final HostnameVerifier getHostnameVerifier() {
         return hostnameVerifier;
+    }
+
+    /**
+     * Gets the timeout for connection establishment.
+     *
+     * @return The timeout.
+     */
+    public final int getConnectTimeout() {
+        return connectTimeout;
     }
 
     /**
@@ -136,6 +151,8 @@ public abstract class ConnectionConfiguration {
         private SSLContext sslContext;
 
         private HostnameVerifier hostnameVerifier;
+
+        private int connectTimeout;
 
         protected Builder() {
         }
@@ -211,6 +228,17 @@ public abstract class ConnectionConfiguration {
          */
         public final T hostnameVerifier(HostnameVerifier hostnameVerifier) {
             this.hostnameVerifier = hostnameVerifier;
+            return self();
+        }
+
+        /**
+         * Sets a timeout for the connection establishment.
+         *
+         * @param connectTimeout The timeout in milliseconds.
+         * @return The builder.
+         */
+        public T connectTimeout(int connectTimeout) {
+            this.connectTimeout = connectTimeout;
             return self();
         }
 

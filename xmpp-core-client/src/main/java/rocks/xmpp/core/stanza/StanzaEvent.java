@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,7 @@ public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extend
      *
      * @return True, if the stanza is incoming; false if it is outgoing.
      */
-    public boolean isIncoming() {
+    public final boolean isIncoming() {
         return incoming;
     }
 
@@ -62,7 +62,7 @@ public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extend
      * @deprecated Use getMessage(), getPresence() or getIQ().
      */
     @Deprecated
-    public S getStanza() {
+    public final S getStanza() {
         return stanza;
     }
 }

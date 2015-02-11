@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <policy-violation/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-policy-violation">8.3.3.12.  policy-violation</a></cite></p>
  * <p>The entity has violated some local service policy (e.g., a message contains words that are prohibited by the service) and the server MAY choose to specify the policy in the {@code <text/>} element or in an application-specific condition element; the associated error type SHOULD be "modify" or "wait" depending on the policy being violated.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #POLICY_VIOLATION
  */
 @XmlRootElement(name = "policy-violation")
-public final class PolicyViolation extends Condition {
+@XmlType(factoryMethod = "create")
+final class PolicyViolation extends Condition {
+
+    PolicyViolation() {
+    }
+
+    private static PolicyViolation create() {
+        return (PolicyViolation) POLICY_VIOLATION;
+    }
 }

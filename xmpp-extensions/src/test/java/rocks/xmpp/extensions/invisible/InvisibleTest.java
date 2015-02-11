@@ -27,8 +27,7 @@ package rocks.xmpp.extensions.invisible;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.invisible.model.Invisible;
-import rocks.xmpp.extensions.invisible.model.Visible;
+import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -39,20 +38,20 @@ import javax.xml.stream.XMLStreamException;
 public class InvisibleTest extends XmlTest {
 
     protected InvisibleTest() throws JAXBException, XMLStreamException {
-        super(Invisible.class, Visible.class);
+        super(InvisibleCommand.class);
     }
 
     @Test
     public void unmarshalInvisible() throws JAXBException, XMLStreamException {
         String xml = "<invisible xmlns='urn:xmpp:invisible:0'/>";
-        Invisible invisible = unmarshal(xml, Invisible.class);
-        Assert.assertNotNull(invisible);
+        Object invisible = unmarshal(xml);
+        Assert.assertTrue(invisible == InvisibleCommand.INVISIBLE);
     }
 
     @Test
     public void unmarshalVisible() throws JAXBException, XMLStreamException {
         String xml = "<visible xmlns='urn:xmpp:invisible:0'/>";
-        Visible visible = unmarshal(xml, Visible.class);
-        Assert.assertNotNull(visible);
+        Object visible = unmarshal(xml);
+        Assert.assertTrue(visible == InvisibleCommand.VISIBLE);
     }
 }

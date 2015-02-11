@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.errors.NotAuthorized;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 
 import java.util.Arrays;
@@ -108,13 +108,13 @@ public final class HttpAuthenticationEvent extends EventObject {
             // If the user wishes to deny the request, the <iq/> response stanza MUST be of type "error",
             // MAY contain the original <confirm/> child element (although this is not necessary since the XMPP 'id' attribute can be used for tracking purposes),
             // and MUST specify an error, which SHOULD be <not-authorized/>
-            xmppSession.send(((IQ) stanza).createError(new StanzaError(new NotAuthorized())));
+            xmppSession.send(((IQ) stanza).createError(Condition.NOT_AUTHORIZED));
         } else if (stanza instanceof Message) {
             // If the user wishes to deny the request, the <message/> response stanza MUST be of type "error",
             // MUST mirror the <thread/> ID (if provided by the XMPP Server),
             // MUST contain the original <confirm/> child element,
             // and MUST specify an error, which SHOULD be <not-authorized/>
-            xmppSession.send(new Message(getRequester(), Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, ((Message) stanza).getThread(), null, null, null, null, Arrays.asList(confirmationRequest), new StanzaError(new NotAuthorized())));
+            xmppSession.send(new Message(getRequester(), Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, ((Message) stanza).getThread(), null, null, null, null, Arrays.asList(confirmationRequest), new StanzaError(Condition.NOT_AUTHORIZED)));
         }
     }
 }

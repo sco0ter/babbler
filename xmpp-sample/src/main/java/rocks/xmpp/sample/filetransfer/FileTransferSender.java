@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,9 +33,8 @@ import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 
-import javax.security.auth.login.LoginException;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 
 /**
@@ -43,7 +42,7 @@ import java.util.concurrent.Executors;
  */
 public class FileTransferSender {
 
-    public static void main(String[] args) throws IOException, LoginException {
+    public static void main(String[] args) throws IOException {
 
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
@@ -70,7 +69,7 @@ public class FileTransferSender {
                     xmppSession.send(new Presence());
 
                     FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
-                    FileTransfer fileTransfer = fileTransferManager.offerFile(new File("info.png"), "Description", new Jid("222", xmppSession.getDomain(), "filetransfer"), 5000);
+                    FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("info.png"), "Description", new Jid("222", xmppSession.getDomain(), "filetransfer"), 5000);
                     fileTransfer.transfer();
 
                 } catch (Exception e) {

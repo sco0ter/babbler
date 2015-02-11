@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <resource-constraint/>} stanza error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-resource-constraint">8.3.3.18.  resource-constraint</a></cite></p>
  * <p>The server or recipient is busy or lacks the system resources necessary to service the request; the associated error type SHOULD be "wait".</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #RESOURCE_CONSTRAINT
  */
 @XmlRootElement(name = "resource-constraint")
-public final class ResourceConstraint extends Condition {
+@XmlType(factoryMethod = "create")
+final class ResourceConstraint extends Condition {
+
+    ResourceConstraint() {
+    }
+
+    private static ResourceConstraint create() {
+        return (ResourceConstraint) RESOURCE_CONSTRAINT;
+    }
 }

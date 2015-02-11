@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,14 @@ package rocks.xmpp.core.stream.model;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * The implementation of the {@code <stream:features/>} element.
+ * <p>
+ * This class is immutable (if all features are immutable, too).
  *
  * @author Christian Schudt
  */
@@ -39,9 +42,13 @@ public final class StreamFeatures implements ServerStreamElement {
 
     @XmlAnyElement(lax = true)
     @SuppressWarnings("unused")
-    private List<Object> features;
+    private final List<Object> features = new ArrayList<>();
 
     private StreamFeatures() {
+    }
+
+    public StreamFeatures(List<Object> features) {
+        this.features.addAll(features);
     }
 
     /**
@@ -49,7 +56,7 @@ public final class StreamFeatures implements ServerStreamElement {
      *
      * @return The features.
      */
-    public List<Object> getFeatures() {
+    public final List<Object> getFeatures() {
         return Collections.unmodifiableList(features);
     }
 }

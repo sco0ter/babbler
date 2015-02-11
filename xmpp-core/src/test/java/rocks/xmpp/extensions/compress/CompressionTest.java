@@ -27,10 +27,8 @@ package rocks.xmpp.extensions.compress;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.compress.model.Compress;
-import rocks.xmpp.extensions.compress.model.CompressionMethod;
-import rocks.xmpp.extensions.compress.model.Failure;
-import rocks.xmpp.extensions.compress.model.feature.Compression;
+import rocks.xmpp.extensions.compress.model.StreamCompression;
+import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -40,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class CompressionTest extends XmlTest {
     protected CompressionTest() throws JAXBException, XMLStreamException {
-        super(Compress.class);
+        super(StreamCompression.class);
     }
 
     @Test
@@ -49,16 +47,25 @@ public class CompressionTest extends XmlTest {
                 "    <method>zlib</method>\n" +
                 "    <method>lzw</method>\n" +
                 "  </compression>\n";
-        Compression compression = unmarshal(xml, Compression.class);
+        CompressionFeature compressionFeature = unmarshal(xml, CompressionFeature.class);
 
-        Assert.assertNotNull(compression);
-        Assert.assertEquals(compression.getMethods().size(), 2);
-        Assert.assertEquals(compression.getMethods().get(0), CompressionMethod.ZLIB);
+        Assert.assertNotNull(compressionFeature);
+        Assert.assertEquals(compressionFeature.getMethods().size(), 2);
+        Assert.assertEquals(compressionFeature.getMethods().get(0), "zlib");
+        Assert.assertEquals(compressionFeature.getMethods().get(1), "lzw");
+    }
+
+    @Test
+    public void unmarshalCompressed() throws XMLStreamException, JAXBException {
+        String xml = "<compressed xmlns='http://jabber.org/protocol/compress'/>\n";
+        Object compressed = unmarshal(xml);
+
+        Assert.assertTrue(compressed == StreamCompression.COMPRESSED);
     }
 
     @Test
     public void marshalCompress() throws JAXBException, XMLStreamException {
-        Compress compress = new Compress(CompressionMethod.ZLIB);
+        StreamCompression.Compress compress = new StreamCompression.Compress("zlib");
         String xml = marshal(compress);
         Assert.assertEquals(xml, "<compress xmlns=\"http://jabber.org/protocol/compress\"><method>zlib</method></compress>");
     }
@@ -68,10 +75,10 @@ public class CompressionTest extends XmlTest {
         String xml = "<failure xmlns='http://jabber.org/protocol/compress'>\n" +
                 "  <unsupported-method/>\n" +
                 "</failure>\n";
-        Failure failure = unmarshal(xml, Failure.class);
+        StreamCompression.Failure failure = unmarshal(xml, StreamCompression.Failure.class);
 
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.UnsupportedMethod);
+        Assert.assertTrue(failure.getCondition() == StreamCompression.Failure.Condition.UNSUPPORTED_METHOD);
     }
 
     @Test
@@ -79,9 +86,9 @@ public class CompressionTest extends XmlTest {
         String xml = "<failure xmlns='http://jabber.org/protocol/compress'>\n" +
                 "  <setup-failed/>\n" +
                 "</failure>\n";
-        Failure failure = unmarshal(xml, Failure.class);
+        StreamCompression.Failure failure = unmarshal(xml, StreamCompression.Failure.class);
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.SetupFailed);
+        Assert.assertTrue(failure.getCondition() == StreamCompression.Failure.Condition.SETUP_FAILED);
     }
 
     @Test
@@ -89,9 +96,9 @@ public class CompressionTest extends XmlTest {
         String xml = "<failure xmlns='http://jabber.org/protocol/compress'>\n" +
                 "  <processing-failed/>\n" +
                 "</failure>\n";
-        Failure failure = unmarshal(xml, Failure.class);
+        StreamCompression.Failure failure = unmarshal(xml, StreamCompression.Failure.class);
 
         Assert.assertNotNull(failure);
-        Assert.assertTrue(failure.getCondition() instanceof Failure.ProcessingFailed);
+        Assert.assertTrue(failure.getCondition() == StreamCompression.Failure.Condition.PROCESSING_FAILED);
     }
 }

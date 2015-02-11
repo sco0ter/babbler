@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,37 +22,58 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.compress.model;
-
-import rocks.xmpp.core.stream.model.ClientStreamElement;
-import rocks.xmpp.extensions.compress.model.feature.Compression;
+package rocks.xmpp.sample.customiq;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.Objects;
 
 /**
- * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress} namespace.
+ * This is a custom payload, which can be used to request the sum of two values and returns the sum.
+ * It's only for illustrating purposes.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
- * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
  */
-@XmlRootElement(name = "compress")
-@XmlSeeAlso({Compression.class, Compressed.class, Failure.class})
-public final class Compress implements ClientStreamElement {
+@XmlRootElement(name = "addition", namespace = "rocks:xmpp:sample")
+public final class Addition {
+
+    @XmlElement(name = "summand1")
+    private Integer summand1;
+
+    @XmlElement(name = "summand2")
+    private Integer summand2;
+
+    @XmlElement(name = "sum")
+    private Integer sum;
+
     /**
-     * http://jabber.org/protocol/compress
+     * No-arg default constructor needed for JAXB.
      */
-    public static final String NAMESPACE = "http://jabber.org/protocol/compress";
-
-    @XmlElement
-    private CompressionMethod method;
-
-    private Compress() {
+    private Addition() {
     }
 
-    public Compress(CompressionMethod method) {
-        this.method = method;
+    public Addition(Integer summand1, Integer summand2) {
+        this.summand1 = Objects.requireNonNull(summand1);
+        this.summand2 = Objects.requireNonNull(summand2);
+    }
+
+    public Addition(Integer sum) {
+        this.sum = Objects.requireNonNull(sum);
+    }
+
+    public Integer getSummand1() {
+        return summand1;
+    }
+
+    public Integer getSummand2() {
+        return summand2;
+    }
+
+    @Override
+    public String toString() {
+        if (summand1 != null && summand2 != null) {
+            return summand1 + " + " + summand2 + " = ???";
+        }
+        return "Sum: " + sum;
     }
 }

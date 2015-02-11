@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,32 +29,39 @@ import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
  * The implementation of the {@code <item/>} element in the {@code http://jabber.org/protocol/disco#item} namespace, used for item discovery.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 public final class Item implements ResultSetItem {
 
     @XmlTransient
-    private String id;
+    private final String id;
 
     @XmlAttribute
-    private Jid jid;
+    private final Jid jid;
 
     @XmlAttribute
-    private String name;
+    private final String name;
 
     @XmlAttribute
-    private String node;
+    private final String node;
 
     private Item() {
+        this.jid = null;
+        this.node = null;
+        this.name = null;
+        this.id = null;
     }
 
     public Item(Jid jid, String node, String name, String id) {
-        this.jid = jid;
+        this.jid = Objects.requireNonNull(jid);
         this.node = node;
         this.name = name;
         this.id = id;
@@ -73,7 +80,7 @@ public final class Item implements ResultSetItem {
      *
      * @return The id.
      */
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
@@ -82,7 +89,7 @@ public final class Item implements ResultSetItem {
      *
      * @return The JID.
      */
-    public Jid getJid() {
+    public final Jid getJid() {
         return jid;
     }
 
@@ -91,7 +98,7 @@ public final class Item implements ResultSetItem {
      *
      * @return The name.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -100,12 +107,12 @@ public final class Item implements ResultSetItem {
      *
      * @return The node.
      */
-    public String getNode() {
+    public final String getNode() {
         return node;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(jid.toString());
         if (node != null) {

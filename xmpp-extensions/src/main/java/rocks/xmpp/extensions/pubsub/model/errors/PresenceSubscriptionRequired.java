@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,24 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <presence-subscription-required/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #PRESENCE_SUBSCRIPTION_REQUIRED
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-presence">6.1.3.2 Presence Subscription Required</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-presence">6.5.9.6 Presence Subscription Required</a>
  */
 @XmlRootElement(name = "presence-subscription-required")
+@XmlType(factoryMethod = "create")
 public final class PresenceSubscriptionRequired extends PubSubError {
-    private PresenceSubscriptionRequired() {
+    PresenceSubscriptionRequired() {
+    }
+
+    private static PresenceSubscriptionRequired create() {
+        return PRESENCE_SUBSCRIPTION_REQUIRED;
     }
 }

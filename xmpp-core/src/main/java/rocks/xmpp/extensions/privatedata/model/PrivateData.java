@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:private} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>
@@ -43,9 +45,10 @@ public final class PrivateData {
     public static final String NAMESPACE = "jabber:iq:private";
 
     @XmlAnyElement(lax = true)
-    private Object privateData;
+    private final Object privateData;
 
     private PrivateData() {
+        this.privateData = null;
     }
 
     /**

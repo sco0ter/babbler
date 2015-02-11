@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,35 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.compress.model;
+package rocks.xmpp.core.bind;
 
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.bind.model.Bind;
+import rocks.xmpp.core.stanza.model.client.IQ;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 /**
- * The implementation of the {@code <compressed/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates that the stream is now compressed.
- *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
- * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
  */
-@XmlRootElement(name = "compressed")
-public final class Compressed implements ServerStreamElement {
+public class BindTest extends XmlTest {
+
+    protected BindTest() throws JAXBException, XMLStreamException {
+        super(IQ.class, Bind.class);
+    }
+
+    @Test
+    public void testBind() throws XMLStreamException, JAXBException, NoSuchFieldException {
+        String xml = "<iq id='wy2xa82b4' type='set'>\n" +
+                "     <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>\n" +
+                "       <resource>balcony</resource>\n" +
+                "     </bind>\n" +
+                "   </iq>";
+        IQ iq = unmarshal(xml, IQ.class);
+        Bind bind = iq.getExtension(Bind.class);
+        Assert.assertEquals(bind.getResource(), "balcony");
+    }
 }

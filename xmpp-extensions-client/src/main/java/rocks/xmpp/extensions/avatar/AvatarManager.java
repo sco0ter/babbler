@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.util.cache.DirectoryCache;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
@@ -49,7 +50,6 @@ import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -63,7 +63,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -106,22 +105,27 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
         super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
         vCardManager = xmppSession.getExtensionManager(VCardManager.class);
-        avatarCache = new DirectoryAvatarCache(new File(System.getProperty("user.dir"), "avatars"));
+        Map<String, byte[]> cache;
+        try {
+            cache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Unable to instantiate directory cache.", e);
+            cache = null;
+        }
+        avatarCache = cache;
 
-        avatarRequester = Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, "Avatar Request Thread");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
+        avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
 
+        setEnabled(false);
+    }
+
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addPresenceListener(this);
         xmppSession.addMessageListener(this);
-        setEnabled(false);
     }
+
 
     private void resetHash() {
         // Remove our own hash and send an empty presence.
@@ -137,9 +141,10 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
 
     private void notifyListeners(Jid contact, byte[] avatar) {
 
+        AvatarChangeEvent avatarChangeEvent = new AvatarChangeEvent(AvatarManager.this, contact, avatar);
         for (AvatarChangeListener avatarChangeListener : avatarChangeListeners) {
             try {
-                avatarChangeListener.avatarChanged(new AvatarChangeEvent(AvatarManager.this, contact, avatar));
+                avatarChangeListener.avatarChanged(avatarChangeEvent);
             } catch (Exception e1) {
                 logger.log(Level.WARNING, e1.getMessage(), e1);
             }
@@ -205,14 +210,14 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
 
     private synchronized byte[] loadFromCache(String hash) {
         if (avatarCache != null) {
-            return avatarCache.get(hash);
+            return avatarCache.get(hash + ".avatar");
         }
         return null;
     }
 
     private synchronized void storeToCache(String hash, byte[] image) {
         if (avatarCache != null) {
-            avatarCache.put(hash, image);
+            avatarCache.put(hash + ".avatar", image);
         }
     }
 
@@ -221,7 +226,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
      *
      * @param contact The contact.
      * @return The contact's avatar or null, if it has no avatar.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public byte[] getAvatar(Jid contact) throws XmppException {
@@ -232,7 +237,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
      * Publishes an avatar to your VCard.
      *
      * @param imageData The avatar image data, which must be in PNG format.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
@@ -293,12 +298,12 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
         if (avatar != null) {
             if (info.getUrl() == null) {
                 // Publish image.
-                personalEventingService.getNode(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar));
+                personalEventingService.node(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar));
             }
             // Publish meta data.
-            personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(info));
+            personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(info));
         } else {
-            personalEventingService.getNode(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata());
+            personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata());
         }
     }
 
@@ -363,7 +368,6 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
 
                                     if (chosenInfo != null && chosenInfo.getUrl() != null) {
                                         URLConnection urlConnection = chosenInfo.getUrl().openConnection();
-                                        String type = urlConnection.getContentType();
                                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                         // Download the image file.
                                         try (InputStream in = urlConnection.getInputStream()) {
@@ -380,7 +384,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
                                     } else {
                                         PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
 
-                                        List<Item> items = pubSubService.getNode(AvatarData.NAMESPACE).getItems(item.getId());
+                                        List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
                                         if (!items.isEmpty()) {
                                             Item i = items.get(0);
                                             if (i.getPayload() instanceof AvatarData) {

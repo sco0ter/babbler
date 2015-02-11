@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -184,7 +184,7 @@ public final class ResultSetManagement {
      *
      * @return The item count.
      */
-    public Integer getItemCount() {
+    public final Integer getItemCount() {
         return count;
     }
 
@@ -193,7 +193,7 @@ public final class ResultSetManagement {
      *
      * @return The first item.
      */
-    public String getFirstItem() {
+    public final String getFirstItem() {
         return first != null ? first.value : null;
     }
 
@@ -202,7 +202,7 @@ public final class ResultSetManagement {
      *
      * @return The first item's index.
      */
-    public Integer getFirstItemIndex() {
+    public final Integer getFirstItemIndex() {
         return first != null ? first.index : null;
     }
 
@@ -211,7 +211,7 @@ public final class ResultSetManagement {
      *
      * @return The last item.
      */
-    public String getLastItem() {
+    public final String getLastItem() {
         return last;
     }
 
@@ -220,7 +220,7 @@ public final class ResultSetManagement {
      *
      * @return The max size.
      */
-    public Integer getMaxSize() {
+    public final Integer getMaxSize() {
         return max;
     }
 
@@ -229,7 +229,7 @@ public final class ResultSetManagement {
      *
      * @return The 'after' element.
      */
-    public String getAfter() {
+    public final String getAfter() {
         return after;
     }
 
@@ -238,7 +238,7 @@ public final class ResultSetManagement {
      *
      * @return The 'before' element.
      */
-    public String getBefore() {
+    public final String getBefore() {
         return before;
     }
 
@@ -247,7 +247,7 @@ public final class ResultSetManagement {
      *
      * @return The index.
      */
-    public Integer getIndex() {
+    public final Integer getIndex() {
         return index;
     }
 }

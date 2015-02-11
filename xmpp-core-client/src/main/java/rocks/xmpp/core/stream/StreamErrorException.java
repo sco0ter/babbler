@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,40 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.invisible.model;
+package rocks.xmpp.core.stream;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stream.model.StreamError;
 
 /**
- * The implementation of the {@code <visible/>} element in the {@code urn:xmpp:invisible:0} namespace.
+ * Represents a stream error.
+ * This is exception is thrown if client receives a stream error.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
-@XmlRootElement(name = "visible")
-public final class Visible {
+public final class StreamErrorException extends XmppException {
+
+    private final StreamError streamError;
+
+    /**
+     * Constructs a stanza exception.
+     *
+     * @param streamError The underlying stream error.
+     */
+    public StreamErrorException(StreamError streamError) {
+        super(streamError.toString());
+        this.streamError = streamError;
+    }
+
+    /**
+     * Gets the stream error.
+     *
+     * @return The stream error.
+     */
+    public final StreamError getStreamError() {
+        return streamError;
+    }
 }

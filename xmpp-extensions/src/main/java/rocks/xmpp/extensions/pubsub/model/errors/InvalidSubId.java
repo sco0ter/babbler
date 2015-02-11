@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,17 +25,25 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <invalid-subid/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #INVALID_SUB_ID
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe-error-badsubid">6.2.3.5 Bad Subscription ID</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-error-badsubid">6.3.4.5 Invalid Subscription ID</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-subid">6.5.9.2 Invalid Subscription ID</a>
  */
 @XmlRootElement(name = "invalid-subid")
+@XmlType(factoryMethod = "create")
 public final class InvalidSubId extends PubSubError {
-    private InvalidSubId() {
+    InvalidSubId() {
+    }
+
+    private static InvalidSubId create() {
+        return INVALID_SUB_ID;
     }
 }

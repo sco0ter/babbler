@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.server;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -131,7 +132,12 @@ public final class IQ extends AbstractIQ implements ServerStreamElement {
     }
 
     @Override
-    public IQ withFrom(Jid from) {
+    public final IQ createError(Condition condition) {
+        return createError(new StanzaError(condition));
+    }
+
+    @Override
+    public final IQ withFrom(Jid from) {
         return new IQ(getTo(), getType(), getExtension(Object.class), getId(), from, getLanguage(), getError());
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.invisible.model;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
- * The implementation of the {@code <invisible/>} element in the {@code urn:xmpp:invisible:0} namespace.
- *
- * @author Christian Schudt
+ * Provides simple cache implementations.
  */
-@XmlRootElement(name = "invisible")
-public final class Invisible {
-
-    /**
-     * urn:xmpp:invisible:0
-     */
-    public static final String NAMESPACE = "urn:xmpp:invisible:0";
-}
+package rocks.xmpp.core.util.cache;

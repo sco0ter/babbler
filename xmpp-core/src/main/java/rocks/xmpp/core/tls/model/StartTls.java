@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#tls-process-initiate-command">5.4.2.1.  STARTTLS Command</a></cite></p>
  * <p>In order to begin the STARTTLS negotiation, the initiating entity issues the STARTTLS command (i.e., a {@code <starttls/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-tls' namespace) to instruct the receiving entity that it wishes to begin a STARTTLS negotiation to secure the stream.</p>
  * </blockquote>
+ * <p>
+ * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
  */
@@ -45,14 +47,21 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 public final class StartTls extends StreamFeature implements ClientStreamElement {
 
     @XmlElement
-    protected String required;
+    private String required;
+
+    public StartTls() {
+    }
+
+    public StartTls(boolean required) {
+        this.required = required ? "" : null;
+    }
 
     @Override
-    public boolean isMandatory() {
+    public final synchronized boolean isMandatory() {
         return required != null;
     }
 
-    public void setMandatory(boolean mandatory) {
+    public final synchronized void setMandatory(boolean mandatory) {
         if (mandatory) {
             required = "";
         } else {
@@ -61,7 +70,7 @@ public final class StartTls extends StreamFeature implements ClientStreamElement
     }
 
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 0;
     }
 }

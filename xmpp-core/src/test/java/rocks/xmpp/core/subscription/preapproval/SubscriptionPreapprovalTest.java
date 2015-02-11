@@ -45,6 +45,6 @@ public class SubscriptionPreapprovalTest extends XmlTest {
     public void unmarshalPreApproval() throws JAXBException, XMLStreamException {
         String xml = "<sub xmlns='urn:xmpp:features:pre-approval'/>";
         SubscriptionPreApproval subscriptionPreApproval = unmarshal(xml, SubscriptionPreApproval.class);
-        Assert.assertNotNull(subscriptionPreApproval);
+        Assert.assertTrue(subscriptionPreApproval == SubscriptionPreApproval.INSTANCE);
     }
 }

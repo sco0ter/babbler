@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ public final class PrivateDataManager extends ExtensionManager {
      * @param type The class of the private data. Note that this class needs a no-arg default constructor.
      * @param <T>  The type of private data.
      * @return The list of stored items of the given type.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the server returned an error, e.g. if the used namespace is reserved.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned an error, e.g. if the used namespace is reserved.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     @SuppressWarnings("unchecked")
@@ -76,7 +76,7 @@ public final class PrivateDataManager extends ExtensionManager {
      * Stores private data.
      *
      * @param privateData The private data. The class of this object must be annotated with JAXB annotations and must known to the XMPP context in order to marshal und unmarshal it.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public void storeData(Object privateData) throws XmppException {

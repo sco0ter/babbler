@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,17 +30,50 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
+ * A debugger interface, which allows to implement custom debugger implementation to log XMPP traffic.
+ *
  * @author Christian Schudt
  */
 public interface XmppDebugger {
 
+    /**
+     * This method is called when a new XMPP session is initialized.
+     *
+     * @param xmppSession The XMPP session.
+     */
     void initialize(XmppSession xmppSession);
 
-    void writeStanza(String xml, Object stanza);
+    /**
+     * This method is called, whenever a stream element is written.
+     *
+     * @param xml           The xml representation of the stream element.
+     * @param streamElement The stream element. Maybe null, if no stream element, but an opening or closing stream element is written.
+     */
+    void writeStanza(String xml, Object streamElement);
 
-    void readStanza(String xml, Object stanza);
+    /**
+     * This method is called, whenever a stream element is read.
+     *
+     * @param xml           The xml representation of the stream element.
+     * @param streamElement The stream element. Maybe null, if no stream element, but an opening or closing stream element is read.
+     */
+    void readStanza(String xml, Object streamElement);
 
+    /**
+     * Creates a new output stream from the actual output stream. This is useful is you want to log the actually written bytes.
+     * In this case you could fork the output stream and return the new forked stream.
+     *
+     * @param outputStream The actual output stream.
+     * @return The (forked) output stream.
+     */
     OutputStream createOutputStream(OutputStream outputStream);
 
+    /**
+     * Creates a new input stream from the actual input stream. This is useful is you want to log the actually read bytes.
+     * In this case you could fork the input stream and return the new forked stream.
+     *
+     * @param inputStream The actual input stream.
+     * @return The (forked) input stream.
+     */
     InputStream createInputStream(InputStream inputStream);
 }

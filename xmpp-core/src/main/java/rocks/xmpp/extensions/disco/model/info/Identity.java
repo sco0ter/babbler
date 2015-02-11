@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,27 +34,32 @@ import java.util.Objects;
  * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
  * <p>In disco, an entity's identity is broken down into its category (server, client, gateway, directory, etc.) and its particular type within that category (IM server, phone vs. handheld client, MSN gateway vs. AIM gateway, user directory vs. chatroom directory, etc.). This information helps requesting entities to determine the group or "bucket" of services into which the entity is most appropriately placed (e.g., perhaps the entity is shown in a GUI with an appropriate icon). An entity MAY have multiple identities. When multiple identity elements are provided, the name attributes for each identity element SHOULD have the same value.</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 public final class Identity implements Comparable<Identity> {
 
     @XmlAttribute
-    private String category;
+    private final String category;
 
     @XmlAttribute
-    private String type;
+    private final String type;
 
     @XmlAttribute
-    private String name;
+    private final String name;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private String lang;
+    private final String lang;
 
     /**
      * Private default constructor for unmarshalling.
      */
     private Identity() {
+        this.category = null;
+        this.type = null;
+        this.name = null;
+        this.lang = null;
     }
 
     /**
@@ -64,8 +69,7 @@ public final class Identity implements Comparable<Identity> {
      * @param type     The type.
      */
     public Identity(String category, String type) {
-        this.category = category;
-        this.type = type;
+        this(category, type, null);
     }
 
     /**
@@ -76,9 +80,7 @@ public final class Identity implements Comparable<Identity> {
      * @param name     The name.
      */
     public Identity(String category, String type, String name) {
-        this.category = category;
-        this.type = type;
-        this.name = name;
+        this(category, type, name, null);
     }
 
     /**
@@ -90,8 +92,8 @@ public final class Identity implements Comparable<Identity> {
      * @param language The language.
      */
     public Identity(String category, String type, String name, String language) {
-        this.category = category;
-        this.type = type;
+        this.category = Objects.requireNonNull(category);
+        this.type = Objects.requireNonNull(type);
         this.name = name;
         this.lang = language;
     }
@@ -101,7 +103,7 @@ public final class Identity implements Comparable<Identity> {
      *
      * @return The category.
      */
-    public String getCategory() {
+    public final String getCategory() {
         return category;
     }
 
@@ -110,7 +112,7 @@ public final class Identity implements Comparable<Identity> {
      *
      * @return The type.
      */
-    public String getType() {
+    public final String getType() {
         return type;
     }
 
@@ -119,7 +121,7 @@ public final class Identity implements Comparable<Identity> {
      *
      * @return The name
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -128,7 +130,7 @@ public final class Identity implements Comparable<Identity> {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         return lang;
     }
 
@@ -139,7 +141,7 @@ public final class Identity implements Comparable<Identity> {
      * @return True, if category, type and language are equal.
      */
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -155,7 +157,7 @@ public final class Identity implements Comparable<Identity> {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(category, type, lang);
     }
 
@@ -166,7 +168,7 @@ public final class Identity implements Comparable<Identity> {
      * @return The result of the comparison.
      */
     @Override
-    public int compareTo(Identity o) {
+    public final int compareTo(Identity o) {
         int result;
         if (o == null) {
             result = 1;
@@ -221,7 +223,7 @@ public final class Identity implements Comparable<Identity> {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "Category: " + category + " / Type: " + type;
     }
 }

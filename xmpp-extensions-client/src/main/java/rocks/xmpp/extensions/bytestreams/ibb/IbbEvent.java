@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.bytestreams.ibb;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.NotAcceptable;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 
@@ -58,6 +58,6 @@ final class IbbEvent extends ByteStreamEvent {
     @Override
     public void reject() {
         // If the responder supports IBB but does not wish to proceed with the session, it returns a <not-acceptable/> error.
-        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, new NotAcceptable())));
+        xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, Condition.NOT_ACCEPTABLE)));
     }
 }

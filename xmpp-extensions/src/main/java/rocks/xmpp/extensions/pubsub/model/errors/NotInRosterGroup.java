@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,24 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <not-in-roster-group/>} pubsub error.
+ * This class is a singleton.
  *
  * @author Christian Schudt
+ * @see #NOT_IN_ROSTER_GROUP
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-rostergroup">6.1.3.3 Not in Roster Group</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-rostergroup">6.5.9.7 Not in Roster Groupd</a>
  */
 @XmlRootElement(name = "not-in-roster-group")
+@XmlType(factoryMethod = "create")
 public final class NotInRosterGroup extends PubSubError {
-    private NotInRosterGroup() {
+    NotInRosterGroup() {
+    }
+
+    private static NotInRosterGroup create() {
+        return NOT_IN_ROSTER_GROUP;
     }
 }

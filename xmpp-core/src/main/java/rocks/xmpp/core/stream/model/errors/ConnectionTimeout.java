@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <connection-timeout/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-connection-timeout">4.9.3.4.  connection-timeout</a></cite></p>
  * <p>One party is closing the stream because it has reason to believe that the other party has permanently lost the ability to communicate over the stream. The lack of ability to communicate can be discovered using various methods, such as whitespace keepalives as specified under Section 4.4, XMPP-level pings as defined in [XEP-0199], and XMPP Stream Management as defined in [XEP-0198].</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #CONNECTION_TIMEOUT
  */
 @XmlRootElement(name = "connection-timeout")
-public final class ConnectionTimeout extends Condition {
+@XmlType(factoryMethod = "create")
+final class ConnectionTimeout extends Condition {
+
+    ConnectionTimeout() {
+    }
+
+    private static ConnectionTimeout create() {
+        return (ConnectionTimeout) CONNECTION_TIMEOUT;
+    }
 }

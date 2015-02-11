@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <redirect/>} stanza error.
@@ -32,16 +33,25 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-redirect">8.3.3.14.  redirect</a></cite></p>
  * <p>The recipient or server is redirecting requests for this information to another entity, typically in a temporary fashion (as opposed to the {@code <gone/>} error condition, which is used for permanent addressing failures); the associated error type SHOULD be "modify" and the error stanza SHOULD contain the alternate address in the XML character data of the {@code <redirect/>} element (which MUST be a URI or IRI with which the sender can communicate, typically an XMPP IRI as specified in [XMPP-URI]).</p>
  * </blockquote>
+ *
+ * @see #redirect(String)
  */
 @XmlRootElement(name = "redirect")
 public final class Redirect extends Condition {
+
+    Redirect() {
+    }
+
+    Redirect(String alternateAddress) {
+        super(Objects.requireNonNull(alternateAddress));
+    }
 
     /**
      * Gets the alternate address.
      *
      * @return The alternate address.
      */
-    public String getAlternateAddress() {
+    public final String getAlternateAddress() {
         return value;
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.BadRequest;
-import rocks.xmpp.core.stanza.model.errors.ItemNotFound;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.model.Jingle;
@@ -43,6 +42,7 @@ import rocks.xmpp.extensions.jingle.model.errors.UnknownSession;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,16 +67,16 @@ public final class JingleManager extends ExtensionManager implements SessionStat
         super(xmppSession);
 
         supportedApplicationFormats.add(JingleFileTransfer.class);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
-
         xmppSession.addIQListener(this);
     }
 
     public JingleSession createSession(Jid responder, Jingle.Content... contents) throws XmppException {
-        if (responder == null) {
-            throw new IllegalArgumentException("responder must not be null.");
-        }
+        Objects.requireNonNull(responder, "responder must not be null.");
         if (contents.length == 0) {
             throw new IllegalArgumentException("no content provided.");
         }
@@ -140,15 +140,15 @@ public final class JingleManager extends ExtensionManager implements SessionStat
                 // If an entity receives a value not defined here, it MUST ignore the attribute and MUST return a <bad-request/> error to the sender.
                 // There is no default value for the 'action' attribute.
                 if (jingle.getAction() == null) {
-                    xmppSession.send(iq.createError(new StanzaError(new BadRequest(), "No valid action attribute set.")));
+                    xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST, "No valid action attribute set.")));
                 } else if (jingle.getSessionId() == null) {
-                    xmppSession.send(iq.createError(new StanzaError(new BadRequest(), "No session id set.")));
+                    xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST, "No session id set.")));
                 } else if (jingle.getAction() == Jingle.Action.SESSION_INITIATE) {
 
                     // Check if the Jingle request is not mal-formed, otherwise return a bad-request error.
                     // See 6.3.2 Errors
                     if (jingle.getContents().isEmpty()) {
-                        xmppSession.send(iq.createError(new StanzaError(new BadRequest(), "No contents found.")));
+                        xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST, "No contents found.")));
                     } else {
                         boolean hasContentWithDispositionSession = false;
                         boolean hasSupportedApplications = false;
@@ -174,7 +174,7 @@ public final class JingleManager extends ExtensionManager implements SessionStat
                             // the value of the <content/> element's 'disposition' attribute MUST be "session"
                             // (if there are multiple <content/> elements then at least one MUST have a disposition of "session");
                             // if this rule is violated, the responder MUST return a <bad-request/> error to the initiator.
-                            xmppSession.send(iq.createError(new StanzaError(new BadRequest(), "No content with disposition 'session' found.")));
+                            xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST, "No content with disposition 'session' found.")));
                         } else {
                             // If the request was ok, immediately acknowledge the initiation request.
                             // See 6.3.1 Acknowledgement
@@ -210,7 +210,7 @@ public final class JingleManager extends ExtensionManager implements SessionStat
                     if (jingleSession == null) {
                         // If we receive a non-session-initiate Jingle action with an unknown session id,
                         // return <item-not-found/> and <unknown-session/>
-                        xmppSession.send(iq.createError(new StanzaError(new ItemNotFound(), new UnknownSession())));
+                        xmppSession.send(iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession())));
                     } else {
                         jingleSession.notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                         xmppSession.send(iq.createResult());

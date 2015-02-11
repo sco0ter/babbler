@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,6 +41,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <body/>} element in the {@code http://jabber.org/protocol/httpbind} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a>
@@ -64,126 +66,153 @@ public final class Body {
     private final List<Object> wrappedObjects = new ArrayList<>();
 
     @XmlElement
-    private URI uri;
+    private final URI uri;
 
     /**
      * The connection manager MAY include an 'accept' attribute in the session creation response element, to specify a space-separated list of the content encodings it can decompress. After receiving a session creation response with an 'accept' attribute, clients MAY include an HTTP Content-Encoding header in subsequent requests (indicating one of the encodings specified in the 'accept' attribute) and compress the bodies of the requests accordingly.
      */
     @XmlAttribute
-    private String accept;
+    private final String accept;
 
     /**
      * A connection manager MAY include an 'ack' attribute (set to the value of the 'rid' attribute of the session creation request) to indicate that it will be using acknowledgements throughout the session and that the absence of an 'ack' attribute in any response is meaningful (see Acknowledgements).
      */
     @XmlAttribute
-    private Long ack;
+    private final Long ack;
 
     @XmlAttribute
-    private String authid;
+    private final String authid;
 
     @XmlAttribute
-    private String charsets;
+    private final String charsets;
 
     @XmlAttribute
-    private Condition condition;
+    private final Condition condition;
 
     @XmlAttribute
-    private String content;
+    private final String content;
 
     @XmlAttribute
-    private Jid from;
+    private final Jid from;
 
     /**
      * This attribute informs the client about the maximum number of requests the connection manager will keep waiting at any one time during the session. This value MUST NOT be greater than the value specified by the client in the session request.
      */
     @XmlAttribute
-    private Byte hold;
+    private final Byte hold;
 
     /**
      * This attribute specifies the longest allowable inactivity period (in seconds). This enables the client to ensure that the periods with no requests pending are never too long (see Polling Sessions and Inactivity).
      */
     @XmlAttribute
-    private Short inactivity;
+    private final Short inactivity;
 
     @XmlAttribute
-    private String key;
+    private final String key;
 
     /**
      * If the connection manager supports session pausing (see Inactivity) then it SHOULD advertise that to the client by including a 'maxpause' attribute in the session creation response element. The value of the attribute indicates the maximum length of a temporary session pause (in seconds) that a client can request.
      */
     @XmlAttribute
-    private Short maxpause;
+    private final Short maxpause;
 
     @XmlAttribute
-    private String newkey;
+    private final String newkey;
 
     @XmlAttribute
-    private Short pause;
+    private final Short pause;
 
     /**
      * This attribute specifies the shortest allowable polling interval (in seconds). This enables the client to not send empty request elements more often than desired (see Polling Sessions and Overactivity).
      */
     @XmlAttribute
-    private Short polling;
+    private final Short polling;
 
     @XmlAttribute
-    private Integer report;
+    private final Integer report;
 
     /**
      * This attribute enables the connection manager to limit the number of simultaneous requests the client makes (see Overactivity and Polling Sessions). The RECOMMENDED values are either "2" or one more than the value of the 'hold' attribute specified in the session request.
      */
     @XmlAttribute
-    private Byte requests;
+    private final Byte requests;
 
     @XmlAttribute
-    private Long rid;
+    private final Long rid;
 
     @XmlAttribute
-    private String route;
+    private final String route;
 
     @XmlAttribute
-    private Boolean secure;
+    private final String sid;
 
     @XmlAttribute
-    private String sid;
+    private final String stream;
 
     @XmlAttribute
-    private String stream;
-
-    @XmlAttribute
-    private Short time;
+    private final Short time;
 
     /**
      * This attribute communicates the identity of the backend server to which the client is attempting to connect.
      */
     @XmlAttribute
-    private String to;
+    private final String to;
 
     @XmlAttribute
-    private Type type;
+    private final Type type;
 
     /**
      * This attribute specifies the highest version of the BOSH protocol that the connection manager supports, or the version specified by the client in its request, whichever is lower.
      */
     @XmlAttribute
-    private String ver;
+    private final String ver;
 
     @XmlAttribute
-    private Integer wait;
+    private final Integer wait;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private String lang;
+    private final String lang;
 
     @XmlAttribute(name = "version", namespace = XBOSH_NAMESPACE)
-    private String version;
+    private final String version;
 
     @XmlAttribute(name = "restartlogic", namespace = XBOSH_NAMESPACE)
-    private Boolean restartLogic;
+    private final Boolean restartLogic;
 
     @XmlAttribute(name = "restart", namespace = XBOSH_NAMESPACE)
-    private Boolean restart;
+    private final Boolean restart;
 
     private Body() {
+        this.ack = null;
+        this.hold = null;
+        this.lang = null;
+        this.restart = null;
+        this.rid = null;
+        this.route = null;
+        this.sid = null;
+        this.type = null;
+        this.ver = null;
+        this.version = null;
+        this.to = null;
+        this.wait = null;
+        this.newkey = null;
+        this.key = null;
+        this.from = null;
+        this.uri = null;
+        this.accept = null;
+        this.authid = null;
+        this.charsets = null;
+        this.inactivity = null;
+        this.condition = null;
+        this.content = null;
+        this.maxpause = null;
+        this.pause = null;
+        this.polling = null;
+        this.report = null;
+        this.requests = null;
+        this.stream = null;
+        this.time = null;
+        this.restartLogic = true;
     }
 
     private Body(Builder builder) {
@@ -203,6 +232,21 @@ public final class Body {
         this.newkey = builder.newKey;
         this.key = builder.key;
         this.from = builder.from;
+        this.uri = null;
+        this.accept = null;
+        this.authid = null;
+        this.charsets = null;
+        this.inactivity = null;
+        this.condition = null;
+        this.content = null;
+        this.maxpause = null;
+        this.pause = null;
+        this.polling = null;
+        this.report = null;
+        this.requests = null;
+        this.stream = null;
+        this.time = null;
+        this.restartLogic = null;
     }
 
     /**
@@ -219,7 +263,7 @@ public final class Body {
      *
      * @return The wrapped objects.
      */
-    public List<Object> getWrappedObjects() {
+    public final List<Object> getWrappedObjects() {
         return Collections.unmodifiableList(wrappedObjects);
     }
 
@@ -228,7 +272,7 @@ public final class Body {
      *
      * @return The URI.
      */
-    public URI getUri() {
+    public final URI getUri() {
         return uri;
     }
 
@@ -239,7 +283,7 @@ public final class Body {
      *
      * @return The comma-separated list of the content encodings.
      */
-    public String getAccept() {
+    public final String getAccept() {
         return accept;
     }
 
@@ -251,7 +295,7 @@ public final class Body {
      *
      * @return The acknowledged request.
      */
-    public Long getAck() {
+    public final Long getAck() {
         return ack;
     }
 
@@ -262,7 +306,7 @@ public final class Body {
      *
      * @return The available charsets.
      */
-    public String getCharsets() {
+    public final String getCharsets() {
         return charsets;
     }
 
@@ -273,7 +317,7 @@ public final class Body {
      *
      * @return The 'from' attribute.
      */
-    public Jid getFrom() {
+    public final Jid getFrom() {
         return from;
     }
 
@@ -285,15 +329,15 @@ public final class Body {
      *
      * @return The 'hold' attribute.
      */
-    public Byte getHold() {
+    public final Byte getHold() {
         return hold;
     }
 
-    public Short getInactivity() {
+    public final Short getInactivity() {
         return inactivity;
     }
 
-    public String getKey() {
+    public final String getKey() {
         return key;
     }
 
@@ -304,11 +348,11 @@ public final class Body {
      *
      * @return The maximal pause in seconds.
      */
-    public Short getMaxPause() {
+    public final Short getMaxPause() {
         return maxpause;
     }
 
-    public String getNewKey() {
+    public final String getNewKey() {
         return newkey;
     }
 
@@ -319,7 +363,7 @@ public final class Body {
      *
      * @return The 'pause' attribute value.
      */
-    public Short getPause() {
+    public final Short getPause() {
         return pause;
     }
 
@@ -330,7 +374,7 @@ public final class Body {
      *
      * @return The 'polling' attribute value.
      */
-    public Short getPolling() {
+    public final Short getPolling() {
         return polling;
     }
 
@@ -342,7 +386,7 @@ public final class Body {
      *
      * @return The 'report' attribute value.
      */
-    public Integer getReport() {
+    public final Integer getReport() {
         return report;
     }
 
@@ -353,7 +397,7 @@ public final class Body {
      *
      * @return The 'requests' attribute value.
      */
-    public Byte getRequests() {
+    public final Byte getRequests() {
         return requests;
     }
 
@@ -364,7 +408,7 @@ public final class Body {
      *
      * @return The 'rid' attribute value.
      */
-    public Long getRid() {
+    public final Long getRid() {
         return rid;
     }
 
@@ -375,7 +419,7 @@ public final class Body {
      *
      * @return The 'route' attribute value.
      */
-    public String getRoute() {
+    public final String getRoute() {
         return route;
     }
 
@@ -386,7 +430,7 @@ public final class Body {
      *
      * @return The 'route' attribute value.
      */
-    public String getSid() {
+    public final String getSid() {
         return sid;
     }
 
@@ -397,7 +441,7 @@ public final class Body {
      *
      * @return The 'stream' attribute value.
      */
-    public String getStream() {
+    public final String getStream() {
         return stream;
     }
 
@@ -405,15 +449,15 @@ public final class Body {
      * @return The 'time' attribute value.
      * @see #getReport()
      */
-    public Short getTime() {
+    public final Short getTime() {
         return time;
     }
 
-    public String getTo() {
+    public final String getTo() {
         return to;
     }
 
-    public Type getType() {
+    public final Type getType() {
         return type;
     }
 
@@ -424,31 +468,31 @@ public final class Body {
      *
      * @return The 'version' attribute value.
      */
-    public String getVersion() {
+    public final String getVersion() {
         return version;
     }
 
-    public Integer getWait() {
+    public final Integer getWait() {
         return wait;
     }
 
-    public String getLanguage() {
+    public final String getLanguage() {
         return lang;
     }
 
-    public Condition getCondition() {
+    public final Condition getCondition() {
         return condition;
     }
 
-    public String getXmppVersion() {
+    public final String getXmppVersion() {
         return version;
     }
 
-    public Boolean getRestartLogic() {
+    public final Boolean getRestartLogic() {
         return restartLogic;
     }
 
-    public Boolean getRestart() {
+    public final Boolean getRestart() {
         return restart;
     }
 
@@ -459,8 +503,17 @@ public final class Body {
      *
      * @return The content.
      */
-    public String getContent() {
+    public final String getContent() {
         return content;
+    }
+
+    /**
+     * Gets the 'authid' attribute.
+     *
+     * @return The 'authid' attribute.
+     */
+    public final String getAuthId() {
+        return authid;
     }
 
     /**
@@ -603,7 +656,7 @@ public final class Body {
          * @param type The 'type' attribute.
          * @return The builder.
          */
-        public Builder type(Type type) {
+        public final Builder type(Type type) {
             this.type = type;
             return this;
         }
@@ -614,7 +667,7 @@ public final class Body {
          * @param to The 'to' attribute.
          * @return The builder.
          */
-        public Builder to(String to) {
+        public final Builder to(String to) {
             this.to = to;
             return this;
         }
@@ -625,7 +678,7 @@ public final class Body {
          * @param language The 'lang' attribute.
          * @return The builder.
          */
-        public Builder language(String language) {
+        public final Builder language(String language) {
             this.language = language;
             return this;
         }
@@ -636,7 +689,7 @@ public final class Body {
          * @param version The 'ver' attribute.
          * @return The builder.
          */
-        public Builder version(String version) {
+        public final Builder version(String version) {
             this.version = version;
             return this;
         }
@@ -647,7 +700,7 @@ public final class Body {
          * @param wait The 'wait' attribute.
          * @return The builder.
          */
-        public Builder wait(int wait) {
+        public final Builder wait(int wait) {
             this.wait = wait;
             return this;
         }
@@ -658,7 +711,7 @@ public final class Body {
          * @param hold The 'hold' attribute.
          * @return The builder.
          */
-        public Builder hold(byte hold) {
+        public final Builder hold(byte hold) {
             this.hold = hold;
             return this;
         }
@@ -669,7 +722,7 @@ public final class Body {
          * @param route The 'route' attribute.
          * @return The builder.
          */
-        public Builder route(String route) {
+        public final Builder route(String route) {
             this.route = route;
             return this;
         }
@@ -680,7 +733,7 @@ public final class Body {
          * @param ack The 'ack' attribute.
          * @return The builder.
          */
-        public Builder ack(long ack) {
+        public final Builder ack(long ack) {
             this.ack = ack;
             return this;
         }
@@ -691,7 +744,7 @@ public final class Body {
          * @param xmppVersion The 'version' attribute.
          * @return The builder.
          */
-        public Builder xmppVersion(String xmppVersion) {
+        public final Builder xmppVersion(String xmppVersion) {
             this.xmppVersion = xmppVersion;
             return this;
         }
@@ -702,7 +755,7 @@ public final class Body {
          * @param sessionId The 'sid' attribute.
          * @return The builder.
          */
-        public Builder sessionId(String sessionId) {
+        public final Builder sessionId(String sessionId) {
             this.sessionId = sessionId;
             return this;
         }
@@ -713,7 +766,7 @@ public final class Body {
          * @param restart The 'restart' attribute.
          * @return The builder.
          */
-        public Builder restart(boolean restart) {
+        public final Builder restart(boolean restart) {
             this.restart = restart;
             return this;
         }
@@ -724,7 +777,7 @@ public final class Body {
          * @param requestId The 'rid' attribute.
          * @return The builder.
          */
-        public Builder requestId(long requestId) {
+        public final Builder requestId(long requestId) {
             this.requestId = requestId;
             return this;
         }
@@ -735,7 +788,7 @@ public final class Body {
          * @param objects The wrapped objects.
          * @return The builder.
          */
-        public Builder wrappedObjects(Collection<Object> objects) {
+        public final Builder wrappedObjects(Collection<Object> objects) {
             this.wrappedObjects.clear();
             this.wrappedObjects.addAll(objects);
             return this;
@@ -747,7 +800,7 @@ public final class Body {
          * @param newKey The 'newkey' attribute.
          * @return The builder.
          */
-        public Builder newKey(String newKey) {
+        public final Builder newKey(String newKey) {
             this.newKey = newKey;
             return this;
         }
@@ -758,7 +811,7 @@ public final class Body {
          * @param key The 'key' attribute.
          * @return The builder.
          */
-        public Builder key(String key) {
+        public final Builder key(String key) {
             this.key = key;
             return this;
         }
@@ -769,7 +822,7 @@ public final class Body {
          * @param from The 'from' attribute.
          * @return The builder.
          */
-        public Builder from(Jid from) {
+        public final Builder from(Jid from) {
             this.from = from;
             return this;
         }
@@ -779,7 +832,7 @@ public final class Body {
          *
          * @return The body.
          */
-        public Body build() {
+        public final Body build() {
             return new Body(this);
         }
     }

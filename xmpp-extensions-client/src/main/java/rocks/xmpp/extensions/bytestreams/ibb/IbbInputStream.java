@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -86,6 +87,9 @@ final class IbbInputStream extends InputStream {
                 buffer = data.getBytes();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                InterruptedIOException ie = new InterruptedIOException();
+                ie.initCause(e);
+                throw ie;
             }
         }
 
@@ -105,7 +109,11 @@ final class IbbInputStream extends InputStream {
         if (!closed) {
             super.close();
             closed = true;
-            ibbSession.close();
+            try {
+                ibbSession.close();
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
         }
     }
 }

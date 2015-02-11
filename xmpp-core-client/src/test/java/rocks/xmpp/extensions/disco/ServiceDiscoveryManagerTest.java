@@ -31,12 +31,19 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -84,6 +91,11 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertFalse(serviceDiscoveryManager.isEnabled());
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureInfo));
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureItems));
+
+        // Enable it by adding the features.
+        serviceDiscoveryManager.addFeature(featureInfo);
+        serviceDiscoveryManager.addFeature(featureItems);
+        Assert.assertTrue(serviceDiscoveryManager.isEnabled());
     }
 
     @Test
@@ -92,7 +104,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "root", "name"));
+        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(Arrays.asList(new Item(Jid.valueOf("test"), "root", "name"))));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO);
@@ -109,8 +121,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
 
-        DefaultItemProvider defaultItemProvider = new DefaultItemProvider();
-        defaultItemProvider.getItems().add(new Item(Jid.valueOf("test"), "node1"));
+        DefaultItemProvider defaultItemProvider = new DefaultItemProvider(Arrays.asList(new Item(Jid.valueOf("test"), "node1")));
         serviceDiscoveryManager.setItemProvider("node1", defaultItemProvider);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
@@ -126,9 +137,11 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
 
+        List<Item> items = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "item" + i));
+            items.add(new Item(Jid.valueOf("test"), "item" + i));
         }
+        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
 
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
@@ -168,11 +181,11 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
-
+        List<Item> items = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
-            serviceDiscoveryManager.addItem(new Item(Jid.valueOf("test"), "item" + i));
+            items.add(new Item(Jid.valueOf("test"), "item" + i));
         }
-
+        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
         ItemNode resultItemCount = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forItemCount());
@@ -214,4 +227,27 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertEquals(page6.getResultSetManagement().getItemCount(), Integer.valueOf(30));
         Assert.assertEquals(page6.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(5));
     }
+
+    @Test
+    public void testPropertyChangeHandler() {
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        final int[] listenerCalled = {0};
+        serviceDiscoveryManager.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                listenerCalled[0]++;
+            }
+        });
+        serviceDiscoveryManager.addFeature(new Feature("dummy"));
+        serviceDiscoveryManager.removeFeature(new Feature("dummy"));
+        serviceDiscoveryManager.addIdentity(new Identity("cat", "type"));
+        serviceDiscoveryManager.removeIdentity(new Identity("cat", "type"));
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
+        serviceDiscoveryManager.addExtension(dataForm);
+        serviceDiscoveryManager.removeExtension(dataForm);
+        if (listenerCalled[0] != 6) {
+            Assert.fail();
+        }
+    }
+
 }

@@ -29,9 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.errors.BadRequest;
-import rocks.xmpp.extensions.si.model.BadProfile;
-import rocks.xmpp.extensions.si.model.NoValidStreams;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 
 import javax.xml.bind.JAXBException;
@@ -67,7 +65,7 @@ public class StreamInitiationTest extends XmlTest {
 
     @Test
     public void marshalBadProfile() throws JAXBException, XMLStreamException {
-        IQ result = new IQ(null, IQ.Type.ERROR, null, "1", null, null, new StanzaError(new BadRequest(), new BadProfile()));
+        IQ result = new IQ(null, IQ.Type.ERROR, null, "1", null, null, new StanzaError(Condition.BAD_REQUEST, StreamInitiation.BAD_PROFILE));
         String xml = marshal(result);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"error\"><error type=\"modify\"><bad-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></bad-request><bad-profile xmlns=\"http://jabber.org/protocol/si\"></bad-profile></error></iq>");
 
@@ -75,9 +73,8 @@ public class StreamInitiationTest extends XmlTest {
 
     @Test
     public void marshalNoValidStreams() throws JAXBException, XMLStreamException {
-        IQ result = new IQ(null, IQ.Type.ERROR, null, "1", null, null, new StanzaError(new BadRequest(), new NoValidStreams()));
+        IQ result = new IQ(null, IQ.Type.ERROR, null, "1", null, null, new StanzaError(Condition.BAD_REQUEST, StreamInitiation.NO_VALID_STREAMS));
         String xml = marshal(result);
         Assert.assertEquals(xml, "<iq id=\"1\" type=\"error\"><error type=\"modify\"><bad-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></bad-request><no-valid-streams xmlns=\"http://jabber.org/protocol/si\"></no-valid-streams></error></iq>");
-
     }
 }

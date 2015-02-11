@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,20 +35,23 @@ import javax.xml.bind.annotation.XmlValue;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-challengeresponse">6.4.3.  Challenge-Response Sequence</a></cite></p>
  * <p>The initiating entity responds to the challenge by sending a {@code <response/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace; this element MAY contain XML character data (which MUST be generated in accordance with the definition of the SASL mechanism chosen by the initiating entity).</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.sasl.model.Challenge
+ * @see Challenge
  */
 @XmlRootElement
 public final class Response implements ClientStreamElement {
 
     @XmlValue
-    private byte[] value;
+    private final byte[] value;
 
     /**
      * Default constructor, needed for unmarshalling.
      */
     private Response() {
+        this.value = null;
     }
 
     /**
@@ -58,5 +61,14 @@ public final class Response implements ClientStreamElement {
      */
     public Response(byte[] value) {
         this.value = value;
+    }
+
+    /**
+     * Gets the value.
+     *
+     * @return The value.
+     */
+    public final byte[] getValue() {
+        return value;
     }
 }

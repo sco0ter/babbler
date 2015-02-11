@@ -31,7 +31,16 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.pubsub.model.*;
+import rocks.xmpp.extensions.pubsub.model.AccessModel;
+import rocks.xmpp.extensions.pubsub.model.ChildrenAssociationPolicy;
+import rocks.xmpp.extensions.pubsub.model.ItemReply;
+import rocks.xmpp.extensions.pubsub.model.NodeConfiguration;
+import rocks.xmpp.extensions.pubsub.model.NodeMetaData;
+import rocks.xmpp.extensions.pubsub.model.NodeType;
+import rocks.xmpp.extensions.pubsub.model.PublishOptions;
+import rocks.xmpp.extensions.pubsub.model.PublisherModel;
+import rocks.xmpp.extensions.pubsub.model.SendLastPublishedItem;
+import rocks.xmpp.extensions.pubsub.model.SubscribeOptions;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;

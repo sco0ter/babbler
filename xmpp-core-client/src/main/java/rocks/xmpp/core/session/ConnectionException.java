@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,30 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.receipts.model;
+package rocks.xmpp.core.session;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import rocks.xmpp.core.XmppException;
 
 /**
- * The implementation of the {@code <request/>} element in the {@code urn:xmpp:receipts} namespace.
+ * Indicates a failure while connecting to the server.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>
- * @see <a href="http://xmpp.org/extensions/xep-0184.html#schema">XML Schema</a>
  */
-@XmlRootElement
-public final class Request {
+public final class ConnectionException extends XmppException {
 
-    /**
-     * urn:xmpp:receipts
-     */
-    public static final String NAMESPACE = "urn:xmpp:receipts";
+    public ConnectionException() {
+        super();
+    }
+
+    public ConnectionException(String message) {
+        super(message);
+    }
+
+    public ConnectionException(Throwable cause) {
+        super(cause);
+    }
+
+    public ConnectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

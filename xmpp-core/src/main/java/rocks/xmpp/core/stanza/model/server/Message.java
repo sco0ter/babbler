@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.server;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -141,12 +142,17 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
     }
 
     @Override
-    public Message createError(StanzaError error) {
+    public final Message createError(StanzaError error) {
         return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), error);
     }
 
     @Override
-    public Message withFrom(Jid from) {
+    public final Message createError(Condition condition) {
+        return createError(new StanzaError(condition));
+    }
+
+    @Override
+    public final Message withFrom(Jid from) {
         return new Message(getTo(), getType(), getBodies(), getSubjects(), getThread(), getParentThread(), getId(), from, getLanguage(), getExtensions(), getError());
     }
 }

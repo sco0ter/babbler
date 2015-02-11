@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model.errors;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <unsupported-version/>} stream error.
@@ -32,7 +33,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-version">4.9.3.25.  unsupported-version</a></cite></p>
  * <p>The 'version' attribute provided by the initiating entity in the stream header specifies a version of XMPP that is not supported by the server.</p>
  * </blockquote>
+ * This class is a singleton.
+ *
+ * @see #UNSUPPORTED_VERSION
  */
 @XmlRootElement(name = "unsupported-version")
-public final class UnsupportedVersion extends Condition {
+@XmlType(factoryMethod = "create")
+final class UnsupportedVersion extends Condition {
+
+    UnsupportedVersion() {
+    }
+
+    private static UnsupportedVersion create() {
+        return (UnsupportedVersion) UNSUPPORTED_VERSION;
+    }
 }

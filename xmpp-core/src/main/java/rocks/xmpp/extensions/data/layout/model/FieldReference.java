@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,13 @@
 package rocks.xmpp.extensions.data.layout.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Objects;
 
 /**
  * A field reference is used to reference to a field in a data form.
  * The {@link #getVar() var attribute} must be equal to the field's {@link rocks.xmpp.extensions.data.model.DataForm.Field#getVar() var attribute}.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
@@ -38,9 +41,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class FieldReference {
 
     @XmlAttribute(name = "var")
-    private String var;
+    private final String var;
 
     private FieldReference() {
+        this.var = null;
     }
 
     /**
@@ -49,7 +53,7 @@ public final class FieldReference {
      * @param var The var attribute, which must match to a field in the data form.
      */
     public FieldReference(String var) {
-        this.var = var;
+        this.var = Objects.requireNonNull(var);
     }
 
     /**
@@ -57,7 +61,7 @@ public final class FieldReference {
      *
      * @return The var attribute.
      */
-    public String getVar() {
+    public final String getVar() {
         return var;
     }
 }

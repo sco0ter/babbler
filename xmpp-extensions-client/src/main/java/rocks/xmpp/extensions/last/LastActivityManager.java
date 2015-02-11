@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,16 +26,15 @@ package rocks.xmpp.extensions.last;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.IQExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.last.model.LastActivity;
@@ -71,18 +70,21 @@ import java.util.Date;
  *
  * @author Christian Schudt
  */
-public final class LastActivityManager extends ExtensionManager implements SessionStatusListener, PresenceListener, IQListener {
+public final class LastActivityManager extends IQExtensionManager implements SessionStatusListener, PresenceListener {
 
     private volatile LastActivityStrategy lastActivityStrategy;
 
     private LastActivityManager(final XmppSession xmppSession) {
-        super(xmppSession, LastActivity.NAMESPACE);
+        super(xmppSession, AbstractIQ.Type.GET, LastActivity.NAMESPACE);
         lastActivityStrategy = new DefaultLastActivityStrategy(xmppSession);
+        setEnabled(true);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(this);
         xmppSession.addPresenceListener(this);
-        xmppSession.addIQListener(this);
-        setEnabled(true);
+        xmppSession.addIQHandler(LastActivity.class, this);
     }
 
     private long getSecondsSince(Date date) {
@@ -98,7 +100,7 @@ public final class LastActivityManager extends ExtensionManager implements Sessi
      *
      * @param jid The JID for which the last activity is requested.
      * @return The last activity of the requested JID or null if the feature is not implemented or a time out has occurred.
-     * @throws rocks.xmpp.core.stanza.model.StanzaException If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public LastActivity getLastActivity(Jid jid) throws XmppException {
@@ -127,19 +129,6 @@ public final class LastActivityManager extends ExtensionManager implements Sessi
     }
 
     @Override
-    public void handleIQ(IQEvent e) {
-        IQ iq = e.getIQ();
-        if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.GET && iq.getExtension(LastActivity.class) != null) {
-            // If someone asks me to get my last activity, reply.
-            synchronized (LastActivityManager.this) {
-                long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
-                xmppSession.send(iq.createResult(new LastActivity(seconds, null)));
-                e.consume();
-            }
-        }
-    }
-
-    @Override
     public void handlePresence(PresenceEvent e) {
         if (!e.isIncoming() && isEnabled()) {
             AbstractPresence presence = e.getPresence();
@@ -158,6 +147,15 @@ public final class LastActivityManager extends ExtensionManager implements Sessi
     public void sessionStatusChanged(SessionStatusEvent e) {
         if (e.getStatus() == XmppSession.Status.CLOSED) {
             lastActivityStrategy = null;
+        }
+    }
+
+    @Override
+    protected IQ processRequest(final IQ iq) {
+        // If someone asks me to get my last activity, reply.
+        synchronized (LastActivityManager.this) {
+            long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
+            return iq.createResult(new LastActivity(seconds, null));
         }
     }
 

@@ -107,6 +107,7 @@
         <module>xmpp-debug</module>
         <module>xmpp-sample</module>
         <module>xmpp-documentation</module>
+        <module>xmpp-fx</module>
     </modules>
 
     <distributionManagement>

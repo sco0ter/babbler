@@ -26,8 +26,8 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.stream.model.errors.Text;
 
@@ -46,8 +46,6 @@ import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.
@@ -57,8 +55,6 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 final class XmppStreamReader {
-
-    private static final Logger logger = Logger.getLogger(XmppStreamReader.class.getName());
 
     private final TcpConnection connection;
 
@@ -172,7 +168,7 @@ final class XmppStreamReader {
                             try {
                                 xmlEventReader.close();
                             } catch (XMLStreamException e) {
-                                logger.log(Level.WARNING, e.getMessage(), e);
+                                xmppSession.notifyException(e);
                             }
                         }
                         if (doRestart) {
@@ -188,7 +184,7 @@ final class XmppStreamReader {
                             try {
                                 connection.close();
                             } catch (Exception e) {
-                                logger.log(Level.WARNING, e.getMessage(), e);
+                                xmppSession.notifyException(e);
                             }
                         }
                     }

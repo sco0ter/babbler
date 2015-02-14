@@ -35,7 +35,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -43,8 +42,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class is responsible for opening and closing the XMPP stream as well as writing any XML elements to the stream.
@@ -54,8 +51,6 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 final class XmppStreamWriter {
-
-    private static final Logger logger = Logger.getLogger(XmppStreamWriter.class.getName());
 
     private final XmppSession xmppSession;
 
@@ -146,13 +141,13 @@ final class XmppStreamWriter {
                             marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                         }
                         prefixFreeCanonicalizationWriter.flush();
-                        
+
                         // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
                         if (clientStreamElement instanceof Stanza) {
                             prefixFreeCanonicalizationWriter.writeCharacters(" ");
                             prefixFreeCanonicalizationWriter.flush();
                         }
-                        
+
                         if (debugger != null) {
                             debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), clientStreamElement);
                             byteArrayOutputStream.reset();
@@ -255,14 +250,16 @@ final class XmppStreamWriter {
         synchronized (this) {
             if (keepAliveExecutor != null) {
                 keepAliveExecutor.shutdown();
+                keepAliveExecutor = null;
             }
             executor.shutdown();
 
             if (prefixFreeCanonicalizationWriter != null) {
                 try {
                     prefixFreeCanonicalizationWriter.close();
+                    prefixFreeCanonicalizationWriter = null;
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
+                    exception.addSuppressed(e);
                 }
             }
             lastOutputStream = null;
@@ -273,7 +270,7 @@ final class XmppStreamWriter {
             // Close the connection, which will only close the reader thread and the socket (because the writer is already shutdown).
             connection.close();
         } catch (Exception e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
+            exception.addSuppressed(e);
         }
         xmppSession.notifyException(exception);
     }

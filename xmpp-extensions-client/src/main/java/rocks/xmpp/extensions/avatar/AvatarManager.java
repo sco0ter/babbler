@@ -226,8 +226,8 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
      *
      * @param contact The contact.
      * @return The contact's avatar or null, if it has no avatar.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public byte[] getAvatar(Jid contact) throws XmppException {
         return getAvatarByVCard(contact.asBareJid());
@@ -237,8 +237,8 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
      * Publishes an avatar to your VCard.
      *
      * @param imageData The avatar image data, which must be in PNG format.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
     public void publishAvatar(byte[] imageData) throws XmppException {
@@ -328,10 +328,10 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
     @Override
     public void handleMessage(MessageEvent e) {
         if (e.isIncoming() && isEnabled()) {
-            Message message = e.getMessage();
+            final Message message = e.getMessage();
             Event event = message.getExtension(Event.class);
             if (event != null) {
-                for (Item item : event.getItems()) {
+                for (final Item item : event.getItems()) {
                     if (item.getPayload() instanceof AvatarMetadata) {
                         AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
 
@@ -382,20 +382,28 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
                                         notifyListeners(message.getFrom().asBareJid(), data);
 
                                     } else {
-                                        PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
-
-                                        List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
-                                        if (!items.isEmpty()) {
-                                            Item i = items.get(0);
-                                            if (i.getPayload() instanceof AvatarData) {
-                                                AvatarData avatarData = (AvatarData) i.getPayload();
-                                                storeToCache(item.getId(), avatarData.getData());
-                                                notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
+                                        avatarRequester.execute(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
+                                                    List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
+                                                    if (!items.isEmpty()) {
+                                                        Item i = items.get(0);
+                                                        if (i.getPayload() instanceof AvatarData) {
+                                                            AvatarData avatarData = (AvatarData) i.getPayload();
+                                                            storeToCache(item.getId(), avatarData.getData());
+                                                            notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
+                                                        }
+                                                    }
+                                                } catch (XmppException e1) {
+                                                    logger.log(Level.WARNING, e1.getMessage(), e1);
+                                                }
                                             }
-                                        }
+                                        });
                                     }
                                 }
-                            } catch (XmppException | IOException e1) {
+                            } catch (IOException e1) {
                                 logger.log(Level.WARNING, e1.getMessage(), e1);
                             }
                         }

@@ -35,6 +35,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.util.cache.DirectoryCache;
@@ -180,10 +181,18 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
 
                     // Load the vCard for that user
                     VCard vCard;
-                    if (contact.equals(xmppSession.getConnectedResource().asBareJid())) {
-                        vCard = vCardManager.getVCard();
-                    } else {
-                        vCard = vCardManager.getVCard(contact);
+                    try {
+                        if (contact.equals(xmppSession.getConnectedResource().asBareJid())) {
+                            vCard = vCardManager.getVCard();
+                        } else {
+                            vCard = vCardManager.getVCard(contact);
+                        }
+                    } catch (StanzaException e) {
+                        // If the user has no vCard (e.g. server returned <item-not-found/> or <service-unavailable/>),
+                        // the user also has no avatar obviously.
+                        // If another exception has occurred (e.g. NoResponseException) we should rethrow the exception,
+                        // so that it can be tried later again.
+                        vCard = null;
                     }
                     if (vCard != null) {
                         // And check if it has a photo.
@@ -339,34 +348,35 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
                         if (avatarMetadata.getInfoList().isEmpty()) {
                             notifyListeners(message.getFrom().asBareJid(), null);
                         } else {
-                            try {
-                                // Check if we have a cached avatar.
-                                byte[] cachedImage = loadFromCache(item.getId());
-                                if (cachedImage != null) {
-                                    notifyListeners(message.getFrom().asBareJid(), cachedImage);
-                                } else {
-                                    // We don't have a cached copy, let's retrieve it.
 
-                                    // Determine the best info
-                                    AvatarMetadata.Info chosenInfo = null;
-                                    // Check if there's an avatar, which is stored in PubSub node (and therefore must be in PNG format).
+                            // Check if we have a cached avatar.
+                            byte[] cachedImage = loadFromCache(item.getId());
+                            if (cachedImage != null) {
+                                notifyListeners(message.getFrom().asBareJid(), cachedImage);
+                            } else {
+                                // We don't have a cached copy, let's retrieve it.
+
+                                // Determine the best info
+                                AvatarMetadata.Info chosenInfo = null;
+                                // Check if there's an avatar, which is stored in PubSub node (and therefore must be in PNG format).
+                                for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
+                                    if (info.getUrl() == null) {
+                                        chosenInfo = info;
+                                    }
+                                }
+
+                                // If only URLs are available, choose the first URL.
+                                if (chosenInfo == null) {
                                     for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
-                                        if (info.getUrl() == null) {
+                                        if (info.getUrl() != null) {
                                             chosenInfo = info;
+                                            break;
                                         }
                                     }
+                                }
 
-                                    // If only URLs are available, choose the first URL.
-                                    if (chosenInfo == null) {
-                                        for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
-                                            if (info.getUrl() != null) {
-                                                chosenInfo = info;
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    if (chosenInfo != null && chosenInfo.getUrl() != null) {
+                                if (chosenInfo != null && chosenInfo.getUrl() != null) {
+                                    try {
                                         URLConnection urlConnection = chosenInfo.getUrl().openConnection();
                                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                         // Download the image file.
@@ -380,32 +390,32 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
                                         byte[] data = baos.toByteArray();
                                         storeToCache(item.getId(), data);
                                         notifyListeners(message.getFrom().asBareJid(), data);
-
-                                    } else {
-                                        avatarRequester.execute(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                try {
-                                                    PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
-                                                    List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
-                                                    if (!items.isEmpty()) {
-                                                        Item i = items.get(0);
-                                                        if (i.getPayload() instanceof AvatarData) {
-                                                            AvatarData avatarData = (AvatarData) i.getPayload();
-                                                            storeToCache(item.getId(), avatarData.getData());
-                                                            notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
-                                                        }
-                                                    }
-                                                } catch (XmppException e1) {
-                                                    logger.log(Level.WARNING, e1.getMessage(), e1);
-                                                }
-                                            }
-                                        });
+                                    } catch (IOException e1) {
+                                        logger.warning(String.format("Failed to download avatar from advertised URL: %s.", chosenInfo.getUrl()));
                                     }
+                                } else {
+                                    avatarRequester.execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
+                                                List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
+                                                if (!items.isEmpty()) {
+                                                    Item i = items.get(0);
+                                                    if (i.getPayload() instanceof AvatarData) {
+                                                        AvatarData avatarData = (AvatarData) i.getPayload();
+                                                        storeToCache(item.getId(), avatarData.getData());
+                                                        notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
+                                                    }
+                                                }
+                                            } catch (XmppException e1) {
+                                                logger.warning(String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), message.getFrom()));
+                                            }
+                                        }
+                                    });
                                 }
-                            } catch (IOException e1) {
-                                logger.log(Level.WARNING, e1.getMessage(), e1);
                             }
+
                         }
                     }
                 }
@@ -476,11 +486,11 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
                             avatarRequester.execute(new Runnable() {
                                 @Override
                                 public void run() {
+                                    // If the avatar was either known before or could be successfully retrieved from the vCard.
                                     try {
-                                        // If the avatar was either known before or could be successfully retrieved from the vCard.
                                         notifyListeners(contact, getAvatarByVCard(contact));
                                     } catch (XmppException e1) {
-                                        logger.log(Level.WARNING, e1.getMessage(), e1);
+                                        logger.warning(String.format("Failed to retrieve vCard based avatar for user: %s", contact));
                                     }
                                 }
                             });
@@ -502,6 +512,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
                         public void run() {
                             try {
                                 getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
+
                                 // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
                                 Presence lastPresence = xmppSession.getPresenceManager().getLastSentPresence();
                                 Presence presence;
@@ -513,7 +524,7 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
                                 // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
                                 xmppSession.send(presence);
                             } catch (XmppException e1) {
-                                logger.log(Level.WARNING, e1.getMessage(), e1);
+                                logger.warning("Failed to retrieve own vCard based avatar.");
                             }
                         }
                     });

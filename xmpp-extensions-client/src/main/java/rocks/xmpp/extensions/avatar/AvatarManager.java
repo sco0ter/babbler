@@ -39,6 +39,8 @@ import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.util.cache.DirectoryCache;
+import rocks.xmpp.extensions.address.model.Address;
+import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
@@ -340,6 +342,16 @@ public final class AvatarManager extends ExtensionManager implements SessionStat
             final Message message = e.getMessage();
             Event event = message.getExtension(Event.class);
             if (event != null) {
+                Addresses addresses = message.getExtension(Addresses.class);
+                if (addresses != null) {
+                    // See http://xmpp.org/extensions/xep-0163.html#notify-addressing
+                    for (Address address : addresses.getAddresses()) {
+                        if (address.getType() == Address.Type.REPLYTO && xmppSession.getConnectedResource().equals(address.getJid())) {
+                            // Don't notify if the message came from our own connected resource.
+                            return;
+                        }
+                    }
+                }
                 for (final Item item : event.getItems()) {
                     if (item.getPayload() instanceof AvatarMetadata) {
                         AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();

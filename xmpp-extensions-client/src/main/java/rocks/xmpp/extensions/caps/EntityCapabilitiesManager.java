@@ -212,8 +212,8 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      *
      * @param jid The JID, which should usually be a full JID.
      * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
     public InfoNode discoverCapabilities(Jid jid) throws XmppException {
@@ -251,8 +251,8 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      *
      * @param jid The JID, which should usually be a full JID.
      * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @deprecated Use {@link #discoverCapabilities(rocks.xmpp.core.Jid)}
      */
     @Deprecated
@@ -266,8 +266,8 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      * @param feature The feature.
      * @param jid     The JID, which should usually be a full JID.
      * @return True, if this entity supports the feature.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public boolean isSupported(String feature, Jid jid) throws XmppException {
         InfoNode infoNode = discoverCapabilities(jid);
@@ -370,14 +370,14 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
                         serviceDiscoverer.execute(new Runnable() {
                             @Override
                             public void run() {
-
+                                String node = entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString();
                                 try {
                                     // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
                                     final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
 
                                     // 3.1 Send a service discovery information request to the generating entity.
                                     // 3.2 Receive a service discovery information response from the generating entity.
-                                    InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(entity, entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString());
+                                    InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(entity, node);
                                     // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
                                     // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
                                     // => not possible due to java.util.Set semantics and equals method.
@@ -417,17 +417,17 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
 
                                     // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
                                 } catch (XmppException e1) {
-                                    logger.log(Level.WARNING, e1.getMessage(), e1);
+                                    logger.log(Level.WARNING, String.format("Failed to discover information for entity '%s' for node '%s'", entity, node));
                                 } catch (NoSuchAlgorithmException e1) {
                                     // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
                                     try {
                                         // 2.1 Send a service discovery information request to the generating entity.
                                         // 2.2 Receive a service discovery information response from the generating entity.
-                                        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(entity, entityCapabilities.getNode());
+                                        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(entity, node);
                                         // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
                                         ENTITY_CAPABILITIES.put(entity, infoNode);
                                     } catch (XmppException e2) {
-                                        logger.log(Level.WARNING, e2.getMessage(), e2);
+                                        logger.log(Level.WARNING, String.format("Failed to discover information for entity '%s' for node '%s'", entity, node));
                                     }
                                 }
                             }

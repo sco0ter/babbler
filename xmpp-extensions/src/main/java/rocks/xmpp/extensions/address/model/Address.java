@@ -202,6 +202,13 @@ public final class Address {
          * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-to">4.6.1 Address type='to'</a>
          */
         @XmlEnumValue(value = "to")
-        TO
+        TO,
+        /**
+         * In Multi-User Chat, if the room is non-anonymous, notes the original full JID of the sender.
+         *
+         * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-history">7.2.14 Discussion History</a>
+         */
+        @XmlEnumValue(value = "ofrom")
+        OFROM
     }
 }

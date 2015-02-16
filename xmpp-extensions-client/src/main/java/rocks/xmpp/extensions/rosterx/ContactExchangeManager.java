@@ -56,7 +56,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ContactExchangeManager extends IQExtensionManager implements SessionStatusListener, MessageListener {
+public final class ContactExchangeManager extends IQExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ContactExchangeManager.class.getName());
 
@@ -70,8 +70,37 @@ public final class ContactExchangeManager extends IQExtensionManager implements 
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(this);
-        xmppSession.addMessageListener(this);
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    contactExchangeListeners.clear();
+                    trustedEntities.clear();
+                }
+            }
+        });
+        xmppSession.addMessageListener(new MessageListener() {
+            @Override
+            public void handleMessage(MessageEvent e) {
+                if (e.isIncoming() && isEnabled()) {
+                    Message message = e.getMessage();
+                    ContactExchange contactExchange = message.getExtension(ContactExchange.class);
+                    if (contactExchange != null) {
+                        List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+                        if (!items.isEmpty()) {
+                            Date date;
+                            DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
+                            if (delayedDelivery != null) {
+                                date = delayedDelivery.getTimeStamp();
+                            } else {
+                                date = new Date();
+                            }
+                            processItems(items, message.getFrom(), message.getBody(), date);
+                        }
+                    }
+                }
+            }
+        });
         xmppSession.addIQHandler(ContactExchange.class, this);
     }
 
@@ -160,8 +189,8 @@ public final class ContactExchangeManager extends IQExtensionManager implements 
      *
      * @param jid      The recipient.
      * @param contacts The contacts
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public void suggestContactAddition(Jid jid, Contact... contacts) throws XmppException {
 
@@ -207,8 +236,8 @@ public final class ContactExchangeManager extends IQExtensionManager implements 
      *
      * @param item The roster exchange item.
      * @return The action, which was actually performed. This may vary from the specified action, e.g. if you add a contact that already exists, only its groups are updated. If no action was performed, e.g. if you want to delete a contact, that does not exist, null is returned.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ContactExchange.Item.Action approve(ContactExchange.Item item) throws XmppException {
         RosterManager rosterManager = xmppSession.getRosterManager();
@@ -289,35 +318,6 @@ public final class ContactExchangeManager extends IQExtensionManager implements 
                 processItems(items, iq.getFrom(), null, new Date());
             }
             return iq.createResult();
-        }
-    }
-
-    @Override
-    public void handleMessage(MessageEvent e) {
-        if (e.isIncoming() && isEnabled()) {
-            Message message = e.getMessage();
-            ContactExchange contactExchange = message.getExtension(ContactExchange.class);
-            if (contactExchange != null) {
-                List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                if (!items.isEmpty()) {
-                    Date date;
-                    DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                    if (delayedDelivery != null) {
-                        date = delayedDelivery.getTimeStamp();
-                    } else {
-                        date = new Date();
-                    }
-                    processItems(items, message.getFrom(), message.getBody(), date);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            contactExchangeListeners.clear();
-            trustedEntities.clear();
         }
     }
 }

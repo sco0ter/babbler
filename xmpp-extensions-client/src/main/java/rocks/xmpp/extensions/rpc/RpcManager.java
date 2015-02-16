@@ -50,7 +50,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
-public final class RpcManager extends IQExtensionManager implements SessionStatusListener {
+public final class RpcManager extends IQExtensionManager {
 
     private static final Logger logger = Logger.getLogger(RpcManager.class.getName());
 
@@ -63,7 +63,14 @@ public final class RpcManager extends IQExtensionManager implements SessionStatu
     @Override
     protected void initialize() {
         // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
-        xmppSession.addSessionStatusListener(this);
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    rpcHandler = null;
+                }
+            }
+        });
         xmppSession.addIQHandler(Rpc.class, this);
     }
 
@@ -74,9 +81,9 @@ public final class RpcManager extends IQExtensionManager implements SessionStatu
      * @param methodName The method name.
      * @param parameters The parameters.
      * @return The result.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the RPC returned with an XMPP stanza error.
-     * @throws RpcException                                 If the RPC returned with an application-level error ({@code <fault/>} element).
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the RPC returned with an XMPP stanza error.
+     * @throws RpcException                                If the RPC returned with an application-level error ({@code <fault/>} element).
      */
     public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
@@ -132,12 +139,5 @@ public final class RpcManager extends IQExtensionManager implements SessionStatu
             }
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            rpcHandler = null;
-        }
     }
 }

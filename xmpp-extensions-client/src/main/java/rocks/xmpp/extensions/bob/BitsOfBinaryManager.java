@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Christian Schudt
  */
-class BitsOfBinaryManager extends IQExtensionManager implements SessionStatusListener {
+class BitsOfBinaryManager extends IQExtensionManager {
 
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 
@@ -51,7 +51,14 @@ class BitsOfBinaryManager extends IQExtensionManager implements SessionStatusLis
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(this);
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    dataCache.clear();
+                }
+            }
+        });
         xmppSession.addIQHandler(Data.class, this);
     }
 
@@ -61,8 +68,8 @@ class BitsOfBinaryManager extends IQExtensionManager implements SessionStatusLis
      * @param contentId Gets the data from
      * @param to        The recipient. This should be a full JID.
      * @return The data.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error, e.g. {@link rocks.xmpp.core.stanza.model.errors.ItemNotFound}, if the data was not found.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error, e.g. {@link rocks.xmpp.core.stanza.model.errors.ItemNotFound}, if the data was not found.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public Data getData(String contentId, Jid to) throws XmppException {
         IQ result = xmppSession.query(new IQ(to, IQ.Type.GET, new Data(contentId)));
@@ -94,13 +101,6 @@ class BitsOfBinaryManager extends IQExtensionManager implements SessionStatusLis
             return iq.createResult(cachedData);
         } else {
             return iq.createError(Condition.ITEM_NOT_FOUND);
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            dataCache.clear();
         }
     }
 }

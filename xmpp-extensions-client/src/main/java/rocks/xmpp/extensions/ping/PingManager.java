@@ -37,8 +37,8 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.model.Ping;
@@ -61,7 +61,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class PingManager extends IQExtensionManager implements SessionStatusListener {
+public final class PingManager extends IQExtensionManager {
 
     private static final Logger logger = Logger.getLogger(PingManager.class.getName());
 
@@ -91,7 +91,18 @@ public final class PingManager extends IQExtensionManager implements SessionStat
     @Override
     protected final void initialize() {
         xmppSession.addIQHandler(Ping.class, this);
-        xmppSession.addSessionStatusListener(this);
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    // Shutdown the ping executor service and cancel the next ping.
+                    synchronized (this) {
+                        cancelNextPing();
+                        scheduledExecutorService.shutdown();
+                    }
+                }
+            }
+        });
 
         // Reschedule server pings, whenever we send a stanza to the server.
         // Pinging the server is only necessary to let him know, that we are still connected.
@@ -217,17 +228,6 @@ public final class PingManager extends IQExtensionManager implements SessionStat
     @Override
     protected final IQ processRequest(final IQ iq) {
         return iq.createResult();
-    }
-
-    @Override
-    public final void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            // Shutdown the ping executor service and cancel the next ping.
-            synchronized (this) {
-                cancelNextPing();
-                scheduledExecutorService.shutdown();
-            }
-        }
     }
 
     /**

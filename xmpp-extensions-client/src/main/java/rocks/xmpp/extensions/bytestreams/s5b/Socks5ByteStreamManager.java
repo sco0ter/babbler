@@ -28,6 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.SessionStatusEvent;
+import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -70,7 +71,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
 
         this.localSocks5Server = new LocalSocks5Server();
 
-        xmppSession.addIQHandler(Socks5ByteStream.class, this);
         setEnabled(true);
     }
 
@@ -97,6 +97,21 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
             throw new IOException("Unable to connect to any stream host.", ioException);
         }
         return new S5bSession(sessionId, socketUsed, streamHostUsed);
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        xmppSession.addIQHandler(Socks5ByteStream.class, this);
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    // Stop the server, when the session is closed.
+                    localSocks5Server.stop();
+                }
+            }
+        });
     }
 
     /**
@@ -152,8 +167,8 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * Discovers the SOCKS5 proxies.
      *
      * @return The proxies.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0065.html#disco">4. Discovering Proxies</a>
      */
     public List<StreamHost> discoverProxies() throws XmppException {
@@ -203,9 +218,9 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * @param target    The target.
      * @param sessionId The session id.
      * @return The SOCKS5 byte stream session.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @throws java.io.IOException                          If the byte stream session could not be established.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @throws java.io.IOException                         If the byte stream session could not be established.
      */
     public ByteStreamSession initiateSession(Jid target, String sessionId) throws XmppException, IOException {
 
@@ -272,15 +287,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         } else {
             notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
             return null;
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        super.sessionStatusChanged(e);
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            // Stop the server, when the session is closed.
-            localSocks5Server.stop();
         }
     }
 }

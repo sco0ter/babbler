@@ -56,7 +56,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
-public final class MultiUserChatManager extends ExtensionManager implements SessionStatusListener, MessageListener {
+public final class MultiUserChatManager extends ExtensionManager {
     private static final Logger logger = Logger.getLogger(MultiUserChatManager.class.getName());
 
     private static final String ROOMS_NODE = "http://jabber.org/protocol/muc#rooms";
@@ -74,10 +74,37 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(this);
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    invitationListeners.clear();
+                }
+            }
+        });
 
         // Listen for incoming invitations.
-        xmppSession.addMessageListener(this);
+        xmppSession.addMessageListener(new MessageListener() {
+            @Override
+            public void handleMessage(MessageEvent e) {
+                if (e.isIncoming()) {
+                    Message message = e.getMessage();
+                    // Check, if the message contains a mediated invitation.
+                    MucUser mucUser = message.getExtension(MucUser.class);
+                    if (mucUser != null) {
+                        for (Invite invite : mucUser.getInvites()) {
+                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                        }
+                    } else {
+                        // Check, if the message contains a direct invitation.
+                        DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
+                        if (directInvitation != null) {
+                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
+                        }
+                    }
+                }
+            }
+        });
         serviceDiscoveryManager.setItemProvider(ROOMS_NODE, new DefaultItemProvider(enteredRoomsMap.values()));
     }
 
@@ -115,8 +142,8 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * Discovers the multi-user chat services hosted at the connected domain.
      *
      * @return The list of chat services.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      * @deprecated Use {@link #discoverChatServices()}
      */
@@ -129,8 +156,8 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      * Discovers the multi-user chat services hosted at the connected domain.
      *
      * @return The list of chat services.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
     public Collection<ChatService> discoverChatServices() throws XmppException {
@@ -147,8 +174,8 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      *
      * @param contact The contact, which must be a full JID.
      * @return The items, {@link rocks.xmpp.extensions.disco.model.items.Item#getJid()} has the room address, and {@link rocks.xmpp.extensions.disco.model.items.Item#getName()}} has the nickname.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-client">6.7 Discovering Client Support for MUC</a>
      */
     public Collection<Item> discoverEnteredRooms(Jid contact) throws XmppException {
@@ -163,33 +190,6 @@ public final class MultiUserChatManager extends ExtensionManager implements Sess
      */
     public ChatService createChatService(Jid chatService) {
         return new ChatService(chatService, null, xmppSession, serviceDiscoveryManager, this);
-    }
-
-    @Override
-    public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
-            Message message = e.getMessage();
-            // Check, if the message contains a mediated invitation.
-            MucUser mucUser = message.getExtension(MucUser.class);
-            if (mucUser != null) {
-                for (Invite invite : mucUser.getInvites()) {
-                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
-                }
-            } else {
-                // Check, if the message contains a direct invitation.
-                DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
-                if (directInvitation != null) {
-                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
-                }
-            }
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            invitationListeners.clear();
-        }
     }
 
     void roomEntered(ChatRoom chatRoom, String nick) {

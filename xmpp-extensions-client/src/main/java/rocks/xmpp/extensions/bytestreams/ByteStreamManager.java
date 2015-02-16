@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public abstract class ByteStreamManager extends IQExtensionManager implements SessionStatusListener {
+public abstract class ByteStreamManager extends IQExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ByteStreamManager.class.getName());
 
@@ -52,7 +52,14 @@ public abstract class ByteStreamManager extends IQExtensionManager implements Se
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(this);
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    byteStreamListeners.clear();
+                }
+            }
+        });
     }
 
     /**
@@ -87,13 +94,6 @@ public abstract class ByteStreamManager extends IQExtensionManager implements Se
             } catch (Exception exc) {
                 logger.log(Level.WARNING, exc.getMessage(), exc);
             }
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            byteStreamListeners.clear();
         }
     }
 }

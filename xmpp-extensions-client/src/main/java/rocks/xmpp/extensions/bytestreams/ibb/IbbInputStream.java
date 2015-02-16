@@ -35,6 +35,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * An input stream implementation for in-band bytestreams.
+ * <p>
+ * This class is thread-safe.
+ *
  * @author Christian Schudt
  */
 final class IbbInputStream extends InputStream {
@@ -42,13 +46,25 @@ final class IbbInputStream extends InputStream {
 
     private final IbbSession ibbSession;
 
+    /**
+     * Guarded by "this"
+     */
     int readTimeout;
 
+    /**
+     * Guarded by "this"
+     */
     private byte[] buffer;
 
+    /**
+     * Guarded by "this"
+     */
     private int n = 0;
 
-    private volatile boolean closed;
+    /**
+     * Guarded by "this"
+     */
+    private boolean closed;
 
     IbbInputStream(IbbSession ibbSession) {
         this.ibbSession = ibbSession;
@@ -105,15 +121,18 @@ final class IbbInputStream extends InputStream {
     }
 
     @Override
-    public void close() throws IOException {
-        if (!closed) {
-            super.close();
-            closed = true;
-            try {
-                ibbSession.close();
-            } catch (Exception e) {
-                throw new IOException(e);
+    public final void close() throws IOException {
+        synchronized (this) {
+            if (closed) {
+                return;
             }
+            closed = true;
+        }
+        super.close();
+        try {
+            ibbSession.close();
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 }

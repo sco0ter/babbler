@@ -80,6 +80,7 @@ import java.util.logging.Logger;
  * <p>
  * By default this manager is not enabled.
  * </p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
@@ -123,7 +124,7 @@ public final class AvatarManager extends ExtensionManager {
     }
 
     @Override
-    protected void initialize() {
+    protected final void initialize() {
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
             public void sessionStatusChanged(SessionStatusEvent e) {
@@ -342,7 +343,6 @@ public final class AvatarManager extends ExtensionManager {
                                             });
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -351,7 +351,6 @@ public final class AvatarManager extends ExtensionManager {
             }
         });
     }
-
 
     private void resetHash() {
         // Remove our own hash and send an empty presence.
@@ -463,7 +462,7 @@ public final class AvatarManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public byte[] getAvatar(Jid contact) throws XmppException {
+    public final byte[] getAvatar(Jid contact) throws XmppException {
         return getAvatarByVCard(contact.asBareJid());
     }
 
@@ -475,8 +474,7 @@ public final class AvatarManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
-    public void publishAvatar(byte[] imageData) throws XmppException {
-
+    public final void publishAvatar(byte[] imageData) throws XmppException {
         if (imageData != null) {
             String hash = XmppUtils.hash(imageData);
             publishToVCard(imageData, null, hash);
@@ -546,7 +544,7 @@ public final class AvatarManager extends ExtensionManager {
      *
      * @param avatarChangeListener The avatar listener.
      */
-    public void addAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
+    public final void addAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
         avatarChangeListeners.add(avatarChangeListener);
     }
 
@@ -555,25 +553,7 @@ public final class AvatarManager extends ExtensionManager {
      *
      * @param avatarChangeListener The avatar listener.
      */
-    public void removeAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
+    public final void removeAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
         avatarChangeListeners.remove(avatarChangeListener);
     }
-
-//    /**
-//     * Gets the avatar cache.
-//     *
-//     * @return The avatar cache.
-//     */
-//    public synchronized AvatarCache getAvatarCache() {
-//        return avatarCache;
-//    }
-//
-//    /**
-//     * Sets the avatar cache.
-//     *
-//     * @param avatarCache The avatar cache.
-//     */
-//    public synchronized void setAvatarCache(AvatarCache avatarCache) {
-//        this.avatarCache = avatarCache;
-//    }
 }

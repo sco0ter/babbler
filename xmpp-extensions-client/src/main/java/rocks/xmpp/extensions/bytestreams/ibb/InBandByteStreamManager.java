@@ -48,6 +48,8 @@ import java.util.logging.Logger;
  * A manager for <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>. IBB streams use the same transport as XMPP, i.e. the same TCP or BOSH connection.
  * <p>
  * To initiate an IBB session with another entity, use {@link #initiateSession(rocks.xmpp.core.Jid, String, int)}.
+ * <p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
@@ -64,7 +66,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
     }
 
     @Override
-    protected void initialize() {
+    protected final void initialize() {
         super.initialize();
 
         xmppSession.addIQHandler(InBandByteStream.Open.class, this);
@@ -127,7 +129,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public ByteStreamSession initiateSession(Jid receiver, final String sessionId, int blockSize) throws XmppException {
+    public final ByteStreamSession initiateSession(Jid receiver, final String sessionId, int blockSize) throws XmppException {
         if (blockSize > 65535) {
             throw new IllegalArgumentException("blockSize must not be greater than 65535.");
         }
@@ -137,7 +139,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
     }
 
     @Override
-    protected IQ processRequest(final IQ iq) {
+    protected final IQ processRequest(final IQ iq) {
         // Check, if the IQ carries some IBB related payload.
         InBandByteStream ibbElement = iq.getExtension(InBandByteStream.class);
         if (ibbElement instanceof InBandByteStream.Data) {

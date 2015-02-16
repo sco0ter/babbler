@@ -133,7 +133,7 @@ public final class ChatStateManager extends ExtensionManager {
      * @param chat      The chat.
      * @return True, if the chat state has been sent; false, if it has not been sent (e.g. because it is known that the chat partner does not support chat states).
      */
-    public boolean setChatState(ChatState chatState, Chat chat) {
+    public final boolean setChatState(ChatState chatState, Chat chat) {
         if (!isEnabled()) {
             throw new IllegalStateException("Chat States aren't enabled. Please enable them before sending chat states.");
         }

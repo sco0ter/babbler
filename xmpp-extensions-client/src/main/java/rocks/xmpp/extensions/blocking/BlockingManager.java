@@ -52,6 +52,7 @@ import java.util.logging.Logger;
  * <p>
  * Enabling or disabling this manager has no effect, because blocking is done on server side.
  * </p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
@@ -68,13 +69,15 @@ public final class BlockingManager extends IQExtensionManager {
     }
 
     @Override
-    protected void initialize() {
+    protected final void initialize() {
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
             public void sessionStatusChanged(SessionStatusEvent e) {
                 if (e.getStatus() == XmppSession.Status.CLOSED) {
                     blockingListeners.clear();
-                    blockedContacts.clear();
+                    synchronized (blockedContacts) {
+                        blockedContacts.clear();
+                    }
                 }
             }
         });
@@ -100,7 +103,7 @@ public final class BlockingManager extends IQExtensionManager {
      * @param blockingListener The listener.
      * @see #removeBlockingListener(BlockingListener)
      */
-    public void addBlockingListener(BlockingListener blockingListener) {
+    public final void addBlockingListener(BlockingListener blockingListener) {
         blockingListeners.add(blockingListener);
     }
 
@@ -110,7 +113,7 @@ public final class BlockingManager extends IQExtensionManager {
      * @param blockingListener The listener.
      * @see #addBlockingListener(BlockingListener)
      */
-    public void removeBlockingListener(BlockingListener blockingListener) {
+    public final void removeBlockingListener(BlockingListener blockingListener) {
         blockingListeners.remove(blockingListener);
     }
 
@@ -122,7 +125,7 @@ public final class BlockingManager extends IQExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#blocklist">3.2 User Retrieves Block List</a>
      */
-    public Collection<Jid> getBlockedContacts() throws XmppException {
+    public final Collection<Jid> getBlockedContacts() throws XmppException {
         synchronized (blockedContacts) {
             IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
             BlockList blockList = result.getExtension(BlockList.class);
@@ -143,7 +146,7 @@ public final class BlockingManager extends IQExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
      */
-    public void blockContact(Jid... jids) throws XmppException {
+    public final void blockContact(Jid... jids) throws XmppException {
         List<Jid> items = new ArrayList<>();
         Collections.addAll(items, jids);
         xmppSession.query(new IQ(IQ.Type.SET, new Block(items)));
@@ -158,14 +161,14 @@ public final class BlockingManager extends IQExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblock">3.4 User Unblocks Contact</a>
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblockall">3.5 User Unblocks All Contacts</a>
      */
-    public void unblockContact(Jid... jids) throws XmppException {
+    public final void unblockContact(Jid... jids) throws XmppException {
         List<Jid> items = new ArrayList<>();
         Collections.addAll(items, jids);
         xmppSession.query(new IQ(IQ.Type.SET, new Unblock(items)));
     }
 
     @Override
-    protected IQ processRequest(IQ iq) {
+    protected final IQ processRequest(IQ iq) {
         if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
             Block block = iq.getExtension(Block.class);
             if (block != null) {

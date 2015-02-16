@@ -78,8 +78,11 @@ import java.util.logging.Logger;
  * You can check for an entity's capabilities by using {@link #getCapabilities(rocks.xmpp.core.Jid)}, which will either return cached capabilities or ask the entity.
  * </p>
  * Similarly you can ask if an entity supports a particular feature via {@link #isSupported(String, rocks.xmpp.core.Jid)}.
+ * <p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
  */
 public final class EntityCapabilitiesManager extends ExtensionManager {
 
@@ -105,8 +108,14 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private final DirectoryCache directoryCapsCache;
 
+    /**
+     * Guarded by "serviceDiscoveryManager".
+     */
     private boolean capsSent;
 
+    /**
+     * Guarded by "this".
+     */
     private String node;
 
     private EntityCapabilitiesManager(final XmppSession xmppSession) {
@@ -148,14 +157,16 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
                 // http://xmpp.org/extensions/xep-0115.html#advertise:
                 // "If the supported features change during a generating entity's presence session (e.g., a user installs an updated version of a client plugin), the application MUST recompute the verification string and SHOULD send a new presence broadcast."
-                if (capsSent) {
-                    // Whenever the verification string has changed, publish the info node.
-                    publishCapsNode();
+                synchronized (serviceDiscoveryManager) {
+                    if (capsSent) {
+                        // Whenever the verification string has changed, publish the info node.
+                        publishCapsNode();
 
-                    // Resend presence. This manager will add the caps extension later.
-                    PresenceManager presenceManager = xmppSession.getPresenceManager();
-                    Presence lastPresence = presenceManager.getLastSentPresence();
-                    xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
+                        // Resend presence. This manager will add the caps extension later.
+                        PresenceManager presenceManager = xmppSession.getPresenceManager();
+                        Presence lastPresence = presenceManager.getLastSentPresence();
+                        xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
+                    }
                 }
             }
         });
@@ -284,7 +295,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
-    public InfoNode discoverCapabilities(Jid jid) throws XmppException {
+    public final InfoNode discoverCapabilities(Jid jid) throws XmppException {
         InfoNode infoNode = ENTITY_CAPABILITIES.get(jid);
         if (infoNode == null) {
             // Make sure, that for the same JID no multiple concurrent queries are sent. One is enough.
@@ -324,7 +335,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
      * @deprecated Use {@link #discoverCapabilities(rocks.xmpp.core.Jid)}
      */
     @Deprecated
-    public InfoNode getCapabilities(Jid jid) throws XmppException {
+    public final InfoNode getCapabilities(Jid jid) throws XmppException {
         return discoverCapabilities(jid);
     }
 
@@ -337,7 +348,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public boolean isSupported(String feature, Jid jid) throws XmppException {
+    public final boolean isSupported(String feature, Jid jid) throws XmppException {
         InfoNode infoNode = discoverCapabilities(jid);
         return infoNode.getFeatures().contains(new Feature(feature));
     }

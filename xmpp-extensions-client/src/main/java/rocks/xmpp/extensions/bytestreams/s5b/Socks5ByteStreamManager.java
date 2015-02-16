@@ -63,6 +63,9 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
 
     private final LocalSocks5Server localSocks5Server;
 
+    /**
+     * Guarded by "this".
+     */
     private boolean localHostEnabled;
 
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
@@ -119,7 +122,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      *
      * @return If enabled.
      */
-    public boolean isLocalHostEnabled() {
+    public synchronized boolean isLocalHostEnabled() {
         return localHostEnabled;
     }
 
@@ -128,7 +131,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      *
      * @param enabled If enabled.
      */
-    public void setLocalHostEnabled(boolean enabled) {
+    public synchronized void setLocalHostEnabled(boolean enabled) {
         this.localHostEnabled = enabled;
         if (!enabled) {
             localSocks5Server.stop();

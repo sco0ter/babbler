@@ -41,6 +41,7 @@ import rocks.xmpp.extensions.carbons.model.Enable;
  * <li>Chat messages sent to another of your available resources (i.e. to another full JID), will be copied to you with a {@link rocks.xmpp.extensions.carbons.model.Received} extension.</li>
  * <li>Chat messages you sent from another resource, will be copied to you with a {@link rocks.xmpp.extensions.carbons.model.Sent} extension.</li>
  * </ul>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
@@ -54,20 +55,20 @@ public final class MessageCarbonsManager extends ExtensionManager {
     /**
      * Enables message carbons on the server for this session.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void enableCarbons() throws XmppException {
+    public final void enableCarbons() throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, new Enable()));
     }
 
     /**
      * Enables message carbons on the server for this session.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void disableCarbons() throws XmppException {
+    public final void disableCarbons() throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, new Disable()));
     }
 }

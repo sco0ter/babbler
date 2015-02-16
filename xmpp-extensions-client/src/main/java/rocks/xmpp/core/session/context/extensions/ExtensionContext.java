@@ -39,10 +39,7 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
-import rocks.xmpp.extensions.carbons.model.Disable;
-import rocks.xmpp.extensions.carbons.model.Enable;
-import rocks.xmpp.extensions.carbons.model.Private;
-import rocks.xmpp.extensions.carbons.model.Sent;
+import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
@@ -274,7 +271,7 @@ public class ExtensionContext extends CoreContext {
                 InBandBytestreamsTransportMethod.class,
 
                 // XEP-0280: Message Carbons
-                Enable.class, Disable.class, Private.class, rocks.xmpp.extensions.carbons.model.Received.class, Sent.class,
+                MessageCarbons.class,
 
                 // XEP-0297: Stanza Forwarding
                 Forwarded.class,

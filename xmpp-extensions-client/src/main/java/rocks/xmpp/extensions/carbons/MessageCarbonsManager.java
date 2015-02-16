@@ -28,8 +28,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.carbons.model.Disable;
-import rocks.xmpp.extensions.carbons.model.Enable;
+import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 
 /**
  * Manages message carbons. It allows you to {@linkplain #enableCarbons()} ()} enable} or {@linkplain #disableCarbons()} disable} message carbons on the server.
@@ -38,8 +37,8 @@ import rocks.xmpp.extensions.carbons.model.Enable;
  * </p>
  * <ul>
  * <li>Chat messages sent to your bare jid, will be "forked" to your carbons-enabled session.</li>
- * <li>Chat messages sent to another of your available resources (i.e. to another full JID), will be copied to you with a {@link rocks.xmpp.extensions.carbons.model.Received} extension.</li>
- * <li>Chat messages you sent from another resource, will be copied to you with a {@link rocks.xmpp.extensions.carbons.model.Sent} extension.</li>
+ * <li>Chat messages sent to another of your available resources (i.e. to another full JID), will be copied to you with a {@link rocks.xmpp.extensions.carbons.model.MessageCarbons.Received} extension.</li>
+ * <li>Chat messages you sent from another resource, will be copied to you with a {@link rocks.xmpp.extensions.carbons.model.MessageCarbons.Sent} extension.</li>
  * </ul>
  * This class is thread-safe.
  *
@@ -49,7 +48,7 @@ import rocks.xmpp.extensions.carbons.model.Enable;
 public final class MessageCarbonsManager extends ExtensionManager {
 
     private MessageCarbonsManager(XmppSession xmppSession) {
-        super(xmppSession, Enable.NAMESPACE);
+        super(xmppSession, MessageCarbons.NAMESPACE);
     }
 
     /**
@@ -59,7 +58,7 @@ public final class MessageCarbonsManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final void enableCarbons() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, new Enable()));
+        xmppSession.query(new IQ(IQ.Type.SET, MessageCarbons.ENABLE));
     }
 
     /**
@@ -69,6 +68,6 @@ public final class MessageCarbonsManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final void disableCarbons() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, new Disable()));
+        xmppSession.query(new IQ(IQ.Type.SET, MessageCarbons.DISABLE));
     }
 }

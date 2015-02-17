@@ -26,8 +26,9 @@ package rocks.xmpp.extensions.time;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
@@ -43,16 +44,21 @@ import java.util.TimeZone;
  *
  * @author Christian Schudt
  */
-public final class EntityTimeManager extends IQExtensionManager {
+public final class EntityTimeManager extends ExtensionManager {
 
     private EntityTimeManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.GET, EntityTime.NAMESPACE);
+        super(xmppSession, EntityTime.NAMESPACE);
         setEnabled(true);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(EntityTime.class, this);
+        xmppSession.addIQHandler(EntityTime.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                return iq.createResult(new EntityTime(TimeZone.getDefault(), new Date()));
+            }
+        });
     }
 
     /**
@@ -60,16 +66,11 @@ public final class EntityTimeManager extends IQExtensionManager {
      *
      * @param jid The entity's JID.
      * @return The entity time or null if this protocol is not supported by the entity.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public EntityTime getEntityTime(Jid jid) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
         return result.getExtension(EntityTime.class);
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-        return iq.createResult(new EntityTime(TimeZone.getDefault(), new Date()));
     }
 }

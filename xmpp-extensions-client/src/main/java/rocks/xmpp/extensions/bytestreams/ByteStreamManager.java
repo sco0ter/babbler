@@ -24,11 +24,10 @@
 
 package rocks.xmpp.extensions.bytestreams;
 
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -42,14 +41,14 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public abstract class ByteStreamManager extends IQExtensionManager {
+public abstract class ByteStreamManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ByteStreamManager.class.getName());
 
     private final Set<ByteStreamListener> byteStreamListeners = new CopyOnWriteArraySet<>();
 
     protected ByteStreamManager(XmppSession xmppSession, String... features) {
-        super(xmppSession, AbstractIQ.Type.SET, features);
+        super(xmppSession, features);
     }
 
     @Override

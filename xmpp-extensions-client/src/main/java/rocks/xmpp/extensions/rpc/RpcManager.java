@@ -26,10 +26,11 @@ package rocks.xmpp.extensions.rpc;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -50,14 +51,14 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
-public final class RpcManager extends IQExtensionManager {
+public final class RpcManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(RpcManager.class.getName());
 
     private RpcHandler rpcHandler;
 
     private RpcManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.SET, Rpc.NAMESPACE);
+        super(xmppSession, Rpc.NAMESPACE);
     }
 
     @Override
@@ -71,7 +72,35 @@ public final class RpcManager extends IQExtensionManager {
                 }
             }
         });
-        xmppSession.addIQHandler(Rpc.class, this);
+        xmppSession.addIQHandler(Rpc.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                Rpc rpc = iq.getExtension(Rpc.class);
+                // If there's an incoming RPC
+                RpcHandler rpcHandler1;
+                synchronized (this) {
+                    rpcHandler1 = rpcHandler;
+                }
+                if (rpcHandler1 != null) {
+                    final Rpc.MethodCall methodCall = rpc.getMethodCall();
+                    final List<Value> parameters = new ArrayList<>();
+                    for (Value parameter : methodCall.getParameters()) {
+                        parameters.add(parameter);
+                    }
+
+                    try {
+                        Value value = rpcHandler1.process(iq.getFrom(), methodCall.getMethodName(), parameters);
+                        return iq.createResult(new Rpc(value));
+                    } catch (RpcException e1) {
+                        return iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
+                    } catch (Throwable e1) {
+                        logger.log(Level.WARNING, e1.getMessage(), e1);
+                        return iq.createError(Condition.INTERNAL_SERVER_ERROR);
+                    }
+                }
+                return iq.createError(Condition.SERVICE_UNAVAILABLE);
+            }
+        });
     }
 
     /**
@@ -110,34 +139,5 @@ public final class RpcManager extends IQExtensionManager {
     public synchronized void setRpcHandler(RpcHandler rpcHandler) {
         this.rpcHandler = rpcHandler;
         setEnabled(rpcHandler != null);
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-
-        Rpc rpc = iq.getExtension(Rpc.class);
-        // If there's an incoming RPC
-        RpcHandler rpcHandler1;
-        synchronized (this) {
-            rpcHandler1 = rpcHandler;
-        }
-        if (rpcHandler1 != null) {
-            final Rpc.MethodCall methodCall = rpc.getMethodCall();
-            final List<Value> parameters = new ArrayList<>();
-            for (Value parameter : methodCall.getParameters()) {
-                parameters.add(parameter);
-            }
-
-            try {
-                Value value = rpcHandler1.process(iq.getFrom(), methodCall.getMethodName(), parameters);
-                return iq.createResult(new Rpc(value));
-            } catch (RpcException e1) {
-                return iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
-            } catch (Throwable e1) {
-                logger.log(Level.WARNING, e1.getMessage(), e1);
-                return iq.createError(Condition.INTERNAL_SERVER_ERROR);
-            }
-        }
-        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 }

@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.ContactGroup;
 import rocks.xmpp.core.roster.model.Roster;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
@@ -67,7 +68,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class RosterManager {
+public final class RosterManager extends Manager {
     private static final Logger logger = Logger.getLogger(RosterManager.class.getName());
 
     private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();

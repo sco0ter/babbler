@@ -27,10 +27,11 @@ package rocks.xmpp.extensions.ping;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -61,7 +62,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class PingManager extends IQExtensionManager {
+public final class PingManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(PingManager.class.getName());
 
@@ -83,14 +84,19 @@ public final class PingManager extends IQExtensionManager {
      * @param xmppSession The underlying XMPP session.
      */
     private PingManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.GET, Ping.NAMESPACE);
+        super(xmppSession, Ping.NAMESPACE);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
         setEnabled(true);
     }
 
     @Override
     protected final void initialize() {
-        xmppSession.addIQHandler(Ping.class, this);
+        xmppSession.addIQHandler(Ping.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                return iq.createResult();
+            }
+        });
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
             public void sessionStatusChanged(SessionStatusEvent e) {
@@ -223,11 +229,6 @@ public final class PingManager extends IQExtensionManager {
                 }
             }, pingInterval, TimeUnit.SECONDS);
         }
-    }
-
-    @Override
-    protected final IQ processRequest(final IQ iq) {
-        return iq.createResult();
     }
 
     /**

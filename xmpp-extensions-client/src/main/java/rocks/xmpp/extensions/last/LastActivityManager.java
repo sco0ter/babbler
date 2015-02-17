@@ -26,10 +26,11 @@ package rocks.xmpp.extensions.last;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -70,12 +71,12 @@ import java.util.Date;
  *
  * @author Christian Schudt
  */
-public final class LastActivityManager extends IQExtensionManager {
+public final class LastActivityManager extends ExtensionManager {
 
     private volatile LastActivityStrategy lastActivityStrategy;
 
     private LastActivityManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.GET, LastActivity.NAMESPACE);
+        super(xmppSession, LastActivity.NAMESPACE);
         lastActivityStrategy = new DefaultLastActivityStrategy(xmppSession);
         setEnabled(true);
     }
@@ -106,7 +107,16 @@ public final class LastActivityManager extends IQExtensionManager {
                 }
             }
         });
-        xmppSession.addIQHandler(LastActivity.class, this);
+        xmppSession.addIQHandler(LastActivity.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                // If someone asks me to get my last activity, reply.
+                synchronized (LastActivityManager.this) {
+                    long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
+                    return iq.createResult(new LastActivity(seconds, null));
+                }
+            }
+        });
     }
 
     private long getSecondsSince(Date date) {
@@ -148,15 +158,6 @@ public final class LastActivityManager extends IQExtensionManager {
      */
     public synchronized void setLastActivityStrategy(LastActivityStrategy lastActivityStrategy) {
         this.lastActivityStrategy = lastActivityStrategy;
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-        // If someone asks me to get my last activity, reply.
-        synchronized (LastActivityManager.this) {
-            long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
-            return iq.createResult(new LastActivity(seconds, null));
-        }
     }
 
     /**

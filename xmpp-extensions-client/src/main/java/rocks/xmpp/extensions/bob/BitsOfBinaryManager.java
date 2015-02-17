@@ -26,10 +26,11 @@ package rocks.xmpp.extensions.bob;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -41,12 +42,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Christian Schudt
  */
-class BitsOfBinaryManager extends IQExtensionManager {
+class BitsOfBinaryManager extends ExtensionManager {
 
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 
     private BitsOfBinaryManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.GET, Data.NAMESPACE);
+        super(xmppSession, Data.NAMESPACE);
     }
 
     @Override
@@ -59,7 +60,19 @@ class BitsOfBinaryManager extends IQExtensionManager {
                 }
             }
         });
-        xmppSession.addIQHandler(Data.class, this);
+        xmppSession.addIQHandler(Data.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                Data data = iq.getExtension(Data.class);
+                // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
+                Data cachedData = dataCache.get(data.getContentId());
+                if (cachedData != null) {
+                    return iq.createResult(cachedData);
+                } else {
+                    return iq.createError(Condition.ITEM_NOT_FOUND);
+                }
+            }
+        });
     }
 
     /**
@@ -89,18 +102,5 @@ class BitsOfBinaryManager extends IQExtensionManager {
      */
     public void put(Data data) {
         dataCache.put(data.getContentId(), data);
-    }
-
-    @Override
-    protected IQ processRequest(IQ iq) {
-
-        Data data = iq.getExtension(Data.class);
-        // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
-        Data cachedData = dataCache.get(data.getContentId());
-        if (cachedData != null) {
-            return iq.createResult(cachedData);
-        } else {
-            return iq.createError(Condition.ITEM_NOT_FOUND);
-        }
     }
 }

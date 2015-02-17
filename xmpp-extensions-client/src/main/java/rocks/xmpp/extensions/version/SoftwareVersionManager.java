@@ -26,8 +26,9 @@ package rocks.xmpp.extensions.version;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -42,18 +43,28 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
  *
  * @author Christian Schudt
  */
-public final class SoftwareVersionManager extends IQExtensionManager {
+public final class SoftwareVersionManager extends ExtensionManager {
 
     private SoftwareVersion softwareVersion;
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.GET, SoftwareVersion.NAMESPACE);
+        super(xmppSession, SoftwareVersion.NAMESPACE);
         setEnabled(true);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(SoftwareVersion.class, this);
+        xmppSession.addIQHandler(SoftwareVersion.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                synchronized (SoftwareVersionManager.this) {
+                    if (softwareVersion != null) {
+                        return iq.createResult(softwareVersion);
+                    }
+                }
+                return iq.createError(Condition.SERVICE_UNAVAILABLE);
+            }
+        });
     }
 
     /**
@@ -61,8 +72,8 @@ public final class SoftwareVersionManager extends IQExtensionManager {
      *
      * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to get the server's software version.
      * @return The software version or null, if this protocol is not supported.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new SoftwareVersion()));
@@ -87,15 +98,5 @@ public final class SoftwareVersionManager extends IQExtensionManager {
      */
     public synchronized void setSoftwareVersion(SoftwareVersion softwareVersion) {
         this.softwareVersion = softwareVersion;
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-        synchronized (SoftwareVersionManager.this) {
-            if (softwareVersion != null) {
-                return iq.createResult(softwareVersion);
-            }
-        }
-        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 }

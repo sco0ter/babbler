@@ -26,10 +26,11 @@ package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -73,7 +74,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends IQExtensionManager {
+public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private static Identity defaultIdentity = new Identity("client", "pc");
 
@@ -90,8 +91,12 @@ public final class ServiceDiscoveryManager extends IQExtensionManager {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.GET, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
+        super(xmppSession, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
+        setEnabled(true);
+    }
 
+    @Override
+    protected void initialize() {
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
             public void sessionStatusChanged(SessionStatusEvent e) {
@@ -105,9 +110,43 @@ public final class ServiceDiscoveryManager extends IQExtensionManager {
             }
         });
 
-        xmppSession.addIQHandler(InfoDiscovery.class, this);
-        xmppSession.addIQHandler(ItemDiscovery.class, this);
-        setEnabled(true);
+        xmppSession.addIQHandler(InfoDiscovery.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
+                if (infoDiscovery.getNode() == null) {
+                    return iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
+                } else {
+                    InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
+                    if (infoNode != null) {
+                        return iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
+                    } else {
+                        // Returns <feature-not-implemented/> here.
+                        // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
+                        return iq.createError(Condition.FEATURE_NOT_IMPLEMENTED);
+                    }
+                }
+            }
+        });
+        xmppSession.addIQHandler(ItemDiscovery.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
+                ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
+                if (itemProvider != null) {
+                    ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
+                    return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
+                } else {
+                    if (itemDiscovery.getNode() == null) {
+                        // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                        return iq.createResult(new ItemDiscovery(itemDiscovery.getNode()));
+                    } else {
+                        // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
+                        return iq.createError(Condition.ITEM_NOT_FOUND);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -410,7 +449,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager {
 
     /**
      * Sets an item provider for the root node.
-     * <p/>
+     * <p>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
      * @param itemProvider The item provider.
@@ -425,7 +464,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager {
 
     /**
      * Sets an item provider for a node.
-     * <p/>
+     * <p>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
      * @param node         The node name.
@@ -436,40 +475,6 @@ public final class ServiceDiscoveryManager extends IQExtensionManager {
             itemProviders.remove(node);
         } else {
             itemProviders.put(node, itemProvider);
-        }
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-        InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
-        if (infoDiscovery != null) {
-            if (infoDiscovery.getNode() == null) {
-                return iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
-            } else {
-                InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
-                if (infoNode != null) {
-                    return iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
-                } else {
-                    // Returns <feature-not-implemented/> here.
-                    // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
-                    return iq.createError(Condition.FEATURE_NOT_IMPLEMENTED);
-                }
-            }
-        } else {
-            ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
-            ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
-            if (itemProvider != null) {
-                ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
-                return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
-            } else {
-                if (itemDiscovery.getNode() == null) {
-                    // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                    return iq.createResult(new ItemDiscovery(itemDiscovery.getNode()));
-                } else {
-                    // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
-                    return iq.createError(Condition.ITEM_NOT_FOUND);
-                }
-            }
         }
     }
 }

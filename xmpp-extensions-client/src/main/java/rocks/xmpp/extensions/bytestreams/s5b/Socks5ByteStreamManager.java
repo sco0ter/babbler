@@ -30,6 +30,8 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamManager;
@@ -105,7 +107,20 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     @Override
     protected void initialize() {
         super.initialize();
-        xmppSession.addIQHandler(Socks5ByteStream.class, this);
+        xmppSession.addIQHandler(Socks5ByteStream.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
+
+                if (socks5ByteStream.getSessionId() == null) {
+                    // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
+                    return iq.createError(Condition.BAD_REQUEST);
+                } else {
+                    notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
+                    return null;
+                }
+            }
+        });
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
             public void sessionStatusChanged(SessionStatusEvent e) {
@@ -276,20 +291,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
             return new S5bSession(sessionId, socket, usedStreamHost.getJid());
         } finally {
             localSocks5Server.removeConnection(hash);
-        }
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-
-        Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
-
-        if (socks5ByteStream.getSessionId() == null) {
-            // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
-            return iq.createError(Condition.BAD_REQUEST);
-        } else {
-            notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
-            return null;
         }
     }
 }

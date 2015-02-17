@@ -26,10 +26,11 @@ package rocks.xmpp.extensions.reach;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -60,7 +61,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ReachabilityManager extends IQExtensionManager {
+public final class ReachabilityManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ReachabilityManager.class.getName());
 
@@ -71,7 +72,7 @@ public final class ReachabilityManager extends IQExtensionManager {
     private final List<Address> addresses = new CopyOnWriteArrayList<>();
 
     private ReachabilityManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.GET, Reachability.NAMESPACE);
+        super(xmppSession, Reachability.NAMESPACE);
     }
 
     @Override
@@ -120,7 +121,13 @@ public final class ReachabilityManager extends IQExtensionManager {
         });
 
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
-        xmppSession.addIQHandler(Reachability.class, this);
+        xmppSession.addIQHandler(Reachability.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
+                return iq.createResult(new Reachability(addresses));
+            }
+        });
 
         // TODO: implement similar logic for PEP
     }
@@ -193,11 +200,5 @@ public final class ReachabilityManager extends IQExtensionManager {
             return reachability.getAddresses();
         }
         return null;
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-        // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
-        return iq.createResult(new Reachability(addresses));
     }
 }

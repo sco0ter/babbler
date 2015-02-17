@@ -24,10 +24,11 @@
 
 package rocks.xmpp.extensions.httpauth;
 
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -51,7 +52,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
  */
-public final class HttpAuthenticationManager extends IQExtensionManager {
+public final class HttpAuthenticationManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(HttpAuthenticationManager.class.getName());
 
@@ -59,12 +60,21 @@ public final class HttpAuthenticationManager extends IQExtensionManager {
 
     private HttpAuthenticationManager(XmppSession xmppSession) {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
-        super(xmppSession, AbstractIQ.Type.GET);
+        super(xmppSession);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(ConfirmationRequest.class, this);
+        xmppSession.addIQHandler(ConfirmationRequest.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
+                if (notifyHttpAuthListeners(iq, confirmationRequest)) {
+                    return null;
+                }
+                return iq.createError(Condition.SERVICE_UNAVAILABLE);
+            }
+        });
 
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
@@ -122,15 +132,5 @@ public final class HttpAuthenticationManager extends IQExtensionManager {
      */
     public void removeHttpAuthenticationListener(HttpAuthenticationListener httpAuthenticationListener) {
         httpAuthenticationListeners.remove(httpAuthenticationListener);
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-
-        ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
-        if (notifyHttpAuthListeners(iq, confirmationRequest)) {
-            return null;
-        }
-        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 }

@@ -73,7 +73,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends IQExtensionManager implements SessionStatusListener {
+public final class ServiceDiscoveryManager extends IQExtensionManager {
 
     private static Identity defaultIdentity = new Identity("client", "pc");
 
@@ -92,7 +92,18 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, AbstractIQ.Type.GET, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
 
-        xmppSession.addSessionStatusListener(this);
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
+                        pcs.removePropertyChangeListener(propertyChangeListener);
+                    }
+                }
+                infoNodeMap.clear();
+                itemProviders.clear();
+            }
+        });
 
         xmppSession.addIQHandler(InfoDiscovery.class, this);
         xmppSession.addIQHandler(ItemDiscovery.class, this);
@@ -269,8 +280,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param jid The entity's JID.
      * @return The service discovery result.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public InfoNode discoverInformation(Jid jid) throws XmppException {
         return discoverInformation(jid, null);
@@ -286,8 +297,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid  The entity's JID.
      * @param node The node.
      * @return The info discovery result or null, if info discovery is not supported.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see #discoverInformation(rocks.xmpp.core.Jid)
      */
     public InfoNode discoverInformation(Jid jid, String node) throws XmppException {
@@ -300,8 +311,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param jid The JID.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid) throws XmppException {
         return discoverItems(jid, null, null);
@@ -313,8 +324,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid       The JID.
      * @param resultSet The result set management.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, ResultSetManagement resultSet) throws XmppException {
         return discoverItems(jid, null, resultSet);
@@ -326,8 +337,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid  The JID.
      * @param node The node.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node) throws XmppException {
         return discoverItems(jid, node, null);
@@ -340,8 +351,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param node                The node.
      * @param resultSetManagement The result set management.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
@@ -353,8 +364,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param feature The feature namespace.
      * @return The services, that belong to the namespace.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      */
     public Collection<Item> discoverServices(String feature) throws XmppException {
         ItemNode itemDiscovery = discoverItems(Jid.valueOf(xmppSession.getDomain()));
@@ -399,7 +410,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
 
     /**
      * Sets an item provider for the root node.
-     * <p>
+     * <p/>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
      * @param itemProvider The item provider.
@@ -414,7 +425,7 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
 
     /**
      * Sets an item provider for a node.
-     * <p>
+     * <p/>
      * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
      *
      * @param node         The node name.
@@ -460,16 +471,5 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
                 }
             }
         }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
-                pcs.removePropertyChangeListener(propertyChangeListener);
-            }
-        }
-        infoNodeMap.clear();
-        itemProviders.clear();
     }
 }

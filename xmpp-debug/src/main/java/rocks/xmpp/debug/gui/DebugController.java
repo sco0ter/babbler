@@ -373,7 +373,8 @@ public final class DebugController implements Initializable {
                             IQ otherIQ = (IQ) entry.getStanza();
                             if (otherIQ.getId() != null && otherIQ.getId().equals(selectedIQ.getId())
                                     && ((selectedIQ.isRequest() && otherIQ.isResponse())
-                                    || selectedIQ.isResponse() && otherIQ.isRequest())) {
+                                    || selectedIQ.isResponse() && otherIQ.isRequest())
+                                    && newValue.isInbound() != entry.isInbound()) {
                                 // Add the highlighted items.
                                 viewModel.highlightedItems.add(entry);
                             }

@@ -26,8 +26,8 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stream.StreamFeatureListener;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
@@ -123,7 +123,7 @@ public final class TcpConnection extends Connection {
         final CompressionManager compressionManager = new CompressionManager(xmppSession, configuration.getCompressionMethods());
         compressionManager.addFeatureListener(new StreamFeatureListener() {
             @Override
-            public void featureSuccessfullyNegotiated() {
+            public void featureSuccessfullyNegotiated() throws StreamNegotiationException {
                 CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
                 // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
                 // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
@@ -133,11 +133,15 @@ public final class TcpConnection extends Connection {
                     iStream = inputStream;
                     oStream = outputStream;
                 }
-                iStream = compressionMethod.decompress(iStream);
-                oStream = compressionMethod.compress(oStream);
-                synchronized (TcpConnection.this) {
-                    inputStream = iStream;
-                    outputStream = oStream;
+                try {
+                    iStream = compressionMethod.decompress(iStream);
+                    oStream = compressionMethod.compress(oStream);
+                    synchronized (TcpConnection.this) {
+                        inputStream = iStream;
+                        outputStream = oStream;
+                    }
+                } catch (IOException e) {
+                    throw new StreamNegotiationException(e);
                 }
             }
         });

@@ -30,6 +30,7 @@ import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
 import javax.naming.Context;
@@ -60,6 +61,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
@@ -110,6 +112,28 @@ public final class BoshConnection extends Connection {
     private final AtomicInteger requestCount = new AtomicInteger();
 
     /**
+     * Our supported compression methods.
+     */
+    private final Map<String, CompressionMethod> compressionMethods;
+
+    /**
+     * The encoding we can support. This is added as "Accept-Encoding" header in a request.
+     */
+    private final String clientAcceptEncoding;
+
+    /**
+     * The compression method which is used to compress requests.
+     * Guarded by "this".
+     */
+    private CompressionMethod requestCompressionMethod;
+
+    /**
+     * The "Content-Encoding" header which is set during requests. It's only set, if the server included an "accept" attribute.
+     * Guarded by "this".
+     */
+    private String requestContentEncoding;
+
+    /**
      * Guarded by "this".
      */
     private long highestReceivedRid;
@@ -146,6 +170,24 @@ public final class BoshConnection extends Connection {
         httpBindExecutor = Executors.newFixedThreadPool(2, XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
         xmlOutputFactory = XMLOutputFactory.newFactory();
         xmlInputFactory = XMLInputFactory.newFactory();
+        compressionMethods = new LinkedHashMap<>();
+        for (CompressionMethod compressionMethod : boshConnectionConfiguration.getCompressionMethods()) {
+            compressionMethods.put(compressionMethod.getName(), compressionMethod);
+        }
+        if (!compressionMethods.isEmpty()) {
+            // TODO Use String.join(",", compressionMethods.keySet()); when on Java 8
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            for (String compressionMethodName : compressionMethods.keySet()) {
+                sb.append(compressionMethodName);
+                if (++i < compressionMethods.size()) {
+                    sb.append(",");
+                }
+            }
+            clientAcceptEncoding = sb.toString();
+        } else {
+            clientAcceptEncoding = null;
+        }
     }
 
     /**
@@ -356,7 +398,21 @@ public final class BoshConnection extends Connection {
                 if (responseBody.getAck() != null) {
                     usingAcknowledgments = true;
                 }
-
+                // The connection manager MAY include an 'accept' attribute in the session creation response element, to specify a comma-separated list of the content encodings it can decompress.
+                if (responseBody.getAccept() != null) {
+                    // After receiving a session creation response with an 'accept' attribute,
+                    // clients MAY include an HTTP Content-Encoding header in subsequent requests (indicating one of the encodings specified in the 'accept' attribute) and compress the bodies of the requests accordingly.
+                    String[] serverAcceptedEncodings = responseBody.getAccept().split(",");
+                    String contentEncoding = null;
+                    // Let's see if we can compress the contents for the server by choosing a known compression method.
+                    for (String serverAcceptedEncoding : serverAcceptedEncodings) {
+                        requestCompressionMethod = compressionMethods.get(serverAcceptedEncoding);
+                        requestContentEncoding = serverAcceptedEncoding;
+                        if (requestCompressionMethod != null) {
+                            break;
+                        }
+                    }
+                }
                 if (responseBody.getFrom() != null) {
                     getXmppSession().setXmppServiceDomain(responseBody.getFrom().getDomain());
                 }
@@ -561,6 +617,17 @@ public final class BoshConnection extends Connection {
 
                                 httpConnection = getConnection();
                                 httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+
+                                // We can decompress server responses, so tell the server about it.
+                                if (clientAcceptEncoding != null) {
+                                    httpConnection.setRequestProperty("Accept-Encoding", clientAcceptEncoding);
+                                }
+
+                                // If we can compress, tell the server about it.
+                                if (requestCompressionMethod != null && requestContentEncoding != null) {
+                                    httpConnection.setRequestProperty("Content-Encoding", requestContentEncoding);
+                                }
+
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
                                 // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
@@ -571,10 +638,16 @@ public final class BoshConnection extends Connection {
 
                                 XMLStreamWriter xmlStreamWriter = null;
 
-                                try {
+                                OutputStream requestStream;
+                                if (requestCompressionMethod != null) {
+                                    requestStream = requestCompressionMethod.compress(httpConnection.getOutputStream());
+                                } else {
+                                    requestStream = httpConnection.getOutputStream();
+                                }
 
+                                try {
                                     // Branch the stream, so that its output can also be logged.
-                                    OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest);
+                                    OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(requestStream, byteArrayOutputStreamRequest);
                                     OutputStream xmppOutputStream;
                                     if (debugger != null) {
                                         xmppOutputStream = debugger.createOutputStream(branchedOutputStream);
@@ -598,7 +671,7 @@ public final class BoshConnection extends Connection {
                                 }
                             }
                             // Wait for the response
-                            if ((httpConnection.getResponseCode()) == HttpURLConnection.HTTP_OK) {
+                            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
                                 // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
                                 synchronized (BoshConnection.this) {
@@ -608,8 +681,17 @@ public final class BoshConnection extends Connection {
                                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                                 XMLEventReader xmlEventReader = null;
 
+                                InputStream responseStream;
+                                String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
+                                System.out.println(contentEncoding);
+                                if (contentEncoding != null) {
+                                    responseStream = compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream());
+                                } else {
+                                    responseStream = httpConnection.getInputStream();
+                                }
+
                                 // Branch the stream so that its input can be logged.
-                                InputStream inputStream = XmppUtils.createBranchedInputStream(httpConnection.getInputStream(), byteArrayOutputStream);
+                                InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream);
                                 InputStream xmppInputStream;
                                 if (debugger != null) {
                                     xmppInputStream = debugger.createInputStream(inputStream);

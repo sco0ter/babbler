@@ -30,12 +30,17 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 /**
@@ -58,13 +63,46 @@ public final class CompressionManager extends StreamFeatureNegotiator {
             }
 
             @Override
-            public InputStream decompress(InputStream inputStream) {
+            public InputStream decompress(InputStream inputStream) throws IOException {
                 return new InflaterInputStream(inputStream);
             }
 
             @Override
-            public OutputStream compress(OutputStream outputStream) {
+            public OutputStream compress(OutputStream outputStream) throws IOException {
                 return new DeflaterOutputStream(outputStream, true);
+            }
+        };
+        GZIP = new CompressionMethod() {
+            public String getName() {
+                return "gzip";
+            }
+
+            @Override
+            public InputStream decompress(InputStream inputStream) throws IOException {
+                return new GZIPInputStream(inputStream);
+            }
+
+            @Override
+            public OutputStream compress(OutputStream outputStream) throws IOException {
+                return new GZIPOutputStream(outputStream);
+            }
+        };
+        DEFLATE = new CompressionMethod() {
+            @Override
+            public String getName() {
+                return "deflate";
+            }
+
+            @Override
+            public InputStream decompress(InputStream inputStream) throws IOException {
+                // See http://stackoverflow.com/a/3932260
+                // Seems like most (web)server implement deflate in a wrong way.
+                return new InflaterInputStream(inputStream, new Inflater(true));
+            }
+
+            @Override
+            public OutputStream compress(OutputStream outputStream) throws IOException {
+                return new DeflaterOutputStream(outputStream, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
             }
         };
     }
@@ -73,6 +111,16 @@ public final class CompressionManager extends StreamFeatureNegotiator {
      * The "zlib" compression method.
      */
     public static final CompressionMethod ZLIB;
+
+    /**
+     * The "gzip" compression method.
+     */
+    public static final CompressionMethod GZIP;
+
+    /**
+     * The "deflate" compression method.
+     */
+    public static final CompressionMethod DEFLATE;
 
     private final XmppSession xmppSession;
 

@@ -110,13 +110,13 @@ public final class PingManager extends ExtensionManager {
             }
         });
 
-        // Reschedule server pings, whenever we send a stanza to the server.
-        // Pinging the server is only necessary to let him know, that we are still connected.
-        // Therefore sending a message and shortly after it sending a ping would add no value.
+        // Reschedule server pings whenever we receive a stanza from the server.
+        // When we receive a stanza, we are obviously connected.
+        // Pinging should be deferred in this case.
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (!e.isIncoming()) {
+                if (e.isIncoming()) {
                     rescheduleNextPing();
                 }
             }
@@ -124,7 +124,7 @@ public final class PingManager extends ExtensionManager {
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (!e.isIncoming()) {
+                if (e.isIncoming()) {
                     rescheduleNextPing();
                 }
             }
@@ -132,7 +132,7 @@ public final class PingManager extends ExtensionManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handleIQ(IQEvent e) {
-                if (!e.isIncoming()) {
+                if (e.isIncoming()) {
                     rescheduleNextPing();
                 }
             }
@@ -225,7 +225,7 @@ public final class PingManager extends ExtensionManager {
                             logger.log(Level.WARNING, "Timeout reached while pinging server.");
                         }
                     }
-                    nextPing = scheduledExecutorService.schedule(this, pingInterval, TimeUnit.SECONDS);
+                    rescheduleNextPing();
                 }
             }, pingInterval, TimeUnit.SECONDS);
         }

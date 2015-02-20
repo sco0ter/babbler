@@ -106,6 +106,8 @@ public final class DebugController implements Initializable {
 
     private final SAXParser parser;
 
+    private FilteredList<StanzaEntry> filteredList;
+
     @FXML
     private Text lblStatus;
 
@@ -117,8 +119,6 @@ public final class DebugController implements Initializable {
 
     @FXML
     private Circle circlePresence;
-
-    private FilteredList<StanzaEntry> filteredList;
 
     @FXML
     private CheckBox cbIgnoreCase;
@@ -635,5 +635,7 @@ public final class DebugController implements Initializable {
         StringSelection strSel = new StringSelection(sb.toString());
         clipboard.setContents(strSel, null);
     }
+
+
 }
 

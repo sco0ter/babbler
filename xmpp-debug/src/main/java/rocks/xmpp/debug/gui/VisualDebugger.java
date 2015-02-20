@@ -32,9 +32,12 @@ import javafx.embed.swing.JFXPanel;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -53,32 +56,110 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
 public final class VisualDebugger implements XmppDebugger {
 
-    private static final Map<Tab, SessionStatusListener> connectionListenerMap = new HashMap<>();
+    static {
+        initializeLogging();
+    }
+
+    private static final Map<Tab, SessionStatusListener> CONNECTION_LISTENER_MAP = new HashMap<>();
+
+    private static final Queue<LogRecord> LOG_RECORDS = new ArrayDeque<>();
+
+    private static final Formatter FORMATTER = new LogFormatter();
 
     private static Stage stage;
 
     private static TabPane tabPane;
 
+    private static TextArea textArea;
+
+    private static SplitPane root;
+
+    private static volatile boolean platformInitialized;
+
     final StringProperty title = new SimpleStringProperty();
 
     private DebugController debugController;
-
-    private volatile boolean platformInitialized;
 
     private ByteArrayOutputStream outputStreamIncoming;
 
     private ByteArrayOutputStream outputStreamOutgoing;
 
+    private static void initializeLogging() {
+
+        Handler logHandler = new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                synchronized (LOG_RECORDS) {
+                    int maxLogEntries = 500;
+                    if (LOG_RECORDS.size() >= maxLogEntries) {
+                        LOG_RECORDS.poll();
+                    }
+                    LOG_RECORDS.offer(record);
+                }
+                if (platformInitialized) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateTextArea();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() throws SecurityException {
+            }
+        };
+        logHandler.setLevel(Level.FINE);
+
+        final Logger logger = Logger.getLogger("rocks.xmpp");
+        logger.addHandler(logHandler);
+        logger.setLevel(Level.FINE);
+    }
+
+    private static void waitForPlatform() {
+        if (!platformInitialized) {
+            synchronized (VisualDebugger.class) {
+                try {
+                    VisualDebugger.class.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    private static void updateTextArea() {
+        synchronized (LOG_RECORDS) {
+            textArea.clear();
+            for (LogRecord logRecord : LOG_RECORDS) {
+                textArea.appendText(FORMATTER.format(logRecord));
+            }
+        }
+    }
+
     @Override
     public void initialize(final XmppSession xmppSession) {
+
         final SessionStatusListener connectionListener = new SessionStatusListener() {
             @Override
             public void sessionStatusChanged(final SessionStatusEvent e) {
@@ -132,8 +213,15 @@ public final class VisualDebugger implements XmppDebugger {
                         try {
                             Font.loadFont(getClass().getResource("Inconsolata.ttf").toExternalForm(), 12);
                             if (stage == null) {
+                                root = new SplitPane();
+                                root.setDividerPositions(0.8);
+                                root.setOrientation(Orientation.VERTICAL);
                                 tabPane = new TabPane();
-                                Scene scene = new Scene(tabPane, 800, 600);
+                                textArea = new TextArea();
+                                textArea.setEditable(false);
+                                root.getItems().addAll(tabPane, textArea);
+                                updateTextArea();
+                                Scene scene = new Scene(root, 800, 600);
                                 scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
                                 stage = new Stage();
                                 stage.setTitle("XMPP Viewer");
@@ -142,7 +230,7 @@ public final class VisualDebugger implements XmppDebugger {
                                     @Override
                                     public void handle(WindowEvent event) {
                                         for (Tab tab : tabPane.getTabs()) {
-                                            xmppSession.removeSessionStatusListener(connectionListenerMap.remove(tab));
+                                            xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
                                         }
 
                                         tabPane.getTabs().clear();
@@ -159,7 +247,7 @@ public final class VisualDebugger implements XmppDebugger {
                             final Tab tab = new Tab(xmppSession.getDomain());
                             tab.setContent(debugView);
                             tab.textProperty().bind(title);
-                            connectionListenerMap.put(tab, connectionListener);
+                            CONNECTION_LISTENER_MAP.put(tab, connectionListener);
 
                             final AnimationTimer animationTimer = new AnimationTimer() {
                                 @Override
@@ -185,7 +273,7 @@ public final class VisualDebugger implements XmppDebugger {
                             tab.setOnClosed(new EventHandler<Event>() {
                                 @Override
                                 public void handle(Event event) {
-                                    xmppSession.removeSessionStatusListener(connectionListenerMap.remove(tab));
+                                    xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
                                     xmppSession.removePresenceListener(presenceListener);
                                     animationTimer.stop();
                                 }
@@ -198,25 +286,13 @@ public final class VisualDebugger implements XmppDebugger {
                             e.printStackTrace();
                         }
                         platformInitialized = true;
-                        synchronized (VisualDebugger.this) {
-                            VisualDebugger.this.notifyAll();
+                        synchronized (VisualDebugger.class) {
+                            VisualDebugger.class.notifyAll();
                         }
                     }
                 });
             }
         });
-    }
-
-    private void waitForPlatform() {
-        if (!platformInitialized) {
-            synchronized (VisualDebugger.this) {
-                try {
-                    VisualDebugger.this.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
     }
 
     @Override

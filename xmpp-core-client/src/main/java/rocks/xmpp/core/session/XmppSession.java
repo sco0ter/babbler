@@ -40,19 +40,19 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
@@ -715,6 +715,7 @@ public class XmppSession implements AutoCloseable {
      * @throws IllegalStateException      If the session is in a wrong state, e.g. closed or already connected.
      */
     public final synchronized void connect(Jid from) throws XmppException {
+
         if (status == Status.CLOSED) {
             throw new IllegalStateException("Session is already closed. Create a new one.");
         }
@@ -740,6 +741,7 @@ public class XmppSession implements AutoCloseable {
             } catch (IOException e) {
                 if (connectionIterator.hasNext()) {
                     logger.log(Level.WARNING, String.format("%s failed to connect. Trying alternative connection.", connection));
+                    logger.log(Level.FINE, e.getMessage(), e);
                 } else {
                     updateStatus(previousStatus, e);
                     throw new ConnectionException(e);

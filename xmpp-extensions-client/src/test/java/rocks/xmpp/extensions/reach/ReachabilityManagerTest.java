@@ -62,7 +62,7 @@ public class ReachabilityManagerTest extends ExtensionTest {
             }
         });
 
-        AttentionManager attentionManager = xmppSession1.getExtensionManager(AttentionManager.class);
+        AttentionManager attentionManager = xmppSession1.getManager(AttentionManager.class);
         attentionManager.captureAttention(JULIET);
 
         Assert.assertTrue(attentionReceived[0]);
@@ -72,9 +72,9 @@ public class ReachabilityManagerTest extends ExtensionTest {
     public void testServiceDiscoveryEntry() {
 
         TestXmppSession connection1 = new TestXmppSession();
-        ReachabilityManager reachabilityManager = connection1.getExtensionManager(ReachabilityManager.class);
+        ReachabilityManager reachabilityManager = connection1.getManager(ReachabilityManager.class);
         Assert.assertFalse(reachabilityManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:reach:0");
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         reachabilityManager.setEnabled(true);

@@ -76,8 +76,8 @@ public final class FileTransferManager extends ExtensionManager {
 
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession);
-        this.streamInitiationManager = xmppSession.getExtensionManager(StreamInitiationManager.class);
-        this.entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
+        this.streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
+        this.entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
     }
 
     @Override

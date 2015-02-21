@@ -53,7 +53,7 @@ public class RegistrationSample {
                     // Connect
                     xmppSession.connect();
 
-                    RegistrationManager registrationManager = xmppSession.getExtensionManager(RegistrationManager.class);
+                    RegistrationManager registrationManager = xmppSession.getManager(RegistrationManager.class);
                     Registration registration = registrationManager.getRegistration();
 
                     if (!registration.isRegistered()) {

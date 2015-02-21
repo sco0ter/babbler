@@ -131,7 +131,7 @@ public class FileTransferSender extends Application {
                     final Task<Void> fileTransferTask = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
-                            FileTransferManager fileTransferManager = xmppSession.get().getExtensionManager(FileTransferManager.class);
+                            FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
                             updateMessage("Offering file... waiting for acceptance");
                             FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", new Jid("222", xmppSession.get().getDomain(), "filetransfer"), 10000);
                             fileTransfer.addFileTransferStatusListener(new FileTransferStatusListener() {
@@ -184,7 +184,7 @@ public class FileTransferSender extends Application {
 //            return new Task<Void>() {
 //                @Override
 //                protected Void call() throws Exception {
-//                    FileTransferManager fileTransferManager = xmppSession.get().getExtensionManager(FileTransferManager.class);
+//                    FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
 //                    try {
 //                        updateMessage("Offering file... waiting for acceptance");
 //                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", new Jid("222", xmppSession.get().getDomain(), "filetransfer"), 10000);

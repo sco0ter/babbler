@@ -55,10 +55,10 @@ public class IbbTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        InBandByteStreamManager inBandBytestreamManager = connection1.getExtensionManager(InBandByteStreamManager.class);
+        InBandByteStreamManager inBandBytestreamManager = connection1.getManager(InBandByteStreamManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(inBandBytestreamManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("http://jabber.org/protocol/ibb");
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         inBandBytestreamManager.setEnabled(false);
@@ -71,7 +71,7 @@ public class IbbTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
         final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         final XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
-        InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getExtensionManager(InBandByteStreamManager.class);
+        InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getManager(InBandByteStreamManager.class);
         inBandBytestreamManager2.addByteStreamListener(new ByteStreamListener() {
             @Override
             public void byteStreamRequested(final ByteStreamEvent e) {
@@ -79,7 +79,7 @@ public class IbbTest extends ExtensionTest {
             }
         });
 
-        InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getExtensionManager(InBandByteStreamManager.class);
+        InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getManager(InBandByteStreamManager.class);
         boolean rejected = false;
         try {
             inBandBytestreamManager1.initiateSession(JULIET, UUID.randomUUID().toString(), 4096);
@@ -109,7 +109,7 @@ public class IbbTest extends ExtensionTest {
         new Thread() {
             @Override
             public void run() {
-                InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getExtensionManager(InBandByteStreamManager.class);
+                InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getManager(InBandByteStreamManager.class);
                 inBandBytestreamManager2.addByteStreamListener(new ByteStreamListener() {
                     @Override
                     public void byteStreamRequested(final ByteStreamEvent e) {
@@ -152,7 +152,7 @@ public class IbbTest extends ExtensionTest {
                     }
                 });
 
-                InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getExtensionManager(InBandByteStreamManager.class);
+                InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getManager(InBandByteStreamManager.class);
                 ByteStreamSession ibbSession;
                 try {
                     ibbSession = inBandBytestreamManager1.initiateSession(JULIET, "sid", 4096);

@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stream.StreamFeatureListener;
+import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
@@ -108,8 +109,8 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
-
-        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new SecurityManager(xmppSession, new StreamFeatureListener() {
+        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, new StreamFeatureListener() {
             @Override
             public void featureSuccessfullyNegotiated() throws StreamNegotiationException {
                 try {
@@ -145,7 +146,7 @@ public final class TcpConnection extends Connection {
                 }
             }
         });
-        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(compressionManager);
+        streamFeaturesManager.addFeatureNegotiator(compressionManager);
     }
 
     @Override

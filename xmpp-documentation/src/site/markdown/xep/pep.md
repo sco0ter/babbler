@@ -12,7 +12,7 @@ Therefore it can be used, if you want to publish your [location][GeoLocation], [
 First you have to create the personal eventing service. Since it\'s just a subset of PubSub, you have to use the `PubSubManager` and the personal eventing service is just a `PubSubService`.
 
 ```java
-PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
 PubSubService personalEventingService = pubSubManager.createPersonalEventingService();
 ```
 

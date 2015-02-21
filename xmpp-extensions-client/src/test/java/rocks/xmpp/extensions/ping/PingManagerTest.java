@@ -44,7 +44,7 @@ public class PingManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
-        PingManager pingManager = connection1.getExtensionManager(PingManager.class);
+        PingManager pingManager = connection1.getManager(PingManager.class);
         pingManager.ping(JULIET);
     }
 
@@ -53,18 +53,18 @@ public class PingManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        connection2.getExtensionManager(PingManager.class).setEnabled(false);
-        PingManager pingManager = connection1.getExtensionManager(PingManager.class);
+        connection2.getManager(PingManager.class).setEnabled(false);
+        PingManager pingManager = connection1.getManager(PingManager.class);
         Assert.assertFalse(pingManager.ping(JULIET));
     }
 
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        PingManager pingManager = connection1.getExtensionManager(PingManager.class);
+        PingManager pingManager = connection1.getManager(PingManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(pingManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:ping");
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         pingManager.setEnabled(false);

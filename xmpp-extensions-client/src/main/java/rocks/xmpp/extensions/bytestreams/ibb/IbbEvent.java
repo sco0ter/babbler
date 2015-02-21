@@ -52,7 +52,7 @@ final class IbbEvent extends ByteStreamEvent {
     @Override
     public final ByteStreamSession accept() {
         xmppSession.send(iq.createResult());
-        return xmppSession.getExtensionManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize);
+        return xmppSession.getManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize);
     }
 
     @Override

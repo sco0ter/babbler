@@ -34,6 +34,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.util.cache.DirectoryCache;
 import rocks.xmpp.core.util.cache.LruCache;
@@ -120,7 +121,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private EntityCapabilitiesManager(final XmppSession xmppSession) {
         super(xmppSession, EntityCapabilities.NAMESPACE);
-        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
         DirectoryCache cache;
         try {
@@ -163,7 +164,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                         publishCapsNode();
 
                         // Resend presence. This manager will add the caps extension later.
-                        PresenceManager presenceManager = xmppSession.getPresenceManager();
+                        PresenceManager presenceManager = xmppSession.getManager(PresenceManager.class);
                         Presence lastPresence = presenceManager.getLastSentPresence();
                         xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
                     }
@@ -176,7 +177,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 switch (e.getStatus()) {
                     case AUTHENTICATED:
                         // As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
-                        EntityCapabilities serverCapabilities = (EntityCapabilities) xmppSession.getStreamFeaturesManager().getFeatures().get(EntityCapabilities.class);
+                        EntityCapabilities serverCapabilities = (EntityCapabilities) xmppSession.getManager(StreamFeaturesManager.class).getFeatures().get(EntityCapabilities.class);
                         // If yes, treat it as other caps.
                         if (serverCapabilities != null) {
                             handleEntityCaps(serverCapabilities, Jid.valueOf(xmppSession.getDomain()));

@@ -75,7 +75,7 @@ try {
 ### Listening for File Transfer Offers
 
 ```java
-FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
 fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
     @Override
     public void fileTransferOffered(FileTransferOfferEvent e) {

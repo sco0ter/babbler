@@ -46,8 +46,8 @@ public class SoftwareVersionManagerTest extends ExtensionTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        connection2.getExtensionManager(SoftwareVersionManager.class).setSoftwareVersion(new SoftwareVersion("Name", "Version"));
-        SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
+        connection2.getManager(SoftwareVersionManager.class).setSoftwareVersion(new SoftwareVersion("Name", "Version"));
+        SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
         SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(JULIET);
         Assert.assertNotNull(softwareVersion);
         Assert.assertEquals(softwareVersion.getName(), "Name");
@@ -59,8 +59,8 @@ public class SoftwareVersionManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        connection2.getExtensionManager(SoftwareVersionManager.class).setEnabled(false);
-        SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
+        connection2.getManager(SoftwareVersionManager.class).setEnabled(false);
+        SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
         try {
             softwareVersionManager.getSoftwareVersion(JULIET);
         } catch (StanzaException e) {
@@ -72,10 +72,10 @@ public class SoftwareVersionManagerTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        SoftwareVersionManager softwareVersionManager = connection1.getExtensionManager(SoftwareVersionManager.class);
+        SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(softwareVersionManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("jabber:iq:version");
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         softwareVersionManager.setEnabled(false);

@@ -55,7 +55,7 @@ public class EntityCapabilitiesManagerTest extends ExtensionTest {
                 final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
                 XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-                final EntityCapabilitiesManager entityCapabilitiesManager = xmppSession1.getExtensionManager(EntityCapabilitiesManager.class);
+                final EntityCapabilitiesManager entityCapabilitiesManager = xmppSession1.getManager(EntityCapabilitiesManager.class);
 
                 ExecutorService executorService = Executors.newCachedThreadPool();
                 for (int i = 0; i < 100; i++) {

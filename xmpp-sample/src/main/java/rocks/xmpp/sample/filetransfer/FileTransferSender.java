@@ -68,7 +68,7 @@ public class FileTransferSender {
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-                    FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                    FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
                     FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("info.png"), "Description", new Jid("222", xmppSession.getDomain(), "filetransfer"), 5000);
                     fileTransfer.transfer();
 

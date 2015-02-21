@@ -81,14 +81,14 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     private StreamInitiationManager(final XmppSession xmppSession) {
         super(xmppSession, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
 
-        inBandByteStreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
-        socks5ByteStreamManager = xmppSession.getExtensionManager(Socks5ByteStreamManager.class);
+        inBandByteStreamManager = xmppSession.getManager(InBandByteStreamManager.class);
+        socks5ByteStreamManager = xmppSession.getManager(Socks5ByteStreamManager.class);
 
         // Currently, there's only one profile in XMPP, namely XEP-0096 SI File Transfer.
         profileManagers.put(SIFileTransferOffer.NAMESPACE, new ProfileManager() {
             @Override
             public void handle(IQ iq, StreamInitiation streamInitiation) {
-                FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
                 fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
             }
         });

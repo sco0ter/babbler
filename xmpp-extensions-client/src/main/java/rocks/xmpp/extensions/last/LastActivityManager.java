@@ -64,7 +64,7 @@ import java.util.Date;
  * <h3>Code sample</h3>
  * <pre>
  * <code>
- * LastActivityManager lastActivityManager = xmppSession.getExtensionManager(LastActivityManager.class);
+ * LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
  * LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@example.com/balcony"));
  * </code>
  * </pre>

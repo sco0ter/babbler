@@ -82,7 +82,7 @@ public final class InvisibilityManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public boolean isSupported() throws XmppException {
-        EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
+        EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
         return entityCapabilitiesManager.isSupported(InvisibleCommand.NAMESPACE, Jid.valueOf(xmppSession.getDomain()));
     }
 }

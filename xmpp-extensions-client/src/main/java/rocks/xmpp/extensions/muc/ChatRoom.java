@@ -581,7 +581,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public String discoverReservedNickname() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid, "x-roomuser-item");
         if (infoNode != null) {
             for (Identity identity : infoNode.getIdentities()) {

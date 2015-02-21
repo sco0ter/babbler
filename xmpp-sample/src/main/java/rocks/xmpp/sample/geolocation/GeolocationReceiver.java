@@ -55,7 +55,7 @@ public class GeolocationReceiver {
                     // Login
                     xmppSession.login("222", "222", "geolocation");
 
-//                    GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
+//                    GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
 //                    geoLocationManager.setEnabled(true);
 //                    geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
 //                        @Override

@@ -54,7 +54,7 @@ import rocks.xmpp.extensions.attention.model.Attention;
  * <p>If you use attentions, enable this manager class, in order to register this extension in service discovery:</p>
  * <pre>
  * <code>
- * xmppSession.getExtensionManager(AttentionManager.class).setEnabled(true);
+ * xmppSession.getManager(AttentionManager.class).setEnabled(true);
  * </code>
  * </pre>
  * This class is thread-safe.

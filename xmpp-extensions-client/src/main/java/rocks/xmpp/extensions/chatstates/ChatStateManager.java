@@ -53,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Setting your own chat state can either be done in a one-to-one chat session or a group chat.
  * <pre>
  * {@code
- * ChatStateManager chatStateManager = xmppSession.getExtensionManager(ChatStateManager.class);
+ * ChatStateManager chatStateManager = xmppSession.getManager(ChatStateManager.class);
  * chatStateManager.setChatState(ChatState.COMPOSING, chat);
  * }
  * </pre>

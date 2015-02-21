@@ -8,7 +8,7 @@ Here are a few examples how to do it.
 ## Retrieving Another User\'s Profile
 
 ```java
-VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
+VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
 VCard vCard = vCardManager.getVCard(Jid.valueOf("juliet@example.net"));
 if (vCard != null) {
     if (vCard.getName() != null) {
@@ -32,7 +32,7 @@ if (vCard != null) {
 ## Storing Your Own Profile
 
 ```java
-VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
+VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
 VCard vCard = new VCard();
 vCard.setName(new VCard.Name("Family Name", "Given Name", "Middle Name"));
 vCard.setNickName("Nickname");

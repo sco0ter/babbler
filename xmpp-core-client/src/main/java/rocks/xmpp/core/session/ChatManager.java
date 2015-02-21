@@ -69,7 +69,7 @@ import java.util.logging.Logger;
  * </code>
  * </pre>
  */
-public final class ChatManager {
+public final class ChatManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(ChatManager.class.getName());
 
@@ -89,9 +89,12 @@ public final class ChatManager {
      *
      * @param xmppSession The connection.
      */
-    public ChatManager(final XmppSession xmppSession) {
+    private ChatManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
+    }
 
+    @Override
+    protected final void initialize() {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {

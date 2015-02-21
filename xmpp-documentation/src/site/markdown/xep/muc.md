@@ -4,7 +4,7 @@
 For all MUC-related operations, you will need the ```MultiUserChatManager```, which you can get like this:
 
 ```java
-MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
+MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChatManager.class);
 ```
 
 ## Chat Services

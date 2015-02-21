@@ -52,4 +52,13 @@ public abstract class Manager {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    /**
+     * Initializes the manager. Logic which shouldn't be in the constructor can go here.
+     * This allows thread-safe construction of objects, e.g. when you need to publish the "this" reference.
+     *
+     * @see <a href="http://www.ibm.com/developerworks/library/j-jtp0618/">Java theory and practice: Safe construction techniques</a>
+     */
+    protected void initialize() {
+    }
 }

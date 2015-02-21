@@ -40,6 +40,7 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
@@ -106,7 +107,7 @@ public final class ContactExchangeManager extends ExtensionManager {
             @Override
             protected IQ processRequest(IQ iq) {
                 ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
-                if (xmppSession.getRosterManager().getContact(iq.getFrom().asBareJid()) == null) {
+                if (xmppSession.getManager(RosterManager.class).getContact(iq.getFrom().asBareJid()) == null) {
                     // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
                     return iq.createError(Condition.NOT_AUTHORIZED);
                 } else {
@@ -143,7 +144,7 @@ public final class ContactExchangeManager extends ExtensionManager {
     List<ContactExchange.Item> getItemsToProcess(List<ContactExchange.Item> items) {
         List<ContactExchange.Item> newItems = new ArrayList<>();
         for (ContactExchange.Item item : items) {
-            Contact contact = xmppSession.getRosterManager().getContact(item.getJid());
+            Contact contact = xmppSession.getManager(RosterManager.class).getContact(item.getJid());
             // If "action" attribute is missing, it is implicitly "add" by default.
             if (item.getAction() == null || item.getAction() == ContactExchange.Item.Action.ADD) {
                 if (contact != null) {
@@ -224,7 +225,7 @@ public final class ContactExchangeManager extends ExtensionManager {
                 contactExchange.getItems().add(rosterItem);
             }
             // http://xmpp.org/extensions/xep-0144.html#stanza
-            Presence presence = xmppSession.getPresenceManager().getPresence(jid);
+            Presence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
             if (presence.isAvailable()) {
                 xmppSession.query(new IQ(presence.getFrom(), IQ.Type.SET, contactExchange));
             } else {
@@ -256,7 +257,7 @@ public final class ContactExchangeManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ContactExchange.Item.Action approve(ContactExchange.Item item) throws XmppException {
-        RosterManager rosterManager = xmppSession.getRosterManager();
+        RosterManager rosterManager = xmppSession.getManager(RosterManager.class);
         Contact contact = rosterManager.getContact(item.getJid());
         ContactExchange.Item.Action action = null;
         if (item.getAction() == null || item.getAction() == ContactExchange.Item.Action.ADD) {

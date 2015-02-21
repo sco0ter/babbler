@@ -109,16 +109,6 @@ public class XmppSession implements AutoCloseable {
 
     private final AuthenticationManager authenticationManager;
 
-    private final RosterManager rosterManager;
-
-    private final ReconnectionManager reconnectionManager;
-
-    private final PresenceManager presenceManager;
-
-    private final StreamFeaturesManager streamFeaturesManager;
-
-    private final ChatManager chatManager;
-
     private final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
 
     private final Set<PresenceListener> presenceListeners = new CopyOnWriteArraySet<>();
@@ -129,7 +119,7 @@ public class XmppSession implements AutoCloseable {
 
     private final Set<SessionStatusListener> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<Class<? extends ExtensionManager>, ExtensionManager> instances = new ConcurrentHashMap<>();
+    private final Map<Class<? extends Manager>, Manager> instances = new ConcurrentHashMap<>();
 
     private final List<Connection> connections = new ArrayList<>();
 
@@ -228,15 +218,9 @@ public class XmppSession implements AutoCloseable {
         };
         Runtime.getRuntime().addShutdownHook(shutdownHook);
 
-        reconnectionManager = new ReconnectionManager(this);
+        StreamFeaturesManager streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
-        streamFeaturesManager = new StreamFeaturesManager();
-        addSessionStatusListener(streamFeaturesManager);
-
-        chatManager = new ChatManager(this);
         authenticationManager = new AuthenticationManager(this, configuration.getAuthenticationMechanisms());
-        rosterManager = new RosterManager(this);
-        presenceManager = new PresenceManager(this);
 
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
         streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(Bind.class) {
@@ -253,7 +237,7 @@ public class XmppSession implements AutoCloseable {
         });
 
         // Every connection supports XEP-106 JID Escaping.
-        getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
+        getManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
 
         if (configuration.getDebugger() != null) {
             try {
@@ -274,9 +258,9 @@ public class XmppSession implements AutoCloseable {
             }
         }
 
-        for (Class<? extends ExtensionManager> cls : configuration.getInitialExtensionManagers()) {
+        for (Class<? extends Manager> cls : configuration.getInitialManagers()) {
             // Initialize the managers.
-            getExtensionManager(cls);
+            getManager(cls);
         }
     }
 
@@ -740,7 +724,7 @@ public class XmppSession implements AutoCloseable {
 
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
         try {
-            getStreamFeaturesManager().awaitNegotiation(Mechanisms.class, 10000);
+            getManager(StreamFeaturesManager.class).awaitNegotiation(Mechanisms.class, 10000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             exception = e;
@@ -938,16 +922,16 @@ public class XmppSession implements AutoCloseable {
                 authenticationManager.startAuthentication(mechanisms, authorizationId, callbackHandler);
             }
             // Negotiate all pending features until <bind/> would be negotiated.
-            streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
+            getManager(StreamFeaturesManager.class).awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
 
             // Check if stream feature negotiation failed with an exception.
             throwAsXmppExceptionIfNotNull(exception);
 
             // Then negotiate resource binding manually.
             bindResource(resource);
-
-            if (callbackHandler != null && getRosterManager().isRetrieveRosterOnLogin()) {
-                getRosterManager().requestRoster();
+            RosterManager rosterManager = getManager(RosterManager.class);
+            if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
+                rosterManager.requestRoster();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -981,7 +965,7 @@ public class XmppSession implements AutoCloseable {
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
-        Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
+        Session session = (Session) getManager(StreamFeaturesManager.class).getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
             query(new IQ(IQ.Type.SET, new Session()));
         }
@@ -1009,12 +993,12 @@ public class XmppSession implements AutoCloseable {
                 }
             });
         } else if (element instanceof StreamFeatures) {
-            streamFeaturesManager.processFeatures((StreamFeatures) element);
+            getManager(StreamFeaturesManager.class).processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {
             throw new StreamErrorException((StreamError) element);
         } else {
             // Let's see, if the element is known to any feature negotiator.
-            return streamFeaturesManager.processElement(element);
+            return getManager(StreamFeaturesManager.class).processElement(element);
         }
         return false;
     }
@@ -1031,7 +1015,7 @@ public class XmppSession implements AutoCloseable {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
         exception = e;
         // Release a potential waiting thread.
-        streamFeaturesManager.cancelNegotiation();
+        getManager(StreamFeaturesManager.class).cancelNegotiation();
 
         synchronized (this) {
             if (status == Status.AUTHENTICATED || status == Status.AUTHENTICATING || status == Status.CONNECTED || status == Status.CONNECTING) {
@@ -1041,12 +1025,27 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
+     * Gets an instance of the specified extension manager class. The class MUST have a constructor which takes a single parameter, whose type is {@link rocks.xmpp.core.session.XmppSession}.
+     *
      * @param clazz The class of the extension manager.
      * @param <T>   The type.
-     * @return An instance of the specified extension manager.
+     * @return An instance of the specified manager.
+     * @deprecated Use {@link #getManager(Class)}
+     */
+    @Deprecated
+    public final <T extends ExtensionManager> T getExtensionManager(Class<T> clazz) {
+        return getManager(clazz);
+    }
+
+    /**
+     * Gets an instance of the specified manager class. The class MUST have a constructor which takes a single parameter, whose type is {@link rocks.xmpp.core.session.XmppSession}.
+     *
+     * @param clazz The class of the manager.
+     * @param <T>   The type.
+     * @return An instance of the specified manager.
      */
     @SuppressWarnings("unchecked")
-    public final <T extends ExtensionManager> T getExtensionManager(Class<T> clazz) {
+    public final <T extends Manager> T getManager(Class<T> clazz) {
         // http://j2eeblogger.blogspot.de/2007/10/singleton-vs-multiton-synchronization.html
         T instance;
         if ((instance = (T) instances.get(clazz)) == null) {
@@ -1071,45 +1070,55 @@ public class XmppSession implements AutoCloseable {
      * Gets the roster manager, which is responsible for retrieving, updating and deleting contacts from the roster.
      *
      * @return The roster manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final RosterManager getRosterManager() {
-        return rosterManager;
+        return getManager(RosterManager.class);
     }
 
     /**
      * Gets the presence manager, which is responsible for presence subscriptions.
      *
      * @return The presence manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final PresenceManager getPresenceManager() {
-        return presenceManager;
+        return getManager(PresenceManager.class);
     }
 
     /**
      * Gets the reconnection manager, which is responsible for automatic reconnection.
      *
      * @return The reconnection manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final ReconnectionManager getReconnectionManager() {
-        return reconnectionManager;
+        return getManager(ReconnectionManager.class);
     }
 
     /**
      * Gets the features manager, which is responsible for negotiating features.
      *
      * @return The features manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final StreamFeaturesManager getStreamFeaturesManager() {
-        return streamFeaturesManager;
+        return getManager(StreamFeaturesManager.class);
     }
 
     /**
      * Gets the chat manager, which is responsible for one-to-one chat sessions.
      *
      * @return The chat manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final ChatManager getChatManager() {
-        return chatManager;
+        return getManager(ChatManager.class);
     }
 
     /**

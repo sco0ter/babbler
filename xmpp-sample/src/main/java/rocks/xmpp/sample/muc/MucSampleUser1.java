@@ -70,7 +70,7 @@ public class MucSampleUser1 {
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-                    MultiUserChatManager multiUserChatManager = xmppSession.getExtensionManager(MultiUserChatManager.class);
+                    MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChatManager.class);
                     ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference." + xmppSession.getDomain()));
                     ChatRoom chatRoom = chatService.createRoom("test");
                     chatRoom.addOccupantListener(new OccupantListener() {

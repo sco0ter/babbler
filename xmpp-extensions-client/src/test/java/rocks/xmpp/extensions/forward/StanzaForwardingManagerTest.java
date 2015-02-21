@@ -39,10 +39,10 @@ public class StanzaForwardingManagerTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        StanzaForwardingManager stanzaForwardingManager = connection1.getExtensionManager(StanzaForwardingManager.class);
+        StanzaForwardingManager stanzaForwardingManager = connection1.getManager(StanzaForwardingManager.class);
         // By default, the manager should be NOT enabled.
         Assert.assertFalse(stanzaForwardingManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:forward:0");
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         stanzaForwardingManager.setEnabled(true);

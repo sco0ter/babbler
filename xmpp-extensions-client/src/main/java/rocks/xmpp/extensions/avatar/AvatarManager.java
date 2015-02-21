@@ -38,6 +38,7 @@ import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.util.cache.DirectoryCache;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
@@ -108,7 +109,7 @@ public final class AvatarManager extends ExtensionManager {
     private AvatarManager(final XmppSession xmppSession) {
         super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
-        vCardManager = xmppSession.getExtensionManager(VCardManager.class);
+        vCardManager = xmppSession.getManager(VCardManager.class);
         Map<String, byte[]> cache;
         try {
             cache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
@@ -229,7 +230,7 @@ public final class AvatarManager extends ExtensionManager {
                                         getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
 
                                         // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
-                                        Presence lastPresence = xmppSession.getPresenceManager().getLastSentPresence();
+                                        Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
                                         Presence presence;
                                         if (lastPresence != null) {
                                             presence = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
@@ -326,7 +327,7 @@ public final class AvatarManager extends ExtensionManager {
                                                 @Override
                                                 public void run() {
                                                     try {
-                                                        PubSubService pubSubService = xmppSession.getExtensionManager(PubSubManager.class).createPubSubService(message.getFrom());
+                                                        PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(message.getFrom());
                                                         List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
                                                         if (!items.isEmpty()) {
                                                             Item i = items.get(0);
@@ -356,7 +357,7 @@ public final class AvatarManager extends ExtensionManager {
         // Remove our own hash and send an empty presence.
         // The lack of our own hash, will download the vCard and either broadcasts the image hash or an empty hash.
         userHashes.remove(xmppSession.getConnectedResource().asBareJid());
-        Presence presence = xmppSession.getPresenceManager().getLastSentPresence();
+        Presence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
         if (presence == null) {
             presence = new Presence();
         }
@@ -401,7 +402,7 @@ public final class AvatarManager extends ExtensionManager {
                     // If there's no avatar for that user, create an empty avatar and load it.
                     avatar = new byte[0];
                     hash = "";
-                    VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
+                    VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
 
                     // Load the vCard for that user
                     VCard vCard;
@@ -526,7 +527,7 @@ public final class AvatarManager extends ExtensionManager {
      * @throws rocks.xmpp.core.XmppException If an XMPP exception occurs.
      */
     private void publishToPersonalEventingService(byte[] avatar, String itemId, AvatarMetadata.Info info) throws XmppException {
-        PubSubService personalEventingService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
+        PubSubService personalEventingService = xmppSession.getManager(PubSubManager.class).createPersonalEventingService();
         if (avatar != null) {
             if (info.getUrl() == null) {
                 // Publish image.

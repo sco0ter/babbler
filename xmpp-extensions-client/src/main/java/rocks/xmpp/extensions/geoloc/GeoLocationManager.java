@@ -103,7 +103,7 @@ public final class GeoLocationManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public void publish(GeoLocation geoLocation) throws XmppException {
-        PubSubService pepService = xmppSession.getExtensionManager(PubSubManager.class).createPersonalEventingService();
+        PubSubService pepService = xmppSession.getManager(PubSubManager.class).createPersonalEventingService();
         pepService.node(GeoLocation.NAMESPACE).publish(geoLocation);
     }
 

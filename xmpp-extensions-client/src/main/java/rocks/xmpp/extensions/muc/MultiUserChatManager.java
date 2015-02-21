@@ -69,7 +69,7 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     private MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, Muc.NAMESPACE);
-        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
     }
 
     @Override

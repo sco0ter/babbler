@@ -24,12 +24,13 @@
 
 package rocks.xmpp.core.stream;
 
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.tls.model.StartTls;
 
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Christian Schudt
  */
-public final class StreamFeaturesManager implements SessionStatusListener {
+public final class StreamFeaturesManager extends Manager {
 
     private final Lock lock = new ReentrantLock();
 
@@ -85,6 +86,41 @@ public final class StreamFeaturesManager implements SessionStatusListener {
      * The feature negotiators, which are responsible to negotiate each individual feature.
      */
     private final Set<StreamFeatureNegotiator> streamFeatureNegotiators = new CopyOnWriteArraySet<>();
+
+    private final XmppSession xmppSession;
+
+    private StreamFeaturesManager(XmppSession xmppSession) {
+        this.xmppSession = xmppSession;
+    }
+
+    @Override
+    protected final void initialize() {
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                switch (e.getStatus()) {
+                    // If we're (re)connecting, make sure any previous features are forgotten.
+                    case CONNECTING:
+                        synchronized (this) {
+                            featureNegotiationStartedConditions.clear();
+                            advertisedFeatures.clear();
+                            negotiatedFeatures.clear();
+                        }
+                        break;
+                    // If the connection is closed, clear everything.
+                    case CLOSED:
+                        synchronized (this) {
+                            featureNegotiationStartedConditions.clear();
+                            advertisedFeatures.clear();
+                            featuresToNegotiate.clear();
+                            negotiatedFeatures.clear();
+                            streamFeatureNegotiators.clear();
+                        }
+                        break;
+                }
+            }
+        });
+    }
 
     /**
      * Gets the available features, which the server has advertised.
@@ -241,30 +277,6 @@ public final class StreamFeaturesManager implements SessionStatusListener {
             } finally {
                 lock.unlock();
             }
-        }
-    }
-
-    @Override
-    public final void sessionStatusChanged(SessionStatusEvent e) {
-        switch (e.getStatus()) {
-            // If we're (re)connecting, make sure any previous features are forgotten.
-            case CONNECTING:
-                synchronized (this) {
-                    featureNegotiationStartedConditions.clear();
-                    advertisedFeatures.clear();
-                    negotiatedFeatures.clear();
-                }
-                break;
-            // If the connection is closed, clear everything.
-            case CLOSED:
-                synchronized (this) {
-                    featureNegotiationStartedConditions.clear();
-                    advertisedFeatures.clear();
-                    featuresToNegotiate.clear();
-                    negotiatedFeatures.clear();
-                    streamFeatureNegotiators.clear();
-                }
-                break;
         }
     }
 

@@ -25,6 +25,7 @@
 package rocks.xmpp.core.subscription;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
@@ -54,7 +55,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class PresenceManager {
+public final class PresenceManager extends Manager {
 
     // TODO auto deny or auto approve some or all requests.
 
@@ -66,8 +67,12 @@ public final class PresenceManager {
 
     private final Map<String, Presence> lastSentPresences = new ConcurrentHashMap<>();
 
-    public PresenceManager(final XmppSession xmppSession) {
+    private PresenceManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
+    }
+
+    @Override
+    protected final void initialize() {
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {

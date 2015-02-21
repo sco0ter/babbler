@@ -25,16 +25,20 @@
 package rocks.xmpp.core.session.context;
 
 import rocks.xmpp.core.bind.model.Bind;
+import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.ReconnectionManager;
 import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.subscription.preapproval.model.SubscriptionPreApproval;
 import rocks.xmpp.core.tls.model.StartTls;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
@@ -68,13 +72,13 @@ public class CoreContext {
 
     private final Set<Class<?>> extensions = new HashSet<>();
 
-    private final Set<Class<? extends ExtensionManager>> managers = new HashSet<>();
+    private final Set<Class<? extends Manager>> managers = new HashSet<>();
 
     public CoreContext(Class<?>... extensions) {
         this(Collections.<Class<? extends ExtensionManager>>emptyList(), extensions);
     }
 
-    public CoreContext(Collection<Class<? extends ExtensionManager>> extensionManagers, Class<?>... extensions) {
+    public CoreContext(Collection<Class<? extends ExtensionManager>> managers, Class<?>... extensions) {
         this.extensions.addAll(Arrays.asList(
                 // Core
                 StreamFeatures.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class,
@@ -115,9 +119,12 @@ public class CoreContext {
                 Media.class
         ));
         this.extensions.addAll(Arrays.asList(extensions));
-        managers.add(ServiceDiscoveryManager.class);
-        managers.add(ResultSetManager.class);
-        managers.addAll(extensionManagers);
+        this.managers.add(ServiceDiscoveryManager.class);
+        this.managers.add(ResultSetManager.class);
+        this.managers.add(PresenceManager.class);
+        this.managers.add(RosterManager.class);
+        this.managers.add(ReconnectionManager.class);
+        this.managers.addAll(managers);
     }
 
     /**
@@ -130,11 +137,11 @@ public class CoreContext {
     }
 
     /**
-     * Gets the initial extension managers.
+     * Gets the initial managers.
      *
-     * @return The initial extension managers.
+     * @return The initial managers.
      */
-    public final Collection<Class<? extends ExtensionManager>> getExtensionManagers() {
+    public final Collection<Class<? extends Manager>> getManagers() {
         return Collections.unmodifiableCollection(managers);
     }
 }

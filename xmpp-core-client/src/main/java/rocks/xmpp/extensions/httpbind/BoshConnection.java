@@ -683,7 +683,6 @@ public final class BoshConnection extends Connection {
 
                                 InputStream responseStream;
                                 String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
-                                System.out.println(contentEncoding);
                                 if (contentEncoding != null) {
                                     responseStream = compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream());
                                 } else {

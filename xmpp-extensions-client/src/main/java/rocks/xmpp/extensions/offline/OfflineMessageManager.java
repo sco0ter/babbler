@@ -65,7 +65,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      */
     public boolean isSupported() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
         return infoNode.getFeatures().contains(new Feature(OfflineMessage.NAMESPACE));
     }
@@ -79,7 +79,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-number">2.2 Requesting Number of Messages</a>
      */
     public int requestNumberOfMessages() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(null, OfflineMessage.NAMESPACE);
         if (!infoDiscovery.getExtensions().isEmpty()) {
             DataForm dataForm = infoDiscovery.getExtensions().get(0);
@@ -105,7 +105,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      */
     public List<OfflineMessageHeader> requestMessageHeaders() throws XmppException {
         List<OfflineMessageHeader> result = new ArrayList<>();
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, OfflineMessage.NAMESPACE);
         for (Item item : itemNode.getItems()) {
             result.add(new OfflineMessageHeader(Jid.valueOf(item.getName()), item.getNode()));

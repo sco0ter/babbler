@@ -53,7 +53,7 @@ public final class BookmarkManager extends ExtensionManager {
 
     private BookmarkManager(XmppSession xmppSession) {
         super(xmppSession);
-        privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
+        privateDataManager = xmppSession.getManager(PrivateDataManager.class);
     }
 
     /**

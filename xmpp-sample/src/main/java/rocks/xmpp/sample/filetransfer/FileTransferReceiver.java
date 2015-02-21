@@ -70,7 +70,7 @@ public class FileTransferReceiver {
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-                    FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                    FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
                     fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
                         @Override
                         public void fileTransferOffered(FileTransferOfferEvent e) {

@@ -135,7 +135,7 @@ public class XmppSession implements AutoCloseable {
      */
     volatile Jid connectedResource;
 
-    Connection activeConnection;
+    volatile Connection activeConnection;
 
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
@@ -144,8 +144,9 @@ public class XmppSession implements AutoCloseable {
 
     /**
      * Holds the connection state.
+     * Guarded by "this".
      */
-    private volatile Status status = Status.INITIAL;
+    private Status status = Status.INITIAL;
 
     /**
      * The resource, which the user requested during resource binding. This value is stored, so that it can be reused during reconnection.
@@ -160,9 +161,9 @@ public class XmppSession implements AutoCloseable {
     /**
      * The shutdown hook for JVM shutdown, which will disconnect each open connection before the JVM is halted.
      */
-    private Thread shutdownHook;
+    private volatile Thread shutdownHook;
 
-    private XmppDebugger debugger;
+    private volatile XmppDebugger debugger;
 
     private volatile boolean wasLoggedIn;
 
@@ -209,10 +210,8 @@ public class XmppSession implements AutoCloseable {
             public void run() {
                 shutdownHook = null;
                 try {
-                    if (status == Status.CONNECTED) {
-                        close();
-                    }
-                } catch (Exception e) {
+                    close();
+                } catch (XmppException e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
             }
@@ -653,14 +652,11 @@ public class XmppSession implements AutoCloseable {
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
      * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
      * @throws XmppException              If any other XMPP exception occurs.
+     * @deprecated Use {@link #connect()} which automatically performs a connect+login, if previously logged in.
      */
-    public final synchronized void reconnect() throws XmppException {
-        if (status == Status.DISCONNECTED) {
-            connect();
-            if (wasLoggedIn) {
-                loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
-            }
-        }
+    @Deprecated
+    public final void reconnect() throws XmppException {
+        connect();
     }
 
     /**
@@ -741,6 +737,11 @@ public class XmppSession implements AutoCloseable {
             throwAsXmppExceptionIfNotNull(exception);
         }
         updateStatus(Status.CONNECTED);
+
+        // This is for reconnection.
+        if (wasLoggedIn) {
+            loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
+        }
     }
 
     /**
@@ -783,7 +784,7 @@ public class XmppSession implements AutoCloseable {
      */
     public void send(ClientStreamElement element) {
 
-        if (!isConnected() && status != Status.CONNECTING) {
+        if (!isConnected() && getStatus() != Status.CONNECTING) {
             throw new IllegalStateException(String.format("Session is not connected to server"));
         }
         if (element instanceof Stanza) {
@@ -1019,15 +1020,7 @@ public class XmppSession implements AutoCloseable {
         // Release a potential waiting thread.
         getManager(StreamFeaturesManager.class).cancelNegotiation();
 
-        boolean canDisconnect = false;
-        synchronized (this) {
-            // synchronize for the status field.
-            if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(status)) {
-                canDisconnect = true;
-            }
-        }
-        if (canDisconnect) {
-            // Don't call listeners from within synchronized region.
+        if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus())) {
             updateStatus(Status.DISCONNECTED, e);
         }
     }
@@ -1212,7 +1205,7 @@ public class XmppSession implements AutoCloseable {
 
     /**
      * Gets the unmarshaller, which is used to unmarshal XML during reading from the input stream.
-     * <p>
+     * <p/>
      * Since {@link javax.xml.bind.Unmarshaller} is not thread-safe it is crucial to synchronize unmarshal operations on the unmarshaller itself:
      * <pre>
      * {@code
@@ -1231,7 +1224,7 @@ public class XmppSession implements AutoCloseable {
 
     /**
      * Gets the marshaller, which is used to marshal XML during writing to the output stream.
-     * <p>
+     * <p/>
      * Since {@link javax.xml.bind.Marshaller} is not thread-safe it is crucial to synchronize marshal operations on the marshaller itself:
      * <pre>
      * {@code
@@ -1265,8 +1258,8 @@ public class XmppSession implements AutoCloseable {
      * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link Status#AUTHENTICATING}.
      * @see #getStatus()
      */
-    public final synchronized boolean isConnected() {
-        return EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING).contains(status);
+    public final boolean isConnected() {
+        return EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING).contains(getStatus());
     }
 
     /**
@@ -1290,9 +1283,9 @@ public class XmppSession implements AutoCloseable {
 
     /**
      * Represents the session status.
-     * <p>
+     * <p/>
      * The following chart illustrates the valid status transitions:
-     * <p>
+     * <p/>
      * <pre>
      * &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; INITIAL
      * &#x2502;          &#x2502;

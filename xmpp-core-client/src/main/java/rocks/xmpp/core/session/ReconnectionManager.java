@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * You can also {@linkplain #setReconnectionStrategy(ReconnectionStrategy) set} your own reconnection strategy.
  * </p>
  * Use {@link #getNextReconnectionAttempt()} if you want to find out, when the next reconnection attempt will happen.
- * <p>
+ * <p/>
  * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
@@ -124,8 +124,8 @@ public final class ReconnectionManager extends Manager {
                 @Override
                 public void run() {
                     try {
-                        xmppSession.reconnect();
-                    } catch (XmppException e1) {
+                        xmppSession.connect();
+                    } catch (XmppException e) {
                         scheduleReconnection(attempt + 1);
                     }
                 }

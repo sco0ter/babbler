@@ -713,7 +713,7 @@ public class XmppSession implements AutoCloseable {
                 break;
             } catch (IOException e) {
                 if (connectionIterator.hasNext()) {
-                    logger.log(Level.WARNING, String.format("%s failed to connect. Trying alternative connection.", connection));
+                    logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connection);
                     logger.log(Level.FINE, e.getMessage(), e);
                 } else {
                     updateStatus(previousStatus, e);

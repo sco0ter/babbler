@@ -91,11 +91,6 @@ public final class BoshConnection extends Connection {
      */
     private final AtomicLong rid = new AtomicLong();
 
-    /**
-     * The executor, which will execute HTTP requests.
-     */
-    private final ExecutorService httpBindExecutor;
-
     private final XMLOutputFactory xmlOutputFactory;
 
     private final XMLInputFactory xmlInputFactory;
@@ -120,6 +115,12 @@ public final class BoshConnection extends Connection {
      * The encoding we can support. This is added as "Accept-Encoding" header in a request.
      */
     private final String clientAcceptEncoding;
+
+    /**
+     * The executor, which will execute HTTP requests.
+     * Guarded by "this".
+     */
+    private ExecutorService httpBindExecutor;
 
     /**
      * The compression method which is used to compress requests.
@@ -165,9 +166,6 @@ public final class BoshConnection extends Connection {
         this.boshConnectionConfiguration = configuration;
         this.debugger = getXmppSession().getDebugger();
 
-        // Threads created by this thread pool, will be used to do simultaneous requests.
-        // Even in the unusual case, where the connection manager allows for more requests, two are enough.
-        httpBindExecutor = Executors.newFixedThreadPool(2, XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
         xmlOutputFactory = XMLOutputFactory.newFactory();
         xmlInputFactory = XMLInputFactory.newFactory();
         compressionMethods = new LinkedHashMap<>();
@@ -370,6 +368,11 @@ public final class BoshConnection extends Connection {
                 connection.disconnect();
             }
         }
+
+        // Threads created by this thread pool, will be used to do simultaneous requests.
+        // Even in the unusual case, where the connection manager allows for more requests, two are enough.
+        httpBindExecutor = Executors.newFixedThreadPool(2, XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
+
         // Send the initial request.
         sendNewRequest(body.build());
     }
@@ -403,7 +406,6 @@ public final class BoshConnection extends Connection {
                     // After receiving a session creation response with an 'accept' attribute,
                     // clients MAY include an HTTP Content-Encoding header in subsequent requests (indicating one of the encodings specified in the 'accept' attribute) and compress the bodies of the requests accordingly.
                     String[] serverAcceptedEncodings = responseBody.getAccept().split(",");
-                    String contentEncoding = null;
                     // Let's see if we can compress the contents for the server by choosing a known compression method.
                     for (String serverAcceptedEncoding : serverAcceptedEncodings) {
                         requestCompressionMethod = compressionMethods.get(serverAcceptedEncoding);
@@ -494,22 +496,24 @@ public final class BoshConnection extends Connection {
     @Override
     public final void close() throws Exception {
         if (getSessionId() != null) {
-            synchronized (httpBindExecutor) {
-                if (!httpBindExecutor.isShutdown()) {
-                    // Terminate the BOSH session.
-                    Body.Builder bodyBuilder = Body.builder()
-                            .requestId(rid.getAndIncrement())
-                            .sessionId(getSessionId())
-                            .type(Body.Type.TERMINATE);
+            synchronized (this) {
+                if (httpBindExecutor != null) {
+                    if (!httpBindExecutor.isShutdown()) {
+                        // Terminate the BOSH session.
+                        Body.Builder bodyBuilder = Body.builder()
+                                .requestId(rid.getAndIncrement())
+                                .sessionId(getSessionId())
+                                .type(Body.Type.TERMINATE);
 
-                    appendKey(bodyBuilder);
+                        appendKey(bodyBuilder);
 
-                    sendNewRequest(bodyBuilder.build());
+                        sendNewRequest(bodyBuilder.build());
 
-                    // and then shut it down.
-                    httpBindExecutor.shutdown();
-                    // Wait shortly, until the "terminate" body has been sent.
-                    httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
+                        // and then shut it down.
+                        httpBindExecutor.shutdown();
+                        // Wait shortly, until the "terminate" body has been sent.
+                        httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
+                    }
                 }
             }
         }
@@ -522,7 +526,7 @@ public final class BoshConnection extends Connection {
      * @see <a href="https://conversejs.org/docs/html/#prebinding-and-single-session-support">https://conversejs.org/docs/html/#prebinding-and-single-session-support</a>
      */
     public final long detach() {
-        synchronized (httpBindExecutor) {
+        synchronized (this) {
             if (!httpBindExecutor.isShutdown()) {
                 httpBindExecutor.shutdown();
             }
@@ -598,7 +602,7 @@ public final class BoshConnection extends Connection {
     private void sendNewRequest(final Body body) {
 
         // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
-        synchronized (httpBindExecutor) {
+        synchronized (this) {
             if (!httpBindExecutor.isShutdown()) {
                 httpBindExecutor.execute(new Runnable() {
                     @Override
@@ -750,6 +754,11 @@ public final class BoshConnection extends Connection {
                                 sendNewRequest(bodyBuilder.build());
                             }
                         } catch (Exception e) {
+                            synchronized (this) {
+                                if (!httpBindExecutor.isShutdown()) {
+                                    httpBindExecutor.shutdown();
+                                }
+                            }
                             getXmppSession().notifyException(e);
                         } finally {
                             if (httpConnection != null) {

@@ -70,7 +70,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
     private static final String STREAM_METHOD = "stream-method";
 
-    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList( InBandByteStream.NAMESPACE));
+    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
 
     private final Map<String, ProfileManager> profileManagers = new ConcurrentHashMap<>();
 

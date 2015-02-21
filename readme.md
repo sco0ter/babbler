@@ -245,7 +245,7 @@ xmppSession.addMessageListener(new MessageListener() {
     }
 });
 // Listen for roster pushes
-xmppSession.getRosterManager().addRosterListener(new RosterListener() {
+xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
     @Override
     public void rosterChanged(RosterEvent e) {
 

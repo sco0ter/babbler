@@ -428,7 +428,7 @@ public class JavaFXApp extends Application {
                             Presence presence = new Presence();
                             xmppSession.send(presence);
 
-                            //xmppSession.getRosterManager().requestRoster();
+                            //xmppSession.getManager(RosterManager.class).requestRoster();
 
                         } catch (Exception e) {
                             e.printStackTrace();

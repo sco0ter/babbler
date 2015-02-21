@@ -108,7 +108,7 @@ xmppSession.addMessageListener(new MessageListener() {
     }
 });
 // Listen for roster pushes
-xmppSession.getRosterManager().addRosterListener(new RosterListener() {
+xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
     @Override
     public void rosterChanged(RosterEvent e) {
 
@@ -123,8 +123,8 @@ If you have prepared your session, you are now ready to connect to the server:
 ```java
 try {
    xmppSession.connect();
-} catch (IOException e) {
-   // e.g. UnknownHostException
+} catch (XmppException e) {
+   // ...
 }
 ```
 
@@ -141,7 +141,9 @@ After connecting, you have to authenticate and bind a resource, in order to beco
 try {
    xmppSession.login("username", "password", "resource");
 } catch (AuthenticationException e) {
-   // Login failed
+   // Login failed, because the server returned a SASL failure, most likely due to wrong credentials.
+} catch (XmppException e) {
+   // Other causes, e.g. no response, failure during resource binding, etc.
 }
 ```
 

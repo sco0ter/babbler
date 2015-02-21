@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -136,7 +137,7 @@ public abstract class AbstractIQ extends Stanza {
      * @return True if this is a get or set IQ.
      */
     public final boolean isRequest() {
-        return type == Type.GET || type == Type.SET;
+        return EnumSet.of(Type.GET, Type.SET).contains(type);
     }
 
     /**
@@ -145,7 +146,7 @@ public abstract class AbstractIQ extends Stanza {
      * @return If this is a result or error IQ.
      */
     public final boolean isResponse() {
-        return type == Type.RESULT || type == Type.ERROR;
+        return EnumSet.of(Type.RESULT, Type.ERROR).contains(type);
     }
 
     /**

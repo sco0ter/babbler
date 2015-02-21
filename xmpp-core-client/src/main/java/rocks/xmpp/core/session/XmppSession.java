@@ -72,6 +72,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -1017,10 +1018,16 @@ public class XmppSession implements AutoCloseable {
         // Release a potential waiting thread.
         getManager(StreamFeaturesManager.class).cancelNegotiation();
 
+        boolean canDisconnect = false;
         synchronized (this) {
-            if (status == Status.AUTHENTICATED || status == Status.AUTHENTICATING || status == Status.CONNECTED || status == Status.CONNECTING) {
-                updateStatus(Status.DISCONNECTED, e);
+            // synchronize for the status field.
+            if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(status)) {
+                canDisconnect = true;
             }
+        }
+        if (canDisconnect) {
+            // Don't call listeners from within synchronized region.
+            updateStatus(Status.DISCONNECTED, e);
         }
     }
 
@@ -1258,7 +1265,7 @@ public class XmppSession implements AutoCloseable {
      * @see #getStatus()
      */
     public final boolean isConnected() {
-        return status == Status.CONNECTED || status == Status.AUTHENTICATED || status == Status.AUTHENTICATING;
+        return EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING).contains(status);
     }
 
     /**

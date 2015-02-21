@@ -162,15 +162,15 @@ public class XmppSession implements AutoCloseable {
      */
     private Thread shutdownHook;
 
-    private boolean wasLoggedIn;
-
     private XmppDebugger debugger;
 
-    private String lastAuthorizationId;
+    private volatile boolean wasLoggedIn;
 
-    private String[] lastMechanisms;
+    private volatile String lastAuthorizationId;
 
-    private CallbackHandler lastCallbackHandler;
+    private volatile String[] lastMechanisms;
+
+    private volatile CallbackHandler lastCallbackHandler;
 
     /**
      * Creates a session with the specified service domain, by using the default configuration.
@@ -688,20 +688,18 @@ public class XmppSession implements AutoCloseable {
      * @throws XmppException              If any other XMPP exception occurs.
      * @throws IllegalStateException      If the session is in a wrong state, e.g. closed or already connected.
      */
-    public final synchronized void connect(Jid from) throws XmppException {
+    public final void connect(Jid from) throws XmppException {
 
-        if (status == Status.CLOSED) {
+        Status previousStatus = getStatus();
+
+        if (previousStatus == Status.CLOSED) {
             throw new IllegalStateException("Session is already closed. Create a new one.");
         }
-        if (status != Status.INITIAL && status != Status.DISCONNECTED) {
-            throw new IllegalStateException("Already connected.");
+
+        if (isConnected() || !updateStatus(Status.CONNECTING)) {
+            // Silently return, when we are already connected or connecting.
+            return;
         }
-
-        Status oldStatus = status;
-
-        // Should either be INITIAL or DISCONNECTED
-        Status previousStatus = status;
-        updateStatus(Status.CONNECTING);
         // Reset
         exception = null;
 
@@ -734,7 +732,7 @@ public class XmppSession implements AutoCloseable {
         }
 
         if (exception != null) {
-            updateStatus(oldStatus);
+            updateStatus(previousStatus);
             try {
                 activeConnection.close();
             } catch (Exception e1) {
@@ -899,18 +897,21 @@ public class XmppSession implements AutoCloseable {
         loginInternal(new String[]{"ANONYMOUS"}, null, null, null);
     }
 
-    private synchronized void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
-        if (getStatus() == Status.AUTHENTICATED) {
+    private void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
+
+        Status previousStatus = getStatus();
+
+        if (previousStatus == Status.AUTHENTICATED || !updateStatus(Status.AUTHENTICATING)) {
             throw new IllegalStateException("You are already logged in.");
         }
-        if (getStatus() != Status.CONNECTED) {
+        if (previousStatus != Status.CONNECTED) {
             throw new IllegalStateException("You must be connected to the server before trying to login.");
         }
         if (getDomain() == null) {
             throw new IllegalStateException("The XMPP domain must not be null.");
         }
+
         exception = null;
-        Status oldStatus = status;
 
         lastMechanisms = mechanisms;
         lastAuthorizationId = authorizationId;
@@ -937,11 +938,11 @@ public class XmppSession implements AutoCloseable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // Revert status
-            updateStatus(oldStatus);
+            updateStatus(previousStatus);
             throwAsXmppExceptionIfNotNull(e);
         } catch (StreamNegotiationException e) {
             // Revert status
-            updateStatus(oldStatus);
+            updateStatus(previousStatus);
             throw e;
         }
         wasLoggedIn = true;
@@ -1264,7 +1265,7 @@ public class XmppSession implements AutoCloseable {
      * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link Status#AUTHENTICATING}.
      * @see #getStatus()
      */
-    public final boolean isConnected() {
+    public final synchronized boolean isConnected() {
         return EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING).contains(status);
     }
 

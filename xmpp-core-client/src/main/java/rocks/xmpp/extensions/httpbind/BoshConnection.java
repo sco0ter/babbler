@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
@@ -423,7 +424,7 @@ public final class BoshConnection extends Connection {
 
         if (responseBody.getAck() != null) {
             // The response has acknowledged another request.
-            unacknowledgedRequests.remove(responseBody.getAck());
+            ackReceived(responseBody.getAck());
         }
 
         // If the body contains an error condition, which is not a stream error, terminate the connection by throwing an exception.
@@ -723,7 +724,7 @@ public final class BoshConnection extends Connection {
                                     }
                                 } finally {
                                     // The response itself acknowledges the request, so we can remove the request.
-                                    unacknowledgedRequests.remove(body.getRid());
+                                    ackReceived(body.getRid());
                                     if (xmlEventReader != null) {
                                         xmlEventReader.close();
                                     }
@@ -767,6 +768,17 @@ public final class BoshConnection extends Connection {
                         }
                     }
                 });
+            }
+        }
+    }
+
+    private void ackReceived(Long rid) {
+        Body body = unacknowledgedRequests.remove(rid);
+        if (body != null) {
+            for (Object object : body.getWrappedObjects()) {
+                if (object instanceof Stanza) {
+                    // TODO trigger some listener
+                }
             }
         }
     }

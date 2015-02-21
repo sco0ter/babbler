@@ -48,7 +48,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -124,14 +123,6 @@ public final class PingManager extends ExtensionManager {
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (e.isIncoming()) {
-                    rescheduleNextPing();
-                }
-            }
-        });
-        xmppSession.addIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
                 if (e.isIncoming()) {
                     rescheduleNextPing();
                 }
@@ -222,7 +213,11 @@ public final class PingManager extends ExtensionManager {
                 public void run() {
                     if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
                         if (!pingServer()) {
-                            logger.log(Level.WARNING, "Timeout reached while pinging server.");
+                            try {
+                                throw new XmppException("Server ping failed.");
+                            } catch (XmppException e) {
+                                xmppSession.notifyException(e);
+                            }
                         }
                     }
                     rescheduleNextPing();

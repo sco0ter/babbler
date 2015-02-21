@@ -58,11 +58,11 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -99,7 +99,7 @@ public final class BoshConnection extends Connection {
 
     private final XmppDebugger debugger;
 
-    private final Deque<String> keySequence = new LinkedList<>();
+    private final Deque<String> keySequence = new ArrayDeque<>();
 
     /**
      * The current request count, i.e. the current number of simultaneous requests.

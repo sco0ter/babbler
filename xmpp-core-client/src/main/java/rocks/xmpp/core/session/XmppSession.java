@@ -480,17 +480,6 @@ public class XmppSession implements AutoCloseable {
         }
     }
 
-    private void notifyConnectionListeners(Status status, Status oldStatus, Exception exception) {
-        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, exception);
-        for (SessionStatusListener connectionListener : sessionStatusListeners) {
-            try {
-                connectionListener.sessionStatusChanged(sessionStatusEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
     /**
      * Sends an {@code <iq/>} stanza and waits for the response.
      * <p>
@@ -772,32 +761,35 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Explicitly closes the connection and performs a clean up of all listeners.
+     * Explicitly closes the connection and performs a clean up of all listeners. Calling this method, if the session is already closing or closed has no effect.
      *
      * @throws XmppException If an exception occurs while closing the connection, e.g. the underlying socket connection.
      */
     @Override
-    public synchronized void close() throws XmppException {
-        updateStatus(Status.CLOSING);
-        // Clear everything.
-        messageListeners.clear();
-        presenceListeners.clear();
-        iqListeners.clear();
-        if (shutdownHook != null) {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+    public void close() throws XmppException {
+        if (getStatus() == Status.CLOSED || !updateStatus(Status.CLOSING)) {
+            return;
         }
-
+        // The following code should only be called once, no matter how many threads concurrently call this method.
         try {
             if (activeConnection != null) {
                 activeConnection.close();
                 activeConnection = null;
             }
         } catch (Exception e) {
-            throw new XmppException(e);
+            throwAsXmppExceptionIfNotNull(e);
         } finally {
+            // Clear everything.
+            messageListeners.clear();
+            presenceListeners.clear();
+            iqListeners.clear();
             stanzaListenerExecutor.shutdown();
             iqHandlerExecutor.shutdown();
+            if (shutdownHook != null) {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            }
             updateStatus(Status.CLOSED);
+            sessionStatusListeners.clear();
         }
     }
 
@@ -1147,12 +1139,18 @@ public class XmppSession implements AutoCloseable {
      *
      * @return The status.
      */
-    public final Status getStatus() {
+    public final synchronized Status getStatus() {
         return status;
     }
 
-    final void updateStatus(Status status) {
-        updateStatus(status, null);
+    /**
+     * Updates the status and notifies the connection listeners.
+     *
+     * @param status The new status.
+     * @return True, if the status has changed; otherwise false.
+     */
+    final boolean updateStatus(Status status) {
+        return updateStatus(status, null);
     }
 
     /**
@@ -1160,15 +1158,29 @@ public class XmppSession implements AutoCloseable {
      *
      * @param status The new status.
      * @param e      The exception.
+     * @return True, if the status has changed; otherwise false.
      */
-    final void updateStatus(Status status, Exception e) {
-        if (this.status != status) {
-            Status oldStatus = this.status;
+    final boolean updateStatus(Status status, Exception e) {
+        Status oldStatus;
+        synchronized (this) {
+            oldStatus = this.status;
             this.status = status;
-            notifyConnectionListeners(status, oldStatus, e);
         }
-        if (status == Status.CLOSED) {
-            sessionStatusListeners.clear();
+        if (status != oldStatus) {
+            // Make sure to not call listeners from within synchronized region.
+            notifySessionStatusListeners(status, oldStatus, e);
+        }
+        return status != oldStatus;
+    }
+
+    private void notifySessionStatusListeners(Status status, Status oldStatus, Exception exception) {
+        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, exception);
+        for (SessionStatusListener connectionListener : sessionStatusListeners) {
+            try {
+                connectionListener.sessionStatusChanged(sessionStatusEvent);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
         }
     }
 

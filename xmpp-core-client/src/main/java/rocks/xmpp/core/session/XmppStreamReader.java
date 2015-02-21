@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.
- * <p>
+ * <p/>
  * This class is thread-safe.
  *
  * @author Christian Schudt
@@ -162,6 +162,12 @@ final class XmppStreamReader {
                             throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, new Text("Stream closed by server", "en"), null));
                         }
                     } catch (Exception e) {
+                        synchronized (XmppStreamReader.this) {
+                            if (!executorService.isShutdown()) {
+                                // shutdown the service, but don't await termination, in order to not block the reader thread.
+                                executorService.shutdown();
+                            }
+                        }
                         xmppSession.notifyException(e);
                     } finally {
                         if (xmlEventReader != null) {
@@ -173,19 +179,6 @@ final class XmppStreamReader {
                         }
                         if (doRestart) {
                             connection.restartStream();
-                        } else {
-                            synchronized (XmppStreamReader.this) {
-                                if (!executorService.isShutdown()) {
-                                    // shutdown the service, but don't await termination, in order to not block the reader thread.
-                                    executorService.shutdown();
-                                }
-                            }
-                            // Then close the connection, which will only close the writer thread and the socket.
-                            try {
-                                connection.close();
-                            } catch (Exception e) {
-                                xmppSession.notifyException(e);
-                            }
                         }
                     }
                 }

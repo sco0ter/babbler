@@ -190,7 +190,7 @@ public final class TcpConnection extends Connection {
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), this, xmlOutputFactory);
+        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), xmlOutputFactory);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 

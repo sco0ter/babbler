@@ -1021,6 +1021,11 @@ public class XmppSession implements AutoCloseable {
         getManager(StreamFeaturesManager.class).cancelNegotiation();
 
         if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus())) {
+            try {
+                activeConnection.close();
+            } catch (Exception e1) {
+                e.addSuppressed(e1);
+            }
             updateStatus(Status.DISCONNECTED, e);
         }
     }

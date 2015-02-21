@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class is responsible for opening and closing the XMPP stream as well as writing any XML elements to the stream.
- * <p>
+ * <p/>
  * This class is thread-safe.
  *
  * @author Christian Schudt
@@ -62,8 +62,6 @@ final class XmppStreamWriter {
     private final Marshaller marshaller;
 
     private final XmppDebugger debugger;
-
-    private final Connection connection;
 
     /**
      * An executor which periodically schedules a whitespace ping.
@@ -96,12 +94,11 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(final XmppSession xmppSession, final Connection connection, XMLOutputFactory xmlOutputFactory) {
+    XmppStreamWriter(final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.getMarshaller();
         this.debugger = xmppSession.getDebugger();
-        this.connection = connection;
 
         executor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
     }
@@ -121,7 +118,7 @@ final class XmppStreamWriter {
                                         xmlStreamWriter.writeCharacters(" ");
                                         xmlStreamWriter.flush();
                                     } catch (Exception e) {
-                                        closeConnectionAndNotify(e);
+                                        notifyException(e);
                                     }
                                 }
                             });
@@ -154,7 +151,7 @@ final class XmppStreamWriter {
                             byteArrayOutputStream.reset();
                         }
                     } catch (Exception e) {
-                        closeConnectionAndNotify(e);
+                        notifyException(e);
                     }
                 }
             });
@@ -210,7 +207,7 @@ final class XmppStreamWriter {
                         }
                         streamOpened = true;
                     } catch (Exception e) {
-                        closeConnectionAndNotify(e);
+                        notifyException(e);
                     }
                 }
             });
@@ -233,7 +230,7 @@ final class XmppStreamWriter {
                         xmlStreamWriter.close();
                         streamOpened = false;
                     } catch (Exception e) {
-                        closeConnectionAndNotify(e);
+                        notifyException(e);
                     }
                 }
             }
@@ -245,7 +242,7 @@ final class XmppStreamWriter {
      *
      * @param exception The exception which occurred during writing.
      */
-    private void closeConnectionAndNotify(Exception exception) {
+    private void notifyException(Exception exception) {
 
         // Shutdown the executors.
         synchronized (this) {
@@ -267,19 +264,13 @@ final class XmppStreamWriter {
             byteArrayOutputStream = null;
         }
 
-        try {
-            // Close the connection, which will only close the reader thread and the socket (because the writer is already shutdown).
-            connection.close();
-        } catch (Exception e) {
-            exception.addSuppressed(e);
-        }
         xmppSession.notifyException(exception);
     }
 
     /**
      * Closes the stream by sending a closing {@code </stream:stream>} to the server.
      * This method waits until this task is completed, but not more than 0.25 seconds.
-     * <p>
+     * <p/>
      * Make sure to synchronize this method.
      * Otherwise multiple threads could call {@link #closeStream()} which may result in a {@link RejectedExecutionException}, if it has been shutdown by another thread in the meantime.
      */

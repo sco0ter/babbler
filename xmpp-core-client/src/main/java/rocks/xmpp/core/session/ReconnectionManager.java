@@ -34,6 +34,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * If the connection goes down, this class automatically reconnects, if the user was authenticated.
@@ -52,13 +54,15 @@ import java.util.concurrent.TimeUnit;
  * You can also {@linkplain #setReconnectionStrategy(ReconnectionStrategy) set} your own reconnection strategy.
  * </p>
  * Use {@link #getNextReconnectionAttempt()} if you want to find out, when the next reconnection attempt will happen.
- * <p/>
+ * <p>
  * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
  */
 public final class ReconnectionManager extends Manager {
+
+    private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
 
     private final ScheduledExecutorService scheduledExecutorService;
 
@@ -119,12 +123,19 @@ public final class ReconnectionManager extends Manager {
     private synchronized void scheduleReconnection(final int attempt) {
         if (isEnabled()) {
             int seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
+            if (attempt == 0) {
+                logger.log(Level.FINE, "Disconnect detected. Next reconnection attempt in {0} seconds.", seconds);
+            } else {
+                logger.log(Level.FINE, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", new Object[]{attempt, seconds});
+            }
+
             nextReconnectionAttempt = new Date(System.currentTimeMillis() + seconds * 1000);
             scheduledFuture = scheduledExecutorService.schedule(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         xmppSession.connect();
+                        logger.log(Level.FINE, "Reconnection successful.");
                     } catch (XmppException e) {
                         scheduleReconnection(attempt + 1);
                     }

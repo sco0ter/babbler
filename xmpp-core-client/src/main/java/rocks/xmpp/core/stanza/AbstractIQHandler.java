@@ -26,6 +26,7 @@ package rocks.xmpp.core.stanza;
 
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
@@ -62,7 +63,7 @@ public abstract class AbstractIQHandler implements IQHandler {
             if (iq.getType() == type) {
                 return processRequest(iq);
             } else {
-                return iq.createError(Condition.BAD_REQUEST);
+                return iq.createError(new StanzaError(Condition.BAD_REQUEST, String.format("Type was '%s', but expected '%s'.", iq.getType().toString().toLowerCase(), type.toString().toLowerCase())));
             }
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);

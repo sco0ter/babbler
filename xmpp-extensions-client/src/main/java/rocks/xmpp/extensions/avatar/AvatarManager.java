@@ -110,14 +110,7 @@ public final class AvatarManager extends ExtensionManager {
         super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
         vCardManager = xmppSession.getManager(VCardManager.class);
-        Map<String, byte[]> cache;
-        try {
-            cache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Unable to instantiate directory cache.", e);
-            cache = null;
-        }
-        avatarCache = cache;
+        avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
 
         avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
 

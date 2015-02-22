@@ -53,7 +53,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -123,14 +122,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
         super(xmppSession, EntityCapabilities.NAMESPACE);
         serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
-        DirectoryCache cache;
-        try {
-            cache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Unable to instantiate directory cache.", e);
-            cache = null;
-        }
-        directoryCapsCache = cache;
+        directoryCapsCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
         serviceDiscoverer = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Automatic Service Discovery Thread"));
         // no need for a synchronized map, since access to this is already synchronized by this class.
         publishedNodes = new LinkedHashMap<String, Verification>(10, 0.75F, false) {

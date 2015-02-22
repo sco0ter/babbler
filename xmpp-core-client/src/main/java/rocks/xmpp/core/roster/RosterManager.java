@@ -35,7 +35,8 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
@@ -134,6 +135,7 @@ public final class RosterManager extends Manager {
         privateDataManager = xmppSession.getManager(PrivateDataManager.class);
 
         this.rosterCacheDirectory = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("rosterver")) : null;
+        setEnabled(true);
     }
 
     /**
@@ -179,23 +181,20 @@ public final class RosterManager extends Manager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addIQHandler(Roster.class, new IQHandler() {
+        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
-            public IQ handleRequest(IQ iq) {
+            public IQ processRequest(IQ iq) {
                 Roster roster = iq.getExtension(Roster.class);
                 // 2.1.6.  Roster Push
-                if (iq.getType() == IQ.Type.SET) {
-                    // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
-                    if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
-                        updateRoster(roster, true);
-                        // Gracefully send an empty result.
-                        return iq.createResult();
-                    } else {
-                        // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
-                        return iq.createError(Condition.SERVICE_UNAVAILABLE);
-                    }
+                // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
+                if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
+                    updateRoster(roster, true);
+                    // Gracefully send an empty result.
+                    return iq.createResult();
+                } else {
+                    // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
+                    return iq.createError(Condition.SERVICE_UNAVAILABLE);
                 }
-                return iq.createError(Condition.BAD_REQUEST);
             }
         });
         xmppSession.addSessionStatusListener(new SessionStatusListener() {

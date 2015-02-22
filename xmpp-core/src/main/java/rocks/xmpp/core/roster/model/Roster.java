@@ -51,11 +51,14 @@ public final class Roster {
     private final List<Contact> item = new ArrayList<>();
 
     @XmlAttribute
-    @SuppressWarnings("unused") // Only set by server.
     private final String ver;
 
     public Roster() {
         this(null, null);
+    }
+
+    public Roster(String ver) {
+        this(null, ver);
     }
 
     public Roster(Collection<Contact> contacts) {

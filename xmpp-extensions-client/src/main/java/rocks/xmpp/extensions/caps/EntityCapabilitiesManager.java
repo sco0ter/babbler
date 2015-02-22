@@ -46,7 +46,6 @@ import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.beans.PropertyChangeEvent;
@@ -352,8 +351,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             CAPS_CACHE.put(verification, infoNode);
 
             // Write to persistent cache.
-            try {
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream);
                 XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
                 synchronized (xmppSession.getMarshaller()) {
@@ -375,18 +373,19 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             }
             // If it's not present, check the persistent cache.
             String fileName = XmppUtils.hash(verification.toString().getBytes()) + ".caps";
-            byte[] bytes = directoryCapsCache.get(fileName);
-            if (bytes != null) {
-                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-                try {
-                    synchronized (xmppSession.getUnmarshaller()) {
-                        infoNode = (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
-                        CAPS_CACHE.put(verification, infoNode);
-                        return infoNode;
+            try {
+                byte[] bytes = directoryCapsCache.get(fileName);
+                if (bytes != null) {
+                    try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+                        synchronized (xmppSession.getUnmarshaller()) {
+                            infoNode = (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
+                            CAPS_CACHE.put(verification, infoNode);
+                            return infoNode;
+                        }
                     }
-                } catch (JAXBException e) {
-                    logger.log(Level.WARNING, "Could not read entity capabilities from persistent cache (file: " + fileName + ")", e);
                 }
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Could not read entity capabilities from persistent cache (file: " + fileName + ")", e);
             }
         }
         // The verification string is unknown, Service Discovery needs to be done.

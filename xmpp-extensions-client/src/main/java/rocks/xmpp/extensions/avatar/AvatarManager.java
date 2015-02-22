@@ -435,16 +435,24 @@ public final class AvatarManager extends ExtensionManager {
         }
     }
 
-    private synchronized byte[] loadFromCache(String hash) {
+    private byte[] loadFromCache(String hash) {
         if (avatarCache != null) {
-            return avatarCache.get(hash + ".avatar");
+            try {
+                return avatarCache.get(hash + ".avatar");
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Could not read avatar from cache.", e);
+            }
         }
         return null;
     }
 
-    private synchronized void storeToCache(String hash, byte[] image) {
+    private void storeToCache(String hash, byte[] image) {
         if (avatarCache != null) {
-            avatarCache.put(hash + ".avatar", image);
+            try {
+                avatarCache.put(hash + ".avatar", image);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Could not write avatar to cache.", e);
+            }
         }
     }
 

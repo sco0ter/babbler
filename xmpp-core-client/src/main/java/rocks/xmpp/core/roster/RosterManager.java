@@ -307,15 +307,22 @@ public final class RosterManager extends Manager {
     private void cacheRoster(String version) {
         if (rosterCacheDirectory != null && version != null) {
             Roster roster = new Roster(contactMap.values(), version);
-            synchronized (xmppSession.getMarshaller()) {
-                try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                    XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(outputStream);
-                    XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-                    xmppSession.getMarshaller().marshal(roster, xmppStreamWriter);
-                    rosterCacheDirectory.put(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes()) + ".xml", outputStream.toByteArray());
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Could not write roster to cache.", e);
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                XMLStreamWriter xmppStreamWriter = null;
+                try {
+                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(XMLOutputFactory.newFactory().createXMLStreamWriter(outputStream), true);
+                    xmppStreamWriter.flush();
+                    synchronized (xmppSession.getMarshaller()) {
+                        xmppSession.getMarshaller().marshal(roster, xmppStreamWriter);
+                    }
+                } finally {
+                    if (xmppStreamWriter != null) {
+                        xmppStreamWriter.close();
+                    }
                 }
+                rosterCacheDirectory.put(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes()) + ".xml", outputStream.toByteArray());
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Could not write roster to cache.", e);
             }
         }
     }

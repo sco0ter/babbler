@@ -352,10 +352,17 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
             // Write to persistent cache.
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-                XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream);
-                XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-                synchronized (xmppSession.getMarshaller()) {
-                    xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
+                XMLStreamWriter xmppStreamWriter = null;
+                try {
+                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream), true);
+                    xmppStreamWriter.flush();
+                    synchronized (xmppSession.getMarshaller()) {
+                        xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
+                    }
+                } finally {
+                    if (xmppStreamWriter != null) {
+                        xmppStreamWriter.close();
+                    }
                 }
                 directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
             } catch (Exception e) {

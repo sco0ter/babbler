@@ -48,7 +48,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * This class implements the application-level ping mechanism as specified in <a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
@@ -62,8 +61,6 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 public final class PingManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(PingManager.class.getName());
 
     private final ScheduledExecutorService scheduledExecutorService;
 
@@ -123,6 +120,14 @@ public final class PingManager extends ExtensionManager {
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
+                if (e.isIncoming()) {
+                    rescheduleNextPing();
+                }
+            }
+        });
+        xmppSession.addIQListener(new IQListener() {
+            @Override
+            public void handleIQ(IQEvent e) {
                 if (e.isIncoming()) {
                     rescheduleNextPing();
                 }
@@ -205,25 +210,33 @@ public final class PingManager extends ExtensionManager {
         }
     }
 
-    private synchronized void rescheduleNextPing() {
-        cancelNextPing();
-        if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
-            nextPing = scheduledExecutorService.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                        if (!pingServer()) {
-                            try {
-                                throw new XmppException("Server ping failed.");
-                            } catch (XmppException e) {
-                                xmppSession.notifyException(e);
+    private void rescheduleNextPing() {
+        // Reschedule in a separate thread, so that it won't interrupt the "pinging" thread due to the cancel, which then causes the ping to fail.
+        scheduledExecutorService.schedule(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (PingManager.this) {
+                    cancelNextPing();
+                    if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
+                        nextPing = scheduledExecutorService.schedule(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                                    if (!pingServer()) {
+                                        try {
+                                            throw new XmppException("Server ping failed.");
+                                        } catch (XmppException e) {
+                                            xmppSession.notifyException(e);
+                                        }
+                                    }
+                                }
+                                // Rescheduling of the next ping is already done by the IQ response of the ping.
                             }
-                        }
+                        }, pingInterval, TimeUnit.SECONDS);
                     }
-                    rescheduleNextPing();
                 }
-            }, pingInterval, TimeUnit.SECONDS);
-        }
+            }
+        }, 0, TimeUnit.MILLISECONDS);
     }
 
     /**

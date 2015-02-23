@@ -32,10 +32,10 @@ import javax.xml.bind.JAXBException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -85,7 +85,7 @@ public final class XmppSessionConfiguration {
 
     private static volatile XmppSessionConfiguration defaultConfiguration;
 
-    private final Collection<Class<? extends Manager>> initialExtensionManagers = new HashSet<>();
+    private final Collection<Class<? extends Manager>> initialExtensionManagers = new ArrayList<>();
 
     private final JAXBContext jaxbContext;
 

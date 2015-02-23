@@ -29,7 +29,6 @@ import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.core.sasl.model.Mechanisms;
-import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.ReconnectionManager;
 import rocks.xmpp.core.session.model.Session;
@@ -56,29 +55,30 @@ import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
 import rocks.xmpp.extensions.rsm.ResultSetManager;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The context provides XMPP classes as well as manager classes which are associated with an XMPP session.
  * Registered classes are used to marshal and unmarshal XML to objects. Registered manager classes are initialized as soon as an XMPP session is created, in order to start listening for stanzas immediately e.g. to automatically respond to IQ requests.
  *
  * @author Christian Schudt
+ * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#context(rocks.xmpp.core.session.context.CoreContext)
  */
 public class CoreContext {
 
-    private final Set<Class<?>> extensions = new HashSet<>();
+    private final Collection<Class<?>> extensions = new HashSet<>();
 
-    private final Set<Class<? extends Manager>> managers = new HashSet<>();
+    private final Collection<Class<? extends Manager>> managers = new ArrayList<>();
 
     public CoreContext(Class<?>... extensions) {
-        this(Collections.<Class<? extends ExtensionManager>>emptyList(), extensions);
+        this(Collections.<Class<? extends Manager>>emptyList(), extensions);
     }
 
-    public CoreContext(Collection<Class<? extends ExtensionManager>> managers, Class<?>... extensions) {
+    public CoreContext(Collection<Class<? extends Manager>> managers, Class<?>... extensions) {
         this.extensions.addAll(Arrays.asList(
                 // Core
                 StreamFeatures.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class,

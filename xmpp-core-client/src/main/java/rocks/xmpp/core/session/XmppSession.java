@@ -924,14 +924,19 @@ public class XmppSession implements AutoCloseable {
             } else {
                 authenticationManager.startAuthentication(mechanisms, authorizationId, callbackHandler);
             }
+            StreamFeaturesManager streamFeaturesManager = getManager(StreamFeaturesManager.class);
             // Negotiate all pending features until <bind/> would be negotiated.
-            getManager(StreamFeaturesManager.class).awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
+            streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
 
             // Check if stream feature negotiation failed with an exception.
             throwAsXmppExceptionIfNotNull(exception);
 
             // Then negotiate resource binding manually.
             bindResource(resource);
+
+            // Proceed with any outstanding stream features which are negotiated after resource binding, e.g. XEP-0198
+            // and wait until all features have been negotiated.
+            streamFeaturesManager.completeNegotiation(configuration.getDefaultResponseTimeout());
             RosterManager rosterManager = getManager(RosterManager.class);
             if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
                 rosterManager.requestRoster();
@@ -1210,7 +1215,7 @@ public class XmppSession implements AutoCloseable {
 
     /**
      * Gets the unmarshaller, which is used to unmarshal XML during reading from the input stream.
-     * <p/>
+     * <p>
      * Since {@link javax.xml.bind.Unmarshaller} is not thread-safe it is crucial to synchronize unmarshal operations on the unmarshaller itself:
      * <pre>
      * {@code
@@ -1229,7 +1234,7 @@ public class XmppSession implements AutoCloseable {
 
     /**
      * Gets the marshaller, which is used to marshal XML during writing to the output stream.
-     * <p/>
+     * <p>
      * Since {@link javax.xml.bind.Marshaller} is not thread-safe it is crucial to synchronize marshal operations on the marshaller itself:
      * <pre>
      * {@code
@@ -1288,9 +1293,9 @@ public class XmppSession implements AutoCloseable {
 
     /**
      * Represents the session status.
-     * <p/>
+     * <p>
      * The following chart illustrates the valid status transitions:
-     * <p/>
+     * <p>
      * <pre>
      * &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; INITIAL
      * &#x2502;          &#x2502;

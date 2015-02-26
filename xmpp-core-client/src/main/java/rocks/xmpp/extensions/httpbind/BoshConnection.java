@@ -297,6 +297,12 @@ public final class BoshConnection extends Connection {
      */
     @Override
     public final synchronized void connect(Jid from) throws IOException {
+
+        if (sessionId != null) {
+            // Already connected.
+            return;
+        }
+
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
         }
@@ -498,23 +504,28 @@ public final class BoshConnection extends Connection {
     public final void close() throws Exception {
         if (getSessionId() != null) {
             synchronized (this) {
-                if (httpBindExecutor != null) {
-                    if (!httpBindExecutor.isShutdown()) {
-                        // Terminate the BOSH session.
-                        Body.Builder bodyBuilder = Body.builder()
-                                .requestId(rid.getAndIncrement())
-                                .sessionId(getSessionId())
-                                .type(Body.Type.TERMINATE);
+                sessionId = null;
+                authId = null;
+                requestContentEncoding = null;
+                keySequence.clear();
+                requestContentEncoding = null;
 
-                        appendKey(bodyBuilder);
+                if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
+                    // Terminate the BOSH session.
+                    Body.Builder bodyBuilder = Body.builder()
+                            .requestId(rid.getAndIncrement())
+                            .sessionId(getSessionId())
+                            .type(Body.Type.TERMINATE);
 
-                        sendNewRequest(bodyBuilder.build());
+                    appendKey(bodyBuilder);
 
-                        // and then shut it down.
-                        httpBindExecutor.shutdown();
-                        // Wait shortly, until the "terminate" body has been sent.
-                        httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
-                    }
+                    sendNewRequest(bodyBuilder.build());
+
+                    // and then shut it down.
+                    httpBindExecutor.shutdown();
+                    // Wait shortly, until the "terminate" body has been sent.
+                    httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
+                    httpBindExecutor = null;
                 }
             }
         }
@@ -528,8 +539,9 @@ public final class BoshConnection extends Connection {
      */
     public final long detach() {
         synchronized (this) {
-            if (!httpBindExecutor.isShutdown()) {
+            if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                 httpBindExecutor.shutdown();
+                httpBindExecutor = null;
             }
         }
         // Return the latest and greatest rid.
@@ -604,7 +616,7 @@ public final class BoshConnection extends Connection {
 
         // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
         synchronized (this) {
-            if (!httpBindExecutor.isShutdown()) {
+            if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                 httpBindExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -756,7 +768,7 @@ public final class BoshConnection extends Connection {
                             }
                         } catch (Exception e) {
                             synchronized (this) {
-                                if (!httpBindExecutor.isShutdown()) {
+                                if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                                     httpBindExecutor.shutdown();
                                 }
                             }

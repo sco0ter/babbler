@@ -78,11 +78,13 @@ public final class PresenceManager extends Manager {
             public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
                 if (e.isIncoming()) {
-                    // Store the user (bare JID) in the map, associated with different resources.
-                    presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());
-                    Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
-                    // Update the contact's resource with the presence.
-                    presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
+                    if (presence.getFrom() != null) {
+                        // Store the user (bare JID) in the map, associated with different resources.
+                        presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());
+                        Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
+                        // Update the contact's resource with the presence.
+                        presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
+                    }
                 } else {
                     // Store the last sent presences, in order to automatically resend them, after a disconnect.
                     if (presence.getType() == null || presence.getType() == Presence.Type.UNAVAILABLE) {

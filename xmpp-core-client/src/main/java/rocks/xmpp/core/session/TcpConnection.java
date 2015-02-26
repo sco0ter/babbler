@@ -170,6 +170,11 @@ public final class TcpConnection extends Connection {
     @Override
     public final synchronized void connect(Jid from) throws IOException {
 
+        if (socket != null) {
+            // Already connected.
+            return;
+        }
+
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
         }
@@ -268,7 +273,9 @@ public final class TcpConnection extends Connection {
 
     @Override
     public final synchronized void send(ClientStreamElement element) {
-        xmppStreamWriter.send(element);
+        if (xmppStreamWriter != null) {
+            xmppStreamWriter.send(element);
+        }
     }
 
     @Override
@@ -297,14 +304,20 @@ public final class TcpConnection extends Connection {
             xmppStreamReader.shutdown();
             xmppStreamReader = null;
         }
+
+        inputStream = null;
+        outputStream = null;
+        streamId = null;
+
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
         // Now close the socket.
         if (socket != null) {
-            socket.close();
-            socket = null;
+            try {
+                socket.close();
+            } finally {
+                socket = null;
+            }
         }
-        inputStream = null;
-        outputStream = null;
     }
 
     /**

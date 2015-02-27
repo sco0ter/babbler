@@ -296,8 +296,9 @@ public final class StreamFeaturesManager extends Manager {
      * Negotiates all pending features, if any, and waits until all features have been negotiated.
      *
      * @param timeout The timeout.
-     * @throws InterruptedException If the current thread is interrupted.
-     * @throws NoResponseException  If the server didn't respond.
+     * @throws InterruptedException       If the current thread is interrupted.
+     * @throws NoResponseException        If the server didn't respond.
+     * @throws StreamNegotiationException If the stream negotiation failed.
      */
     public final void completeNegotiation(long timeout) throws InterruptedException, NoResponseException, StreamNegotiationException {
         if (!negotiateNextFeature()) {

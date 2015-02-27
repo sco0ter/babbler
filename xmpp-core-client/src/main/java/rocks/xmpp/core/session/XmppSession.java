@@ -268,6 +268,8 @@ public class XmppSession implements AutoCloseable {
         if (e != null) {
             if (e instanceof XmppException) {
                 throw (XmppException) e;
+            } else if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
             } else {
                 throw new XmppException(e);
             }
@@ -728,7 +730,7 @@ public class XmppSession implements AutoCloseable {
         }
 
         if (exception != null) {
-            updateStatus(previousStatus);
+            updateStatus(previousStatus, exception);
             try {
                 activeConnection.close();
             } catch (Exception e1) {
@@ -740,7 +742,12 @@ public class XmppSession implements AutoCloseable {
 
         // This is for reconnection.
         if (wasLoggedIn) {
-            loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
+            try {
+                loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
+            } catch (XmppException e) {
+                updateStatus(previousStatus, e);
+                throw e;
+            }
         }
     }
 
@@ -944,11 +951,11 @@ public class XmppSession implements AutoCloseable {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // Revert status
-            updateStatus(previousStatus);
+            updateStatus(previousStatus, e);
             throwAsXmppExceptionIfNotNull(e);
-        } catch (StreamNegotiationException e) {
+        } catch (XmppException e) {
             // Revert status
-            updateStatus(previousStatus);
+            updateStatus(previousStatus, e);
             throw e;
         }
         wasLoggedIn = true;

@@ -121,7 +121,8 @@ public final class TcpConnection extends Connection {
             }
         }, configuration.isSecure()));
 
-        final CompressionManager compressionManager = new CompressionManager(xmppSession, configuration.getCompressionMethods());
+        final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
+        compressionManager.getConfiguredCompressionMethods().addAll(configuration.getCompressionMethods());
         compressionManager.addFeatureListener(new StreamFeatureListener() {
             @Override
             public void featureSuccessfullyNegotiated() throws StreamNegotiationException {

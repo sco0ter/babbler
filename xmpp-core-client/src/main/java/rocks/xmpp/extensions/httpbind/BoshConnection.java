@@ -309,9 +309,11 @@ public final class BoshConnection extends Connection {
 
         if (url == null) {
             String protocol = boshConnectionConfiguration.isSecure() ? "https" : "http";
+            // If no port has been configured, use the default ports.
+            int targetPort = getPort() > 0 ? getPort() : (boshConnectionConfiguration.isSecure() ? 5281 : 5280);
             // If a hostname has been configured, use it to connect.
             if (getHostname() != null) {
-                url = new URL(protocol, getHostname(), getPort(), boshConnectionConfiguration.getFile());
+                url = new URL(protocol, getHostname(), targetPort, boshConnectionConfiguration.getFile());
             } else if (getXmppSession().getDomain() != null) {
                 // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
                 String resolvedUrl = findBoshUrl(getXmppSession().getDomain(), boshConnectionConfiguration.getConnectTimeout());
@@ -320,10 +322,10 @@ public final class BoshConnection extends Connection {
                 } else {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    url = new URL(protocol, getXmppSession().getDomain(), getPort(), boshConnectionConfiguration.getFile());
+                    url = new URL(protocol, getXmppSession().getDomain(), targetPort, boshConnectionConfiguration.getFile());
                 }
-                port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
-                hostname = url.getHost();
+                this.port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
+                this.hostname = url.getHost();
             } else {
                 throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
             }

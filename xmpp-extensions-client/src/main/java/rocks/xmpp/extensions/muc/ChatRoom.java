@@ -274,7 +274,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null) {
             // If the presence is self-presence (110) or if the service assigned another nickname (210) to the user (but didn't include 110).
-            isSelfPresence = mucUser.getStatusCodes().contains(Status.SELF_PRESENCE) || mucUser.getStatusCodes().contains(Status.SERVICE_HAS_ASSIGNED_OR_MODIFIED_NICK);
+            boolean nicknameChanged = mucUser.getStatusCodes().contains(Status.SERVICE_HAS_ASSIGNED_OR_MODIFIED_NICK);
+            if (nicknameChanged) {
+                nick = presence.getFrom().getResource();
+            }
+            isSelfPresence = mucUser.getStatusCodes().contains(Status.SELF_PRESENCE) || nicknameChanged;
         }
         return isSelfPresence || nick != null && presence.getFrom() != null && nick.equals(presence.getFrom().getResource());
     }

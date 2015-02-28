@@ -187,15 +187,15 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                                             Actor actor = mucUser.getItem().getActor();
                                             String reason = mucUser.getItem().getReason();
                                             if (!mucUser.getStatusCodes().isEmpty()) {
-                                                if (mucUser.getStatusCodes().contains(Status.kicked())) {
+                                                if (mucUser.getStatusCodes().contains(Status.KICKED)) {
                                                     notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null));
-                                                } else if (mucUser.getStatusCodes().contains(Status.banned())) {
+                                                } else if (mucUser.getStatusCodes().contains(Status.BANNED)) {
                                                     notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null));
-                                                } else if (mucUser.getStatusCodes().contains(Status.membershipRevoked())) {
+                                                } else if (mucUser.getStatusCodes().contains(Status.MEMBERSHIP_REVOKED)) {
                                                     notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null));
-                                                } else if (mucUser.getStatusCodes().contains(Status.nicknameChanged())) {
+                                                } else if (mucUser.getStatusCodes().contains(Status.NICK_CHANGED)) {
                                                     notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null));
-                                                } else if (mucUser.getStatusCodes().contains(Status.systemShutdown())) {
+                                                } else if (mucUser.getStatusCodes().contains(Status.SERVICE_SHUT_DOWN)) {
                                                     notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null));
                                                 }
                                             } else if (mucUser.getDestroy() != null) {
@@ -274,7 +274,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null) {
             // If the presence is self-presence (110) or if the service assigned another nickname (210) to the user (but didn't include 110).
-            isSelfPresence = mucUser.getStatusCodes().contains(Status.self()) || mucUser.getStatusCodes().contains(Status.serviceHasAssignedOrModifiedNick());
+            isSelfPresence = mucUser.getStatusCodes().contains(Status.SELF_PRESENCE) || mucUser.getStatusCodes().contains(Status.SERVICE_HAS_ASSIGNED_OR_MODIFIED_NICK);
         }
         return isSelfPresence || nick != null && presence.getFrom() != null && nick.equals(presence.getFrom().getResource());
     }

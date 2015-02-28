@@ -45,7 +45,7 @@ public class EntityTimeManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
-        EntityTimeManager entityTimeManager = connection1.getExtensionManager(EntityTimeManager.class);
+        EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
         EntityTime entityTime = entityTimeManager.getEntityTime(JULIET);
         Assert.assertNotNull(entityTime);
         Assert.assertNotNull(entityTime.getDate());
@@ -57,8 +57,8 @@ public class EntityTimeManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        connection2.getExtensionManager(EntityTimeManager.class).setEnabled(false);
-        EntityTimeManager entityTimeManager = connection1.getExtensionManager(EntityTimeManager.class);
+        connection2.getManager(EntityTimeManager.class).setEnabled(false);
+        EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
         try {
             entityTimeManager.getEntityTime(JULIET);
         } catch (StanzaException e) {
@@ -70,10 +70,10 @@ public class EntityTimeManagerTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        EntityTimeManager entityTimeManager = connection1.getExtensionManager(EntityTimeManager.class);
+        EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(entityTimeManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:time");
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         entityTimeManager.setEnabled(false);

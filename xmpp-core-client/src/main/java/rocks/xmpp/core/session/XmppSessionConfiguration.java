@@ -32,10 +32,10 @@ import javax.xml.bind.JAXBException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -85,7 +85,7 @@ public final class XmppSessionConfiguration {
 
     private static volatile XmppSessionConfiguration defaultConfiguration;
 
-    private final Collection<Class<? extends ExtensionManager>> initialExtensionManagers = new HashSet<>();
+    private final Collection<Class<? extends Manager>> initialExtensionManagers = new ArrayList<>();
 
     private final JAXBContext jaxbContext;
 
@@ -121,7 +121,7 @@ public final class XmppSessionConfiguration {
 
         // These are the manager classes which are loaded immediately, when the XmppSession is initialized,
         // Typically the add listeners to the session, e.g. to automatically reply.
-        initialExtensionManagers.addAll(context.getExtensionManagers());
+        initialExtensionManagers.addAll(context.getManagers());
 
         Class<?>[] classesToBeBound = new Class<?>[context.getExtensions().size()];
         context.getExtensions().toArray(classesToBeBound);
@@ -180,11 +180,11 @@ public final class XmppSessionConfiguration {
     }
 
     /**
-     * Gets the initial extension managers. Theses managers are initialized when the session is initialized, thus allowing them to immediately add listeners to the session e.g. to react to incoming stanzas.
+     * Gets the initial managers. Theses managers are initialized when the session is initialized, thus allowing them to immediately add listeners to the session e.g. to react to incoming stanzas.
      *
-     * @return The initial extension managers.
+     * @return The initial managers.
      */
-    Collection<Class<? extends ExtensionManager>> getInitialExtensionManagers() {
+    Collection<Class<? extends Manager>> getInitialManagers() {
         return initialExtensionManagers;
     }
 

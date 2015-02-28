@@ -17,7 +17,7 @@ Publishing means, it is published to your vCard (XEP-0153) as well as to the Per
 ```java
 try {
     // Get the avatar manager
-    AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+    AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
     avatarManager.setEnabled(true);
 
     // Choose a file with JavaFX file dialog.
@@ -49,7 +49,7 @@ try {
 You can listen for your contacts\' avatar updates by adding a listener to the manager:
 
 ```java
-AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
 avatarManager.setEnabled(true);
 avatarManager.addAvatarChangeListener(new AvatarChangeListener() {
     @Override

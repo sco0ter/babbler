@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.compress;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -46,14 +47,16 @@ public interface CompressionMethod {
      *
      * @param inputStream The compressed input stream.
      * @return The decompressed input stream.
+     * @throws IOException If the decompression failed.
      */
-    InputStream decompress(InputStream inputStream);
+    InputStream decompress(InputStream inputStream) throws IOException;
 
     /**
      * Gets the compressed output stream.
      *
      * @param outputStream The uncompressed output stream.
      * @return The compressed output stream.
+     * @throws IOException If the compression failed.
      */
-    OutputStream compress(OutputStream outputStream);
+    OutputStream compress(OutputStream outputStream) throws IOException;
 }

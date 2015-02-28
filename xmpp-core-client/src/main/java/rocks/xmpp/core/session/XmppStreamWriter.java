@@ -35,27 +35,23 @@ import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
+import java.util.EnumSet;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class is responsible for opening and closing the XMPP stream as well as writing any XML elements to the stream.
- * <p>
+ * <p/>
  * This class is thread-safe.
  *
  * @author Christian Schudt
  */
 final class XmppStreamWriter {
-
-    private static final Logger logger = Logger.getLogger(XmppStreamWriter.class.getName());
 
     private final XmppSession xmppSession;
 
@@ -66,8 +62,6 @@ final class XmppStreamWriter {
     private final Marshaller marshaller;
 
     private final XmppDebugger debugger;
-
-    private final Connection connection;
 
     /**
      * An executor which periodically schedules a whitespace ping.
@@ -100,12 +94,11 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(final XmppSession xmppSession, final Connection connection, XMLOutputFactory xmlOutputFactory) {
+    XmppStreamWriter(final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.getMarshaller();
         this.debugger = xmppSession.getDebugger();
-        this.connection = connection;
 
         executor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
     }
@@ -117,7 +110,7 @@ final class XmppStreamWriter {
                 keepAliveExecutor.scheduleAtFixedRate(new Runnable() {
                     @Override
                     public void run() {
-                        if (xmppSession.getStatus() == XmppSession.Status.CONNECTED || xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                        if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED).contains(xmppSession.getStatus())) {
                             executor.execute(new Runnable() {
                                 @Override
                                 public void run() {
@@ -125,7 +118,7 @@ final class XmppStreamWriter {
                                         xmlStreamWriter.writeCharacters(" ");
                                         xmlStreamWriter.flush();
                                     } catch (Exception e) {
-                                        closeConnectionAndNotify(e);
+                                        notifyException(e);
                                     }
                                 }
                             });
@@ -146,19 +139,19 @@ final class XmppStreamWriter {
                             marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                         }
                         prefixFreeCanonicalizationWriter.flush();
-                        
+
                         // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
                         if (clientStreamElement instanceof Stanza) {
                             prefixFreeCanonicalizationWriter.writeCharacters(" ");
                             prefixFreeCanonicalizationWriter.flush();
                         }
-                        
+
                         if (debugger != null) {
                             debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), clientStreamElement);
                             byteArrayOutputStream.reset();
                         }
                     } catch (Exception e) {
-                        closeConnectionAndNotify(e);
+                        notifyException(e);
                     }
                 }
             });
@@ -214,7 +207,7 @@ final class XmppStreamWriter {
                         }
                         streamOpened = true;
                     } catch (Exception e) {
-                        closeConnectionAndNotify(e);
+                        notifyException(e);
                     }
                 }
             });
@@ -237,7 +230,7 @@ final class XmppStreamWriter {
                         xmlStreamWriter.close();
                         streamOpened = false;
                     } catch (Exception e) {
-                        closeConnectionAndNotify(e);
+                        notifyException(e);
                     }
                 }
             }
@@ -249,39 +242,35 @@ final class XmppStreamWriter {
      *
      * @param exception The exception which occurred during writing.
      */
-    private void closeConnectionAndNotify(Exception exception) {
+    private void notifyException(Exception exception) {
 
         // Shutdown the executors.
         synchronized (this) {
             if (keepAliveExecutor != null) {
                 keepAliveExecutor.shutdown();
+                keepAliveExecutor = null;
             }
             executor.shutdown();
 
             if (prefixFreeCanonicalizationWriter != null) {
                 try {
                     prefixFreeCanonicalizationWriter.close();
+                    prefixFreeCanonicalizationWriter = null;
                 } catch (Exception e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
+                    exception.addSuppressed(e);
                 }
             }
             lastOutputStream = null;
             byteArrayOutputStream = null;
         }
 
-        try {
-            // Close the connection, which will only close the reader thread and the socket (because the writer is already shutdown).
-            connection.close();
-        } catch (Exception e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-        }
         xmppSession.notifyException(exception);
     }
 
     /**
      * Closes the stream by sending a closing {@code </stream:stream>} to the server.
      * This method waits until this task is completed, but not more than 0.25 seconds.
-     * <p>
+     * <p/>
      * Make sure to synchronize this method.
      * Otherwise multiple threads could call {@link #closeStream()} which may result in a {@link RejectedExecutionException}, if it has been shutdown by another thread in the meantime.
      */

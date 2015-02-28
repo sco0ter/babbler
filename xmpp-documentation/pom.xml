@@ -142,5 +142,10 @@
             <artifactId>xmpp-extensions-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>rocks.xmpp</groupId>
+            <artifactId>xmpp-fx</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

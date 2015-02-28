@@ -287,7 +287,7 @@ public class MultiUserChatUserTest extends XmlTest {
 
     @Test
     public void marshalWithStatus() throws JAXBException, XMLStreamException {
-        MucUser mucUser = MucUser.withStatus(Status.affiliationChanged());
+        MucUser mucUser = MucUser.withStatus(Status.AFFILIATION_CHANGED);
         String xml = marshal(mucUser);
         Assert.assertEquals(mucUser.getStatusCodes().size(), 1);
         Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><status code=\"101\"></status></x>");

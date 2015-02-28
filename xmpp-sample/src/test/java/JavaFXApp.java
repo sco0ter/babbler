@@ -66,7 +66,9 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.roster.RosterEvent;
 import rocks.xmpp.core.roster.RosterListener;
+import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Contact;
+import rocks.xmpp.core.session.ChatManager;
 import rocks.xmpp.core.session.ChatSession;
 import rocks.xmpp.core.session.ChatSessionEvent;
 import rocks.xmpp.core.session.ChatSessionListener;
@@ -76,11 +78,12 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.avatar.AvatarChangeEvent;
 import rocks.xmpp.extensions.avatar.AvatarChangeListener;
 import rocks.xmpp.extensions.avatar.AvatarManager;
@@ -254,7 +257,7 @@ public class JavaFXApp extends Application {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
 
-                        xmppSession.getChatManager().addChatSessionListener(new ChatSessionListener() {
+                        xmppSession.getManager(ChatManager.class).addChatSessionListener(new ChatSessionListener() {
                             @Override
                             public void chatSessionCreated(final ChatSessionEvent chatSessionEvent) {
                                 final ChatSession chatSession = chatSessionEvent.getChatSession();
@@ -282,7 +285,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        xmppSession.getRosterManager().addRosterListener(new RosterListener() {
+                        xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
                             @Override
                             public void rosterChanged(final RosterEvent e) {
                                 Platform.runLater(new Runnable() {
@@ -316,7 +319,7 @@ public class JavaFXApp extends Application {
                                             @Override
                                             public void run() {
                                                 Presence presence = e.getPresence();
-                                                Contact contact = xmppSession.getRosterManager().getContact(presence.getFrom());
+                                                Contact contact = xmppSession.getManager(RosterManager.class).getContact(presence.getFrom());
                                                 if (contact != null) {
                                                     ContactItem contactItem1 = contactMap.get(contact);
                                                     contactItem1.presence.set(presence);
@@ -325,13 +328,13 @@ public class JavaFXApp extends Application {
                                             }
                                         });
                                     } else if (e.getPresence().getType() == Presence.Type.SUBSCRIBE) {
-                                        xmppSession.getPresenceManager().denySubscription(e.getPresence().getFrom());
+                                        xmppSession.getManager(PresenceManager.class).denySubscription(e.getPresence().getFrom());
                                     }
                                 }
                             }
                         });
 
-                        RpcManager rpcManager = xmppSession.getExtensionManager(RpcManager.class);
+                        RpcManager rpcManager = xmppSession.getManager(RpcManager.class);
                         rpcManager.setRpcHandler(new RpcHandler() {
                             @Override
                             public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
@@ -346,7 +349,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+                        AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
                         avatarManager.addAvatarChangeListener(new AvatarChangeListener() {
                             @Override
                             public void avatarChanged(final AvatarChangeEvent e) {
@@ -354,7 +357,7 @@ public class JavaFXApp extends Application {
                                     @Override
                                     public void run() {
 
-                                        Contact contact = xmppSession.getRosterManager().getContact(e.getContact());
+                                        Contact contact = xmppSession.getManager(RosterManager.class).getContact(e.getContact());
                                         if (contact != null) {
                                             ContactItem contactItem = contactMap.get(contact);
                                             if (contactItem != null) {
@@ -366,7 +369,7 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getExtensionManager(MessageDeliveryReceiptsManager.class);
+                        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
                         messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
                             @Override
                             public void messageDelivered(MessageDeliveredEvent e) {
@@ -374,9 +377,9 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        xmppSession.getExtensionManager(EntityCapabilitiesManager.class).setEnabled(true);
+                        xmppSession.getManager(EntityCapabilitiesManager.class).setEnabled(true);
 
-                        GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
+                        GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
                         geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
                             @Override
                             public void geoLocationUpdated(GeoLocationEvent e) {
@@ -384,11 +387,11 @@ public class JavaFXApp extends Application {
                             }
                         });
 
-                        SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
+                        SoftwareVersionManager softwareVersionManager = xmppSession.getManager(SoftwareVersionManager.class);
                         softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "0.1"));
 
 
-                        final FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                        final FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
                         fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
                             @Override
                             public void fileTransferOffered(FileTransferOfferEvent e) {
@@ -425,7 +428,7 @@ public class JavaFXApp extends Application {
                             Presence presence = new Presence();
                             xmppSession.send(presence);
 
-                            //xmppSession.getRosterManager().requestRoster();
+                            //xmppSession.getManager(RosterManager.class).requestRoster();
 
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -454,7 +457,7 @@ public class JavaFXApp extends Application {
                                 final Task<byte[]> task = new Task<byte[]>() {
                                     @Override
                                     protected byte[] call() throws Exception {
-                                        AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+                                        AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
                                         return avatarManager.getAvatar(user);
                                     }
                                 };
@@ -479,7 +482,7 @@ public class JavaFXApp extends Application {
                             lastActivityMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    LastActivityManager lastActivityManager = xmppSession.getExtensionManager(LastActivityManager.class);
+                                    LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
                                     try {
                                         lastActivityManager.getLastActivity(item.contact.get().getJid().withResource("test"));
                                     } catch (XmppException e) {
@@ -491,7 +494,7 @@ public class JavaFXApp extends Application {
                             pingMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    PingManager pingManager = xmppSession.getExtensionManager(PingManager.class);
+                                    PingManager pingManager = xmppSession.getManager(PingManager.class);
                                     pingManager.pingServer();
 
                                 }
@@ -500,7 +503,7 @@ public class JavaFXApp extends Application {
                             searchMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    SearchManager searchManager = xmppSession.getExtensionManager(SearchManager.class);
+                                    SearchManager searchManager = xmppSession.getManager(SearchManager.class);
                                     try {
                                         Search search = new Search("22*", null, null, null);
                                         searchManager.discoverSearchFields(new Jid("search.dev"));
@@ -517,7 +520,7 @@ public class JavaFXApp extends Application {
                             softwareVersionItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
+                                    SoftwareVersionManager softwareVersionManager = xmppSession.getManager(SoftwareVersionManager.class);
                                     try {
                                         SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(item.contact.get().getJid());
                                         if (softwareVersion != null)
@@ -531,7 +534,7 @@ public class JavaFXApp extends Application {
                             serviceDiscoveryMenuItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+                                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
                                     try {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
                                         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(null);
@@ -546,7 +549,7 @@ public class JavaFXApp extends Application {
                             vCardItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    VCardManager vCardManager = xmppSession.getExtensionManager(VCardManager.class);
+                                    VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
                                     try {
                                         Jid jid = new Jid(item.contact.get().getJid().getLocal(), item.contact.get().getJid().getDomain());
                                         VCard vCard = vCardManager.getVCard(jid);
@@ -561,7 +564,7 @@ public class JavaFXApp extends Application {
                             storeAnnotationsItems.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
+                                    PrivateDataManager privateDataManager = xmppSession.getManager(PrivateDataManager.class);
                                     try {
                                         List<Annotation.Note> notes = new ArrayList<>();
                                         notes.add(new Annotation.Note("Hallo", item.contact.get().getJid()));
@@ -576,7 +579,7 @@ public class JavaFXApp extends Application {
                             getAnnotationsItems.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    PrivateDataManager privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
+                                    PrivateDataManager privateDataManager = xmppSession.getManager(PrivateDataManager.class);
                                     try {
                                         Annotation annotations = privateDataManager.getData(Annotation.class);
                                         int i = 0;
@@ -589,8 +592,8 @@ public class JavaFXApp extends Application {
                             pubSubItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
-                                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+                                    PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
+                                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
                                     try {
                                         ItemNode infoNode = serviceDiscoveryManager.discoverItems(null);
                                         int i = 0;
@@ -605,7 +608,7 @@ public class JavaFXApp extends Application {
                                 public void handle(ActionEvent actionEvent) {
 
                                     try {
-                                        GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
+                                        GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
                                         geoLocationManager.publish(GeoLocation.builder().latitude(45.44).longitude(12.33).build());
                                     } catch (XmppException e) {
                                         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -617,12 +620,12 @@ public class JavaFXApp extends Application {
                             sendFile.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+                                    FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
                                     FileChooser fileChooser = new FileChooser();
                                     File file = fileChooser.showOpenDialog(stage);
 
                                     try {
-                                        fileTransferManager.offerFile(file, "", xmppSession.getPresenceManager().getPresence(item.contact.get().getJid()).getFrom(), 10000);
+                                        fileTransferManager.offerFile(file, "", xmppSession.getManager(PresenceManager.class).getPresence(item.contact.get().getJid()).getFrom(), 10000);
                                     } catch (XmppException e) {
                                         e.printStackTrace();
                                     } catch (IOException e) {
@@ -635,7 +638,7 @@ public class JavaFXApp extends Application {
                             timeItem.setOnAction(new EventHandler<ActionEvent>() {
                                 @Override
                                 public void handle(ActionEvent actionEvent) {
-                                    EntityTimeManager entityTimeManager = xmppSession.getExtensionManager(EntityTimeManager.class);
+                                    EntityTimeManager entityTimeManager = xmppSession.getManager(EntityTimeManager.class);
 
                                     try {
                                         EntityTime entityTime = entityTimeManager.getEntityTime(Jid.valueOf("juliet@example.net/balcony"));
@@ -689,7 +692,7 @@ public class JavaFXApp extends Application {
 
                 try {
                     // Get the avatar manager
-                    AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+                    AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
 
                     //avatarManager.publishAvatar(null);
 
@@ -709,7 +712,7 @@ public class JavaFXApp extends Application {
 
                 try {
                     // Get the avatar manager
-                    AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+                    AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
 
                     //avatarManager.publishAvatar(null);
 
@@ -730,7 +733,7 @@ public class JavaFXApp extends Application {
                 }
 
 
-//                JingleFileTransferManager jingleFileTransferManager = xmppSession.getExtensionManager(JingleFileTransferManager.class);
+//                JingleFileTransferManager jingleFileTransferManager = xmppSession.getManager(JingleFileTransferManager.class);
 //                try {
 //                    JingleFileTransferSession jingleFileTransferSession = jingleFileTransferManager.initiateFileTransferSession(Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), new File("test.png"), "", 60000);
 //
@@ -741,7 +744,7 @@ public class JavaFXApp extends Application {
 //                }
 //
 //
-//                FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+//                FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
 //                try {
 //                    //fileTransferManager.offerFile(new URL("http://i.i.cbsi.com/cnwk.1d/i/tim2/2013/10/10/20131007_Frax_fractal_002.jpg"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
 //                    final FileTransfer fileTransfer = fileTransferManager.offerFile(new File("test.png"), "", Jid.valueOf("222@christian-schudts-macbook-pro.local/test"), 60000);
@@ -792,7 +795,7 @@ public class JavaFXApp extends Application {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     if (chatSession == null) {
-                        chatSession = xmppSession.getChatManager().createChatSession(chatPartner);
+                        chatSession = xmppSession.getManager(ChatManager.class).createChatSession(chatPartner);
                     }
                     //AbstractMessage message = new AbstractMessage(chatSession.getChatPartner(), AbstractMessage.Type.CHAT, textArea.getText());
                     //message.setId(UUID.randomUUID().toString());

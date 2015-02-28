@@ -24,10 +24,11 @@
 
 package rocks.xmpp.extensions.httpauth;
 
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -51,7 +52,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
  */
-public final class HttpAuthenticationManager extends IQExtensionManager implements SessionStatusListener, MessageListener {
+public final class HttpAuthenticationManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(HttpAuthenticationManager.class.getName());
 
@@ -59,14 +60,45 @@ public final class HttpAuthenticationManager extends IQExtensionManager implemen
 
     private HttpAuthenticationManager(XmppSession xmppSession) {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
-        super(xmppSession, AbstractIQ.Type.GET);
+        super(xmppSession);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(this);
-        xmppSession.addIQHandler(ConfirmationRequest.class, this);
-        xmppSession.addMessageListener(this);
+        xmppSession.addIQHandler(ConfirmationRequest.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
+                if (notifyHttpAuthListeners(iq, confirmationRequest)) {
+                    return null;
+                }
+                return iq.createError(Condition.SERVICE_UNAVAILABLE);
+            }
+        });
+
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    httpAuthenticationListeners.clear();
+                }
+            }
+        });
+
+        xmppSession.addMessageListener(new MessageListener() {
+            @Override
+            public void handleMessage(MessageEvent e) {
+                if (e.isIncoming()) {
+                    Message message = e.getMessage();
+                    if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
+                        ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
+                        if (confirmationRequest != null) {
+                            notifyHttpAuthListeners(message, confirmationRequest);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private boolean notifyHttpAuthListeners(Stanza stanza, ConfirmationRequest confirmationRequest) {
@@ -100,35 +132,5 @@ public final class HttpAuthenticationManager extends IQExtensionManager implemen
      */
     public void removeHttpAuthenticationListener(HttpAuthenticationListener httpAuthenticationListener) {
         httpAuthenticationListeners.remove(httpAuthenticationListener);
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-
-        ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
-        if (notifyHttpAuthListeners(iq, confirmationRequest)) {
-            return null;
-        }
-        return iq.createError(Condition.SERVICE_UNAVAILABLE);
-    }
-
-    @Override
-    public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
-            Message message = e.getMessage();
-            if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
-                ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
-                if (confirmationRequest != null) {
-                    notifyHttpAuthListeners(message, confirmationRequest);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            httpAuthenticationListeners.clear();
-        }
     }
 }

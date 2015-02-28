@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-class LocalSocks5Server {
+final class LocalSocks5Server {
 
     private static final Logger logger = Logger.getLogger(LocalSocks5Server.class.getName());
 

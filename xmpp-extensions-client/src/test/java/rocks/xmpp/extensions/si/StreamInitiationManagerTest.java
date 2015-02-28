@@ -55,7 +55,7 @@ public class StreamInitiationManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-        FileTransferManager fileTransferManager = xmppSession2.getExtensionManager(FileTransferManager.class);
+        FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
         fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
             @Override
             public void fileTransferOffered(FileTransferOfferEvent e) {
@@ -69,7 +69,7 @@ public class StreamInitiationManagerTest extends ExtensionTest {
                 }
             }
         });
-        StreamInitiationManager streamInitiationManager1 = xmppSession1.getExtensionManager(StreamInitiationManager.class);
+        StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
         OutputStream outputStream = streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000);
 
         // Stream Initiation should have been succeeded, if we have OutputStream and no exception has occurred.
@@ -84,7 +84,7 @@ public class StreamInitiationManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-        FileTransferManager fileTransferManager = xmppSession2.getExtensionManager(FileTransferManager.class);
+        FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
         fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
             @Override
             public void fileTransferOffered(FileTransferOfferEvent e) {
@@ -94,7 +94,7 @@ public class StreamInitiationManagerTest extends ExtensionTest {
                 e.reject();
             }
         });
-        StreamInitiationManager streamInitiationManager1 = xmppSession1.getExtensionManager(StreamInitiationManager.class);
+        StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
 
         try {
             streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000);

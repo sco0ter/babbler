@@ -46,9 +46,9 @@ public class RpcManagerTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        RpcManager rpcManager = connection1.getExtensionManager(RpcManager.class);
+        RpcManager rpcManager = connection1.getManager(RpcManager.class);
         Assert.assertFalse(rpcManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("jabber:iq:rpc");
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         rpcManager.setEnabled(true);
@@ -63,7 +63,7 @@ public class RpcManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-        RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
+        RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
         //rpcManager.executorService = new SameThreadExecutorService();
         rpcManager.setEnabled(true);
         rpcManager.setRpcHandler(new RpcHandler() {
@@ -76,7 +76,7 @@ public class RpcManagerTest extends ExtensionTest {
             }
         });
 
-        Value result = xmppSession2.getExtensionManager(RpcManager.class).call(ROMEO, "square", new Value(2));
+        Value result = xmppSession2.getManager(RpcManager.class).call(ROMEO, "square", new Value(2));
         Assert.assertEquals(result.getAsInteger().intValue(), 4);
     }
 
@@ -87,7 +87,7 @@ public class RpcManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-        RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
+        RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
         rpcManager.setEnabled(true);
 
         //rpcManager.executorService = new SameThreadExecutorService();
@@ -103,7 +103,7 @@ public class RpcManagerTest extends ExtensionTest {
         });
 
         try {
-            xmppSession2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
+            xmppSession2.getManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
         } catch (RpcException e) {
             Assert.assertEquals(e.getFaultCode(), 2);
             Assert.assertEquals(e.getFaultString(), "faulty");
@@ -119,7 +119,7 @@ public class RpcManagerTest extends ExtensionTest {
 //        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
 //        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 //
-//        RpcManager rpcManager = xmppSession1.getExtensionManager(RpcManager.class);
+//        RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
 //        rpcManager.setEnabled(true);
 //        rpcManager.setRpcHandler(new RpcHandler() {
 //            @Override
@@ -134,7 +134,7 @@ public class RpcManagerTest extends ExtensionTest {
 //        });
 //
 //        try {
-//            xmppSession2.getExtensionManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
+//            xmppSession2.getManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
 //        } catch (StanzaException e) {
 //            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Forbidden);
 //            return;

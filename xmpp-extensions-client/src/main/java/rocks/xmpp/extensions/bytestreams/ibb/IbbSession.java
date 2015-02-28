@@ -52,11 +52,20 @@ final class IbbSession extends ByteStreamSession {
 
     private final InBandByteStreamManager inBandByteStreamManager;
 
+    /**
+     * Guarded by "this"
+     */
     private int incomingSequence = 0;
 
+    /**
+     * Guarded by "outputStream"
+     */
     private int outgoingSequence = 0;
 
-    private volatile boolean closed;
+    /**
+     * Guarded by "this"
+     */
+    private boolean closed;
 
     IbbSession(String sessionId, XmppSession xmppSession, Jid jid, int blockSize, InBandByteStreamManager manager) {
         super(sessionId);
@@ -68,7 +77,7 @@ final class IbbSession extends ByteStreamSession {
         this.inBandByteStreamManager = manager;
     }
 
-    boolean dataReceived(InBandByteStream.Data data) {
+    synchronized final boolean dataReceived(InBandByteStream.Data data) {
         if (incomingSequence++ == data.getSequence()) {
             inputStream.queue.offer(data);
             return true;
@@ -77,12 +86,12 @@ final class IbbSession extends ByteStreamSession {
         }
     }
 
-    void open() throws XmppException {
+    final void open() throws XmppException {
         xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Open(blockSize, getSessionId())));
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException {
+    public synchronized final OutputStream getOutputStream() throws IOException {
         if (closed) {
             throw new IOException("IBB session is closed.");
         }
@@ -90,7 +99,7 @@ final class IbbSession extends ByteStreamSession {
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
+    public synchronized final InputStream getInputStream() throws IOException {
         if (closed) {
             throw new IOException("IBB session is closed.");
         }
@@ -98,16 +107,20 @@ final class IbbSession extends ByteStreamSession {
     }
 
     @Override
-    public int getReadTimeout() {
-        return inputStream.readTimeout;
+    public final int getReadTimeout() {
+        synchronized (inputStream) {
+            return inputStream.readTimeout;
+        }
     }
 
     @Override
-    public void setReadTimeout(int readTimeout) {
-        inputStream.readTimeout = readTimeout;
+    public final void setReadTimeout(int readTimeout) {
+        synchronized (inputStream) {
+            inputStream.readTimeout = readTimeout;
+        }
     }
 
-    synchronized void send(byte[] bytes) throws XmppException {
+    final void send(byte[] bytes) throws XmppException {
         xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Data(bytes, getSessionId(), outgoingSequence)));
         // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2, and so on. The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.
         if (++outgoingSequence > 65535) {
@@ -116,31 +129,37 @@ final class IbbSession extends ByteStreamSession {
     }
 
     @Override
-    public void close() throws Exception {
-        if (!closed) {
-            closed = true;
-            try {
-                inputStream.close();
-                outputStream.close();
-                xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Close(getSessionId())));
-            } finally {
-                // the party that sent the original <close/> element SHOULD wait to receive the IQ response from the receiving party before considering the bytestream to be closed.
-                // Remove this session from the map.
-                inBandByteStreamManager.ibbSessionMap.remove(getSessionId());
+    public final void close() throws Exception {
+        synchronized (this) {
+            if (closed) {
+                return;
             }
+            closed = true;
+        }
+        try {
+            inputStream.close();
+            outputStream.close();
+            xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Close(getSessionId())));
+        } finally {
+            // the party that sent the original <close/> element SHOULD wait to receive the IQ response from the receiving party before considering the bytestream to be closed.
+            // Remove this session from the map.
+            inBandByteStreamManager.ibbSessionMap.remove(getSessionId());
         }
     }
 
-    void closedByPeer() throws IOException {
-        if (!closed) {
+    final void closedByPeer() throws IOException {
+        synchronized (this) {
+            if (closed) {
+                return;
+            }
             closed = true;
-            inputStream.close();
-            outputStream.close();
         }
+        inputStream.close();
+        outputStream.close();
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "In-Band Bytestream Session: " + getSessionId();
     }
 }

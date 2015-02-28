@@ -54,9 +54,10 @@ import rocks.xmpp.extensions.attention.model.Attention;
  * <p>If you use attentions, enable this manager class, in order to register this extension in service discovery:</p>
  * <pre>
  * <code>
- * xmppSession.getExtensionManager(AttentionManager.class).setEnabled(true);
+ * xmppSession.getManager(AttentionManager.class).setEnabled(true);
  * </code>
  * </pre>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
@@ -71,7 +72,7 @@ public final class AttentionManager extends ExtensionManager {
      *
      * @param jid The user
      */
-    public void captureAttention(Jid jid) {
+    public final void captureAttention(Jid jid) {
         Message message = new Message(jid, Message.Type.HEADLINE);
         message.getExtensions().add(Attention.INSTANCE);
         xmppSession.send(message);

@@ -83,7 +83,7 @@ public class SampleApplication {
                             .port(5222)
                             .sslContext(sslContext)
                             .compressionMethods(CompressionManager.ZLIB)
-                            .secure(false)
+                            .secure(true)
                             .build();
 
 
@@ -108,7 +108,7 @@ public class SampleApplication {
                             .defaultResponseTimeout(5000)
                             .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, boshConnectionConfiguration);
+                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
 
                     // Listen for incoming messages.
                     xmppSession.addMessageListener(new MessageListener() {

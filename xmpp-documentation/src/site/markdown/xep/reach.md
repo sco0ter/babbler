@@ -6,7 +6,7 @@
 Here\'s a simple example:
 
 ```java
-EntityTimeManager entityTimeManager = xmppSession.getExtensionManager(EntityTimeManager.class);
+EntityTimeManager entityTimeManager = xmppSession.getManager(EntityTimeManager.class);
 EntityTime entityTime = entityTimeManager.getEntityTime(Jid.valueOf("juliet@example.net/balcony"));
 
 Date date = entityTime.getDate();

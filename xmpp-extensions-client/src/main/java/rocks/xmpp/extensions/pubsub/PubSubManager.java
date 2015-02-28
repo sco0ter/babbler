@@ -54,7 +54,7 @@ public final class PubSubManager extends ExtensionManager {
 
     private PubSubManager(XmppSession xmppSession) {
         super(xmppSession);
-        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
     }
 
     /**

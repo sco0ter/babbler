@@ -6,7 +6,7 @@ For XMPP core aspects like roster and presence management, there\'s a correspond
 ## Adding Contacts to Your Roster
 
 ```java
-xmppSession.getRosterManager().addContact(new Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
+xmppSession.getManager(RosterManager.class).addContact(new Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
 ```
 
 This will create a contact on your roster and subsequently sends a presence subscription request to the user.
@@ -18,12 +18,12 @@ The roster manager also provides other methods, e.g. for deleting and updating a
 You can listen for roster pushes like this:
 
 ```java
-xmppSession.getRosterManager().addRosterListener(new RosterListener() {
+xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
     @Override
     public void rosterChanged(RosterEvent e) {
         // The roster event contains information about added, updated or deleted contacts.
         // TODO: Update your roster!
-        Collection<Contact> contacts = xmppSession.getRosterManager().getContacts();
+        Collection<Contact> contacts = xmppSession.getManager(RosterManager.class).getContacts();
         for (Contact contact : contacts) {
             System.out.println(contact.getName());
         }
@@ -41,7 +41,7 @@ xmppSession.addPresenceListener(new PresenceListener() {
     public void handlePresence(PresenceEvent e) {
         if (e.isIncoming()) {
             Presence presence = e.getPresence();
-            Contact contact = xmppSession.getRosterManager().getContact(presence.getFrom());
+            Contact contact = xmppSession.getManager(RosterManager.class).getContact(presence.getFrom());
             if (contact != null) {
                 // ... contact's presence has updated.
             }
@@ -69,11 +69,11 @@ xmppSession.addPresenceListener(new PresenceListener() {
 You can then either approve or deny the subscription request:
 
 ```java
-xmppSession.getPresenceManager().approveSubscription(presence.getFrom());
+xmppSession.getManager(PresenceManager.class).approveSubscription(presence.getFrom());
 ```
 
 ```java
-xmppSession.getPresenceManager().denySubscription(presence.getFrom());
+xmppSession.getManager(PresenceManager.class).denySubscription(presence.getFrom());
 ```
 
 ## Listening for Incoming Messages

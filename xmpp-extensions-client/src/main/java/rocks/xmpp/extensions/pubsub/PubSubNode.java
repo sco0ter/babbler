@@ -80,7 +80,7 @@ public final class PubSubNode {
         this.type = type;
         this.pubSubServiceAddress = pubSubServiceAddress;
         this.xmppSession = xmppSession;
-        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
     }
 
     /**

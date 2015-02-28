@@ -24,9 +24,14 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.extensions.compress.CompressionMethod;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.net.Proxy;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A base class for connection configurations.
@@ -52,7 +57,9 @@ public abstract class ConnectionConfiguration {
 
     private final int connectTimeout;
 
-    protected ConnectionConfiguration(Builder builder) {
+    private final List<CompressionMethod> compressionMethods;
+
+    protected ConnectionConfiguration(Builder<? extends Builder> builder) {
         this.hostname = builder.hostname;
         this.port = builder.port;
         this.proxy = builder.proxy;
@@ -60,6 +67,7 @@ public abstract class ConnectionConfiguration {
         this.sslContext = builder.sslContext;
         this.hostnameVerifier = builder.hostnameVerifier;
         this.connectTimeout = builder.connectTimeout;
+        this.compressionMethods = builder.compressionMethods;
     }
 
     /**
@@ -134,6 +142,15 @@ public abstract class ConnectionConfiguration {
     }
 
     /**
+     * Gets the compression methods.
+     *
+     * @return The compression methods.
+     */
+    public final List<CompressionMethod> getCompressionMethods() {
+        return compressionMethods;
+    }
+
+    /**
      * An abstract builder class for building immutable configuration objects.
      *
      * @param <T> The concrete builder class.
@@ -153,6 +170,8 @@ public abstract class ConnectionConfiguration {
         private HostnameVerifier hostnameVerifier;
 
         private int connectTimeout;
+
+        private List<CompressionMethod> compressionMethods = Collections.emptyList();
 
         protected Builder() {
         }
@@ -237,8 +256,22 @@ public abstract class ConnectionConfiguration {
          * @param connectTimeout The timeout in milliseconds.
          * @return The builder.
          */
-        public T connectTimeout(int connectTimeout) {
+        public final T connectTimeout(int connectTimeout) {
             this.connectTimeout = connectTimeout;
+            return self();
+        }
+
+        /**
+         * Sets the compression method.
+         *
+         * @param compressionMethods The compression methods.
+         * @return The builder.
+         * @see rocks.xmpp.extensions.compress.CompressionManager#ZLIB
+         * @see rocks.xmpp.extensions.compress.CompressionManager#GZIP
+         * @see rocks.xmpp.extensions.compress.CompressionManager#DEFLATE
+         */
+        public final T compressionMethods(CompressionMethod... compressionMethods) {
+            this.compressionMethods = Arrays.asList(compressionMethods);
             return self();
         }
 

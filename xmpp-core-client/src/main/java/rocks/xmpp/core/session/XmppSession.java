@@ -40,19 +40,19 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
@@ -72,6 +72,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -109,16 +110,6 @@ public class XmppSession implements AutoCloseable {
 
     private final AuthenticationManager authenticationManager;
 
-    private final RosterManager rosterManager;
-
-    private final ReconnectionManager reconnectionManager;
-
-    private final PresenceManager presenceManager;
-
-    private final StreamFeaturesManager streamFeaturesManager;
-
-    private final ChatManager chatManager;
-
     private final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
 
     private final Set<PresenceListener> presenceListeners = new CopyOnWriteArraySet<>();
@@ -129,7 +120,7 @@ public class XmppSession implements AutoCloseable {
 
     private final Set<SessionStatusListener> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<Class<? extends ExtensionManager>, ExtensionManager> instances = new ConcurrentHashMap<>();
+    private final Map<Class<? extends Manager>, Manager> instances = new ConcurrentHashMap<>();
 
     private final List<Connection> connections = new ArrayList<>();
 
@@ -144,7 +135,7 @@ public class XmppSession implements AutoCloseable {
      */
     volatile Jid connectedResource;
 
-    Connection activeConnection;
+    volatile Connection activeConnection;
 
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
@@ -153,8 +144,9 @@ public class XmppSession implements AutoCloseable {
 
     /**
      * Holds the connection state.
+     * Guarded by "this".
      */
-    private volatile Status status = Status.INITIAL;
+    private Status status = Status.INITIAL;
 
     /**
      * The resource, which the user requested during resource binding. This value is stored, so that it can be reused during reconnection.
@@ -169,17 +161,17 @@ public class XmppSession implements AutoCloseable {
     /**
      * The shutdown hook for JVM shutdown, which will disconnect each open connection before the JVM is halted.
      */
-    private Thread shutdownHook;
+    private volatile Thread shutdownHook;
 
-    private boolean wasLoggedIn;
+    private volatile XmppDebugger debugger;
 
-    private XmppDebugger debugger;
+    private volatile boolean wasLoggedIn;
 
-    private String lastAuthorizationId;
+    private volatile String lastAuthorizationId;
 
-    private String[] lastMechanisms;
+    private volatile String[] lastMechanisms;
 
-    private CallbackHandler lastCallbackHandler;
+    private volatile CallbackHandler lastCallbackHandler;
 
     /**
      * Creates a session with the specified service domain, by using the default configuration.
@@ -218,25 +210,17 @@ public class XmppSession implements AutoCloseable {
             public void run() {
                 shutdownHook = null;
                 try {
-                    if (status == Status.CONNECTED) {
-                        close();
-                    }
-                } catch (Exception e) {
+                    close();
+                } catch (XmppException e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
             }
         };
         Runtime.getRuntime().addShutdownHook(shutdownHook);
 
-        reconnectionManager = new ReconnectionManager(this);
+        StreamFeaturesManager streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
-        streamFeaturesManager = new StreamFeaturesManager();
-        addSessionStatusListener(streamFeaturesManager);
-
-        chatManager = new ChatManager(this);
         authenticationManager = new AuthenticationManager(this, configuration.getAuthenticationMechanisms());
-        rosterManager = new RosterManager(this);
-        presenceManager = new PresenceManager(this);
 
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
         streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(Bind.class) {
@@ -253,7 +237,7 @@ public class XmppSession implements AutoCloseable {
         });
 
         // Every connection supports XEP-106 JID Escaping.
-        getExtensionManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
+        getManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
 
         if (configuration.getDebugger() != null) {
             try {
@@ -274,9 +258,9 @@ public class XmppSession implements AutoCloseable {
             }
         }
 
-        for (Class<? extends ExtensionManager> cls : configuration.getInitialExtensionManagers()) {
+        for (Class<? extends Manager> cls : configuration.getInitialManagers()) {
             // Initialize the managers.
-            getExtensionManager(cls);
+            getManager(cls);
         }
     }
 
@@ -284,6 +268,8 @@ public class XmppSession implements AutoCloseable {
         if (e != null) {
             if (e instanceof XmppException) {
                 throw (XmppException) e;
+            } else if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
             } else {
                 throw new XmppException(e);
             }
@@ -480,17 +466,6 @@ public class XmppSession implements AutoCloseable {
         }
     }
 
-    private void notifyConnectionListeners(Status status, Status oldStatus, Exception exception) {
-        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, exception);
-        for (SessionStatusListener connectionListener : sessionStatusListeners) {
-            try {
-                connectionListener.sessionStatusChanged(sessionStatusEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
     /**
      * Sends an {@code <iq/>} stanza and waits for the response.
      * <p>
@@ -679,14 +654,11 @@ public class XmppSession implements AutoCloseable {
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
      * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
      * @throws XmppException              If any other XMPP exception occurs.
+     * @deprecated Use {@link #connect()} which automatically performs a connect+login, if previously logged in.
      */
-    public final synchronized void reconnect() throws XmppException {
-        if (status == Status.DISCONNECTED) {
-            connect();
-            if (wasLoggedIn) {
-                loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
-            }
-        }
+    @Deprecated
+    public final void reconnect() throws XmppException {
+        connect();
     }
 
     /**
@@ -714,19 +686,18 @@ public class XmppSession implements AutoCloseable {
      * @throws XmppException              If any other XMPP exception occurs.
      * @throws IllegalStateException      If the session is in a wrong state, e.g. closed or already connected.
      */
-    public final synchronized void connect(Jid from) throws XmppException {
-        if (status == Status.CLOSED) {
+    public final void connect(Jid from) throws XmppException {
+
+        Status previousStatus = getStatus();
+
+        if (previousStatus == Status.CLOSED) {
             throw new IllegalStateException("Session is already closed. Create a new one.");
         }
-        if (status != Status.INITIAL && status != Status.DISCONNECTED) {
-            throw new IllegalStateException("Already connected.");
+
+        if (isConnected() || !updateStatus(Status.CONNECTING)) {
+            // Silently return, when we are already connected or connecting.
+            return;
         }
-
-        Status oldStatus = status;
-
-        // Should either be INITIAL or DISCONNECTED
-        Status previousStatus = status;
-        updateStatus(Status.CONNECTING);
         // Reset
         exception = null;
 
@@ -739,7 +710,8 @@ public class XmppSession implements AutoCloseable {
                 break;
             } catch (IOException e) {
                 if (connectionIterator.hasNext()) {
-                    logger.log(Level.WARNING, String.format("%s failed to connect. Trying alternative connection.", connection));
+                    logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connection);
+                    logger.log(Level.FINE, e.getMessage(), e);
                 } else {
                     updateStatus(previousStatus, e);
                     throw new ConnectionException(e);
@@ -749,7 +721,7 @@ public class XmppSession implements AutoCloseable {
 
         // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
         try {
-            getStreamFeaturesManager().awaitNegotiation(Mechanisms.class, 10000);
+            getManager(StreamFeaturesManager.class).awaitNegotiation(Mechanisms.class, 10000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             exception = e;
@@ -758,7 +730,7 @@ public class XmppSession implements AutoCloseable {
         }
 
         if (exception != null) {
-            updateStatus(oldStatus);
+            updateStatus(previousStatus, exception);
             try {
                 activeConnection.close();
             } catch (Exception e1) {
@@ -767,35 +739,48 @@ public class XmppSession implements AutoCloseable {
             throwAsXmppExceptionIfNotNull(exception);
         }
         updateStatus(Status.CONNECTED);
+
+        // This is for reconnection.
+        if (wasLoggedIn) {
+            try {
+                loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
+            } catch (XmppException e) {
+                updateStatus(previousStatus, e);
+                throw e;
+            }
+        }
     }
 
     /**
-     * Explicitly closes the connection and performs a clean up of all listeners.
+     * Explicitly closes the connection and performs a clean up of all listeners. Calling this method, if the session is already closing or closed has no effect.
      *
      * @throws XmppException If an exception occurs while closing the connection, e.g. the underlying socket connection.
      */
     @Override
-    public synchronized void close() throws XmppException {
-        updateStatus(Status.CLOSING);
-        // Clear everything.
-        messageListeners.clear();
-        presenceListeners.clear();
-        iqListeners.clear();
-        if (shutdownHook != null) {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+    public void close() throws XmppException {
+        if (getStatus() == Status.CLOSED || !updateStatus(Status.CLOSING)) {
+            return;
         }
-
+        // The following code should only be called once, no matter how many threads concurrently call this method.
         try {
             if (activeConnection != null) {
                 activeConnection.close();
                 activeConnection = null;
             }
         } catch (Exception e) {
-            throw new XmppException(e);
+            throwAsXmppExceptionIfNotNull(e);
         } finally {
+            // Clear everything.
+            messageListeners.clear();
+            presenceListeners.clear();
+            iqListeners.clear();
             stanzaListenerExecutor.shutdown();
             iqHandlerExecutor.shutdown();
+            if (shutdownHook != null) {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            }
             updateStatus(Status.CLOSED);
+            sessionStatusListeners.clear();
         }
     }
 
@@ -806,7 +791,7 @@ public class XmppSession implements AutoCloseable {
      */
     public void send(ClientStreamElement element) {
 
-        if (!isConnected() && status != Status.CONNECTING) {
+        if (!isConnected() && getStatus() != Status.CONNECTING) {
             throw new IllegalStateException(String.format("Session is not connected to server"));
         }
         if (element instanceof Stanza) {
@@ -920,18 +905,21 @@ public class XmppSession implements AutoCloseable {
         loginInternal(new String[]{"ANONYMOUS"}, null, null, null);
     }
 
-    private synchronized void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
-        if (getStatus() == Status.AUTHENTICATED) {
+    private void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
+
+        Status previousStatus = getStatus();
+
+        if (previousStatus == Status.AUTHENTICATED || !updateStatus(Status.AUTHENTICATING)) {
             throw new IllegalStateException("You are already logged in.");
         }
-        if (getStatus() != Status.CONNECTED) {
+        if (previousStatus != Status.CONNECTED) {
             throw new IllegalStateException("You must be connected to the server before trying to login.");
         }
         if (getDomain() == null) {
             throw new IllegalStateException("The XMPP domain must not be null.");
         }
+
         exception = null;
-        Status oldStatus = status;
 
         lastMechanisms = mechanisms;
         lastAuthorizationId = authorizationId;
@@ -943,6 +931,7 @@ public class XmppSession implements AutoCloseable {
             } else {
                 authenticationManager.startAuthentication(mechanisms, authorizationId, callbackHandler);
             }
+            StreamFeaturesManager streamFeaturesManager = getManager(StreamFeaturesManager.class);
             // Negotiate all pending features until <bind/> would be negotiated.
             streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
 
@@ -952,17 +941,21 @@ public class XmppSession implements AutoCloseable {
             // Then negotiate resource binding manually.
             bindResource(resource);
 
-            if (callbackHandler != null && getRosterManager().isRetrieveRosterOnLogin()) {
-                getRosterManager().requestRoster();
+            // Proceed with any outstanding stream features which are negotiated after resource binding, e.g. XEP-0198
+            // and wait until all features have been negotiated.
+            streamFeaturesManager.completeNegotiation(configuration.getDefaultResponseTimeout());
+            RosterManager rosterManager = getManager(RosterManager.class);
+            if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
+                rosterManager.requestRoster();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // Revert status
-            updateStatus(oldStatus);
+            updateStatus(previousStatus, e);
             throwAsXmppExceptionIfNotNull(e);
-        } catch (StreamNegotiationException e) {
+        } catch (XmppException e) {
             // Revert status
-            updateStatus(oldStatus);
+            updateStatus(previousStatus, e);
             throw e;
         }
         wasLoggedIn = true;
@@ -987,7 +980,7 @@ public class XmppSession implements AutoCloseable {
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
-        Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
+        Session session = (Session) getManager(StreamFeaturesManager.class).getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
             query(new IQ(IQ.Type.SET, new Session()));
         }
@@ -1015,12 +1008,12 @@ public class XmppSession implements AutoCloseable {
                 }
             });
         } else if (element instanceof StreamFeatures) {
-            streamFeaturesManager.processFeatures((StreamFeatures) element);
+            getManager(StreamFeaturesManager.class).processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {
             throw new StreamErrorException((StreamError) element);
         } else {
             // Let's see, if the element is known to any feature negotiator.
-            return streamFeaturesManager.processElement(element);
+            return getManager(StreamFeaturesManager.class).processElement(element);
         }
         return false;
     }
@@ -1037,22 +1030,40 @@ public class XmppSession implements AutoCloseable {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
         exception = e;
         // Release a potential waiting thread.
-        streamFeaturesManager.cancelNegotiation();
+        getManager(StreamFeaturesManager.class).cancelNegotiation();
 
-        synchronized (this) {
-            if (status == Status.AUTHENTICATED || status == Status.AUTHENTICATING || status == Status.CONNECTED || status == Status.CONNECTING) {
-                updateStatus(Status.DISCONNECTED, e);
+        if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus())) {
+            try {
+                activeConnection.close();
+            } catch (Exception e1) {
+                e.addSuppressed(e1);
             }
+            updateStatus(Status.DISCONNECTED, e);
         }
     }
 
     /**
+     * Gets an instance of the specified extension manager class. The class MUST have a constructor which takes a single parameter, whose type is {@link rocks.xmpp.core.session.XmppSession}.
+     *
      * @param clazz The class of the extension manager.
      * @param <T>   The type.
-     * @return An instance of the specified extension manager.
+     * @return An instance of the specified manager.
+     * @deprecated Use {@link #getManager(Class)}
+     */
+    @Deprecated
+    public final <T extends ExtensionManager> T getExtensionManager(Class<T> clazz) {
+        return getManager(clazz);
+    }
+
+    /**
+     * Gets an instance of the specified manager class. The class MUST have a constructor which takes a single parameter, whose type is {@link rocks.xmpp.core.session.XmppSession}.
+     *
+     * @param clazz The class of the manager.
+     * @param <T>   The type.
+     * @return An instance of the specified manager.
      */
     @SuppressWarnings("unchecked")
-    public final <T extends ExtensionManager> T getExtensionManager(Class<T> clazz) {
+    public final <T extends Manager> T getManager(Class<T> clazz) {
         // http://j2eeblogger.blogspot.de/2007/10/singleton-vs-multiton-synchronization.html
         T instance;
         if ((instance = (T) instances.get(clazz)) == null) {
@@ -1077,45 +1088,55 @@ public class XmppSession implements AutoCloseable {
      * Gets the roster manager, which is responsible for retrieving, updating and deleting contacts from the roster.
      *
      * @return The roster manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final RosterManager getRosterManager() {
-        return rosterManager;
+        return getManager(RosterManager.class);
     }
 
     /**
      * Gets the presence manager, which is responsible for presence subscriptions.
      *
      * @return The presence manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final PresenceManager getPresenceManager() {
-        return presenceManager;
+        return getManager(PresenceManager.class);
     }
 
     /**
      * Gets the reconnection manager, which is responsible for automatic reconnection.
      *
      * @return The reconnection manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final ReconnectionManager getReconnectionManager() {
-        return reconnectionManager;
+        return getManager(ReconnectionManager.class);
     }
 
     /**
      * Gets the features manager, which is responsible for negotiating features.
      *
      * @return The features manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final StreamFeaturesManager getStreamFeaturesManager() {
-        return streamFeaturesManager;
+        return getManager(StreamFeaturesManager.class);
     }
 
     /**
      * Gets the chat manager, which is responsible for one-to-one chat sessions.
      *
      * @return The chat manager.
+     * @deprecated Use {@link #getManager(Class)} instead.
      */
+    @Deprecated
     public final ChatManager getChatManager() {
-        return chatManager;
+        return getManager(ChatManager.class);
     }
 
     /**
@@ -1145,12 +1166,18 @@ public class XmppSession implements AutoCloseable {
      *
      * @return The status.
      */
-    public final Status getStatus() {
+    public final synchronized Status getStatus() {
         return status;
     }
 
-    final void updateStatus(Status status) {
-        updateStatus(status, null);
+    /**
+     * Updates the status and notifies the connection listeners.
+     *
+     * @param status The new status.
+     * @return True, if the status has changed; otherwise false.
+     */
+    final boolean updateStatus(Status status) {
+        return updateStatus(status, null);
     }
 
     /**
@@ -1158,15 +1185,29 @@ public class XmppSession implements AutoCloseable {
      *
      * @param status The new status.
      * @param e      The exception.
+     * @return True, if the status has changed; otherwise false.
      */
-    final void updateStatus(Status status, Exception e) {
-        if (this.status != status) {
-            Status oldStatus = this.status;
+    final boolean updateStatus(Status status, Exception e) {
+        Status oldStatus;
+        synchronized (this) {
+            oldStatus = this.status;
             this.status = status;
-            notifyConnectionListeners(status, oldStatus, e);
         }
-        if (status == Status.CLOSED) {
-            sessionStatusListeners.clear();
+        if (status != oldStatus) {
+            // Make sure to not call listeners from within synchronized region.
+            notifySessionStatusListeners(status, oldStatus, e);
+        }
+        return status != oldStatus;
+    }
+
+    private void notifySessionStatusListeners(Status status, Status oldStatus, Exception exception) {
+        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, exception);
+        for (SessionStatusListener connectionListener : sessionStatusListeners) {
+            try {
+                connectionListener.sessionStatusChanged(sessionStatusEvent);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
         }
     }
 
@@ -1235,7 +1276,7 @@ public class XmppSession implements AutoCloseable {
      * @see #getStatus()
      */
     public final boolean isConnected() {
-        return status == Status.CONNECTED || status == Status.AUTHENTICATED || status == Status.AUTHENTICATING;
+        return EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING).contains(getStatus());
     }
 
     /**

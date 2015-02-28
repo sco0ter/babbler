@@ -51,12 +51,12 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getManager(MessageDeliveryReceiptsManager.class);
         // Test if the manager is disabled by default.
         Assert.assertFalse(messageDeliveryReceiptsManager1.isEnabled());
 
         messageDeliveryReceiptsManager1.setEnabled(true);
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager2 = xmppSession2.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager2 = xmppSession2.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager2.setEnabled(true);
 
         final boolean[] messageReceived = {false};
@@ -84,9 +84,9 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager2 = xmppSession2.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager2 = xmppSession2.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager2.setEnabled(false);
 
         final boolean[] messageReceived = {false};
@@ -109,7 +109,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
@@ -130,7 +130,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addMessageListener(new MessageListener() {
             @Override
@@ -163,7 +163,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
     @Test
     public void testEnablingManager() {
         TestXmppSession connection1 = new TestXmppSession();
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
     }
 
@@ -171,7 +171,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
     public void testListeners() throws Exception {
         TestXmppSession connection1 = new TestXmppSession();
 
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
 
         MessageDeliveredListener messageDeliveredListener = new MessageDeliveredListener() {
             @Override
@@ -198,9 +198,9 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getExtensionManager(MessageDeliveryReceiptsManager.class);
+        MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:receipts");
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         messageDeliveryReceiptsManager.setEnabled(true);

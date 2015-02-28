@@ -7,7 +7,7 @@
 ## Querying Another Entity for Its Software Version
 
 ```java
-SoftwareVersionManager softwareVersionManager = xmppSession.getExtensionManager(SoftwareVersionManager.class);
+SoftwareVersionManager softwareVersionManager = xmppSession.getManager(SoftwareVersionManager.class);
 SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.valueOf("example.net"));
 ```
 

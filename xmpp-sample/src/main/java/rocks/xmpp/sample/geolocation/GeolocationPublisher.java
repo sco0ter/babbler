@@ -76,7 +76,7 @@ public class GeolocationPublisher {
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-//                    GeoLocationManager geoLocationManager = xmppSession.getExtensionManager(GeoLocationManager.class);
+//                    GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
 //                    geoLocationManager.publish(new GeoLocation(123, 321));
 
                 } catch (XmppException e) {

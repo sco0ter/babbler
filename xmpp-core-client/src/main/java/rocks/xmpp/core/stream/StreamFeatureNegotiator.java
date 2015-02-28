@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core.stream;
 
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.stream.model.StreamFeature;
-import rocks.xmpp.core.stream.StreamNegotiationException;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -39,7 +39,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Christian Schudt
  */
-public abstract class StreamFeatureNegotiator {
+public abstract class StreamFeatureNegotiator extends Manager {
 
     private final Set<StreamFeatureListener> streamFeatureListeners = new CopyOnWriteArraySet<>();
 
@@ -52,6 +52,7 @@ public abstract class StreamFeatureNegotiator {
      */
     public StreamFeatureNegotiator(Class<? extends StreamFeature> featureClass) {
         this.featureClass = featureClass;
+        setEnabled(true);
     }
 
     /**

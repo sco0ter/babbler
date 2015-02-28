@@ -10,7 +10,7 @@
 You can get all existing privacy lists from the server like this:
 
 ```java
-PrivacyListManager privacyListManager = xmppSession.getExtensionManager(PrivacyListManager.class);
+PrivacyListManager privacyListManager = xmppSession.getManager(PrivacyListManager.class);
 Collection<PrivacyList> privacyLists = privacyListManager.getPrivacyLists();
 ```
 

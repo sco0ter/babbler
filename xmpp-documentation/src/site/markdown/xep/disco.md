@@ -14,7 +14,7 @@ Generally speaking all enabled extension manager will add their feature to the f
 You discover information about another XMPP entity by sending a request to it:
 
 ```java
-ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf("example.net"));
 ```
 
@@ -25,7 +25,7 @@ InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf("exa
 You can also discover items associated with an XMPP entity.
 
 ```java
-ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 ItemNode itemNode = serviceDiscoveryManager.discoverItems(Jid.valueOf("example.net"));
 List<Item> items = itemNode.getItems();
 ```
@@ -33,7 +33,7 @@ List<Item> items = itemNode.getItems();
 This will discover items at the \"root\" node, but you can also discover items at another node:
 
 ```java
-ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 ItemNode itemNode = serviceDiscoveryManager.discoverItems(Jid.valueOf("example.net"), "music");
 List<Item> items = itemNode.getItems();
 ```

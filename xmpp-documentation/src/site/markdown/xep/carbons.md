@@ -10,7 +10,7 @@ This if useful if you want all your connected resources to stay in sync with eac
 If you want to make use of Message Carbons, you must first tell it the server:
 
 ```java
-MessageCarbonsManager messageCarbonsManager = xmppSession.getExtensionManager(MessageCarbonsManager.class);
+MessageCarbonsManager messageCarbonsManager = xmppSession.getManager(MessageCarbonsManager.class);
 messageCarbonsManager.enableCarbons();
 ```
 

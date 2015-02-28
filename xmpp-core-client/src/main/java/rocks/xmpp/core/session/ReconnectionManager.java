@@ -29,12 +29,13 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * If the connection goes down, this class automatically reconnects, if the user was authenticated.
@@ -59,7 +60,9 @@ import java.util.concurrent.TimeUnit;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
  */
-public final class ReconnectionManager extends Manager implements SessionStatusListener {
+public final class ReconnectionManager extends Manager {
+
+    private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
 
     private final ScheduledExecutorService scheduledExecutorService;
 
@@ -71,7 +74,7 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
 
     private Date nextReconnectionAttempt;
 
-    ReconnectionManager(final XmppSession xmppSession) {
+    private ReconnectionManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
         this.reconnectionStrategy = new TruncatedBinaryExponentialBackoffStrategy(60, 5);
 
@@ -79,8 +82,31 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
         setEnabled(true);
 
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
+    }
 
-        xmppSession.addSessionStatusListener(this);
+
+    @Override
+    protected final void initialize() {
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                switch (e.getStatus()) {
+                    case DISCONNECTED:
+                        // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
+                        if ((!(e.getException() instanceof StreamErrorException) || !(((StreamErrorException) e.getException()).getStreamError().getCondition() == Condition.CONFLICT)) && e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
+                            scheduleReconnection(0);
+                        }
+                        break;
+                    case CONNECTED:
+                        cancel();
+                        break;
+                    case CLOSED:
+                        cancel();
+                        scheduledExecutorService.shutdown();
+                        break;
+                }
+            }
+        });
     }
 
     /**
@@ -97,13 +123,20 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
     private synchronized void scheduleReconnection(final int attempt) {
         if (isEnabled()) {
             int seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
+            if (attempt == 0) {
+                logger.log(Level.FINE, "Disconnect detected. Next reconnection attempt in {0} seconds.", seconds);
+            } else {
+                logger.log(Level.FINE, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", new Object[]{attempt, seconds});
+            }
+
             nextReconnectionAttempt = new Date(System.currentTimeMillis() + seconds * 1000);
             scheduledFuture = scheduledExecutorService.schedule(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        xmppSession.reconnect();
-                    } catch (XmppException e1) {
+                        xmppSession.connect();
+                        logger.log(Level.FINE, "Reconnection successful.");
+                    } catch (XmppException e) {
                         scheduleReconnection(attempt + 1);
                     }
                 }
@@ -143,26 +176,6 @@ public final class ReconnectionManager extends Manager implements SessionStatusL
         super.setEnabled(enabled);
         if (!enabled) {
             cancel();
-        }
-    }
-
-    @Override
-    public final void sessionStatusChanged(SessionStatusEvent e) {
-
-        switch (e.getStatus()) {
-            case DISCONNECTED:
-                // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
-                if ((!(e.getException() instanceof StreamErrorException) || !(((StreamErrorException) e.getException()).getStreamError().getCondition() == Condition.CONFLICT)) && e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
-                    scheduleReconnection(0);
-                }
-                break;
-            case CONNECTED:
-                cancel();
-                break;
-            case CLOSED:
-                cancel();
-                scheduledExecutorService.shutdown();
-                break;
         }
     }
 }

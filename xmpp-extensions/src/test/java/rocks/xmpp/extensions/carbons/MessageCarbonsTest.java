@@ -28,11 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.carbons.model.Disable;
-import rocks.xmpp.extensions.carbons.model.Enable;
-import rocks.xmpp.extensions.carbons.model.Private;
-import rocks.xmpp.extensions.carbons.model.Received;
-import rocks.xmpp.extensions.carbons.model.Sent;
+import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -43,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
 public class MessageCarbonsTest extends XmlTest {
 
     protected MessageCarbonsTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Enable.class, Disable.class, Private.class, Received.class, Sent.class);
+        super(IQ.class, MessageCarbons.class);
     }
 
     @Test
@@ -55,7 +51,7 @@ public class MessageCarbonsTest extends XmlTest {
                 "  <enable xmlns='urn:xmpp:carbons:2'/>\n" +
                 "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
-        Assert.assertNotNull(iq.getExtension(Enable.class));
+        Assert.assertTrue(iq.getExtension(MessageCarbons.Enable.class) == MessageCarbons.ENABLE);
     }
 
     @Test
@@ -67,6 +63,6 @@ public class MessageCarbonsTest extends XmlTest {
                 "  <disable xmlns='urn:xmpp:carbons:2'/>\n" +
                 "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
-        Assert.assertNotNull(iq.getExtension(Disable.class));
+        Assert.assertTrue(iq.getExtension(MessageCarbons.Disable.class) == MessageCarbons.DISABLE);
     }
 }

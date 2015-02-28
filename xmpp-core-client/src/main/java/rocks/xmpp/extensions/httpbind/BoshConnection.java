@@ -29,7 +29,9 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
 import javax.naming.Context;
@@ -57,10 +59,11 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.Hashtable;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -89,11 +92,6 @@ public final class BoshConnection extends Connection {
      */
     private final AtomicLong rid = new AtomicLong();
 
-    /**
-     * The executor, which will execute HTTP requests.
-     */
-    private final ExecutorService httpBindExecutor;
-
     private final XMLOutputFactory xmlOutputFactory;
 
     private final XMLInputFactory xmlInputFactory;
@@ -102,12 +100,40 @@ public final class BoshConnection extends Connection {
 
     private final XmppDebugger debugger;
 
-    private final Deque<String> keySequence = new LinkedList<>();
+    private final Deque<String> keySequence = new ArrayDeque<>();
 
     /**
      * The current request count, i.e. the current number of simultaneous requests.
      */
     private final AtomicInteger requestCount = new AtomicInteger();
+
+    /**
+     * Our supported compression methods.
+     */
+    private final Map<String, CompressionMethod> compressionMethods;
+
+    /**
+     * The encoding we can support. This is added as "Accept-Encoding" header in a request.
+     */
+    private final String clientAcceptEncoding;
+
+    /**
+     * The executor, which will execute HTTP requests.
+     * Guarded by "this".
+     */
+    private ExecutorService httpBindExecutor;
+
+    /**
+     * The compression method which is used to compress requests.
+     * Guarded by "this".
+     */
+    private CompressionMethod requestCompressionMethod;
+
+    /**
+     * The "Content-Encoding" header which is set during requests. It's only set, if the server included an "accept" attribute.
+     * Guarded by "this".
+     */
+    private String requestContentEncoding;
 
     /**
      * Guarded by "this".
@@ -141,11 +167,26 @@ public final class BoshConnection extends Connection {
         this.boshConnectionConfiguration = configuration;
         this.debugger = getXmppSession().getDebugger();
 
-        // Threads created by this thread pool, will be used to do simultaneous requests.
-        // Even in the unusual case, where the connection manager allows for more requests, two are enough.
-        httpBindExecutor = Executors.newFixedThreadPool(2, XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
         xmlOutputFactory = XMLOutputFactory.newFactory();
         xmlInputFactory = XMLInputFactory.newFactory();
+        compressionMethods = new LinkedHashMap<>();
+        for (CompressionMethod compressionMethod : boshConnectionConfiguration.getCompressionMethods()) {
+            compressionMethods.put(compressionMethod.getName(), compressionMethod);
+        }
+        if (!compressionMethods.isEmpty()) {
+            // TODO Use String.join(",", compressionMethods.keySet()); when on Java 8
+            StringBuilder sb = new StringBuilder();
+            int i = 0;
+            for (String compressionMethodName : compressionMethods.keySet()) {
+                sb.append(compressionMethodName);
+                if (++i < compressionMethods.size()) {
+                    sb.append(",");
+                }
+            }
+            clientAcceptEncoding = sb.toString();
+        } else {
+            clientAcceptEncoding = null;
+        }
     }
 
     /**
@@ -256,15 +297,23 @@ public final class BoshConnection extends Connection {
      */
     @Override
     public final synchronized void connect(Jid from) throws IOException {
+
+        if (sessionId != null) {
+            // Already connected.
+            return;
+        }
+
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
         }
 
         if (url == null) {
             String protocol = boshConnectionConfiguration.isSecure() ? "https" : "http";
+            // If no port has been configured, use the default ports.
+            int targetPort = getPort() > 0 ? getPort() : (boshConnectionConfiguration.isSecure() ? 5281 : 5280);
             // If a hostname has been configured, use it to connect.
             if (getHostname() != null) {
-                url = new URL(protocol, getHostname(), getPort(), boshConnectionConfiguration.getFile());
+                url = new URL(protocol, getHostname(), targetPort, boshConnectionConfiguration.getFile());
             } else if (getXmppSession().getDomain() != null) {
                 // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
                 String resolvedUrl = findBoshUrl(getXmppSession().getDomain(), boshConnectionConfiguration.getConnectTimeout());
@@ -273,10 +322,10 @@ public final class BoshConnection extends Connection {
                 } else {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    url = new URL(protocol, getXmppSession().getDomain(), getPort(), boshConnectionConfiguration.getFile());
+                    url = new URL(protocol, getXmppSession().getDomain(), targetPort, boshConnectionConfiguration.getFile());
                 }
-                port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
-                hostname = url.getHost();
+                this.port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
+                this.hostname = url.getHost();
             } else {
                 throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
             }
@@ -328,6 +377,11 @@ public final class BoshConnection extends Connection {
                 connection.disconnect();
             }
         }
+
+        // Threads created by this thread pool, will be used to do simultaneous requests.
+        // Even in the unusual case, where the connection manager allows for more requests, two are enough.
+        httpBindExecutor = Executors.newFixedThreadPool(2, XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
+
         // Send the initial request.
         sendNewRequest(body.build());
     }
@@ -356,7 +410,20 @@ public final class BoshConnection extends Connection {
                 if (responseBody.getAck() != null) {
                     usingAcknowledgments = true;
                 }
-
+                // The connection manager MAY include an 'accept' attribute in the session creation response element, to specify a comma-separated list of the content encodings it can decompress.
+                if (responseBody.getAccept() != null) {
+                    // After receiving a session creation response with an 'accept' attribute,
+                    // clients MAY include an HTTP Content-Encoding header in subsequent requests (indicating one of the encodings specified in the 'accept' attribute) and compress the bodies of the requests accordingly.
+                    String[] serverAcceptedEncodings = responseBody.getAccept().split(",");
+                    // Let's see if we can compress the contents for the server by choosing a known compression method.
+                    for (String serverAcceptedEncoding : serverAcceptedEncodings) {
+                        requestCompressionMethod = compressionMethods.get(serverAcceptedEncoding);
+                        requestContentEncoding = serverAcceptedEncoding;
+                        if (requestCompressionMethod != null) {
+                            break;
+                        }
+                    }
+                }
                 if (responseBody.getFrom() != null) {
                     getXmppSession().setXmppServiceDomain(responseBody.getFrom().getDomain());
                 }
@@ -365,7 +432,7 @@ public final class BoshConnection extends Connection {
 
         if (responseBody.getAck() != null) {
             // The response has acknowledged another request.
-            unacknowledgedRequests.remove(responseBody.getAck());
+            ackReceived(responseBody.getAck());
         }
 
         // If the body contains an error condition, which is not a stream error, terminate the connection by throwing an exception.
@@ -438,8 +505,14 @@ public final class BoshConnection extends Connection {
     @Override
     public final void close() throws Exception {
         if (getSessionId() != null) {
-            synchronized (httpBindExecutor) {
-                if (!httpBindExecutor.isShutdown()) {
+            synchronized (this) {
+                sessionId = null;
+                authId = null;
+                requestContentEncoding = null;
+                keySequence.clear();
+                requestContentEncoding = null;
+
+                if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                     // Terminate the BOSH session.
                     Body.Builder bodyBuilder = Body.builder()
                             .requestId(rid.getAndIncrement())
@@ -454,6 +527,7 @@ public final class BoshConnection extends Connection {
                     httpBindExecutor.shutdown();
                     // Wait shortly, until the "terminate" body has been sent.
                     httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
+                    httpBindExecutor = null;
                 }
             }
         }
@@ -466,9 +540,10 @@ public final class BoshConnection extends Connection {
      * @see <a href="https://conversejs.org/docs/html/#prebinding-and-single-session-support">https://conversejs.org/docs/html/#prebinding-and-single-session-support</a>
      */
     public final long detach() {
-        synchronized (httpBindExecutor) {
-            if (!httpBindExecutor.isShutdown()) {
+        synchronized (this) {
+            if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                 httpBindExecutor.shutdown();
+                httpBindExecutor = null;
             }
         }
         // Return the latest and greatest rid.
@@ -542,8 +617,8 @@ public final class BoshConnection extends Connection {
     private void sendNewRequest(final Body body) {
 
         // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
-        synchronized (httpBindExecutor) {
-            if (!httpBindExecutor.isShutdown()) {
+        synchronized (this) {
+            if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                 httpBindExecutor.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -561,6 +636,17 @@ public final class BoshConnection extends Connection {
 
                                 httpConnection = getConnection();
                                 httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+
+                                // We can decompress server responses, so tell the server about it.
+                                if (clientAcceptEncoding != null) {
+                                    httpConnection.setRequestProperty("Accept-Encoding", clientAcceptEncoding);
+                                }
+
+                                // If we can compress, tell the server about it.
+                                if (requestCompressionMethod != null && requestContentEncoding != null) {
+                                    httpConnection.setRequestProperty("Content-Encoding", requestContentEncoding);
+                                }
+
                                 httpConnection.setDoOutput(true);
                                 httpConnection.setRequestMethod("POST");
                                 // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
@@ -571,10 +657,16 @@ public final class BoshConnection extends Connection {
 
                                 XMLStreamWriter xmlStreamWriter = null;
 
-                                try {
+                                OutputStream requestStream;
+                                if (requestCompressionMethod != null) {
+                                    requestStream = requestCompressionMethod.compress(httpConnection.getOutputStream());
+                                } else {
+                                    requestStream = httpConnection.getOutputStream();
+                                }
 
+                                try {
                                     // Branch the stream, so that its output can also be logged.
-                                    OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(httpConnection.getOutputStream(), byteArrayOutputStreamRequest);
+                                    OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(requestStream, byteArrayOutputStreamRequest);
                                     OutputStream xmppOutputStream;
                                     if (debugger != null) {
                                         xmppOutputStream = debugger.createOutputStream(branchedOutputStream);
@@ -598,7 +690,7 @@ public final class BoshConnection extends Connection {
                                 }
                             }
                             // Wait for the response
-                            if ((httpConnection.getResponseCode()) == HttpURLConnection.HTTP_OK) {
+                            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
                                 // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
                                 synchronized (BoshConnection.this) {
@@ -608,8 +700,16 @@ public final class BoshConnection extends Connection {
                                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                                 XMLEventReader xmlEventReader = null;
 
+                                InputStream responseStream;
+                                String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
+                                if (contentEncoding != null) {
+                                    responseStream = compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream());
+                                } else {
+                                    responseStream = httpConnection.getInputStream();
+                                }
+
                                 // Branch the stream so that its input can be logged.
-                                InputStream inputStream = XmppUtils.createBranchedInputStream(httpConnection.getInputStream(), byteArrayOutputStream);
+                                InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream);
                                 InputStream xmppInputStream;
                                 if (debugger != null) {
                                     xmppInputStream = debugger.createInputStream(inputStream);
@@ -638,7 +738,7 @@ public final class BoshConnection extends Connection {
                                     }
                                 } finally {
                                     // The response itself acknowledges the request, so we can remove the request.
-                                    unacknowledgedRequests.remove(body.getRid());
+                                    ackReceived(body.getRid());
                                     if (xmlEventReader != null) {
                                         xmlEventReader.close();
                                     }
@@ -669,6 +769,11 @@ public final class BoshConnection extends Connection {
                                 sendNewRequest(bodyBuilder.build());
                             }
                         } catch (Exception e) {
+                            synchronized (this) {
+                                if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
+                                    httpBindExecutor.shutdown();
+                                }
+                            }
                             getXmppSession().notifyException(e);
                         } finally {
                             if (httpConnection != null) {
@@ -677,6 +782,17 @@ public final class BoshConnection extends Connection {
                         }
                     }
                 });
+            }
+        }
+    }
+
+    private void ackReceived(Long rid) {
+        Body body = unacknowledgedRequests.remove(rid);
+        if (body != null) {
+            for (Object object : body.getWrappedObjects()) {
+                if (object instanceof Stanza) {
+                    // TODO trigger some listener
+                }
             }
         }
     }

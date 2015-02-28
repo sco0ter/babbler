@@ -34,6 +34,106 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#statuscodes">11. Status Codes</a>
  */
 public final class Status {
+
+    /**
+     * Inform user that any occupant is allowed to see the user's full JID (100).
+     */
+    public static final Status ROOM_IS_NON_ANONYMOUS = new Status(100);
+
+    /**
+     * Inform user that his or her affiliation changed while not in the room (101).
+     */
+    public static final Status AFFILIATION_CHANGED = new Status(101);
+
+    /**
+     * Inform occupants that room now shows unavailable members (102).
+     */
+    public static final Status ROOM_SHOWS_UNAVAILABLE_MEMBERS = new Status(102);
+
+    /**
+     * Inform occupants that room now does not show unavailable members (103).
+     */
+    public static final Status ROOM_DOES_NOT_SHOW_UNAVAILABLE_MEMBERS = new Status(103);
+
+    /**
+     * Inform occupants that a non-privacy-related room configuration change has occurred (104).
+     */
+    public static final Status ROOM_CONFIGURATION_CHANGED = new Status(104);
+
+    /**
+     * Inform user that presence refers to itself (110).
+     */
+    public static final Status SELF_PRESENCE = new Status(110);
+
+    /**
+     * Inform occupants that room logging is now enabled (170).
+     */
+    public static final Status ROOM_LOGGING_ENABLED = new Status(170);
+
+    /**
+     * Inform occupants that room logging is now disabled (171).
+     */
+    public static final Status ROOM_LOGGING_DISABLED = new Status(171);
+
+    /**
+     * Inform occupants that the room is now non-anonymous (172).
+     */
+    public static final Status ROOM_NON_ANONYMOUS = new Status(172);
+
+    /**
+     * Inform occupants that the room is now semi-anonymous (173).
+     */
+    public static final Status ROOM_SEMI_ANONYMOUS = new Status(173);
+
+    /**
+     * Inform occupants that the room is now fully-anonymous (174).
+     */
+    public static final Status ROOM_FULLY_ANONYMOUS = new Status(174);
+
+    /**
+     * Inform user that a new room has been created (201).
+     */
+    public static final Status NEW_ROOM_CREATED = new Status(201);
+
+    /**
+     * Inform user that service has assigned or modified occupant's roomnick (210).
+     */
+    public static final Status SERVICE_HAS_ASSIGNED_OR_MODIFIED_NICK = new Status(210);
+
+    /**
+     * Inform user that he or she has been banned from the room (301).
+     */
+    public static final Status BANNED = new Status(301);
+
+    /**
+     * Inform all occupants of new room nickname (303).
+     */
+    public static final Status NICK_CHANGED = new Status(303);
+
+    /**
+     * Inform user that he or she has been kicked from the room (307).
+     */
+    public static final Status KICKED = new Status(307);
+
+    /**
+     * Inform user that he or she is being removed from the room
+     * because of an affiliation change (321).
+     */
+    public static final Status MEMBERSHIP_REVOKED = new Status(321);
+
+    /**
+     * Inform user that he or she is being removed from the room
+     * because the room has been changed to members-only and the
+     * user is not a member (322).
+     */
+    public static final Status ROOM_CHANGED_TO_MEMBERS_ONLY = new Status(322);
+
+    /**
+     * Inform user that he or she is being removed from the room
+     * because the MUC service is being shut down (332).
+     */
+    public static final Status SERVICE_SHUT_DOWN = new Status(332);
+
     @XmlAttribute(name = "code")
     private Integer code;
 
@@ -50,187 +150,16 @@ public final class Status {
     }
 
     /**
-     * Creates status code 100.
-     *
-     * @return The status code.
-     */
-    public static Status roomIsNonAnonymous() {
-        return new Status(100);
-    }
-
-    /**
-     * Creates status code 101.
-     *
-     * @return The status code.
-     */
-    public static Status affiliationChanged() {
-        return new Status(101);
-    }
-
-    /**
-     * Creates status code 102.
-     *
-     * @return The status code.
-     */
-    public static Status roomShowsUnavailableMembers() {
-        return new Status(102);
-    }
-
-    /**
-     * Creates status code 103.
-     *
-     * @return The status code.
-     */
-    public static Status roomDoesNotShowUnavailableMembers() {
-        return new Status(103);
-    }
-
-    /**
-     * Creates status code 104.
-     *
-     * @return The status code.
-     */
-    public static Status roomConfigurationChange() {
-        return new Status(104);
-    }
-
-    /**
-     * Creates status code 110.
-     *
-     * @return The status code.
-     */
-    public static Status self() {
-        return new Status(110);
-    }
-
-    /**
-     * Creates status code 170.
-     *
-     * @return The status code.
-     */
-    public static Status roomLoggingEnabled() {
-        return new Status(170);
-    }
-
-    /**
-     * Creates status code 171.
-     *
-     * @return The status code.
-     */
-    public static Status roomLoggingDisabled() {
-        return new Status(171);
-    }
-
-    /**
-     * Creates status code 172.
-     *
-     * @return The status code.
-     */
-    public static Status roomNonAnonymous() {
-        return new Status(172);
-    }
-
-    /**
-     * Creates status code 173.
-     *
-     * @return The status code.
-     */
-    public static Status roomSemiAnonymous() {
-        return new Status(173);
-    }
-
-    /**
-     * Creates status code 174.
-     *
-     * @return The status code.
-     */
-    public static Status roomFullyAnonymous() {
-        return new Status(174);
-    }
-
-    /**
-     * Creates status code 201.
-     *
-     * @return The status code.
-     */
-    public static Status newRoomCreated() {
-        return new Status(201);
-    }
-
-    /**
-     * Creates status code 210.
-     *
-     * @return The status code.
-     */
-    public static Status serviceHasAssignedOrModifiedNick() {
-        return new Status(210);
-    }
-
-    /**
-     * Creates status code 301.
-     *
-     * @return The status code.
-     */
-    public static Status banned() {
-        return new Status(301);
-    }
-
-    /**
-     * Creates status code 303.
-     *
-     * @return The status code.
-     */
-    public static Status nicknameChanged() {
-        return new Status(303);
-    }
-
-    /**
-     * Creates status code 307.
-     *
-     * @return The status code.
-     */
-    public static Status kicked() {
-        return new Status(307);
-    }
-
-    /**
-     * Creates status code 321.
-     *
-     * @return The status code.
-     */
-    public static Status membershipRevoked() {
-        return new Status(321);
-    }
-
-    /**
-     * Creates status code 322.
-     *
-     * @return The status code.
-     */
-    public static Status roomChangedToMembersOnly() {
-        return new Status(322);
-    }
-
-    /**
-     * Creates status code 332.
-     *
-     * @return The status code.
-     */
-    public static Status systemShutdown() {
-        return new Status(332);
-    }
-
-    /**
      * Gets the status code.
      *
      * @return The status code.
      */
-    public int getCode() {
+    public final int getCode() {
         return code != null ? code : 0;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -243,7 +172,7 @@ public final class Status {
     }
 
     @Override
-    public int hashCode() {
-       return Objects.hash(code);
+    public final int hashCode() {
+        return Objects.hash(code);
     }
 }

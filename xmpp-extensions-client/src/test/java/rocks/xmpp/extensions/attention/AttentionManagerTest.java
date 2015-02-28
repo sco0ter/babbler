@@ -61,7 +61,7 @@ public class AttentionManagerTest extends ExtensionTest {
             }
         });
 
-        AttentionManager attentionManager = xmppSession1.getExtensionManager(AttentionManager.class);
+        AttentionManager attentionManager = xmppSession1.getManager(AttentionManager.class);
         attentionManager.captureAttention(JULIET);
 
         Assert.assertTrue(attentionReceived[0]);
@@ -72,9 +72,9 @@ public class AttentionManagerTest extends ExtensionTest {
     public void testServiceDiscoveryEntry() {
 
         TestXmppSession connection1 = new TestXmppSession();
-        AttentionManager attentionManager = connection1.getExtensionManager(AttentionManager.class);
+        AttentionManager attentionManager = connection1.getManager(AttentionManager.class);
         Assert.assertFalse(attentionManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:attention:0");
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         attentionManager.setEnabled(true);

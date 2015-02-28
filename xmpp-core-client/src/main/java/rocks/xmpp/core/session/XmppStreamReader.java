@@ -26,8 +26,8 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.stream.model.errors.Text;
 
@@ -46,19 +46,15 @@ import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.
- * <p>
+ * <p/>
  * This class is thread-safe.
  *
  * @author Christian Schudt
  */
 final class XmppStreamReader {
-
-    private static final Logger logger = Logger.getLogger(XmppStreamReader.class.getName());
 
     private final TcpConnection connection;
 
@@ -166,30 +162,23 @@ final class XmppStreamReader {
                             throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, new Text("Stream closed by server", "en"), null));
                         }
                     } catch (Exception e) {
+                        synchronized (XmppStreamReader.this) {
+                            if (!executorService.isShutdown()) {
+                                // shutdown the service, but don't await termination, in order to not block the reader thread.
+                                executorService.shutdown();
+                            }
+                        }
                         xmppSession.notifyException(e);
                     } finally {
                         if (xmlEventReader != null) {
                             try {
                                 xmlEventReader.close();
                             } catch (XMLStreamException e) {
-                                logger.log(Level.WARNING, e.getMessage(), e);
+                                xmppSession.notifyException(e);
                             }
                         }
                         if (doRestart) {
                             connection.restartStream();
-                        } else {
-                            synchronized (XmppStreamReader.this) {
-                                if (!executorService.isShutdown()) {
-                                    // shutdown the service, but don't await termination, in order to not block the reader thread.
-                                    executorService.shutdown();
-                                }
-                            }
-                            // Then close the connection, which will only close the writer thread and the socket.
-                            try {
-                                connection.close();
-                            } catch (Exception e) {
-                                logger.log(Level.WARNING, e.getMessage(), e);
-                            }
                         }
                     }
                 }

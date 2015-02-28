@@ -68,7 +68,7 @@ public class DiscoSampleUser2 {
                     // Send initial presence
                     xmppSession.send(new Presence());
 
-                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
                     ItemNode itemNode = serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forLimit(10));
 
                     serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forNextPage(10, itemNode.getResultSetManagement().getLastItem()));

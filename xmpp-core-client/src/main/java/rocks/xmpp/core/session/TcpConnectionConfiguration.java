@@ -24,12 +24,7 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.extensions.compress.CompressionMethod;
-
 import javax.net.SocketFactory;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A configuration for a TCP connection.
@@ -61,13 +56,10 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
     private final SocketFactory socketFactory;
 
-    private final List<CompressionMethod> compressionMethods;
-
     private TcpConnectionConfiguration(Builder builder) {
         super(builder);
         this.keepAliveInterval = builder.keepAliveInterval;
         this.socketFactory = builder.socketFactory;
-        this.compressionMethods = builder.compressionMethods;
     }
 
     /**
@@ -131,23 +123,12 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
     }
 
     /**
-     * Gets the compression method.
-     *
-     * @return The compression method.
-     */
-    public final List<CompressionMethod> getCompressionMethods() {
-        return compressionMethods;
-    }
-
-    /**
      * A builder to create a {@link TcpConnectionConfiguration} instance.
      */
     public static final class Builder extends ConnectionConfiguration.Builder<Builder> {
         private int keepAliveInterval;
 
         private SocketFactory socketFactory;
-
-        private List<CompressionMethod> compressionMethods = Collections.emptyList();
 
         private Builder() {
             // default values.
@@ -164,18 +145,6 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
          */
         public Builder keepAliveInterval(int keepAliveInterval) {
             this.keepAliveInterval = keepAliveInterval;
-            return this;
-        }
-
-        /**
-         * Sets the compression method.
-         *
-         * @param compressionMethods The compression method.
-         * @return The builder.
-         * @see rocks.xmpp.extensions.compress.CompressionManager#ZLIB
-         */
-        public Builder compressionMethods(CompressionMethod... compressionMethods) {
-            this.compressionMethods = Arrays.asList(compressionMethods);
             return this;
         }
 

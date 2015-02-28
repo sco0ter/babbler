@@ -57,7 +57,7 @@ public final class JingleFileTransferManager extends ExtensionManager {
 
     private JingleFileTransferManager(XmppSession xmppSession) {
         super(xmppSession, JingleFileTransfer.NAMESPACE);
-        jingleManager = xmppSession.getExtensionManager(JingleManager.class);
+        jingleManager = xmppSession.getManager(JingleManager.class);
     }
 
     public JingleFileTransferSession initiateFileTransferSession(final Jid responder, File file, String description, long timeout) throws XmppException, IOException {
@@ -108,7 +108,7 @@ public final class JingleFileTransferManager extends ExtensionManager {
         }
         if (jingle.getAction() == Jingle.Action.SESSION_ACCEPT) {
             // TODO respect responders transport method.
-            InBandByteStreamManager inBandByteStreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
+            InBandByteStreamManager inBandByteStreamManager = xmppSession.getManager(InBandByteStreamManager.class);
             inBandByteStreamManager.initiateSession(responder, ibbSessionId, 4096);
         }
         return new JingleFileTransferSession(jingleSession);

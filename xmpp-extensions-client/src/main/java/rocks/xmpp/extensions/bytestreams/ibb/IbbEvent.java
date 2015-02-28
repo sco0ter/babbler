@@ -50,13 +50,13 @@ final class IbbEvent extends ByteStreamEvent {
     }
 
     @Override
-    public ByteStreamSession accept() {
+    public final ByteStreamSession accept() {
         xmppSession.send(iq.createResult());
-        return xmppSession.getExtensionManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize);
+        return xmppSession.getManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize);
     }
 
     @Override
-    public void reject() {
+    public final void reject() {
         // If the responder supports IBB but does not wish to proceed with the session, it returns a <not-acceptable/> error.
         xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, Condition.NOT_ACCEPTABLE)));
     }

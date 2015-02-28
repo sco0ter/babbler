@@ -54,7 +54,7 @@ public class BoshTest {
                 xmppSession.connect();
                 xmppSession.login("admin", "admin", null);
                 //xmppSession.send(new Presence());
-                //xmppSession.getRosterManager().requestRoster();
+                //xmppSession.getManager(RosterManager.class).requestRoster();
                 xmppSession.close();
             } catch (Exception e) {
                 e.printStackTrace();

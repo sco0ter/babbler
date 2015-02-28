@@ -7,9 +7,11 @@
     * Specifically your hosted Service Discovery items (XEP-0030) can now return [limited result sets](http://xmpp.org/extensions/xep-0059.html#examples).
 * Add support for [XEP-0222: Persistent Storage of Public Data via PubSub](http://xmpp.org/extensions/xep-0222.html)
 * Add support for [XEP-0223: Persistent Storage of Private Data via PubSub](http://xmpp.org/extensions/xep-0223.html)
+* Add support for [Roster Versioning](http://xmpp.org/rfcs/rfc6121.html#roster-versioning)
 * Rename method signature of `[Message|Presence|IQ]Listener` from `handle` to `handle[Message|Presence|IQ]` for better readability if a class implements multiple of those interfaces. (API change!)
 * PubSub: Add support for [Publish Options](http://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
 * PubSub: Add API to retrieve subscription options for a specific subscription id.
+* Harmonize Exception design: Most methods now only throw `XmppException` (or a subclass thereof)
 * Add helper classes to work with [standardized MUC](http://xmpp.org/extensions/xep-0045.html#registrar-formtype) and [PubSub data forms](http://xmpp.org/extensions/xep-0060.html#registrar-formtypes), e.g. to configure a node.
 * Rename some methods to better resemble the terminology of the specifications (e.g. `discover*` instead of `get*`).
 * Refactor Chat State Notifications, Message Delivery Receipts, PingManager
@@ -24,7 +26,9 @@
 * Add support for [optional session establishment](http://tools.ietf.org/html/draft-cridland-xmpp-session-01).
 * Add persistent (directory-based) cache support for [Entity Capabilities](http://xmpp.org/extensions/xep-0115.html) and [Avatars](http://xmpp.org/extensions/xep-0084.html).
 * Use Singleton pattern for XML elements where appropriate (e.g. most stanza errors).
-* Various minor tweaks and bug fixes (e.g. thread-safety, Objects.requireNonNull())
+* Add support for BOSH compression (gzip, deflate)
+* `XmppSession.getExtensionManager()` has been replaced with a more general `getManager()`, which also covers core managers.
+* Various minor tweaks and bug fixes (e.g. thread-safety, `Objects.requireNonNull()`)
 
 
 ## Version 0.4.0 (2014-11-01)

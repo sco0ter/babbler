@@ -46,10 +46,8 @@ public final class DirectoryCache implements Map<String, byte[]> {
 
     private final Path cacheDirectory;
 
-    public DirectoryCache(Path cacheDirectory) throws IOException {
+    public DirectoryCache(Path cacheDirectory) {
         this.cacheDirectory = cacheDirectory;
-        // Make sure the directory exists.
-        Files.createDirectories(cacheDirectory);
     }
 
     @Override
@@ -101,9 +99,13 @@ public final class DirectoryCache implements Map<String, byte[]> {
 
     @Override
     public final byte[] put(String key, byte[] value) {
-        Path file = cacheDirectory.resolve(key);
+        // Make sure the directory exists.
         byte[] data = get(key);
         try {
+            if (Files.notExists(cacheDirectory)) {
+                Files.createDirectories(cacheDirectory);
+            }
+            Path file = cacheDirectory.resolve(key);
             Files.write(file, value);
         } catch (IOException e) {
             throw new RuntimeException(e);

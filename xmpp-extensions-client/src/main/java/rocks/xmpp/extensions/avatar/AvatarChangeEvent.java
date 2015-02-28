@@ -50,11 +50,21 @@ public final class AvatarChangeEvent extends EventObject {
         this.avatar = avatar;
     }
 
-    public byte[] getAvatar() {
+    /**
+     * Gets the avatar image data.
+     *
+     * @return The avatar.
+     */
+    public final byte[] getAvatar() {
         return avatar;
     }
 
-    public Jid getContact() {
+    /**
+     * Gets the bare JID of the contact who's associated with the avatar, i.e. who changed his or her avatar.
+     *
+     * @return The contact.
+     */
+    public final Jid getContact() {
         return contact;
     }
 }

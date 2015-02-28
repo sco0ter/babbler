@@ -38,7 +38,7 @@ import java.util.Objects;
  * </p>
  * <h3>Advertising support for message correction</h3>
  * <pre><code>
- * xmppSession.getExtensionManager(MessageCorrectionManager.class).setEnabled(true);
+ * xmppSession.getManager(MessageCorrectionManager.class).setEnabled(true);
  * </code></pre>
  * <h3>Checking if a message should be corrected</h3>
  * <pre><code>

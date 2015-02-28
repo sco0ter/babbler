@@ -26,10 +26,11 @@ package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -73,7 +74,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends IQExtensionManager implements SessionStatusListener {
+public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private static Identity defaultIdentity = new Identity("client", "pc");
 
@@ -90,13 +91,62 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.GET, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
-
-        xmppSession.addSessionStatusListener(this);
-
-        xmppSession.addIQHandler(InfoDiscovery.class, this);
-        xmppSession.addIQHandler(ItemDiscovery.class, this);
+        super(xmppSession, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
         setEnabled(true);
+    }
+
+    @Override
+    protected void initialize() {
+        xmppSession.addSessionStatusListener(new SessionStatusListener() {
+            @Override
+            public void sessionStatusChanged(SessionStatusEvent e) {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
+                        pcs.removePropertyChangeListener(propertyChangeListener);
+                    }
+                }
+                infoNodeMap.clear();
+                itemProviders.clear();
+            }
+        });
+
+        xmppSession.addIQHandler(InfoDiscovery.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
+                if (infoDiscovery.getNode() == null) {
+                    return iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
+                } else {
+                    InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
+                    if (infoNode != null) {
+                        return iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
+                    } else {
+                        // Returns <feature-not-implemented/> here.
+                        // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
+                        return iq.createError(Condition.FEATURE_NOT_IMPLEMENTED);
+                    }
+                }
+            }
+        });
+        xmppSession.addIQHandler(ItemDiscovery.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
+                ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
+                if (itemProvider != null) {
+                    ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
+                    return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
+                } else {
+                    if (itemDiscovery.getNode() == null) {
+                        // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
+                        return iq.createResult(new ItemDiscovery(itemDiscovery.getNode()));
+                    } else {
+                        // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
+                        return iq.createError(Condition.ITEM_NOT_FOUND);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -269,8 +319,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param jid The entity's JID.
      * @return The service discovery result.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public InfoNode discoverInformation(Jid jid) throws XmppException {
         return discoverInformation(jid, null);
@@ -286,8 +336,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid  The entity's JID.
      * @param node The node.
      * @return The info discovery result or null, if info discovery is not supported.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see #discoverInformation(rocks.xmpp.core.Jid)
      */
     public InfoNode discoverInformation(Jid jid, String node) throws XmppException {
@@ -300,8 +350,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param jid The JID.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid) throws XmppException {
         return discoverItems(jid, null, null);
@@ -313,8 +363,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid       The JID.
      * @param resultSet The result set management.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, ResultSetManagement resultSet) throws XmppException {
         return discoverItems(jid, null, resultSet);
@@ -326,8 +376,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param jid  The JID.
      * @param node The node.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node) throws XmppException {
         return discoverItems(jid, node, null);
@@ -340,8 +390,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      * @param node                The node.
      * @param resultSetManagement The result set management.
      * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
@@ -353,8 +403,8 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
      *
      * @param feature The feature namespace.
      * @return The services, that belong to the namespace.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      */
     public Collection<Item> discoverServices(String feature) throws XmppException {
         ItemNode itemDiscovery = discoverItems(Jid.valueOf(xmppSession.getDomain()));
@@ -426,50 +476,5 @@ public final class ServiceDiscoveryManager extends IQExtensionManager implements
         } else {
             itemProviders.put(node, itemProvider);
         }
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-        InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
-        if (infoDiscovery != null) {
-            if (infoDiscovery.getNode() == null) {
-                return iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
-            } else {
-                InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
-                if (infoNode != null) {
-                    return iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
-                } else {
-                    // Returns <feature-not-implemented/> here.
-                    // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
-                    return iq.createError(Condition.FEATURE_NOT_IMPLEMENTED);
-                }
-            }
-        } else {
-            ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
-            ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
-            if (itemProvider != null) {
-                ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
-                return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
-            } else {
-                if (itemDiscovery.getNode() == null) {
-                    // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                    return iq.createResult(new ItemDiscovery(itemDiscovery.getNode()));
-                } else {
-                    // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
-                    return iq.createError(Condition.ITEM_NOT_FOUND);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
-                pcs.removePropertyChangeListener(propertyChangeListener);
-            }
-        }
-        infoNodeMap.clear();
-        itemProviders.clear();
     }
 }

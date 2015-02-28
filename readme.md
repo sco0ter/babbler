@@ -2,7 +2,7 @@
 
 It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 700+ unit tests).
 
-It supports the core specifications [RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html), (short of optional features like [Roster Versioning](http://xmpp.org/rfcs/rfc6121.html#roster-versioning)), as well as many [extensions](http://xmpp.org/xmpp-protocols/xmpp-extensions/).
+It supports the core specifications [RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html), as well as many [extensions](http://xmpp.org/xmpp-protocols/xmpp-extensions/).
 
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 
@@ -28,6 +28,39 @@ Since this project is quite young, the API might change. Comments on the API are
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
     <version>0.4.0</version>
+</dependency>
+```
+
+## Snapshots
+
+Developing snapshots are availble on OSS Sonatype nexus:
+
+```xml
+<repositories>
+    <repository>
+        <id>sonatype-nexus-snapshots</id>
+        <name>Sonatype Nexus Snapshots</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
+
+```xml
+<dependency>
+    <groupId>rocks.xmpp</groupId>
+    <artifactId>xmpp-core-client</artifactId>
+    <version>0.5.0-SNAPSHOT</version>
+</dependency>
+<dependency>
+    <groupId>rocks.xmpp</groupId>
+    <artifactId>xmpp-extensions-client</artifactId>
+    <version>0.5.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -245,7 +278,7 @@ xmppSession.addMessageListener(new MessageListener() {
     }
 });
 // Listen for roster pushes
-xmppSession.getRosterManager().addRosterListener(new RosterListener() {
+xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
     @Override
     public void rosterChanged(RosterEvent e) {
 
@@ -260,8 +293,8 @@ If you have prepared your session, you are now ready to connect to the server:
 ```java
 try {
    xmppSession.connect();
-} catch (IOException e) {
-   // e.g. UnknownHostException
+} catch (XmppException e) {
+   // ...
 }
 ```
 

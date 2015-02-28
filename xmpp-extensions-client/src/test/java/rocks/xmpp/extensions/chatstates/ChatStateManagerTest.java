@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.Chat;
+import rocks.xmpp.core.session.ChatManager;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -64,9 +65,9 @@ public class ChatStateManagerTest extends ExtensionTest {
             }
         });
 
-        ChatStateManager chatStateManager = xmppSession1.getExtensionManager(ChatStateManager.class);
+        ChatStateManager chatStateManager = xmppSession1.getManager(ChatStateManager.class);
         chatStateManager.setEnabled(true);
-        Chat chat = xmppSession1.getChatManager().createChatSession(JULIET.asBareJid());
+        Chat chat = xmppSession1.getManager(ChatManager.class).createChatSession(JULIET.asBareJid());
         // At this point it is unknown if the chat partner supports chat states. Therefore send it.
         Assert.assertTrue(chatStateManager.setChatState(ChatState.COMPOSING, chat));
         Assert.assertTrue(chatStatesReceived.contains(ChatState.COMPOSING));
@@ -84,10 +85,10 @@ public class ChatStateManagerTest extends ExtensionTest {
     public void testServiceDiscoveryEntry() {
 
         XmppSession xmppSession1 = new TestXmppSession();
-        ChatStateManager chatStateManager = xmppSession1.getExtensionManager(ChatStateManager.class);
+        ChatStateManager chatStateManager = xmppSession1.getManager(ChatStateManager.class);
         // By default, Chat States are disabled.
         Assert.assertFalse(chatStateManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("http://jabber.org/protocol/chatstates");
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         chatStateManager.setEnabled(true);

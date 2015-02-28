@@ -75,7 +75,7 @@ public class DiscoSampleUser1 {
                         myItems.add(new Item(Jid.valueOf("test"), "myNode" + i, "test" + i));
                     }
 
-                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
                     serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(myItems));
                 } catch (Exception e) {
                     e.printStackTrace();

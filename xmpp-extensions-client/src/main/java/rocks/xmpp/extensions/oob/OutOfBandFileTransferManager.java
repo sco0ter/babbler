@@ -24,8 +24,9 @@
 
 package rocks.xmpp.extensions.oob;
 
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -53,18 +54,91 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-public final class OutOfBandFileTransferManager extends IQExtensionManager implements FileTransferNegotiator {
+public final class OutOfBandFileTransferManager extends ExtensionManager implements FileTransferNegotiator {
     private final FileTransferManager fileTransferManager;
 
     private OutOfBandFileTransferManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.SET, OobIQ.NAMESPACE, OobX.NAMESPACE);
-        fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
+        super(xmppSession, OobIQ.NAMESPACE, OobX.NAMESPACE);
+        fileTransferManager = xmppSession.getManager(FileTransferManager.class);
         setEnabled(true);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(OobIQ.class, this);
+        xmppSession.addIQHandler(OobIQ.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                OobIQ oobIQ = iq.getExtension(OobIQ.class);
+                final URL url = oobIQ.getUrl();
+                final String description = oobIQ.getDescription();
+                try {
+                    HttpURLConnection connection = null;
+                    try {
+                        URLConnection urlConnection = url.openConnection();
+
+                        // Get the header information like file length and content type.
+                        if (urlConnection instanceof HttpURLConnection) {
+                            String mimeType;
+                            final long length;
+                            long lastModified;
+
+                            connection = (HttpURLConnection) urlConnection;
+                            connection.setRequestMethod("HEAD");
+                            connection.connect();
+
+                            mimeType = connection.getContentType();
+                            length = connection.getContentLength();
+                            lastModified = connection.getLastModified();
+
+                            final Date date = lastModified > 0 ? new Date(lastModified) : null;
+                            final String name = url.toString();
+                            fileTransferManager.fileTransferOffered(iq, null, mimeType, null, new FileTransferOffer() {
+                                @Override
+                                public long getSize() {
+                                    return length;
+                                }
+
+                                @Override
+                                public String getName() {
+                                    return name;
+                                }
+
+                                @Override
+                                public Date getDate() {
+                                    return date;
+                                }
+
+                                @Override
+                                public List<Hash> getHashes() {
+                                    return Collections.emptyList();
+                                }
+
+                                @Override
+                                public String getDescription() {
+                                    return description;
+                                }
+
+                                @Override
+                                public Range getRange() {
+                                    return null;
+                                }
+                            }, OutOfBandFileTransferManager.this);
+                            return null;
+                        } else {
+                            // If the URL is no HTTP URL, return a stanza error.
+                            return iq.createError(Condition.NOT_ACCEPTABLE);
+                        }
+                    } finally {
+                        if (connection != null) {
+                            connection.disconnect();
+                        }
+                    }
+                } catch (IOException e1) {
+                    // If the recipient attempts to retrieve the file but is unable to do so, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Found condition:
+                    return iq.createError(Condition.ITEM_NOT_FOUND);
+                }
+            }
+        });
     }
 
     @Override
@@ -96,78 +170,5 @@ public final class OutOfBandFileTransferManager extends IQExtensionManager imple
     public void reject(IQ iq) {
         // If the recipient rejects the request outright, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Acceptable condition:
         xmppSession.send(iq.createError(Condition.NOT_ACCEPTABLE));
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-        OobIQ oobIQ = iq.getExtension(OobIQ.class);
-        final URL url = oobIQ.getUrl();
-        final String description = oobIQ.getDescription();
-        try {
-            HttpURLConnection connection = null;
-            try {
-                URLConnection urlConnection = url.openConnection();
-
-                // Get the header information like file length and content type.
-                if (urlConnection instanceof HttpURLConnection) {
-                    String mimeType;
-                    final long length;
-                    long lastModified;
-
-                    connection = (HttpURLConnection) urlConnection;
-                    connection.setRequestMethod("HEAD");
-                    connection.connect();
-
-                    mimeType = connection.getContentType();
-                    length = connection.getContentLength();
-                    lastModified = connection.getLastModified();
-
-                    final Date date = lastModified > 0 ? new Date(lastModified) : null;
-                    final String name = url.toString();
-                    fileTransferManager.fileTransferOffered(iq, null, mimeType, null, new FileTransferOffer() {
-                        @Override
-                        public long getSize() {
-                            return length;
-                        }
-
-                        @Override
-                        public String getName() {
-                            return name;
-                        }
-
-                        @Override
-                        public Date getDate() {
-                            return date;
-                        }
-
-                        @Override
-                        public List<Hash> getHashes() {
-                            return Collections.emptyList();
-                        }
-
-                        @Override
-                        public String getDescription() {
-                            return description;
-                        }
-
-                        @Override
-                        public Range getRange() {
-                            return null;
-                        }
-                    }, OutOfBandFileTransferManager.this);
-                    return null;
-                } else {
-                    // If the URL is no HTTP URL, return a stanza error.
-                    return iq.createError(Condition.NOT_ACCEPTABLE);
-                }
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-            }
-        } catch (IOException e1) {
-            // If the recipient attempts to retrieve the file but is unable to do so, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Found condition:
-            return iq.createError(Condition.ITEM_NOT_FOUND);
-        }
     }
 }

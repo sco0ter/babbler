@@ -6,7 +6,7 @@
 For all PubSub related operations you need the `PubSubManager`.
 
 ```java
-PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
 ```
 
 ## Discovering PubSub Services

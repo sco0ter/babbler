@@ -156,7 +156,7 @@ public class XmppSession implements AutoCloseable {
     /**
      * Any exception that occurred during stream negotiation ({@link #connect()}) or ({@link #login(String, String)})
      */
-    private volatile Exception exception;
+    private volatile Throwable exception;
 
     /**
      * The shutdown hook for JVM shutdown, which will disconnect each open connection before the JVM is halted.
@@ -264,12 +264,14 @@ public class XmppSession implements AutoCloseable {
         }
     }
 
-    private static void throwAsXmppExceptionIfNotNull(Exception e) throws XmppException {
+    private static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
         if (e != null) {
             if (e instanceof XmppException) {
                 throw (XmppException) e;
             } else if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
+            } else if (e instanceof Error) {
+                throw (Error) e;
             } else {
                 throw new XmppException(e);
             }
@@ -701,53 +703,49 @@ public class XmppSession implements AutoCloseable {
         // Reset
         exception = null;
 
-        Iterator<Connection> connectionIterator = connections.iterator();
-        while (connectionIterator.hasNext()) {
-            Connection connection = connectionIterator.next();
-            try {
-                connection.connect(from);
-                activeConnection = connection;
-                break;
-            } catch (IOException e) {
-                if (connectionIterator.hasNext()) {
-                    logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connection);
-                    logger.log(Level.FINE, e.getMessage(), e);
-                } else {
-                    updateStatus(previousStatus, e);
-                    throw new ConnectionException(e);
+        try {
+            Iterator<Connection> connectionIterator = connections.iterator();
+            while (connectionIterator.hasNext()) {
+                Connection connection = connectionIterator.next();
+                try {
+                    connection.connect(from);
+                    activeConnection = connection;
+                    break;
+                } catch (IOException e) {
+                    if (connectionIterator.hasNext()) {
+                        logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connection);
+                        logger.log(Level.FINE, e.getMessage(), e);
+                    } else {
+                        throw new ConnectionException(e);
+                    }
                 }
             }
-        }
 
-        // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
-        try {
-            getManager(StreamFeaturesManager.class).awaitNegotiation(Mechanisms.class, 10000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            exception = e;
-        } catch (NoResponseException e) {
-            exception = e;
-        }
+            // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
+            try {
+                getManager(StreamFeaturesManager.class).awaitNegotiation(Mechanisms.class, 10000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw e;
+            }
 
-        if (exception != null) {
-            updateStatus(previousStatus, exception);
+            // Check if stream negotiation threw any exception.
+            throwAsXmppExceptionIfNotNull(exception);
+
+            updateStatus(Status.CONNECTED);
+
+            // This is for reconnection.
+            if (wasLoggedIn) {
+                loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
+            }
+        } catch (Throwable e) {
+            updateStatus(previousStatus, e);
             try {
                 activeConnection.close();
             } catch (Exception e1) {
-                exception.addSuppressed(e1);
+                e.addSuppressed(e1);
             }
-            throwAsXmppExceptionIfNotNull(exception);
-        }
-        updateStatus(Status.CONNECTED);
-
-        // This is for reconnection.
-        if (wasLoggedIn) {
-            try {
-                loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
-            } catch (XmppException e) {
-                updateStatus(previousStatus, e);
-                throw e;
-            }
+            throwAsXmppExceptionIfNotNull(e);
         }
     }
 
@@ -925,7 +923,6 @@ public class XmppSession implements AutoCloseable {
         lastAuthorizationId = authorizationId;
         lastCallbackHandler = callbackHandler;
         try {
-            updateStatus(Status.AUTHENTICATING);
             if (callbackHandler == null) {
                 authenticationManager.startAuthentication(mechanisms, null, null);
             } else {
@@ -944,6 +941,10 @@ public class XmppSession implements AutoCloseable {
             // Proceed with any outstanding stream features which are negotiated after resource binding, e.g. XEP-0198
             // and wait until all features have been negotiated.
             streamFeaturesManager.completeNegotiation(configuration.getDefaultResponseTimeout());
+
+            // Check again, if stream feature negotiation failed with an exception.
+            throwAsXmppExceptionIfNotNull(exception);
+
             RosterManager rosterManager = getManager(RosterManager.class);
             if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
                 rosterManager.requestRoster();
@@ -953,10 +954,10 @@ public class XmppSession implements AutoCloseable {
             // Revert status
             updateStatus(previousStatus, e);
             throwAsXmppExceptionIfNotNull(e);
-        } catch (XmppException e) {
+        } catch (Throwable e) {
             // Revert status
             updateStatus(previousStatus, e);
-            throw e;
+            throwAsXmppExceptionIfNotNull(e);
         }
         wasLoggedIn = true;
         updateStatus(Status.AUTHENTICATED);
@@ -1028,7 +1029,7 @@ public class XmppSession implements AutoCloseable {
      */
     public final void notifyException(Exception e) {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
-        exception = e;
+        exception = Objects.requireNonNull(e, "exception must not be null");
         // Release a potential waiting thread.
         getManager(StreamFeaturesManager.class).cancelNegotiation();
 
@@ -1187,7 +1188,7 @@ public class XmppSession implements AutoCloseable {
      * @param e      The exception.
      * @return True, if the status has changed; otherwise false.
      */
-    final boolean updateStatus(Status status, Exception e) {
+    final boolean updateStatus(Status status, Throwable e) {
         Status oldStatus;
         synchronized (this) {
             oldStatus = this.status;
@@ -1200,8 +1201,8 @@ public class XmppSession implements AutoCloseable {
         return status != oldStatus;
     }
 
-    private void notifySessionStatusListeners(Status status, Status oldStatus, Exception exception) {
-        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, exception);
+    private void notifySessionStatusListeners(Status status, Status oldStatus, Throwable throwable) {
+        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, throwable);
         for (SessionStatusListener connectionListener : sessionStatusListeners) {
             try {
                 connectionListener.sessionStatusChanged(sessionStatusEvent);

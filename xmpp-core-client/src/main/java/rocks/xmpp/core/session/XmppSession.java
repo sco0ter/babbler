@@ -698,6 +698,7 @@ public class XmppSession implements AutoCloseable {
 
         if (isConnected() || !updateStatus(Status.CONNECTING)) {
             // Silently return, when we are already connected or connecting.
+            logger.fine("Already connected. Return silently.");
             return;
         }
         // Reset
@@ -721,6 +722,9 @@ public class XmppSession implements AutoCloseable {
                 }
             }
 
+            logger.log(Level.FINE, "Connected via {0}", activeConnection);
+            logger.fine("Negotiating stream, waiting until SASL is ready to be negotiated.");
+
             // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
             try {
                 getManager(StreamFeaturesManager.class).awaitNegotiation(Mechanisms.class, 10000);
@@ -732,10 +736,12 @@ public class XmppSession implements AutoCloseable {
             // Check if stream negotiation threw any exception.
             throwAsXmppExceptionIfNotNull(exception);
 
+            logger.fine("Stream negotiated until SASL, now ready to login.");
             updateStatus(Status.CONNECTED);
 
             // This is for reconnection.
             if (wasLoggedIn) {
+                logger.fine("Was already logged in. Re-login automatically with known credentials.");
                 loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
             }
         } catch (Throwable e) {
@@ -923,6 +929,7 @@ public class XmppSession implements AutoCloseable {
         lastAuthorizationId = authorizationId;
         lastCallbackHandler = callbackHandler;
         try {
+            logger.fine("Starting SASL negotiation (authentication).");
             if (callbackHandler == null) {
                 authenticationManager.startAuthentication(mechanisms, null, null);
             } else {
@@ -945,8 +952,11 @@ public class XmppSession implements AutoCloseable {
             // Check again, if stream feature negotiation failed with an exception.
             throwAsXmppExceptionIfNotNull(exception);
 
+            logger.fine("Stream negotiation completed successfully.");
+
             RosterManager rosterManager = getManager(RosterManager.class);
             if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
+                logger.fine("Retrieving roster on login (as per configuration).");
                 rosterManager.requestRoster();
             }
         } catch (InterruptedException e) {
@@ -960,6 +970,7 @@ public class XmppSession implements AutoCloseable {
             throwAsXmppExceptionIfNotNull(e);
         }
         wasLoggedIn = true;
+        logger.fine("Login successful.");
         updateStatus(Status.AUTHENTICATED);
     }
 
@@ -971,6 +982,8 @@ public class XmppSession implements AutoCloseable {
     private void bindResource(String resource) throws XmppException {
         this.resource = resource;
 
+        logger.log(Level.FINE, "Negotiating resource binding, resource: {0}.", resource);
+
         // Bind the resource
         IQ iq = new IQ(IQ.Type.SET, new Bind(this.resource));
         IQ result = query(iq);
@@ -978,11 +991,14 @@ public class XmppSession implements AutoCloseable {
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
 
+        logger.log(Level.FINE, "Resource binding completed, connected resource: {0}.", connectedResource);
+
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
         Session session = (Session) getManager(StreamFeaturesManager.class).getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
+            logger.fine("Establishing session.");
             query(new IQ(IQ.Type.SET, new Session()));
         }
     }
@@ -1034,12 +1050,15 @@ public class XmppSession implements AutoCloseable {
         getManager(StreamFeaturesManager.class).cancelNegotiation();
 
         if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus())) {
+
             try {
                 activeConnection.close();
             } catch (Exception e1) {
                 e.addSuppressed(e1);
             }
-            updateStatus(Status.DISCONNECTED, e);
+            if (updateStatus(Status.DISCONNECTED, e)) {
+                logger.log(Level.FINE, "Session disconnected due to exception: ", e);
+            }
         }
     }
 

@@ -746,12 +746,15 @@ public class XmppSession implements AutoCloseable {
                 loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
             }
         } catch (Throwable e) {
-            updateStatus(previousStatus, e);
             try {
-                activeConnection.close();
+                if (activeConnection != null) {
+                    activeConnection.close();
+                    activeConnection = null;
+                }
             } catch (Exception e1) {
                 e.addSuppressed(e1);
             }
+            updateStatus(previousStatus, e);
             throwAsXmppExceptionIfNotNull(e);
         }
     }

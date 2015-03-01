@@ -29,9 +29,8 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
-import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.commands.model.Command;
@@ -66,7 +65,7 @@ public class AdHocCommandsManager extends ExtensionManager {
 
     private AdHocCommandsManager(final XmppSession xmppSession) {
         super(xmppSession, Command.NAMESPACE);
-        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         commandMap = new HashMap<>();
         commandSessionMap = new HashMap<>();
 
@@ -95,33 +94,28 @@ public class AdHocCommandsManager extends ExtensionManager {
             }
         };
 
-        xmppSession.addIQListener(new IQListener() {
+        xmppSession.addIQHandler(Command.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-                    Command command = iq.getExtension(Command.class);
-                    if (command != null) {
-                        String sessionId = command.getSessionId();
-                        String node = command.getNode();
+            public IQ processRequest(IQ iq) {
 
-                        if (sessionId == null) {
-                            AdHocCommand adHocCommand = commandMap.get(node);
-                            if (adHocCommand == null) {
-                                xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
-                                e.consume();
-                            }
-                        } else {
-                            CommandSession commandSession = commandSessionMap.get(sessionId);
-                            if (commandSession == null) {
-                                StanzaError stanzaError = new StanzaError(Condition.ITEM_NOT_FOUND);
-                                // stanzaError.setExtension();
-                                xmppSession.send(iq.createError(stanzaError));
-                                e.consume();
-                            }
-                        }
+                Command command = iq.getExtension(Command.class);
+
+                String sessionId = command.getSessionId();
+                String node = command.getNode();
+
+                if (sessionId == null) {
+                    AdHocCommand adHocCommand = commandMap.get(node);
+                    if (adHocCommand == null) {
+                        return iq.createError(Condition.ITEM_NOT_FOUND);
+                    }
+                } else {
+                    CommandSession commandSession = commandSessionMap.get(sessionId);
+                    if (commandSession == null) {
+                        // We can't find the requested command node.
+                        return iq.createError(Condition.ITEM_NOT_FOUND);
                     }
                 }
+                return iq.createError(Condition.ITEM_NOT_FOUND);
             }
         });
 
@@ -131,47 +125,55 @@ public class AdHocCommandsManager extends ExtensionManager {
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        if (enabled) {
-            serviceDiscoveryManager.addInfoNode(infoNode);
-            serviceDiscoveryManager.setItemProvider(Command.NAMESPACE, new ResultSetProvider<Item>() {
-                @Override
-                public List<Item> getItems() {
-                    return null;
-                }
-
-                @Override
-                public int getItemCount() {
-                    return 0;
-                }
-
-                @Override
-                public List<Item> getItems(int index, int maxSize) {
-                    return null;
-                }
-
-                @Override
-                public List<Item> getItemsAfter(String itemId, int maxSize) {
-                    return null;
-                }
-
-                @Override
-                public List<Item> getItemsBefore(String itemId, int maxSize) {
-                    return null;
-                }
-
-                @Override
-                public int indexOf(String itemId) {
-                    return 0;
-                }
-            });
-        } else {
-            serviceDiscoveryManager.removeInfoNode(Command.NAMESPACE);
-            serviceDiscoveryManager.setItemProvider(Command.NAMESPACE, null);
-        }
+//        if (enabled) {
+//            serviceDiscoveryManager.addInfoNode(infoNode);
+//            serviceDiscoveryManager.setItemProvider(Command.NAMESPACE, new ResultSetProvider<Item>() {
+//                @Override
+//                public List<Item> getItems() {
+//                    return null;
+//                }
+//
+//                @Override
+//                public int getItemCount() {
+//                    return 0;
+//                }
+//
+//                @Override
+//                public List<Item> getItems(int index, int maxSize) {
+//                    return null;
+//                }
+//
+//                @Override
+//                public List<Item> getItemsAfter(String itemId, int maxSize) {
+//                    return null;
+//                }
+//
+//                @Override
+//                public List<Item> getItemsBefore(String itemId, int maxSize) {
+//                    return null;
+//                }
+//
+//                @Override
+//                public int indexOf(String itemId) {
+//                    return 0;
+//                }
+//            });
+//        } else {
+//            serviceDiscoveryManager.removeInfoNode(Command.NAMESPACE);
+//            serviceDiscoveryManager.setItemProvider(Command.NAMESPACE, null);
+//        }
     }
 
-    public List<AdHocCommand> getCommands() throws XmppException {
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, Command.NAMESPACE);
+    /**
+     * Retrieves the command list of another entity.
+     *
+     * @param entity The responder.
+     * @return The command list.
+     * @throws XmppException
+     * @see <a href="http://xmpp.org/extensions/xep-0050.html#retrieve">2.2 Retrieving the Command List</a>
+     */
+    public List<AdHocCommand> discoverCommands(Jid entity) throws XmppException {
+        ItemNode itemNode = serviceDiscoveryManager.discoverItems(entity, Command.NAMESPACE);
         List<AdHocCommand> commands = new ArrayList<>();
         for (Item item : itemNode.getItems()) {
             commands.add(new AdHocCommand(serviceDiscoveryManager, xmppSession, item.getJid(), item.getName(), item.getNode()));

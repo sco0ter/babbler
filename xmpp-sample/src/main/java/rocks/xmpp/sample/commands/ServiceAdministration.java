@@ -47,6 +47,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
@@ -91,8 +92,8 @@ public class ServiceAdministration extends Application {
                 xmppSession = new XmppSession("localhost", sessionConfiguration, connectionConfiguration);
                 xmppSession.connect();
                 xmppSession.login("admin", "admin");
-                AdHocCommandsManager adHocCommandsManager = xmppSession.getExtensionManager(AdHocCommandsManager.class);
-                return adHocCommandsManager.getCommands();
+                AdHocCommandsManager adHocCommandsManager = xmppSession.getManager(AdHocCommandsManager.class);
+                return adHocCommandsManager.discoverCommands(new Jid(xmppSession.getDomain()));
             }
         };
         task.stateProperty().addListener(new ChangeListener<Worker.State>() {

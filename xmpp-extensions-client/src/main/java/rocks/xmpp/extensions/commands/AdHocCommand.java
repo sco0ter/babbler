@@ -38,7 +38,6 @@ import rocks.xmpp.extensions.disco.model.info.InfoNode;
  */
 public final class AdHocCommand {
 
-
     private ServiceDiscoveryManager serviceDiscoveryManager;
 
     private XmppSession xmppSession;

@@ -477,13 +477,29 @@ public final class AvatarManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
     public final void publishAvatar(byte[] imageData) throws XmppException {
-        if (imageData != null) {
-            String hash = XmppUtils.hash(imageData);
+
+        XmppException vCardException = null;
+        String hash = imageData != null ? XmppUtils.hash(imageData) : null;
+        AvatarMetadata.Info info = imageData != null ? new AvatarMetadata.Info(imageData.length, hash, hash) : null;
+
+        try {
+            // Try publishing to vCard first. If this fails, don't immediately throw an exception, but try PEP first.
             publishToVCard(imageData, null, hash);
-            publishToPersonalEventingService(imageData, hash, new AvatarMetadata.Info(imageData.length, hash, hash));
-        } else {
-            publishToVCard(null, null, null);
-            publishToPersonalEventingService(null, null, null);
+        } catch (XmppException e) {
+            vCardException = e;
+            logger.warning("Failed to publish avatar to vCard.");
+        }
+        try {
+            publishToPersonalEventingService(imageData, hash, info);
+        } catch (XmppException e) {
+            if (vCardException != null) {
+                // Only if both vCard and PEP publishing threw an exception rethrow it.
+                e.addSuppressed(vCardException);
+                throw e;
+            } else {
+                // If only PEP publishing failed, log a warning. The avatar is still published to vCard.
+                logger.warning("Failed to publish avatar to PEP service.");
+            }
         }
     }
 
@@ -497,7 +513,13 @@ public final class AvatarManager extends ExtensionManager {
      */
     private void publishToVCard(byte[] avatar, String type, String hash) throws XmppException {
 
-        VCard vCard = vCardManager.getVCard();
+        VCard vCard;
+        try {
+            vCard = vCardManager.getVCard();
+        } catch (StanzaException e) {
+            // If there's no vCard yet (e.g. <item-not-found/>), create a new one.
+            vCard = new VCard();
+        }
 
         if (avatar != null) {
             // Within a given session, a client MUST NOT attempt to upload a given avatar image more than once.

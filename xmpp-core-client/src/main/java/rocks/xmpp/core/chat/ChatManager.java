@@ -22,9 +22,13 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.chat;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.SessionStatusEvent;
+import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;

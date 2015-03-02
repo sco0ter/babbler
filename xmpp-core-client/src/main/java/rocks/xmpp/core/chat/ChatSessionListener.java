@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.chat;
 
 import java.util.EventListener;
 

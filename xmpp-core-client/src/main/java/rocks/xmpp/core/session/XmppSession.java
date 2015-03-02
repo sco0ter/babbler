@@ -28,6 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.bind.model.Bind;
+import rocks.xmpp.core.chat.ChatManager;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;

@@ -22,9 +22,10 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.chat;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
 

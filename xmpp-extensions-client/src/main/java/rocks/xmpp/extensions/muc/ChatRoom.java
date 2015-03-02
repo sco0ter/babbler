@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.Chat;
+import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;

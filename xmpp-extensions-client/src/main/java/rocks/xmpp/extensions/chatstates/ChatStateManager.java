@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.chatstates;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.session.Chat;
+import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;

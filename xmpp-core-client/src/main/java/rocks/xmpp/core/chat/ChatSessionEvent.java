@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.chat;
 
 import java.util.EventObject;
 
@@ -55,7 +55,7 @@ public final class ChatSessionEvent extends EventObject {
      *
      * @return The chat session.
      */
-    public ChatSession getChatSession() {
+    public final ChatSession getChatSession() {
         return chatSession;
     }
 
@@ -64,7 +64,7 @@ public final class ChatSessionEvent extends EventObject {
      *
      * @return True, if the chat session has been created by an incoming message.
      */
-    public boolean isCreatedByIncomingMessage() {
+    public final boolean isCreatedByIncomingMessage() {
         return createdByIncomingMessage;
     }
 }

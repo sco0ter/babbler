@@ -31,6 +31,8 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.stream.model.errors.Text;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -49,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.
- * <p/>
+ * <p>
  * This class is thread-safe.
  *
  * @author Christian Schudt
@@ -68,11 +70,16 @@ final class XmppStreamReader {
 
     private final XmppDebugger debugger;
 
+    private final Marshaller marshaller;
+
+    private final Unmarshaller unmarshaller;
+
     public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();
-
+        this.marshaller = xmppSession.createMarshaller();
+        this.unmarshaller = xmppSession.createUnmarshaller();
         executorService = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Reader Thread"));
         this.xmlInputFactory = XMLInputFactory.newFactory();
         this.xmlOutputFactory = xmlOutputFactory;
@@ -118,10 +125,8 @@ final class XmppStreamReader {
 
                                     xmlEventReader.next();
                                 } else {
-                                    Object object;
-                                    synchronized (xmppSession.getUnmarshaller()) {
-                                        object = xmppSession.getUnmarshaller().unmarshal(xmlEventReader);
-                                    }
+                                    Object object = unmarshaller.unmarshal(xmlEventReader);
+
                                     if (debugger != null) {
                                         if (isFirstPass && byteArrayOutputStream != null) {
                                             // If it's the first pass, include the stream header with the <features/>, which are both in the byteArrayOutputStream at this point.
@@ -130,9 +135,7 @@ final class XmppStreamReader {
                                             // Otherwise marshal the incoming stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
                                             StringWriter stringWriter = new StringWriter();
                                             XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
-                                            synchronized (xmppSession.getMarshaller()) {
-                                                xmppSession.getMarshaller().marshal(object, xmlStreamWriter);
-                                            }
+                                            marshaller.marshal(object, xmlStreamWriter);
                                             debugger.readStanza(stringWriter.toString(), object);
                                         }
                                     }

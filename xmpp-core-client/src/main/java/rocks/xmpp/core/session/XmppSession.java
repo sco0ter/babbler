@@ -100,16 +100,6 @@ public class XmppSession implements AutoCloseable {
 
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
-    /**
-     * The unmarshaller, which is used to unmarshal XML during reading from the input stream.
-     */
-    private final Unmarshaller unmarshaller;
-
-    /**
-     * The marshaller, which is used to marshal XML during writing to the output stream.
-     */
-    private final Marshaller marshaller;
-
     private final AuthenticationManager authenticationManager;
 
     private final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
@@ -197,14 +187,6 @@ public class XmppSession implements AutoCloseable {
         this.configuration = configuration;
         this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
         this.iqHandlerExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("IQ Handler Thread"));
-        try {
-            // Create the marshaller and unmarshaller, which will be used for this connection.
-            unmarshaller = configuration.getJAXBContext().createUnmarshaller();
-            marshaller = configuration.getJAXBContext().createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-        } catch (JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
 
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
         shutdownHook = new Thread() {
@@ -1254,41 +1236,40 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Gets the unmarshaller, which is used to unmarshal XML during reading from the input stream.
+     * Creates a new unmarshaller, which can be used to unmarshal XML to objects.
      * <p>
-     * Since {@link javax.xml.bind.Unmarshaller} is not thread-safe it is crucial to synchronize unmarshal operations on the unmarshaller itself:
-     * <pre>
-     * {@code
-     * synchronized (xmppSession.getUnmarshaller()) {
-     *     Object object = xmppSession.getUnmarshaller().unmarshal(...);
-     * }
-     * }
-     * </pre>
+     * Note that the returned unmarshaller is not thread-safe.
      *
      * @return The unmarshaller.
-     * @see #getMarshaller()
+     * @see #createMarshaller()
      */
-    public final Unmarshaller getUnmarshaller() {
-        return unmarshaller;
+    public final Unmarshaller createUnmarshaller() {
+        try {
+            return configuration.getJAXBContext().createUnmarshaller();
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
-     * Gets the marshaller, which is used to marshal XML during writing to the output stream.
+     * Creates a marshaller, which can be used to create XML from objects.
      * <p>
-     * Since {@link javax.xml.bind.Marshaller} is not thread-safe it is crucial to synchronize marshal operations on the marshaller itself:
-     * <pre>
-     * {@code
-     * synchronized (xmppSession.getMarshaller()) {
-     *     xmppSession.getMarshaller().marshal(object, ...);
-     * }
-     * }
-     * </pre>
+     * The returned marshaller is configured with {@code Marshaller.JAXB_FRAGMENT = true}, so that no XML header is written
+     * (which is usually what we want in XMPP when writing stanzas).
+     * <p>
+     * Note that the returned unmarshaller is not thread-safe.
      *
      * @return The marshaller.
-     * @see #getUnmarshaller()
+     * @see #createUnmarshaller()
      */
-    public final Marshaller getMarshaller() {
-        return marshaller;
+    public final Marshaller createMarshaller() {
+        try {
+            Marshaller marshaller = configuration.getJAXBContext().createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+            return marshaller;
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

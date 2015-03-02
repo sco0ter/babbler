@@ -311,9 +311,7 @@ public final class RosterManager extends Manager {
                 try {
                     xmppStreamWriter = XmppUtils.createXmppStreamWriter(XMLOutputFactory.newFactory().createXMLStreamWriter(outputStream), true);
                     xmppStreamWriter.flush();
-                    synchronized (xmppSession.getMarshaller()) {
-                        xmppSession.getMarshaller().marshal(roster, xmppStreamWriter);
-                    }
+                    xmppSession.createMarshaller().marshal(roster, xmppStreamWriter);
                 } finally {
                     if (xmppStreamWriter != null) {
                         xmppStreamWriter.close();
@@ -331,10 +329,8 @@ public final class RosterManager extends Manager {
             try {
                 byte[] rosterData = rosterCacheDirectory.get(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes()) + ".xml");
                 if (rosterData != null) {
-                    synchronized (xmppSession.getUnmarshaller()) {
-                        try (InputStream inputStream = new ByteArrayInputStream(rosterData)) {
-                            return (Roster) xmppSession.getUnmarshaller().unmarshal(inputStream);
-                        }
+                    try (InputStream inputStream = new ByteArrayInputStream(rosterData)) {
+                        return (Roster) xmppSession.createUnmarshaller().unmarshal(inputStream);
                     }
                 }
             } catch (Exception e) {

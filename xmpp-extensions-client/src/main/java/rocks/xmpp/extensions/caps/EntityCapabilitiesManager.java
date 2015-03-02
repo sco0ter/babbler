@@ -356,9 +356,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 try {
                     xmppStreamWriter = XmppUtils.createXmppStreamWriter(XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream), true);
                     xmppStreamWriter.flush();
-                    synchronized (xmppSession.getMarshaller()) {
-                        xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
-                    }
+                    xmppSession.createMarshaller().marshal(infoNode, xmppStreamWriter);
                 } finally {
                     if (xmppStreamWriter != null) {
                         xmppStreamWriter.close();
@@ -384,11 +382,9 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 byte[] bytes = directoryCapsCache.get(fileName);
                 if (bytes != null) {
                     try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
-                        synchronized (xmppSession.getUnmarshaller()) {
-                            infoNode = (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
-                            CAPS_CACHE.put(verification, infoNode);
-                            return infoNode;
-                        }
+                        infoNode = (InfoNode) xmppSession.createUnmarshaller().unmarshal(byteArrayInputStream);
+                        CAPS_CACHE.put(verification, infoNode);
+                        return infoNode;
                     }
                 }
             } catch (Exception e) {

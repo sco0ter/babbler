@@ -677,9 +677,9 @@ public final class BoshConnection extends Connection {
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8"), true);
 
                                     // Then write the XML to the output stream by marshalling the object to the writer.
-                                    synchronized (getXmppSession().getMarshaller()) {
-                                        getXmppSession().getMarshaller().marshal(body, xmlStreamWriter);
-                                    }
+                                    // Marshaller needs to be recreated here, because it's not thread-safe.
+                                    getXmppSession().createMarshaller().marshal(body, xmlStreamWriter);
+
                                     if (debugger != null) {
                                         debugger.writeStanza(byteArrayOutputStreamRequest.toString(), body);
                                     }
@@ -724,10 +724,8 @@ public final class BoshConnection extends Connection {
 
                                         // Parse the <body/> element.
                                         if (xmlEvent.isStartElement()) {
-                                            JAXBElement<Body> element;
-                                            synchronized (getXmppSession().getUnmarshaller()) {
-                                                element = getXmppSession().getUnmarshaller().unmarshal(xmlEventReader, Body.class);
-                                            }
+                                            JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
+
                                             if (debugger != null) {
                                                 debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
                                             }

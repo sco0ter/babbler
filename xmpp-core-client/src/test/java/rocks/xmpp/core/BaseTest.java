@@ -57,8 +57,8 @@ public class BaseTest {
 
     @BeforeClass
     public void setupMarshaller() throws JAXBException, XMLStreamException {
-        marshaller = xmppSession.getMarshaller();
-        unmarshaller = xmppSession.getUnmarshaller();
+        marshaller = xmppSession.createMarshaller();
+        unmarshaller = xmppSession.createUnmarshaller();
     }
 
     protected String marshall(Object object) throws XMLStreamException, JAXBException, IOException {

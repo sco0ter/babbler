@@ -281,7 +281,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Adds a message listener to the connection, which will get notified, whenever a message is received.
+     * Adds a message listener to the session, which will get notified, whenever a message is received.
      *
      * @param messageListener The message listener.
      * @see #removeMessageListener(MessageListener)
@@ -291,7 +291,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Removes a previously added message listener from the connection.
+     * Removes a previously added message listener from the session.
      *
      * @param messageListener The message listener.
      * @see #addMessageListener(MessageListener)
@@ -301,7 +301,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Adds a presence listener to the connection, which will get notified, whenever a presence is received.
+     * Adds a presence listener to the session, which will get notified, whenever a presence is received.
      *
      * @param presenceListener The presence listener.
      * @see #removePresenceListener(PresenceListener)
@@ -311,7 +311,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Removes a previously added presence listener from the connection.
+     * Removes a previously added presence listener from the session.
      *
      * @param presenceListener The presence listener.
      * @see #addPresenceListener(PresenceListener)
@@ -321,7 +321,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Adds an IQ listener to the connection, which will get notified, whenever an IQ stanza is received.
+     * Adds an IQ listener to the session, which will get notified, whenever an IQ stanza is received.
      *
      * @param iqListener The IQ listener.
      * @see #removeIQListener(IQListener)
@@ -331,7 +331,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Removes a previously added IQ listener from the connection.
+     * Removes a previously added IQ listener from the session.
      *
      * @param iqListener The IQ listener.
      * @see #addIQListener(IQListener)
@@ -373,7 +373,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Removes a previously added connection listener.
+     * Removes a previously added session listener.
      *
      * @param sessionStatusListener The session listener.
      * @see #addSessionStatusListener(SessionStatusListener)
@@ -744,7 +744,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Explicitly closes the connection and performs a clean up of all listeners. Calling this method, if the session is already closing or closed has no effect.
+     * Explicitly closes the session and performs a clean up of all listeners. Calling this method, if the session is already closing or closed has no effect.
      *
      * @throws XmppException If an exception occurs while closing the connection, e.g. the underlying socket connection.
      */
@@ -970,7 +970,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Binds a resource to the connection.
+     * Binds a resource to the session.
      *
      * @param resource The resource to bind. If the resource is null and random resource is bound by the server.
      */
@@ -1177,7 +1177,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Gets the status of the connection.
+     * Gets the status of the session.
      *
      * @return The status.
      */
@@ -1186,7 +1186,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Updates the status and notifies the connection listeners.
+     * Updates the status and notifies the session listeners.
      *
      * @param status The new status.
      * @return True, if the status has changed; otherwise false.
@@ -1196,7 +1196,7 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Updates the status and notifies the connection listeners.
+     * Updates the status and notifies the session listeners.
      *
      * @param status The new status.
      * @param e      The exception.
@@ -1217,9 +1217,9 @@ public class XmppSession implements AutoCloseable {
 
     private void notifySessionStatusListeners(Status status, Status oldStatus, Throwable throwable) {
         SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, throwable);
-        for (SessionStatusListener connectionListener : sessionStatusListeners) {
+        for (SessionStatusListener sessionStatusListener : sessionStatusListeners) {
             try {
-                connectionListener.sessionStatusChanged(sessionStatusEvent);
+                sessionStatusListener.sessionStatusChanged(sessionStatusEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }

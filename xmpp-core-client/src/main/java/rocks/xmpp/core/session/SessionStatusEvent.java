@@ -40,7 +40,7 @@ public final class SessionStatusEvent extends EventObject {
     private final XmppSession.Status oldStatus;
 
     /**
-     * Constructs a connection event.
+     * Constructs a session status event.
      *
      * @param source    The object on which the event initially occurred.
      * @param status    The session status.
@@ -57,7 +57,7 @@ public final class SessionStatusEvent extends EventObject {
     /**
      * Gets the session status.
      *
-     * @return The connection status.
+     * @return The session status.
      */
     public XmppSession.Status getStatus() {
         return status;

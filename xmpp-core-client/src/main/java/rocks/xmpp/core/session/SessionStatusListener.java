@@ -35,9 +35,9 @@ import java.util.EventListener;
 public interface SessionStatusListener extends EventListener {
 
     /**
-     * Called, whenever the status of the connection changed.
+     * Called, whenever the status of the session has changed.
      *
-     * @param e The connection event.
+     * @param e The session status event.
      */
     void sessionStatusChanged(SessionStatusEvent e);
 }

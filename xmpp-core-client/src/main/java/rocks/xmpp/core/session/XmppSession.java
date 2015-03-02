@@ -71,6 +71,8 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -169,7 +171,7 @@ public class XmppSession implements AutoCloseable {
 
     private volatile String lastAuthorizationId;
 
-    private volatile String[] lastMechanisms;
+    private volatile Collection<String> lastMechanisms;
 
     private volatile CallbackHandler lastCallbackHandler;
 
@@ -220,7 +222,7 @@ public class XmppSession implements AutoCloseable {
 
         StreamFeaturesManager streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
-        authenticationManager = new AuthenticationManager(this, configuration.getAuthenticationMechanisms());
+        authenticationManager = new AuthenticationManager(this);
 
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
         streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(Bind.class) {
@@ -903,7 +905,7 @@ public class XmppSession implements AutoCloseable {
      * @throws XmppException              If the login failed, due to another error.
      */
     public final void login(String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
-        loginInternal(null, authorizationId, callbackHandler, resource);
+        loginInternal(configuration.getAuthenticationMechanisms(), authorizationId, callbackHandler, resource);
     }
 
     /**
@@ -917,10 +919,10 @@ public class XmppSession implements AutoCloseable {
      * @throws XmppException              If the login failed, due to another error.
      */
     public final void loginAnonymously() throws XmppException {
-        loginInternal(new String[]{"ANONYMOUS"}, null, null, null);
+        loginInternal(Arrays.asList("ANONYMOUS"), null, null, null);
     }
 
-    private void loginInternal(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
+    private void loginInternal(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
 
         Status previousStatus = getStatus();
 

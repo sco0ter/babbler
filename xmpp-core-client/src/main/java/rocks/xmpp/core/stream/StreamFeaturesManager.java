@@ -195,7 +195,7 @@ public final class StreamFeaturesManager extends Manager {
                     // Mark the feature negotiation as completed.
                     negotiatedFeatures.add(streamFeatureNegotiator.getFeatureClass());
                     // Check if the feature expects a restart now.
-                    if (streamFeatureNegotiator.needsRestart()) {
+                    if (status == StreamFeatureNegotiator.Status.SUCCESS && streamFeatureNegotiator.needsRestart()) {
                         return true;
                     } else {
                         // If no restart is required, negotiate the next feature.

@@ -27,12 +27,46 @@ package rocks.xmpp.extensions.httpbind;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
 /**
  * @author Christian Schudt
  */
 public class BoshConnectionTest {
+
+    public static void main(String args[]) {
+
+        XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                //.debugger(VisualDebugger.class)
+                .build();
+        XmppSessionConfiguration.setDefault(configuration);
+
+        BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
+                .hostname("localhost")
+                .port(7070)
+                .file("/http-bind/")
+                        //.useKeySequence(true)
+                .build();
+
+        long start = System.currentTimeMillis();
+
+        for (int i = 0; i < 500; i++) {
+            XmppSession xmppSession = new XmppSession("christihudtsmbp.fritz.box", boshConnectionConfiguration);
+            System.out.println(i);
+            try {
+                xmppSession.connect();
+                xmppSession.login("admin", "admin", null);
+                //xmppSession.send(new Presence());
+                //xmppSession.getManager(RosterManager.class).requestRoster();
+                xmppSession.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(System.currentTimeMillis() - start);
+    }
 
     @Test
     public void testInsertionOrder() {

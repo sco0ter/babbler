@@ -1,4 +1,4 @@
-/*
+package rocks.xmpp.sample;/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Christian Schudt
@@ -22,52 +22,29 @@
  * THE SOFTWARE.
  */
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
 
-@XmlRootElement(name = "product", namespace = "com:mycompany:product")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Product {
-
-    @XmlAttribute
-    private String id;
-
-    @XmlAttribute
-    private String price;
-
-    @XmlElement
-    private String name;
-
-    @XmlElement
-    private String description;
-
-    private Product() {
-        // Private no-args default constructor for JAXB.
-    }
-
-    public Product(String id, String price, String name, String description) {
-        this.id = id;
-        this.price = price;
-        this.name = name;
-        this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
+/**
+ * @author Christian Schudt
+ */
+public class LogFormatter extends SimpleFormatter {
+    @Override
+    public String format(LogRecord record) {
+        StringBuilder sb = new StringBuilder();
+        DateFormat dateFormat = DateFormat.getDateTimeInstance();
+        Date resultDate = new Date(record.getMillis());
+        sb.append(dateFormat.format(resultDate));
+        sb.append(" ");
+        sb.append(record.getLevel());
+        sb.append("  ");
+        sb.append(formatMessage(record));
+        if (record.getThrown() != null) {
+            record.getThrown().printStackTrace();
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 }

@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -100,13 +101,6 @@ public final class PresenceManager extends Manager {
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
             public void sessionStatusChanged(SessionStatusEvent e) {
-                // Resend the last presences, as soon as we are reconnected.
-                if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                    for (Presence presence : lastSentPresences.values()) {
-                        presence.getExtensions().clear();
-                        xmppSession.send(presence);
-                    }
-                }
                 if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
                     for (Jid contact : presenceMap.keySet()) {
                         try {
@@ -228,11 +222,20 @@ public final class PresenceManager extends Manager {
     }
 
     /**
-     * Gets the last sent presence, that has been broadcast by the server.
+     * Gets the last sent (non-directed) presence, that has been broadcast by the server.
      *
      * @return The presence.
      */
     public final Presence getLastSentPresence() {
         return lastSentPresences.get("");
+    }
+
+    /**
+     * Gets the last sent presences, that have been sent, including directed presences.
+     *
+     * @return The presence.
+     */
+    public final Collection<Presence> getLastSentPresences() {
+        return lastSentPresences.values();
     }
 }

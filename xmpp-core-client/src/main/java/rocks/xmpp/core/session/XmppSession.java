@@ -950,10 +950,20 @@ public class XmppSession implements AutoCloseable {
 
             logger.fine("Stream negotiation completed successfully.");
 
+            wasLoggedIn = true;
+            updateStatus(Status.AUTHENTICATED);
+
+            // Retrieve roster.
             RosterManager rosterManager = getManager(RosterManager.class);
             if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
                 logger.fine("Retrieving roster on login (as per configuration).");
                 rosterManager.requestRoster();
+            }
+
+            // After retrieving the roster, resend the last presence, if any (in reconnection case).
+            for (Presence presence : getManager(PresenceManager.class).getLastSentPresences()) {
+                presence.getExtensions().clear();
+                send(presence);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -965,9 +975,7 @@ public class XmppSession implements AutoCloseable {
             updateStatus(previousStatus, e);
             throwAsXmppExceptionIfNotNull(e);
         }
-        wasLoggedIn = true;
         logger.fine("Login successful.");
-        updateStatus(Status.AUTHENTICATED);
     }
 
     /**

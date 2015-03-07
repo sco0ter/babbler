@@ -114,7 +114,7 @@ public class TestXmppSession extends XmppSession {
         mockServer.registerConnection(this);
 
         // Auto-connect
-        updateStatus(Status.CONNECTED);
+        updateStatus(Status.AUTHENTICATED);
     }
 
     @Override

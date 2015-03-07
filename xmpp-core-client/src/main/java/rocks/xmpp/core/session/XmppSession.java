@@ -688,7 +688,6 @@ public class XmppSession implements AutoCloseable {
         }
         // Reset
         exception = null;
-        connectedResource = null;
 
         try {
             Iterator<Connection> connectionIterator = connections.iterator();
@@ -792,7 +791,7 @@ public class XmppSession implements AutoCloseable {
             // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
             // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
             // TODO: Consider queuing such stanzas and send them as soon as logged in instead of throwing exception.
-            if (connectedResource == null && stanza.getExtension(Bind.class) == null) {
+            if (getStatus() != Status.AUTHENTICATED && stanza.getExtension(Bind.class) == null) {
                 throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
             }
             notifyStanzaListeners(stanza, false);

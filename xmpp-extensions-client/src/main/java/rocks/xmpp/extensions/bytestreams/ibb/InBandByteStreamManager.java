@@ -85,7 +85,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return null;
                 }
             }
-        });
+        }, false);
         xmppSession.addIQHandler(InBandByteStream.Data.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -103,7 +103,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return iq.createError(Condition.ITEM_NOT_FOUND);
                 }
             }
-        });
+        }, false);
         xmppSession.addIQHandler(InBandByteStream.Close.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -123,7 +123,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return iq.createError(Condition.ITEM_NOT_FOUND);
                 }
             }
-        });
+        }, false);
 
         // 4. Use of Message Stanzas
         // an application MAY use message stanzas instead.

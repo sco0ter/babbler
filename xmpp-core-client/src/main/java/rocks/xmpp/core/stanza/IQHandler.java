@@ -35,8 +35,6 @@ import rocks.xmpp.core.stanza.model.client.IQ;
  * <p>An entity that receives an IQ request of type "get" or "set" MUST reply with an IQ response of type "result" or "error". The response MUST preserve the 'id' attribute of the request (or be empty if the generated stanza did not include an 'id' attribute).</p>
  * </blockquote>
  * IQ handlers are registered for a specific payload type via {@link rocks.xmpp.core.session.XmppSession#addIQHandler(Class, IQHandler)}.
- * <p>
- * The {@link #handleRequest(rocks.xmpp.core.stanza.model.client.IQ)} is invoked in its own thread, so that it doesn't block any other processing of inbound stanzas.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-semantics-iq">8.2.3.  IQ Semantics</a>

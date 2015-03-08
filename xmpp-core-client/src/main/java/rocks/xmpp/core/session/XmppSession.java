@@ -76,6 +76,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -115,7 +117,9 @@ public class XmppSession implements AutoCloseable {
 
     private final Set<IQListener> outboundIQListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<Class<?>, IQHandler> iqHandlerMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, IQHandler> iqHandlerMap = new HashMap<>();
+
+    private final Map<Class<?>, Boolean> iqHandlerInvocationModes = new HashMap<>();
 
     private final Set<SessionStatusListener> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
@@ -486,14 +490,33 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Adds an IQ handler for a given payload type.
+     * Adds an IQ handler for a given payload type. The handler will be processed asynchronously, which means it won't block the inbound stanza processing queue.
      *
      * @param type      The payload type.
      * @param iqHandler The IQ handler.
      * @see #removeIQHandler(Class)
+     * @see #addIQHandler(Class, rocks.xmpp.core.stanza.IQHandler, boolean)
      */
     public final void addIQHandler(Class<?> type, IQHandler iqHandler) {
-        iqHandlerMap.put(type, iqHandler);
+        addIQHandler(type, iqHandler, true);
+    }
+
+    /**
+     * Adds an IQ handler for a given payload type. The handler can either be processed asynchronously (which means it won't block the inbound stanza processing queue),
+     * or synchronously, which means IQ requests are processed on the same thread as other stanzas.
+     * In other words synchronous processing means, the IQ requests are processed in the same order as they arrive and no other stanzas can be
+     * processed until the handler has returned.
+     *
+     * @param type        The payload type.
+     * @param iqHandler   The IQ handler.
+     * @param invokeAsync True, if the handler should be processed asynchronously; false, if the handler should be processed asynchronously.
+     * @see #removeIQHandler(Class)
+     */
+    public final void addIQHandler(Class<?> type, IQHandler iqHandler, boolean invokeAsync) {
+        synchronized (iqHandlerMap) {
+            iqHandlerMap.put(type, iqHandler);
+            iqHandlerInvocationModes.put(type, invokeAsync);
+        }
     }
 
     /**
@@ -503,7 +526,10 @@ public class XmppSession implements AutoCloseable {
      * @see #addIQHandler(Class, rocks.xmpp.core.stanza.IQHandler)
      */
     public final void removeIQHandler(Class<?> type) {
-        iqHandlerMap.remove(type);
+        synchronized (iqHandlerMap) {
+            iqHandlerMap.remove(type);
+            iqHandlerInvocationModes.remove(type);
+        }
     }
 
     /**
@@ -525,79 +551,6 @@ public class XmppSession implements AutoCloseable {
      */
     public final void removeSessionStatusListener(SessionStatusListener sessionStatusListener) {
         sessionStatusListeners.remove(sessionStatusListener);
-    }
-
-    private void notifyStanzaListeners(Stanza element, final boolean inbound) {
-
-        if (element instanceof Message) {
-            MessageEvent messageEvent = new MessageEvent(this, (Message) element, inbound);
-            Iterable<MessageListener> listeners = inbound ? inboundMessageListeners : outboundMessageListeners;
-            for (MessageListener messageListener : listeners) {
-                try {
-                    messageListener.handleMessage(messageEvent);
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
-                }
-            }
-
-        } else if (element instanceof Presence) {
-            PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) element, inbound);
-            Iterable<PresenceListener> listeners = inbound ? inboundPresenceListeners : outboundPresenceListeners;
-            for (PresenceListener presenceListener : listeners) {
-                try {
-                    presenceListener.handlePresence(presenceEvent);
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
-                }
-            }
-        } else if (element instanceof IQ) {
-            final IQ iq = (IQ) element;
-
-            if (inbound) {
-                if (iq.getType() == null) {
-                    // return <bad-request/> if the <iq/> has no type.
-                    send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST));
-                } else if (iq.isRequest()) {
-                    Object payload = iq.getExtension(Object.class);
-                    if (payload == null) {
-                        // return <bad-request/> if the <iq/> has no payload.
-                        send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST));
-                    } else {
-                        final IQHandler iqHandler = iqHandlerMap.get(payload.getClass());
-                        if (iqHandler != null) {
-                            iqHandlerExecutor.execute(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        IQ response = iqHandler.handleRequest(iq);
-                                        if (response != null) {
-                                            send(response);
-                                        }
-                                    } catch (Exception e) {
-                                        logger.log(Level.WARNING, "Failed to handle IQ request: " + e.getMessage(), e);
-                                        // If any exception occurs during processing the IQ, return <service-unavailable/>.
-                                        send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
-                                    }
-                                }
-                            });
-                        } else {
-                            // return <service-unavailable/> if the <iq/> is not understood.
-                            send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
-                        }
-                    }
-                }
-            }
-
-            Iterable<IQListener> listeners = inbound ? inboundIQListeners : outboundIQListeners;
-            IQEvent iqEvent = new IQEvent(this, iq, inbound);
-            for (IQListener iqListener : listeners) {
-                try {
-                    iqListener.handleIQ(iqEvent);
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
-                }
-            }
-        }
     }
 
     /**
@@ -944,7 +897,13 @@ public class XmppSession implements AutoCloseable {
             if (getStatus() != Status.AUTHENTICATED && stanza.getExtension(Bind.class) == null) {
                 throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
             }
-            notifyStanzaListeners(stanza, false);
+            if (stanza instanceof Message) {
+                notifyMessageListeners((Message) stanza, false);
+            } else if (stanza instanceof Presence) {
+                notifyPresenceListeners((Presence) stanza, false);
+            } else if (stanza instanceof IQ) {
+                notifyIQListeners((IQ) stanza, false);
+            }
         }
         if (activeConnection != null) {
             activeConnection.send(element);
@@ -1174,11 +1133,66 @@ public class XmppSession implements AutoCloseable {
      */
     public final boolean handleElement(final Object element) throws XmppException {
 
-        if (element instanceof Stanza) {
+        if (element instanceof IQ) {
+            final IQ iq = (IQ) element;
+
+            if (iq.getType() == null) {
+                // return <bad-request/> if the <iq/> has no type.
+                send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST));
+            } else if (iq.isRequest()) {
+                Object payload = iq.getExtension(Object.class);
+                if (payload == null) {
+                    // return <bad-request/> if the <iq/> has no payload.
+                    send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST));
+                } else {
+                    Executor executor;
+                    final IQHandler iqHandler;
+                    synchronized (iqHandlerMap) {
+                        iqHandler = iqHandlerMap.get(payload.getClass());
+                        // If the handler is to be invoked asynchronously, get the iqHandlerExecutor, otherwise use stanzaListenerExecutor (which is a single thread executor).
+                        executor = iqHandlerInvocationModes.get(payload.getClass()) ? iqHandlerExecutor : stanzaListenerExecutor;
+                    }
+
+                    if (iqHandler != null) {
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    IQ response = iqHandler.handleRequest(iq);
+                                    if (response != null) {
+                                        send(response);
+                                    }
+                                } catch (Exception e) {
+                                    logger.log(Level.WARNING, "Failed to handle IQ request: " + e.getMessage(), e);
+                                    // If any exception occurs during processing the IQ, return <service-unavailable/>.
+                                    send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
+                                }
+                            }
+                        });
+                    } else {
+                        // return <service-unavailable/> if the <iq/> is not understood.
+                        send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
+                    }
+                }
+            }
             stanzaListenerExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    notifyStanzaListeners((Stanza) element, true);
+                    notifyIQListeners(iq, true);
+                }
+            });
+        } else if (element instanceof Message) {
+            stanzaListenerExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    notifyMessageListeners((Message) element, true);
+                }
+            });
+        } else if (element instanceof Presence) {
+            stanzaListenerExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    notifyPresenceListeners((Presence) element, true);
                 }
             });
         } else if (element instanceof StreamFeatures) {
@@ -1190,6 +1204,42 @@ public class XmppSession implements AutoCloseable {
             return getManager(StreamFeaturesManager.class).processElement(element);
         }
         return false;
+    }
+
+    private void notifyIQListeners(IQ iq, boolean inbound) {
+        IQEvent iqEvent = new IQEvent(this, iq, inbound);
+        Iterable<IQListener> listeners = inbound ? inboundIQListeners : outboundIQListeners;
+        for (IQListener iqListener : listeners) {
+            try {
+                iqListener.handleIQ(iqEvent);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+    }
+
+    private void notifyMessageListeners(Message message, boolean inbound) {
+        MessageEvent messageEvent = new MessageEvent(this, message, inbound);
+        Iterable<MessageListener> listeners = inbound ? inboundMessageListeners : outboundMessageListeners;
+        for (MessageListener messageListener : listeners) {
+            try {
+                messageListener.handleMessage(messageEvent);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
+    }
+
+    private void notifyPresenceListeners(Presence presence, boolean inbound) {
+        PresenceEvent presenceEvent = new PresenceEvent(this, presence, inbound);
+        Iterable<PresenceListener> listeners = inbound ? inboundPresenceListeners : outboundPresenceListeners;
+        for (PresenceListener presenceListener : listeners) {
+            try {
+                presenceListener.handlePresence(presenceEvent);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
     }
 
     /**

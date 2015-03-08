@@ -98,7 +98,7 @@ public final class PrivacyListManager extends ExtensionManager {
                 }
                 return iq.createError(Condition.NOT_ACCEPTABLE);
             }
-        });
+        }, false);
     }
 
     /**

@@ -195,7 +195,7 @@ public final class RosterManager extends Manager {
                     return iq.createError(Condition.SERVICE_UNAVAILABLE);
                 }
             }
-        });
+        }, false); // Roster pushes should be processed in order as they arrive, so that they don't mess up the roster.
         xmppSession.addSessionStatusListener(new SessionStatusListener() {
             @Override
             public void sessionStatusChanged(SessionStatusEvent e) {

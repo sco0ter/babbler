@@ -1099,9 +1099,6 @@ public class XmppSession implements AutoCloseable {
 
             logger.fine("Stream negotiation completed successfully.");
 
-            wasLoggedIn = true;
-            updateStatus(Status.AUTHENTICATED);
-
             // Retrieve roster.
             RosterManager rosterManager = getManager(RosterManager.class);
             if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
@@ -1145,6 +1142,13 @@ public class XmppSession implements AutoCloseable {
         this.connectedResource = bindResult.getJid();
 
         logger.log(Level.FINE, "Resource binding completed, connected resource: {0}.", connectedResource);
+
+        // At this point the entity is free to send stanzas:
+        // "If, before completing the resource binding step, the client attempts to send an XML stanza to an entity other
+        // than the server itself or the client's account, the server MUST NOT process the stanza
+        // and MUST close the stream with a <not-authorized/> stream error."
+        updateStatus(Status.AUTHENTICATED);
+        wasLoggedIn = true;
 
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.

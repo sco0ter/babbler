@@ -230,7 +230,12 @@ public final class BoshConnection extends Connection {
 
             Hashtable<String, String> env = new Hashtable<>();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-            env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(timeout));
+            // 0 seems to mean "infinite", which is a bad idea.
+            if (timeout > 0) {
+                // http://docs.oracle.com/javase/7/docs/technotes/guides/jndi/jndi-dns.html
+                // If this property has not been set, the default initial timeout is 1000 milliseconds.
+                env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(timeout));
+            }
 
             DirContext ctx = new InitialDirContext(env);
 

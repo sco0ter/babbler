@@ -103,11 +103,17 @@ public class XmppSession implements AutoCloseable {
 
     private final AuthenticationManager authenticationManager;
 
-    private final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
+    private final Set<MessageListener> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<PresenceListener> presenceListeners = new CopyOnWriteArraySet<>();
+    private final Set<MessageListener> outboundMessageListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<IQListener> iqListeners = new CopyOnWriteArraySet<>();
+    private final Set<PresenceListener> inboundPresenceListeners = new CopyOnWriteArraySet<>();
+
+    private final Set<PresenceListener> outboundPresenceListeners = new CopyOnWriteArraySet<>();
+
+    private final Set<IQListener> inboundIQListeners = new CopyOnWriteArraySet<>();
+
+    private final Set<IQListener> outboundIQListeners = new CopyOnWriteArraySet<>();
 
     private final Map<Class<?>, IQHandler> iqHandlerMap = new ConcurrentHashMap<>();
 
@@ -286,9 +292,12 @@ public class XmppSession implements AutoCloseable {
      *
      * @param messageListener The message listener.
      * @see #removeMessageListener(MessageListener)
+     * @deprecated Use either {@link #addInboundMessageListener(rocks.xmpp.core.stanza.MessageListener)} or {@link #addOutboundMessageListener(rocks.xmpp.core.stanza.MessageListener)}
      */
+    @Deprecated
     public final void addMessageListener(MessageListener messageListener) {
-        messageListeners.add(messageListener);
+        inboundMessageListeners.add(messageListener);
+        outboundMessageListeners.add(messageListener);
     }
 
     /**
@@ -296,9 +305,52 @@ public class XmppSession implements AutoCloseable {
      *
      * @param messageListener The message listener.
      * @see #addMessageListener(MessageListener)
+     * @deprecated Use either {@link #removeInboundMessageListener(rocks.xmpp.core.stanza.MessageListener)} or {@link #removeOutboundMessageListener(rocks.xmpp.core.stanza.MessageListener)}
      */
+    @Deprecated
     public final void removeMessageListener(MessageListener messageListener) {
-        messageListeners.remove(messageListener);
+        inboundMessageListeners.remove(messageListener);
+        outboundMessageListeners.remove(messageListener);
+    }
+
+    /**
+     * Adds an inbound message listener to the session, which will get notified, whenever a message is received.
+     *
+     * @param messageListener The message listener.
+     * @see #removeInboundMessageListener(MessageListener)
+     */
+    public final void addInboundMessageListener(MessageListener messageListener) {
+        inboundMessageListeners.add(messageListener);
+    }
+
+    /**
+     * Removes a previously added inbound message listener from the session.
+     *
+     * @param messageListener The message listener.
+     * @see #addInboundMessageListener(MessageListener)
+     */
+    public final void removeInboundMessageListener(MessageListener messageListener) {
+        inboundMessageListeners.remove(messageListener);
+    }
+
+    /**
+     * Adds an outbound message listener to the session, which will get notified, whenever a message is sent.
+     *
+     * @param messageListener The message listener.
+     * @see #removeOutboundMessageListener(MessageListener)
+     */
+    public final void addOutboundMessageListener(MessageListener messageListener) {
+        outboundMessageListeners.add(messageListener);
+    }
+
+    /**
+     * Removes a previously added outbound message listener from the session.
+     *
+     * @param messageListener The message listener.
+     * @see #addOutboundMessageListener(MessageListener)
+     */
+    public final void removeOutboundMessageListener(MessageListener messageListener) {
+        outboundMessageListeners.remove(messageListener);
     }
 
     /**
@@ -306,9 +358,12 @@ public class XmppSession implements AutoCloseable {
      *
      * @param presenceListener The presence listener.
      * @see #removePresenceListener(PresenceListener)
+     * @deprecated Use either {@link #addInboundPresenceListener(rocks.xmpp.core.stanza.PresenceListener)} or {@link #addOutboundPresenceListener(rocks.xmpp.core.stanza.PresenceListener)}
      */
+    @Deprecated
     public final void addPresenceListener(PresenceListener presenceListener) {
-        presenceListeners.add(presenceListener);
+        inboundPresenceListeners.add(presenceListener);
+        outboundPresenceListeners.add(presenceListener);
     }
 
     /**
@@ -316,9 +371,52 @@ public class XmppSession implements AutoCloseable {
      *
      * @param presenceListener The presence listener.
      * @see #addPresenceListener(PresenceListener)
+     * @deprecated Use either {@link #removeInboundPresenceListener(rocks.xmpp.core.stanza.PresenceListener)} or {@link #removeOutboundPresenceListener(rocks.xmpp.core.stanza.PresenceListener)}
      */
+    @Deprecated
     public final void removePresenceListener(PresenceListener presenceListener) {
-        presenceListeners.remove(presenceListener);
+        inboundPresenceListeners.remove(presenceListener);
+        outboundPresenceListeners.remove(presenceListener);
+    }
+
+    /**
+     * Adds an inbound presence listener to the session, which will get notified, whenever a presence is received.
+     *
+     * @param presenceListener The presence listener.
+     * @see #removeInboundPresenceListener(PresenceListener)
+     */
+    public final void addInboundPresenceListener(PresenceListener presenceListener) {
+        inboundPresenceListeners.add(presenceListener);
+    }
+
+    /**
+     * Removes a previously added inbound presence listener from the session.
+     *
+     * @param presenceListener The presence listener.
+     * @see #addInboundPresenceListener(PresenceListener)
+     */
+    public final void removeInboundPresenceListener(PresenceListener presenceListener) {
+        inboundPresenceListeners.remove(presenceListener);
+    }
+
+    /**
+     * Adds an outbound presence listener to the session, which will get notified, whenever a presence is sent.
+     *
+     * @param presenceListener The presence listener.
+     * @see #removeOutboundPresenceListener(PresenceListener)
+     */
+    public final void addOutboundPresenceListener(PresenceListener presenceListener) {
+        outboundPresenceListeners.add(presenceListener);
+    }
+
+    /**
+     * Removes a previously added outbound presence listener from the session.
+     *
+     * @param presenceListener The presence listener.
+     * @see #addOutboundPresenceListener(PresenceListener)
+     */
+    public final void removeOutboundPresenceListener(PresenceListener presenceListener) {
+        outboundPresenceListeners.remove(presenceListener);
     }
 
     /**
@@ -326,9 +424,12 @@ public class XmppSession implements AutoCloseable {
      *
      * @param iqListener The IQ listener.
      * @see #removeIQListener(IQListener)
+     * @deprecated Use either {@link #removeInboundIQListener(rocks.xmpp.core.stanza.IQListener)} or {@link #removeOutboundIQListener(rocks.xmpp.core.stanza.IQListener)}
      */
+    @Deprecated
     public final void addIQListener(IQListener iqListener) {
-        iqListeners.add(iqListener);
+        inboundIQListeners.add(iqListener);
+        outboundIQListeners.add(iqListener);
     }
 
     /**
@@ -336,9 +437,52 @@ public class XmppSession implements AutoCloseable {
      *
      * @param iqListener The IQ listener.
      * @see #addIQListener(IQListener)
+     * @deprecated Use either {@link #removeInboundIQListener(rocks.xmpp.core.stanza.IQListener)} or {@link #removeOutboundIQListener(rocks.xmpp.core.stanza.IQListener)}
      */
+    @Deprecated
     public final void removeIQListener(IQListener iqListener) {
-        iqListeners.remove(iqListener);
+        inboundIQListeners.remove(iqListener);
+        outboundIQListeners.remove(iqListener);
+    }
+
+    /**
+     * Adds an inbound IQ listener to the session, which will get notified, whenever an IQ stanza is received.
+     *
+     * @param iqListener The IQ listener.
+     * @see #removeInboundIQListener(IQListener)
+     */
+    public final void addInboundIQListener(IQListener iqListener) {
+        inboundIQListeners.add(iqListener);
+    }
+
+    /**
+     * Removes a previously added inbound IQ listener from the session.
+     *
+     * @param iqListener The IQ listener.
+     * @see #addInboundIQListener(IQListener)
+     */
+    public final void removeInboundIQListener(IQListener iqListener) {
+        inboundIQListeners.remove(iqListener);
+    }
+
+    /**
+     * Adds an outbound IQ listener to the session, which will get notified, whenever an IQ stanza is sent.
+     *
+     * @param iqListener The IQ listener.
+     * @see #removeOutboundIQListener(IQListener)
+     */
+    public final void addOutboundIQListener(IQListener iqListener) {
+        outboundIQListeners.add(iqListener);
+    }
+
+    /**
+     * Removes a previously added outbound IQ listener from the session.
+     *
+     * @param iqListener The IQ listener.
+     * @see #addOutboundIQListener(IQListener)
+     */
+    public final void removeOutboundIQListener(IQListener iqListener) {
+        outboundIQListeners.remove(iqListener);
     }
 
     /**
@@ -383,20 +527,23 @@ public class XmppSession implements AutoCloseable {
         sessionStatusListeners.remove(sessionStatusListener);
     }
 
-    private void notifyStanzaListeners(Stanza element, final boolean incoming) {
+    private void notifyStanzaListeners(Stanza element, final boolean inbound) {
 
         if (element instanceof Message) {
-            MessageEvent messageEvent = new MessageEvent(this, (Message) element, incoming);
-            for (MessageListener messageListener : messageListeners) {
+            MessageEvent messageEvent = new MessageEvent(this, (Message) element, inbound);
+            Iterable<MessageListener> listeners = inbound ? inboundMessageListeners : outboundMessageListeners;
+            for (MessageListener messageListener : listeners) {
                 try {
                     messageListener.handleMessage(messageEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
             }
+
         } else if (element instanceof Presence) {
-            PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) element, incoming);
-            for (PresenceListener presenceListener : presenceListeners) {
+            PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) element, inbound);
+            Iterable<PresenceListener> listeners = inbound ? inboundPresenceListeners : outboundPresenceListeners;
+            for (PresenceListener presenceListener : listeners) {
                 try {
                     presenceListener.handlePresence(presenceEvent);
                 } catch (Exception e) {
@@ -406,7 +553,7 @@ public class XmppSession implements AutoCloseable {
         } else if (element instanceof IQ) {
             final IQ iq = (IQ) element;
 
-            if (incoming) {
+            if (inbound) {
                 if (iq.getType() == null) {
                     // return <bad-request/> if the <iq/> has no type.
                     send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST));
@@ -441,9 +588,9 @@ public class XmppSession implements AutoCloseable {
                 }
             }
 
-
-            IQEvent iqEvent = new IQEvent(this, iq, incoming);
-            for (IQListener iqListener : iqListeners) {
+            Iterable<IQListener> listeners = inbound ? inboundIQListeners : outboundIQListeners;
+            IQEvent iqEvent = new IQEvent(this, iq, inbound);
+            for (IQListener iqListener : listeners) {
                 try {
                     iqListener.handleIQ(iqEvent);
                 } catch (Exception e) {
@@ -763,9 +910,12 @@ public class XmppSession implements AutoCloseable {
             throwAsXmppExceptionIfNotNull(e);
         } finally {
             // Clear everything.
-            messageListeners.clear();
-            presenceListeners.clear();
-            iqListeners.clear();
+            inboundMessageListeners.clear();
+            outboundMessageListeners.clear();
+            inboundPresenceListeners.clear();
+            outboundPresenceListeners.clear();
+            inboundIQListeners.clear();
+            outboundIQListeners.clear();
             stanzaListenerExecutor.shutdown();
             iqHandlerExecutor.shutdown();
             if (shutdownHook != null) {

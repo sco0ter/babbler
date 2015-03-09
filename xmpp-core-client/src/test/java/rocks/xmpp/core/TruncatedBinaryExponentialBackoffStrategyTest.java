@@ -23,9 +23,9 @@ public class TruncatedBinaryExponentialBackoffStrategyTest {
         Assert.assertTrue(fourth >= 0 && fourth < 900);
         int fifth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4);
         Assert.assertTrue(fifth >= 0 && fifth < 1860);
-        int sixth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4);
+        int sixth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(5);
         Assert.assertTrue(sixth >= 0 && sixth < 1860);
-        int seventh = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4);
+        int seventh = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(6);
         Assert.assertTrue(seventh >= 0 && seventh < 1860);
     }
 }

@@ -95,7 +95,7 @@ For now, you have to just deal directly with the messages. This may change in th
 xmppSession.addMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
+        if (e.isInbound()) {
             Message message = e.getMessage();
             Event event = message.getExtension(Event.class);
             if (event != null) {

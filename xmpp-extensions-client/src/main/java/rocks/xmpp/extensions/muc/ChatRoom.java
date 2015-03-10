@@ -123,7 +123,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         this.messageListener = new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     Message message = e.getMessage();
                     if (message.getFrom().asBareJid().equals(roomJid)) {
                         if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
@@ -160,7 +160,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 Presence presence = e.getPresence();
                 // If the presence came from the room.
                 if (presence.getFrom() != null && presence.getFrom().asBareJid().equals(roomJid)) {
-                    if (e.isIncoming()) {
+                    if (e.isInbound()) {
                         MucUser mucUser = presence.getExtension(MucUser.class);
                         if (mucUser != null) {
                             String nick = presence.getFrom().getResource();

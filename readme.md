@@ -265,7 +265,7 @@ Here are some examples:
 xmppSession.addPresenceListener(new PresenceListener() {
     @Override
     public void handlePresence(PresenceEvent e) {
-        if (e.isIncoming()) {
+        if (e.isInbound()) {
             // Handle incoming presence.
         }
     }

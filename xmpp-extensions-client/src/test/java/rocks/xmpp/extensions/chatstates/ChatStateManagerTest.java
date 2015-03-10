@@ -59,7 +59,7 @@ public class ChatStateManagerTest extends ExtensionTest {
             @Override
             public void handleMessage(MessageEvent e) {
                 ChatState chatState = e.getMessage().getExtension(ChatState.class);
-                if (e.isIncoming() && chatState != null) {
+                if (e.isInbound() && chatState != null) {
                     chatStatesReceived.add(chatState);
                 }
             }

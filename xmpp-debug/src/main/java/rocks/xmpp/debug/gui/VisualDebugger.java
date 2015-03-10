@@ -187,7 +187,7 @@ public final class VisualDebugger implements XmppDebugger {
         final PresenceListener presenceListener = new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (!e.isIncoming()) {
+                if (!e.isInbound()) {
                     final Presence presence = e.getPresence();
                     if (presence.getTo() == null) {
                         waitForPlatform();

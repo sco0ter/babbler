@@ -30,7 +30,6 @@ import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -130,7 +129,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming() && isEnabled()) {
+                if (e.isInbound() && isEnabled()) {
                     InBandByteStream.Data data = e.getMessage().getExtension(InBandByteStream.Data.class);
                     if (data != null) {
                         IbbSession ibbSession = ibbSessionMap.get(data.getSessionId());

@@ -91,7 +91,7 @@ public final class ReachabilityManager extends ExtensionManager {
             @Override
             public void handlePresence(PresenceEvent e) {
                 AbstractPresence presence = e.getPresence();
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
                     Jid contact = presence.getFrom().asBareJid();
                     if (!hasReachability && reachabilities.remove(contact) != null) {
@@ -114,7 +114,7 @@ public final class ReachabilityManager extends ExtensionManager {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     checkStanzaForReachabilityAndNotify(e.getMessage());
                 }
             }

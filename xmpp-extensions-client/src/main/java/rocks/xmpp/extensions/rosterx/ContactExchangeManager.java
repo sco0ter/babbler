@@ -84,7 +84,7 @@ public final class ContactExchangeManager extends ExtensionManager {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming() && isEnabled()) {
+                if (e.isInbound() && isEnabled()) {
                     Message message = e.getMessage();
                     ContactExchange contactExchange = message.getExtension(ContactExchange.class);
                     if (contactExchange != null) {

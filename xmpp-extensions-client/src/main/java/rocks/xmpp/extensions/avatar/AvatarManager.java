@@ -137,7 +137,7 @@ public final class AvatarManager extends ExtensionManager {
                 // If vCard based avatars are enabled.
                 if (isEnabled()) {
                     final Presence presence = e.getPresence();
-                    if (e.isIncoming()) {
+                    if (e.isInbound()) {
 
                         // If the presence has an avatar update information.
                         final AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
@@ -248,7 +248,7 @@ public final class AvatarManager extends ExtensionManager {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming() && isEnabled()) {
+                if (e.isInbound() && isEnabled()) {
                     final Message message = e.getMessage();
                     Event event = message.getExtension(Event.class);
                     if (event != null) {

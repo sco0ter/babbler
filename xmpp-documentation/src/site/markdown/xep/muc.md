@@ -98,7 +98,7 @@ chatRoom.addMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
         Message message = e.getMessage();
-        if (e.isIncoming()) {
+        if (e.isInbound()) {
             System.out.println(String.format("%s: %s", message.getFrom().getResource(), message.getBody()));
         }
     }

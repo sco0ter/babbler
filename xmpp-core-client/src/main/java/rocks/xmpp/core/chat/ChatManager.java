@@ -104,18 +104,18 @@ public final class ChatManager extends Manager {
             public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
                 if (message.getType() == Message.Type.CHAT) {
-                    Jid chatPartner = e.isIncoming() ? message.getFrom() : message.getTo();
+                    Jid chatPartner = e.isInbound() ? message.getFrom() : message.getTo();
                     // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
                     // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).
                     String threadId = message.getThread() != null ? message.getThread() : UUID.randomUUID().toString();
                     if (chatPartner != null) {
                         synchronized (chatSessions) {
-                            ChatSession chatSession = buildChatSession(chatPartner, threadId, xmppSession, e.isIncoming());
-                            if (e.isIncoming()) {
+                            ChatSession chatSession = buildChatSession(chatPartner, threadId, xmppSession, e.isInbound());
+                            if (e.isInbound()) {
                                 // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
                                 chatSession.setChatPartner(message.getFrom());
                             }
-                            chatSession.notifyMessageListeners(new MessageEvent(chatSession, message, e.isIncoming()));
+                            chatSession.notifyMessageListeners(new MessageEvent(chatSession, message, e.isInbound()));
                         }
                     }
                 }
@@ -124,7 +124,7 @@ public final class ChatManager extends Manager {
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
                     AbstractPresence presence = e.getPresence();
                     synchronized (chatSessions) {

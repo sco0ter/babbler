@@ -38,21 +38,32 @@ public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extend
 
     protected final S stanza;
 
-    private final boolean incoming;
+    private final boolean inbound;
 
-    public StanzaEvent(Object source, S stanza, boolean incoming) {
+    public StanzaEvent(Object source, S stanza, boolean inbound) {
         super(source);
         this.stanza = stanza;
-        this.incoming = incoming;
+        this.inbound = inbound;
     }
 
     /**
-     * Indicates, whether the stanza has been received (incoming) or is about to being sent (outgoing).
+     * Indicates, whether the stanza has been received (inbound) or is about to being sent (outbound).
      *
-     * @return True, if the stanza is incoming; false if it is outgoing.
+     * @return True, if the stanza is inbound; false if it is outbound.
+     * @deprecated Use {@link #isInbound()}
      */
+    @Deprecated
     public final boolean isIncoming() {
-        return incoming;
+        return inbound;
+    }
+
+    /**
+     * Indicates, whether the stanza has been received (inbound) or is about to being sent (outbound).
+     *
+     * @return True, if the stanza is inbound; false if it is outbound.
+     */
+    public final boolean isInbound() {
+        return inbound;
     }
 
     /**

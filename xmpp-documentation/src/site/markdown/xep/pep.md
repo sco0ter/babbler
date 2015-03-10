@@ -37,7 +37,7 @@ Now that you have published your geo location all your contacts will receive not
 xmppSession.addMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
+        if (e.isInbound()) {
             Message message = e.getMessage();
             Event event = message.getExtension(Event.class);
             if (event != null) {

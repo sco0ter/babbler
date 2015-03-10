@@ -88,7 +88,7 @@ public final class HttpAuthenticationManager extends ExtensionManager {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     Message message = e.getMessage();
                     if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
                         ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);

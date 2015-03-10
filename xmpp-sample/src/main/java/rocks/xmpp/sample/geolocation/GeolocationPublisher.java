@@ -63,7 +63,7 @@ public class GeolocationPublisher {
                     xmppSession.addMessageListener(new MessageListener() {
                         @Override
                         public void handleMessage(MessageEvent e) {
-                            if (e.isIncoming()) {
+                            if (e.isInbound()) {
                                 System.out.println(e.getMessage());
                             }
                         }

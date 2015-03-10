@@ -94,7 +94,7 @@ public final class LastActivityManager extends ExtensionManager {
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (!e.isIncoming() && isEnabled()) {
+                if (!e.isInbound() && isEnabled()) {
                     AbstractPresence presence = e.getPresence();
                     if (presence.getTo() == null) {
                         synchronized (LastActivityManager.this) {
@@ -178,7 +178,7 @@ public final class LastActivityManager extends ExtensionManager {
 
         @Override
         public void handleMessage(MessageEvent e) {
-            if (!e.isIncoming()) {
+            if (!e.isInbound()) {
                 lastActivity = new Date();
             }
         }
@@ -186,7 +186,7 @@ public final class LastActivityManager extends ExtensionManager {
         @Override
         public void handlePresence(PresenceEvent e) {
             AbstractPresence presence = e.getPresence();
-            if (!e.isIncoming() && (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA)) {
+            if (!e.isInbound() && (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA)) {
                 lastActivity = new Date();
             }
         }

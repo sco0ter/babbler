@@ -44,7 +44,7 @@ import rocks.xmpp.extensions.attention.model.Attention;
  * xmppSession.addMessageListener(new MessageListener() {
  *     {@literal @}Override
  *     public void handleMessage(MessageEvent e) {
- *         if (e.isIncoming() &amp;&amp; e.getMessage().getExtension(Attention.class) != null) {
+ *         if (e.isInbound() &amp;&amp; e.getMessage().getExtension(Attention.class) != null) {
  *             // Handle attention request.
  *         }
  *     }

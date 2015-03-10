@@ -188,7 +188,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 if (isEnabled()) {
                     final Presence presence = e.getPresence();
 
-                    if (!e.isIncoming()) {
+                    if (!e.isInbound()) {
                         if (presence.isAvailable() && presence.getTo() == null) {
                             // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
                             synchronized (serviceDiscoveryManager) {

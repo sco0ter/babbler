@@ -112,7 +112,7 @@ public final class PingManager extends ExtensionManager {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     rescheduleNextPing();
                 }
             }
@@ -120,7 +120,7 @@ public final class PingManager extends ExtensionManager {
         xmppSession.addPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     rescheduleNextPing();
                 }
             }
@@ -128,7 +128,7 @@ public final class PingManager extends ExtensionManager {
         xmppSession.addIQListener(new IQListener() {
             @Override
             public void handleIQ(IQEvent e) {
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     rescheduleNextPing();
                 }
             }

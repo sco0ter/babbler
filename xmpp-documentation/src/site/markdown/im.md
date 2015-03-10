@@ -39,7 +39,7 @@ Whenever one of your contacts updates his presence (e.g. comes offline, goes awa
 xmppSession.addPresenceListener(new PresenceListener() {
     @Override
     public void handlePresence(PresenceEvent e) {
-        if (e.isIncoming()) {
+        if (e.isInbound()) {
             Presence presence = e.getPresence();
             Contact contact = xmppSession.getManager(RosterManager.class).getContact(presence.getFrom());
             if (contact != null) {
@@ -56,7 +56,7 @@ Presence is also used for requesting subscription to your presence status.
 xmppSession.addPresenceListener(new PresenceListener() {
     @Override
     public void handlePresence(PresenceEvent e) {
-        if (e.isIncoming()) {
+        if (e.isInbound()) {
             Presence presence = e.getPresence();
             if (presence.getType() == Presence.Type.SUBSCRIBE) {
                 // presence.getFrom() wants to subscribe to your presence.
@@ -84,7 +84,7 @@ Listening for messages is done by adding a message listener to the session.
 xmppSession.addMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
+        if (e.isInbound()) {
             Message message = e.getMessage();
             // Handle message.
         }
@@ -102,7 +102,7 @@ You can use this, if you want to add extensions to a stanza or otherwise modify 
 xmppSession.addMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        if (!e.isIncoming()) {
+        if (!e.isInbound()) {
             Message message = e.getMessage();
             // you could add an extension to the message here.
         }

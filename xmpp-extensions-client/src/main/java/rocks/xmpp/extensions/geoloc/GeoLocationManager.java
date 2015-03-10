@@ -72,7 +72,7 @@ public final class GeoLocationManager extends ExtensionManager {
         xmppSession.addMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming() && isEnabled()) {
+                if (e.isInbound() && isEnabled()) {
                     Message message = e.getMessage();
                     Event event = message.getExtension(Event.class);
                     if (event != null) {

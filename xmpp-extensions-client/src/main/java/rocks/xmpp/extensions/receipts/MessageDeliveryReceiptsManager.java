@@ -111,7 +111,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                     Message message = e.getMessage();
 
                     // If a message is received, check if it requests a receipt.
-                    if (e.isIncoming()) {
+                    if (e.isInbound()) {
 
                         // If a client requests a receipt, send an ack message.
                         if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {

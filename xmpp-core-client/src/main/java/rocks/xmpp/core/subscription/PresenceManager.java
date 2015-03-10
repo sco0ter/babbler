@@ -78,7 +78,7 @@ public final class PresenceManager extends Manager {
             @Override
             public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
-                if (e.isIncoming()) {
+                if (e.isInbound()) {
                     if (presence.getFrom() != null) {
                         // Store the user (bare JID) in the map, associated with different resources.
                         presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());

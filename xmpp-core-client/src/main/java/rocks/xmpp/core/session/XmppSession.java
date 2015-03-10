@@ -593,7 +593,7 @@ public class XmppSession implements AutoCloseable {
             @Override
             public void handleIQ(IQEvent e) {
                 IQ responseIQ = e.getIQ();
-                if (e.isIncoming() && responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
+                if (e.isInbound() && responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
                     queryLock.lock();
                     try {
                         result[0] = responseIQ;
@@ -645,7 +645,7 @@ public class XmppSession implements AutoCloseable {
             @Override
             public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
-                if (e.isIncoming() && filter.accept(presence)) {
+                if (e.isInbound() && filter.accept(presence)) {
                     presenceLock.lock();
                     try {
                         result[0] = presence;
@@ -698,7 +698,7 @@ public class XmppSession implements AutoCloseable {
             @Override
             public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
-                if (e.isIncoming() && filter.accept(message)) {
+                if (e.isInbound() && filter.accept(message)) {
                     messageLock.lock();
                     try {
                         result[0] = message;

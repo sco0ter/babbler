@@ -1012,7 +1012,7 @@ public class XmppSession implements AutoCloseable {
      * @throws XmppException              If the login failed, due to another error.
      */
     public final void loginAnonymously() throws XmppException {
-        loginInternal(Arrays.asList("ANONYMOUS"), null, null, null);
+        loginInternal(Collections.singleton("ANONYMOUS"), null, null, null);
         anonymous = true;
     }
 

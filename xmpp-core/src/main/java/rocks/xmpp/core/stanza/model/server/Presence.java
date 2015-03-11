@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The implementation of the {@code <presence/>} element for the server namespace ('jabber:server').
@@ -113,7 +114,7 @@ public final class Presence extends AbstractPresence implements ServerStreamElem
      * @param status The status.
      */
     public Presence(Jid to, Show show, String status) {
-        this(to, null, show, status != null ? Arrays.asList(new Status(status)) : null, null, null, null, null, null, null);
+        this(to, null, show, status != null ? Collections.singleton(new Status(status)) : null, null, null, null, null, null, null);
     }
 
     /**
@@ -136,7 +137,7 @@ public final class Presence extends AbstractPresence implements ServerStreamElem
      * @param id     The id.
      */
     public Presence(Jid to, Type type, String status, String id) {
-        this(to, type, null, status != null ? Arrays.asList(new Status(status)) : null, null, id, null, null, null, null);
+        this(to, type, null, status != null ? Collections.singleton(new Status(status)) : null, null, id, null, null, null, null);
     }
 
     /**

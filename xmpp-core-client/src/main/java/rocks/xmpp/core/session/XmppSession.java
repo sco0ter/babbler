@@ -176,6 +176,8 @@ public class XmppSession implements AutoCloseable {
 
     private volatile CallbackHandler lastCallbackHandler;
 
+    private volatile boolean anonymous;
+
     /**
      * Creates a session with the specified service domain, by using the default configuration.
      *
@@ -1011,6 +1013,7 @@ public class XmppSession implements AutoCloseable {
      */
     public final void loginAnonymously() throws XmppException {
         loginInternal(Arrays.asList("ANONYMOUS"), null, null, null);
+        anonymous = true;
     }
 
     private void loginInternal(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
@@ -1503,6 +1506,15 @@ public class XmppSession implements AutoCloseable {
      */
     public final boolean isConnected() {
         return EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING).contains(getStatus());
+    }
+
+    /**
+     * Indicates whether the session has been logged in anonymously. If never logged in at all, returns false.
+     *
+     * @return True, if the session is anonymous.
+     */
+    public final boolean isAnonymous() {
+        return anonymous;
     }
 
     /**

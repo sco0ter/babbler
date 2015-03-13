@@ -30,6 +30,8 @@ import rocks.xmpp.extensions.hashes.model.Hash;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -38,17 +40,22 @@ public final class HashManager extends ExtensionManager {
 
     private static final String[] REGISTERED_HASH_ALGORITHMS = new String[]{"md5", "sha-1", "sha-224", "sha-256", "sha-384", "sha-512"};
 
-    private HashManager(XmppSession xmppSession) {
-        super(xmppSession, Hash.NAMESPACE);
+    private static final List<String> FEATURES = new ArrayList<>();
+
+    static {
+        FEATURES.add(Hash.NAMESPACE);
         for (String algorithm : REGISTERED_HASH_ALGORITHMS) {
             try {
                 MessageDigest.getInstance(algorithm);
-                features.add("urn:xmpp:hash-function-text-names:" + algorithm);
+                FEATURES.add("urn:xmpp:hash-function-text-names:" + algorithm);
             } catch (NoSuchAlgorithmException e) {
                 // ignore
             }
         }
+    }
 
+    private HashManager(XmppSession xmppSession) {
+        super(xmppSession, FEATURES);
         setEnabled(true);
     }
 }

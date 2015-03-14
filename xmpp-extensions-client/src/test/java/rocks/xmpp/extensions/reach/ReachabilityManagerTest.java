@@ -52,10 +52,10 @@ public class ReachabilityManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         final boolean[] attentionReceived = {false};
-        xmppSession2.addMessageListener(new MessageListener() {
+        xmppSession2.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isInbound() && e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
+                if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
                     attentionReceived[0] = true;
                     Assert.assertEquals(e.getMessage().getType(), AbstractMessage.Type.HEADLINE);
                 }

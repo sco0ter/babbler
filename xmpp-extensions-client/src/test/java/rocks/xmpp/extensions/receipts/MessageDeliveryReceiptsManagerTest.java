@@ -111,7 +111,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
-        xmppSession1.addMessageListener(new MessageListener() {
+        xmppSession1.addOutboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));
@@ -132,7 +132,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
-        xmppSession1.addMessageListener(new MessageListener() {
+        xmppSession1.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));
@@ -149,7 +149,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
 
-        xmppSession1.addMessageListener(new MessageListener() {
+        xmppSession1.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));

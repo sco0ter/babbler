@@ -132,16 +132,16 @@ public class TestXmppSession extends XmppSession {
         final IQListener iqListener = new IQListener() {
             @Override
             public void handleIQ(IQEvent e) {
-                if (e.isInbound() && e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
+                if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
                     result[0] = e.getIQ();
                 }
             }
         };
 
-        addIQListener(iqListener);
+        addInboundIQListener(iqListener);
         send(iq);
 
-        removeIQListener(iqListener);
+        removeInboundIQListener(iqListener);
         IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
             throw new StanzaException(response);

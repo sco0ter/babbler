@@ -55,11 +55,11 @@ public class ChatStateManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET.asBareJid(), mockServer);
 
         final Collection<ChatState> chatStatesReceived = new ArrayList<>();
-        xmppSession2.addMessageListener(new MessageListener() {
+        xmppSession2.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 ChatState chatState = e.getMessage().getExtension(ChatState.class);
-                if (e.isInbound() && chatState != null) {
+                if (chatState != null) {
                     chatStatesReceived.add(chatState);
                 }
             }

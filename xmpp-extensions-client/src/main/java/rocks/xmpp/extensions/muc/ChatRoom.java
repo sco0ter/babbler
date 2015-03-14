@@ -137,7 +137,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                             }
                             notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), delayedDelivery != null, date));
                         } else {
-                            notifyMessageListeners(new MessageEvent(ChatRoom.this, message, true));
+                            notifyInboundMessageListeners(new MessageEvent(ChatRoom.this, message, true));
                         }
                     } else {
                         MucUser mucUser = message.getExtension(MucUser.class);
@@ -223,7 +223,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                     invitationDeclineListeners.clear();
                     subjectChangeListeners.clear();
                     occupantListeners.clear();
-                    messageListeners.clear();
+                    inboundMessageListeners.clear();
                     occupantMap.clear();
                 }
             }

@@ -43,7 +43,7 @@ public abstract class Chat {
 
     private static final Logger logger = Logger.getLogger(Chat.class.getName());
 
-    protected final Set<MessageListener> messageListeners = new CopyOnWriteArraySet<>();
+    protected final Set<MessageListener> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
     /**
      * Sends a message to the chat.
@@ -60,27 +60,27 @@ public abstract class Chat {
     public abstract void sendMessage(Message message);
 
     /**
-     * Adds a message listener, which allows to listen for incoming messages.
+     * Adds a message listener, which allows to listen for inbound messages.
      *
      * @param messageListener The listener.
-     * @see #removeMessageListener(rocks.xmpp.core.stanza.MessageListener)
+     * @see #removeInboundMessageListener(rocks.xmpp.core.stanza.MessageListener)
      */
-    public final void addMessageListener(MessageListener messageListener) {
-        messageListeners.add(messageListener);
+    public final void addInboundMessageListener(MessageListener messageListener) {
+        inboundMessageListeners.add(messageListener);
     }
 
     /**
      * Removes a previously added message listener.
      *
      * @param messageListener The listener.
-     * @see #addMessageListener(rocks.xmpp.core.stanza.MessageListener)
+     * @see #addInboundMessageListener(rocks.xmpp.core.stanza.MessageListener)
      */
-    public final void removeMessageListener(MessageListener messageListener) {
-        messageListeners.remove(messageListener);
+    public final void removeInboundMessageListener(MessageListener messageListener) {
+        inboundMessageListeners.remove(messageListener);
     }
 
-    protected void notifyMessageListeners(MessageEvent messageEvent) {
-        for (MessageListener messageListener : messageListeners) {
+    protected void notifyInboundMessageListeners(MessageEvent messageEvent) {
+        for (MessageListener messageListener : inboundMessageListeners) {
             try {
                 messageListener.handleMessage(messageEvent);
             } catch (Exception e) {

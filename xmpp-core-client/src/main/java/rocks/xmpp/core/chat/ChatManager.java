@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  *     {@literal @}Override
  *     public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
  *         ChatSession chatSession = chatSessionEvent.getChatSession();
- *         chatSession.addMessageListener(new MessageListener() {
+ *         chatSession.addInboundMessageListener(new MessageListener() {
  *             {@literal @}Override
  *             public void handleMessage(MessageEvent e) {
  *                 Message message = e.getMessage();
@@ -99,7 +99,7 @@ public final class ChatManager extends Manager {
 
     @Override
     protected final void initialize() {
-        MessageListener messageListener = new MessageListener() {
+        xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
@@ -115,14 +115,13 @@ public final class ChatManager extends Manager {
                                 // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
                                 chatSession.setChatPartner(message.getFrom());
                             }
-                            chatSession.notifyMessageListeners(new MessageEvent(chatSession, message, e.isInbound()));
+                            chatSession.notifyInboundMessageListeners(new MessageEvent(chatSession, message, e.isInbound()));
                         }
                     }
                 }
             }
-        };
-        xmppSession.addInboundMessageListener(messageListener);
-        xmppSession.addOutboundMessageListener(messageListener);
+        });
+
         xmppSession.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {

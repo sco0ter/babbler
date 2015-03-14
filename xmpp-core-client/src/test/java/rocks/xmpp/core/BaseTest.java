@@ -30,11 +30,7 @@ import rocks.xmpp.core.session.TestXmppSession;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 /**
  * @author Christian Schudt
@@ -59,15 +55,5 @@ public class BaseTest {
     public void setupMarshaller() throws JAXBException, XMLStreamException {
         marshaller = xmppSession.createMarshaller();
         unmarshaller = xmppSession.createUnmarshaller();
-    }
-
-    protected String marshall(Object object) throws XMLStreamException, JAXBException, IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(outputStream), true);
-        marshaller.marshal(object, xmlStreamWriter);
-        xmlStreamWriter.close();
-        outputStream.close();
-        return outputStream.toString();
     }
 }

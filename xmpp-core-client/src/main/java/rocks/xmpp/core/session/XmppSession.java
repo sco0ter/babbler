@@ -95,8 +95,60 @@ import java.util.logging.Logger;
 
 /**
  * The base class for establishing an XMPP session with a server.
+ * <p>
+ * <h3>Establishing an XMPP Session</h3>
+ * The following example shows the most simple way to establish a session:
+ * <pre>
+ * {@code
+ * XmppSession xmppSession = new XmppSession("domain");
+ * xmppSession.connect();
+ * xmppSession.login("username", "password");
+ * xmppSession.send(new Presence());
+ * }
+ * </pre>
+ * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback.
+ * You can configure a session and its connection methods by passing appropriate configurations in its constructor.
+ * <p>
+ * <h3>Sending Messages</h3>
+ * Once connected, you can send messages:
+ * <pre>
+ * {@code
+ * xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
+ * }
+ * </pre>
+ * <h3>Closing the Session</h3>
+ * <pre>
+ * {@code
+ * xmppSession.close();
+ * }
+ * </pre>
+ * <h3>Listening for Messages and Presence</h3>
+ * <b>Note:</b> Adding the following listeners should be added before logging in, otherwise they might not trigger.
+ * <pre>
+ * <code>
+ * // Listen for messages
+ * xmppSession.addInboundMessageListener(new MessageListener() {
+ *     {@literal @}Override
+ *     public void handleMessage(MessageEvent e) {
+ *         // Handle inbound message
+ *     }
+ * });
+ *
+ * // Listen for presence changes
+ * xmppSession.addInboundPresenceListener(new PresenceListener() {
+ *     {@literal @}Override
+ *     public void handlePresence(PresenceEvent e) {
+ *         // Handle inbound presence.
+ *     }
+ * });
+ * </code>
+ * </pre>
+ * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
  *
  * @author Christian Schudt
+ * @see rocks.xmpp.core.session.XmppSessionConfiguration
+ * @see rocks.xmpp.core.session.TcpConnectionConfiguration
+ * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  */
 public class XmppSession implements AutoCloseable {
 

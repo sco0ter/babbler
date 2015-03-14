@@ -51,7 +51,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -123,12 +122,10 @@ public class SampleApplication {
                     XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
 
                     // Listen for incoming messages.
-                    xmppSession.addMessageListener(new MessageListener() {
+                    xmppSession.addInboundMessageListener(new MessageListener() {
                         @Override
                         public void handleMessage(MessageEvent e) {
-                            if (e.isInbound()) {
-                                System.out.println(e.getMessage());
-                            }
+                            System.out.println(e.getMessage());
                         }
                     });
                     // Connect

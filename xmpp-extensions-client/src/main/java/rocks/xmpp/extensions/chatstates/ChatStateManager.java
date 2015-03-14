@@ -94,7 +94,7 @@ public final class ChatStateManager extends ExtensionManager {
                 }
             }
         });
-        xmppSession.addMessageListener(new MessageListener() {
+        MessageListener messageListener = new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 if (isEnabled()) {
@@ -123,7 +123,9 @@ public final class ChatStateManager extends ExtensionManager {
                     }
                 }
             }
-        });
+        };
+        xmppSession.addInboundMessageListener(messageListener);
+        xmppSession.addOutboundMessageListener(messageListener);
     }
 
     /**

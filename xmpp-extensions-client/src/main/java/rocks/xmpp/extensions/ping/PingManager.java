@@ -109,28 +109,22 @@ public final class PingManager extends ExtensionManager {
         // Reschedule server pings whenever we receive a stanza from the server.
         // When we receive a stanza, we are obviously connected.
         // Pinging should be deferred in this case.
-        xmppSession.addMessageListener(new MessageListener() {
+        xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isInbound()) {
-                    rescheduleNextPing();
-                }
+                rescheduleNextPing();
             }
         });
-        xmppSession.addPresenceListener(new PresenceListener() {
+        xmppSession.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (e.isInbound()) {
-                    rescheduleNextPing();
-                }
+                rescheduleNextPing();
             }
         });
-        xmppSession.addIQListener(new IQListener() {
+        xmppSession.addInboundIQListener(new IQListener() {
             @Override
             public void handleIQ(IQEvent e) {
-                if (e.isInbound()) {
-                    rescheduleNextPing();
-                }
+                rescheduleNextPing();
             }
         });
     }

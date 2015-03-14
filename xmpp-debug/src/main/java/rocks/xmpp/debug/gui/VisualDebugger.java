@@ -187,21 +187,19 @@ public final class VisualDebugger implements XmppDebugger {
         final PresenceListener presenceListener = new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (!e.isInbound()) {
-                    final Presence presence = e.getPresence();
-                    if (presence.getTo() == null) {
-                        waitForPlatform();
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                debugController.viewModel.presence.set(presence);
-                            }
-                        });
-                    }
+                final Presence presence = e.getPresence();
+                if (presence.getTo() == null) {
+                    waitForPlatform();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            debugController.viewModel.presence.set(presence);
+                        }
+                    });
                 }
             }
         };
-        xmppSession.addPresenceListener(presenceListener);
+        xmppSession.addOutboundPresenceListener(presenceListener);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -274,7 +272,7 @@ public final class VisualDebugger implements XmppDebugger {
                                 @Override
                                 public void handle(Event event) {
                                     xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
-                                    xmppSession.removePresenceListener(presenceListener);
+                                    xmppSession.removeOutboundPresenceListener(presenceListener);
                                     animationTimer.stop();
                                 }
                             });

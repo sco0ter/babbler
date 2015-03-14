@@ -182,33 +182,39 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 }
             }
         });
-        xmppSession.addPresenceListener(new PresenceListener() {
+
+        xmppSession.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
                 if (isEnabled()) {
                     final Presence presence = e.getPresence();
-
-                    if (!e.isInbound()) {
-                        if (presence.isAvailable() && presence.getTo() == null) {
-                            // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
-                            synchronized (serviceDiscoveryManager) {
-                                if (publishedNodes.isEmpty()) {
-                                    publishCapsNode();
-                                }
-                                // a client SHOULD include entity capabilities with every presence notification it sends.
-                                // Get the last generated verification string here.
-                                List<Verification> verifications = new ArrayList<>(publishedNodes.values());
-                                Verification verification = verifications.get(verifications.size() - 1);
-                                presence.getExtensions().add(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
-                                capsSent = true;
-                            }
+                    if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
+                        final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
+                        if (entityCapabilities != null) {
+                            handleEntityCaps(entityCapabilities, presence.getFrom());
                         }
-                    } else {
-                        if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
-                            final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
-                            if (entityCapabilities != null) {
-                                handleEntityCaps(entityCapabilities, presence.getFrom());
+                    }
+                }
+            }
+        });
+
+        xmppSession.addOutboundPresenceListener(new PresenceListener() {
+            @Override
+            public void handlePresence(PresenceEvent e) {
+                if (isEnabled()) {
+                    final Presence presence = e.getPresence();
+                    if (presence.isAvailable() && presence.getTo() == null) {
+                        // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
+                        synchronized (serviceDiscoveryManager) {
+                            if (publishedNodes.isEmpty()) {
+                                publishCapsNode();
                             }
+                            // a client SHOULD include entity capabilities with every presence notification it sends.
+                            // Get the last generated verification string here.
+                            List<Verification> verifications = new ArrayList<>(publishedNodes.values());
+                            Verification verification = verifications.get(verifications.size() - 1);
+                            presence.getExtensions().add(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
+                            capsSent = true;
                         }
                     }
                 }

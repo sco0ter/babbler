@@ -85,16 +85,14 @@ public final class HttpAuthenticationManager extends ExtensionManager {
             }
         });
 
-        xmppSession.addMessageListener(new MessageListener() {
+        xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isInbound()) {
-                    Message message = e.getMessage();
-                    if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
-                        ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
-                        if (confirmationRequest != null) {
-                            notifyHttpAuthListeners(message, confirmationRequest);
-                        }
+                Message message = e.getMessage();
+                if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
+                    ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
+                    if (confirmationRequest != null) {
+                        notifyHttpAuthListeners(message, confirmationRequest);
                     }
                 }
             }

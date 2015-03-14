@@ -99,7 +99,7 @@ public final class ChatManager extends Manager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addMessageListener(new MessageListener() {
+        MessageListener messageListener = new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
@@ -120,19 +120,19 @@ public final class ChatManager extends Manager {
                     }
                 }
             }
-        });
-        xmppSession.addPresenceListener(new PresenceListener() {
+        };
+        xmppSession.addInboundMessageListener(messageListener);
+        xmppSession.addOutboundMessageListener(messageListener);
+        xmppSession.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (e.isInbound()) {
-                    // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
-                    AbstractPresence presence = e.getPresence();
-                    synchronized (chatSessions) {
-                        Jid contact = presence.getFrom().asBareJid();
-                        if (chatSessions.containsKey(contact)) {
-                            for (ChatSession chatSession : chatSessions.get(contact).values()) {
-                                chatSession.setChatPartner(contact);
-                            }
+                // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
+                AbstractPresence presence = e.getPresence();
+                synchronized (chatSessions) {
+                    Jid contact = presence.getFrom().asBareJid();
+                    if (chatSessions.containsKey(contact)) {
+                        for (ChatSession chatSession : chatSessions.get(contact).values()) {
+                            chatSession.setChatPartner(contact);
                         }
                     }
                 }

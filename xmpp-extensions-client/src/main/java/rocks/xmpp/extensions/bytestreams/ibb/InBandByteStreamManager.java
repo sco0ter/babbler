@@ -126,10 +126,10 @@ public final class InBandByteStreamManager extends ByteStreamManager {
 
         // 4. Use of Message Stanzas
         // an application MAY use message stanzas instead.
-        xmppSession.addMessageListener(new MessageListener() {
+        xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isInbound() && isEnabled()) {
+                if (isEnabled()) {
                     InBandByteStream.Data data = e.getMessage().getExtension(InBandByteStream.Data.class);
                     if (data != null) {
                         IbbSession ibbSession = ibbSessionMap.get(data.getSessionId());

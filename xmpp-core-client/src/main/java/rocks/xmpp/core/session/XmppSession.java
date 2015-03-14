@@ -72,7 +72,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -595,7 +594,7 @@ public class XmppSession implements AutoCloseable {
             @Override
             public void handleIQ(IQEvent e) {
                 IQ responseIQ = e.getIQ();
-                if (e.isInbound() && responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
+                if (responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
                     queryLock.lock();
                     try {
                         result[0] = responseIQ;
@@ -609,7 +608,7 @@ public class XmppSession implements AutoCloseable {
 
         queryLock.lock();
         try {
-            addIQListener(listener);
+            addInboundIQListener(listener);
             send(iq);
             // Wait for the stanza to arrive.
             if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
@@ -620,7 +619,7 @@ public class XmppSession implements AutoCloseable {
             throw new XmppException("Thread is interrupted.", e);
         } finally {
             queryLock.unlock();
-            removeIQListener(listener);
+            removeInboundIQListener(listener);
         }
         IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
@@ -647,7 +646,7 @@ public class XmppSession implements AutoCloseable {
             @Override
             public void handlePresence(PresenceEvent e) {
                 Presence presence = e.getPresence();
-                if (e.isInbound() && filter.accept(presence)) {
+                if (filter.accept(presence)) {
                     presenceLock.lock();
                     try {
                         result[0] = presence;
@@ -661,7 +660,7 @@ public class XmppSession implements AutoCloseable {
 
         presenceLock.lock();
         try {
-            addPresenceListener(listener);
+            addInboundPresenceListener(listener);
             send(stanza);
             // Wait for the stanza to arrive.
             if (!resultReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
@@ -672,7 +671,7 @@ public class XmppSession implements AutoCloseable {
             throw new XmppException("Thread is interrupted.", e);
         } finally {
             presenceLock.unlock();
-            removePresenceListener(listener);
+            removeInboundPresenceListener(listener);
         }
         Presence response = result[0];
         if (response.getType() == Presence.Type.ERROR) {
@@ -700,7 +699,7 @@ public class XmppSession implements AutoCloseable {
             @Override
             public void handleMessage(MessageEvent e) {
                 Message message = e.getMessage();
-                if (e.isInbound() && filter.accept(message)) {
+                if (filter.accept(message)) {
                     messageLock.lock();
                     try {
                         result[0] = message;
@@ -714,7 +713,7 @@ public class XmppSession implements AutoCloseable {
 
         messageLock.lock();
         try {
-            addMessageListener(listener);
+            addInboundMessageListener(listener);
             send(stanza);
             // Wait for the stanza to arrive.
             if (!resultReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
@@ -725,7 +724,7 @@ public class XmppSession implements AutoCloseable {
             throw new XmppException("Thread is interrupted.", e);
         } finally {
             messageLock.unlock();
-            removeMessageListener(listener);
+            removeInboundMessageListener(listener);
         }
         Message response = result[0];
         if (response.getType() == Message.Type.ERROR) {

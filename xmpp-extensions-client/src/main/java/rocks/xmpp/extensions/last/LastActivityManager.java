@@ -91,10 +91,10 @@ public final class LastActivityManager extends ExtensionManager {
                 }
             }
         });
-        xmppSession.addPresenceListener(new PresenceListener() {
+        xmppSession.addOutboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (!e.isInbound() && isEnabled()) {
+                if (isEnabled()) {
                     AbstractPresence presence = e.getPresence();
                     if (presence.getTo() == null) {
                         synchronized (LastActivityManager.this) {
@@ -167,8 +167,8 @@ public final class LastActivityManager extends ExtensionManager {
         private volatile Date lastActivity;
 
         public DefaultLastActivityStrategy(XmppSession xmppSession) {
-            xmppSession.addMessageListener(this);
-            xmppSession.addPresenceListener(this);
+            xmppSession.addOutboundMessageListener(this);
+            xmppSession.addOutboundPresenceListener(this);
         }
 
         @Override
@@ -178,15 +178,13 @@ public final class LastActivityManager extends ExtensionManager {
 
         @Override
         public void handleMessage(MessageEvent e) {
-            if (!e.isInbound()) {
-                lastActivity = new Date();
-            }
+            lastActivity = new Date();
         }
 
         @Override
         public void handlePresence(PresenceEvent e) {
             AbstractPresence presence = e.getPresence();
-            if (!e.isInbound() && (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA)) {
+            if (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA) {
                 lastActivity = new Date();
             }
         }

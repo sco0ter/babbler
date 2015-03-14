@@ -60,12 +60,10 @@ public class GeolocationPublisher {
                     XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
 
                     // Listen for incoming messages.
-                    xmppSession.addMessageListener(new MessageListener() {
+                    xmppSession.addInboundMessageListener(new MessageListener() {
                         @Override
                         public void handleMessage(MessageEvent e) {
-                            if (e.isInbound()) {
-                                System.out.println(e.getMessage());
-                            }
+                            System.out.println(e.getMessage());
                         }
                     });
 

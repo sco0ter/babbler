@@ -33,10 +33,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -48,6 +45,10 @@ public abstract class XmlTest {
     private static final String START_STREAM = "<?xml version='1.0' encoding='UTF-8'?><stream:stream xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"jabber:client\" from=\"localhost\" id=\"55aa4529\" xml:lang=\"en\" version=\"1.0\">";
 
     private static final String END_STREAM = "</stream:stream>";
+
+    private static final XMLInputFactory INPUT_FACTORY = XMLInputFactory.newFactory();
+
+    private static final XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newFactory();
 
     private Unmarshaller unmarshaller;
 
@@ -61,13 +62,7 @@ public abstract class XmlTest {
     }
 
     private static XMLEventReader getStream(String stanza) throws XMLStreamException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        PrintStream printStream = new PrintStream(byteArrayOutputStream);
-        printStream.print(START_STREAM + stanza + END_STREAM);
-
-        InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-
-        XMLEventReader xmlEventReader = XMLInputFactory.newFactory().createXMLEventReader(inputStream);
+        XMLEventReader xmlEventReader = INPUT_FACTORY.createXMLEventReader(new StringReader(START_STREAM + stanza + END_STREAM));
         xmlEventReader.nextEvent();
         xmlEventReader.nextEvent();
         return xmlEventReader;
@@ -86,7 +81,7 @@ public abstract class XmlTest {
     protected String marshal(Object object) throws XMLStreamException, JAXBException {
         Writer writer = new StringWriter();
 
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmlStreamWriter = OUTPUT_FACTORY.createXMLStreamWriter(writer);
 
         XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
         marshaller.marshal(object, prefixFreeWriter);

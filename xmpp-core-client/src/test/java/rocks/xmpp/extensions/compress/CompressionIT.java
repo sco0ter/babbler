@@ -22,34 +22,33 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.httpbind;
+package rocks.xmpp.extensions.compress;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.roster.RosterManager;
+import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Presence;
 
 /**
  * @author Christian Schudt
  */
-public class BoshIT extends IntegrationTest {
+public class CompressionIT extends IntegrationTest {
 
     @Test
-    public void testBoshConnection() throws XmppException {
+    public void testConnectingWithCompression() throws XmppException {
+        TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                .hostname(HOSTNAME)
+                .compressionMethods(CompressionManager.ZLIB)
+                .secure(false)
+                .build();
 
-        long start = System.currentTimeMillis();
-
-        for (int i = 0; i < 10; i++) {
-            try (XmppSession xmppSession = new XmppSession(DOMAIN, BoshConnectionConfiguration.getDefault())) {
-                System.out.println(i);
-                xmppSession.connect();
-                xmppSession.login("admin", "admin", null);
-                xmppSession.send(new Presence());
-                xmppSession.getManager(RosterManager.class).requestRoster();
-            }
+        try (XmppSession xmppSession = new XmppSession(DOMAIN, tcpConfiguration)) {
+            xmppSession.connect();
+            xmppSession.loginAnonymously();
+            CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
+            Assert.assertEquals(compressionManager.getNegotiatedCompressionMethod(), CompressionManager.ZLIB);
         }
-        System.out.println(System.currentTimeMillis() - start);
     }
 }

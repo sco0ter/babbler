@@ -163,6 +163,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
             logger.fine("Stream is now compressed.");
             return Status.SUCCESS;
         } else if (element instanceof StreamCompression.Failure) {
+            negotiatedCompressionMethod = null;
             // Failure of the negotiation SHOULD NOT be treated as an unrecoverable error
             logger.warning("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
             return Status.IGNORE;

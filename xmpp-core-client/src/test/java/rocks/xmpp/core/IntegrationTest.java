@@ -22,34 +22,32 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.httpbind;
+package rocks.xmpp.core;
 
-import org.testng.annotations.Test;
-import rocks.xmpp.core.IntegrationTest;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.roster.RosterManager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 /**
  * @author Christian Schudt
  */
-public class BoshIT extends IntegrationTest {
+public abstract class IntegrationTest {
+    public static final String DOMAIN = "localhost";
 
-    @Test
-    public void testBoshConnection() throws XmppException {
+    public static final String HOSTNAME = "localhost";
 
-        long start = System.currentTimeMillis();
+    static {
+        BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
+                .hostname(HOSTNAME)
+                .port(7070)
+                .build();
+        BoshConnectionConfiguration.setDefault(boshConnectionConfiguration);
 
-        for (int i = 0; i < 10; i++) {
-            try (XmppSession xmppSession = new XmppSession(DOMAIN, BoshConnectionConfiguration.getDefault())) {
-                System.out.println(i);
-                xmppSession.connect();
-                xmppSession.login("admin", "admin", null);
-                xmppSession.send(new Presence());
-                xmppSession.getManager(RosterManager.class).requestRoster();
-            }
-        }
-        System.out.println(System.currentTimeMillis() - start);
+        TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
+                .hostname(HOSTNAME)
+                .port(5222)
+                .build();
+        TcpConnectionConfiguration.setDefault(tcpConnectionConfiguration);
     }
+
+
 }

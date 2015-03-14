@@ -33,7 +33,6 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
-import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,7 +49,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Socks5ByteStreamIT extends IntegrationTest {
 
     @Test
-    public void test() throws XmppException {
+    public void test() throws XmppException, IOException {
 
         final XmppSession xmppSession1 = new XmppSession(DOMAIN);
         final XmppSession xmppSession2 = new XmppSession(DOMAIN);
@@ -67,14 +66,14 @@ public class Socks5ByteStreamIT extends IntegrationTest {
         final Condition condition = lock.newCondition();
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getManager(InBandByteStreamManager.class);
-        inBandBytestreamManager2.addByteStreamListener(new ByteStreamListener() {
+        Socks5ByteStreamManager socks5ByteStreamManager2 = xmppSession2.getManager(Socks5ByteStreamManager.class);
+        socks5ByteStreamManager2.addByteStreamListener(new ByteStreamListener() {
             @Override
             public void byteStreamRequested(final ByteStreamEvent e) {
-                final ByteStreamSession ibbSession;
+                final ByteStreamSession s5bSession;
 
                 try {
-                    ibbSession = e.accept();
+                    s5bSession = e.accept();
 
                     new Thread() {
                         @Override
@@ -82,7 +81,7 @@ public class Socks5ByteStreamIT extends IntegrationTest {
 
                             InputStream inputStream;
                             try {
-                                inputStream = ibbSession.getInputStream();
+                                inputStream = s5bSession.getInputStream();
                                 int b;
                                 while ((b = inputStream.read()) > -1) {
                                     outputStream.write(b);
@@ -109,17 +108,12 @@ public class Socks5ByteStreamIT extends IntegrationTest {
             }
         });
 
-        InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getManager(InBandByteStreamManager.class);
-        ByteStreamSession ibbSession;
-        try {
-            ibbSession = inBandBytestreamManager1.initiateSession(xmppSession2.getConnectedResource(), "sid", 4096);
-            OutputStream os = ibbSession.getOutputStream();
-            os.write(new byte[]{1, 2, 3, 4});
-            os.flush();
-            os.close();
-        } catch (IOException | XmppException e) {
-            e.printStackTrace();
-        }
+        Socks5ByteStreamManager socks5ByteStreamManager1 = xmppSession1.getManager(Socks5ByteStreamManager.class);
+        ByteStreamSession s5bSession = socks5ByteStreamManager1.initiateSession(xmppSession2.getConnectedResource(), "sid");
+        OutputStream os = s5bSession.getOutputStream();
+        os.write(new byte[]{1, 2, 3, 4});
+        os.flush();
+        os.close();
 
         try {
             lock.lock();

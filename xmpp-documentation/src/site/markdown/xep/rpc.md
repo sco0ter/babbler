@@ -5,7 +5,7 @@
 
 ## Responding to XML-RPC Requests
 
-If you want to respond to requests, you have to set an `RpcHandler`, which handles incoming requests. Here\'s an example:
+If you want to respond to requests, you have to set an `RpcHandler`, which handles inbound requests. Here\'s an example:
 
 ```java
 RpcManager rpcManager = xmppSession.getManager(RpcManager.class);

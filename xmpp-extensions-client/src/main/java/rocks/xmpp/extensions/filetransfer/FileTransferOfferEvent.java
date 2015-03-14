@@ -89,7 +89,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Accepts the incoming file transfer request.
+     * Accepts the inbound file transfer request.
      * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
      *
      * @param outputStream The output stream, to which the file will be written.
@@ -101,7 +101,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
     
     /**
-     * Accepts the incoming file transfer request.
+     * Accepts the inbound file transfer request.
      * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
      *
      * @param destination The path of the file to be written.
@@ -113,7 +113,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Accepts the incoming file transfer request.
+     * Accepts the inbound file transfer request.
      * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
      *
      * @param target The file to be written.
@@ -125,7 +125,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Rejects the incoming file transfer request.
+     * Rejects the inbound file transfer request.
      */
     public void reject() {
         fileTransferNegotiator.reject(iq);

@@ -41,11 +41,11 @@ public final class IQEvent extends StanzaEvent<IQ> {
      *
      * @param source   The object on which the event initially occurred.
      * @param iq       The IQ stanza.
-     * @param incoming True, if the stanza is incoming.
+     * @param inbound True, if the stanza is inbound.
      * @throws IllegalArgumentException if source is null.
      */
-    public IQEvent(Object source, IQ iq, boolean incoming) {
-        super(source, iq, incoming);
+    public IQEvent(Object source, IQ iq, boolean inbound) {
+        super(source, iq, inbound);
     }
 
     /**

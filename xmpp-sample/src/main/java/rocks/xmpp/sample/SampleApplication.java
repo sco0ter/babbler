@@ -121,7 +121,7 @@ public class SampleApplication {
 
                     XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
 
-                    // Listen for incoming messages.
+                    // Listen for inbound messages.
                     xmppSession.addInboundMessageListener(new MessageListener() {
                         @Override
                         public void handleMessage(MessageEvent e) {

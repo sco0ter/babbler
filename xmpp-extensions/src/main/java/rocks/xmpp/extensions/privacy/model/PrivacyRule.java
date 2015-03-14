@@ -187,9 +187,9 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Indicates, whether incoming message stanzas are filtered.
+     * Indicates, whether inbound message stanzas are filtered.
      *
-     * @return True, if incoming message stanzas are filtered.
+     * @return True, if inbound message stanzas are filtered.
      * @see #setFilterMessage(boolean)
      */
     public boolean isFilterMessage() {
@@ -197,9 +197,9 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Indicates, whether incoming message stanzas are filtered.
+     * Indicates, whether inbound message stanzas are filtered.
      *
-     * @param filterMessages True, if incoming message stanzas are filtered.
+     * @param filterMessages True, if inbound message stanzas are filtered.
      * @see #isFilterMessage()
      * @deprecated Use {@link #filterPresenceOut()}
      */
@@ -219,9 +219,9 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Indicates, whether incoming IQ stanzas are filtered.
+     * Indicates, whether inbound IQ stanzas are filtered.
      *
-     * @return True, if incoming IQ stanzas are filtered.
+     * @return True, if inbound IQ stanzas are filtered.
      * @see #setFilterIQ(boolean)
      */
     public boolean isFilterIQ() {
@@ -229,9 +229,9 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Indicates, whether incoming IQ stanzas are filtered.
+     * Indicates, whether inbound IQ stanzas are filtered.
      *
-     * @param filterIQ True, if incoming IQ stanzas are filtered.
+     * @param filterIQ True, if inbound IQ stanzas are filtered.
      * @see #isFilterIQ()
      * @deprecated Use {@link #filterIQ()}
      */
@@ -251,9 +251,9 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Indicates, whether incoming presence notifications are filtered.
+     * Indicates, whether inbound presence notifications are filtered.
      *
-     * @return True, if incoming presence notifications are filtered.
+     * @return True, if inbound presence notifications are filtered.
      * @see #setFilterPresenceIn(boolean)
      */
     public boolean isFilterPresenceIn() {
@@ -261,9 +261,9 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Indicates, whether incoming presence notifications are filtered.
+     * Indicates, whether inbound presence notifications are filtered.
      *
-     * @param filterPresenceIn True, if incoming presence notifications are filtered.
+     * @param filterPresenceIn True, if inbound presence notifications are filtered.
      * @deprecated Use {@link #filterPresenceIn()}
      */
     @Deprecated
@@ -282,9 +282,9 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Indicates, whether outgoing presence notifications are filtered.
+     * Indicates, whether outbound presence notifications are filtered.
      *
-     * @return True, if outgoing presence notifications are filtered.
+     * @return True, if outbound presence notifications are filtered.
      * @see #setFilterPresenceOut(boolean)
      */
     public boolean isFilterPresenceOut() {
@@ -292,9 +292,9 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Indicates, whether outgoing presence notifications are filtered.
+     * Indicates, whether outbound presence notifications are filtered.
      *
-     * @param filterPresenceOut True, if outgoing presence notifications are filtered.
+     * @param filterPresenceOut True, if outbound presence notifications are filtered.
      * @see #isFilterPresenceOut()
      * @deprecated Use {@link #filterPresenceOut()}
      */

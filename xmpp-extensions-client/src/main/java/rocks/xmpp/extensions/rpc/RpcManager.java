@@ -43,9 +43,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This manager allows you to call remote procedures and handle incoming calls, if enabled.
+ * This manager allows you to call remote procedures and handle inbound calls, if enabled.
  * <p>
- * By default this manager is disabled. If you want to support RPC (i.e. handle incoming calls), {@linkplain #setEnabled(boolean) enable} it and {@linkplain #setRpcHandler(RpcHandler) set a RPC handler}, which allows you to handle incoming calls.
+ * By default this manager is disabled. If you want to support RPC (i.e. handle inbound calls), {@linkplain #setEnabled(boolean) enable} it and {@linkplain #setRpcHandler(RpcHandler) set a RPC handler}, which allows you to handle inbound calls.
  * </p>
  *
  * @author Christian Schudt
@@ -76,7 +76,7 @@ public final class RpcManager extends ExtensionManager {
             @Override
             protected IQ processRequest(IQ iq) {
                 Rpc rpc = iq.getExtension(Rpc.class);
-                // If there's an incoming RPC
+                // If there's an inbound RPC
                 RpcHandler rpcHandler1;
                 synchronized (this) {
                     rpcHandler1 = rpcHandler;

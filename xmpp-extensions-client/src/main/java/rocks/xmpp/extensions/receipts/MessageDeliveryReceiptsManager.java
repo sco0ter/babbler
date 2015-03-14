@@ -46,11 +46,11 @@ import java.util.logging.Logger;
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.
  * <p>
- * This manager automatically adds message delivery requests to outgoing messages, if enabled.
+ * This manager automatically adds message delivery requests to outbound messages, if enabled.
  * If a message has been received by the recipient, registered listeners will be notified about the receipt.
  * </p>
  * <p>
- * If an incoming message contains a delivery receipt request, a receipt is automatically sent back to the requesting entity.
+ * If an inbound message contains a delivery receipt request, a receipt is automatically sent back to the requesting entity.
  * </p>
  * <p>
  * Note that messages must contain an id, in order to track receipts. If a message does not contain an id, requests won't be added.

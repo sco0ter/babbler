@@ -83,7 +83,7 @@ public final class MultiUserChatManager extends ExtensionManager {
             }
         });
 
-        // Listen for incoming invitations.
+        // Listen for inbound invitations.
         xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
@@ -117,7 +117,7 @@ public final class MultiUserChatManager extends ExtensionManager {
     }
 
     /**
-     * Adds an invitation listener, which allows to listen for incoming multi-user chat invitations.
+     * Adds an invitation listener, which allows to listen for inbound multi-user chat invitations.
      *
      * @param invitationListener The listener.
      * @see #removeInvitationListener(InvitationListener)

@@ -218,7 +218,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                 if (sessionId.equals(e.getSessionId())) {
                     lock.lock();
                     try {
-                        // Auto-accept the incoming stream
+                        // Auto-accept the inbound stream
                         byteStreamSessions[0] = e.accept();
                         // If no exception occurred during stream method negotiation, notify the waiting thread.
                         byteStreamOpened.signal();

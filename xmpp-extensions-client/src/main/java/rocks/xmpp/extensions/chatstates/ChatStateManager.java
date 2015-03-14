@@ -101,10 +101,10 @@ public final class ChatStateManager extends ExtensionManager {
                     Message message = e.getMessage();
                     // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".
                     if (message.getType() == AbstractMessage.Type.CHAT || message.getType() == AbstractMessage.Type.GROUPCHAT) {
-                        // For outgoing messages append <active/>.
+                        // For outbound messages append <active/>.
                         boolean containsChatState = message.getExtension(ChatState.class) != null;
                         if (!e.isInbound()) {
-                            // Append an <active/> chat state to every outgoing content message, if it doesn't contain a chat state yet
+                            // Append an <active/> chat state to every outbound content message, if it doesn't contain a chat state yet
                             // and the recipient supports chat states or it is unknown if he supports them.
                             if (!containsChatState) {
                                 // If either support of chat states is unknown (== null) or it's known to be supported (== true), include an active chat state.

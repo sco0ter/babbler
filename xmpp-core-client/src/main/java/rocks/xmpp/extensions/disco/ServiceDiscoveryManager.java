@@ -69,7 +69,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * <p>Enabled extensions are automatically added to the list of features by their respective manager class.
  * Disabled extensions are removed.</p>
  * <p>
- * This class automatically manages incoming service discovery requests by responding with a list of enabled extensions (features).
+ * This class automatically manages inbound service discovery requests by responding with a list of enabled extensions (features).
  * </p>
  *
  * @author Christian Schudt

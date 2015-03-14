@@ -30,7 +30,7 @@ import rocks.xmpp.extensions.rpc.model.Value;
 import java.util.List;
 
 /**
- * Handles an incoming remote procedure call.
+ * Handles an inbound remote procedure call.
  *
  * @author Christian Schudt
  * @see RpcManager#setRpcHandler(rocks.xmpp.extensions.rpc.RpcHandler)

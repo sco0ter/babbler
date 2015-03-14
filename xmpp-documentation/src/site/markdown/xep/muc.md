@@ -94,13 +94,11 @@ chatRoom.addOccupantListener(new OccupantListener() {
     }
 });
 
-chatRoom.addMessageListener(new MessageListener() {
+chatRoom.addInboundMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
         Message message = e.getMessage();
-        if (e.isInbound()) {
-            System.out.println(String.format("%s: %s", message.getFrom().getResource(), message.getBody()));
-        }
+        System.out.println(String.format("%s: %s", message.getFrom().getResource(), message.getBody()));
     }
 });
 

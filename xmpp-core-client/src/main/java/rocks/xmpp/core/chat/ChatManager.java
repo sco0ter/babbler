@@ -168,8 +168,8 @@ public final class ChatManager extends Manager {
         chatSessionListeners.remove(chatSessionListener);
     }
 
-    private void notifyChatSessionCreated(ChatSession chatSession, boolean createdByIncomingMessage) {
-        ChatSessionEvent chatSessionEvent = new ChatSessionEvent(this, chatSession, createdByIncomingMessage);
+    private void notifyChatSessionCreated(ChatSession chatSession, boolean createdByInboundMessage) {
+        ChatSessionEvent chatSessionEvent = new ChatSessionEvent(this, chatSession, createdByInboundMessage);
         for (ChatSessionListener chatSessionListener : chatSessionListeners) {
             try {
                 chatSessionListener.chatSessionCreated(chatSessionEvent);
@@ -191,7 +191,7 @@ public final class ChatManager extends Manager {
         }
     }
 
-    private final ChatSession buildChatSession(final Jid chatPartner, final String threadId, final XmppSession xmppSession, final boolean isIncoming) {
+    private final ChatSession buildChatSession(final Jid chatPartner, final String threadId, final XmppSession xmppSession, final boolean inbound) {
         Jid contact = chatPartner.asBareJid();
         // If there are no chat sessions with that contact yet, put the contact into the map.
         if (!chatSessions.containsKey(contact)) {
@@ -201,7 +201,7 @@ public final class ChatManager extends Manager {
         if (!chatSessionMap.containsKey(threadId)) {
             ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession);
             chatSessionMap.put(threadId, chatSession);
-            notifyChatSessionCreated(chatSession, isIncoming);
+            notifyChatSessionCreated(chatSession, inbound);
         }
         return chatSessionMap.get(threadId);
     }

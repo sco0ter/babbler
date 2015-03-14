@@ -34,7 +34,7 @@ import java.util.Objects;
 /**
  * This manager allows to correct last sent messages as specified by <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>.
  * <p>
- * By default this manager is disabled. If you support last message correction, explicitly enable it and check incoming messages for the {@link rocks.xmpp.extensions.messagecorrect.model.Replace} extension.
+ * By default this manager is disabled. If you support last message correction, explicitly enable it and check inbound messages for the {@link rocks.xmpp.extensions.messagecorrect.model.Replace} extension.
  * </p>
  * <h3>Advertising support for message correction</h3>
  * <pre><code>

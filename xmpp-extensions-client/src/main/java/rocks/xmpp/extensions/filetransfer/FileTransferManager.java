@@ -216,7 +216,7 @@ public final class FileTransferManager extends ExtensionManager {
     }
 
     /**
-     * Adds a file transfer listener, which allows to listen for incoming file transfer requests.
+     * Adds a file transfer listener, which allows to listen for inbound file transfer requests.
      *
      * @param fileTransferOfferListener The listener.
      * @see #removeFileTransferOfferListener(FileTransferOfferListener)

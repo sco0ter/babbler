@@ -36,12 +36,12 @@ import rocks.xmpp.extensions.attention.model.Attention;
  * <p><cite><a href="http://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a></cite></p>
  * <p>This feature is known as 'nudge' or 'buzz' in some non-XMPP IM protocols.</p>
  * </blockquote>
- * <p>If you want to listen for incoming attention requests, listen for incoming messages and check if they have the {@link rocks.xmpp.extensions.attention.model.Attention} extension.
+ * <p>If you want to listen for inbound attention requests, listen for inbound messages and check if they have the {@link rocks.xmpp.extensions.attention.model.Attention} extension.
  * </p>
  * <h3>Sample</h3>
  * <pre>
  * <code>
- * xmppSession.addMessageListener(new MessageListener() {
+ * xmppSession.addInboundMessageListener(new MessageListener() {
  *     {@literal @}Override
  *     public void handleMessage(MessageEvent e) {
  *         if (e.isInbound() &amp;&amp; e.getMessage().getExtension(Attention.class) != null) {

@@ -35,6 +35,14 @@ public abstract class IntegrationTest {
 
     public static final String HOSTNAME = "localhost";
 
+    public static final String USER_1 = "111";
+
+    public static final String PASSWORD_1 = "111";
+
+    public static final String USER_2 = "222";
+
+    public static final String PASSWORD_2 = "222";
+
     static {
         BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
                 .hostname(HOSTNAME)
@@ -45,6 +53,7 @@ public abstract class IntegrationTest {
         TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
                 .hostname(HOSTNAME)
                 .port(5222)
+                .secure(false)
                 .build();
         TcpConnectionConfiguration.setDefault(tcpConnectionConfiguration);
     }

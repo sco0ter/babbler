@@ -34,18 +34,10 @@ import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
-import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.UUID;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Christian Schudt
@@ -94,87 +86,5 @@ public class IbbTest extends ExtensionTest {
         if (!rejected) {
             Assert.fail("Should have been rejected");
         }
-    }
-
-    //@Test
-    // Runs locally, but not on CI server...
-    public void testInBandBytestreamManager() throws IOException {
-        MockServer mockServer = new MockServer();
-        final Lock lock = new ReentrantLock();
-        final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        final XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
-        final Condition condition = lock.newCondition();
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        new Thread() {
-            @Override
-            public void run() {
-                InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getManager(InBandByteStreamManager.class);
-                inBandBytestreamManager2.addByteStreamListener(new ByteStreamListener() {
-                    @Override
-                    public void byteStreamRequested(final ByteStreamEvent e) {
-                        final ByteStreamSession ibbSession;
-
-                        try {
-                            ibbSession = e.accept();
-
-                            new Thread() {
-                                @Override
-                                public void run() {
-
-                                    InputStream inputStream;
-                                    try {
-                                        inputStream = ibbSession.getInputStream();
-
-                                        int b;
-                                        while ((b = inputStream.read()) > -1) {
-                                            outputStream.write(b);
-                                        }
-                                        outputStream.flush();
-                                        outputStream.close();
-                                        inputStream.close();
-
-                                    } catch (IOException e1) {
-                                        e1.printStackTrace();
-                                    } finally {
-                                        try {
-                                            lock.lock();
-                                            condition.signal();
-                                        } finally {
-                                            lock.unlock();
-                                        }
-                                    }
-                                }
-                            }.start();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                });
-
-                InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getManager(InBandByteStreamManager.class);
-                ByteStreamSession ibbSession;
-                try {
-                    ibbSession = inBandBytestreamManager1.initiateSession(JULIET, "sid", 4096);
-                    OutputStream os = ibbSession.getOutputStream();
-                    os.write(new byte[]{1, 2, 3, 4});
-                    os.flush();
-                    os.close();
-                } catch (IOException | XmppException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-
-
-        try {
-            lock.lock();
-            condition.await();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
-        }
-        Assert.assertEquals(outputStream.toByteArray(), new byte[]{1, 2, 3, 4});
     }
 }

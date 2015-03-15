@@ -401,7 +401,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 @Override
                 public boolean accept(Presence presence) {
                     Jid room = presence.getFrom().asBareJid();
-                    return room.equals(roomJid) && isSelfPresence(presence);
+                    return presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
                 }
             });
         } catch (XmppException e) {
@@ -608,9 +608,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Exits the room.
      *
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    public void exit() {
+    public void exit() throws XmppException {
         exit(null);
     }
 
@@ -618,14 +620,22 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Exits the room with a custom message.
      *
      * @param message The exit message.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    public synchronized void exit(String message) {
+    public synchronized void exit(String message) throws XmppException {
 
         if (!entered) {
             throw new IllegalStateException("You can't exit a room, when you didn't enter it.");
         }
-        xmppSession.send(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message));
+        xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), new StanzaFilter<Presence>() {
+            @Override
+            public boolean accept(Presence presence) {
+                Jid room = presence.getFrom().asBareJid();
+                return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
+            }
+        });
         userHasExited();
 
         nick = null;

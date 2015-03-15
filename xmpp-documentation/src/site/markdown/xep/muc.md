@@ -26,7 +26,7 @@ A chat service allows you to do two things:
 First, discovering public chat rooms hosted by this service:
 
 ```java
-List<ChatRoom> publicRooms = chatService.getPublicRooms();
+List<ChatRoom> publicRooms = chatService.discoverRooms();
 ```
 
 or second - if you know an existing room or want to create a new one - creating a new chat room directly:

@@ -49,15 +49,17 @@ public abstract class Chat {
      * Sends a message to the chat.
      *
      * @param message The message.
+     * @return The message, which has been sent.
      */
-    public abstract void sendMessage(String message);
+    public abstract Message sendMessage(String message);
 
     /**
      * Sends a message to the chat.
      *
      * @param message The message.
+     * @return The message, which has been sent.
      */
-    public abstract void sendMessage(Message message);
+    public abstract Message sendMessage(Message message);
 
     /**
      * Adds a message listener, which allows to listen for inbound messages.

@@ -434,18 +434,24 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Sends a message to the room.
      *
      * @param message The message text.
+     * @return The sent message.
      */
-    public void sendMessage(String message) {
-        xmppSession.send(new Message(roomJid, Message.Type.GROUPCHAT, message));
+    public Message sendMessage(String message) {
+        Message m = new Message(roomJid, Message.Type.GROUPCHAT, message);
+        xmppSession.send(m);
+        return m;
     }
 
     /**
      * Sends a message to the room.
      *
      * @param message The message.
+     * @return The sent message.
      */
-    public void sendMessage(Message message) {
-        xmppSession.send(new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(), message.getThread(), message.getParentThread(), message.getId(), message.getFrom(), message.getLanguage(), message.getExtensions(), message.getError()));
+    public Message sendMessage(Message message) {
+        Message m = new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(), message.getThread(), message.getParentThread(), message.getId(), message.getFrom(), message.getLanguage(), message.getExtensions(), message.getError());
+        xmppSession.send(m);
+        return m;
     }
 
     /**

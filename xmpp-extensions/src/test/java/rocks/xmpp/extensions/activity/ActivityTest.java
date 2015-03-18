@@ -57,6 +57,7 @@ public class ActivityTest extends XmlTest {
         Assert.assertEquals(activity.getText(), "My nurse's birthday!");
         Assert.assertEquals(activity.getCategory(), Category.RELAXING);
         Assert.assertTrue(activity.getSpecificActivity() instanceof SpecificActivity.Partying);
+        Assert.assertEquals(activity.toString(), "relaxing / partying (My nurse's birthday!)");
     }
 
     @Test

@@ -125,7 +125,7 @@ public final class Activity {
      *
      * @return The text.
      */
-    public String getText() {
+    public final String getText() {
         return text;
     }
 
@@ -134,7 +134,7 @@ public final class Activity {
      *
      * @return The category.
      */
-    public Category getCategory() {
+    public final Category getCategory() {
         return category != null ? category.category : null;
     }
 
@@ -143,8 +143,24 @@ public final class Activity {
      *
      * @return The activity.
      */
-    public SpecificActivity getSpecificActivity() {
+    public final SpecificActivity getSpecificActivity() {
         return category != null ? category.specificActivity : null;
+    }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (category != null) {
+            sb.append(category);
+            if (category.specificActivity != null) {
+                sb.append(" / ").append(category.specificActivity);
+            }
+            if (text != null) {
+                sb.append(" (").append(text).append(")");
+            }
+            return sb.toString();
+        }
+        return super.toString();
     }
 
     /**
@@ -168,6 +184,11 @@ public final class Activity {
         private AbstractCategory(Category category, SpecificActivity specificActivity) {
             this.category = category;
             this.specificActivity = specificActivity;
+        }
+
+        @Override
+        public final String toString() {
+            return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
         }
 
         /**

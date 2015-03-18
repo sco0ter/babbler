@@ -251,7 +251,7 @@ public final class Mood {
      *
      * @return The description.
      */
-    public String getText() {
+    public final String getText() {
         return text;
     }
 
@@ -260,8 +260,25 @@ public final class Mood {
      *
      * @return The mood value.
      */
-    public Value getValue() {
+    public final Value getValue() {
         return value;
+    }
+
+    /**
+     * Gets the mood value.
+     *
+     * @return The mood value.
+     */
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (value != null) {
+            sb.append(value);
+        }
+        if (text != null) {
+            sb.append(" (").append(text).append(")");
+        }
+        return sb.toString();
     }
 
     /**
@@ -284,8 +301,13 @@ public final class Mood {
          *
          * @return The specific mood.
          */
-        public Object getSpecificMood() {
+        public final Object getSpecificMood() {
             return specificMood;
+        }
+
+        @Override
+        public final String toString() {
+            return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
         }
     }
 

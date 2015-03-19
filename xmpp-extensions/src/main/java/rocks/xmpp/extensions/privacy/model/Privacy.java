@@ -31,14 +31,17 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the the {@code <query/>} element in the {@code jabber:iq:privacy} namespace.
  * <p>
  * This class contains information about the active and default list and holds the privacy lists.
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
@@ -57,16 +60,17 @@ public final class Privacy {
 
     @XmlJavaTypeAdapter(ActiveNameAdapter.class)
     @XmlElement(name = "active")
-    private String activeName;
+    private final String activeName;
 
     @XmlJavaTypeAdapter(DefaultNameAdapter.class)
     @XmlElement(name = "default")
-    private String defaultName;
+    private final String defaultName;
 
     /**
      * Creates an empty privacy element.
      */
     public Privacy() {
+        this(null, null, null);
     }
 
     /**
@@ -75,47 +79,60 @@ public final class Privacy {
      * @param privacyLists The privacy list(s).
      */
     public Privacy(PrivacyList... privacyLists) {
-        this.privacyLists.addAll(Arrays.asList(privacyLists));
+        this(null, null, Arrays.asList(privacyLists));
+    }
+
+    /**
+     * Creates a privacy element with one or more privacy lists and an active and default name.
+     *
+     * @param activeName   The active name.
+     * @param defaultName  The default name.
+     * @param privacyLists The privacy list(s).
+     */
+    public Privacy(String activeName, String defaultName, Collection<PrivacyList> privacyLists) {
+        this.activeName = activeName;
+        this.defaultName = defaultName;
+        if (privacyLists != null) {
+            this.privacyLists.addAll(privacyLists);
+        }
+    }
+
+    /**
+     * Creates a privacy element with an active list.
+     *
+     * @param active The active list name. Pass an empty string if you want to decline the use of an active list.
+     * @return The privacy element.
+     */
+    public static Privacy withActive(String active) {
+        return new Privacy(Objects.requireNonNull(active), null, null);
+    }
+
+    /**
+     * Creates a privacy element with a default list.
+     *
+     * @param defaultName The default list name. Pass an empty string if you want to decline the use of a default list.
+     * @return The privacy element.
+     */
+    public static Privacy withDefault(String defaultName) {
+        return new Privacy(null, Objects.requireNonNull(defaultName), null);
     }
 
     /**
      * Gets the active list name.
      *
      * @return The active list name.
-     * @see #setActiveName(String)
      */
-    public String getActiveName() {
+    public final String getActiveName() {
         return activeName;
-    }
-
-    /**
-     * Sets the active list name.
-     *
-     * @param activeName The active list name.
-     * @see #getActiveName()
-     */
-    public void setActiveName(String activeName) {
-        this.activeName = activeName;
     }
 
     /**
      * Sets the default list name.
      *
      * @return The default list name.
-     * @see #setDefaultName(String)
      */
-    public String getDefaultName() {
+    public final String getDefaultName() {
         return defaultName;
-    }
-
-    /**
-     * Gets the default list name.
-     *
-     * @param defaultName The default list name.
-     * @see #getDefaultName()
-     */
-    public void setDefaultName(String defaultName) {
-        this.defaultName = defaultName;
     }
 
     /**
@@ -123,12 +140,12 @@ public final class Privacy {
      *
      * @return The privacy lists.
      */
-    public List<PrivacyList> getPrivacyLists() {
+    public final List<PrivacyList> getPrivacyLists() {
         return Collections.unmodifiableList(privacyLists);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return privacyLists.toString();
     }
 
@@ -145,7 +162,7 @@ public final class Privacy {
     private static final class ActiveNameAdapter extends XmlAdapter<Active, String> {
 
         @Override
-        public String unmarshal(Active v) throws Exception {
+        public final String unmarshal(Active v) throws Exception {
             if (v != null) {
                 return v.name;
             }
@@ -153,7 +170,7 @@ public final class Privacy {
         }
 
         @Override
-        public Active marshal(String v) throws Exception {
+        public final Active marshal(String v) throws Exception {
             if (v != null) {
                 Active active = new Active();
                 active.name = v.isEmpty() ? null : v;
@@ -166,7 +183,7 @@ public final class Privacy {
     private static final class DefaultNameAdapter extends XmlAdapter<Default, String> {
 
         @Override
-        public String unmarshal(Default v) throws Exception {
+        public final String unmarshal(Default v) throws Exception {
             if (v != null) {
                 return v.name;
             }
@@ -174,7 +191,7 @@ public final class Privacy {
         }
 
         @Override
-        public Default marshal(String v) throws Exception {
+        public final Default marshal(String v) throws Exception {
             if (v != null) {
                 Default def = new Default();
                 def.name = v.isEmpty() ? null : v;

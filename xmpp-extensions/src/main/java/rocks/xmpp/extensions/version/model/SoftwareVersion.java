@@ -29,6 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:version} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>
@@ -43,15 +45,16 @@ public final class SoftwareVersion {
     public static final String NAMESPACE = "jabber:iq:version";
 
     @XmlElement
-    private String name;
+    private final String name;
 
     @XmlElement
-    private String version;
+    private final String version;
 
     @XmlElement
-    private String os;
+    private final String os;
 
     public SoftwareVersion() {
+        this(null, null, null);
     }
 
     /**
@@ -88,7 +91,7 @@ public final class SoftwareVersion {
      *
      * @return The operating system.
      */
-    public String getOs() {
+    public final String getOs() {
         return os;
     }
 
@@ -97,7 +100,7 @@ public final class SoftwareVersion {
      *
      * @return The version.
      */
-    public String getVersion() {
+    public final String getVersion() {
         return version;
     }
 
@@ -106,12 +109,12 @@ public final class SoftwareVersion {
      *
      * @return The software's name.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         if (name != null) {
             sb.append(name);

@@ -33,11 +33,14 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/rosterx} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
@@ -59,7 +62,7 @@ public final class ContactExchange {
      *
      * @return The items.
      */
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         return Collections.unmodifiableList(items);
     }
 
@@ -69,25 +72,28 @@ public final class ContactExchange {
     public static final class Item {
 
         @XmlAttribute
-        private Action action;
+        private final Action action;
 
         @XmlJavaTypeAdapter(JidAdapter.class)
         @XmlAttribute
-        private Jid jid;
+        private final Jid jid;
 
         @XmlAttribute
-        private String name;
+        private final String name;
 
         @XmlElement(name = "group")
-        private List<String> groups = new ArrayList<>();
+        private final List<String> groups = new ArrayList<>();
 
         private Item() {
+            this(null, null, null, null);
         }
 
-        public Item(Jid jid, String name, List<String> groups, Action action) {
+        public Item(Jid jid, String name, Collection<String> groups, Action action) {
             this.jid = jid;
             this.name = name;
-            this.groups.addAll(groups);
+            if (groups != null) {
+                this.groups.addAll(groups);
+            }
             this.action = action;
         }
 
@@ -96,7 +102,7 @@ public final class ContactExchange {
          *
          * @return The JID.
          */
-        public Jid getJid() {
+        public final Jid getJid() {
             return jid;
         }
 
@@ -105,7 +111,7 @@ public final class ContactExchange {
          *
          * @return The action.
          */
-        public Action getAction() {
+        public final Action getAction() {
             return action;
         }
 
@@ -114,7 +120,7 @@ public final class ContactExchange {
          *
          * @return The name.
          */
-        public String getName() {
+        public final String getName() {
             return name;
         }
 
@@ -123,7 +129,7 @@ public final class ContactExchange {
          *
          * @return The roster groups.
          */
-        public List<String> getGroups() {
+        public final List<String> getGroups() {
             return Collections.unmodifiableList(groups);
         }
 

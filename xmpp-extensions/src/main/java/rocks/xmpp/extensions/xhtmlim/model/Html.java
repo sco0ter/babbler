@@ -45,6 +45,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 /**
+ * The implementation of the {@code <html/>} element in the {@code http://jabber.org/protocol/xhtml-im} namespace.
+ * <p>
+ * This class is immutable.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "html")
@@ -56,9 +60,10 @@ public final class Html {
     public static final String NAMESPACE = "http://jabber.org/protocol/xhtml-im";
 
     @XmlElement(name = "body", namespace = "http://www.w3.org/1999/xhtml")
-    private Object body;
+    private final Object body;
 
     private Html() {
+        this.body = null;
     }
 
     /**
@@ -96,7 +101,7 @@ public final class Html {
      *
      * @return The body.
      */
-    public Element getBody() {
+    public final Element getBody() {
         return (Element) body;
     }
 
@@ -105,7 +110,7 @@ public final class Html {
      *
      * @return The XHTML content as string.
      */
-    public String getContent() {
+    public final String getContent() {
         if (body != null) {
             try {
                 TransformerFactory transFactory = TransformerFactory.newInstance();
@@ -121,5 +126,10 @@ public final class Html {
             }
         }
         return null;
+    }
+
+    @Override
+    public final String toString() {
+        return getContent();
     }
 }

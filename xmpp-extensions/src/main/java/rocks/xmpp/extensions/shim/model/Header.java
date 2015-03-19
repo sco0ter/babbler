@@ -32,6 +32,8 @@ import java.util.Date;
 
 /**
  * A header element which hold stanza header information or internet metadata.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
@@ -41,12 +43,13 @@ import java.util.Date;
 public final class Header {
 
     @XmlAttribute(name = "name")
-    private String name;
+    private final String name;
 
     @XmlValue
-    private String value;
+    private final String value;
 
     private Header() {
+        this(null, null);
     }
 
     /**
@@ -87,7 +90,7 @@ public final class Header {
      *
      * @return The header.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -96,12 +99,12 @@ public final class Header {
      *
      * @return The header.
      */
-    public String getValue() {
+    public final String getValue() {
         return value;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return name + ": " + value;
     }
 }

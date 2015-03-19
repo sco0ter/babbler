@@ -198,7 +198,7 @@ public final class GeoLocation {
      * @return The accuracy.
      * @see #setAccuracy(Double)
      */
-    public Double getAccuracy() {
+    public final Double getAccuracy() {
         return accuracy;
     }
 
@@ -220,7 +220,7 @@ public final class GeoLocation {
      * @return The altitude.
      * @see #setAltitude(Double)
      */
-    public Double getAltitude() {
+    public final Double getAltitude() {
         return altitude;
     }
 
@@ -242,7 +242,7 @@ public final class GeoLocation {
      * @return The area.
      * @see #setArea(String)
      */
-    public String getArea() {
+    public final String getArea() {
         return area;
     }
 
@@ -264,7 +264,7 @@ public final class GeoLocation {
      * @return The bearing.
      * @see #setBearing(Double)
      */
-    public Double getBearing() {
+    public final Double getBearing() {
         return bearing;
     }
 
@@ -286,7 +286,7 @@ public final class GeoLocation {
      * @return The building.
      * @see #setBuilding(String)
      */
-    public String getBuilding() {
+    public final String getBuilding() {
         return building;
     }
 
@@ -308,7 +308,7 @@ public final class GeoLocation {
      * @return The country.
      * @see #setCountry(String)
      */
-    public String getCountry() {
+    public final String getCountry() {
         return country;
     }
 
@@ -330,7 +330,7 @@ public final class GeoLocation {
      * @return The country code.
      * @see #setCountryCode(String)
      */
-    public String getCountryCode() {
+    public final String getCountryCode() {
         return countryCode;
     }
 
@@ -352,7 +352,7 @@ public final class GeoLocation {
      * @return The GPS datum.
      * @see #setDatum(String)
      */
-    public String getDatum() {
+    public final String getDatum() {
         return datum;
     }
 
@@ -374,7 +374,7 @@ public final class GeoLocation {
      * @return The description.
      * @see #setDescription(String)
      */
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
@@ -396,7 +396,7 @@ public final class GeoLocation {
      * @return The floor.
      * @see #setFloor(String)
      */
-    public String getFloor() {
+    public final String getFloor() {
         return floor;
     }
 
@@ -418,7 +418,7 @@ public final class GeoLocation {
      * @return The latitude.
      * @see #setLatitude(Double)
      */
-    public Double getLatitude() {
+    public final Double getLatitude() {
         return latitude;
     }
 
@@ -440,7 +440,7 @@ public final class GeoLocation {
      * @return The locality.
      * @see #setLocality(String)
      */
-    public String getLocality() {
+    public final String getLocality() {
         return locality;
     }
 
@@ -462,7 +462,7 @@ public final class GeoLocation {
      * @return The longitude.
      * @see #setLongitude(Double)
      */
-    public Double getLongitude() {
+    public final Double getLongitude() {
         return longitude;
     }
 
@@ -484,7 +484,7 @@ public final class GeoLocation {
      * @return The postal code.
      * @see #setPostalCode(String)
      */
-    public String getPostalCode() {
+    public final String getPostalCode() {
         return postalCode;
     }
 
@@ -506,7 +506,7 @@ public final class GeoLocation {
      * @return The region.
      * @see #setRegion(String)
      */
-    public String getRegion() {
+    public final String getRegion() {
         return region;
     }
 
@@ -528,7 +528,7 @@ public final class GeoLocation {
      * @return The room.
      * @see #setRoom(String)
      */
-    public String getRoom() {
+    public final String getRoom() {
         return room;
     }
 
@@ -550,7 +550,7 @@ public final class GeoLocation {
      * @return The speed.
      * @see #setSpeed(Double)
      */
-    public Double getSpeed() {
+    public final Double getSpeed() {
         return speed;
     }
 
@@ -572,7 +572,7 @@ public final class GeoLocation {
      * @return The street.
      * @see #setStreet(String)
      */
-    public String getStreet() {
+    public final String getStreet() {
         return street;
     }
 
@@ -594,7 +594,7 @@ public final class GeoLocation {
      * @return The text.
      * @see #setText(String)
      */
-    public String getText() {
+    public final String getText() {
         return text;
     }
 
@@ -616,7 +616,7 @@ public final class GeoLocation {
      * @return The timestamp.
      * @see #setTimestamp(java.util.Date)
      */
-    public Date getTimestamp() {
+    public final Date getTimestamp() {
         return timestamp;
     }
 
@@ -638,7 +638,7 @@ public final class GeoLocation {
      * @return The URI.
      * @see #setUri(java.net.URI)
      */
-    public URI getUri() {
+    public final URI getUri() {
         return uri;
     }
 
@@ -660,7 +660,7 @@ public final class GeoLocation {
      * @return The language.
      * @see #setLanguage(String)
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         return language;
     }
 
@@ -681,7 +681,7 @@ public final class GeoLocation {
      *
      * @return The time zone.
      */
-    public TimeZone getTimeZone() {
+    public final TimeZone getTimeZone() {
         return timeZone;
     }
 
@@ -697,7 +697,7 @@ public final class GeoLocation {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder("Geolocation: ");
         if (accuracy != null) {
             sb.append("Accuracy: ");

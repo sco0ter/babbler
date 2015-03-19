@@ -37,6 +37,8 @@ import java.util.Objects;
 
 /**
  * The implementation of the {@code <address/>} element in the {@code urn:xmpp:reach:0} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>
@@ -62,16 +64,16 @@ public final class Address {
         this.descriptions.addAll(Arrays.asList(descriptions));
     }
 
-    public URI getUri() {
+    public final URI getUri() {
         return uri;
     }
 
-    public List<Description> getDescriptions() {
+    public final List<Description> getDescriptions() {
         return Collections.unmodifiableList(descriptions);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -85,12 +87,12 @@ public final class Address {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(descriptions, uri);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return uri != null ? uri.toString() : super.toString();
     }
 
@@ -100,12 +102,13 @@ public final class Address {
     public static final class Description {
 
         @XmlValue
-        private String value;
+        private final String value;
 
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private String language;
+        private final String language;
 
         private Description() {
+            this(null, null);
         }
 
         /**
@@ -122,7 +125,7 @@ public final class Address {
          *
          * @return The description.
          */
-        public String getValue() {
+        public final String getValue() {
             return value;
         }
 
@@ -131,12 +134,12 @@ public final class Address {
          *
          * @return The language.
          */
-        public String getLanguage() {
+        public final String getLanguage() {
             return language;
         }
 
         @Override
-        public boolean equals(Object o) {
+        public final boolean equals(Object o) {
             if (o == this) {
                 return true;
             }
@@ -150,12 +153,12 @@ public final class Address {
         }
 
         @Override
-        public int hashCode() {
+        public final int hashCode() {
             return Objects.hash(value, language);
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return value;
         }
     }

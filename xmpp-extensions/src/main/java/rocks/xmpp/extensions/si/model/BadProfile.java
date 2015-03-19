@@ -49,7 +49,7 @@ final class BadProfile {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "<si:bad-profile/>";
     }
 }

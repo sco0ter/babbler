@@ -37,6 +37,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <offline/>} element in the {@code http://jabber.org/protocol/offline} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>
@@ -54,20 +56,26 @@ public final class OfflineMessage {
     private final List<Item> items = new ArrayList<>();
 
     @XmlElement(name = "fetch")
-    private String fetch;
+    private final String fetch;
 
     @XmlElement(name = "purge")
-    private String purge;
+    private final String purge;
 
     public OfflineMessage() {
+        this.fetch = null;
+        this.purge = null;
     }
 
     public OfflineMessage(Item... item) {
-        items.addAll(Arrays.asList(item));
+        this.items.addAll(Arrays.asList(item));
+        this.fetch = null;
+        this.purge = null;
     }
 
     public OfflineMessage(Collection<Item> items) {
         this.items.addAll(items);
+        this.fetch = null;
+        this.purge = null;
     }
 
     public OfflineMessage(boolean fetch, boolean purge) {

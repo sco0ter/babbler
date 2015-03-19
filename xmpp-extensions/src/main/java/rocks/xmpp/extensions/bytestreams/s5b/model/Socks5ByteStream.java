@@ -139,7 +139,7 @@ public final class Socks5ByteStream {
      *
      * @return The stream hosts.
      */
-    public List<StreamHost> getStreamHosts() {
+    public final List<StreamHost> getStreamHosts() {
         return Collections.unmodifiableList(streamHosts);
     }
 
@@ -148,7 +148,7 @@ public final class Socks5ByteStream {
      *
      * @return The session id.
      */
-    public String getSessionId() {
+    public final String getSessionId() {
         return sid;
     }
 
@@ -157,7 +157,7 @@ public final class Socks5ByteStream {
      *
      * @return The used stream host.
      */
-    public Jid getStreamHostUsed() {
+    public final Jid getStreamHostUsed() {
         return streamHostUsed != null ? streamHostUsed.jid : null;
     }
 

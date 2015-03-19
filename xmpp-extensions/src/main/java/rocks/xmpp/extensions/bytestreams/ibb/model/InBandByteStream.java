@@ -47,13 +47,14 @@ public abstract class InBandByteStream {
     public static final String NAMESPACE = "http://jabber.org/protocol/ibb";
 
     @XmlAttribute
-    private String sid;
+    private final String sid;
 
     private InBandByteStream(String sid) {
         this.sid = sid;
     }
 
     private InBandByteStream() {
+        this.sid = null;
     }
 
     /**
@@ -61,12 +62,14 @@ public abstract class InBandByteStream {
      *
      * @return The session id.
      */
-    public String getSessionId() {
+    public final String getSessionId() {
         return sid;
     }
 
     /**
      * The implementation of the {@code <open/>} element in the {@code http://jabber.org/protocol/ibb} namespace.
+     * <p>
+     * This class is immutable.
      *
      * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
      * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
@@ -74,12 +77,14 @@ public abstract class InBandByteStream {
     @XmlRootElement
     public static final class Open extends InBandByteStream {
         @XmlAttribute(name = "block-size")
-        private int blockSize;
+        private final int blockSize;
 
         @XmlAttribute
-        private StanzaType stanza;
+        private final StanzaType stanza;
 
         private Open() {
+            this.blockSize = 0;
+            this.stanza = null;
         }
 
         /**
@@ -91,6 +96,7 @@ public abstract class InBandByteStream {
         public Open(int blockSize, String sessionId) {
             super(sessionId);
             this.blockSize = blockSize;
+            this.stanza = null;
         }
 
         /**
@@ -98,7 +104,7 @@ public abstract class InBandByteStream {
          *
          * @return The block size.
          */
-        public int getBlockSize() {
+        public final int getBlockSize() {
             return blockSize;
         }
 
@@ -107,7 +113,7 @@ public abstract class InBandByteStream {
          *
          * @return The stanza type.
          */
-        public StanzaType getStanzaType() {
+        public final StanzaType getStanzaType() {
             return stanza;
         }
 
@@ -130,6 +136,8 @@ public abstract class InBandByteStream {
 
     /**
      * The implementation of the {@code <data/>} element in the {@code http://jabber.org/protocol/ibb} namespace.
+     * <p>
+     * This class is immutable.
      *
      * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
      * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
@@ -138,15 +146,17 @@ public abstract class InBandByteStream {
     public static final class Data extends InBandByteStream {
 
         @XmlAttribute
-        private Integer seq;
+        private final Integer seq;
 
         @XmlValue
-        private byte[] bytes;
+        private final byte[] bytes;
 
         /**
          * Private constructor for unmarshalling.
          */
         private Data() {
+            this.seq = null;
+            this.bytes = null;
         }
 
         /**
@@ -167,7 +177,7 @@ public abstract class InBandByteStream {
          *
          * @return The sequence number.
          */
-        public int getSequence() {
+        public final int getSequence() {
             return seq;
         }
 
@@ -176,13 +186,15 @@ public abstract class InBandByteStream {
          *
          * @return The bytes.
          */
-        public byte[] getBytes() {
+        public final byte[] getBytes() {
             return bytes;
         }
     }
 
     /**
      * The implementation of the {@code <close/>} element in the {@code http://jabber.org/protocol/ibb} namespace.
+     * <p>
+     * This class is immutable.
      *
      * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
      * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>

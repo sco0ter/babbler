@@ -53,6 +53,6 @@ public class LastActivityTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         LastActivity lastActivity = iq.getExtension(LastActivity.class);
         Assert.assertNotNull(lastActivity);
-        Assert.assertEquals(lastActivity.getSeconds(), 903);
+        Assert.assertEquals(lastActivity.getSeconds(), Long.valueOf(903));
     }
 }

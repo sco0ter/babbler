@@ -32,6 +32,8 @@ import java.util.Date;
 
 /**
  * The implementation of the {@code <rule/>} element, used both in the {@code http://jabber.org/protocol/amp} namespace as well as in the {@code http://jabber.org/protocol/amp#errors} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
@@ -39,15 +41,18 @@ import java.util.Date;
  */
 public final class Rule {
     @XmlAttribute(name = "action")
-    private Action action;
+    private final Action action;
 
     @XmlAttribute(name = "condition")
-    private Condition condition;
+    private final Condition condition;
 
     @XmlAttribute(name = "value")
-    private String value;
+    private final String value;
 
     private Rule() {
+        this.action = null;
+        this.condition = null;
+        this.value = null;
     }
 
     /**
@@ -103,7 +108,7 @@ public final class Rule {
      *
      * @return The action.
      */
-    public Action getAction() {
+    public final Action getAction() {
         return action;
     }
 
@@ -112,7 +117,7 @@ public final class Rule {
      *
      * @return The condition.
      */
-    public Condition getCondition() {
+    public final Condition getCondition() {
         return condition;
     }
 
@@ -121,7 +126,7 @@ public final class Rule {
      *
      * @return The value.
      */
-    public String getValue() {
+    public final String getValue() {
         return value;
     }
 

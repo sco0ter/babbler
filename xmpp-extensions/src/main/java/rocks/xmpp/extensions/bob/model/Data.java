@@ -32,6 +32,8 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <data/>} element in the {@code urn:xmpp:bob} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
@@ -46,18 +48,22 @@ public final class Data {
     public static final String NAMESPACE = "urn:xmpp:bob";
 
     @XmlAttribute
-    private String cid;
+    private final String cid;
 
     @XmlAttribute(name = "max-age")
-    private Integer maxAge;
+    private final Integer maxAge;
 
     @XmlAttribute
-    private String type;
+    private final String type;
 
     @XmlValue
-    private byte[] bytes;
+    private final byte[] bytes;
 
     private Data() {
+        this.bytes = null;
+        this.cid = null;
+        this.type = null;
+        this.maxAge = null;
     }
 
     /**
@@ -66,7 +72,10 @@ public final class Data {
      * @param cid The contend id.
      */
     public Data(String cid) {
+        this.bytes = null;
         this.cid = cid;
+        this.type = null;
+        this.maxAge = null;
     }
 
     /**
@@ -80,6 +89,7 @@ public final class Data {
         this.bytes = bytes;
         this.cid = createContendId(bytes);
         this.type = type;
+        this.maxAge = null;
     }
 
     /**
@@ -115,7 +125,7 @@ public final class Data {
      *
      * @return The content id.
      */
-    public String getContentId() {
+    public final String getContentId() {
         return cid;
     }
 
@@ -124,17 +134,16 @@ public final class Data {
      *
      * @return The max age.
      */
-    public Integer getMaxAge() {
+    public final Integer getMaxAge() {
         return maxAge;
     }
-
 
     /**
      * The value of the 'type' attribute MUST match the syntax specified in <a href="http://tools.ietf.org/html/rfc2045">RFC 2045</a>. That is, the value MUST include a top-level media type, the "/" character, and a subtype; in addition, it MAY include one or more optional parameters (e.g., the "audio/ogg" MIME type in the example shown below includes a "codecs" parameter as specified in <a href="http://tools.ietf.org/html/rfc4281">RFC 4281</a>). The "type/subtype" string SHOULD be registered in the <a href="http://www.iana.org/assignments/media-types/media-types.xhtml">IANA MIME Media Types Registry</a>, but MAY be an unregistered or yet-to-be-registered value.
      *
      * @return The type.
      */
-    public String getType() {
+    public final String getType() {
         return type;
     }
 
@@ -143,7 +152,7 @@ public final class Data {
      *
      * @return The bytes.
      */
-    public byte[] getBytes() {
+    public final byte[] getBytes() {
         return bytes;
     }
 }

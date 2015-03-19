@@ -195,7 +195,7 @@ public abstract class StreamCompression {
          *
          * @return The compression method.
          */
-        public String getMethod() {
+        public final String getMethod() {
             return method;
         }
     }

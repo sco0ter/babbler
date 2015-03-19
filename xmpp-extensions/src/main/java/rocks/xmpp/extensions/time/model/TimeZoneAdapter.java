@@ -33,12 +33,12 @@ import java.util.TimeZone;
 public final class TimeZoneAdapter extends XmlAdapter<String, TimeZone> {
 
     @Override
-    public TimeZone unmarshal(String v) throws Exception {
+    public final TimeZone unmarshal(String v) throws Exception {
         return TimeZone.getTimeZone("GMT" + v);
     }
 
     @Override
-    public String marshal(TimeZone v) throws Exception {
+    public final String marshal(TimeZone v) throws Exception {
         int seconds = Math.abs(v.getRawOffset()) / 1000;
         int hours = seconds / 3600;
         int minutes = (seconds % 3600) / 60;

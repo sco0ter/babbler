@@ -48,7 +48,7 @@ public abstract class Bookmark implements Comparable<Bookmark> {
      *
      * @return The name.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -59,7 +59,7 @@ public abstract class Bookmark implements Comparable<Bookmark> {
      * @return The comparison result.
      */
     @Override
-    public int compareTo(Bookmark o) {
+    public final int compareTo(Bookmark o) {
         if (this == o) {
             return 0;
         }

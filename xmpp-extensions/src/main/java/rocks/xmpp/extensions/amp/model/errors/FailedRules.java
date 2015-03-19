@@ -37,6 +37,7 @@ import java.util.List;
  * <p>
  * One or more rules triggered the "error" action. This condition contains the triggered rules.
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
@@ -53,7 +54,7 @@ public final class FailedRules {
      *
      * @return The failed rules.
      */
-    public List<Rule> getRules() {
+    public final List<Rule> getRules() {
         return Collections.unmodifiableList(rules);
     }
 }

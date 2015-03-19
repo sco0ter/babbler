@@ -36,6 +36,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <metadata/>} element in the {@code urn:xmpp:avatar:metadata} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>
@@ -53,13 +55,15 @@ public final class AvatarMetadata {
     private final List<Info> infoList = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
-    private Object pointer;
+    private final Object pointer;
 
     private AvatarMetadata() {
+        this.pointer = null;
     }
 
     public AvatarMetadata(Info... info) {
         this.infoList.addAll(Arrays.asList(info));
+        this.pointer = null;
     }
 
     /**
@@ -67,43 +71,44 @@ public final class AvatarMetadata {
      *
      * @return The info list.
      */
-    public List<Info> getInfoList() {
+    public final List<Info> getInfoList() {
         return Collections.unmodifiableList(infoList);
     }
 
     /**
      * The implementation of the {@code <info/>} element in the {@code urn:xmpp:avatar:metadata} namespace.
+     * <p>
+     * This class is immutable.
      */
     public static final class Info {
 
         @XmlAttribute(name = "bytes")
-        private Integer bytes;
+        private final Integer bytes;
 
         @XmlAttribute(name = "id")
-        private String id;
+        private final String id;
 
         @XmlAttribute(name = "type")
-        private String type;
+        private final String type;
 
         @XmlAttribute(name = "url")
-        private URL url;
+        private final URL url;
 
         @XmlAttribute(name = "width")
-        private Integer width;
+        private final Integer width;
 
         @XmlAttribute(name = "height")
-        private Integer height;
+        private final Integer height;
 
         public Info() {
+            this(null, null, null);
         }
 
-        public Info(int bytes, String id, String type) {
-            this.bytes = bytes;
-            this.id = id;
-            this.type = type;
+        public Info(Integer bytes, String id, String type) {
+            this(bytes, id, type, null, null, null);
         }
 
-        public Info(int bytes, String id, String type, Integer width, Integer height, URL url) {
+        public Info(Integer bytes, String id, String type, Integer width, Integer height, URL url) {
             this.bytes = bytes;
             this.id = id;
             this.type = type;
@@ -117,7 +122,7 @@ public final class AvatarMetadata {
          *
          * @return The bytes.
          */
-        public Integer getBytes() {
+        public final Integer getBytes() {
             return bytes;
         }
 
@@ -126,7 +131,7 @@ public final class AvatarMetadata {
          *
          * @return The id.
          */
-        public String getId() {
+        public final String getId() {
             return id;
         }
 
@@ -135,7 +140,7 @@ public final class AvatarMetadata {
          *
          * @return The type.
          */
-        public String getType() {
+        public final String getType() {
             return type;
         }
 
@@ -144,7 +149,7 @@ public final class AvatarMetadata {
          *
          * @return The URL.
          */
-        public URL getUrl() {
+        public final URL getUrl() {
             return url;
         }
 
@@ -153,7 +158,7 @@ public final class AvatarMetadata {
          *
          * @return The width.
          */
-        public Integer getWidth() {
+        public final Integer getWidth() {
             return width;
         }
 
@@ -162,7 +167,7 @@ public final class AvatarMetadata {
          *
          * @return The height.
          */
-        public Integer getHeight() {
+        public final Integer getHeight() {
             return height;
         }
     }

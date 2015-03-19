@@ -36,6 +36,8 @@ import java.util.Map;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:rpc} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
@@ -91,7 +93,7 @@ public final class Rpc {
      *
      * @return The method call.
      */
-    public MethodCall getMethodCall() {
+    public final MethodCall getMethodCall() {
         return methodCall;
     }
 
@@ -100,7 +102,7 @@ public final class Rpc {
      *
      * @return The method response.
      */
-    public MethodResponse getMethodResponse() {
+    public final MethodResponse getMethodResponse() {
         return methodResponse;
     }
 
@@ -115,9 +117,10 @@ public final class Rpc {
         private final List<Parameter> parameters = new ArrayList<>();
 
         @XmlElement(name = "methodName")
-        private String methodName;
+        private final String methodName;
 
         private MethodCall() {
+            this.methodName = null;
         }
 
         MethodCall(String methodName, Value... parameters) {
@@ -132,7 +135,7 @@ public final class Rpc {
          *
          * @return The method name.
          */
-        public String getMethodName() {
+        public final String getMethodName() {
             return methodName;
         }
 
@@ -141,7 +144,7 @@ public final class Rpc {
          *
          * @return The parameters.
          */
-        public List<Value> getParameters() {
+        public final List<Value> getParameters() {
             List<Value> values = new ArrayList<>();
             for (Parameter parameter : parameters) {
                 values.add(parameter.getValue());
@@ -177,7 +180,7 @@ public final class Rpc {
          *
          * @return The response value.
          */
-        public Value getResponse() {
+        public final Value getResponse() {
             if (!parameters.isEmpty()) {
                 return parameters.get(0).getValue();
             }
@@ -189,7 +192,7 @@ public final class Rpc {
          *
          * @return The fault.
          */
-        public Fault getFault() {
+        public final Fault getFault() {
             return fault;
         }
 
@@ -219,7 +222,7 @@ public final class Rpc {
              *
              * @return The fault code.
              */
-            public int getFaultCode() {
+            public final int getFaultCode() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();
                     Value faultCode = map.get("faultCode");
@@ -238,7 +241,7 @@ public final class Rpc {
              *
              * @return The fault string.
              */
-            public String getFaultString() {
+            public final String getFaultString() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();
                     Value faultCode = map.get("faultString");

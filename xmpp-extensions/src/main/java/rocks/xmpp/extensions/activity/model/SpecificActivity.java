@@ -103,9 +103,10 @@ import javax.xml.bind.annotation.XmlSeeAlso;
         SpecificActivity.Writing.class})
 public abstract class SpecificActivity {
     @XmlElementRef
-    private SpecificActivity specificActivity;
+    private final SpecificActivity specificActivity;
 
     public SpecificActivity() {
+        this.specificActivity = null;
     }
 
     public SpecificActivity(SpecificActivity specificActivity) {
@@ -117,7 +118,7 @@ public abstract class SpecificActivity {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
     }
 

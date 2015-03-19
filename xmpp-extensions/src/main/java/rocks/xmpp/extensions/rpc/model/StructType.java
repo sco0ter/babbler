@@ -38,12 +38,13 @@ final class StructType {
 
     static final class MemberType {
         @XmlElement(name = "name")
-        String name;
+        final String name;
 
         @XmlElement(name = "value")
-        Value value;
+        final Value value;
 
         private MemberType() {
+            this(null, null);
         }
 
         MemberType(String name, Value value) {

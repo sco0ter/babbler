@@ -31,15 +31,18 @@ import java.util.Objects;
 
 /**
  * A web page bookmark.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 public final class WebPageBookmark extends Bookmark {
     @XmlAttribute(name = "url")
-    private URL url;
+    private final URL url;
 
     private WebPageBookmark() {
         super(null);
+        this.url = null;
     }
 
     /**
@@ -58,12 +61,12 @@ public final class WebPageBookmark extends Bookmark {
      *
      * @return The URL.
      */
-    public URL getUrl() {
+    public final URL getUrl() {
         return url;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -77,12 +80,12 @@ public final class WebPageBookmark extends Bookmark {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(url);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getName() + ": " + (url != null ? url.toString() : "");
     }
 }

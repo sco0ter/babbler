@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <delay/>} element in the {@code urn:xmpp:delay} namespace.
@@ -44,6 +45,7 @@ import java.util.Date;
  * <li>Messages cached by a <a href="http://xmpp.org/extensions/xep-0045.html">Multi-User Chat</a> room for delivery to new participants when they join the room.</li>
  * </ul>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0203.html">XEP-0203: Delayed Delivery</a>
@@ -59,18 +61,21 @@ public final class DelayedDelivery {
 
     @XmlAttribute
     @XmlJavaTypeAdapter(JidAdapter.class)
-    private Jid from;
+    private final Jid from;
 
     @XmlAttribute
-    private Date stamp;
+    private final Date stamp;
 
     @XmlValue
-    private String reason;
+    private final String reason;
 
     /**
      * Private default constructor for unmarshalling.
      */
     private DelayedDelivery() {
+        this.stamp = null;
+        this.from = null;
+        this.reason = null;
     }
 
     /**
@@ -79,7 +84,7 @@ public final class DelayedDelivery {
      * @param timestamp The timestamp.
      */
     public DelayedDelivery(Date timestamp) {
-        this.stamp = timestamp;
+        this(timestamp, null, null);
     }
 
     /**
@@ -90,7 +95,7 @@ public final class DelayedDelivery {
      * @param reason    The reason.
      */
     public DelayedDelivery(Date timestamp, Jid from, String reason) {
-        this.stamp = timestamp;
+        this.stamp = Objects.requireNonNull(timestamp);
         this.from = from;
         this.reason = reason;
     }
@@ -100,7 +105,7 @@ public final class DelayedDelivery {
      *
      * @return The entity who originally sent the XML stanza.
      */
-    public Jid getFrom() {
+    public final Jid getFrom() {
         return from;
     }
 
@@ -109,7 +114,7 @@ public final class DelayedDelivery {
      *
      * @return The time when the XML stanza was originally sent.
      */
-    public Date getTimeStamp() {
+    public final Date getTimeStamp() {
         return stamp;
     }
 
@@ -118,12 +123,12 @@ public final class DelayedDelivery {
      *
      * @return The natural-language description of the reason for the delay.
      */
-    public String getReason() {
+    public final String getReason() {
         return reason;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return stamp.toString();
     }
 }

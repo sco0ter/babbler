@@ -34,6 +34,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <headers/>} element in the {@code http://jabber.org/protocol/shim} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
@@ -79,12 +81,12 @@ public final class Headers {
      *
      * @return The headers.
      */
-    public List<Header> getHeaders() {
+    public final List<Header> getHeaders() {
         return Collections.unmodifiableList(headers);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return headers.toString();
     }
 }

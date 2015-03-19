@@ -33,7 +33,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
- * The implementation of the {@code <open/>} element in the {@code http://jabber.org/protocol/ibb} namespace.
+ * The implementation of the {@code <si/>} element in the {@code http://jabber.org/protocol/si} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>
@@ -65,25 +67,26 @@ public final class StreamInitiation {
     public static final Object NO_VALID_STREAMS = new NoValidStreams();
 
     @XmlAttribute(name = "id")
-    private String id;
+    private final String id;
 
     @XmlAttribute(name = "mime-type")
-    private String mimeType;
+    private final String mimeType;
 
     @XmlAttribute(name = "profile")
-    private String profile;
+    private final String profile;
 
     @XmlAnyElement(lax = true)
-    private Object profileElement;
+    private final Object profileElement;
 
     @XmlElementRef
-    private FeatureNegotiation featureNegotiation;
+    private final FeatureNegotiation featureNegotiation;
 
     private StreamInitiation() {
+        this(null);
     }
 
     public StreamInitiation(FeatureNegotiation featureNegotiation) {
-        this.featureNegotiation = featureNegotiation;
+        this(null, null, null, null, featureNegotiation);
     }
 
     public StreamInitiation(String id, String profile, String mimeType, Object profileElement, FeatureNegotiation featureNegotiation) {
@@ -99,7 +102,7 @@ public final class StreamInitiation {
      *
      * @return The id.
      */
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
@@ -108,7 +111,7 @@ public final class StreamInitiation {
      *
      * @return The MIME type.
      */
-    public String getMimeType() {
+    public final String getMimeType() {
         return mimeType;
     }
 
@@ -117,7 +120,7 @@ public final class StreamInitiation {
      *
      * @return The profile.
      */
-    public String getProfile() {
+    public final String getProfile() {
         return profile;
     }
 
@@ -126,7 +129,7 @@ public final class StreamInitiation {
      *
      * @return The profile element.
      */
-    public Object getProfileElement() {
+    public final Object getProfileElement() {
         return profileElement;
     }
 
@@ -135,7 +138,7 @@ public final class StreamInitiation {
      *
      * @return The feature negotiation.
      */
-    public FeatureNegotiation getFeatureNegotiation() {
+    public final FeatureNegotiation getFeatureNegotiation() {
         return featureNegotiation;
     }
 }

@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
@@ -62,12 +63,13 @@ public final class EntityTime {
      * Creates a empty entity time element for requesting entity time.
      */
     public EntityTime() {
-        this(null, null);
+        this.tzo = null;
+        this.utc = null;
     }
 
     public EntityTime(TimeZone timeZone, Date date) {
-        this.tzo = timeZone;
-        this.utc = date;
+        this.tzo = Objects.requireNonNull(timeZone);
+        this.utc = Objects.requireNonNull(date);
     }
 
     /**

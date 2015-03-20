@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of a privacy list.
@@ -69,7 +70,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @param items The privacy rules.
      */
     public PrivacyList(String name, Collection<PrivacyRule> items) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         if (items != null) {
             this.items.addAll(items);
         }

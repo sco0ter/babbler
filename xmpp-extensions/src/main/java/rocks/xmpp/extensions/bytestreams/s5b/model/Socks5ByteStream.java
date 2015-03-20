@@ -36,6 +36,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/bytestreams} namespace.
@@ -82,7 +83,7 @@ public final class Socks5ByteStream {
      * @param dstaddr     The destination address (i.e. the hash).
      */
     public Socks5ByteStream(String sessionId, List<StreamHost> streamHosts, String dstaddr) {
-        this.sid = sessionId;
+        this.sid = Objects.requireNonNull(sessionId);
         this.streamHosts.addAll(streamHosts);
         this.dstaddr = dstaddr;
     }
@@ -96,7 +97,7 @@ public final class Socks5ByteStream {
      */
     public static Socks5ByteStream activate(String sessionId, Jid jid) {
         Socks5ByteStream socks5ByteStream = new Socks5ByteStream();
-        socks5ByteStream.sid = sessionId;
+        socks5ByteStream.sid = Objects.requireNonNull(sessionId);
         socks5ByteStream.activate = jid;
         return socks5ByteStream;
     }

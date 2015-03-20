@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <metadata/>} element in the {@code urn:xmpp:avatar:metadata} namespace.
@@ -100,8 +101,13 @@ public final class AvatarMetadata {
         @XmlAttribute(name = "height")
         private final Integer height;
 
-        public Info() {
-            this(null, null, null);
+        private Info() {
+            this.bytes = null;
+            this.id = null;
+            this.type = null;
+            this.width = null;
+            this.height = null;
+            this.url = null;
         }
 
         public Info(Integer bytes, String id, String type) {
@@ -109,9 +115,9 @@ public final class AvatarMetadata {
         }
 
         public Info(Integer bytes, String id, String type, Integer width, Integer height, URL url) {
-            this.bytes = bytes;
-            this.id = id;
-            this.type = type;
+            this.bytes = Objects.requireNonNull(bytes);
+            this.id = Objects.requireNonNull(id);
+            this.type = Objects.requireNonNull(type);
             this.width = width;
             this.height = height;
             this.url = url;

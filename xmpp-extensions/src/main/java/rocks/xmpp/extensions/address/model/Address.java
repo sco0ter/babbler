@@ -29,6 +29,7 @@ import rocks.xmpp.core.Jid;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <address/>} element in the {@code http://jabber.org/protocol/address} namespace.
@@ -94,7 +95,7 @@ public final class Address {
      * @param node        Specifies a sub-addressable unit at a particular JID, corresponding to a Service Discovery node.
      */
     public Address(Type type, Jid jid, String description, String node) {
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
         this.jid = jid;
         this.description = description;
         this.node = node;
@@ -108,7 +109,7 @@ public final class Address {
      */
     public Address(Type type, URI uri, String description) {
         // If the 'uri' attribute is specified, the 'jid' and 'node' attributes MUST NOT be specified.
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
         this.jid = null;
         this.uri = uri;
         this.description = description;

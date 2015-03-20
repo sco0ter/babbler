@@ -43,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <html/>} element in the {@code http://jabber.org/protocol/xhtml-im} namespace.
@@ -88,7 +89,7 @@ public final class Html {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = dbf.newDocumentBuilder();
-            Document document = builder.parse(new InputSource(new StringReader("<body>" + xhtmlContent + "</body>")));
+            Document document = builder.parse(new InputSource(new StringReader("<body>" + Objects.requireNonNull(xhtmlContent) + "</body>")));
             this.body = document.getDocumentElement();
         } catch (ParserConfigurationException | IOException e) {
             // Should never occur with this setup, so don't let the API user deal with it.

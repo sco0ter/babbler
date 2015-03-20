@@ -50,17 +50,18 @@ public final class Address {
     private final List<Description> descriptions = new ArrayList<>();
 
     @XmlAttribute
-    private URI uri;
+    private final URI uri;
 
     private Address() {
+        this.uri = null;
     }
 
     public Address(URI uri) {
-        this.uri = uri;
+        this.uri = Objects.requireNonNull(uri);
     }
 
     public Address(URI uri, Description... descriptions) {
-        this.uri = uri;
+        this.uri = Objects.requireNonNull(uri);
         this.descriptions.addAll(Arrays.asList(descriptions));
     }
 

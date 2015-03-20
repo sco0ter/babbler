@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:search} namespace.
@@ -216,11 +217,15 @@ public final class Search {
         private final String email;
 
         private Item() {
-            this(null, null, null, null, null);
+            this.jid = null;
+            this.first = null;
+            this.last = null;
+            this.nick = null;
+            this.email = null;
         }
 
         public Item(Jid jid, String first, String last, String nick, String email) {
-            this.jid = jid;
+            this.jid = Objects.requireNonNull(jid);
             this.first = first;
             this.last = last;
             this.nick = nick;

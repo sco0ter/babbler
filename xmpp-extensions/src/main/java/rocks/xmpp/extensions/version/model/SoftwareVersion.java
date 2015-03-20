@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.version.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:version} namespace.
@@ -54,7 +55,9 @@ public final class SoftwareVersion {
     private final String os;
 
     public SoftwareVersion() {
-        this(null, null, null);
+        this.name = null;
+        this.version = null;
+        this.os = null;
     }
 
     /**
@@ -81,9 +84,9 @@ public final class SoftwareVersion {
      * @param os      The operating system.
      */
     public SoftwareVersion(String name, String version, String os) {
-        this.name = name;
-        this.version = version;
-        this.os = os;
+        this.name = Objects.requireNonNull(name);       // This element is REQUIRED in a result.
+        this.version = Objects.requireNonNull(version); // This element is REQUIRED in a result.
+        this.os = os;                                   // This element is OPTIONAL in a result
     }
 
     /**

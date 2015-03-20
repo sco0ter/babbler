@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * This class is a container for the three different In-Band ByteStream elements and provides the namespace for IBB, so that it can be used by other protocols such as XEP-0095.
@@ -50,7 +51,7 @@ public abstract class InBandByteStream {
     private final String sid;
 
     private InBandByteStream(String sid) {
-        this.sid = sid;
+        this.sid = Objects.requireNonNull(sid);
     }
 
     private InBandByteStream() {
@@ -146,7 +147,7 @@ public abstract class InBandByteStream {
     public static final class Data extends InBandByteStream {
 
         @XmlAttribute
-        private final Integer seq;
+        private final int seq;
 
         @XmlValue
         private final byte[] bytes;
@@ -155,7 +156,7 @@ public abstract class InBandByteStream {
          * Private constructor for unmarshalling.
          */
         private Data() {
-            this.seq = null;
+            this.seq = 0;
             this.bytes = null;
         }
 

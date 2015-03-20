@@ -106,11 +106,10 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *               </ul>
      */
     private PrivacyRule(Action action, long order, Type type, String value, boolean filterMessage, boolean filterPresenceIn, boolean filterPresenceOut, boolean filterIQ) {
-        Objects.requireNonNull(action, "action must not be null.");
         if (order < 0) {
             throw new IllegalArgumentException("order must be greater 0.");
         }
-        this.action = action;
+        this.action = Objects.requireNonNull(action);
         this.order = order;
         this.type = type;
         this.value = value;

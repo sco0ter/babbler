@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <rule/>} element, used both in the {@code http://jabber.org/protocol/amp} namespace as well as in the {@code http://jabber.org/protocol/amp#errors} namespace.
@@ -63,9 +64,9 @@ public final class Rule {
      * @param value     The value. This depends on the condition.
      */
     public Rule(Action action, Condition condition, String value) {
-        this.action = action;
-        this.condition = condition;
-        this.value = value;
+        this.action = Objects.requireNonNull(action);
+        this.condition = Objects.requireNonNull(condition);
+        this.value = Objects.requireNonNull(value);
     }
 
     /**

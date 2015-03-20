@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppUtils;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <data/>} element in the {@code urn:xmpp:bob} namespace.
@@ -73,7 +74,7 @@ public final class Data {
      */
     public Data(String cid) {
         this.bytes = null;
-        this.cid = cid;
+        this.cid = Objects.requireNonNull(cid);
         this.type = null;
         this.maxAge = null;
     }
@@ -86,10 +87,7 @@ public final class Data {
      * @param type  The type.
      */
     public Data(byte[] bytes, String type) {
-        this.bytes = bytes;
-        this.cid = createContendId(bytes);
-        this.type = type;
-        this.maxAge = null;
+        this(bytes, type, null);
     }
 
     /**
@@ -100,10 +98,10 @@ public final class Data {
      * @param type   The type.
      * @param maxAge The max age.
      */
-    public Data(byte[] bytes, String type, int maxAge) {
-        this.bytes = bytes;
+    public Data(byte[] bytes, String type, Integer maxAge) {
+        this.bytes = Objects.requireNonNull(bytes);
         this.cid = createContendId(bytes);
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
         this.maxAge = maxAge;
     }
 

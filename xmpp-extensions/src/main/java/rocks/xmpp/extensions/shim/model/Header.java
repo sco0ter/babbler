@@ -29,6 +29,7 @@ import rocks.xmpp.extensions.time.model.EntityTime;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * A header element which hold stanza header information or internet metadata.
@@ -49,7 +50,8 @@ public final class Header {
     private final String value;
 
     private Header() {
-        this(null, null);
+        this.name = null;
+        this.value = null;
     }
 
     /**
@@ -59,7 +61,7 @@ public final class Header {
      * @param value The header value.
      */
     public Header(String name, String value) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         this.value = value;
     }
 

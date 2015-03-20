@@ -66,7 +66,7 @@ public final class ChatRoomBookmark extends Bookmark {
      */
     public ChatRoomBookmark(String name, Jid room) {
         super(name);
-        this.room = room;
+        this.room = Objects.requireNonNull(room);
         this.nick = null;
         this.password = null;
         this.autojoin = null;

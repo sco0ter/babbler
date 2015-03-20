@@ -53,7 +53,7 @@ public final class WebPageBookmark extends Bookmark {
      */
     public WebPageBookmark(String name, URL url) {
         super(name);
-        this.url = url;
+        this.url = Objects.requireNonNull(url);
     }
 
     /**

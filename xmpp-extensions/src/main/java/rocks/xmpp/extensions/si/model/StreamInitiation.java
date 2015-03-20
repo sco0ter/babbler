@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <si/>} element in the {@code http://jabber.org/protocol/si} namespace.
@@ -82,7 +83,11 @@ public final class StreamInitiation {
     private final FeatureNegotiation featureNegotiation;
 
     private StreamInitiation() {
-        this(null);
+        this.id = null;
+        this.profile = null;
+        this.mimeType = null;
+        this.profileElement = null;
+        this.featureNegotiation = null;
     }
 
     public StreamInitiation(FeatureNegotiation featureNegotiation) {
@@ -93,7 +98,7 @@ public final class StreamInitiation {
         this.id = id;
         this.profile = profile;
         this.mimeType = mimeType;
-        this.profileElement = profileElement;
+        this.profileElement = Objects.requireNonNull(profileElement);
         this.featureNegotiation = featureNegotiation;
     }
 

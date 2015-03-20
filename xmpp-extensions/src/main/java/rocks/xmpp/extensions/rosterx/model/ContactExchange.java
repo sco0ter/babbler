@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/rosterx} namespace.
@@ -85,11 +86,13 @@ public final class ContactExchange {
         private final List<String> groups = new ArrayList<>();
 
         private Item() {
-            this(null, null, null, null);
+            this.jid = null;
+            this.name = null;
+            this.action = null;
         }
 
         public Item(Jid jid, String name, Collection<String> groups, Action action) {
-            this.jid = jid;
+            this.jid = Objects.requireNonNull(jid);
             this.name = name;
             if (groups != null) {
                 this.groups.addAll(groups);

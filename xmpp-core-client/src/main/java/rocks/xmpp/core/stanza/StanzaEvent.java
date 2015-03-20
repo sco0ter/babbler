@@ -76,4 +76,9 @@ public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extend
     public final S getStanza() {
         return stanza;
     }
+
+    @Override
+    public final String toString() {
+        return (inbound ? "Inbound " : "Outbound ") + stanza;
+    }
 }

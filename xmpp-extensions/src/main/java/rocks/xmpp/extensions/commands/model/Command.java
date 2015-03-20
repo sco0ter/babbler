@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.commands.model;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -35,11 +36,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <command/>} element in the {@code http://jabber.org/protocol/commands} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0050.html">XEP-0050: Ad-Hoc Commands</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0050.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "command")
 @XmlSeeAlso({Command.MalformedAction.class, Command.BadAction.class, Command.BadLocale.class, Command.BadPayload.class, Command.BadSessionId.class, Command.SessionExpired.class})
@@ -51,55 +57,129 @@ public final class Command {
     public static final String NAMESPACE = "http://jabber.org/protocol/commands";
 
     @XmlAttribute(name = "action")
-    private Action action;
+    private final Action action;
 
     @XmlAttribute(name = "node")
-    private String node;
+    private final String node;
 
     @XmlAttribute(name = "sessionid")
-    private String sessionId;
+    private final String sessionId;
+
+    @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
+    private final String language;
 
     @XmlAttribute(name = "status")
-    private Status status;
+    private final Status status;
 
     @XmlElement(name = "actions")
-    private Actions actions;
+    private final Actions actions;
 
     @XmlElement(name = "note")
-    private List<Note> notes = new ArrayList<>();
+    private final List<Note> notes = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
-    private List<Object> payloads;
+    private final List<Object> payloads = new ArrayList<>();
 
     private Command() {
+        this.action = null;
+        this.node = null;
+        this.sessionId = null;
+        this.status = null;
+        this.actions = null;
+        this.language = null;
     }
 
     /**
-     * Creates a command for simple execution.
+     * Creates a command request for simple execution.
      *
      * @param node   The node.
      * @param action The action. If null, {@link Action#EXECUTE} is implied.
      */
     public Command(String node, Action action) {
-        this.node = node;
-        this.action = action;
+        this(node, null, action, null);
     }
 
     /**
-     * Creates a command.
+     * Creates a command request, which is created by the requester.
      *
      * @param node      The node.
-     * @param action    The action. If null, {@link Action#EXECUTE} is implied.
      * @param sessionId The session id.
-     * @param payloads   The payload.
+     * @param action    The action. If null, {@link Action#EXECUTE} is implied.
+     * @param payloads  The payloads.
      */
-    public Command(String node, Action action, String sessionId, List<Object> payloads) {
-        this.node = node;
-        this.action = action;
+    public Command(String node, String sessionId, Action action, List<Object> payloads) {
+        this(node, sessionId, action, payloads, null, null);
+    }
+
+    /**
+     * Creates a command request, which is created by the requester.
+     *
+     * @param node      The node.
+     * @param sessionId The session id.
+     * @param action    The action. If null, {@link Action#EXECUTE} is implied.
+     * @param payloads  The payloads.
+     * @param language  The language.
+     * @param notes     The notes.
+     */
+    public Command(String node, String sessionId, Action action, List<Object> payloads, String language, List<Note> notes) {
+        this(node, sessionId, action, null, null, null, payloads, language, notes);
+    }
+
+    /**
+     * Creates a command result, which is created by the responder.
+     *
+     * @param node          The node.
+     * @param sessionId     The session id.
+     * @param status        The status.
+     * @param actions       The actions, which are possible to execute by the requester.
+     * @param defaultAction The default action, which should be executed by the requester.
+     * @param payloads      The payloads.
+     */
+    public Command(String node, String sessionId, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads) {
+        this(node, sessionId, status, actions, defaultAction, payloads, null, null);
+    }
+
+    /**
+     * Creates a command result, which is created by the responder.
+     *
+     * @param node          The node.
+     * @param sessionId     The session id.
+     * @param status        The status.
+     * @param actions       The actions, which are possible to execute by the requester.
+     * @param defaultAction The default action, which should be executed by the requester.
+     * @param payloads      The payloads.
+     * @param language      The language.
+     * @param notes         The notes.
+     */
+    public Command(String node, String sessionId, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, String language, List<Note> notes) {
+        this(node, sessionId, null, status, actions, defaultAction, payloads, language, notes);
+    }
+
+    /**
+     * Creates a command result, which is created by the responder.
+     *
+     * @param node      The node.
+     * @param actions   The actions, which are possible to execute.
+     * @param sessionId The session id.
+     * @param payloads  The payloads.
+     */
+    private Command(String node, String sessionId, Action action, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, String language, List<Note> notes) {
+        this.node = Objects.requireNonNull(node);
         this.sessionId = sessionId;
+        this.action = action;
+        this.status = status;
         if (payloads != null) {
             this.payloads.addAll(payloads);
         }
+        if (notes != null) {
+            this.notes.addAll(notes);
+        }
+        if (actions != null) {
+            this.actions = new Actions(actions.contains(Action.PREV) ? "" : null, actions.contains(Action.NEXT) ? "" : null, actions.contains(Action.COMPLETE) ? "" : null, defaultAction);
+        } else {
+            this.actions = null;
+        }
+        this.language = language;
     }
 
     /**
@@ -108,7 +188,7 @@ public final class Command {
      * @return The command payload.
      * @see <a href="http://xmpp.org/extensions/xep-0050.html#impl-payloads">3.5 Command Payloads</a>
      */
-    public List<Object> getPayloads() {
+    public final List<Object> getPayloads() {
         return payloads;
     }
 
@@ -117,7 +197,7 @@ public final class Command {
      *
      * @return The action.
      */
-    public Action getAction() {
+    public final Action getAction() {
         return action;
     }
 
@@ -127,7 +207,7 @@ public final class Command {
      * @return The node.
      * @see <a href="http://xmpp.org/extensions/xep-0050.html#impl-nodes">3.2 Command Nodes</a>
      */
-    public String getNode() {
+    public final String getNode() {
         return node;
     }
 
@@ -136,7 +216,7 @@ public final class Command {
      *
      * @return The status.
      */
-    public Status getStatus() {
+    public final Status getStatus() {
         return status;
     }
 
@@ -145,7 +225,7 @@ public final class Command {
      *
      * @return The session id.
      */
-    public String getSessionId() {
+    public final String getSessionId() {
         return sessionId;
     }
 
@@ -155,7 +235,7 @@ public final class Command {
      * @return The command actions.
      * @see <a href="http://xmpp.org/extensions/xep-0050.html#impl-actions">3.4 Command Actions</a>
      */
-    public Collection<Action> getActions() {
+    public final Collection<Action> getActions() {
         if (status == Status.COMPLETED) {
             return Collections.emptyList();
         }
@@ -193,8 +273,21 @@ public final class Command {
      *
      * @return The default action.
      */
-    public Action getDefaultAction() {
+    public final Action getDefaultAction() {
         return actions != null ? actions.defaultAction : null;
+    }
+
+    /**
+     * Gets the notes.
+     *
+     * @return The notes.
+     */
+    public final List<Note> getNotes() {
+        return notes;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 
     /**
@@ -256,16 +349,27 @@ public final class Command {
     private static final class Actions {
 
         @XmlElement(name = "prev")
-        private String prev;
+        private final String prev;
 
         @XmlElement(name = "next")
-        private String next;
+        private final String next;
 
         @XmlElement(name = "complete")
-        private String complete;
+        private final String complete;
 
         @XmlAttribute(name = "execute")
-        private Action defaultAction;
+        private final Action defaultAction;
+
+        private Actions() {
+            this(null, null, null, null);
+        }
+
+        private Actions(String prev, String next, String complete, Action defaultAction) {
+            this.prev = prev;
+            this.next = next;
+            this.complete = complete;
+            this.defaultAction = defaultAction;
+        }
     }
 
     /**
@@ -318,12 +422,14 @@ public final class Command {
     public static final class Note {
 
         @XmlValue
-        private String value;
+        private final String value;
 
         @XmlAttribute(name = "type")
-        private Type type;
+        private final Type type;
 
         private Note() {
+            this.value = null;
+            this.type = null;
         }
 
         /**
@@ -333,7 +439,7 @@ public final class Command {
          * @param value The actual note value.
          */
         public Note(Type type, String value) {
-            this.type = type;
+            this.type = Objects.requireNonNull(type);
             this.value = value;
         }
 
@@ -342,7 +448,7 @@ public final class Command {
          *
          * @return The type.
          */
-        public Type getType() {
+        public final Type getType() {
             return type;
         }
 
@@ -351,7 +457,7 @@ public final class Command {
          *
          * @return The note value.
          */
-        public String getValue() {
+        public final String getValue() {
             return value;
         }
 

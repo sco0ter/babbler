@@ -42,6 +42,7 @@ import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
+import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.forward.model.Forwarded;
@@ -159,6 +160,9 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0048: BookmarkStorage
                 BookmarkStorage.class,
+
+                // XEP-0050: Ad-Hoc Commands
+                Command.class,
 
                 // XEP-0054: vcard-temp
                 VCard.class,

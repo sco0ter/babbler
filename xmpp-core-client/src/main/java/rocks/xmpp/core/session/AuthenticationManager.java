@@ -24,9 +24,9 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.XmppSaslClientFactory;
 import rocks.xmpp.core.sasl.model.Auth;
-import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Challenge;
 import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Mechanisms;
@@ -42,7 +42,6 @@ import javax.security.sasl.SaslException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -78,11 +77,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     private final List<String> supportedMechanisms;
 
     /**
-     * Stores the preferred SASL mechanisms of the client.
-     */
-    private final List<String> preferredMechanisms;
-
-    /**
      * The SASL client which is used during an authentication process.
      * Guarded by "this".
      */
@@ -91,14 +85,12 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     /**
      * Creates the authentication manager. Usually only the {@link rocks.xmpp.core.session.XmppSession} should create it implicitly.
      *
-     * @param xmppSession The connection.
-     * @param mechanisms  The SASL mechanisms provided by the client.
+     * @param xmppSession The session.
      */
-    public AuthenticationManager(final XmppSession xmppSession, List<String> mechanisms) {
+    public AuthenticationManager(final XmppSession xmppSession) {
         super(Mechanisms.class);
         this.xmppSession = Objects.requireNonNull(xmppSession, "xmppSession must not be null.");
         this.supportedMechanisms = new ArrayList<>();
-        this.preferredMechanisms = new ArrayList<>(mechanisms);
     }
 
     /**
@@ -107,18 +99,17 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @param callbackHandler The callback handler.
      * @throws StreamNegotiationException If an exception occurred, while starting authentication.
      */
-    public final void startAuthentication(String[] mechanisms, String authorizationId, CallbackHandler callbackHandler) throws StreamNegotiationException {
+    public final void startAuthentication(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler) throws StreamNegotiationException {
         synchronized (this) {
             try {
-                Collection<String> clientMechanisms;
-                if (mechanisms == null) {
-                    clientMechanisms = new ArrayList<>(preferredMechanisms);
-                } else {
-                    clientMechanisms = new ArrayList<>(Arrays.asList(mechanisms));
-                }
+                Collection<String> clientMechanisms = new ArrayList<>(mechanisms);
 
                 // Retain only the server-supported mechanisms.
                 clientMechanisms.retainAll(supportedMechanisms);
+
+                if (clientMechanisms.isEmpty()) {
+                    throw new StreamNegotiationException(String.format("Server doesn't support any of the requested SASL mechanisms: %s.", mechanisms));
+                }
 
                 saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
 

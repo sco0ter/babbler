@@ -26,9 +26,12 @@ package rocks.xmpp.extensions.version.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:version} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>
@@ -43,15 +46,18 @@ public final class SoftwareVersion {
     public static final String NAMESPACE = "jabber:iq:version";
 
     @XmlElement
-    private String name;
+    private final String name;
 
     @XmlElement
-    private String version;
+    private final String version;
 
     @XmlElement
-    private String os;
+    private final String os;
 
     public SoftwareVersion() {
+        this.name = null;
+        this.version = null;
+        this.os = null;
     }
 
     /**
@@ -78,9 +84,9 @@ public final class SoftwareVersion {
      * @param os      The operating system.
      */
     public SoftwareVersion(String name, String version, String os) {
-        this.name = name;
-        this.version = version;
-        this.os = os;
+        this.name = Objects.requireNonNull(name);       // This element is REQUIRED in a result.
+        this.version = Objects.requireNonNull(version); // This element is REQUIRED in a result.
+        this.os = os;                                   // This element is OPTIONAL in a result
     }
 
     /**
@@ -88,7 +94,7 @@ public final class SoftwareVersion {
      *
      * @return The operating system.
      */
-    public String getOs() {
+    public final String getOs() {
         return os;
     }
 
@@ -97,7 +103,7 @@ public final class SoftwareVersion {
      *
      * @return The version.
      */
-    public String getVersion() {
+    public final String getVersion() {
         return version;
     }
 
@@ -106,12 +112,12 @@ public final class SoftwareVersion {
      *
      * @return The software's name.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder sb = new StringBuilder();
         if (name != null) {
             sb.append(name);

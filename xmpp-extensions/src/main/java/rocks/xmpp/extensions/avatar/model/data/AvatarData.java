@@ -26,9 +26,12 @@ package rocks.xmpp.extensions.avatar.model.data;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <data/>} element in the {@code urn:xmpp:avatar:data} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>
@@ -43,16 +46,17 @@ public final class AvatarData {
     public static final String NAMESPACE = "urn:xmpp:avatar:data";
 
     @XmlValue
-    private byte[] data;
+    private final byte[] data;
 
     private AvatarData() {
+        this.data = null;
     }
 
     /**
      * @param data The image data.
      */
     public AvatarData(byte[] data) {
-        this.data = data;
+        this.data = Objects.requireNonNull(data);
     }
 
     /**
@@ -60,7 +64,7 @@ public final class AvatarData {
      *
      * @return The image data.
      */
-    public byte[] getData() {
+    public final byte[] getData() {
         return data;
     }
 }

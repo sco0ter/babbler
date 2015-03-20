@@ -37,7 +37,7 @@ import java.util.Date;
  * @author Christian Schudt
  */
 final class StanzaEntry {
-    private final boolean incoming;
+    private final boolean inbound;
 
     private final String xml;
 
@@ -45,8 +45,8 @@ final class StanzaEntry {
 
     private final Date date;
 
-    public StanzaEntry(boolean incoming, String xml, Object stanza) {
-        this.incoming = incoming;
+    public StanzaEntry(boolean inbound, String xml, Object stanza) {
+        this.inbound = inbound;
         this.xml = xml;
         this.stanza = stanza;
         this.date = new Date();
@@ -61,7 +61,7 @@ final class StanzaEntry {
     }
 
     public boolean isInbound() {
-        return incoming;
+        return inbound;
     }
 
     public Date getDate() {
@@ -85,6 +85,6 @@ final class StanzaEntry {
 
     @Override
     public String toString() {
-        return (incoming ? "IN : " : "OUT: ") + xml;
+        return (inbound ? "IN : " : "OUT: ") + xml;
     }
 }

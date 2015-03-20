@@ -97,7 +97,7 @@ final class XmppStreamWriter {
     XmppStreamWriter(final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
-        this.marshaller = xmppSession.getMarshaller();
+        this.marshaller = xmppSession.createMarshaller();
         this.debugger = xmppSession.getDebugger();
 
         executor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));

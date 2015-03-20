@@ -36,6 +36,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <blocklist/>} element in the {@code urn:xmpp:blocking} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
@@ -77,7 +79,7 @@ public final class BlockList {
      *
      * @return The items.
      */
-    public List<Jid> getItems() {
+    public final List<Jid> getItems() {
         List<Jid> jids = new ArrayList<>();
         for (Item item : items) {
             jids.add(item.getJid());
@@ -86,7 +88,7 @@ public final class BlockList {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return items.toString();
     }
 }

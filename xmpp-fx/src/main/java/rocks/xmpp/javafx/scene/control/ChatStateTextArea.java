@@ -85,8 +85,10 @@ public class ChatStateTextArea extends TextArea {
         textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-                // We are in "composing" state.
-                chatState.set(ChatState.COMPOSING);
+                if (isFocused()) {
+                    // We are in "composing" state.
+                    chatState.set(ChatState.COMPOSING);
+                }
                 // Restart the timer.
                 pauseTransition.playFromStart();
             }

@@ -136,7 +136,7 @@ public final class InfoDiscovery implements InfoNode {
     }
 
     @Override
-    public String getNode() {
+    public final String getNode() {
         return node;
     }
 

@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <mood/>} element in the {@code http://jabber.org/protocol/mood} namespace.
@@ -36,6 +37,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * <p><cite><a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a></cite></p>
  * <p>This specification defines a payload format for communicating information about user moods, such as whether a person is currently happy, sad, angy, or annoyed. The payload format is typically transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a>
@@ -136,7 +138,7 @@ public final class Mood {
     public static final String NAMESPACE = "http://jabber.org/protocol/mood";
 
     @XmlElement
-    private String text;
+    private final String text;
 
     @XmlElements({@XmlElement(name = "afraid", type = Afraid.class),
             @XmlElement(name = "amazed", type = Amazed.class),
@@ -218,12 +220,14 @@ public final class Mood {
             @XmlElement(name = "undefined", type = Undefined.class),
             @XmlElement(name = "weak", type = Weak.class),
             @XmlElement(name = "worried", type = Worried.class)})
-    private Value value;
+    private final Value value;
 
     /**
      * Creates an empty mood, which indicates that no mood is used.
      */
     public Mood() {
+        this.value = null;
+        this.text = null;
     }
 
     /**
@@ -232,7 +236,7 @@ public final class Mood {
      * @param value The mood value.
      */
     public Mood(Value value) {
-        this.value = value;
+        this(value, null);
     }
 
     /**
@@ -242,7 +246,7 @@ public final class Mood {
      * @param text  A natural-language description of, or reason for, the mood.
      */
     public Mood(Value value, String text) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
         this.text = text;
     }
 
@@ -251,7 +255,7 @@ public final class Mood {
      *
      * @return The description.
      */
-    public String getText() {
+    public final String getText() {
         return text;
     }
 
@@ -260,8 +264,25 @@ public final class Mood {
      *
      * @return The mood value.
      */
-    public Value getValue() {
+    public final Value getValue() {
         return value;
+    }
+
+    /**
+     * Gets the mood value.
+     *
+     * @return The mood value.
+     */
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (value != null) {
+            sb.append(value);
+        }
+        if (text != null) {
+            sb.append(" (").append(text).append(")");
+        }
+        return sb.toString();
     }
 
     /**
@@ -284,8 +305,13 @@ public final class Mood {
          *
          * @return The specific mood.
          */
-        public Object getSpecificMood() {
+        public final Object getSpecificMood() {
             return specificMood;
+        }
+
+        @Override
+        public final String toString() {
+            return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
         }
     }
 

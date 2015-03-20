@@ -31,10 +31,13 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
 /**
  * The implementation of the {@code <time/>} element in the {@code urn:xmpp:time} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>
@@ -50,21 +53,23 @@ public final class EntityTime {
 
     @XmlJavaTypeAdapter(TimeZoneAdapter.class)
     @XmlElement(name = "tzo")
-    private TimeZone tzo;
+    private final TimeZone tzo;
 
     @XmlJavaTypeAdapter(UTCDateAdapter.class)
     @XmlElement(name = "utc")
-    private Date utc;
+    private final Date utc;
 
     /**
      * Creates a empty entity time element for requesting entity time.
      */
     public EntityTime() {
+        this.tzo = null;
+        this.utc = null;
     }
 
     public EntityTime(TimeZone timeZone, Date date) {
-        this.tzo = timeZone;
-        this.utc = date;
+        this.tzo = Objects.requireNonNull(timeZone);
+        this.utc = Objects.requireNonNull(date);
     }
 
     /**
@@ -100,7 +105,7 @@ public final class EntityTime {
      *
      * @return The time zone.
      */
-    public TimeZone getTimezone() {
+    public final TimeZone getTimezone() {
         return tzo;
     }
 
@@ -109,12 +114,12 @@ public final class EntityTime {
      *
      * @return The date.
      */
-    public Date getDate() {
+    public final Date getDate() {
         return utc;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         if (utc != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(utc);
@@ -129,15 +134,15 @@ public final class EntityTime {
     /**
      * Converts a date to its UTC representation.
      */
-    private static class UTCDateAdapter extends XmlAdapter<String, Date> {
+    private static final class UTCDateAdapter extends XmlAdapter<String, Date> {
 
         @Override
-        public Date unmarshal(String v) throws Exception {
+        public final Date unmarshal(String v) throws Exception {
             return toUtcDate(v);
         }
 
         @Override
-        public String marshal(Date v) throws Exception {
+        public final String marshal(Date v) throws Exception {
             return toUtcString(v);
         }
     }

@@ -202,7 +202,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         }
         offeredStreamMethods.retainAll(supportedStreamMethod);
         DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(fieldReply));
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 
         final Lock lock = new ReentrantLock();
@@ -218,7 +218,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                 if (sessionId.equals(e.getSessionId())) {
                     lock.lock();
                     try {
-                        // Auto-accept the incoming stream
+                        // Auto-accept the inbound stream
                         byteStreamSessions[0] = e.accept();
                         // If no exception occurred during stream method negotiation, notify the waiting thread.
                         byteStreamOpened.signal();

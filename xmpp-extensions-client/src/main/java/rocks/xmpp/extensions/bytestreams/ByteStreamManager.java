@@ -64,7 +64,7 @@ public abstract class ByteStreamManager extends ExtensionManager {
     }
 
     /**
-     * Adds a byte stream listener, which allows to listen for incoming byte stream requests.
+     * Adds a byte stream listener, which allows to listen for inbound byte stream requests.
      *
      * @param byteStreamListener The listener.
      * @see #removeByteStreamListener(ByteStreamListener)

@@ -180,7 +180,7 @@ public final class XmppSessionConfiguration {
     }
 
     /**
-     * Gets the initial managers. Theses managers are initialized when the session is initialized, thus allowing them to immediately add listeners to the session e.g. to react to incoming stanzas.
+     * Gets the initial managers. Theses managers are initialized when the session is initialized, thus allowing them to immediately add listeners to the session e.g. to react to inbound stanzas.
      *
      * @return The initial managers.
      */

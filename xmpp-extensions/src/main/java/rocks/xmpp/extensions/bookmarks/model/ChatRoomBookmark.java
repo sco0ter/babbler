@@ -32,24 +32,30 @@ import java.util.Objects;
 
 /**
  * A conference bookmark to bookmark multi-user chat rooms.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
 public final class ChatRoomBookmark extends Bookmark {
     @XmlElement(name = "nick")
-    private String nick;
+    private final String nick;
 
     @XmlElement(name = "password")
-    private String password;
+    private final String password;
 
     @XmlAttribute(name = "autojoin")
-    private Boolean autojoin;
+    private final Boolean autojoin;
 
     @XmlAttribute(name = "jid")
-    private Jid room;
+    private final Jid room;
 
     private ChatRoomBookmark() {
         super(null);
+        this.room = null;
+        this.nick = null;
+        this.password = null;
+        this.autojoin = null;
     }
 
     /**
@@ -60,7 +66,10 @@ public final class ChatRoomBookmark extends Bookmark {
      */
     public ChatRoomBookmark(String name, Jid room) {
         super(name);
-        this.room = room;
+        this.room = Objects.requireNonNull(room);
+        this.nick = null;
+        this.password = null;
+        this.autojoin = null;
     }
 
     /**
@@ -85,7 +94,7 @@ public final class ChatRoomBookmark extends Bookmark {
      *
      * @return The nick.
      */
-    public String getNick() {
+    public final String getNick() {
         return nick;
     }
 
@@ -94,7 +103,7 @@ public final class ChatRoomBookmark extends Bookmark {
      *
      * @return The password.
      */
-    public String getPassword() {
+    public final String getPassword() {
         return password;
     }
 
@@ -103,7 +112,7 @@ public final class ChatRoomBookmark extends Bookmark {
      *
      * @return True, if the client should automatically join the conference room on login.
      */
-    public boolean isAutojoin() {
+    public final boolean isAutojoin() {
         return autojoin != null && autojoin;
     }
 
@@ -112,12 +121,12 @@ public final class ChatRoomBookmark extends Bookmark {
      *
      * @return The room.
      */
-    public Jid getRoom() {
+    public final Jid getRoom() {
         return room;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -131,12 +140,12 @@ public final class ChatRoomBookmark extends Bookmark {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(room);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getName() + ": " + (room != null ? room.toString() : "");
     }
 }

@@ -250,7 +250,7 @@ Before connecting to a server, you should configure your XMPP session.
 
 You might want to do one of the following:
 
-* Adding event listeners in order to listen for incoming messages, roster and presence changes or to modify outgoing messages.
+* Adding event listeners in order to listen for inbound messages, roster and presence changes or to modify outbound messages.
 * Setting up a custom SSL context
 * Configuring extensions, e.g.
     * Enable or disable certain extensions
@@ -262,19 +262,17 @@ Here are some examples:
 
 ```java
 // Listen for presence changes
-xmppSession.addPresenceListener(new PresenceListener() {
+xmppSession.addInboundPresenceListener(new PresenceListener() {
     @Override
     public void handlePresence(PresenceEvent e) {
-        if (e.isIncoming()) {
-            // Handle incoming presence.
-        }
+        // Handle inbound presence.
     }
 });
 // Listen for messages
-xmppSession.addMessageListener(new MessageListener() {
+xmppSession.addInboundMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        // Handle outgoing or incoming message
+        // Handle inbound message
     }
 });
 // Listen for roster pushes

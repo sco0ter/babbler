@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
@@ -55,6 +56,22 @@ import java.util.zip.InflaterInputStream;
  * @author Christian Schudt
  */
 public final class CompressionManager extends StreamFeatureNegotiator {
+    /**
+     * The "zlib" compression method.
+     */
+    public static final CompressionMethod ZLIB;
+
+    /**
+     * The "gzip" compression method.
+     */
+    public static final CompressionMethod GZIP;
+
+    /**
+     * The "deflate" compression method.
+     */
+    public static final CompressionMethod DEFLATE;
+
+    private static final Logger logger = Logger.getLogger(CompressionManager.class.getName());
 
     static {
         ZLIB = new CompressionMethod() {
@@ -108,21 +125,6 @@ public final class CompressionManager extends StreamFeatureNegotiator {
         };
     }
 
-    /**
-     * The "zlib" compression method.
-     */
-    public static final CompressionMethod ZLIB;
-
-    /**
-     * The "gzip" compression method.
-     */
-    public static final CompressionMethod GZIP;
-
-    /**
-     * The "deflate" compression method.
-     */
-    public static final CompressionMethod DEFLATE;
-
     private final XmppSession xmppSession;
 
     private final List<CompressionMethod> compressionMethods = new CopyOnWriteArrayList<>();
@@ -140,8 +142,6 @@ public final class CompressionManager extends StreamFeatureNegotiator {
             return Status.IGNORE;
         }
 
-        Status status = Status.INCOMPLETE;
-
         if (element instanceof CompressionFeature) {
             List<String> advertisedCompressionMethods = ((CompressionFeature) element).getMethods();
             Map<String, CompressionMethod> clientMethods = new LinkedHashMap<>();
@@ -154,17 +154,21 @@ public final class CompressionManager extends StreamFeatureNegotiator {
                 CompressionMethod compressionMethod = clientMethods.values().iterator().next();
                 xmppSession.send(new StreamCompression.Compress(compressionMethod.getName()));
                 negotiatedCompressionMethod = compressionMethod;
-                status = Status.INCOMPLETE;
+                return Status.INCOMPLETE;
             } else {
-                status = Status.IGNORE;
+                return Status.IGNORE;
             }
         } else if (element == StreamCompression.COMPRESSED) {
             notifyFeatureNegotiated();
-            status = Status.SUCCESS;
+            logger.fine("Stream is now compressed.");
+            return Status.SUCCESS;
         } else if (element instanceof StreamCompression.Failure) {
-            throw new StreamNegotiationException("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
+            negotiatedCompressionMethod = null;
+            // Failure of the negotiation SHOULD NOT be treated as an unrecoverable error
+            logger.warning("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
+            return Status.IGNORE;
         }
-        return status;
+        return Status.IGNORE;
     }
 
     /**

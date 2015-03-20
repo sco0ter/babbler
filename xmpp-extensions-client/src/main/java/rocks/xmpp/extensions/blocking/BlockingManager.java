@@ -123,8 +123,8 @@ public final class BlockingManager extends ExtensionManager {
             }
         };
         // Listen for "un/block pushes"
-        xmppSession.addIQHandler(Block.class, iqHandler);
-        xmppSession.addIQHandler(Unblock.class, iqHandler);
+        xmppSession.addIQHandler(Block.class, iqHandler, false);
+        xmppSession.addIQHandler(Unblock.class, iqHandler, false);
     }
 
     private void notifyListeners(List<Jid> blockedContacts, List<Jid> unblockedContacts) {

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <media/>} element in the {@code urn:xmpp:media-element} namespace.
@@ -137,8 +138,8 @@ public final class Media {
          * @param uri  The location of the media.
          */
         public Location(String type, URI uri) {
-            this.type = type;
-            this.uri = uri;
+            this.type = Objects.requireNonNull(type);
+            this.uri = Objects.requireNonNull(uri);
         }
 
         private Location() {

@@ -55,12 +55,12 @@ final class IbbSession extends ByteStreamSession {
     /**
      * Guarded by "this"
      */
-    private int incomingSequence = 0;
+    private int inboundSequence = 0;
 
     /**
      * Guarded by "outputStream"
      */
-    private int outgoingSequence = 0;
+    private int outboundSequence = 0;
 
     /**
      * Guarded by "this"
@@ -78,7 +78,7 @@ final class IbbSession extends ByteStreamSession {
     }
 
     synchronized final boolean dataReceived(InBandByteStream.Data data) {
-        if (incomingSequence++ == data.getSequence()) {
+        if (inboundSequence++ == data.getSequence()) {
             inputStream.queue.offer(data);
             return true;
         } else {
@@ -121,10 +121,10 @@ final class IbbSession extends ByteStreamSession {
     }
 
     final void send(byte[] bytes) throws XmppException {
-        xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Data(bytes, getSessionId(), outgoingSequence)));
+        xmppSession.query(new IQ(jid, IQ.Type.SET, new InBandByteStream.Data(bytes, getSessionId(), outboundSequence)));
         // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2, and so on. The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.
-        if (++outgoingSequence > 65535) {
-            outgoingSequence = 0;
+        if (++outboundSequence > 65535) {
+            outboundSequence = 0;
         }
     }
 

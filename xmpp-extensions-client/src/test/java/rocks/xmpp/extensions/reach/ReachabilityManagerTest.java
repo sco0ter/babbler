@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,10 +52,10 @@ public class ReachabilityManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         final boolean[] attentionReceived = {false};
-        xmppSession2.addMessageListener(new MessageListener() {
+        xmppSession2.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming() && e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
+                if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
                     attentionReceived[0] = true;
                     Assert.assertEquals(e.getMessage().getType(), AbstractMessage.Type.HEADLINE);
                 }

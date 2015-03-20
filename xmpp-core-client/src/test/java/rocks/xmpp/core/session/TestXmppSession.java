@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -114,7 +114,7 @@ public class TestXmppSession extends XmppSession {
         mockServer.registerConnection(this);
 
         // Auto-connect
-        updateStatus(Status.CONNECTED);
+        updateStatus(Status.AUTHENTICATED);
     }
 
     @Override
@@ -132,16 +132,16 @@ public class TestXmppSession extends XmppSession {
         final IQListener iqListener = new IQListener() {
             @Override
             public void handleIQ(IQEvent e) {
-                if (e.isIncoming() && e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
+                if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
                     result[0] = e.getIQ();
                 }
             }
         };
 
-        addIQListener(iqListener);
+        addInboundIQListener(iqListener);
         send(iq);
 
-        removeIQListener(iqListener);
+        removeInboundIQListener(iqListener);
         IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
             throw new StanzaException(response);

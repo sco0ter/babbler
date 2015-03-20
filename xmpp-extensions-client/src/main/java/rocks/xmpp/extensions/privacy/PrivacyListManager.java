@@ -98,7 +98,7 @@ public final class PrivacyListManager extends ExtensionManager {
                 }
                 return iq.createError(Condition.NOT_ACCEPTABLE);
             }
-        });
+        }, false);
     }
 
     /**
@@ -172,9 +172,7 @@ public final class PrivacyListManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
     public void setActiveList(String name) throws XmppException {
-        Privacy privacy = new Privacy();
-        privacy.setActiveName(name);
-        setPrivacy(privacy);
+        setPrivacy(Privacy.withActive(name));
     }
 
     /**
@@ -200,9 +198,7 @@ public final class PrivacyListManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
     public void setDefaultList(String name) throws XmppException {
-        Privacy privacy = new Privacy();
-        privacy.setDefaultName(name);
-        setPrivacy(privacy);
+        setPrivacy(Privacy.withDefault(name));
     }
 
     /**

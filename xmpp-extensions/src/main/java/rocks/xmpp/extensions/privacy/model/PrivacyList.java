@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of a privacy list.
@@ -40,6 +41,7 @@ import java.util.List;
  * <p><cite><a href="http://xmpp.org/extensions/xep-0016.html#protocol">2. Protocol</a></cite></p>
  * <p>Most instant messaging systems have found it necessary to implement some method for users to block communications from particular other users (this is also required by sections 5.1.5, 5.1.15, 5.3.2, and 5.4.10 of RFC 2779 [3]. In XMPP this is done by managing one's privacy lists using the 'jabber:iq:privacy' namespace.</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
@@ -49,7 +51,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     private final List<PrivacyRule> items = new ArrayList<>();
 
     @XmlAttribute(name = "name")
-    private String name;
+    private final String name;
 
     @XmlTransient
     private boolean isActive;
@@ -58,6 +60,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     private boolean isDefault;
 
     private PrivacyList() {
+        this.name = null;
     }
 
     /**
@@ -67,7 +70,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @param items The privacy rules.
      */
     public PrivacyList(String name, Collection<PrivacyRule> items) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         if (items != null) {
             this.items.addAll(items);
         }
@@ -172,7 +175,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      *
      * @return The privacy rules.
      */
-    public List<PrivacyRule> getPrivacyRules() {
+    public final List<PrivacyRule> getPrivacyRules() {
         return Collections.unmodifiableList(items);
     }
 
@@ -181,7 +184,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      *
      * @return The name.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -190,7 +193,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      *
      * @return True, if this is the default list.
      */
-    public boolean isDefault() {
+    public final boolean isDefault() {
         return isDefault;
     }
 
@@ -199,7 +202,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      *
      * @return True, if this is the active list.
      */
-    public boolean isActive() {
+    public final boolean isActive() {
         return isActive;
     }
 
@@ -209,7 +212,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @return The list as active list.
      * @see #isActive()
      */
-    public PrivacyList asActive() {
+    public final PrivacyList asActive() {
         PrivacyList privacyList = new PrivacyList(name, items);
         privacyList.isActive = true;
         return privacyList;
@@ -221,7 +224,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @return The privacy list as default list.
      * @see #isDefault()
      */
-    public PrivacyList asDefault() {
+    public final PrivacyList asDefault() {
         PrivacyList privacyList = new PrivacyList(name, items);
         privacyList.isDefault = true;
         return privacyList;
@@ -234,7 +237,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @return The comparison result.
      */
     @Override
-    public int compareTo(PrivacyList o) {
+    public final int compareTo(PrivacyList o) {
         if (this == o) {
             return 0;
         }
@@ -266,7 +269,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return name;
     }
 }

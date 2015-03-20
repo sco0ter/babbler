@@ -30,6 +30,8 @@ import java.net.URI;
 
 /**
  * The implementation of the {@code <tune/>} element in the {@code http://jabber.org/protocol/tune} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0118.html">XEP-0118: User Tune</a>
@@ -44,33 +46,32 @@ public final class Tune {
     public static final String NAMESPACE = "http://jabber.org/protocol/tune";
 
     @XmlElement(name = "artist")
-    private String artist;
+    private final String artist;
 
     @XmlElement(name = "length")
-    private Integer length;
+    private final Integer length;
 
     @XmlElement(name = "rating")
-    private Integer rating;
+    private final Integer rating;
 
     @XmlElement(name = "source")
-    private String source;
+    private final String source;
 
     @XmlElement(name = "title")
-    private String title;
+    private final String title;
 
     @XmlElement(name = "track")
-    private String track;
+    private final String track;
 
     @XmlElement(name = "uri")
-    private URI uri;
+    private final URI uri;
 
-    @Deprecated
-    public Tune() {
+    private Tune() {
+        this(null, null);
     }
 
     public Tune(String artist, String title) {
-        this.artist = artist;
-        this.title = title;
+        this(artist, title, null, null, null, null, null);
     }
 
     public Tune(String artist, String title, Integer length, Integer rating, String source, String track, URI uri) {
@@ -90,153 +91,62 @@ public final class Tune {
      * Gets the artist or performer of the song or piece.
      *
      * @return The artist.
-     * @see #setArtist(String)
      */
-    public String getArtist() {
+    public final String getArtist() {
         return artist;
-    }
-
-    /**
-     * Sets the artist or performer of the song or piece.
-     *
-     * @param artist The artist.
-     * @see #getArtist()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setArtist(String artist) {
-        this.artist = artist;
     }
 
     /**
      * Gets the duration of the song or piece in seconds.
      *
      * @return The duration.
-     * @see #setLength(Integer)
      */
-    public Integer getLength() {
+    public final Integer getLength() {
         return length;
-    }
-
-    /**
-     * Sets the duration of the song or piece in seconds.
-     *
-     * @param length The length.
-     * @see #getLength()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setLength(Integer length) {
-        this.length = length;
     }
 
     /**
      * Gets the user's rating of the song or piece, from 1 (lowest) to 10 (highest).
      *
      * @return The rating.
-     * @see #setRating(Integer)
      */
-    public Integer getRating() {
+    public final Integer getRating() {
         return rating;
-    }
-
-    /**
-     * Sets the user's rating of the song or piece, from 1 (lowest) to 10 (highest).
-     *
-     * @param rating The rating.
-     * @see #getRating()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setRating(Integer rating) {
-        this.rating = rating;
     }
 
     /**
      * Gets the collection (e.g., album) or other source (e.g., a band website that hosts streams or audio files).
      *
      * @return The source.
-     * @see #setSource(String)
      */
-    public String getSource() {
+    public final String getSource() {
         return source;
-    }
-
-    /**
-     * Sets the collection (e.g., album) or other source (e.g., a band website that hosts streams or audio files).
-     *
-     * @param source The source.
-     * @see #getSource()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setSource(String source) {
-        this.source = source;
     }
 
     /**
      * Gets the title of the song or piece.
      *
      * @return The title.
-     * @see #setTitle(String)
      */
-    public String getTitle() {
+    public final String getTitle() {
         return title;
-    }
-
-    /**
-     * Sets the title of the song or piece.
-     *
-     * @param title The title.
-     * @see #getTitle()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     /**
      * Gets a unique identifier for the tune; e.g., the track number within a collection or the specific URI for the object (e.g., a stream or audio file).
      *
      * @return The track.
-     * @see #setTrack(String)
      */
-    public String getTrack() {
+    public final String getTrack() {
         return track;
-    }
-
-    /**
-     * Sets a unique identifier for the tune; e.g., the track number within a collection or the specific URI for the object (e.g., a stream or audio file).
-     *
-     * @param track The track.
-     * @see #getTrack()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setTrack(String track) {
-        this.track = track;
     }
 
     /**
      * Gets a URI or URL pointing to information about the song, collection, or artist.
      *
      * @return The URI.
-     * @see #setUri(java.net.URI)
      */
-    public URI getUri() {
+    public final URI getUri() {
         return uri;
-    }
-
-    /**
-     * Sets a URI or URL pointing to information about the song, collection, or artist.
-     *
-     * @param uri The URI.
-     * @see #setUri(java.net.URI)
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setUri(URI uri) {
-        this.uri = uri;
     }
 }

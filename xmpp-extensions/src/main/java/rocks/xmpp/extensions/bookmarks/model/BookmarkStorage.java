@@ -40,6 +40,7 @@ import java.util.List;
  * <p>It is RECOMMENDED to use Publish-Subscribe (XEP-0060) [4] for data storage, specifically through the use of personal data nodes hosted at the user's virtual publish-subscribe service as described in Best Practices for Persistent Storage of Private Data via Publish-Subscribe (XEP-0223) [5] and illustrated in the following sections.</p>
  * <p>Note: In the past, Private XML Storage (XEP-0049) [6] was the recommended method. In addition, other methods could be used, such as HTTP or WebDAV.</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048: Bookmarks</a>
@@ -72,7 +73,7 @@ public final class BookmarkStorage {
      * @see ChatRoomBookmark
      * @see WebPageBookmark
      */
-    public List<Bookmark> getBookmarks() {
+    public final List<Bookmark> getBookmarks() {
         return Collections.unmodifiableList(bookmarks);
     }
 }

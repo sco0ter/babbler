@@ -30,7 +30,6 @@ import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -85,7 +84,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return null;
                 }
             }
-        });
+        }, false);
         xmppSession.addIQHandler(InBandByteStream.Data.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -103,7 +102,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return iq.createError(Condition.ITEM_NOT_FOUND);
                 }
             }
-        });
+        }, false);
         xmppSession.addIQHandler(InBandByteStream.Close.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -123,14 +122,14 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return iq.createError(Condition.ITEM_NOT_FOUND);
                 }
             }
-        });
+        }, false);
 
         // 4. Use of Message Stanzas
         // an application MAY use message stanzas instead.
-        xmppSession.addMessageListener(new MessageListener() {
+        xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming() && isEnabled()) {
+                if (isEnabled()) {
                     InBandByteStream.Data data = e.getMessage().getExtension(InBandByteStream.Data.class);
                     if (data != null) {
                         IbbSession ibbSession = ibbSessionMap.get(data.getSessionId());

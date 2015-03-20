@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.chat;
 
 import java.util.EventObject;
 
@@ -35,19 +35,19 @@ public final class ChatSessionEvent extends EventObject {
 
     private final ChatSession chatSession;
 
-    private final boolean createdByIncomingMessage;
+    private final boolean createdByInboundMessage;
 
     /**
      * Constructs a chat session event.
      *
-     * @param source                   The chat manager on which the event initially occurred.
-     * @param chatSession              The chat session.
-     * @param createdByIncomingMessage True, if the chat session has been created by an incoming message.
+     * @param source                  The chat manager on which the event initially occurred.
+     * @param chatSession             The chat session.
+     * @param createdByInboundMessage True, if the chat session has been created by an inbound message.
      */
-    ChatSessionEvent(ChatManager source, ChatSession chatSession, boolean createdByIncomingMessage) {
+    ChatSessionEvent(ChatManager source, ChatSession chatSession, boolean createdByInboundMessage) {
         super(source);
         this.chatSession = chatSession;
-        this.createdByIncomingMessage = createdByIncomingMessage;
+        this.createdByInboundMessage = createdByInboundMessage;
     }
 
     /**
@@ -55,16 +55,16 @@ public final class ChatSessionEvent extends EventObject {
      *
      * @return The chat session.
      */
-    public ChatSession getChatSession() {
+    public final ChatSession getChatSession() {
         return chatSession;
     }
 
     /**
-     * Indicates, whether the chat session has been created by an incoming message or programmatically.
+     * Indicates, whether the chat session has been created by an inbound message or programmatically.
      *
-     * @return True, if the chat session has been created by an incoming message.
+     * @return True, if the chat session has been created by an inbound message.
      */
-    public boolean isCreatedByIncomingMessage() {
-        return createdByIncomingMessage;
+    public final boolean isCreatedByIncomingMessage() {
+        return createdByInboundMessage;
     }
 }

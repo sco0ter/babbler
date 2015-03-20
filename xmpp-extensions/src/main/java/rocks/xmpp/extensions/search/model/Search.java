@@ -35,9 +35,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:search} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>
@@ -55,30 +58,31 @@ public final class Search {
     private final List<Item> items = new ArrayList<>();
 
     @XmlElement
-    private String instructions;
+    private final String instructions;
 
     @XmlElement
-    private String first;
+    private final String first;
 
     @XmlElement
-    private String last;
+    private final String last;
 
     @XmlElement
-    private String nick;
+    private final String nick;
 
     @XmlElement
-    private String email;
+    private final String email;
 
     @XmlElementRef
-    private DataForm form;
+    private final DataForm form;
 
     @XmlElementRef
-    private ResultSetManagement resultSet;
+    private final ResultSetManagement resultSet;
 
     /**
      * Creates an empty search request.
      */
     public Search() {
+        this(null, null, null, null);
     }
 
     /**
@@ -90,10 +94,7 @@ public final class Search {
      * @param email The email.
      */
     public Search(String first, String last, String nick, String email) {
-        this.first = first;
-        this.last = last;
-        this.nick = nick;
-        this.email = email;
+        this(first, last, nick, email, null, null, null);
     }
 
     /**
@@ -105,12 +106,15 @@ public final class Search {
      * @param email     The email.
      * @param resultSet The result set information.
      */
-    public Search(String first, String last, String nick, String email, ResultSetManagement resultSet) {
+    public Search(String first, String last, String nick, String email, ResultSetManagement resultSet, String instructions, DataForm dataForm) {
         this.first = first;
         this.last = last;
         this.nick = nick;
         this.email = email;
         this.resultSet = resultSet;
+        this.instructions = instructions;
+        this.form = dataForm;
+
     }
 
     /**
@@ -118,7 +122,7 @@ public final class Search {
      *
      * @return The search instructions.
      */
-    public String getInstructions() {
+    public final String getInstructions() {
         return instructions;
     }
 
@@ -127,7 +131,7 @@ public final class Search {
      *
      * @return The first name.
      */
-    public String getFirst() {
+    public final String getFirst() {
         return first;
     }
 
@@ -136,7 +140,7 @@ public final class Search {
      *
      * @return The last name.
      */
-    public String getLast() {
+    public final String getLast() {
         return last;
     }
 
@@ -145,7 +149,7 @@ public final class Search {
      *
      * @return The nick name.
      */
-    public String getNick() {
+    public final String getNick() {
         return nick;
     }
 
@@ -154,7 +158,7 @@ public final class Search {
      *
      * @return The email address.
      */
-    public String getEmail() {
+    public final String getEmail() {
         return email;
     }
 
@@ -163,7 +167,7 @@ public final class Search {
      *
      * @return The items.
      */
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         return Collections.unmodifiableList(items);
     }
 
@@ -176,7 +180,7 @@ public final class Search {
      *
      * @return The data form, which contains additional information.
      */
-    public DataForm getAdditionalInformation() {
+    public final DataForm getAdditionalInformation() {
         return form;
     }
 
@@ -186,36 +190,54 @@ public final class Search {
      * @return The result set.
      * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
      */
-    public ResultSetManagement getResultSet() {
+    public final ResultSetManagement getResultSet() {
         return resultSet;
     }
 
     /**
      * The implementation of a search result item.
+     * <p>
+     * This class is immutable.
      */
     public static final class Item {
 
         @XmlAttribute(name = "jid")
-        private Jid jid;
+        private final Jid jid;
 
         @XmlElement(name = "first")
-        private String first;
+        private final String first;
 
         @XmlElement(name = "last")
-        private String last;
+        private final String last;
 
         @XmlElement(name = "nick")
-        private String nick;
+        private final String nick;
 
         @XmlElement(name = "email")
-        private String email;
+        private final String email;
+
+        private Item() {
+            this.jid = null;
+            this.first = null;
+            this.last = null;
+            this.nick = null;
+            this.email = null;
+        }
+
+        public Item(Jid jid, String first, String last, String nick, String email) {
+            this.jid = Objects.requireNonNull(jid);
+            this.first = first;
+            this.last = last;
+            this.nick = nick;
+            this.email = email;
+        }
 
         /**
          * Gets the first name.
          *
          * @return The first name.
          */
-        public String getFirst() {
+        public final String getFirst() {
             return first;
         }
 
@@ -224,7 +246,7 @@ public final class Search {
          *
          * @return The last name.
          */
-        public String getLast() {
+        public final String getLast() {
             return last;
         }
 
@@ -233,7 +255,7 @@ public final class Search {
          *
          * @return The nick name.
          */
-        public String getNick() {
+        public final String getNick() {
             return nick;
         }
 
@@ -242,7 +264,7 @@ public final class Search {
          *
          * @return The email address.
          */
-        public String getEmail() {
+        public final String getEmail() {
             return email;
         }
 
@@ -251,7 +273,7 @@ public final class Search {
          *
          * @return The JID.
          */
-        public Jid getJid() {
+        public final Jid getJid() {
             return jid;
         }
     }

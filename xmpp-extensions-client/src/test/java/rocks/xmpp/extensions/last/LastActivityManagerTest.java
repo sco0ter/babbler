@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -90,10 +90,10 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInAwayPresence() {
         final TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addPresenceListener(new PresenceListener() {
+        xmppSession1.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                xmppSession1.removePresenceListener(this);
+                xmppSession1.removeInboundPresenceListener(this);
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
             }
         });
@@ -105,7 +105,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInXAPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addPresenceListener(new PresenceListener() {
+        xmppSession1.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
@@ -119,7 +119,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInChatPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addPresenceListener(new PresenceListener() {
+        xmppSession1.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
@@ -132,7 +132,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInDndPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addPresenceListener(new PresenceListener() {
+        xmppSession1.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);
@@ -145,7 +145,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInInitialPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addPresenceListener(new PresenceListener() {
+        xmppSession1.addInboundPresenceListener(new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
                 Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null);

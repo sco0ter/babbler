@@ -17,7 +17,7 @@ contactExchangeManager.suggestContactAddition(Jid.valueOf("romeo@example.net"), 
 ## Listening for Contact Exchange Suggestions
 
 If you want to support contact exchange and therefore indicate support for it you should first enable the manager.
-Once enabled, incoming contact exchange suggestions can be listened to by adding a listener to the manager. The event object will contain the suggested items.
+Once enabled, inbound contact exchange suggestions can be listened to by adding a listener to the manager. The event object will contain the suggested items.
 
 ```java
 final ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);

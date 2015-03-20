@@ -93,7 +93,7 @@ public final class XmppUtils {
 
     /**
      * Creates an branched {@link java.io.InputStream}, which means that everything read by the source stream is written to the target {@link java.io.OutputStream}.
-     * <p>This is useful for reading the XMPP stream and writing the incoming XMPP traffic to an {@link java.io.OutputStream}.</p>
+     * <p>This is useful for reading the XMPP stream and writing the inbound XMPP traffic to an {@link java.io.OutputStream}.</p>
      *
      * @param source The source stream.
      * @param target The target stream.
@@ -105,7 +105,7 @@ public final class XmppUtils {
 
     /**
      * Creates a branched {@link java.io.OutputStream}, which means that everything written to the original stream is also written to the branched stream.
-     * <p>This is useful for writing the outgoing XMPP traffic to another stream.</p>
+     * <p>This is useful for writing the outbound XMPP traffic to another stream.</p>
      *
      * @param out    The original stream.
      * @param branch The branched stream.

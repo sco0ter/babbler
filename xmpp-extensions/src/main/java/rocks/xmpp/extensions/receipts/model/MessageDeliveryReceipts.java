@@ -68,6 +68,8 @@ public abstract class MessageDeliveryReceipts {
 
     /**
      * The implementation of the {@code <received/>} element in the {@code urn:xmpp:receipts} namespace.
+     * <p>
+     * This class is immutable.
      */
     @XmlRootElement
     public static final class Received extends MessageDeliveryReceipts {

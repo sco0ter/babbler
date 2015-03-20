@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@ package rocks.xmpp.extensions.chatstates;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.session.Chat;
-import rocks.xmpp.core.session.ChatManager;
+import rocks.xmpp.core.chat.Chat;
+import rocks.xmpp.core.chat.ChatManager;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -55,11 +55,11 @@ public class ChatStateManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET.asBareJid(), mockServer);
 
         final Collection<ChatState> chatStatesReceived = new ArrayList<>();
-        xmppSession2.addMessageListener(new MessageListener() {
+        xmppSession2.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
                 ChatState chatState = e.getMessage().getExtension(ChatState.class);
-                if (e.isIncoming() && chatState != null) {
+                if (chatState != null) {
                     chatStatesReceived.add(chatState);
                 }
             }

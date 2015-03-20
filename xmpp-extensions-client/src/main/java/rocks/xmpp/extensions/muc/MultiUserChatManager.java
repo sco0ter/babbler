@@ -83,24 +83,22 @@ public final class MultiUserChatManager extends ExtensionManager {
             }
         });
 
-        // Listen for incoming invitations.
-        xmppSession.addMessageListener(new MessageListener() {
+        // Listen for inbound invitations.
+        xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
-                    Message message = e.getMessage();
-                    // Check, if the message contains a mediated invitation.
-                    MucUser mucUser = message.getExtension(MucUser.class);
-                    if (mucUser != null) {
-                        for (Invite invite : mucUser.getInvites()) {
-                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
-                        }
-                    } else {
-                        // Check, if the message contains a direct invitation.
-                        DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
-                        if (directInvitation != null) {
-                            notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
-                        }
+                Message message = e.getMessage();
+                // Check, if the message contains a mediated invitation.
+                MucUser mucUser = message.getExtension(MucUser.class);
+                if (mucUser != null) {
+                    for (Invite invite : mucUser.getInvites()) {
+                        notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                    }
+                } else {
+                    // Check, if the message contains a direct invitation.
+                    DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
+                    if (directInvitation != null) {
+                        notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
                     }
                 }
             }
@@ -119,7 +117,7 @@ public final class MultiUserChatManager extends ExtensionManager {
     }
 
     /**
-     * Adds an invitation listener, which allows to listen for incoming multi-user chat invitations.
+     * Adds an invitation listener, which allows to listen for inbound multi-user chat invitations.
      *
      * @param invitationListener The listener.
      * @see #removeInvitationListener(InvitationListener)

@@ -95,9 +95,9 @@ public final class VisualDebugger implements XmppDebugger {
 
     private DebugController debugController;
 
-    private ByteArrayOutputStream outputStreamIncoming;
+    private ByteArrayOutputStream outputStreamInbound;
 
-    private ByteArrayOutputStream outputStreamOutgoing;
+    private ByteArrayOutputStream outputStreamOutbound;
 
     private static void initializeLogging() {
 
@@ -187,21 +187,19 @@ public final class VisualDebugger implements XmppDebugger {
         final PresenceListener presenceListener = new PresenceListener() {
             @Override
             public void handlePresence(PresenceEvent e) {
-                if (!e.isIncoming()) {
-                    final Presence presence = e.getPresence();
-                    if (presence.getTo() == null) {
-                        waitForPlatform();
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                debugController.viewModel.presence.set(presence);
-                            }
-                        });
-                    }
+                final Presence presence = e.getPresence();
+                if (presence.getTo() == null) {
+                    waitForPlatform();
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            debugController.viewModel.presence.set(presence);
+                        }
+                    });
                 }
             }
         };
-        xmppSession.addPresenceListener(presenceListener);
+        xmppSession.addOutboundPresenceListener(presenceListener);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -252,18 +250,18 @@ public final class VisualDebugger implements XmppDebugger {
                             final AnimationTimer animationTimer = new AnimationTimer() {
                                 @Override
                                 public void handle(long now) {
-                                    if (outputStreamIncoming != null) {
-                                        String incoming = outputStreamIncoming.toString();
-                                        if (!incoming.isEmpty()) {
-                                            debugController.appendTextInbound(incoming);
-                                            outputStreamIncoming.reset();
+                                    if (outputStreamInbound != null) {
+                                        String inbound = outputStreamInbound.toString();
+                                        if (!inbound.isEmpty()) {
+                                            debugController.appendTextInbound(inbound);
+                                            outputStreamInbound.reset();
                                         }
                                     }
-                                    if (outputStreamOutgoing != null) {
-                                        String outgoing = outputStreamOutgoing.toString();
-                                        if (!outgoing.isEmpty()) {
-                                            debugController.appendTextOutbound(outgoing);
-                                            outputStreamOutgoing.reset();
+                                    if (outputStreamOutbound != null) {
+                                        String outbound = outputStreamOutbound.toString();
+                                        if (!outbound.isEmpty()) {
+                                            debugController.appendTextOutbound(outbound);
+                                            outputStreamOutbound.reset();
                                         }
                                     }
                                 }
@@ -274,7 +272,7 @@ public final class VisualDebugger implements XmppDebugger {
                                 @Override
                                 public void handle(Event event) {
                                     xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
-                                    xmppSession.removePresenceListener(presenceListener);
+                                    xmppSession.removeOutboundPresenceListener(presenceListener);
                                     animationTimer.stop();
                                 }
                             });
@@ -297,13 +295,13 @@ public final class VisualDebugger implements XmppDebugger {
 
     @Override
     public void writeStanza(final String xml, final Object stanza) {
-        final String outgoing;
-        if (outputStreamOutgoing != null) {
-            outputStreamOutgoing.write((int) '\n');
-            outgoing = outputStreamOutgoing.toString();
-            outputStreamOutgoing.reset();
+        final String outbound;
+        if (outputStreamOutbound != null) {
+            outputStreamOutbound.write((int) '\n');
+            outbound = outputStreamOutbound.toString();
+            outputStreamOutbound.reset();
         } else {
-            outgoing = "";
+            outbound = "";
         }
 
         waitForPlatform();
@@ -311,8 +309,8 @@ public final class VisualDebugger implements XmppDebugger {
             @Override
             public void run() {
                 debugController.addStanza(new StanzaEntry(false, xml, stanza));
-                if (!outgoing.isEmpty()) {
-                    debugController.appendTextOutbound(outgoing);
+                if (!outbound.isEmpty()) {
+                    debugController.appendTextOutbound(outbound);
                 }
             }
         });
@@ -320,13 +318,13 @@ public final class VisualDebugger implements XmppDebugger {
 
     @Override
     public void readStanza(final String xml, final Object stanza) {
-        final String incoming;
-        if (outputStreamIncoming != null) {
-            outputStreamIncoming.write((int) '\n');
-            incoming = outputStreamIncoming.toString();
-            outputStreamIncoming.reset();
+        final String inbound;
+        if (outputStreamInbound != null) {
+            outputStreamInbound.write((int) '\n');
+            inbound = outputStreamInbound.toString();
+            outputStreamInbound.reset();
         } else {
-            incoming = "";
+            inbound = "";
         }
 
         waitForPlatform();
@@ -334,8 +332,8 @@ public final class VisualDebugger implements XmppDebugger {
             @Override
             public void run() {
                 debugController.addStanza(new StanzaEntry(true, xml, stanza));
-                if (!incoming.isEmpty()) {
-                    debugController.appendTextInbound(incoming);
+                if (!inbound.isEmpty()) {
+                    debugController.appendTextInbound(inbound);
                 }
             }
         });
@@ -343,13 +341,13 @@ public final class VisualDebugger implements XmppDebugger {
 
     @Override
     public OutputStream createOutputStream(OutputStream outputStream) {
-        outputStreamOutgoing = new ByteArrayOutputStream();
-        return XmppUtils.createBranchedOutputStream(outputStream, outputStreamOutgoing);
+        outputStreamOutbound = new ByteArrayOutputStream();
+        return XmppUtils.createBranchedOutputStream(outputStream, outputStreamOutbound);
     }
 
     @Override
     public InputStream createInputStream(InputStream inputStream) {
-        outputStreamIncoming = new ByteArrayOutputStream();
-        return XmppUtils.createBranchedInputStream(inputStream, outputStreamIncoming);
+        outputStreamInbound = new ByteArrayOutputStream();
+        return XmppUtils.createBranchedInputStream(inputStream, outputStreamInbound);
     }
 }

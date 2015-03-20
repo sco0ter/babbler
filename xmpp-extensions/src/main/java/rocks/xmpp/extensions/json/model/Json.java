@@ -26,9 +26,12 @@ package rocks.xmpp.extensions.json.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <json/>} element in the {@code urn:xmpp:json:0} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0335.html">XEP-0335: JSON Containers</a>
@@ -43,13 +46,14 @@ public final class Json {
     public static final String NAMESPACE = "urn:xmpp:json:0";
 
     @XmlValue
-    private String json;
+    private final String json;
 
     private Json() {
+        this.json = null;
     }
 
     public Json(String json) {
-        this.json = json;
+        this.json = Objects.requireNonNull(json);
     }
 
     /**
@@ -57,12 +61,12 @@ public final class Json {
      *
      * @return The JSON value.
      */
-    public String getValue() {
+    public final String getValue() {
         return json;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return json;
     }
 }

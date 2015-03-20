@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.util.EventObject;
 
 /**
- * A byte stream event, which notifies a listener about incoming byte stream requests.
+ * A byte stream event, which notifies a listener about inbound byte stream requests.
  * <p>
- * In order to accept an incoming byte stream, use {@link #accept()}, which will return a {@link rocks.xmpp.extensions.bytestreams.ByteStreamSession}.
+ * In order to accept an inbound byte stream, use {@link #accept()}, which will return a {@link rocks.xmpp.extensions.bytestreams.ByteStreamSession}.
  * To reject the byte stream, use {@link #reject()}, which will return a {@code <not-acceptable/>} error to the sender.
  *
  * @author Christian Schudt

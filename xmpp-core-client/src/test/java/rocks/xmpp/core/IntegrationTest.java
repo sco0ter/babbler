@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,45 +22,41 @@
  * THE SOFTWARE.
  */
 
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.XmppSessionConfiguration;
+package rocks.xmpp.core;
+
+import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 /**
  * @author Christian Schudt
  */
-public class BoshTest {
+public abstract class IntegrationTest {
+    public static final String DOMAIN = "localhost";
 
-    public static void main(String args[]) {
+    public static final String HOSTNAME = "localhost";
 
-        XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                //.debugger(VisualDebugger.class)
-                .build();
-        XmppSessionConfiguration.setDefault(configuration);
+    public static final String USER_1 = "111";
 
+    public static final String PASSWORD_1 = "111";
+
+    public static final String USER_2 = "222";
+
+    public static final String PASSWORD_2 = "222";
+
+    static {
         BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
-                .hostname("localhost")
+                .hostname(HOSTNAME)
                 .port(7070)
-                .file("/http-bind/")
-                //.useKeySequence(true)
                 .build();
+        BoshConnectionConfiguration.setDefault(boshConnectionConfiguration);
 
-        long start = System.currentTimeMillis();
-
-        for (int i = 0; i < 500; i++) {
-            XmppSession xmppSession = new XmppSession("christihudtsmbp.fritz.box", boshConnectionConfiguration);
-            System.out.println(i);
-            try {
-                xmppSession.connect();
-                xmppSession.login("admin", "admin", null);
-                //xmppSession.send(new Presence());
-                //xmppSession.getManager(RosterManager.class).requestRoster();
-                xmppSession.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println(System.currentTimeMillis() - start);
+        TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
+                .hostname(HOSTNAME)
+                .port(5222)
+                .secure(false)
+                .build();
+        TcpConnectionConfiguration.setDefault(tcpConnectionConfiguration);
     }
+
 
 }

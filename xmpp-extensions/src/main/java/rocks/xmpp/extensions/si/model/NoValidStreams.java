@@ -48,7 +48,7 @@ final class NoValidStreams {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "<si:no-valid-streams/>";
     }
 }

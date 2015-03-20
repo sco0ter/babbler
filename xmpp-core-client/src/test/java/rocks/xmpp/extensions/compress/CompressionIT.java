@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,33 @@
  * THE SOFTWARE.
  */
 
-import java.util.logging.StreamHandler;
+package rocks.xmpp.extensions.compress;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.IntegrationTest;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppSession;
 
 /**
  * @author Christian Schudt
  */
-public class LogHandler extends StreamHandler {
+public class CompressionIT extends IntegrationTest {
 
-    public LogHandler() {
-        super();
+    @Test
+    public void testConnectingWithCompression() throws XmppException {
+        TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                .hostname(HOSTNAME)
+                .compressionMethods(CompressionManager.ZLIB)
+                .secure(false)
+                .build();
 
+        try (XmppSession xmppSession = new XmppSession(DOMAIN, tcpConfiguration)) {
+            xmppSession.connect();
+            xmppSession.loginAnonymously();
+            CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
+            Assert.assertEquals(compressionManager.getNegotiatedCompressionMethod(), CompressionManager.ZLIB);
+        }
     }
-
 }

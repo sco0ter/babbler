@@ -252,11 +252,26 @@ public abstract class ConnectionConfiguration {
 
         /**
          * Sets a timeout for the connection establishment.
+         * <p>
+         * Connecting to a XMPP server involves multiple steps:
+         * <ul>
+         * <li>DNS lookup</li>
+         * <li>Connection establishment of the underlying transport (e.g. TCP or HTTP)</li>
+         * <li>XMPP stream negotiation</li>
+         * </ul>
+         * This timeout is only used for DNS lookup (which is not used in all cases) and for connection establishment of the underlying transport (e.g. for a socket connection), but not for stream negotiation.
+         * Therefore it does not reflect how long the whole connection process may take, but should be understood as hint for establishing the underlying XMPP transport.
+         * <p>
+         * XMPP stream negotiation is configured via {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(int)}
          *
          * @param connectTimeout The timeout in milliseconds.
          * @return The builder.
+         * @see XmppSession#connect()
          */
         public final T connectTimeout(int connectTimeout) {
+            if (connectTimeout < 0) {
+                throw new IllegalStateException("connectionTimeout cannot be negative.");
+            }
             this.connectTimeout = connectTimeout;
             return self();
         }

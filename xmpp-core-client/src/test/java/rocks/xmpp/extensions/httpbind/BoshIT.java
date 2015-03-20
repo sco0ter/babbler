@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,52 +22,34 @@
  * THE SOFTWARE.
  */
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+package rocks.xmpp.extensions.httpbind;
 
-@XmlRootElement(name = "product", namespace = "com:mycompany:product")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Product {
+import org.testng.annotations.Test;
+import rocks.xmpp.core.IntegrationTest;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.roster.RosterManager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.client.Presence;
 
-    @XmlAttribute
-    private String id;
+/**
+ * @author Christian Schudt
+ */
+public class BoshIT extends IntegrationTest {
 
-    @XmlAttribute
-    private String price;
+    @Test
+    public void testBoshConnection() throws XmppException {
 
-    @XmlElement
-    private String name;
+        long start = System.currentTimeMillis();
 
-    @XmlElement
-    private String description;
-
-    private Product() {
-        // Private no-args default constructor for JAXB.
-    }
-
-    public Product(String id, String price, String name, String description) {
-        this.id = id;
-        this.price = price;
-        this.name = name;
-        this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
+        for (int i = 0; i < 10; i++) {
+            try (XmppSession xmppSession = new XmppSession(DOMAIN, BoshConnectionConfiguration.getDefault())) {
+                System.out.println(i);
+                xmppSession.connect();
+                xmppSession.login("admin", "admin", null);
+                xmppSession.send(new Presence());
+                xmppSession.getManager(RosterManager.class).requestRoster();
+            }
+        }
+        System.out.println(System.currentTimeMillis() - start);
     }
 }

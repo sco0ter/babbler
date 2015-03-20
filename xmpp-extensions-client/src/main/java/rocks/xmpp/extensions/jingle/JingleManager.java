@@ -30,8 +30,8 @@ import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -80,95 +80,89 @@ public final class JingleManager extends ExtensionManager {
                 }
             }
         });
-        xmppSession.addIQListener(new IQListener() {
+        xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
-            public void handleIQ(IQEvent e) {
-                IQ iq = e.getIQ();
-                if (e.isIncoming() && isEnabled() && !e.isConsumed() && iq.getType() == IQ.Type.SET) {
-                    Jingle jingle = iq.getExtension(Jingle.class);
-                    if (jingle != null) {
+            public IQ processRequest(IQ iq) {
+                Jingle jingle = iq.getExtension(Jingle.class);
 
-                        // The value of the 'action' attribute MUST be one of the following.
-                        // If an entity receives a value not defined here, it MUST ignore the attribute and MUST return a <bad-request/> error to the sender.
-                        // There is no default value for the 'action' attribute.
-                        if (jingle.getAction() == null) {
-                            xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST, "No valid action attribute set.")));
-                        } else if (jingle.getSessionId() == null) {
-                            xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST, "No session id set.")));
-                        } else if (jingle.getAction() == Jingle.Action.SESSION_INITIATE) {
+                // The value of the 'action' attribute MUST be one of the following.
+                // If an entity receives a value not defined here, it MUST ignore the attribute and MUST return a <bad-request/> error to the sender.
+                // There is no default value for the 'action' attribute.
+                if (jingle.getAction() == null) {
+                    return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No valid action attribute set."));
+                } else if (jingle.getSessionId() == null) {
+                    return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No session id set."));
+                } else if (jingle.getAction() == Jingle.Action.SESSION_INITIATE) {
 
-                            // Check if the Jingle request is not mal-formed, otherwise return a bad-request error.
-                            // See 6.3.2 Errors
-                            if (jingle.getContents().isEmpty()) {
-                                xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST, "No contents found.")));
-                            } else {
-                                boolean hasContentWithDispositionSession = false;
-                                boolean hasSupportedApplications = false;
-                                boolean hasSupportedTransports = false;
-                                // Check if we support the application format and transport method and at least one content element has a disposition of "session".
-                                for (Jingle.Content content : jingle.getContents()) {
-                                    // Check if the content disposition is "session" (default value is "session").
-                                    if (!hasContentWithDispositionSession && ("session".equals(content.getDisposition()) || content.getDisposition() == null)) {
-                                        hasContentWithDispositionSession = true;
-                                    }
-
-                                    if (!hasSupportedApplications && content.getApplicationFormat() != null) {
-                                        hasSupportedApplications = true;
-                                    }
-
-                                    if (!hasSupportedTransports && content.getTransportMethod() != null) {
-                                        hasSupportedTransports = true;
-                                    }
-                                }
-
-                                if (!hasContentWithDispositionSession) {
-                                    // When sending a session-initiate with one <content/> element,
-                                    // the value of the <content/> element's 'disposition' attribute MUST be "session"
-                                    // (if there are multiple <content/> elements then at least one MUST have a disposition of "session");
-                                    // if this rule is violated, the responder MUST return a <bad-request/> error to the initiator.
-                                    xmppSession.send(iq.createError(new StanzaError(Condition.BAD_REQUEST, "No content with disposition 'session' found.")));
-                                } else {
-                                    // If the request was ok, immediately acknowledge the initiation request.
-                                    // See 6.3.1 Acknowledgement
-                                    xmppSession.send(iq.createResult());
-
-                                    // However, after acknowledging the session initiation request,
-                                    // the responder might subsequently determine that it cannot proceed with negotiation of the session
-                                    // (e.g., because it does not support any of the offered application formats or transport methods,
-                                    // because a human user is busy or unable to accept the session, because a human user wishes to formally decline
-                                    // the session, etc.). In these cases, the responder SHOULD immediately acknowledge the session initiation request
-                                    // but then terminate the session with an appropriate reason as described in the Termination section of this document.
-
-                                    if (!hasSupportedApplications) {
-                                        // Terminate the session with <unsupported-applications/>.
-                                        xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedApplications()))));
-                                    } else if (!hasSupportedTransports) {
-                                        // Terminate the session with <unsupported-transports/>.
-                                        xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedTransports()))));
-                                    } else {
-                                        // Everything is fine, create the session and notify the listeners.
-                                        JingleSession jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
-                                        jingleSessionMap.put(jingle.getSessionId(), jingleSession);
-                                        notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
-                                    }
-                                }
+                    // Check if the Jingle request is not mal-formed, otherwise return a bad-request error.
+                    // See 6.3.2 Errors
+                    if (jingle.getContents().isEmpty()) {
+                        return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No contents found."));
+                    } else {
+                        boolean hasContentWithDispositionSession = false;
+                        boolean hasSupportedApplications = false;
+                        boolean hasSupportedTransports = false;
+                        // Check if we support the application format and transport method and at least one content element has a disposition of "session".
+                        for (Jingle.Content content : jingle.getContents()) {
+                            // Check if the content disposition is "session" (default value is "session").
+                            if (!hasContentWithDispositionSession && ("session".equals(content.getDisposition()) || content.getDisposition() == null)) {
+                                hasContentWithDispositionSession = true;
                             }
-                        } else {
 
-                            // Another action (!= session-initiate) has been sent.
-                            // Check if we know the session.
-                            JingleSession jingleSession = jingleSessionMap.get(jingle.getSessionId());
+                            if (!hasSupportedApplications && content.getApplicationFormat() != null) {
+                                hasSupportedApplications = true;
+                            }
 
-                            if (jingleSession == null) {
-                                // If we receive a non-session-initiate Jingle action with an unknown session id,
-                                // return <item-not-found/> and <unknown-session/>
-                                xmppSession.send(iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession())));
-                            } else {
-                                jingleSession.notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
-                                xmppSession.send(iq.createResult());
+                            if (!hasSupportedTransports && content.getTransportMethod() != null) {
+                                hasSupportedTransports = true;
                             }
                         }
-                        e.consume();
+
+                        if (!hasContentWithDispositionSession) {
+                            // When sending a session-initiate with one <content/> element,
+                            // the value of the <content/> element's 'disposition' attribute MUST be "session"
+                            // (if there are multiple <content/> elements then at least one MUST have a disposition of "session");
+                            // if this rule is violated, the responder MUST return a <bad-request/> error to the initiator.
+                            return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No content with disposition 'session' found."));
+                        } else {
+
+                            // However, after acknowledging the session initiation request,
+                            // the responder might subsequently determine that it cannot proceed with negotiation of the session
+                            // (e.g., because it does not support any of the offered application formats or transport methods,
+                            // because a human user is busy or unable to accept the session, because a human user wishes to formally decline
+                            // the session, etc.). In these cases, the responder SHOULD immediately acknowledge the session initiation request
+                            // but then terminate the session with an appropriate reason as described in the Termination section of this document.
+
+                            if (!hasSupportedApplications) {
+                                // Terminate the session with <unsupported-applications/>.
+                                xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedApplications()))));
+                            } else if (!hasSupportedTransports) {
+                                // Terminate the session with <unsupported-transports/>.
+                                xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedTransports()))));
+                            } else {
+                                // Everything is fine, create the session and notify the listeners.
+                                JingleSession jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
+                                jingleSessionMap.put(jingle.getSessionId(), jingleSession);
+                                notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                            }
+                            // If the request was ok, immediately acknowledge the initiation request.
+                            // See 6.3.1 Acknowledgement
+                            return iq.createResult();
+                        }
+                    }
+                } else {
+
+                    // Another action (!= session-initiate) has been sent.
+                    // Check if we know the session.
+                    JingleSession jingleSession = jingleSessionMap.get(jingle.getSessionId());
+
+                    if (jingleSession == null) {
+                        // If we receive a non-session-initiate Jingle action with an unknown session id,
+                        // return <item-not-found/> and <unknown-session/>
+                        return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession()));
+                    } else {
+                        jingleSession.notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                        return iq.createResult();
                     }
                 }
             }

@@ -36,15 +36,13 @@ xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener
 Whenever one of your contacts updates his presence (e.g. comes offline, goes away, goes offline, ...), you can react to it with:
 
 ```java
-xmppSession.addPresenceListener(new PresenceListener() {
+xmppSession.addInboundPresenceListener(new PresenceListener() {
     @Override
     public void handlePresence(PresenceEvent e) {
-        if (e.isIncoming()) {
-            Presence presence = e.getPresence();
-            Contact contact = xmppSession.getManager(RosterManager.class).getContact(presence.getFrom());
-            if (contact != null) {
-                // ... contact's presence has updated.
-            }
+        Presence presence = e.getPresence();
+        Contact contact = xmppSession.getManager(RosterManager.class).getContact(presence.getFrom());
+        if (contact != null) {
+            // ... contact's presence has updated.
         }
     }
 });
@@ -53,14 +51,12 @@ xmppSession.addPresenceListener(new PresenceListener() {
 Presence is also used for requesting subscription to your presence status.
 
 ```java
-xmppSession.addPresenceListener(new PresenceListener() {
+xmppSession.addInboundPresenceListener(new PresenceListener() {
     @Override
     public void handlePresence(PresenceEvent e) {
-        if (e.isIncoming()) {
-            Presence presence = e.getPresence();
-            if (presence.getType() == Presence.Type.SUBSCRIBE) {
-                // presence.getFrom() wants to subscribe to your presence.
-            }
+        Presence presence = e.getPresence();
+        if (presence.getType() == Presence.Type.SUBSCRIBE) {
+            // presence.getFrom() wants to subscribe to your presence.
         }
     }
 });
@@ -76,36 +72,32 @@ xmppSession.getManager(PresenceManager.class).approveSubscription(presence.getFr
 xmppSession.getManager(PresenceManager.class).denySubscription(presence.getFrom());
 ```
 
-## Listening for Incoming Messages
+## Listening for Inbound Messages
 
 Listening for messages is done by adding a message listener to the session.
 
 ```java
-xmppSession.addMessageListener(new MessageListener() {
+xmppSession.addInboundMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
-            Message message = e.getMessage();
-            // Handle message.
-        }
+        Message message = e.getMessage();
+        // Handle message.
     }
 });
 ```
 
-## Intercepting Outgoing Messages (or Stanzas in General)
+## Intercepting Outbound Messages (or Stanzas in General)
 
-The same approach as for incoming messages is also used for outgoing messages. The only difference is the \'incoming\’ property of the event.
+The same approach as for inbound messages is also used for outbound messages. The only difference is the \'inbound\’ property of the event.
 
 You can use this, if you want to add extensions to a stanza or otherwise modify the stanza.
 
 ```java
-xmppSession.addMessageListener(new MessageListener() {
+xmppSession.addOutboundMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        if (!e.isIncoming()) {
-            Message message = e.getMessage();
-            // you could add an extension to the message here.
-        }
+        Message message = e.getMessage();
+        // you could add an extension to the message here.
     }
 });
 ```

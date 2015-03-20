@@ -30,6 +30,8 @@ import java.net.URL;
 
 /**
  * The implementation of the {@code <confirm/>} element in the {@code http://jabber.org/protocol/http-auth} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
@@ -44,15 +46,16 @@ public final class ConfirmationRequest {
     public static final String NAMESPACE = "http://jabber.org/protocol/http-auth";
 
     @XmlAttribute(name = "id")
-    private String id;
+    private final String id;
 
     @XmlAttribute(name = "method")
-    private String method;
+    private final String method;
 
     @XmlAttribute(name = "url")
-    private URL url;
+    private final URL url;
 
     private ConfirmationRequest() {
+        this(null, null, null);
     }
 
     /**
@@ -73,7 +76,7 @@ public final class ConfirmationRequest {
      *
      * @return The id.
      */
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
@@ -82,7 +85,7 @@ public final class ConfirmationRequest {
      *
      * @return The HTTP method.
      */
-    public String getMethod() {
+    public final String getMethod() {
         return method;
     }
 
@@ -91,7 +94,7 @@ public final class ConfirmationRequest {
      *
      * @return The URL.
      */
-    public URL getUrl() {
+    public final URL getUrl() {
         return url;
     }
 }

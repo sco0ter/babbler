@@ -44,7 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This manager allows to listen for incoming requests (by an XMPP server) to confirm that the current XMPP user made an HTTP request, i.e. to verify that the HTTP request was in fact made by the XMPP user.
+ * This manager allows to listen for inbound requests (by an XMPP server) to confirm that the current XMPP user made an HTTP request, i.e. to verify that the HTTP request was in fact made by the XMPP user.
  * <p>
  * If you want to confirm or deny HTTP requests, {@linkplain #addHttpAuthenticationListener(HttpAuthenticationListener) add a listener} and call {@link HttpAuthenticationEvent#confirm()} or {@link HttpAuthenticationEvent#deny()} on the event object.
  * </p>
@@ -85,16 +85,14 @@ public final class HttpAuthenticationManager extends ExtensionManager {
             }
         });
 
-        xmppSession.addMessageListener(new MessageListener() {
+        xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (e.isIncoming()) {
-                    Message message = e.getMessage();
-                    if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
-                        ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
-                        if (confirmationRequest != null) {
-                            notifyHttpAuthListeners(message, confirmationRequest);
-                        }
+                Message message = e.getMessage();
+                if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
+                    ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
+                    if (confirmationRequest != null) {
+                        notifyHttpAuthListeners(message, confirmationRequest);
                     }
                 }
             }

@@ -37,11 +37,14 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 /**
  * The implementation of the {@code <c/>} element in the {@code http://jabber.org/protocol/caps}.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
@@ -59,18 +62,21 @@ public final class EntityCapabilities extends StreamFeature {
      * The hashing algorithm used to generate the verification string.
      */
     @XmlAttribute
-    private String hash;
+    private final String hash;
 
     @XmlAttribute
-    private String node;
+    private final String node;
 
     /**
      * The 'ver' attribute is a specially-constructed string (called a "verification string") that represents the entity's service discovery identity.
      */
     @XmlAttribute
-    private String ver;
+    private final String ver;
 
     private EntityCapabilities() {
+        this.node = null;
+        this.hash = null;
+        this.ver = null;
     }
 
     /**
@@ -79,9 +85,9 @@ public final class EntityCapabilities extends StreamFeature {
      * @param ver  The verification string.
      */
     public EntityCapabilities(String node, String hash, String ver) {
-        this.node = node;
-        this.hash = hash;
-        this.ver = ver;
+        this.node = Objects.requireNonNull(node);
+        this.hash = Objects.requireNonNull(hash);
+        this.ver = Objects.requireNonNull(ver);
     }
 
     /**
@@ -187,7 +193,7 @@ public final class EntityCapabilities extends StreamFeature {
      *
      * @return The verification string.
      */
-    public String getHashingAlgorithm() {
+    public final String getHashingAlgorithm() {
         return hash;
     }
 
@@ -200,7 +206,7 @@ public final class EntityCapabilities extends StreamFeature {
      *
      * @return The node.
      */
-    public String getNode() {
+    public final String getNode() {
         return node;
     }
 
@@ -209,17 +215,17 @@ public final class EntityCapabilities extends StreamFeature {
      *
      * @return The verification string.
      */
-    public String getVerificationString() {
+    public final String getVerificationString() {
         return ver;
     }
 
     @Override
-    public int getPriority() {
+    public final int getPriority() {
         return 0;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return ver;
     }
 }

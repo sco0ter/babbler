@@ -31,20 +31,21 @@ import javax.xml.bind.annotation.XmlValue;
  */
 final class NumericBoolean {
     @XmlValue
-    private Integer value;
+    private final Integer value;
 
     private NumericBoolean() {
+        this(false);
     }
 
     public NumericBoolean(Boolean b) {
         this.value = b != null && b ? 1 : 0;
     }
 
-    Integer getValue() {
+    final Integer getValue() {
         return value;
     }
 
-    Boolean getAsBoolean() {
+    final Boolean getAsBoolean() {
         return value != null ? value != 0 : null;
     }
 }

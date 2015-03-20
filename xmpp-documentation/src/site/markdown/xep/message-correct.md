@@ -32,7 +32,7 @@ messageCorrectionManager.correctMessage("123", new Message(Jid.valueOf("juliet@e
 
 ## Listening for Message Corrections
 
-If a message should be replaced by another message, you should check incoming messages for the `Replace` extension and then replace the old message:
+If a message should be replaced by another message, you should check inbound messages for the `Replace` extension and then replace the old message:
 
 ```java
 Replace replace = message.getExtension(Replace.class);

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,6 +57,7 @@ public class ActivityTest extends XmlTest {
         Assert.assertEquals(activity.getText(), "My nurse's birthday!");
         Assert.assertEquals(activity.getCategory(), Category.RELAXING);
         Assert.assertTrue(activity.getSpecificActivity() instanceof SpecificActivity.Partying);
+        Assert.assertEquals(activity.toString(), "relaxing / partying (My nurse's birthday!)");
     }
 
     @Test

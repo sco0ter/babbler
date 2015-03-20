@@ -28,6 +28,8 @@ import rocks.xmpp.core.Jid;
 
 /**
  * The offline message header.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>
@@ -48,7 +50,7 @@ public final class OfflineMessageHeader {
      *
      * @return The sender.
      */
-    public Jid getSender() {
+    public final Jid getSender() {
         return sender;
     }
 
@@ -57,7 +59,7 @@ public final class OfflineMessageHeader {
      *
      * @return The id.
      */
-    public String getId() {
+    public final String getId() {
         return id;
     }
 }

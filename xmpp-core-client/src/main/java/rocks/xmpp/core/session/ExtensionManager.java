@@ -38,13 +38,17 @@ public abstract class ExtensionManager extends Manager {
 
     protected final XmppSession xmppSession;
 
-    protected final Collection<String> features;
+    private final Collection<String> features;
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     protected ExtensionManager(XmppSession xmppSession, String... features) {
+        this(xmppSession, Arrays.asList(features));
+    }
+
+    protected ExtensionManager(XmppSession xmppSession, Collection<String> features) {
         this.xmppSession = xmppSession;
-        this.features = new ArrayList<>(Arrays.asList(features));
+        this.features = features;
 
         if (this instanceof ServiceDiscoveryManager) {
             serviceDiscoveryManager = (ServiceDiscoveryManager) this;

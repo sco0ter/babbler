@@ -46,11 +46,11 @@ import java.util.logging.Logger;
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.
  * <p>
- * This manager automatically adds message delivery requests to outgoing messages, if enabled.
+ * This manager automatically adds message delivery requests to outbound messages, if enabled.
  * If a message has been received by the recipient, registered listeners will be notified about the receipt.
  * </p>
  * <p>
- * If an incoming message contains a delivery receipt request, a receipt is automatically sent back to the requesting entity.
+ * If an inbound message contains a delivery receipt request, a receipt is automatically sent back to the requesting entity.
  * </p>
  * <p>
  * Note that messages must contain an id, in order to track receipts. If a message does not contain an id, requests won't be added.
@@ -104,56 +104,61 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                 }
             }
         });
-        xmppSession.addMessageListener(new MessageListener() {
+        xmppSession.addInboundMessageListener(new MessageListener() {
             @Override
             public void handleMessage(MessageEvent e) {
-                if (isEnabled()) {
-                    Message message = e.getMessage();
+                if (!isEnabled()) {
+                    return;
+                }
+                Message message = e.getMessage();
 
-                    // If a message is received, check if it requests a receipt.
-                    if (e.isIncoming()) {
-
-                        // If a client requests a receipt, send an ack message.
-                        if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {
-                            // Add an empty body. Otherwise some servers, won't store it in offline storage.
-                            Message receiptMessage = new Message(message.getFrom(), Message.Type.NORMAL, " ");
-                            receiptMessage.getExtensions().add(new MessageDeliveryReceipts.Received(message.getId()));
-                            xmppSession.send(receiptMessage);
-                        }
-                        // If the message is a receipt.
-                        MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
-                        if (received != null) {
-                            DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                            Date deliveryDate;
-                            if (delayedDelivery != null) {
-                                deliveryDate = delayedDelivery.getTimeStamp();
-                            } else {
-                                deliveryDate = new Date();
-                            }
-
-                            // Notify the listeners about the reception.
-                            for (MessageDeliveredListener messageDeliveredListener : messageDeliveredListeners) {
-                                try {
-                                    messageDeliveredListener.messageDelivered(new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), deliveryDate));
-                                } catch (Exception ex) {
-                                    logger.log(Level.WARNING, ex.getMessage(), ex);
-                                }
-                            }
-                        }
+                // If a client requests a receipt, send an ack message.
+                if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {
+                    // Add an empty body. Otherwise some servers, won't store it in offline storage.
+                    Message receiptMessage = new Message(message.getFrom(), Message.Type.NORMAL, " ");
+                    receiptMessage.getExtensions().add(new MessageDeliveryReceipts.Received(message.getId()));
+                    xmppSession.send(receiptMessage);
+                }
+                // If the message is a receipt.
+                MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
+                if (received != null) {
+                    DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
+                    Date deliveryDate;
+                    if (delayedDelivery != null) {
+                        deliveryDate = delayedDelivery.getTimeStamp();
                     } else {
-                        // If we are sending a message, append a receipt request, if it passes all filters.
-                        for (StanzaFilter<Message> messageFilter : messageFilters) {
-                            if (!messageFilter.accept(message)) {
-                                return;
-                            }
-                        }
-                        // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
-                        // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
-                        if (message.getExtension(MessageDeliveryReceipts.Received.class) == null && message.getId() != null) {
-                            // Add a delivery receipt request.
-                            message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
+                        deliveryDate = new Date();
+                    }
+
+                    // Notify the listeners about the reception.
+                    for (MessageDeliveredListener messageDeliveredListener : messageDeliveredListeners) {
+                        try {
+                            messageDeliveredListener.messageDelivered(new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), deliveryDate));
+                        } catch (Exception ex) {
+                            logger.log(Level.WARNING, ex.getMessage(), ex);
                         }
                     }
+                }
+            }
+        });
+        xmppSession.addOutboundMessageListener(new MessageListener() {
+            @Override
+            public void handleMessage(MessageEvent e) {
+                if (!isEnabled()) {
+                    return;
+                }
+                Message message = e.getMessage();
+                // If we are sending a message, append a receipt request, if it passes all filters.
+                for (StanzaFilter<Message> messageFilter : messageFilters) {
+                    if (!messageFilter.accept(message)) {
+                        return;
+                    }
+                }
+                // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
+                // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
+                if (message.getExtension(MessageDeliveryReceipts.Received.class) == null && message.getId() != null) {
+                    // Add a delivery receipt request.
+                    message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
                 }
             }
         });

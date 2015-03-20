@@ -230,7 +230,12 @@ public final class BoshConnection extends Connection {
 
             Hashtable<String, String> env = new Hashtable<>();
             env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-            env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(timeout));
+            // 0 seems to mean "infinite", which is a bad idea.
+            if (timeout > 0) {
+                // http://docs.oracle.com/javase/7/docs/technotes/guides/jndi/jndi-dns.html
+                // If this property has not been set, the default initial timeout is 1000 milliseconds.
+                env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(timeout));
+            }
 
             DirContext ctx = new InitialDirContext(env);
 
@@ -677,9 +682,9 @@ public final class BoshConnection extends Connection {
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8"), true);
 
                                     // Then write the XML to the output stream by marshalling the object to the writer.
-                                    synchronized (getXmppSession().getMarshaller()) {
-                                        getXmppSession().getMarshaller().marshal(body, xmlStreamWriter);
-                                    }
+                                    // Marshaller needs to be recreated here, because it's not thread-safe.
+                                    getXmppSession().createMarshaller().marshal(body, xmlStreamWriter);
+
                                     if (debugger != null) {
                                         debugger.writeStanza(byteArrayOutputStreamRequest.toString(), body);
                                     }
@@ -724,10 +729,8 @@ public final class BoshConnection extends Connection {
 
                                         // Parse the <body/> element.
                                         if (xmlEvent.isStartElement()) {
-                                            JAXBElement<Body> element;
-                                            synchronized (getXmppSession().getUnmarshaller()) {
-                                                element = getXmppSession().getUnmarshaller().unmarshal(xmlEventReader, Body.class);
-                                            }
+                                            JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
+
                                             if (debugger != null) {
                                                 debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
                                             }

@@ -1,14 +1,15 @@
 # Changelog
 ---
 
-## Version 0.5.0-SNAPSHOT
+## Version 0.5.0 (2015-03-21)
 
 * Add support for [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
     * Specifically your hosted Service Discovery items (XEP-0030) can now return [limited result sets](http://xmpp.org/extensions/xep-0059.html#examples).
 * Add support for [XEP-0222: Persistent Storage of Public Data via PubSub](http://xmpp.org/extensions/xep-0222.html)
 * Add support for [XEP-0223: Persistent Storage of Private Data via PubSub](http://xmpp.org/extensions/xep-0223.html)
 * Add support for [Roster Versioning](http://xmpp.org/rfcs/rfc6121.html#roster-versioning)
-* Rename method signature of `[Message|Presence|IQ]Listener` from `handle` to `handle[Message|Presence|IQ]` for better readability if a class implements multiple of those interfaces. (API change!)
+* Rework the way inbound/outbound stanzas are handled: Instead of `add[Message|Presence|IQ]Listener` you now have to use `addInbound[Message|Presence|IQ]Listener`. (API change!)
+* Add `IQHandler` interface which allows to easily respond to IQ request.
 * PubSub: Add support for [Publish Options](http://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
 * PubSub: Add API to retrieve subscription options for a specific subscription id.
 * Harmonize Exception design: Most methods now only throw `XmppException` (or a subclass thereof)
@@ -16,7 +17,7 @@
 * Rename some methods to better resemble the terminology of the specifications (e.g. `discover*` instead of `get*`).
 * Refactor Chat State Notifications, Message Delivery Receipts, PingManager
 * Refactor [XEP-0107](http://xmpp.org/extensions/xep-0107.html): Mood values can now take specific (custom) moods.
-* Most classes are now (effectively) immutable.
+* Most extension classes are now immutable.
 * Couple RosterManager more tightly with [XEP-0083: Nested Roster Groups](http://xmpp.org/extensions/xep-0083.html).
 * Add new `connect(Jid from)` method to set the 'from' attribute in the stream header.
 * Add new `login()` method, which allows to pass an authorization id and a `CallbackHandler`.

@@ -30,7 +30,7 @@
 
     <groupId>rocks.xmpp</groupId>
     <artifactId>root</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.5.0</version>
     <packaging>pom</packaging>
 
     <name>XMPP.rocks - An XMPP Stack</name>
@@ -141,7 +141,7 @@
                 <version>2.1</version>
                 <inherited>false</inherited>
                 <configuration>
-                    <newVersion>0.5.0-SNAPSHOT</newVersion>
+                    <newVersion>0.5.0</newVersion>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
                 <executions>
@@ -296,6 +296,21 @@
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                    <quiet>true</quiet>
+                                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+                                    <includeDependencySources>true</includeDependencySources>
+                                    <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
+                                    <nodeprecated>false</nodeprecated>
+                                    <nodeprecatedlist>false</nodeprecatedlist>
+                                    <author>false</author>
+                                    <notimestamp>true</notimestamp>
+                                    <doctitle>Babbler ${project.version}</doctitle>
+                                    <windowtitle>Babbler ${project.version}</windowtitle>
+                                    <docfilessubdirs>true</docfilessubdirs>
+                                    <show>public</show>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

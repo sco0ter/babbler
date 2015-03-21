@@ -84,7 +84,7 @@ public final class ReachabilityManager extends ExtensionManager {
             Jid contact = presence.getFrom().asBareJid();
             if (!hasReachability && reachabilities.remove(contact) != null) {
                 // If no reachability was found in presence, check, if the contact has previously sent any reachability via presence.
-                notifyReachabilityListeners(contact, new ArrayList<Address>());
+                notifyReachabilityListeners(contact, new ArrayList<>());
             }
         });
 

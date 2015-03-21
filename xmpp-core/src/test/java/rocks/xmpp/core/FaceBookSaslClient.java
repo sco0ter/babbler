@@ -58,7 +58,7 @@ public class FaceBookSaslClient implements SaslClient {
     }
 
     private Map<String, String> getQueryMap(String query) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         String[] params = query.split("\\&");
 
         for (String param : params) {

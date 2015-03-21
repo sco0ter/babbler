@@ -181,7 +181,7 @@ public final class ChatManager extends Manager {
         Jid contact = chatPartner.asBareJid();
         // If there are no chat sessions with that contact yet, put the contact into the map.
         if (!chatSessions.containsKey(contact)) {
-            chatSessions.put(contact, new HashMap<String, ChatSession>());
+            chatSessions.put(contact, new HashMap<>());
         }
         Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
         if (!chatSessionMap.containsKey(threadId)) {

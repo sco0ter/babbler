@@ -39,8 +39,6 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -232,12 +230,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testPropertyChangeHandler() {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         final int[] listenerCalled = {0};
-        serviceDiscoveryManager.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                listenerCalled[0]++;
-            }
-        });
+        serviceDiscoveryManager.addPropertyChangeListener(evt -> listenerCalled[0]++);
         serviceDiscoveryManager.addFeature(new Feature("dummy"));
         serviceDiscoveryManager.removeFeature(new Feature("dummy"));
         serviceDiscoveryManager.addIdentity(new Identity("cat", "type"));

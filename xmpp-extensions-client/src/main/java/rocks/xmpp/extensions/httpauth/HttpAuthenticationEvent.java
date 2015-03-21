@@ -33,7 +33,6 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventObject;
 

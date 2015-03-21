@@ -31,8 +31,6 @@ import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.chat.ChatManager;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -55,13 +53,10 @@ public class ChatStateManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET.asBareJid(), mockServer);
 
         final Collection<ChatState> chatStatesReceived = new ArrayList<>();
-        xmppSession2.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                ChatState chatState = e.getMessage().getExtension(ChatState.class);
-                if (chatState != null) {
-                    chatStatesReceived.add(chatState);
-                }
+        xmppSession2.addInboundMessageListener(e -> {
+            ChatState chatState = e.getMessage().getExtension(ChatState.class);
+            if (chatState != null) {
+                chatStatesReceived.add(chatState);
             }
         });
 

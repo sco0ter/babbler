@@ -28,10 +28,9 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
@@ -124,12 +123,9 @@ public class TestXmppSession extends XmppSession {
     public IQ query(final IQ iq) throws StanzaException, NoResponseException {
         final IQ[] result = new IQ[1];
 
-        final IQListener iqListener = new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
-                    result[0] = e.getIQ();
-                }
+        final IQListener iqListener = e -> {
+            if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
+                result[0] = e.getIQ();
             }
         };
 

@@ -29,8 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.attention.AttentionManager;
@@ -52,13 +50,10 @@ public class ReachabilityManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         final boolean[] attentionReceived = {false};
-        xmppSession2.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
-                    attentionReceived[0] = true;
-                    Assert.assertEquals(e.getMessage().getType(), AbstractMessage.Type.HEADLINE);
-                }
+        xmppSession2.addInboundMessageListener(e -> {
+            if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
+                attentionReceived[0] = true;
+                Assert.assertEquals(e.getMessage().getType(), AbstractMessage.Type.HEADLINE);
             }
         });
 

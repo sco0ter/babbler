@@ -52,29 +52,26 @@ public class RosterManagerTest extends BaseTest {
         final int[] rosterPushCount = new int[1];
         XmppSession xmppSession1 = new TestXmppSession();
         RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
-        rosterManager.addRosterListener(new RosterListener() {
-            @Override
-            public void rosterChanged(RosterEvent e) {
-                if (rosterPushCount[0] == 0) {
-                    Assert.assertEquals(e.getAddedContacts().size(), 3);
-                    Assert.assertEquals(e.getUpdatedContacts().size(), 0);
-                    Assert.assertEquals(e.getRemovedContacts().size(), 0);
-                } else if (rosterPushCount[0] == 1) {
-                    Assert.assertEquals(e.getAddedContacts().size(), 1);
-                    Assert.assertEquals(e.getUpdatedContacts().size(), 0);
-                    Assert.assertEquals(e.getRemovedContacts().size(), 0);
-                } else if (rosterPushCount[0] == 2) {
-                    Assert.assertEquals(e.getAddedContacts().size(), 0);
-                    Assert.assertEquals(e.getUpdatedContacts().size(), 0);
-                    Assert.assertEquals(e.getRemovedContacts().size(), 1);
-                    Assert.assertEquals(e.getRemovedContacts().get(0).getJid(), Jid.valueOf("contact2@domain"));
-                } else if (rosterPushCount[0] == 3) {
-                    Assert.assertEquals(e.getAddedContacts().size(), 0);
-                    Assert.assertEquals(e.getUpdatedContacts().size(), 1);
-                    Assert.assertEquals(e.getRemovedContacts().size(), 0);
-                    Assert.assertEquals(e.getUpdatedContacts().get(0).getJid(), Jid.valueOf("contact1@domain"));
-                    Assert.assertEquals(e.getUpdatedContacts().get(0).getName(), "Name");
-                }
+        rosterManager.addRosterListener(e -> {
+            if (rosterPushCount[0] == 0) {
+                Assert.assertEquals(e.getAddedContacts().size(), 3);
+                Assert.assertEquals(e.getUpdatedContacts().size(), 0);
+                Assert.assertEquals(e.getRemovedContacts().size(), 0);
+            } else if (rosterPushCount[0] == 1) {
+                Assert.assertEquals(e.getAddedContacts().size(), 1);
+                Assert.assertEquals(e.getUpdatedContacts().size(), 0);
+                Assert.assertEquals(e.getRemovedContacts().size(), 0);
+            } else if (rosterPushCount[0] == 2) {
+                Assert.assertEquals(e.getAddedContacts().size(), 0);
+                Assert.assertEquals(e.getUpdatedContacts().size(), 0);
+                Assert.assertEquals(e.getRemovedContacts().size(), 1);
+                Assert.assertEquals(e.getRemovedContacts().get(0).getJid(), Jid.valueOf("contact2@domain"));
+            } else if (rosterPushCount[0] == 3) {
+                Assert.assertEquals(e.getAddedContacts().size(), 0);
+                Assert.assertEquals(e.getUpdatedContacts().size(), 1);
+                Assert.assertEquals(e.getRemovedContacts().size(), 0);
+                Assert.assertEquals(e.getUpdatedContacts().get(0).getJid(), Jid.valueOf("contact1@domain"));
+                Assert.assertEquals(e.getUpdatedContacts().get(0).getName(), "Name");
             }
         });
 

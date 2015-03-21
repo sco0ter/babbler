@@ -47,15 +47,12 @@ public class MultiThreadingIT extends IntegrationTest {
 
         final AtomicInteger closing = new AtomicInteger();
         final AtomicInteger closed = new AtomicInteger();
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSING) {
-                    closing.incrementAndGet();
-                }
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    closed.incrementAndGet();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSING) {
+                closing.incrementAndGet();
+            }
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                closed.incrementAndGet();
             }
         });
 
@@ -66,16 +63,13 @@ public class MultiThreadingIT extends IntegrationTest {
         final AtomicReference<Exception> exception = new AtomicReference<>();
         // Multiple threads try to close the session concurrently.
         for (int i = 0; i < 100; i++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        xmppSession.close();
-                    } catch (XmppException e) {
-                        exception.set(e);
-                    } finally {
-                        countDownLatch.countDown();
-                    }
+            executor.execute(() -> {
+                try {
+                    xmppSession.close();
+                } catch (XmppException e) {
+                    exception.set(e);
+                } finally {
+                    countDownLatch.countDown();
                 }
             });
         }
@@ -94,15 +88,12 @@ public class MultiThreadingIT extends IntegrationTest {
 
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CONNECTING) {
-                    connecting.incrementAndGet();
-                }
-                if (e.getStatus() == XmppSession.Status.CONNECTED) {
-                    connected.incrementAndGet();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CONNECTING) {
+                connecting.incrementAndGet();
+            }
+            if (e.getStatus() == XmppSession.Status.CONNECTED) {
+                connected.incrementAndGet();
             }
         });
 
@@ -111,16 +102,13 @@ public class MultiThreadingIT extends IntegrationTest {
         final AtomicReference<Exception> exception = new AtomicReference<>();
         // Multiple threads try to connect the session concurrently.
         for (int i = 0; i < 100; i++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        xmppSession.connect();
-                    } catch (XmppException e) {
-                        exception.set(e);
-                    } finally {
-                        countDownLatch.countDown();
-                    }
+            executor.execute(() -> {
+                try {
+                    xmppSession.connect();
+                } catch (XmppException e) {
+                    exception.set(e);
+                } finally {
+                    countDownLatch.countDown();
                 }
             });
         }
@@ -139,15 +127,12 @@ public class MultiThreadingIT extends IntegrationTest {
 
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CONNECTING) {
-                    connecting.incrementAndGet();
-                }
-                if (e.getStatus() == XmppSession.Status.CONNECTED) {
-                    connected.incrementAndGet();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CONNECTING) {
+                connecting.incrementAndGet();
+            }
+            if (e.getStatus() == XmppSession.Status.CONNECTED) {
+                connected.incrementAndGet();
             }
         });
 
@@ -159,16 +144,13 @@ public class MultiThreadingIT extends IntegrationTest {
         final AtomicReference<Exception> exception = new AtomicReference<>();
         // Multiple threads try to connect the session concurrently, although already connected.
         for (int i = 0; i < 100; i++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        xmppSession.connect();
-                    } catch (XmppException e) {
-                        exception.set(e);
-                    } finally {
-                        countDownLatch.countDown();
-                    }
+            executor.execute(() -> {
+                try {
+                    xmppSession.connect();
+                } catch (XmppException e) {
+                    exception.set(e);
+                } finally {
+                    countDownLatch.countDown();
                 }
             });
         }
@@ -188,15 +170,12 @@ public class MultiThreadingIT extends IntegrationTest {
         final AtomicInteger authenticating = new AtomicInteger();
         final AtomicInteger authenticated = new AtomicInteger();
         final AtomicInteger exceptions = new AtomicInteger();
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.AUTHENTICATING) {
-                    authenticating.incrementAndGet();
-                }
-                if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                    authenticated.incrementAndGet();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.AUTHENTICATING) {
+                authenticating.incrementAndGet();
+            }
+            if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                authenticated.incrementAndGet();
             }
         });
 
@@ -206,16 +185,13 @@ public class MultiThreadingIT extends IntegrationTest {
         final CountDownLatch countDownLatch = new CountDownLatch(100);
         // Multiple threads try to connect the session concurrently, although already connected.
         for (int i = 0; i < 100; i++) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        xmppSession.login(USER_1, PASSWORD_1);
-                    } catch (Exception e) {
-                        exceptions.incrementAndGet();
-                    } finally {
-                        countDownLatch.countDown();
-                    }
+            executor.execute(() -> {
+                try {
+                    xmppSession.login(USER_1, PASSWORD_1);
+                } catch (Exception e) {
+                    exceptions.incrementAndGet();
+                } finally {
+                    countDownLatch.countDown();
                 }
             });
         }

@@ -27,14 +27,11 @@ package rocks.xmpp.extensions.muc;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.chat.Chat;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
-import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -120,32 +117,29 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         this.xmppSession = xmppSession;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
         this.multiUserChatManager = multiUserChatManager;
-        this.messageListener = new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                Message message = e.getMessage();
-                if (message.getFrom().asBareJid().equals(roomJid)) {
-                    if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
-                        // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
-                        if (message.getSubject() != null && message.getBody() == null) {
-                            Date date;
-                            DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                            if (delayedDelivery != null) {
-                                date = delayedDelivery.getTimeStamp();
-                            } else {
-                                date = new Date();
-                            }
-                            notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), delayedDelivery != null, date));
+        this.messageListener = e -> {
+            Message message = e.getMessage();
+            if (message.getFrom().asBareJid().equals(roomJid)) {
+                if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
+                    // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
+                    if (message.getSubject() != null && message.getBody() == null) {
+                        Date date;
+                        DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
+                        if (delayedDelivery != null) {
+                            date = delayedDelivery.getTimeStamp();
                         } else {
-                            notifyInboundMessageListeners(new MessageEvent(ChatRoom.this, message, true));
+                            date = new Date();
                         }
+                        notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), delayedDelivery != null, date));
                     } else {
-                        MucUser mucUser = message.getExtension(MucUser.class);
-                        if (mucUser != null) {
-                            Decline decline = mucUser.getDecline();
-                            if (decline != null) {
-                                notifyInvitationDeclineListeners(new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
-                            }
+                        notifyInboundMessageListeners(new MessageEvent(ChatRoom.this, message, true));
+                    }
+                } else {
+                    MucUser mucUser = message.getExtension(MucUser.class);
+                    if (mucUser != null) {
+                        Decline decline = mucUser.getDecline();
+                        if (decline != null) {
+                            notifyInvitationDeclineListeners(new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
                         }
                     }
                 }
@@ -216,16 +210,13 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    invitationDeclineListeners.clear();
-                    subjectChangeListeners.clear();
-                    occupantListeners.clear();
-                    inboundMessageListeners.clear();
-                    occupantMap.clear();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                invitationDeclineListeners.clear();
+                subjectChangeListeners.clear();
+                occupantListeners.clear();
+                inboundMessageListeners.clear();
+                occupantMap.clear();
             }
         });
     }
@@ -397,12 +388,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             final Presence enterPresence = new Presence(roomJid.withResource(nick));
             enterPresence.getExtensions().add(new Muc(password, history));
             this.nick = nick;
-            xmppSession.sendAndAwaitPresence(enterPresence, new StanzaFilter<Presence>() {
-                @Override
-                public boolean accept(Presence presence) {
-                    Jid room = presence.getFrom().asBareJid();
-                    return presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
-                }
+            xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
+                Jid room = presence.getFrom().asBareJid();
+                return presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
             });
         } catch (XmppException e) {
             xmppSession.removeInboundMessageListener(messageListener);
@@ -422,12 +410,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public void changeSubject(final String subject) throws XmppException {
         Message message = new Message(roomJid, Message.Type.GROUPCHAT, null, subject, null);
-        xmppSession.sendAndAwaitMessage(message, new StanzaFilter<Message>() {
-            @Override
-            public boolean accept(Message message) {
-                return message.getSubject() != null && message.getSubject().equals(subject);
-            }
-        });
+        xmppSession.sendAndAwaitMessage(message, message1 -> message1.getSubject() != null && message1.getSubject().equals(subject));
     }
 
     /**
@@ -468,12 +451,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         }
 
         final Presence changeNickNamePresence = new Presence(roomJid.withResource(newNickname));
-        xmppSession.sendAndAwaitPresence(changeNickNamePresence, new StanzaFilter<Presence>() {
-            @Override
-            public boolean accept(Presence presence) {
-                return presence.getFrom().equals(changeNickNamePresence.getTo());
-            }
-        });
+        xmppSession.sendAndAwaitPresence(changeNickNamePresence, presence -> presence.getFrom().equals(changeNickNamePresence.getTo()));
     }
 
     /**
@@ -620,12 +598,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         if (!entered) {
             throw new IllegalStateException("You can't exit a room, when you didn't enter it.");
         }
-        xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), new StanzaFilter<Presence>() {
-            @Override
-            public boolean accept(Presence presence) {
-                Jid room = presence.getFrom().asBareJid();
-                return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
-            }
+        xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
+            Jid room = presence.getFrom().asBareJid();
+            return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
         });
         userHasExited();
 

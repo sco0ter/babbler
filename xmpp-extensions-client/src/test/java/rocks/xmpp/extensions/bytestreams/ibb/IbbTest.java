@@ -33,7 +33,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
-import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 
@@ -64,12 +63,7 @@ public class IbbTest extends ExtensionTest {
         final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         final XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
         InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getManager(InBandByteStreamManager.class);
-        inBandBytestreamManager2.addByteStreamListener(new ByteStreamListener() {
-            @Override
-            public void byteStreamRequested(final ByteStreamEvent e) {
-                e.reject();
-            }
-        });
+        inBandBytestreamManager2.addByteStreamListener(ByteStreamEvent::reject);
 
         InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getManager(InBandByteStreamManager.class);
         boolean rejected = false;

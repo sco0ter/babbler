@@ -140,13 +140,10 @@ public final class XmppUtils {
      * @return The thread factory.
      */
     public static ThreadFactory createNamedThreadFactory(final String threadName) {
-        return new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, threadName);
-                thread.setDaemon(true);
-                return thread;
-            }
+        return r -> {
+            Thread thread = new Thread(r, threadName);
+            thread.setDaemon(true);
+            return thread;
         };
     }
 }

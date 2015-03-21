@@ -27,8 +27,6 @@ package rocks.xmpp.extensions.rpc;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -64,12 +62,9 @@ public final class RpcManager extends ExtensionManager {
     @Override
     protected void initialize() {
         // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    rpcHandler = null;
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                rpcHandler = null;
             }
         });
         xmppSession.addIQHandler(Rpc.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {

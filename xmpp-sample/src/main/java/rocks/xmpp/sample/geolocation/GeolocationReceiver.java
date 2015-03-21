@@ -39,21 +39,19 @@ public class GeolocationReceiver {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .secure(false)
-                            .build();
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .secure(false)
+                        .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", tcpConfiguration);
+                XmppSession xmppSession = new XmppSession("localhost", tcpConfiguration);
 
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("222", "222", "geolocation");
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("222", "222", "geolocation");
 
 //                    GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
 //                    geoLocationManager.setEnabled(true);
@@ -64,12 +62,11 @@ public class GeolocationReceiver {
 //                        }
 //                    });
 
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                // Send initial presence
+                xmppSession.send(new Presence());
 
-                } catch (XmppException e) {
-                    e.printStackTrace();
-                }
+            } catch (XmppException e) {
+                e.printStackTrace();
             }
         });
     }

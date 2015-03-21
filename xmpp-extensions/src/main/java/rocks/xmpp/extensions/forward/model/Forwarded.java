@@ -33,7 +33,6 @@ import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
 
 /**
  * The implementation of the {@code <forwarded/>} element in the {@code urn:xmpp:forward:0} namespace.

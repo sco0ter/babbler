@@ -26,10 +26,6 @@ package rocks.xmpp.javafx.scene.control;
 
 import javafx.application.Application;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -38,7 +34,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import rocks.xmpp.extensions.chatstates.model.ChatState;
 
 /**
  * @author Christian Schudt
@@ -64,20 +59,12 @@ public class ChatStateTextAreaTest extends Application {
                 return chatStateTextArea.chatStateProperty().get().toString();
             }
         });
-        chatStateTextArea.chatStateProperty().addListener(new ChangeListener<ChatState>() {
-            @Override
-            public void changed(ObservableValue<? extends ChatState> observable, ChatState oldValue, ChatState newValue) {
-                System.out.println(newValue);
-            }
-        });
+        chatStateTextArea.chatStateProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue));
 
         Button button = new Button("Send");
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                chatStateTextArea.clear();
-                chatStateTextArea.requestFocus();
-            }
+        button.setOnAction(event -> {
+            chatStateTextArea.clear();
+            chatStateTextArea.requestFocus();
         });
         HBox hBox = new HBox(5, label, lblState);
         hBox.setAlignment(Pos.CENTER_LEFT);

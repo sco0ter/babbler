@@ -25,7 +25,6 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
@@ -57,7 +56,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -110,41 +108,35 @@ public final class TcpConnection extends Connection {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
         StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, new StreamFeatureListener() {
-            @Override
-            public void featureSuccessfullyNegotiated() throws StreamNegotiationException {
-                try {
-                    secureConnection();
-                } catch (Exception e) {
-                    throw new StreamNegotiationException(e);
-                }
+        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, () -> {
+            try {
+                secureConnection();
+            } catch (Exception e) {
+                throw new StreamNegotiationException(e);
             }
         }, configuration.isSecure()));
 
         final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
         compressionManager.getConfiguredCompressionMethods().addAll(configuration.getCompressionMethods());
-        compressionManager.addFeatureListener(new StreamFeatureListener() {
-            @Override
-            public void featureSuccessfullyNegotiated() throws StreamNegotiationException {
-                CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
-                // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
-                // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
-                InputStream iStream;
-                OutputStream oStream;
+        compressionManager.addFeatureListener(() -> {
+            CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
+            // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
+            // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
+            InputStream iStream;
+            OutputStream oStream;
+            synchronized (TcpConnection.this) {
+                iStream = inputStream;
+                oStream = outputStream;
+            }
+            try {
+                iStream = compressionMethod.decompress(iStream);
+                oStream = compressionMethod.compress(oStream);
                 synchronized (TcpConnection.this) {
-                    iStream = inputStream;
-                    oStream = outputStream;
+                    inputStream = iStream;
+                    outputStream = oStream;
                 }
-                try {
-                    iStream = compressionMethod.decompress(iStream);
-                    oStream = compressionMethod.compress(oStream);
-                    synchronized (TcpConnection.this) {
-                        inputStream = iStream;
-                        outputStream = oStream;
-                    }
-                } catch (IOException e) {
-                    throw new StreamNegotiationException(e);
-                }
+            } catch (IOException e) {
+                throw new StreamNegotiationException(e);
             }
         });
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
@@ -365,15 +357,12 @@ public final class TcpConnection extends Connection {
                 }
 
                 // Sort the entries, so that the best one is tried first.
-                Collections.sort(dnsSrvRecords, new Comparator<DnsResourceRecord>() {
-                    @Override
-                    public int compare(DnsResourceRecord o1, DnsResourceRecord o2) {
-                        int result = Integer.compare(o1.priority, o2.priority);
-                        if (result == 0) {
-                            result = Integer.compare(o2.weight, o1.weight);
-                        }
-                        return result;
+                Collections.sort(dnsSrvRecords, (o1, o2) -> {
+                    int result = Integer.compare(o1.priority, o2.priority);
+                    if (result == 0) {
+                        result = Integer.compare(o2.weight, o1.weight);
                     }
+                    return result;
                 });
 
                 for (DnsResourceRecord dnsResourceRecord : dnsSrvRecords) {

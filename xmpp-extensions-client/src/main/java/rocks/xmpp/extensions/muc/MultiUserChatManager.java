@@ -27,11 +27,7 @@ package rocks.xmpp.extensions.muc;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -74,32 +70,26 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    invitationListeners.clear();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                invitationListeners.clear();
             }
         });
 
         // Listen for inbound invitations.
-        xmppSession.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                Message message = e.getMessage();
-                // Check, if the message contains a mediated invitation.
-                MucUser mucUser = message.getExtension(MucUser.class);
-                if (mucUser != null) {
-                    for (Invite invite : mucUser.getInvites()) {
-                        notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
-                    }
-                } else {
-                    // Check, if the message contains a direct invitation.
-                    DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
-                    if (directInvitation != null) {
-                        notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
-                    }
+        xmppSession.addInboundMessageListener(e -> {
+            Message message = e.getMessage();
+            // Check, if the message contains a mediated invitation.
+            MucUser mucUser = message.getExtension(MucUser.class);
+            if (mucUser != null) {
+                for (Invite invite : mucUser.getInvites()) {
+                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                }
+            } else {
+                // Check, if the message contains a direct invitation.
+                DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
+                if (directInvitation != null) {
+                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
                 }
             }
         });

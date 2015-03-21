@@ -27,14 +27,8 @@ package rocks.xmpp.extensions.reach;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.Stanza;
@@ -77,50 +71,36 @@ public final class ReachabilityManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    reachabilityListeners.clear();
-                    reachabilities.clear();
-                    addresses.clear();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                reachabilityListeners.clear();
+                reachabilities.clear();
+                addresses.clear();
             }
         });
-        xmppSession.addInboundPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                AbstractPresence presence = e.getPresence();
-                boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
-                Jid contact = presence.getFrom().asBareJid();
-                if (!hasReachability && reachabilities.remove(contact) != null) {
-                    // If no reachability was found in presence, check, if the contact has previously sent any reachability via presence.
-                    notifyReachabilityListeners(contact, new ArrayList<Address>());
-                }
+        xmppSession.addInboundPresenceListener(e -> {
+            AbstractPresence presence = e.getPresence();
+            boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
+            Jid contact = presence.getFrom().asBareJid();
+            if (!hasReachability && reachabilities.remove(contact) != null) {
+                // If no reachability was found in presence, check, if the contact has previously sent any reachability via presence.
+                notifyReachabilityListeners(contact, new ArrayList<Address>());
             }
         });
 
-        xmppSession.addOutboundPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                AbstractPresence presence = e.getPresence();
-                if (presence.isAvailable() && presence.getTo() == null) {
-                    synchronized (addresses) {
-                        if (!addresses.isEmpty()) {
-                            presence.getExtensions().add(new Reachability(new ArrayList<>(addresses)));
-                        }
+        xmppSession.addOutboundPresenceListener(e -> {
+            AbstractPresence presence = e.getPresence();
+            if (presence.isAvailable() && presence.getTo() == null) {
+                synchronized (addresses) {
+                    if (!addresses.isEmpty()) {
+                        presence.getExtensions().add(new Reachability(new ArrayList<>(addresses)));
                     }
                 }
             }
         });
 
         // A user MAY send reachability addresses in an XMPP <message/> stanza.
-        xmppSession.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                checkStanzaForReachabilityAndNotify(e.getMessage());
-            }
-        });
+        xmppSession.addInboundMessageListener(e -> checkStanzaForReachabilityAndNotify(e.getMessage()));
 
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
         xmppSession.addIQHandler(Reachability.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {

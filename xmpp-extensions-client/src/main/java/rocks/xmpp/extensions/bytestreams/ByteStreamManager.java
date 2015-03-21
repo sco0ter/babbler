@@ -25,8 +25,6 @@
 package rocks.xmpp.extensions.bytestreams;
 
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 
 import java.util.Set;
@@ -53,12 +51,9 @@ public abstract class ByteStreamManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    byteStreamListeners.clear();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                byteStreamListeners.clear();
             }
         });
     }

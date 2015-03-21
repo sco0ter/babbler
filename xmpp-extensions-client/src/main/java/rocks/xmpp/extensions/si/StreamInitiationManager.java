@@ -32,7 +32,6 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
@@ -85,12 +84,9 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         socks5ByteStreamManager = xmppSession.getManager(Socks5ByteStreamManager.class);
 
         // Currently, there's only one profile in XMPP, namely XEP-0096 SI File Transfer.
-        profileManagers.put(SIFileTransferOffer.NAMESPACE, new ProfileManager() {
-            @Override
-            public void handle(IQ iq, StreamInitiation streamInitiation) {
-                FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
-                fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
-            }
+        profileManagers.put(SIFileTransferOffer.NAMESPACE, (iq, streamInitiation) -> {
+            FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
+            fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
         });
 
         setEnabled(true);
@@ -212,21 +208,18 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         final List<Exception> negotiationExceptions = new ArrayList<>();
         // Before we reply with the chosen stream method, we
         // register a byte stream listener, because we expect the initiator to open a byte stream with us.
-        ByteStreamListener byteStreamListener = new ByteStreamListener() {
-            @Override
-            public void byteStreamRequested(ByteStreamEvent e) {
-                if (sessionId.equals(e.getSessionId())) {
-                    lock.lock();
-                    try {
-                        // Auto-accept the inbound stream
-                        byteStreamSessions[0] = e.accept();
-                        // If no exception occurred during stream method negotiation, notify the waiting thread.
-                        byteStreamOpened.signal();
-                    } catch (Exception e1) {
-                        negotiationExceptions.add(e1);
-                    } finally {
-                        lock.unlock();
-                    }
+        ByteStreamListener byteStreamListener = e -> {
+            if (sessionId.equals(e.getSessionId())) {
+                lock.lock();
+                try {
+                    // Auto-accept the inbound stream
+                    byteStreamSessions[0] = e.accept();
+                    // If no exception occurred during stream method negotiation, notify the waiting thread.
+                    byteStreamOpened.signal();
+                } catch (Exception e1) {
+                    negotiationExceptions.add(e1);
+                } finally {
+                    lock.unlock();
                 }
             }
         };

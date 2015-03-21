@@ -37,45 +37,42 @@ public class RegistrationSample {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
-                            .hostname("localhost")
-                            .port(5222)
-                            .secure(false) // Disable TLS only for simpler example here.
+                TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
+                        .hostname("localhost")
+                        .port(5222)
+                        .secure(false) // Disable TLS only for simpler example here.
+                        .build();
+
+                XmppSession xmppSession = new XmppSession("localhost", tcpConnectionConfiguration);
+
+                // Connect
+                xmppSession.connect();
+
+                RegistrationManager registrationManager = xmppSession.getManager(RegistrationManager.class);
+                Registration registration = registrationManager.getRegistration();
+
+                if (!registration.isRegistered()) {
+                    // Usually you would probably show a visual registration form here.
+                    // Then submit the registration as follows:
+                    Registration registration1 = Registration.builder()
+                            .username("user")
+                            .password("pass")
+                            .familyName("Family Name")
+                            .givenName("Given Name")
+                            .nickname("Nick Name")
+                            .email("E-Mail")
                             .build();
-
-                    XmppSession xmppSession = new XmppSession("localhost", tcpConnectionConfiguration);
-
-                    // Connect
-                    xmppSession.connect();
-
-                    RegistrationManager registrationManager = xmppSession.getManager(RegistrationManager.class);
-                    Registration registration = registrationManager.getRegistration();
-
-                    if (!registration.isRegistered()) {
-                        // Usually you would probably show a visual registration form here.
-                        // Then submit the registration as follows:
-                        Registration registration1 = Registration.builder()
-                                .username("user")
-                                .password("pass")
-                                .familyName("Family Name")
-                                .givenName("Given Name")
-                                .nickname("Nick Name")
-                                .email("E-Mail")
-                                .build();
-                        registrationManager.register(registration1);
-                    }
-                    // Login
-                    xmppSession.login("user", "pass", "register");
-
-
-                } catch (XmppException e) {
-                    e.printStackTrace();
+                    registrationManager.register(registration1);
                 }
+                // Login
+                xmppSession.login("user", "pass", "register");
+
+
+            } catch (XmppException e) {
+                e.printStackTrace();
             }
         });
     }

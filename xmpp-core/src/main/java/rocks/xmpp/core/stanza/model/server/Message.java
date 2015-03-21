@@ -32,7 +32,6 @@ import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 

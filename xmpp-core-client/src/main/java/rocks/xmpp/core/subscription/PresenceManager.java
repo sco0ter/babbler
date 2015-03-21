@@ -26,11 +26,7 @@ package rocks.xmpp.core.subscription;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.session.Manager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.ArrayList;
@@ -74,43 +70,34 @@ public final class PresenceManager extends Manager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addInboundPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                Presence presence = e.getPresence();
-                if (presence.getFrom() != null) {
-                    // Store the user (bare JID) in the map, associated with different resources.
-                    presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());
-                    Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
-                    // Update the contact's resource with the presence.
-                    presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
+        xmppSession.addInboundPresenceListener(e -> {
+            Presence presence = e.getPresence();
+            if (presence.getFrom() != null) {
+                // Store the user (bare JID) in the map, associated with different resources.
+                presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());
+                Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
+                // Update the contact's resource with the presence.
+                presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
+            }
+        });
+        xmppSession.addOutboundPresenceListener(e -> {
+            Presence presence = e.getPresence();
+            // Store the last sent presences, in order to automatically resend them, after a disconnect.
+            if (presence.getType() == null || presence.getType() == Presence.Type.UNAVAILABLE) {
+                if (presence.getTo() == null) {
+                    lastSentPresences.put("", presence);
+                } else {
+                    lastSentPresences.put(presence.getTo().toString(), presence);
                 }
             }
         });
-        xmppSession.addOutboundPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                Presence presence = e.getPresence();
-                // Store the last sent presences, in order to automatically resend them, after a disconnect.
-                if (presence.getType() == null || presence.getType() == Presence.Type.UNAVAILABLE) {
-                    if (presence.getTo() == null) {
-                        lastSentPresences.put("", presence);
-                    } else {
-                        lastSentPresences.put(presence.getTo().toString(), presence);
-                    }
-                }
-            }
-        });
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
-                    for (Jid contact : presenceMap.keySet()) {
-                        try {
-                            xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact));
-                        } catch (Exception e1) {
-                            logger.log(Level.WARNING, e1.getMessage(), e1);
-                        }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
+                for (Jid contact : presenceMap.keySet()) {
+                    try {
+                        xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact));
+                    } catch (Exception e1) {
+                        logger.log(Level.WARNING, e1.getMessage(), e1);
                     }
                 }
             }

@@ -30,8 +30,6 @@ import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
-import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 
 import java.io.ByteArrayOutputStream;
@@ -67,44 +65,41 @@ public class Socks5ByteStreamIT extends IntegrationTest {
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         Socks5ByteStreamManager socks5ByteStreamManager2 = xmppSession2.getManager(Socks5ByteStreamManager.class);
-        socks5ByteStreamManager2.addByteStreamListener(new ByteStreamListener() {
-            @Override
-            public void byteStreamRequested(final ByteStreamEvent e) {
-                final ByteStreamSession s5bSession;
+        socks5ByteStreamManager2.addByteStreamListener(e -> {
+            final ByteStreamSession s5bSession;
 
-                try {
-                    s5bSession = e.accept();
+            try {
+                s5bSession = e.accept();
 
-                    new Thread() {
-                        @Override
-                        public void run() {
+                new Thread() {
+                    @Override
+                    public void run() {
 
-                            InputStream inputStream;
+                        InputStream inputStream;
+                        try {
+                            inputStream = s5bSession.getInputStream();
+                            int b;
+                            while ((b = inputStream.read()) > -1) {
+                                outputStream.write(b);
+                            }
+                            outputStream.flush();
+                            outputStream.close();
+                            inputStream.close();
+
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        } finally {
                             try {
-                                inputStream = s5bSession.getInputStream();
-                                int b;
-                                while ((b = inputStream.read()) > -1) {
-                                    outputStream.write(b);
-                                }
-                                outputStream.flush();
-                                outputStream.close();
-                                inputStream.close();
-
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
+                                lock.lock();
+                                condition.signal();
                             } finally {
-                                try {
-                                    lock.lock();
-                                    condition.signal();
-                                } finally {
-                                    lock.unlock();
-                                }
+                                lock.unlock();
                             }
                         }
-                    }.start();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                    }
+                }.start();
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         });
 

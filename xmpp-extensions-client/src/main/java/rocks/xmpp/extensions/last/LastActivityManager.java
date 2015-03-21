@@ -27,8 +27,6 @@ package rocks.xmpp.extensions.last;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -83,25 +81,19 @@ public final class LastActivityManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    lastActivityStrategy = null;
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                lastActivityStrategy = null;
             }
         });
-        xmppSession.addOutboundPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                if (isEnabled()) {
-                    AbstractPresence presence = e.getPresence();
-                    if (presence.getTo() == null) {
-                        synchronized (LastActivityManager.this) {
-                            // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                            if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
-                                presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity()), presence.getStatus()));
-                            }
+        xmppSession.addOutboundPresenceListener(e -> {
+            if (isEnabled()) {
+                AbstractPresence presence = e.getPresence();
+                if (presence.getTo() == null) {
+                    synchronized (LastActivityManager.this) {
+                        // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
+                        if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                            presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity()), presence.getStatus()));
                         }
                     }
                 }

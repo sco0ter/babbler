@@ -28,13 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
@@ -102,7 +96,7 @@ public final class AvatarManager extends ExtensionManager {
 
     private final VCardManager vCardManager;
 
-    private final Set<String> nonConformingResources = Collections.synchronizedSet(new HashSet<String>());
+    private final Set<String> nonConformingResources = Collections.synchronizedSet(new HashSet<>());
 
     private final Map<String, byte[]> avatarCache;
 
@@ -119,233 +113,212 @@ public final class AvatarManager extends ExtensionManager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    avatarChangeListeners.clear();
-                    requestingAvatarLocks.clear();
-                    nonConformingResources.clear();
-                    userHashes.clear();
-                    avatarRequester.shutdown();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                avatarChangeListeners.clear();
+                requestingAvatarLocks.clear();
+                nonConformingResources.clear();
+                userHashes.clear();
+                avatarRequester.shutdown();
             }
         });
-        xmppSession.addInboundPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                // If vCard based avatars are enabled.
-                if (!isEnabled()) {
-                    return;
-                }
-                final Presence presence = e.getPresence();
+        xmppSession.addInboundPresenceListener(e -> {
+            // If vCard based avatars are enabled.
+            if (!isEnabled()) {
+                return;
+            }
+            final Presence presence = e.getPresence();
 
-                // If the presence has an avatar update information.
-                final AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
+            // If the presence has an avatar update information.
+            final AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
 
-                // 4.3 Multiple Resources
-                if (presence.getFrom().asBareJid().equals(xmppSession.getConnectedResource().asBareJid()) && presence.getFrom().getResource() != null && !presence.getFrom().getResource().equals(xmppSession.getConnectedResource().getResource())) {
-                    // We received a presence stanza from another resource of our own JID.
+            // 4.3 Multiple Resources
+            if (presence.getFrom().asBareJid().equals(xmppSession.getConnectedResource().asBareJid()) && presence.getFrom().getResource() != null && !presence.getFrom().getResource().equals(xmppSession.getConnectedResource().getResource())) {
+                // We received a presence stanza from another resource of our own JID.
 
-                    if (avatarUpdate == null) {
-                        // 1. If the presence stanza received from the other resource does not contain the update child element, then the other resource does not support vCard-based avatars.
-                        // That resource could modify the contents of the vCard (including the photo element);
-                        // because polling for vCard updates is not allowed, the client MUST stop advertising the avatar image hash.
-                        if (presence.isAvailable()) {
-                            nonConformingResources.add(presence.getFrom().getResource());
-                        }
-                        // However, the client MAY reset its hash if all instances of non-conforming resources have gone offline.
-                        else if (presence.getType() == Presence.Type.UNAVAILABLE && nonConformingResources.remove(presence.getFrom().getResource()) && nonConformingResources.isEmpty()) {
-                            resetHash();
-                        }
-                    } else {
-                        // If the presence stanza received from the other resource contains the update child element, then the other resource conforms to the protocol for vCard-based avatars. There are three possible scenarios.
-                        // If the update child element contains a non-empty photo element, then the client MUST compare the image hashes.
-                        if (avatarUpdate.getHash() != null && !avatarUpdate.getHash().equals(userHashes.get(xmppSession.getConnectedResource().asBareJid()))) {
-                            // If the hashes are different, then the client MUST NOT attempt to resolve the conflict by uploading its avatar image again. Instead, it MUST defer to the content of the retrieved vCard by resetting its image hash
-                            resetHash();
-                        }
+                if (avatarUpdate == null) {
+                    // 1. If the presence stanza received from the other resource does not contain the update child element, then the other resource does not support vCard-based avatars.
+                    // That resource could modify the contents of the vCard (including the photo element);
+                    // because polling for vCard updates is not allowed, the client MUST stop advertising the avatar image hash.
+                    if (presence.isAvailable()) {
+                        nonConformingResources.add(presence.getFrom().getResource());
                     }
-                }
-
-                if (avatarUpdate != null && avatarUpdate.getHash() != null) {
-                    final Jid contact;
-                    MucUser mucUser = presence.getExtension(MucUser.class);
-                    if (mucUser != null) {
-                        if (mucUser.getItem() != null && mucUser.getItem().getJid() != null) {
-                            contact = mucUser.getItem().getJid().asBareJid();
-                        } else {
-                            // Ignore presence received from anonymous MUC room.
-                            return;
-                        }
-                    } else {
-                        contact = presence.getFrom().asBareJid();
+                    // However, the client MAY reset its hash if all instances of non-conforming resources have gone offline.
+                    else if (presence.getType() == Presence.Type.UNAVAILABLE && nonConformingResources.remove(presence.getFrom().getResource()) && nonConformingResources.isEmpty()) {
+                        resetHash();
                     }
-                    // If the user sends the same hash as we already know, it's the same avatar. Therefore do nothing.
-                    if (!avatarUpdate.getHash().equals(userHashes.put(contact, avatarUpdate.getHash()))) {
-                        // When the recipient's client receives the hash of the avatar image, it SHOULD check the hash to determine if it already has a cached copy of that avatar image.
-                        byte[] imageData = loadFromCache(avatarUpdate.getHash());
-                        byte[] avatar = null;
-                        if (imageData != null) {
-                            avatar = imageData;
-                        }
-                        if (avatar != null) {
-                            notifyListeners(contact, avatar);
-                        } else {
-                            // If not, it retrieves the sender's full vCard
-                            avatarRequester.execute(new Runnable() {
-                                @Override
-                                public void run() {
-                                    // If the avatar was either known before or could be successfully retrieved from the vCard.
-                                    try {
-                                        notifyListeners(contact, getAvatarByVCard(contact));
-                                    } catch (XmppException e1) {
-                                        logger.warning(String.format("Failed to retrieve vCard based avatar for user: %s", contact));
-                                    }
-                                }
-                            });
-                        }
+                } else {
+                    // If the presence stanza received from the other resource contains the update child element, then the other resource conforms to the protocol for vCard-based avatars. There are three possible scenarios.
+                    // If the update child element contains a non-empty photo element, then the client MUST compare the image hashes.
+                    if (avatarUpdate.getHash() != null && !avatarUpdate.getHash().equals(userHashes.get(xmppSession.getConnectedResource().asBareJid()))) {
+                        // If the hashes are different, then the client MUST NOT attempt to resolve the conflict by uploading its avatar image again. Instead, it MUST defer to the content of the retrieved vCard by resetting its image hash
+                        resetHash();
                     }
                 }
             }
-        });
 
-        xmppSession.addOutboundPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                final Presence presence = e.getPresence();
-                if (presence.isAvailable() && nonConformingResources.isEmpty()) {
-                    // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
-
-                    String myHash = userHashes.get(xmppSession.getConnectedResource().asBareJid());
-
-                    if (myHash == null) {
-                        // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element:
-                        presence.getExtensions().add(new AvatarUpdate());
-
-                        // Load my own avatar in order to advertise an image.
-                        avatarRequester.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
-
-                                    // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
-                                    Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
-                                    Presence presence;
-                                    if (lastPresence != null) {
-                                        presence = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
-                                    } else {
-                                        presence = new Presence();
-                                    }
-                                    // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
-                                    xmppSession.send(presence);
-                                } catch (XmppException e1) {
-                                    logger.warning("Failed to retrieve own vCard based avatar.");
-                                }
+            if (avatarUpdate != null && avatarUpdate.getHash() != null) {
+                final Jid contact;
+                MucUser mucUser = presence.getExtension(MucUser.class);
+                if (mucUser != null) {
+                    if (mucUser.getItem() != null && mucUser.getItem().getJid() != null) {
+                        contact = mucUser.getItem().getJid().asBareJid();
+                    } else {
+                        // Ignore presence received from anonymous MUC room.
+                        return;
+                    }
+                } else {
+                    contact = presence.getFrom().asBareJid();
+                }
+                // If the user sends the same hash as we already know, it's the same avatar. Therefore do nothing.
+                if (!avatarUpdate.getHash().equals(userHashes.put(contact, avatarUpdate.getHash()))) {
+                    // When the recipient's client receives the hash of the avatar image, it SHOULD check the hash to determine if it already has a cached copy of that avatar image.
+                    byte[] imageData = loadFromCache(avatarUpdate.getHash());
+                    byte[] avatar = null;
+                    if (imageData != null) {
+                        avatar = imageData;
+                    }
+                    if (avatar != null) {
+                        notifyListeners(contact, avatar);
+                    } else {
+                        // If not, it retrieves the sender's full vCard
+                        avatarRequester.execute(() -> {
+                            // If the avatar was either known before or could be successfully retrieved from the vCard.
+                            try {
+                                notifyListeners(contact, getAvatarByVCard(contact));
+                            } catch (XmppException e1) {
+                                logger.warning(String.format("Failed to retrieve vCard based avatar for user: %s", contact));
                             }
                         });
-
-                    } else if (presence.getExtension(AvatarUpdate.class) == null) {
-                        presence.getExtensions().add(new AvatarUpdate(myHash));
                     }
                 }
             }
         });
 
-        xmppSession.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (!isEnabled()) {
-                    return;
-                }
-                final Message message = e.getMessage();
-                Event event = message.getExtension(Event.class);
-                if (event != null) {
-                    Addresses addresses = message.getExtension(Addresses.class);
-                    if (addresses != null) {
-                        // See http://xmpp.org/extensions/xep-0163.html#notify-addressing
-                        for (Address address : addresses.getAddresses()) {
-                            if (address.getType() == Address.Type.REPLYTO && xmppSession.getConnectedResource().equals(address.getJid())) {
-                                // Don't notify if the message came from our own connected resource.
-                                return;
+        xmppSession.addOutboundPresenceListener(e -> {
+            final Presence presence = e.getPresence();
+            if (presence.isAvailable() && nonConformingResources.isEmpty()) {
+                // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
+
+                String myHash = userHashes.get(xmppSession.getConnectedResource().asBareJid());
+
+                if (myHash == null) {
+                    // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element:
+                    presence.getExtensions().add(new AvatarUpdate());
+
+                    // Load my own avatar in order to advertise an image.
+                    avatarRequester.execute(() -> {
+                        try {
+                            getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
+
+                            // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
+                            Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
+                            Presence presence1;
+                            if (lastPresence != null) {
+                                presence1 = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
+                            } else {
+                                presence1 = new Presence();
                             }
+                            // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
+                            xmppSession.send(presence1);
+                        } catch (XmppException e1) {
+                            logger.warning("Failed to retrieve own vCard based avatar.");
+                        }
+                    });
+
+                } else if (presence.getExtension(AvatarUpdate.class) == null) {
+                    presence.getExtensions().add(new AvatarUpdate(myHash));
+                }
+            }
+        });
+
+        xmppSession.addInboundMessageListener(e -> {
+            if (!isEnabled()) {
+                return;
+            }
+            final Message message = e.getMessage();
+            Event event = message.getExtension(Event.class);
+            if (event != null) {
+                Addresses addresses = message.getExtension(Addresses.class);
+                if (addresses != null) {
+                    // See http://xmpp.org/extensions/xep-0163.html#notify-addressing
+                    for (Address address : addresses.getAddresses()) {
+                        if (address.getType() == Address.Type.REPLYTO && xmppSession.getConnectedResource().equals(address.getJid())) {
+                            // Don't notify if the message came from our own connected resource.
+                            return;
                         }
                     }
-                    for (final Item item : event.getItems()) {
-                        if (item.getPayload() instanceof AvatarMetadata) {
-                            AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
+                }
+                for (final Item item : event.getItems()) {
+                    if (item.getPayload() instanceof AvatarMetadata) {
+                        AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
 
-                            // Empty avatar
-                            if (avatarMetadata.getInfoList().isEmpty()) {
-                                notifyListeners(message.getFrom().asBareJid(), null);
+                        // Empty avatar
+                        if (avatarMetadata.getInfoList().isEmpty()) {
+                            notifyListeners(message.getFrom().asBareJid(), null);
+                        } else {
+
+                            // Check if we have a cached avatar.
+                            byte[] cachedImage = loadFromCache(item.getId());
+                            if (cachedImage != null) {
+                                notifyListeners(message.getFrom().asBareJid(), cachedImage);
                             } else {
+                                // We don't have a cached copy, let's retrieve it.
 
-                                // Check if we have a cached avatar.
-                                byte[] cachedImage = loadFromCache(item.getId());
-                                if (cachedImage != null) {
-                                    notifyListeners(message.getFrom().asBareJid(), cachedImage);
-                                } else {
-                                    // We don't have a cached copy, let's retrieve it.
+                                // Determine the best info
+                                AvatarMetadata.Info chosenInfo = null;
+                                // Check if there's an avatar, which is stored in PubSub node (and therefore must be in PNG format).
+                                for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
+                                    if (info.getUrl() == null) {
+                                        chosenInfo = info;
+                                    }
+                                }
 
-                                    // Determine the best info
-                                    AvatarMetadata.Info chosenInfo = null;
-                                    // Check if there's an avatar, which is stored in PubSub node (and therefore must be in PNG format).
+                                // If only URLs are available, choose the first URL.
+                                if (chosenInfo == null) {
                                     for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
-                                        if (info.getUrl() == null) {
+                                        if (info.getUrl() != null) {
                                             chosenInfo = info;
+                                            break;
                                         }
                                     }
+                                }
 
-                                    // If only URLs are available, choose the first URL.
-                                    if (chosenInfo == null) {
-                                        for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
-                                            if (info.getUrl() != null) {
-                                                chosenInfo = info;
-                                                break;
+                                if (chosenInfo != null && chosenInfo.getUrl() != null) {
+                                    try {
+                                        URLConnection urlConnection = chosenInfo.getUrl().openConnection();
+                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                        // Download the image file.
+                                        try (InputStream in = urlConnection.getInputStream()) {
+                                            byte data[] = new byte[4096];
+                                            int n;
+                                            while ((n = in.read(data, 0, 4096)) != -1) {
+                                                baos.write(data, 0, n);
                                             }
                                         }
+                                        byte[] data = baos.toByteArray();
+                                        storeToCache(item.getId(), data);
+                                        notifyListeners(message.getFrom().asBareJid(), data);
+                                    } catch (IOException e1) {
+                                        logger.warning(String.format("Failed to download avatar from advertised URL: %s.", chosenInfo.getUrl()));
                                     }
-
-                                    if (chosenInfo != null && chosenInfo.getUrl() != null) {
+                                } else {
+                                    avatarRequester.execute(() -> {
                                         try {
-                                            URLConnection urlConnection = chosenInfo.getUrl().openConnection();
-                                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                            // Download the image file.
-                                            try (InputStream in = urlConnection.getInputStream()) {
-                                                byte data[] = new byte[4096];
-                                                int n;
-                                                while ((n = in.read(data, 0, 4096)) != -1) {
-                                                    baos.write(data, 0, n);
+                                            PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(message.getFrom());
+                                            List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
+                                            if (!items.isEmpty()) {
+                                                Item i = items.get(0);
+                                                if (i.getPayload() instanceof AvatarData) {
+                                                    AvatarData avatarData = (AvatarData) i.getPayload();
+                                                    storeToCache(item.getId(), avatarData.getData());
+                                                    notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
                                                 }
                                             }
-                                            byte[] data = baos.toByteArray();
-                                            storeToCache(item.getId(), data);
-                                            notifyListeners(message.getFrom().asBareJid(), data);
-                                        } catch (IOException e1) {
-                                            logger.warning(String.format("Failed to download avatar from advertised URL: %s.", chosenInfo.getUrl()));
+                                        } catch (XmppException e1) {
+                                            logger.warning(String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), message.getFrom()));
                                         }
-                                    } else {
-                                        avatarRequester.execute(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                try {
-                                                    PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(message.getFrom());
-                                                    List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
-                                                    if (!items.isEmpty()) {
-                                                        Item i = items.get(0);
-                                                        if (i.getPayload() instanceof AvatarData) {
-                                                            AvatarData avatarData = (AvatarData) i.getPayload();
-                                                            storeToCache(item.getId(), avatarData.getData());
-                                                            notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
-                                                        }
-                                                    }
-                                                } catch (XmppException e1) {
-                                                    logger.warning(String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), message.getFrom()));
-                                                }
-                                            }
-                                        });
-                                    }
+                                    });
                                 }
                             }
                         }

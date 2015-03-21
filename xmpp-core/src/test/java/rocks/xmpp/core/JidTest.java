@@ -49,26 +49,20 @@ public class JidTest {
     public static void main1(String[] args) {
         Executor executor = Executors.newFixedThreadPool(1);
 
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Executor executor1 = Executors.newCachedThreadPool();
-                for (int i = 0; i < 100; i++) {
-                    // Start 100 threads
-                    executor1.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            int j = 0;
-                            while (true) {
-                                j++;
-                                Jid.valueOf(j + "@test");
-                                if (j == 3000) {
-                                    j = 0;
-                                }
-                            }
+        executor.execute(() -> {
+            Executor executor1 = Executors.newCachedThreadPool();
+            for (int i = 0; i < 100; i++) {
+                // Start 100 threads
+                executor1.execute(() -> {
+                    int j = 0;
+                    while (true) {
+                        j++;
+                        Jid.valueOf(j + "@test");
+                        if (j == 3000) {
+                            j = 0;
                         }
-                    });
-                }
+                    }
+                });
             }
         });
 

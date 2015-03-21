@@ -88,101 +88,98 @@ final class XmppStreamReader {
     synchronized void startReading(final InputStream inputStream) {
 
         if (!executorService.isShutdown()) {
-            executorService.execute(new Runnable() {
-                @Override
-                public void run() {
-                    boolean doRestart = false;
-                    XMLEventReader xmlEventReader = null;
-                    try {
+            executorService.execute(() -> {
+                boolean doRestart = false;
+                XMLEventReader xmlEventReader = null;
+                try {
 
-                        InputStream xmppInputStream;
-                        ByteArrayOutputStream byteArrayOutputStream = null;
-                        if (debugger != null) {
-                            byteArrayOutputStream = new ByteArrayOutputStream();
-                            xmppInputStream = debugger.createInputStream(XmppUtils.createBranchedInputStream(inputStream, byteArrayOutputStream));
-                        } else {
-                            xmppInputStream = inputStream;
-                        }
+                    InputStream xmppInputStream;
+                    ByteArrayOutputStream byteArrayOutputStream = null;
+                    if (debugger != null) {
+                        byteArrayOutputStream = new ByteArrayOutputStream();
+                        xmppInputStream = debugger.createInputStream(XmppUtils.createBranchedInputStream(inputStream, byteArrayOutputStream));
+                    } else {
+                        xmppInputStream = inputStream;
+                    }
 
-                        xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream, "UTF-8");
-                        boolean isFirstPass = true;
-                        while (!doRestart && xmlEventReader.hasNext()) {
-                            XMLEvent xmlEvent = xmlEventReader.peek();
+                    xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream, "UTF-8");
+                    boolean isFirstPass = true;
+                    while (!doRestart && xmlEventReader.hasNext()) {
+                        XMLEvent xmlEvent = xmlEventReader.peek();
 
-                            if (xmlEvent.isStartElement()) {
-                                StartElement startElement = xmlEvent.asStartElement();
-                                if (startElement.getName().getLocalPart().equals("stream") && startElement.getName().getNamespaceURI().equals("http://etherx.jabber.org/streams")) {
-                                    Attribute idAttribute = startElement.getAttributeByName(new QName("id"));
-                                    if (idAttribute != null) {
-                                        synchronized (connection) {
-                                            connection.streamId = idAttribute.getValue();
-                                        }
+                        if (xmlEvent.isStartElement()) {
+                            StartElement startElement = xmlEvent.asStartElement();
+                            if (startElement.getName().getLocalPart().equals("stream") && startElement.getName().getNamespaceURI().equals("http://etherx.jabber.org/streams")) {
+                                Attribute idAttribute = startElement.getAttributeByName(new QName("id"));
+                                if (idAttribute != null) {
+                                    synchronized (connection) {
+                                        connection.streamId = idAttribute.getValue();
                                     }
-                                    Attribute fromAttribute = startElement.getAttributeByName(new QName("from"));
-                                    if (fromAttribute != null) {
-                                        xmppSession.setXmppServiceDomain(fromAttribute.getValue());
-                                    }
-
-                                    xmlEventReader.next();
-                                } else {
-                                    Object object = unmarshaller.unmarshal(xmlEventReader);
-
-                                    if (debugger != null) {
-                                        if (isFirstPass && byteArrayOutputStream != null) {
-                                            // If it's the first pass, include the stream header with the <features/>, which are both in the byteArrayOutputStream at this point.
-                                            debugger.readStanza(byteArrayOutputStream.toString(), object);
-                                        } else {
-                                            // Otherwise marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
-                                            StringWriter stringWriter = new StringWriter();
-                                            XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
-                                            marshaller.marshal(object, xmlStreamWriter);
-                                            debugger.readStanza(stringWriter.toString(), object);
-                                        }
-                                    }
-                                    isFirstPass = false;
-                                    doRestart = xmppSession.handleElement(object);
                                 }
-                            } else {
+                                Attribute fromAttribute = startElement.getAttributeByName(new QName("from"));
+                                if (fromAttribute != null) {
+                                    xmppSession.setXmppServiceDomain(fromAttribute.getValue());
+                                }
+
                                 xmlEventReader.next();
-                            }
-                            if (!isFirstPass && byteArrayOutputStream != null) {
-                                // Avoid that the stream grows to the size of the whole XMPP stream.
-                                byteArrayOutputStream.reset();
-                            }
-                            if (xmlEvent.getEventType() == XMLEvent.END_ELEMENT) {
-                                // The stream gets closed with </stream:stream>
-                                if (debugger != null) {
-                                    QName qName = xmlEvent.asEndElement().getName();
-                                    debugger.readStanza("</" + qName.getPrefix() + ":" + qName.getLocalPart() + ">", null);
-                                }
-                            }
-                        }
+                            } else {
+                                Object object = unmarshaller.unmarshal(xmlEventReader);
 
-                        xmlEventReader.close();
-                        if (!doRestart && xmppSession.getStatus() != XmppSession.Status.CLOSING) {
-                            // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
-                            // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred.
-                            throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, new Text("Stream closed by server", "en"), null));
+                                if (debugger != null) {
+                                    if (isFirstPass && byteArrayOutputStream != null) {
+                                        // If it's the first pass, include the stream header with the <features/>, which are both in the byteArrayOutputStream at this point.
+                                        debugger.readStanza(byteArrayOutputStream.toString(), object);
+                                    } else {
+                                        // Otherwise marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
+                                        StringWriter stringWriter = new StringWriter();
+                                        XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
+                                        marshaller.marshal(object, xmlStreamWriter);
+                                        debugger.readStanza(stringWriter.toString(), object);
+                                    }
+                                }
+                                isFirstPass = false;
+                                doRestart = xmppSession.handleElement(object);
+                            }
+                        } else {
+                            xmlEventReader.next();
                         }
-                    } catch (Exception e) {
-                        synchronized (XmppStreamReader.this) {
-                            if (!executorService.isShutdown()) {
-                                // shutdown the service, but don't await termination, in order to not block the reader thread.
-                                executorService.shutdown();
+                        if (!isFirstPass && byteArrayOutputStream != null) {
+                            // Avoid that the stream grows to the size of the whole XMPP stream.
+                            byteArrayOutputStream.reset();
+                        }
+                        if (xmlEvent.getEventType() == XMLEvent.END_ELEMENT) {
+                            // The stream gets closed with </stream:stream>
+                            if (debugger != null) {
+                                QName qName = xmlEvent.asEndElement().getName();
+                                debugger.readStanza("</" + qName.getPrefix() + ":" + qName.getLocalPart() + ">", null);
                             }
                         }
-                        xmppSession.notifyException(e);
-                    } finally {
-                        if (xmlEventReader != null) {
-                            try {
-                                xmlEventReader.close();
-                            } catch (XMLStreamException e) {
-                                xmppSession.notifyException(e);
-                            }
+                    }
+
+                    xmlEventReader.close();
+                    if (!doRestart && xmppSession.getStatus() != XmppSession.Status.CLOSING) {
+                        // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
+                        // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred.
+                        throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, new Text("Stream closed by server", "en"), null));
+                    }
+                } catch (Exception e) {
+                    synchronized (XmppStreamReader.this) {
+                        if (!executorService.isShutdown()) {
+                            // shutdown the service, but don't await termination, in order to not block the reader thread.
+                            executorService.shutdown();
                         }
-                        if (doRestart) {
-                            connection.restartStream();
+                    }
+                    xmppSession.notifyException(e);
+                } finally {
+                    if (xmlEventReader != null) {
+                        try {
+                            xmlEventReader.close();
+                        } catch (XMLStreamException e) {
+                            xmppSession.notifyException(e);
                         }
+                    }
+                    if (doRestart) {
+                        connection.restartStream();
                     }
                 }
             });

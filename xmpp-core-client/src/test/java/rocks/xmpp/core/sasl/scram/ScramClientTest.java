@@ -30,16 +30,13 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 
 import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
 import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
 import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -51,16 +48,13 @@ public class ScramClientTest {
 
     @Test
     public void testHiFunction() throws InvalidKeyException, NoSuchAlgorithmException, SaslException {
-        ScramClient scramSaslClient = new ScramClient("SHA-1", "server", new CallbackHandler() {
-            @Override
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback callback : callbacks) {
-                    if (callback instanceof NameCallback) {
-                        ((NameCallback) callback).setName("Test");
-                    }
-                    if (callback instanceof PasswordCallback) {
-                        ((PasswordCallback) callback).setPassword("pencil".toCharArray());
-                    }
+        ScramClient scramSaslClient = new ScramClient("SHA-1", "server", callbacks -> {
+            for (Callback callback : callbacks) {
+                if (callback instanceof NameCallback) {
+                    ((NameCallback) callback).setName("Test");
+                }
+                if (callback instanceof PasswordCallback) {
+                    ((PasswordCallback) callback).setPassword("pencil".toCharArray());
                 }
             }
         });
@@ -73,19 +67,16 @@ public class ScramClientTest {
     public void testSasl() throws SaslException {
         List<String> saslMechs = XmppSessionConfiguration.getDefault().getAuthenticationMechanisms();
         String[] preferredMechanisms = saslMechs.toArray(new String[saslMechs.size()]);
-        SaslClient sc = Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, new CallbackHandler() {
-            @Override
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback callback : callbacks) {
-                    if (callback instanceof NameCallback) {
-                        ((NameCallback) callback).setName("admin");
-                    }
-                    if (callback instanceof PasswordCallback) {
-                        ((PasswordCallback) callback).setPassword("admin".toCharArray());
-                    }
-                    if (callback instanceof RealmCallback) {
-                        ((RealmCallback) callback).setText("realm");
-                    }
+        SaslClient sc = Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, callbacks -> {
+            for (Callback callback : callbacks) {
+                if (callback instanceof NameCallback) {
+                    ((NameCallback) callback).setName("admin");
+                }
+                if (callback instanceof PasswordCallback) {
+                    ((PasswordCallback) callback).setPassword("admin".toCharArray());
+                }
+                if (callback instanceof RealmCallback) {
+                    ((RealmCallback) callback).setText("realm");
                 }
             }
         });
@@ -96,16 +87,13 @@ public class ScramClientTest {
     @Test
     public void testServerResponse() throws SaslException {
 
-        ScramClient scramSha1SaslClient = new ScramClient("SHA-1", null, new CallbackHandler() {
-            @Override
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback callback : callbacks) {
-                    if (callback instanceof NameCallback) {
-                        ((NameCallback) callback).setName("user");
-                    }
-                    if (callback instanceof PasswordCallback) {
-                        ((PasswordCallback) callback).setPassword("pencil".toCharArray());
-                    }
+        ScramClient scramSha1SaslClient = new ScramClient("SHA-1", null, callbacks -> {
+            for (Callback callback : callbacks) {
+                if (callback instanceof NameCallback) {
+                    ((NameCallback) callback).setName("user");
+                }
+                if (callback instanceof PasswordCallback) {
+                    ((PasswordCallback) callback).setPassword("pencil".toCharArray());
                 }
             }
         });
@@ -127,29 +115,23 @@ public class ScramClientTest {
     public void testClientServer() throws SaslException, ClassNotFoundException {
         new XmppSession(null);
 
-        SaslClient saslClient = Sasl.createSaslClient(new String[]{"SCRAM-SHA-1"}, "authzid", "xmpp", "servername", null, new CallbackHandler() {
-            @Override
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback callback : callbacks) {
-                    if (callback instanceof NameCallback) {
-                        ((NameCallback) callback).setName("Test");
-                    }
-                    if (callback instanceof PasswordCallback) {
-                        ((PasswordCallback) callback).setPassword("==".toCharArray());
-                    }
+        SaslClient saslClient = Sasl.createSaslClient(new String[]{"SCRAM-SHA-1"}, "authzid", "xmpp", "servername", null, callbacks -> {
+            for (Callback callback : callbacks) {
+                if (callback instanceof NameCallback) {
+                    ((NameCallback) callback).setName("Test");
+                }
+                if (callback instanceof PasswordCallback) {
+                    ((PasswordCallback) callback).setPassword("==".toCharArray());
                 }
             }
         });
 
         byte[] initialResponse = saslClient.evaluateChallenge(new byte[0]);
 
-        ScramServer scramServer = new ScramServer("SHA-1", new CallbackHandler() {
-            @Override
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback callback : callbacks) {
-                    if (callback instanceof PasswordCallback) {
-                        ((PasswordCallback) callback).setPassword("==".toCharArray());
-                    }
+        ScramServer scramServer = new ScramServer("SHA-1", callbacks -> {
+            for (Callback callback : callbacks) {
+                if (callback instanceof PasswordCallback) {
+                    ((PasswordCallback) callback).setPassword("==".toCharArray());
                 }
             }
         });

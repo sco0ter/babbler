@@ -29,8 +29,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -41,13 +39,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
@@ -112,12 +107,7 @@ public final class VisualDebugger implements XmppDebugger {
                     LOG_RECORDS.offer(record);
                 }
                 if (platformInitialized) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateTextArea();
-                        }
-                    });
+                    Platform.runLater(VisualDebugger::updateTextArea);
                 }
             }
 
@@ -160,43 +150,29 @@ public final class VisualDebugger implements XmppDebugger {
     @Override
     public void initialize(final XmppSession xmppSession) {
 
-        final SessionStatusListener connectionListener = new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(final SessionStatusEvent e) {
-                waitForPlatform();
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (e.getStatus() == XmppSession.Status.CONNECTED && xmppSession.getActiveConnection() != null) {
-                            debugController.viewModel.server.set(xmppSession.getActiveConnection().getHostname());
-                            debugController.viewModel.port.set(xmppSession.getActiveConnection().getPort());
-                            title.set(xmppSession.getDomain());
-                        }
-                        if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                            title.set(xmppSession.getConnectedResource().toString());
-                        } else {
-                            debugController.viewModel.presence.set(null);
-                        }
-                        debugController.viewModel.status.set(e.getStatus());
-                    }
-                });
-            }
+        final SessionStatusListener connectionListener = e -> {
+            waitForPlatform();
+            Platform.runLater(() -> {
+                if (e.getStatus() == XmppSession.Status.CONNECTED && xmppSession.getActiveConnection() != null) {
+                    debugController.viewModel.server.set(xmppSession.getActiveConnection().getHostname());
+                    debugController.viewModel.port.set(xmppSession.getActiveConnection().getPort());
+                    title.set(xmppSession.getDomain());
+                }
+                if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                    title.set(xmppSession.getConnectedResource().toString());
+                } else {
+                    debugController.viewModel.presence.set(null);
+                }
+                debugController.viewModel.status.set(e.getStatus());
+            });
         };
         xmppSession.addSessionStatusListener(connectionListener);
 
-        final PresenceListener presenceListener = new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                final Presence presence = e.getPresence();
-                if (presence.getTo() == null) {
-                    waitForPlatform();
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            debugController.viewModel.presence.set(presence);
-                        }
-                    });
-                }
+        final PresenceListener presenceListener = e -> {
+            final Presence presence = e.getPresence();
+            if (presence.getTo() == null) {
+                waitForPlatform();
+                Platform.runLater(() -> debugController.viewModel.presence.set(presence));
             }
         };
         xmppSession.addOutboundPresenceListener(presenceListener);
@@ -224,17 +200,14 @@ public final class VisualDebugger implements XmppDebugger {
                                 stage = new Stage();
                                 stage.setTitle("XMPP Viewer");
                                 stage.getIcons().addAll(new Image(getClass().getResource("xmpp.png").toExternalForm()));
-                                stage.setOnHidden(new EventHandler<WindowEvent>() {
-                                    @Override
-                                    public void handle(WindowEvent event) {
-                                        for (Tab tab : tabPane.getTabs()) {
-                                            xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
-                                        }
-
-                                        tabPane.getTabs().clear();
-                                        stage = null;
-                                        tabPane = null;
+                                stage.setOnHidden(event -> {
+                                    for (Tab tab : tabPane.getTabs()) {
+                                        xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
                                     }
+
+                                    tabPane.getTabs().clear();
+                                    stage = null;
+                                    tabPane = null;
                                 });
                                 stage.setScene(scene);
                             }
@@ -268,13 +241,10 @@ public final class VisualDebugger implements XmppDebugger {
                             };
                             animationTimer.start();
 
-                            tab.setOnClosed(new EventHandler<Event>() {
-                                @Override
-                                public void handle(Event event) {
-                                    xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
-                                    xmppSession.removeOutboundPresenceListener(presenceListener);
-                                    animationTimer.stop();
-                                }
+                            tab.setOnClosed(event -> {
+                                xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
+                                xmppSession.removeOutboundPresenceListener(presenceListener);
+                                animationTimer.stop();
                             });
 
                             tabPane.getTabs().add(tab);
@@ -305,13 +275,10 @@ public final class VisualDebugger implements XmppDebugger {
         }
 
         waitForPlatform();
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                debugController.addStanza(new StanzaEntry(false, xml, stanza));
-                if (!outbound.isEmpty()) {
-                    debugController.appendTextOutbound(outbound);
-                }
+        Platform.runLater(() -> {
+            debugController.addStanza(new StanzaEntry(false, xml, stanza));
+            if (!outbound.isEmpty()) {
+                debugController.appendTextOutbound(outbound);
             }
         });
     }
@@ -328,13 +295,10 @@ public final class VisualDebugger implements XmppDebugger {
         }
 
         waitForPlatform();
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                debugController.addStanza(new StanzaEntry(true, xml, stanza));
-                if (!inbound.isEmpty()) {
-                    debugController.appendTextInbound(inbound);
-                }
+        Platform.runLater(() -> {
+            debugController.addStanza(new StanzaEntry(true, xml, stanza));
+            if (!inbound.isEmpty()) {
+                debugController.appendTextInbound(inbound);
             }
         });
     }

@@ -32,12 +32,6 @@ import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -109,24 +103,9 @@ public final class PingManager extends ExtensionManager {
         // Reschedule server pings whenever we receive a stanza from the server.
         // When we receive a stanza, we are obviously connected.
         // Pinging should be deferred in this case.
-        xmppSession.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                rescheduleNextPing();
-            }
-        });
-        xmppSession.addInboundPresenceListener(new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                rescheduleNextPing();
-            }
-        });
-        xmppSession.addInboundIQListener(new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                rescheduleNextPing();
-            }
-        });
+        xmppSession.addInboundMessageListener(e -> rescheduleNextPing());
+        xmppSession.addInboundPresenceListener(e -> rescheduleNextPing());
+        xmppSession.addInboundIQListener(e -> rescheduleNextPing());
     }
 
     /**
@@ -206,28 +185,22 @@ public final class PingManager extends ExtensionManager {
 
     private void rescheduleNextPing() {
         // Reschedule in a separate thread, so that it won't interrupt the "pinging" thread due to the cancel, which then causes the ping to fail.
-        scheduledExecutorService.schedule(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (PingManager.this) {
-                    cancelNextPing();
-                    if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
-                        nextPing = scheduledExecutorService.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                                    if (!pingServer()) {
-                                        try {
-                                            throw new XmppException("Server ping failed.");
-                                        } catch (XmppException e) {
-                                            xmppSession.notifyException(e);
-                                        }
-                                    }
+        scheduledExecutorService.schedule(() -> {
+            synchronized (PingManager.this) {
+                cancelNextPing();
+                if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
+                    nextPing = scheduledExecutorService.schedule(() -> {
+                        if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                            if (!pingServer()) {
+                                try {
+                                    throw new XmppException("Server ping failed.");
+                                } catch (XmppException e) {
+                                    xmppSession.notifyException(e);
                                 }
-                                // Rescheduling of the next ping is already done by the IQ response of the ping.
                             }
-                        }, pingInterval, TimeUnit.SECONDS);
-                    }
+                        }
+                        // Rescheduling of the next ping is already done by the IQ response of the ping.
+                    }, pingInterval, TimeUnit.SECONDS);
                 }
             }
         }, 0, TimeUnit.MILLISECONDS);

@@ -33,10 +33,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.Collection;
@@ -88,12 +85,9 @@ public class MultiUserChatIT extends IntegrationTest {
     public void testMessageListener() throws XmppException, InterruptedException {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        MessageListener messageListener = new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (e.getMessage().getBody().equals("Hello")) {
-                    countDownLatch.countDown();
-                }
+        MessageListener messageListener = e -> {
+            if (e.getMessage().getBody().equals("Hello")) {
+                countDownLatch.countDown();
             }
         };
         chatRoom[0].addInboundMessageListener(messageListener);
@@ -114,14 +108,11 @@ public class MultiUserChatIT extends IntegrationTest {
     public void testInvitation() throws XmppException, InterruptedException {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        multiUserChatManager[1].addInvitationListener(new InvitationListener() {
-            @Override
-            public void invitationReceived(InvitationEvent e) {
-                System.out.println(e);
-                if (e.getReason().equals("join!")) {
-                    countDownLatch.countDown();
-                    //ChatRoom chatRoom = multiUserChatManager[0].createChatService(Jid.valueOf(e.getRoomAddress().getDomain())).createRoom(e.getRoomAddress().getLocal());
-                }
+        multiUserChatManager[1].addInvitationListener(e -> {
+            System.out.println(e);
+            if (e.getReason().equals("join!")) {
+                countDownLatch.countDown();
+                //ChatRoom chatRoom = multiUserChatManager[0].createChatService(Jid.valueOf(e.getRoomAddress().getDomain())).createRoom(e.getRoomAddress().getLocal());
             }
         });
         try {
@@ -139,12 +130,9 @@ public class MultiUserChatIT extends IntegrationTest {
     public void testUserEnters() throws XmppException, InterruptedException {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        chatRoom[0].addOccupantListener(new OccupantListener() {
-            @Override
-            public void occupantChanged(OccupantEvent e) {
-                if (e.getType() == OccupantEvent.Type.ENTERED) {
-                    countDownLatch.countDown();
-                }
+        chatRoom[0].addOccupantListener(e -> {
+            if (e.getType() == OccupantEvent.Type.ENTERED) {
+                countDownLatch.countDown();
             }
         });
         try {

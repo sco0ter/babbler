@@ -27,8 +27,6 @@ package rocks.xmpp.extensions.bytestreams.s5b;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -121,13 +119,10 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                 }
             }
         });
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    // Stop the server, when the session is closed.
-                    localSocks5Server.stop();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                // Stop the server, when the session is closed.
+                localSocks5Server.stop();
             }
         });
     }

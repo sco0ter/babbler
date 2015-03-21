@@ -32,8 +32,6 @@ import rocks.xmpp.core.roster.model.ContactGroup;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.core.session.Manager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -196,12 +194,9 @@ public final class RosterManager extends Manager {
                 }
             }
         }, false); // Roster pushes should be processed in order as they arrive, so that they don't mess up the roster.
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    rosterListeners.clear();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                rosterListeners.clear();
             }
         });
     }

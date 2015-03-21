@@ -25,12 +25,8 @@
 package rocks.xmpp.extensions.httpauth;
 
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -76,24 +72,18 @@ public final class HttpAuthenticationManager extends ExtensionManager {
             }
         });
 
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    httpAuthenticationListeners.clear();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                httpAuthenticationListeners.clear();
             }
         });
 
-        xmppSession.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                Message message = e.getMessage();
-                if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
-                    ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
-                    if (confirmationRequest != null) {
-                        notifyHttpAuthListeners(message, confirmationRequest);
-                    }
+        xmppSession.addInboundMessageListener(e -> {
+            Message message = e.getMessage();
+            if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
+                ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
+                if (confirmationRequest != null) {
+                    notifyHttpAuthListeners(message, confirmationRequest);
                 }
             }
         });

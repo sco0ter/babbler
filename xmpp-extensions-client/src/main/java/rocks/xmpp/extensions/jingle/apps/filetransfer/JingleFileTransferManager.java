@@ -31,8 +31,6 @@ import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.filetransfer.FileTransferRejectedException;
-import rocks.xmpp.extensions.jingle.JingleEvent;
-import rocks.xmpp.extensions.jingle.JingleListener;
 import rocks.xmpp.extensions.jingle.JingleManager;
 import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
@@ -75,17 +73,14 @@ public final class JingleFileTransferManager extends ExtensionManager {
         final Condition condition = lock.newCondition();
         final Jingle[] response = new Jingle[1];
 
-        jingleSession.addJingleListener(new JingleListener() {
-            @Override
-            public void jingleReceived(JingleEvent e) {
-                if (e.getJingle().getAction() == Jingle.Action.SESSION_ACCEPT || e.getJingle().getAction() == Jingle.Action.SESSION_TERMINATE) {
-                    lock.lock();
-                    try {
-                        response[0] = e.getJingle();
-                        condition.signalAll();
-                    } finally {
-                        lock.unlock();
-                    }
+        jingleSession.addJingleListener(e -> {
+            if (e.getJingle().getAction() == Jingle.Action.SESSION_ACCEPT || e.getJingle().getAction() == Jingle.Action.SESSION_TERMINATE) {
+                lock.lock();
+                try {
+                    response[0] = e.getJingle();
+                    condition.signalAll();
+                } finally {
+                    lock.unlock();
                 }
             }
         });

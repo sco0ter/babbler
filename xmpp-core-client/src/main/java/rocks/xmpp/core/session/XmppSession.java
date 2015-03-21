@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.bind.model.Bind;
-import rocks.xmpp.core.chat.ChatManager;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
@@ -63,7 +62,6 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.RealmCallback;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -564,18 +562,15 @@ public class XmppSession implements AutoCloseable {
         final Lock queryLock = new ReentrantLock();
         final Condition resultReceived = queryLock.newCondition();
 
-        final IQListener listener = new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                IQ responseIQ = e.getIQ();
-                if (responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
-                    queryLock.lock();
-                    try {
-                        result[0] = responseIQ;
-                    } finally {
-                        resultReceived.signal();
-                        queryLock.unlock();
-                    }
+        final IQListener listener = e -> {
+            IQ responseIQ = e.getIQ();
+            if (responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
+                queryLock.lock();
+                try {
+                    result[0] = responseIQ;
+                } finally {
+                    resultReceived.signal();
+                    queryLock.unlock();
                 }
             }
         };
@@ -616,18 +611,15 @@ public class XmppSession implements AutoCloseable {
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
 
-        final PresenceListener listener = new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                Presence presence = e.getPresence();
-                if (filter.accept(presence)) {
-                    presenceLock.lock();
-                    try {
-                        result[0] = presence;
-                    } finally {
-                        resultReceived.signal();
-                        presenceLock.unlock();
-                    }
+        final PresenceListener listener = e -> {
+            Presence presence = e.getPresence();
+            if (filter.accept(presence)) {
+                presenceLock.lock();
+                try {
+                    result[0] = presence;
+                } finally {
+                    resultReceived.signal();
+                    presenceLock.unlock();
                 }
             }
         };
@@ -669,18 +661,15 @@ public class XmppSession implements AutoCloseable {
         final Lock messageLock = new ReentrantLock();
         final Condition resultReceived = messageLock.newCondition();
 
-        final MessageListener listener = new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                Message message = e.getMessage();
-                if (filter.accept(message)) {
-                    messageLock.lock();
-                    try {
-                        result[0] = message;
-                    } finally {
-                        resultReceived.signal();
-                        messageLock.unlock();
-                    }
+        final MessageListener listener = e -> {
+            Message message = e.getMessage();
+            if (filter.accept(message)) {
+                messageLock.lock();
+                try {
+                    result[0] = message;
+                } finally {
+                    resultReceived.signal();
+                    messageLock.unlock();
                 }
             }
         };
@@ -923,19 +912,16 @@ public class XmppSession implements AutoCloseable {
         Objects.requireNonNull(password, "password must not be null.");
 
         // A default callback handler for username/password retrieval:
-        login(authorizationId, new CallbackHandler() {
-            @Override
-            public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-                for (Callback callback : callbacks) {
-                    if (callback instanceof NameCallback) {
-                        ((NameCallback) callback).setName(user);
-                    }
-                    if (callback instanceof PasswordCallback) {
-                        ((PasswordCallback) callback).setPassword(password.toCharArray());
-                    }
-                    if (callback instanceof RealmCallback) {
-                        ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
-                    }
+        login(authorizationId, callbacks -> {
+            for (Callback callback : callbacks) {
+                if (callback instanceof NameCallback) {
+                    ((NameCallback) callback).setName(user);
+                }
+                if (callback instanceof PasswordCallback) {
+                    ((PasswordCallback) callback).setPassword(password.toCharArray());
+                }
+                if (callback instanceof RealmCallback) {
+                    ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
                 }
             }
         }, resource);
@@ -1114,19 +1100,16 @@ public class XmppSession implements AutoCloseable {
                     }
 
                     if (iqHandler != null) {
-                        executor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    IQ response = iqHandler.handleRequest(iq);
-                                    if (response != null) {
-                                        send(response);
-                                    }
-                                } catch (Exception e) {
-                                    logger.log(Level.WARNING, "Failed to handle IQ request: " + e.getMessage(), e);
-                                    // If any exception occurs during processing the IQ, return <service-unavailable/>.
-                                    send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
+                        executor.execute(() -> {
+                            try {
+                                IQ response = iqHandler.handleRequest(iq);
+                                if (response != null) {
+                                    send(response);
                                 }
+                            } catch (Exception e) {
+                                logger.log(Level.WARNING, "Failed to handle IQ request: " + e.getMessage(), e);
+                                // If any exception occurs during processing the IQ, return <service-unavailable/>.
+                                send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
                             }
                         });
                     } else {
@@ -1135,26 +1118,11 @@ public class XmppSession implements AutoCloseable {
                     }
                 }
             }
-            stanzaListenerExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    notifyIQListeners(iq, true);
-                }
-            });
+            stanzaListenerExecutor.execute(() -> notifyIQListeners(iq, true));
         } else if (element instanceof Message) {
-            stanzaListenerExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    notifyMessageListeners((Message) element, true);
-                }
-            });
+            stanzaListenerExecutor.execute(() -> notifyMessageListeners((Message) element, true));
         } else if (element instanceof Presence) {
-            stanzaListenerExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    notifyPresenceListeners((Presence) element, true);
-                }
-            });
+            stanzaListenerExecutor.execute(() -> notifyPresenceListeners((Presence) element, true));
         } else if (element instanceof StreamFeatures) {
             getManager(StreamFeaturesManager.class).processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {

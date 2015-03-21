@@ -29,12 +29,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -72,33 +68,27 @@ public final class ContactExchangeManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    contactExchangeListeners.clear();
-                    trustedEntities.clear();
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                contactExchangeListeners.clear();
+                trustedEntities.clear();
             }
         });
-        xmppSession.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (isEnabled()) {
-                    Message message = e.getMessage();
-                    ContactExchange contactExchange = message.getExtension(ContactExchange.class);
-                    if (contactExchange != null) {
-                        List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                        if (!items.isEmpty()) {
-                            Date date;
-                            DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                            if (delayedDelivery != null) {
-                                date = delayedDelivery.getTimeStamp();
-                            } else {
-                                date = new Date();
-                            }
-                            processItems(items, message.getFrom(), message.getBody(), date);
+        xmppSession.addInboundMessageListener(e -> {
+            if (isEnabled()) {
+                Message message = e.getMessage();
+                ContactExchange contactExchange = message.getExtension(ContactExchange.class);
+                if (contactExchange != null) {
+                    List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+                    if (!items.isEmpty()) {
+                        Date date;
+                        DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
+                        if (delayedDelivery != null) {
+                            date = delayedDelivery.getTimeStamp();
+                        } else {
+                            date = new Date();
                         }
+                        processItems(items, message.getFrom(), message.getBody(), date);
                     }
                 }
             }

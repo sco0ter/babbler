@@ -352,14 +352,12 @@ public final class RosterManager extends Manager {
      */
     private void removeContactsFromGroups(Contact contact, Collection<ContactGroup> contactGroups) {
         List<ContactGroup> emptyGroups = new ArrayList<>();
-        for (ContactGroup group : contactGroups) {
-            // Recursively remove the contact from the nested subgroups.
-            // If the nested group is empty, it can be removed.
-            if (removeRecursively(contact, group)) {
-                emptyGroups.add(group);
-                rosterGroupMap.remove(group.getFullName());
-            }
-        }
+        // Recursively remove the contact from the nested subgroups.
+// If the nested group is empty, it can be removed.
+        contactGroups.stream().filter(group -> removeRecursively(contact, group)).forEach(group -> {
+            emptyGroups.add(group);
+            rosterGroupMap.remove(group.getFullName());
+        });
         // Remove all empty sub groups
         contactGroups.removeAll(emptyGroups);
     }

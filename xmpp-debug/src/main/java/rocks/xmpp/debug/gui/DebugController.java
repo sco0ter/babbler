@@ -349,19 +349,18 @@ public final class DebugController implements Initializable {
                     }
                 }
 
-                for (StanzaEntry entry : stanzaTableView.getItems()) {
-                    if (newValue.getStanza() instanceof IQ && entry.getStanza() instanceof IQ) {
-                        IQ selectedIQ = (IQ) newValue.getStanza();
-                        IQ otherIQ = (IQ) entry.getStanza();
-                        if (otherIQ.getId() != null && otherIQ.getId().equals(selectedIQ.getId())
-                                && ((selectedIQ.isRequest() && otherIQ.isResponse())
-                                || selectedIQ.isResponse() && otherIQ.isRequest())
-                                && newValue.isInbound() != entry.isInbound()) {
-                            // Add the highlighted items.
-                            viewModel.highlightedItems.add(entry);
-                        }
+                // Add the highlighted items.
+                stanzaTableView.getItems().stream().filter(entry -> newValue.getStanza() instanceof IQ && entry.getStanza() instanceof IQ).forEach(entry -> {
+                    IQ selectedIQ = (IQ) newValue.getStanza();
+                    IQ otherIQ = (IQ) entry.getStanza();
+                    if (otherIQ.getId() != null && otherIQ.getId().equals(selectedIQ.getId())
+                            && ((selectedIQ.isRequest() && otherIQ.isResponse())
+                            || selectedIQ.isResponse() && otherIQ.isRequest())
+                            && newValue.isInbound() != entry.isInbound()) {
+                        // Add the highlighted items.
+                        viewModel.highlightedItems.add(entry);
                     }
-                }
+                });
                 // Workaround to refresh table:
                 // http://stackoverflow.com/questions/11065140/javafx-2-1-tableview-refresh-items
                 stanzaTableView.getColumns().get(0).setVisible(false);

@@ -30,7 +30,6 @@ import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -146,61 +145,58 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             }
         };
 
-        this.presenceListener = new PresenceListener() {
-            @Override
-            public void handlePresence(PresenceEvent e) {
-                Presence presence = e.getPresence();
-                // If the presence came from the room.
-                if (presence.getFrom() != null && presence.getFrom().asBareJid().equals(roomJid)) {
-                    MucUser mucUser = presence.getExtension(MucUser.class);
-                    if (mucUser != null) {
-                        String nick = presence.getFrom().getResource();
+        this.presenceListener = e -> {
+            Presence presence = e.getPresence();
+            // If the presence came from the room.
+            if (presence.getFrom() != null && presence.getFrom().asBareJid().equals(roomJid)) {
+                MucUser mucUser = presence.getExtension(MucUser.class);
+                if (mucUser != null) {
+                    String nick = presence.getFrom().getResource();
 
-                        if (nick != null) {
-                            boolean isSelfPresence = isSelfPresence(presence);
-                            if (presence.isAvailable()) {
-                                Occupant occupant = new Occupant(presence, isSelfPresence);
-                                Occupant previousOccupant = occupantMap.put(nick, occupant);
-                                // A new occupant entered the room.
-                                if (previousOccupant == null) {
-                                    // Only notify about "joins", if it's not our own join and we are already in the room.
-                                    if (!isSelfPresence && entered) {
-                                        notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ENTERED, null, null, null));
-                                    }
-                                } else {
-                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.STATUS_CHANGED, null, null, null));
+                    if (nick != null) {
+                        boolean isSelfPresence = isSelfPresence(presence);
+                        if (presence.isAvailable()) {
+                            Occupant occupant = new Occupant(presence, isSelfPresence);
+                            Occupant previousOccupant = occupantMap.put(nick, occupant);
+                            // A new occupant entered the room.
+                            if (previousOccupant == null) {
+                                // Only notify about "joins", if it's not our own join and we are already in the room.
+                                if (!isSelfPresence && entered) {
+                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ENTERED, null, null, null));
                                 }
-                            } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
-                                // Occupant has exited the room.
-                                Occupant occupant = occupantMap.remove(nick);
-                                if (occupant != null) {
-                                    if (mucUser.getItem() != null) {
-                                        Actor actor = mucUser.getItem().getActor();
-                                        String reason = mucUser.getItem().getReason();
-                                        if (!mucUser.getStatusCodes().isEmpty()) {
-                                            if (mucUser.getStatusCodes().contains(Status.KICKED)) {
-                                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null));
-                                            } else if (mucUser.getStatusCodes().contains(Status.BANNED)) {
-                                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null));
-                                            } else if (mucUser.getStatusCodes().contains(Status.MEMBERSHIP_REVOKED)) {
-                                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null));
-                                            } else if (mucUser.getStatusCodes().contains(Status.NICK_CHANGED)) {
-                                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null));
-                                            } else if (mucUser.getStatusCodes().contains(Status.SERVICE_SHUT_DOWN)) {
-                                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null));
-                                            }
-                                        } else if (mucUser.getDestroy() != null) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid()));
-                                        } else {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
+                            } else {
+                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.STATUS_CHANGED, null, null, null));
+                            }
+                        } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
+                            // Occupant has exited the room.
+                            Occupant occupant = occupantMap.remove(nick);
+                            if (occupant != null) {
+                                if (mucUser.getItem() != null) {
+                                    Actor actor = mucUser.getItem().getActor();
+                                    String reason = mucUser.getItem().getReason();
+                                    if (!mucUser.getStatusCodes().isEmpty()) {
+                                        if (mucUser.getStatusCodes().contains(Status.KICKED)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null));
+                                        } else if (mucUser.getStatusCodes().contains(Status.BANNED)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null));
+                                        } else if (mucUser.getStatusCodes().contains(Status.MEMBERSHIP_REVOKED)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null));
+                                        } else if (mucUser.getStatusCodes().contains(Status.NICK_CHANGED)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null));
+                                        } else if (mucUser.getStatusCodes().contains(Status.SERVICE_SHUT_DOWN)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null));
                                         }
+                                    } else if (mucUser.getDestroy() != null) {
+                                        notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid()));
                                     } else {
                                         notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
                                     }
+                                } else {
+                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
                                 }
-                                if (isSelfPresence) {
-                                    userHasExited();
-                                }
+                            }
+                            if (isSelfPresence) {
+                                userHasExited();
                             }
                         }
                     }
@@ -814,14 +810,12 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(roomJid);
         List<String> occupants = new ArrayList<>();
         List<Item> items = itemNode.getItems();
-        for (Item item : items) {
-            if (item.getJid() != null) {
-                String nickname = item.getJid().getResource();
-                if (nickname != null) {
-                    occupants.add(nickname);
-                }
+        items.stream().filter(item -> item.getJid() != null).forEach(item -> {
+            String nickname = item.getJid().getResource();
+            if (nickname != null) {
+                occupants.add(nickname);
             }
-        }
+        });
         return occupants;
     }
 

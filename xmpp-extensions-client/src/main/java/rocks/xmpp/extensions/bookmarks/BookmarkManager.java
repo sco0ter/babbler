@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This manager facilitates the access to the private storage by providing convenient method for adding, retrieving or removing bookmarks.
@@ -126,11 +127,7 @@ public final class BookmarkManager extends ExtensionManager {
         List<T> bookmarks = new ArrayList<>();
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
 
-        for (Bookmark bookmark : bookmarkStorage.getBookmarks()) {
-            if (bookmark.getClass() == clazz) {
-                bookmarks.add((T) bookmark);
-            }
-        }
+        bookmarks.addAll(bookmarkStorage.getBookmarks().stream().filter(bookmark -> bookmark.getClass() == clazz).map(bookmark -> (T) bookmark).collect(Collectors.toList()));
         Collections.sort(bookmarks);
         return bookmarks;
     }

@@ -157,13 +157,11 @@ public final class StreamFeaturesManager extends Manager {
         featuresToNegotiate.clear();
 
         // Check if a feature is known, that means it must implement Feature and be added to the context.
-        for (Object feature : featureList) {
-            if (feature instanceof StreamFeature) {
-                StreamFeature f = (StreamFeature) feature;
-                advertisedFeatures.put(f.getClass(), f);
-                sortedFeatureList.add(f);
-            }
-        }
+        featureList.stream().filter(feature -> feature instanceof StreamFeature).forEach(feature -> {
+            StreamFeature f = (StreamFeature) feature;
+            advertisedFeatures.put(f.getClass(), f);
+            sortedFeatureList.add(f);
+        });
         // If the receiving entity advertises only the STARTTLS feature [...] the parties MUST consider TLS as mandatory-to-negotiate.
         if (featureList.size() == 1 && featureList.get(0) instanceof StartTls) {
             ((StartTls) featureList.get(0)).setMandatory(true);

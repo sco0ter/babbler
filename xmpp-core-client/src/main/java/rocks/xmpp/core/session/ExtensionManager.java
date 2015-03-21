@@ -27,9 +27,9 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
@@ -59,12 +59,7 @@ public abstract class ExtensionManager extends Manager {
 
     @Override
     public final boolean isEnabled() {
-        Collection<Feature> f = new ArrayList<>();
-        for (String namespace : features) {
-            f.add(new Feature(namespace));
-        }
-        return serviceDiscoveryManager.getFeatures().containsAll(f);
-
+        return serviceDiscoveryManager.getFeatures().containsAll(features.stream().map(Feature::new).collect(Collectors.toList()));
     }
 
     /**

@@ -61,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
@@ -107,10 +108,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                     if (dataForm != null) {
                         DataForm.Field field = dataForm.findField(STREAM_METHOD);
                         if (field != null) {
-                            List<String> streamMethods = new ArrayList<>();
-                            for (DataForm.Option option : field.getOptions()) {
-                                streamMethods.add(option.getValue());
-                            }
+                            List<String> streamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
                             if (!Collections.disjoint(streamMethods, supportedStreamMethod)) {
                                 // Request contains valid streams
                                 noValidStreams = false;
@@ -152,10 +150,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         String sessionId = UUID.randomUUID().toString();
 
         // Offer stream methods.
-        List<DataForm.Option> options = new ArrayList<>();
-        for (String streamMethod : supportedStreamMethod) {
-            options.add(new DataForm.Option(streamMethod));
-        }
+        List<DataForm.Option> options = supportedStreamMethod.stream().map(DataForm.Option::new).collect(Collectors.toList());
         DataForm.Field field = DataForm.Field.builder().var(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
         DataForm dataForm = new DataForm(DataForm.Type.FORM, Arrays.asList(field));
         // Offer the file to the recipient and wait until it's accepted.
@@ -192,10 +187,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     public FileTransfer accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
         StreamInitiation streamInitiation = (StreamInitiation) protocol;
         DataForm.Field field = streamInitiation.getFeatureNegotiation().getDataForm().findField(STREAM_METHOD);
-        final List<String> offeredStreamMethods = new ArrayList<>();
-        for (DataForm.Option option : field.getOptions()) {
-            offeredStreamMethods.add(option.getValue());
-        }
+        final List<String> offeredStreamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
         offeredStreamMethods.retainAll(supportedStreamMethod);
         DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));

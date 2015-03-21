@@ -79,7 +79,7 @@ public class IbbTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
         Assert.assertNotNull(open);
-        Assert.assertEquals((int) open.getBlockSize(), 4096);
+        Assert.assertEquals(open.getBlockSize(), 4096);
         Assert.assertEquals(open.getSessionId(), "i781hf64");
         Assert.assertEquals(open.getStanzaType(), InBandByteStream.Open.StanzaType.IQ);
     }

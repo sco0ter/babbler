@@ -50,6 +50,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class represents a single pubsub node.
@@ -517,11 +518,7 @@ public final class PubSubNode {
      */
     public List<PubSubNode> discoverNodes() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(pubSubServiceAddress, nodeId);
-        List<PubSubNode> nodes = new ArrayList<>();
-        for (rocks.xmpp.extensions.disco.model.items.Item item : itemNode.getItems()) {
-            nodes.add(new PubSubNode(item.getNode(), pubSubServiceAddress, xmppSession));
-        }
-        return nodes;
+        return itemNode.getItems().stream().map(item -> new PubSubNode(item.getNode(), pubSubServiceAddress, xmppSession)).collect(Collectors.toList());
     }
 
     /**

@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:rpc} namespace.
@@ -145,10 +146,7 @@ public final class Rpc {
          * @return The parameters.
          */
         public final List<Value> getParameters() {
-            List<Value> values = new ArrayList<>();
-            for (Parameter parameter : parameters) {
-                values.add(parameter.getValue());
-            }
+            List<Value> values = parameters.stream().map(Parameter::getValue).collect(Collectors.toList());
             return Collections.unmodifiableList(values);
         }
     }

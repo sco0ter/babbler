@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <unblock/>} element in the {@code urn:xmpp:blocking} namespace.
@@ -50,11 +51,7 @@ public final class Unblock {
      * @param unblockedItems The unblocked items.
      */
     public Unblock(List<Jid> unblockedItems) {
-        List<Item> items = new ArrayList<>();
-        for (Jid item : unblockedItems) {
-            items.add(new Item(item));
-        }
-        this.items.addAll(items);
+        this.items.addAll(unblockedItems.stream().map(Item::new).collect(Collectors.toList()));
     }
 
     private Unblock() {
@@ -66,11 +63,7 @@ public final class Unblock {
      * @return The unblocked items.
      */
     public final List<Jid> getItems() {
-        List<Jid> jids = new ArrayList<>();
-        for (Item item : items) {
-            jids.add(item.getJid());
-        }
-        return Collections.unmodifiableList(jids);
+        return Collections.unmodifiableList(items.stream().map(Item::getJid).collect(Collectors.toList()));
     }
 
     @Override

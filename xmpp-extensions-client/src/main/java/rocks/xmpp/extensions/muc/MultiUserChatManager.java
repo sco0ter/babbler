@@ -37,7 +37,6 @@ import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Manages Multi-User Chat.
@@ -136,11 +136,7 @@ public final class MultiUserChatManager extends ExtensionManager {
      */
     public Collection<ChatService> discoverChatServices() throws XmppException {
         Collection<Item> services = serviceDiscoveryManager.discoverServices(Muc.NAMESPACE);
-        Collection<ChatService> chatServices = new ArrayList<>();
-        for (Item service : services) {
-            chatServices.add(new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager, this));
-        }
-        return chatServices;
+        return services.stream().map(service -> new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager, this)).collect(Collectors.toList());
     }
 
     /**

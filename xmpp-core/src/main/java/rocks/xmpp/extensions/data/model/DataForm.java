@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:data} namespace, which represents data forms.
@@ -536,11 +537,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The JID list.
          */
         public List<Jid> getValuesAsJid() {
-            List<Jid> jids = new ArrayList<>();
-            for (String value : values) {
-                jids.add(Jid.valueOf(value, true));
-            }
-            return Collections.unmodifiableList(jids);
+            return Collections.unmodifiableList(values.stream().map(value -> Jid.valueOf(value, true)).collect(Collectors.toList()));
         }
 
         /**
@@ -854,9 +851,7 @@ public final class DataForm implements Comparable<DataForm> {
              */
             public Builder valuesEnum(Collection<? extends Enum<?>> values) {
                 this.values.clear();
-                for (Enum<?> enumValue : values) {
-                    this.values.add(enumValue.name().toLowerCase());
-                }
+                this.values.addAll(values.stream().map(enumValue -> enumValue.name().toLowerCase()).collect(Collectors.toList()));
                 return type(Type.LIST_SINGLE);
             }
 
@@ -869,9 +864,7 @@ public final class DataForm implements Comparable<DataForm> {
             public Builder valuesJid(Collection<Jid> values) {
                 this.values.clear();
                 if (values != null) {
-                    for (Jid value : values) {
-                        this.values.add(value.toEscapedString());
-                    }
+                    this.values.addAll(values.stream().map(Jid::toEscapedString).collect(Collectors.toList()));
                 }
                 return type(Type.JID_MULTI);
             }

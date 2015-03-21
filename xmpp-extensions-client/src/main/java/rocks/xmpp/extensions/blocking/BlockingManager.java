@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This manager allows to block communications with contacts.
@@ -166,9 +167,7 @@ public final class BlockingManager extends ExtensionManager {
             IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
             BlockList blockList = result.getExtension(BlockList.class);
             if (blockList != null) {
-                for (Jid item : blockList.getItems()) {
-                    blockedContacts.add(item);
-                }
+                blockedContacts.addAll(blockList.getItems().stream().collect(Collectors.toList()));
             }
             return blockedContacts;
         }

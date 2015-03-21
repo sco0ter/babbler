@@ -27,11 +27,11 @@ package rocks.xmpp.extensions.rpc.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The value type, which is used by XML-RPC.
@@ -120,9 +120,7 @@ public final class Value {
     public Value(List<Value> list) {
         if (list != null) {
             ArrayType arrayType = new ArrayType();
-            for (Value value : list) {
-                arrayType.values.add(value);
-            }
+            arrayType.values.addAll(list.stream().collect(Collectors.toList()));
             this.value = arrayType;
         } else {
             this.value = null;
@@ -137,9 +135,7 @@ public final class Value {
     public Value(Map<String, Value> map) {
         if (map != null) {
             StructType structType = new StructType();
-            for (Map.Entry<String, Value> entry : map.entrySet()) {
-                structType.values.add(new StructType.MemberType(entry.getKey(), entry.getValue()));
-            }
+            structType.values.addAll(map.entrySet().stream().map(entry -> new StructType.MemberType(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
             this.value = structType;
         } else {
             this.value = null;
@@ -208,11 +204,7 @@ public final class Value {
     public final List<Value> getAsArray() {
         if (value instanceof ArrayType) {
             ArrayType arrayType = (ArrayType) value;
-            List<Value> result = new ArrayList<>();
-            for (Value value : arrayType.values) {
-                result.add(value);
-            }
-            return result;
+            return arrayType.values.stream().collect(Collectors.toList());
         }
         return null;
     }

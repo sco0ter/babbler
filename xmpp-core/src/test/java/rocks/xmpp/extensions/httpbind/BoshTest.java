@@ -183,7 +183,7 @@ public class BoshTest extends XmlTest {
     public void marshalBodyWithMultipleStanzas() throws XMLStreamException, JAXBException {
         IQ iq = new IQ(IQ.Type.GET, new Roster(), "1");
         Body body = Body.builder()
-                .wrappedObjects(Arrays.<Object>asList(iq, new Presence())).build();
+                .wrappedObjects(Arrays.asList(iq, new Presence())).build();
 
         Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\"><iq xmlns=\"jabber:client\" id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"></query></iq><presence xmlns=\"jabber:client\"></presence></body>");
     }

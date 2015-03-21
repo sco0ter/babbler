@@ -440,9 +440,7 @@ public final class BoshConnection extends Connection {
         } else if (responseBody.getType() == Body.Type.ERROR) {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting a 'type' attribute of the <body/> element to "error". These errors do not imply that the HTTP session is terminated.
             // If it decides to recover from the error, then the client MUST repeat the HTTP request that resulted in the error, as well as all the preceding HTTP requests that have not received responses. The content of these requests MUST be identical to the <body/> elements of the original requests. This enables the connection manager to recover a session after the previous request was lost due to a communication failure.
-            for (Body unacknowledgedRequest : unacknowledgedRequests.values()) {
-                sendNewRequest(unacknowledgedRequest);
-            }
+            unacknowledgedRequests.values().forEach(this::sendNewRequest);
         }
 
         for (Object wrappedObject : responseBody.getWrappedObjects()) {
@@ -553,7 +551,7 @@ public final class BoshConnection extends Connection {
     public final void send(ClientStreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
         Body.Builder bodyBuilder = Body.builder()
-                .wrappedObjects(Arrays.<Object>asList(element))
+                .wrappedObjects(Arrays.asList(element))
                 .requestId(rid.getAndIncrement())
                 .sessionId(getSessionId());
 
@@ -786,11 +784,10 @@ public final class BoshConnection extends Connection {
     private void ackReceived(Long rid) {
         Body body = unacknowledgedRequests.remove(rid);
         if (body != null) {
-            for (Object object : body.getWrappedObjects()) {
-                if (object instanceof Stanza) {
-                    // TODO trigger some listener
-                }
-            }
+            // TODO trigger some listener
+            body.getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
+                // TODO trigger some listener
+            });
         }
     }
 

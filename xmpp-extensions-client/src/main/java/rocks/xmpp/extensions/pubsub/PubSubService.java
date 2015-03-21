@@ -30,9 +30,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.NodeType;
@@ -41,12 +39,12 @@ import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class acts a facade to deal with a remote pubsub service.
@@ -92,19 +90,17 @@ public final class PubSubService {
 
     Collection<PubSubFeature> getFeatures(InfoNode infoNode) {
         Collection<PubSubFeature> features = EnumSet.noneOf(PubSubFeature.class);
-        for (Feature feature : infoNode.getFeatures()) {
-            if (feature.getVar().startsWith(PubSub.NAMESPACE + "#")) {
-                String f = feature.getVar().substring(feature.getVar().indexOf("#") + 1);
-                try {
-                    PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace("-", "_"));
-                    if (pubSubFeature != null) {
-                        features.add(pubSubFeature);
-                    }
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Server advertised unknown pubsub feature: " + f);
+        infoNode.getFeatures().stream().filter(feature -> feature.getVar().startsWith(PubSub.NAMESPACE + "#")).forEach(feature -> {
+            String f = feature.getVar().substring(feature.getVar().indexOf("#") + 1);
+            try {
+                PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace("-", "_"));
+                if (pubSubFeature != null) {
+                    features.add(pubSubFeature);
                 }
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Server advertised unknown pubsub feature: " + f);
             }
-        }
+        });
         return features;
     }
 
@@ -118,11 +114,7 @@ public final class PubSubService {
      */
     public List<PubSubNode> discoverNodes() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(service);
-        List<PubSubNode> nodes = new ArrayList<>();
-        for (Item item : itemNode.getItems()) {
-            nodes.add(new PubSubNode(item.getNode(), service, xmppSession));
-        }
-        return nodes;
+        return itemNode.getItems().stream().map(item -> new PubSubNode(item.getNode(), service, xmppSession)).collect(Collectors.toList());
     }
 
     /**

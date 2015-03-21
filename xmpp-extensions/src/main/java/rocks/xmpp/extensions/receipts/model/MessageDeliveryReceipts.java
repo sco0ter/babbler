@@ -113,7 +113,7 @@ public abstract class MessageDeliveryReceipts {
         }
 
         private static Request create() {
-            return (Request) MessageDeliveryReceipts.REQUEST;
+            return MessageDeliveryReceipts.REQUEST;
         }
     }
 }

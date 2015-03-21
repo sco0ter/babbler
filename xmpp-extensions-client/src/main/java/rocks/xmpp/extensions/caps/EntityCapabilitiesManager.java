@@ -438,9 +438,8 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                                 try {
                                     // 2.1 Send a service discovery information request to the generating entity.
                                     // 2.2 Receive a service discovery information response from the generating entity.
-                                    InfoNode infoNode1 = serviceDiscoveryManager.discoverInformation(entity, node);
                                     // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
-                                    ENTITY_CAPABILITIES.put(entity, infoNode);
+                                    ENTITY_CAPABILITIES.put(entity, serviceDiscoveryManager.discoverInformation(entity, node));
                                 } catch (XmppException e2) {
                                     logger.log(Level.WARNING, String.format("Failed to discover information for entity '%s' for node '%s'", entity, node));
                                 }

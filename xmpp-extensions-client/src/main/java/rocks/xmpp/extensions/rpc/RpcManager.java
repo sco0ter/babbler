@@ -35,10 +35,10 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.
@@ -78,10 +78,7 @@ public final class RpcManager extends ExtensionManager {
                 }
                 if (rpcHandler1 != null) {
                     final Rpc.MethodCall methodCall = rpc.getMethodCall();
-                    final List<Value> parameters = new ArrayList<>();
-                    for (Value parameter : methodCall.getParameters()) {
-                        parameters.add(parameter);
-                    }
+                    final List<Value> parameters = methodCall.getParameters().stream().collect(Collectors.toList());
 
                     try {
                         Value value = rpcHandler1.process(iq.getFrom(), methodCall.getMethodName(), parameters);

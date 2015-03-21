@@ -46,11 +46,6 @@ public abstract class UnmarshalTest {
 
     private Unmarshaller unmarshaller;
 
-    @Deprecated
-    protected UnmarshalTest() {
-
-    }
-
     protected UnmarshalTest(Class<?>... context) throws JAXBException, XMLStreamException {
         JAXBContext jaxbContext = JAXBContext.newInstance(context);
         unmarshaller = jaxbContext.createUnmarshaller();

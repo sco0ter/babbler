@@ -282,20 +282,6 @@ public final class PubSubNode {
     }
 
     /**
-     * Submits subscription options for this node.
-     *
-     * @param dataForm The subscription options form.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
-     * @deprecated Use {@link #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)}
-     */
-    @Deprecated
-    public void submitSubscriptionOptions(DataForm dataForm) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null, dataForm)));
-    }
-
-    /**
      * Configures the subscription options for this node.
      *
      * @param subscribeOptions The subscription options form.
@@ -305,21 +291,6 @@ public final class PubSubNode {
      */
     public void configureSubscription(SubscribeOptions subscribeOptions) throws XmppException {
         xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null, subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
-    }
-
-    /**
-     * Gets the default subscription options for a specific node.
-     *
-     * @return The default subscription options.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
-     * @deprecated Use {@link #getSubscriptionOptions(boolean)}
-     */
-    @Deprecated
-    public SubscribeOptions getDefaultSubscriptionOptions() throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withDefault(nodeId)));
-        return new SubscribeOptions(result.getExtension(PubSub.class).getDefault().getDataForm());
     }
 
     /**
@@ -491,20 +462,6 @@ public final class PubSubNode {
     }
 
     /**
-     * Submits the node configuration form.
-     *
-     * @param dataForm The configuration form.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
-     * @deprecated Use {@link #configureNode(rocks.xmpp.extensions.pubsub.model.NodeConfiguration)}
-     */
-    @Deprecated
-    public void submitNodeConfiguration(DataForm dataForm) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withConfigure(nodeId, dataForm)));
-    }
-
-    /**
      * Configures the node by submitting the configuration form.
      *
      * @param nodeConfiguration The configuration form.
@@ -565,20 +522,6 @@ public final class PubSubNode {
             nodes.add(new PubSubNode(item.getNode(), pubSubServiceAddress, xmppSession));
         }
         return nodes;
-    }
-
-    /**
-     * Gets the (sub-)nodes, which hierarchically reside under this node, e.g. the "second-level" nodes.
-     *
-     * @return The list of nodes.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
-     * @deprecated Use {@link #discoverNodes()}
-     */
-    @Deprecated
-    public List<PubSubNode> getNodes() throws XmppException {
-        return discoverNodes();
     }
 
     /**

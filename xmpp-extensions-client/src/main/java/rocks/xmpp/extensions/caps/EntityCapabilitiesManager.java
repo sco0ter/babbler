@@ -74,7 +74,7 @@ import java.util.logging.Logger;
  * If this manager is enabled (default), entity capabilities are automatically included in every presence notification being sent.
  * </p>
  * <p>
- * You can check for an entity's capabilities by using {@link #getCapabilities(rocks.xmpp.core.Jid)}, which will either return cached capabilities or ask the entity.
+ * You can check for an entity's capabilities by using {@link #discoverCapabilities(rocks.xmpp.core.Jid)}, which will either return cached capabilities or ask the entity.
  * </p>
  * Similarly you can ask if an entity supports a particular feature via {@link #isSupported(String, rocks.xmpp.core.Jid)}.
  * <p>
@@ -321,20 +321,6 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             }
         }
         return infoNode;
-    }
-
-    /**
-     * Gets the capabilities of another XMPP entity.
-     *
-     * @param jid The JID, which should usually be a full JID.
-     * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
-     * @deprecated Use {@link #discoverCapabilities(rocks.xmpp.core.Jid)}
-     */
-    @Deprecated
-    public final InfoNode getCapabilities(Jid jid) throws XmppException {
-        return discoverCapabilities(jid);
     }
 
     /**

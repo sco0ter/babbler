@@ -39,7 +39,6 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -136,32 +135,6 @@ public final class DataForm implements Comparable<DataForm> {
             this.reportedFields = new ArrayList<>();
             this.reportedFields.addAll(builder.reportedFields);
         }
-    }
-
-    /**
-     * Creates a data form.
-     *
-     * @param type  The form type.
-     * @param title The form title.
-     */
-    @Deprecated
-    public DataForm(Type type, String title) {
-        this.type = type;
-        this.title = title;
-    }
-
-    /**
-     * Creates a data form.
-     *
-     * @param type         The form type.
-     * @param title        The form title.
-     * @param instructions The instructions.
-     */
-    @Deprecated
-    public DataForm(Type type, String title, String... instructions) {
-        this.type = type;
-        this.title = title;
-        this.instructions.addAll(Arrays.asList(instructions));
     }
 
     public DataForm(Type type, String title, Collection<Field> fields, Collection<Field> reportedFields, Collection<Item> items, Collection<String> instructions, Collection<Page> pages) {
@@ -298,18 +271,6 @@ public final class DataForm implements Comparable<DataForm> {
     }
 
     /**
-     * Sets the title of the form.
-     *
-     * @param title The title.
-     * @see #getTitle()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
      * Gets the fields of the form.
      *
      * @return The fields.
@@ -337,18 +298,6 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public Type getType() {
         return type;
-    }
-
-    /**
-     * Sets the form type.
-     *
-     * @param type The form type.
-     * @see #getType()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setType(Type type) {
-        this.type = type;
     }
 
     /**
@@ -497,31 +446,6 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
-         * Creates a field.
-         *
-         * @param type The field type.
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public Field(Type type) {
-            this.type = type;
-        }
-
-        /**
-         * Creates a field.
-         *
-         * @param type   The field type.
-         * @param var    The unique identifier for the field.
-         * @param values The values.
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        public Field(Type type, String var, String... values) {
-            this.type = type;
-            this.var = var;
-            this.values.addAll(Arrays.asList(values));
-        }
-
-        /**
          * Creates the builder to build a data form field.
          *
          * @return The builder.
@@ -540,58 +464,21 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
-         * Sets the field type.
-         *
-         * @param type The type.
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setType(Type type) {
-            this.type = type;
-        }
-
-        /**
          * Gets a unique identifier for the field in the context of the form.
          *
          * @return The var attribute.
-         * @see #setVar(String)
          */
         public String getVar() {
             return var;
         }
 
         /**
-         * Sets a unique identifier for the field in the context of the form.
-         *
-         * @param var The var attribute.
-         * @see #getVar()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setVar(String var) {
-            this.var = var;
-        }
-
-        /**
          * Gets the field label.
          *
          * @return The label.
-         * @see #setLabel(String)
          */
         public String getLabel() {
             return label;
-        }
-
-        /**
-         * Sets the field label.
-         *
-         * @param label The label.
-         * @see #getLabel()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setLabel(String label) {
-            this.label = label;
         }
 
         /**
@@ -675,36 +562,12 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
-         * Sets a media element.
-         *
-         * @param media The media element.
-         * @see #getMedia()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setMedia(Media media) {
-            this.media = media;
-        }
-
-        /**
          * Gets a natural-language description of the field, intended for presentation in a user-agent (e.g., as a "tool-tip", help button, or explanatory text provided near the field).
          *
          * @return The description.
          */
         public String getDescription() {
             return description;
-        }
-
-        /**
-         * Sets a description of the field.
-         *
-         * @param description The description.
-         * @see #getDescription()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setDescription(String description) {
-            this.description = description;
         }
 
         /**
@@ -718,36 +581,12 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
-         * Sets the validation for this field.
-         *
-         * @param validation The validation.
-         * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setValidation(Validation validation) {
-            this.validation = validation;
-        }
-
-        /**
          * If the field as required in order for the form to be considered valid.
          *
          * @return True, if the field is required.
          */
         public boolean isRequired() {
             return required != null;
-        }
-
-        /**
-         * Sets the field as required.
-         *
-         * @param required If the field is required.
-         * @see #isRequired()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setRequired(boolean required) {
-            this.required = required ? "" : null;
         }
 
         @Override

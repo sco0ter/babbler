@@ -121,17 +121,6 @@ public abstract class AbstractIQ extends Stanza {
     }
 
     /**
-     * Sets the extension.
-     *
-     * @param extension The extension.
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setExtension(Object extension) {
-        this.extension = extension;
-    }
-
-    /**
      * Returns if this is a request IQ, i.e. of type get or set.
      *
      * @return True if this is a get or set IQ.

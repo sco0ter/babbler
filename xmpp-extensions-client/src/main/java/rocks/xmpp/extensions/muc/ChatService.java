@@ -64,19 +64,6 @@ public final class ChatService implements Comparable<ChatService> {
     }
 
     /**
-     * Gets the list of public chat rooms hosted by this chat service.
-     *
-     * @return The public rooms.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
-     * @deprecated Use {@link #discoverRooms()}
-     */
-    @Deprecated
-    public List<ChatRoom> getPublicRooms() throws XmppException {
-        return discoverRooms();
-    }
-
-    /**
      * Discovers the list of chat rooms hosted by this chat service.
      *
      * @return The public rooms.

@@ -52,79 +52,20 @@ public final class ChatSession extends Chat {
 
     private static final Logger LOGGER = Logger.getLogger(ChatSession.class.getName());
 
-    /**
-     * A {@code ChatPartnerEvent} is fired, whenever a {@link ChatSession}'s partner was
-     * replaced.
-     *
-     * @author Markus KARG (markus@headcrashing.eu)
-     * @see ChatSession#addChatPartnerListener(ChatPartnerListener)
-     * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
-     * @see ChatPartnerListener
-     * @since 0.5.0
-     */
-    @SuppressWarnings("serial")
-    public static final class ChatPartnerEvent extends EventObject {
-
-        /**
-         * Constructs a {@link ChatPartnerEvent}.
-         *
-         * @param source         The {@link ChatSession} on which the event initially occurred.
-         * @param oldChatPartner The {@link Jid} of the old chat partner. Must not be {@code null}.
-         * @param newChatPartner The {@link Jid} of the new chat partner. Must not be {@code null}.
-         * @see #getOldChatPartner()
-         * @see #getNewChatPartner()
-         */
-        private ChatPartnerEvent(final ChatSession source, final Jid oldChatPartner, final Jid newChatPartner) {
-            super(requireNonNull(source, "source must not be null"));
-            this.oldChatPartner = requireNonNull(oldChatPartner, "oldChatPartner must not be null");
-            this.newChatPartner = requireNonNull(newChatPartner, "newChatPartner must not be null");
-        }
-
-        private final Jid oldChatPartner;
-
-        /**
-         * Gets the JID of the new chat partner. Will never be {@code null}.
-         *
-         * @return The JID of the new chat partner.
-         * @see #getOldChatPartner()
-         */
-        public final Jid getNewChatPartner() {
-            return newChatPartner;
-        }
-
-        private final Jid newChatPartner;
-
-        /**
-         * Gets the JID of the old chat partner. Will never be {@code null}.
-         *
-         * @return The JID of the old chat partner.
-         * @see #getNewChatPartner()
-         */
-        public final Jid getOldChatPartner() {
-            return oldChatPartner;
-        }
-    }
-
-    /**
-     * A listener interface which allows to listen for partner changes in chat sessions.
-     *
-     * @author Markus KARG (markus@headcrashing.eu)
-     * @see ChatPartnerEvent
-     * @see ChatSession#addChatPartnerListener(ChatPartnerListener)
-     * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
-     * @since 0.50
-     */
-    public static interface ChatPartnerListener {
-
-        /**
-         * Called, whenever the {@link ChatSession}'s partner was replaced.
-         *
-         * @param chatPartnerEvent The chat partner event.
-         */
-        void chatPartnerChanged(ChatPartnerEvent chatPartnerEvent);
-    }
-
     private final Set<ChatPartnerListener> chatPartnerListeners = new CopyOnWriteArraySet<>();
+
+    private final String thread;
+
+    private final XmppSession xmppSession;
+
+    private volatile Jid chatPartner;
+
+    ChatSession(Jid chatPartner, String thread, XmppSession xmppSession) {
+        // The user's client SHOULD address the initial message in a chat session to the bare JID <contact@domainpart> of the contact (rather than attempting to guess an appropriate full JID <contact@domainpart/resourcepart> based on the <show/>, <status/>, or <priority/> value of any presence notifications it might have received from the contact).
+        this.chatPartner = Objects.requireNonNull(chatPartner, "chatPartner must not be null.").asBareJid();
+        this.thread = thread;
+        this.xmppSession = xmppSession;
+    }
 
     /**
      * Adds a chat partner listener.
@@ -165,37 +106,6 @@ public final class ChatSession extends Chat {
 
     private final void notifyChatPartnerListeners(final Jid oldChatPartner, final Jid newChatPartner) {
         notifyChatPartnerListeners(new ChatPartnerEvent(this, requireNonNull(oldChatPartner, "oldChatPartner must not be null"), requireNonNull(newChatPartner, "newChatPartner must not be null")));
-    }
-
-    private final String thread;
-
-    private final XmppSession xmppSession;
-
-    private volatile Jid chatPartner;
-
-    ChatSession(Jid chatPartner, String thread, XmppSession xmppSession) {
-        // The user's client SHOULD address the initial message in a chat session to the bare JID <contact@domainpart> of the contact (rather than attempting to guess an appropriate full JID <contact@domainpart/resourcepart> based on the <show/>, <status/>, or <priority/> value of any presence notifications it might have received from the contact).
-        this.chatPartner = Objects.requireNonNull(chatPartner, "chatPartner must not be null.").asBareJid();
-        this.thread = thread;
-        this.xmppSession = xmppSession;
-    }
-
-    /**
-     * @param message The message.
-     * @deprecated Use {@link #sendMessage(String)}
-     */
-    @Deprecated
-    public void send(String message) {
-        sendMessage(message);
-    }
-
-    /**
-     * @param message The message.
-     * @deprecated Use {@link #sendMessage(Message)}
-     */
-    @Deprecated
-    public void send(Message message) {
-        sendMessage(message);
     }
 
     /**
@@ -245,5 +155,77 @@ public final class ChatSession extends Chat {
      */
     public String getThread() {
         return thread;
+    }
+
+    /**
+     * A listener interface which allows to listen for partner changes in chat sessions.
+     *
+     * @author Markus KARG (markus@headcrashing.eu)
+     * @see ChatPartnerEvent
+     * @see ChatSession#addChatPartnerListener(ChatPartnerListener)
+     * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
+     * @since 0.50
+     */
+    public static interface ChatPartnerListener {
+
+        /**
+         * Called, whenever the {@link ChatSession}'s partner was replaced.
+         *
+         * @param chatPartnerEvent The chat partner event.
+         */
+        void chatPartnerChanged(ChatPartnerEvent chatPartnerEvent);
+    }
+
+    /**
+     * A {@code ChatPartnerEvent} is fired, whenever a {@link ChatSession}'s partner was
+     * replaced.
+     *
+     * @author Markus KARG (markus@headcrashing.eu)
+     * @see ChatSession#addChatPartnerListener(ChatPartnerListener)
+     * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
+     * @see ChatPartnerListener
+     * @since 0.5.0
+     */
+    @SuppressWarnings("serial")
+    public static final class ChatPartnerEvent extends EventObject {
+
+        private final Jid oldChatPartner;
+
+        private final Jid newChatPartner;
+
+        /**
+         * Constructs a {@link ChatPartnerEvent}.
+         *
+         * @param source         The {@link ChatSession} on which the event initially occurred.
+         * @param oldChatPartner The {@link Jid} of the old chat partner. Must not be {@code null}.
+         * @param newChatPartner The {@link Jid} of the new chat partner. Must not be {@code null}.
+         * @see #getOldChatPartner()
+         * @see #getNewChatPartner()
+         */
+        private ChatPartnerEvent(final ChatSession source, final Jid oldChatPartner, final Jid newChatPartner) {
+            super(requireNonNull(source, "source must not be null"));
+            this.oldChatPartner = requireNonNull(oldChatPartner, "oldChatPartner must not be null");
+            this.newChatPartner = requireNonNull(newChatPartner, "newChatPartner must not be null");
+        }
+
+        /**
+         * Gets the JID of the new chat partner. Will never be {@code null}.
+         *
+         * @return The JID of the new chat partner.
+         * @see #getOldChatPartner()
+         */
+        public final Jid getNewChatPartner() {
+            return newChatPartner;
+        }
+
+        /**
+         * Gets the JID of the old chat partner. Will never be {@code null}.
+         *
+         * @return The JID of the old chat partner.
+         * @see #getNewChatPartner()
+         */
+        public final Jid getOldChatPartner() {
+            return oldChatPartner;
+        }
     }
 }

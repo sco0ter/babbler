@@ -345,32 +345,6 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Adds a message listener to the session, which will get notified, whenever a message is received.
-     *
-     * @param messageListener The message listener.
-     * @see #removeMessageListener(MessageListener)
-     * @deprecated Use either {@link #addInboundMessageListener(rocks.xmpp.core.stanza.MessageListener)} or {@link #addOutboundMessageListener(rocks.xmpp.core.stanza.MessageListener)}
-     */
-    @Deprecated
-    public final void addMessageListener(MessageListener messageListener) {
-        inboundMessageListeners.add(messageListener);
-        outboundMessageListeners.add(messageListener);
-    }
-
-    /**
-     * Removes a previously added message listener from the session.
-     *
-     * @param messageListener The message listener.
-     * @see #addMessageListener(MessageListener)
-     * @deprecated Use either {@link #removeInboundMessageListener(rocks.xmpp.core.stanza.MessageListener)} or {@link #removeOutboundMessageListener(rocks.xmpp.core.stanza.MessageListener)}
-     */
-    @Deprecated
-    public final void removeMessageListener(MessageListener messageListener) {
-        inboundMessageListeners.remove(messageListener);
-        outboundMessageListeners.remove(messageListener);
-    }
-
-    /**
      * Adds an inbound message listener to the session, which will get notified, whenever a message is received.
      *
      * @param messageListener The message listener.
@@ -411,32 +385,6 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Adds a presence listener to the session, which will get notified, whenever a presence is received.
-     *
-     * @param presenceListener The presence listener.
-     * @see #removePresenceListener(PresenceListener)
-     * @deprecated Use either {@link #addInboundPresenceListener(rocks.xmpp.core.stanza.PresenceListener)} or {@link #addOutboundPresenceListener(rocks.xmpp.core.stanza.PresenceListener)}
-     */
-    @Deprecated
-    public final void addPresenceListener(PresenceListener presenceListener) {
-        inboundPresenceListeners.add(presenceListener);
-        outboundPresenceListeners.add(presenceListener);
-    }
-
-    /**
-     * Removes a previously added presence listener from the session.
-     *
-     * @param presenceListener The presence listener.
-     * @see #addPresenceListener(PresenceListener)
-     * @deprecated Use either {@link #removeInboundPresenceListener(rocks.xmpp.core.stanza.PresenceListener)} or {@link #removeOutboundPresenceListener(rocks.xmpp.core.stanza.PresenceListener)}
-     */
-    @Deprecated
-    public final void removePresenceListener(PresenceListener presenceListener) {
-        inboundPresenceListeners.remove(presenceListener);
-        outboundPresenceListeners.remove(presenceListener);
-    }
-
-    /**
      * Adds an inbound presence listener to the session, which will get notified, whenever a presence is received.
      *
      * @param presenceListener The presence listener.
@@ -474,32 +422,6 @@ public class XmppSession implements AutoCloseable {
      */
     public final void removeOutboundPresenceListener(PresenceListener presenceListener) {
         outboundPresenceListeners.remove(presenceListener);
-    }
-
-    /**
-     * Adds an IQ listener to the session, which will get notified, whenever an IQ stanza is received.
-     *
-     * @param iqListener The IQ listener.
-     * @see #removeIQListener(IQListener)
-     * @deprecated Use either {@link #removeInboundIQListener(rocks.xmpp.core.stanza.IQListener)} or {@link #removeOutboundIQListener(rocks.xmpp.core.stanza.IQListener)}
-     */
-    @Deprecated
-    public final void addIQListener(IQListener iqListener) {
-        inboundIQListeners.add(iqListener);
-        outboundIQListeners.add(iqListener);
-    }
-
-    /**
-     * Removes a previously added IQ listener from the session.
-     *
-     * @param iqListener The IQ listener.
-     * @see #addIQListener(IQListener)
-     * @deprecated Use either {@link #removeInboundIQListener(rocks.xmpp.core.stanza.IQListener)} or {@link #removeOutboundIQListener(rocks.xmpp.core.stanza.IQListener)}
-     */
-    @Deprecated
-    public final void removeIQListener(IQListener iqListener) {
-        inboundIQListeners.remove(iqListener);
-        outboundIQListeners.remove(iqListener);
     }
 
     /**
@@ -783,22 +705,6 @@ public class XmppSession implements AutoCloseable {
             throw new StanzaException(response);
         }
         return response;
-    }
-
-    /**
-     * Reconnects to the XMPP server and automatically logs in by using the last known information (e.g. user name, password and bound resource).
-     *
-     * @throws ConnectionException        If a connection error occurred on the transport layer, e.g. the socket could not connect.
-     * @throws StreamErrorException       If the server returned a stream error.
-     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
-     * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
-     * @throws XmppException              If any other XMPP exception occurs.
-     * @deprecated Use {@link #connect()} which automatically performs a connect+login, if previously logged in.
-     */
-    @Deprecated
-    public final void reconnect() throws XmppException {
-        connect();
     }
 
     /**
@@ -1324,19 +1230,6 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Gets an instance of the specified extension manager class. The class MUST have a constructor which takes a single parameter, whose type is {@link rocks.xmpp.core.session.XmppSession}.
-     *
-     * @param clazz The class of the extension manager.
-     * @param <T>   The type.
-     * @return An instance of the specified manager.
-     * @deprecated Use {@link #getManager(Class)}
-     */
-    @Deprecated
-    public final <T extends ExtensionManager> T getExtensionManager(Class<T> clazz) {
-        return getManager(clazz);
-    }
-
-    /**
      * Gets an instance of the specified manager class. The class MUST have a constructor which takes a single parameter, whose type is {@link rocks.xmpp.core.session.XmppSession}.
      *
      * @param clazz The class of the manager.
@@ -1363,61 +1256,6 @@ public class XmppSession implements AutoCloseable {
             }
         }
         return instance;
-    }
-
-    /**
-     * Gets the roster manager, which is responsible for retrieving, updating and deleting contacts from the roster.
-     *
-     * @return The roster manager.
-     * @deprecated Use {@link #getManager(Class)} instead.
-     */
-    @Deprecated
-    public final RosterManager getRosterManager() {
-        return getManager(RosterManager.class);
-    }
-
-    /**
-     * Gets the presence manager, which is responsible for presence subscriptions.
-     *
-     * @return The presence manager.
-     * @deprecated Use {@link #getManager(Class)} instead.
-     */
-    @Deprecated
-    public final PresenceManager getPresenceManager() {
-        return getManager(PresenceManager.class);
-    }
-
-    /**
-     * Gets the reconnection manager, which is responsible for automatic reconnection.
-     *
-     * @return The reconnection manager.
-     * @deprecated Use {@link #getManager(Class)} instead.
-     */
-    @Deprecated
-    public final ReconnectionManager getReconnectionManager() {
-        return getManager(ReconnectionManager.class);
-    }
-
-    /**
-     * Gets the features manager, which is responsible for negotiating features.
-     *
-     * @return The features manager.
-     * @deprecated Use {@link #getManager(Class)} instead.
-     */
-    @Deprecated
-    public final StreamFeaturesManager getStreamFeaturesManager() {
-        return getManager(StreamFeaturesManager.class);
-    }
-
-    /**
-     * Gets the chat manager, which is responsible for one-to-one chat sessions.
-     *
-     * @return The chat manager.
-     * @deprecated Use {@link #getManager(Class)} instead.
-     */
-    @Deprecated
-    public final ChatManager getChatManager() {
-        return getManager(ChatManager.class);
     }
 
     /**
@@ -1536,17 +1374,6 @@ public class XmppSession implements AutoCloseable {
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Gets the default timeout for synchronous operations.
-     *
-     * @return The default timeout.
-     * @deprecated Use {@link XmppSessionConfiguration#getDefaultResponseTimeout()}.
-     */
-    @Deprecated
-    public final int getDefaultTimeout() {
-        return configuration.getDefaultResponseTimeout();
     }
 
     /**

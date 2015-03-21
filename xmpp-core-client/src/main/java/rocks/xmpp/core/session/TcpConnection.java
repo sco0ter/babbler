@@ -150,12 +150,6 @@ public final class TcpConnection extends Connection {
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
     }
 
-    @Override
-    @Deprecated
-    public final synchronized void connect() throws IOException {
-        connect(null);
-    }
-
     /**
      * Connects to the specified XMPP server using a socket connection.
      * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppSession#login(String, String)} method.

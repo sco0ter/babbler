@@ -64,16 +64,6 @@ public final class SessionStatusEvent extends EventObject {
     }
 
     /**
-     * Gets the exception if the session abnormally disconnected or null.
-     *
-     * @return The exception, which caused a disconnection or null.
-     */
-    @Deprecated
-    public Exception getException() {
-        return throwable instanceof Exception ? (Exception) throwable : null;
-    }
-
-    /**
      * Gets the throwable if the session abnormally disconnected or null.
      *
      * @return The throwable, which caused a disconnection or null.

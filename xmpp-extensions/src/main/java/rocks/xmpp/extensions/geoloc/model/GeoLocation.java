@@ -173,17 +173,6 @@ public final class GeoLocation {
     }
 
     /**
-     * @param latitude  The latitude.
-     * @param longitude The longitude.
-     * @deprecated Use the builder to create an instance of this class.
-     */
-    @Deprecated
-    public GeoLocation(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
-    /**
      * Creates the builder to build a geo location.
      *
      * @return The builder.
@@ -196,484 +185,198 @@ public final class GeoLocation {
      * Gets the horizontal GPS error in meters.
      *
      * @return The accuracy.
-     * @see #setAccuracy(Double)
      */
     public final Double getAccuracy() {
         return accuracy;
     }
 
     /**
-     * Sets the horizontal GPS error in meters.
-     *
-     * @param accuracy The accuracy.
-     * @see #getAccuracy()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setAccuracy(Double accuracy) {
-        this.accuracy = accuracy;
-    }
-
-    /**
      * Gets the altitude in meters above or below sea level.
      *
      * @return The altitude.
-     * @see #setAltitude(Double)
      */
     public final Double getAltitude() {
         return altitude;
     }
 
     /**
-     * Sets the altitude in meters above or below sea level.
-     *
-     * @param altitude The altitude.
-     * @see #getAltitude()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setAltitude(Double altitude) {
-        this.altitude = altitude;
-    }
-
-    /**
      * Gets a named area such as a campus or neighborhood.
      *
      * @return The area.
-     * @see #setArea(String)
      */
     public final String getArea() {
         return area;
     }
 
     /**
-     * Sets a named area such as a campus or neighborhood.
-     *
-     * @param area The area.
-     * @see #getArea()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setArea(String area) {
-        this.area = area;
-    }
-
-    /**
      * Gets the GPS bearing (direction in which the entity is heading to reach its next waypoint), measured in decimal degrees relative to true north.
      *
      * @return The bearing.
-     * @see #setBearing(Double)
      */
     public final Double getBearing() {
         return bearing;
     }
 
     /**
-     * Sets the GPS bearing (direction in which the entity is heading to reach its next waypoint), measured in decimal degrees relative to true north.
-     *
-     * @param bearing The bearing.
-     * @see #getBearing()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setBearing(Double bearing) {
-        this.bearing = bearing;
-    }
-
-    /**
      * Gets a specific building on a street or in an area.
      *
      * @return The building.
-     * @see #setBuilding(String)
      */
     public final String getBuilding() {
         return building;
     }
 
     /**
-     * Sets a specific building on a street or in an area.
-     *
-     * @param building The building.
-     * @see #getBuilding()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setBuilding(String building) {
-        this.building = building;
-    }
-
-    /**
      * Gets the nation where the user is located.
      *
      * @return The country.
-     * @see #setCountry(String)
      */
     public final String getCountry() {
         return country;
     }
 
     /**
-     * Sets the nation where the user is located.
-     *
-     * @param country The country.
-     * @see #getCountry()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    /**
      * Gets the ISO 3166 two-letter country code.
      *
      * @return The country code.
-     * @see #setCountryCode(String)
      */
     public final String getCountryCode() {
         return countryCode;
     }
 
     /**
-     * Sets the ISO 3166 two-letter country code.
-     *
-     * @param countryCode The country code.
-     * @see #getCountryCode()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
-    /**
      * Gets the GPS datum.
      *
      * @return The GPS datum.
-     * @see #setDatum(String)
      */
     public final String getDatum() {
         return datum;
     }
 
     /**
-     * Sets the GPS datum.
-     *
-     * @param datum The GPS datum.
-     * @see #getDatum()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setDatum(String datum) {
-        this.datum = datum;
-    }
-
-    /**
      * Gets a natural-language name for or description of the location.
      *
      * @return The description.
-     * @see #setDescription(String)
      */
     public final String getDescription() {
         return description;
     }
 
     /**
-     * Sets a natural-language name for or description of the location.
-     *
-     * @param description The description.
-     * @see #getDescription()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
      * Gets a particular floor in a building.
      *
      * @return The floor.
-     * @see #setFloor(String)
      */
     public final String getFloor() {
         return floor;
     }
 
     /**
-     * Sets a particular floor in a building.
-     *
-     * @param floor The floor.
-     * @see #getFloor()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setFloor(String floor) {
-        this.floor = floor;
-    }
-
-    /**
      * Gets the latitude in decimal degrees North.
      *
      * @return The latitude.
-     * @see #setLatitude(Double)
      */
     public final Double getLatitude() {
         return latitude;
     }
 
     /**
-     * Sets the latitude in decimal degrees North.
-     *
-     * @param latitude The latitude.
-     * @see #getLatitude()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    /**
      * Gets a locality within the administrative region, such as a town or city.
      *
      * @return The locality.
-     * @see #setLocality(String)
      */
     public final String getLocality() {
         return locality;
     }
 
     /**
-     * Sets a locality within the administrative region, such as a town or city.
-     *
-     * @param locality The locality.
-     * @see #getLocality()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setLocality(String locality) {
-        this.locality = locality;
-    }
-
-    /**
      * Gets the longitude in decimal degrees East.
      *
      * @return The longitude.
-     * @see #setLongitude(Double)
      */
     public final Double getLongitude() {
         return longitude;
     }
 
     /**
-     * Sets the longitude in decimal degrees East.
-     *
-     * @param longitude The longitude.
-     * @see #getLongitude()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    /**
      * Gets a code used for postal delivery.
      *
      * @return The postal code.
-     * @see #setPostalCode(String)
      */
     public final String getPostalCode() {
         return postalCode;
     }
 
     /**
-     * Sets a code used for postal delivery.
-     *
-     * @param postalCode The postal code.
-     * @see #getPostalCode()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    /**
      * Gets an administrative region of the nation, such as a state or province.
      *
      * @return The region.
-     * @see #setRegion(String)
      */
     public final String getRegion() {
         return region;
     }
 
     /**
-     * Sets an administrative region of the nation, such as a state or province.
-     *
-     * @param region The region.
-     * @see #getRegion()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
-    /**
      * Gets a particular room in a building.
      *
      * @return The room.
-     * @see #setRoom(String)
      */
     public final String getRoom() {
         return room;
     }
 
     /**
-     * Sets a particular room in a building.
-     *
-     * @param room The room.
-     * @see #getRoom()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setRoom(String room) {
-        this.room = room;
-    }
-
-    /**
      * Gets the speed at which the entity is moving, in meters per second.
      *
      * @return The speed.
-     * @see #setSpeed(Double)
      */
     public final Double getSpeed() {
         return speed;
     }
 
     /**
-     * Sets the speed at which the entity is moving, in meters per second.
-     *
-     * @param speed The speed.
-     * @see #getSpeed()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setSpeed(Double speed) {
-        this.speed = speed;
-    }
-
-    /**
      * Gets a thoroughfare within the locality, or a crossing of two thoroughfares.
      *
      * @return The street.
-     * @see #setStreet(String)
      */
     public final String getStreet() {
         return street;
     }
 
     /**
-     * Sets a thoroughfare within the locality, or a crossing of two thoroughfares.
-     *
-     * @param street The street.
-     * @see #setStreet(String)
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    /**
      * Gets a catch-all element that captures any other information about the location.
      *
      * @return The text.
-     * @see #setText(String)
      */
     public final String getText() {
         return text;
     }
 
     /**
-     * Sets a catch-all element that captures any other information about the location.
-     *
-     * @param text The text.
-     * @see #getText()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    /**
      * Gets the UTC timestamp specifying the moment when the reading was taken.
      *
      * @return The timestamp.
-     * @see #setTimestamp(java.util.Date)
      */
     public final Date getTimestamp() {
         return timestamp;
     }
 
     /**
-     * Sets the UTC timestamp specifying the moment when the reading was taken.
-     *
-     * @param timestamp The timestamp.
-     * @see #getTimestamp()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    /**
      * Gets a URI or URL pointing to information about the location.
      *
      * @return The URI.
-     * @see #setUri(java.net.URI)
      */
     public final URI getUri() {
         return uri;
     }
 
     /**
-     * Sets a URI or URL pointing to information about the location.
-     *
-     * @param uri The URI.
-     * @see #getUri()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setUri(URI uri) {
-        this.uri = uri;
-    }
-
-    /**
      * Gets the the natural language of location data.
      *
      * @return The language.
-     * @see #setLanguage(String)
      */
     public final String getLanguage() {
         return language;
-    }
-
-    /**
-     * Sets the natural language of location data.
-     *
-     * @param language The language.
-     * @see #getLanguage()
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setLanguage(String language) {
-        this.language = language;
     }
 
     /**
@@ -683,17 +386,6 @@ public final class GeoLocation {
      */
     public final TimeZone getTimeZone() {
         return timeZone;
-    }
-
-    /**
-     * Sets the time zone offset from UTC for the current location.
-     *
-     * @param timeZone The time zone.
-     * @deprecated Use {@link rocks.xmpp.extensions.geoloc.model.GeoLocation.Builder}.
-     */
-    @Deprecated
-    public void setTimeZone(TimeZone timeZone) {
-        this.timeZone = timeZone;
     }
 
     @Override

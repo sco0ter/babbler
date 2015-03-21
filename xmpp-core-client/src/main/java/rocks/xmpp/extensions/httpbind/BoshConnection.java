@@ -288,12 +288,6 @@ public final class BoshConnection extends Connection {
         }
     }
 
-    @Override
-    @Deprecated
-    public final void connect() throws IOException {
-        connect(null);
-    }
-
     /**
      * Connects to the BOSH server.
      *

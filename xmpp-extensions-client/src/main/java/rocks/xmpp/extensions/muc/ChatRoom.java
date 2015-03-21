@@ -542,21 +542,6 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Submits the registration form.
-     *
-     * @param dataForm The data form.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
-     * @deprecated Use {@link #register(rocks.xmpp.extensions.register.model.Registration)}
-     */
-    @Deprecated
-    public void submitRegistrationForm(DataForm dataForm) throws XmppException {
-        register(Registration.builder().registrationForm(dataForm).build());
-    }
-
-    /**
      * Registers with the room.
      *
      * @param registration The registration.
@@ -902,30 +887,6 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
         MucOwner mucOwner = result.getExtension(MucOwner.class);
         return mucOwner.getConfigurationForm();
-    }
-
-    /**
-     * Submits the configuration form for this room.
-     *
-     * @param dataForm The data form.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
-     * @see #getConfigurationForm()
-     * @deprecated Use {@link #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)}
-     */
-    @Deprecated
-    public void submitConfigurationForm(DataForm dataForm) throws XmppException {
-        Objects.requireNonNull(dataForm, "dataForm must not be null.");
-        if (dataForm.getType() != DataForm.Type.SUBMIT && dataForm.getType() != DataForm.Type.CANCEL) {
-            throw new IllegalArgumentException("Data Form must be of type 'submit' or 'cancel'");
-        }
-        if (!"http://jabber.org/protocol/muc#roomconfig".equals(dataForm.getFormType())) {
-            throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#roomconfig'");
-        }
-        MucOwner mucOwner = new MucOwner(dataForm);
-        IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
-        xmppSession.query(iq);
     }
 
     /**

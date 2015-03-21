@@ -85,16 +85,6 @@ public abstract class Connection implements AutoCloseable {
     }
 
     /**
-     * Sets the XMPP session which is associated with this connection. This method should only be called from the session itself.
-     *
-     * @param xmppSession The XMPP session.
-     */
-    @Deprecated
-    public final void initialize(XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
-    }
-
-    /**
      * Gets the hostname, which is used for the connection.
      *
      * @return The hostname.
@@ -132,15 +122,6 @@ public abstract class Connection implements AutoCloseable {
      * @param clientStreamElement The element.
      */
     public abstract void send(ClientStreamElement clientStreamElement);
-
-    /**
-     * Connects to the server.
-     *
-     * @throws IOException If no connection could be established, e.g. due to unknown host.
-     * @deprecated Use {@link #connect(rocks.xmpp.core.Jid)}
-     */
-    @Deprecated
-    public abstract void connect() throws IOException;
 
     /**
      * Connects to the server and provides an optional 'from' attribute.

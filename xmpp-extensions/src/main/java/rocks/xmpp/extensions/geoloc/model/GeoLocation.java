@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.geoloc.model;
 
-import rocks.xmpp.extensions.time.model.TimeZoneAdapter;
+import rocks.xmpp.extensions.time.model.ZoneOffsetAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -32,7 +32,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.TimeZone;
 
 /**
@@ -131,11 +132,11 @@ public final class GeoLocation {
     private final String text;
 
     @XmlElement(name = "timestamp")
-    private final Date timestamp;
+    private final Instant timestamp;
 
-    @XmlJavaTypeAdapter(TimeZoneAdapter.class)
+    @XmlJavaTypeAdapter(ZoneOffsetAdapter.class)
     @XmlElement(name = "tzo")
-    private final TimeZone timeZone;
+    private final ZoneOffset zoneOffset;
 
     @XmlElement(name = "uri")
     private final URI uri;
@@ -165,7 +166,7 @@ public final class GeoLocation {
         this.street = null;
         this.text = null;
         this.timestamp = null;
-        this.timeZone = null;
+        this.zoneOffset = null;
         this.uri = null;
     }
 
@@ -191,7 +192,7 @@ public final class GeoLocation {
         this.street = builder.street;
         this.text = builder.text;
         this.timestamp = builder.timestamp;
-        this.timeZone = builder.timeZone;
+        this.zoneOffset = builder.zoneOffset;
         this.uri = builder.uri;
     }
 
@@ -380,7 +381,7 @@ public final class GeoLocation {
      *
      * @return The timestamp.
      */
-    public final Date getTimestamp() {
+    public final Instant getTimestamp() {
         return timestamp;
     }
 
@@ -405,10 +406,21 @@ public final class GeoLocation {
     /**
      * Gets the time zone offset from UTC for the current location.
      *
-     * @return The time zone.
+     * @return The time zone offset.
+     * @deprecated Use {@link #getTimeZoneOffset()}
      */
+    @Deprecated
     public final TimeZone getTimeZone() {
-        return timeZone;
+        return TimeZone.getTimeZone(zoneOffset);
+    }
+
+    /**
+     * Gets the time zone offset from UTC for the current location.
+     *
+     * @return The time zone offset.
+     */
+    public final ZoneOffset getTimeZoneOffset() {
+        return zoneOffset;
     }
 
     @Override
@@ -514,9 +526,9 @@ public final class GeoLocation {
             sb.append(timestamp);
             sb.append("; ");
         }
-        if (timeZone != null) {
+        if (zoneOffset != null) {
             sb.append("Time Zone: ");
-            sb.append(timeZone.getDisplayName());
+            sb.append(zoneOffset);
             sb.append("; ");
         }
         if (uri != null) {
@@ -572,9 +584,9 @@ public final class GeoLocation {
 
         private String text;
 
-        private Date timestamp;
+        private Instant timestamp;
 
-        private TimeZone timeZone;
+        private ZoneOffset zoneOffset;
 
         private URI uri;
 
@@ -807,7 +819,7 @@ public final class GeoLocation {
          * @param timestamp The timestamp.
          * @return The builder.
          */
-        public Builder timestamp(Date timestamp) {
+        public Builder timestamp(Instant timestamp) {
             this.timestamp = timestamp;
             return this;
         }
@@ -815,11 +827,27 @@ public final class GeoLocation {
         /**
          * Sets the time zone offset from UTC for the current location.
          *
-         * @param timeZone The time zone.
+         * @param timeZone The time zone offset.
+         * @return The builder.
+         * @deprecated Use {@link #timeZoneOffset(java.time.ZoneOffset)}
+         */
+        @Deprecated
+        public Builder timeZone(TimeZone timeZone) {
+            int seconds = Math.abs(timeZone.getRawOffset()) / 1000;
+            int hours = seconds / 3600;
+            int minutes = (seconds % 3600) / 60;
+            this.zoneOffset = ZoneOffset.of((timeZone.getRawOffset() < 0 ? "-" : "+") + String.format("%02d:%02d", hours, minutes));
+            return this;
+        }
+
+        /**
+         * Sets the time zone offset from UTC for the current location.
+         *
+         * @param zoneOffset The time zone offset.
          * @return The builder.
          */
-        public Builder timeZone(TimeZone timeZone) {
-            this.timeZone = timeZone;
+        public Builder timeZoneOffset(ZoneOffset zoneOffset) {
+            this.zoneOffset = zoneOffset;
             return this;
         }
 

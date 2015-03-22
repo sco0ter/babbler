@@ -25,24 +25,28 @@
 package rocks.xmpp.extensions.time.model;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.util.TimeZone;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 
 /**
- * Converts a {@link java.util.TimeZone} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
+ * Converts an {@link java.time.Instant} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
  */
-@Deprecated
-public final class TimeZoneAdapter extends XmlAdapter<String, TimeZone> {
+public final class InstantAdapter extends XmlAdapter<String, Instant> {
 
     @Override
-    public final TimeZone unmarshal(String v) throws Exception {
-        return TimeZone.getTimeZone("GMT" + v);
+    public final Instant unmarshal(String v) throws Exception {
+        if (v != null) {
+            try {
+                return Instant.parse(v);
+            } catch (DateTimeParseException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     @Override
-    public final String marshal(TimeZone v) throws Exception {
-        int seconds = Math.abs(v.getRawOffset()) / 1000;
-        int hours = seconds / 3600;
-        int minutes = (seconds % 3600) / 60;
-        return (v.getRawOffset() < 0 ? "-" : "+") + String.format("%02d:%02d", hours, minutes);
+    public final String marshal(Instant v) throws Exception {
+        return v != null ? v.toString() : null;
     }
 }

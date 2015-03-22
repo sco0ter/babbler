@@ -30,9 +30,14 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
 import rocks.xmpp.extensions.time.model.TimeZoneAdapter;
+import rocks.xmpp.extensions.time.model.ZoneOffsetAdapter;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -75,6 +80,7 @@ public class EntityTimeTest extends XmlTest {
         Assert.assertEquals(calendar.get(Calendar.HOUR_OF_DAY), 11);
     }
 
+    @Deprecated
     @Test
     public void marshalEntityTimeResponse() throws Exception {
         TimeZone timeZone = TimeZone.getTimeZone("GMT-2:00");
@@ -92,6 +98,7 @@ public class EntityTimeTest extends XmlTest {
         Assert.assertEquals(xml, "<time xmlns=\"urn:xmpp:time\"><tzo>-02:00</tzo><utc>2014-01-07T03:34:03.001Z</utc></time>");
     }
 
+    @Deprecated
     @Test
     public void testTimezoneAdapter() throws Exception {
         TimeZoneAdapter adapter = new TimeZoneAdapter();
@@ -101,5 +108,23 @@ public class EntityTimeTest extends XmlTest {
 
         TimeZone timeZoneUtc = adapter.unmarshal("Z");
         Assert.assertEquals(timeZoneUtc, TimeZone.getTimeZone("GMT"));
+    }
+
+    @Test
+    public void testZoneOffsetAdapter() throws Exception {
+        ZoneOffsetAdapter adapter = new ZoneOffsetAdapter();
+        ZoneOffset zoneOffset = ZoneOffset.of("-08:00");
+        String str = adapter.marshal(zoneOffset);
+        Assert.assertEquals(str, "-08:00");
+
+        ZoneId timeZoneUtc = adapter.unmarshal("Z");
+        Assert.assertEquals(timeZoneUtc, ZoneOffset.of("Z"));
+    }
+
+    @Test
+    public void marshalEntityTimeResponse2() throws Exception {
+        OffsetDateTime offsetDateTime = OffsetDateTime.of(LocalDateTime.of(2015, 3, 22, 20, 48, 11), ZoneOffset.ofHours(-2));
+        String xml = marshal(new EntityTime(offsetDateTime));
+        Assert.assertEquals(xml, "<time xmlns=\"urn:xmpp:time\"><tzo>-02:00</tzo><utc>2015-03-22T22:48:11Z</utc></time>");
     }
 }

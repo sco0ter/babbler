@@ -33,8 +33,7 @@ import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
 
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.OffsetDateTime;
 
 /**
  * This manager implements <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>.
@@ -56,7 +55,7 @@ public final class EntityTimeManager extends ExtensionManager {
         xmppSession.addIQHandler(EntityTime.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
-                return iq.createResult(new EntityTime(TimeZone.getDefault(), new Date()));
+                return iq.createResult(new EntityTime(OffsetDateTime.now()));
             }
         });
     }

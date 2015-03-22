@@ -33,7 +33,8 @@ import rocks.xmpp.extensions.shim.model.Headers;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.util.Date;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
  * @author Christian Schudt
@@ -68,13 +69,13 @@ public class HeadersTest extends XmlTest {
     @Test
     public void marshalDateTimePeriods() throws XMLStreamException, JAXBException {
 
-        String xmlStart = marshal(new Headers(Header.start(new Date())));
-        Assert.assertTrue(xmlStart.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">"));
+        String xmlStart = marshal(new Headers(Header.start(OffsetDateTime.of(2015, 3, 22, 1, 2, 3, 0, ZoneOffset.of("Z")))));
+        Assert.assertEquals(xmlStart, ("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">2015-03-22T01:02:03Z</header></headers>"));
 
-        String xmlStop = marshal(new Headers(Header.stop(new Date())));
+        String xmlStop = marshal(new Headers(Header.stop(OffsetDateTime.now())));
         Assert.assertTrue(xmlStop.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Stop\">"));
 
-        String xmlPeriod = marshal(Headers.timePeriod(new Date(), new Date()));
+        String xmlPeriod = marshal(Headers.timePeriod(OffsetDateTime.now(), OffsetDateTime.now()));
         Assert.assertTrue(xmlPeriod.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">"));
         Assert.assertTrue(xmlPeriod.contains("<header name=\"Stop\">"));
     }

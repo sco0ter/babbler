@@ -117,7 +117,7 @@ public final class ContactExchangeManager extends ExtensionManager {
                 try {
                     approve(item);
                 } catch (XmppException e1) {
-                    logger.log(Level.SEVERE, "Auto approving roster exchange item failed: " + e1.getMessage(), e1);
+                    logger.log(Level.SEVERE, e1, () -> "Auto approving roster exchange item failed: " + e1.getMessage());
                 }
             }
         } else {

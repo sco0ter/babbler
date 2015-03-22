@@ -98,7 +98,7 @@ public final class PubSubService {
                     features.add(pubSubFeature);
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Server advertised unknown pubsub feature: " + f);
+                logger.log(Level.WARNING, "Server advertised unknown pubsub feature: {0}", f);
             }
         });
         return features;

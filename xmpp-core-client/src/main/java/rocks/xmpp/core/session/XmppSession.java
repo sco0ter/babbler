@@ -1107,7 +1107,7 @@ public class XmppSession implements AutoCloseable {
                                     send(response);
                                 }
                             } catch (Exception e) {
-                                logger.log(Level.WARNING, "Failed to handle IQ request: " + e.getMessage(), e);
+                                logger.log(Level.WARNING, e, () -> "Failed to handle IQ request: " + e.getMessage());
                                 // If any exception occurs during processing the IQ, return <service-unavailable/>.
                                 send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
                             }

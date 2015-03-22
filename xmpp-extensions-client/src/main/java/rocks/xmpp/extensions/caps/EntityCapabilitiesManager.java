@@ -338,7 +338,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 }
                 directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage(), e);
+                logger.log(Level.WARNING, e, () -> "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage());
             }
         }
     }
@@ -362,7 +362,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                     }
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Could not read entity capabilities from persistent cache (file: " + fileName + ")", e);
+                logger.log(Level.WARNING, e, () -> "Could not read entity capabilities from persistent cache (file: " + fileName + ")");
             }
         }
         // The verification string is unknown, Service Discovery needs to be done.
@@ -432,7 +432,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
                                 // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
                             } catch (XmppException e1) {
-                                logger.log(Level.WARNING, String.format("Failed to discover information for entity '%s' for node '%s'", entity, node));
+                                logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, node});
                             } catch (NoSuchAlgorithmException e1) {
                                 // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
                                 try {
@@ -441,7 +441,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                                     // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
                                     ENTITY_CAPABILITIES.put(entity, serviceDiscoveryManager.discoverInformation(entity, node));
                                 } catch (XmppException e2) {
-                                    logger.log(Level.WARNING, String.format("Failed to discover information for entity '%s' for node '%s'", entity, node));
+                                    logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, node});
                                 }
                             }
                         });

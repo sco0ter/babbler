@@ -124,7 +124,7 @@ public class S5bTransportMethodTest extends XmlTest {
         candidateList.add(candidate4);
         Collections.shuffle(candidateList);
 
-        Collections.sort(candidateList);
+        candidateList.sort(null);
 
         Assert.assertEquals(candidateList.get(0), candidate1);
         Assert.assertEquals(candidateList.get(1), candidate2);

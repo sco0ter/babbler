@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -141,14 +140,14 @@ public final class EntityCapabilities extends StreamFeature {
         }
 
         // 6. If the service discovery information response includes XEP-0128 data forms, sort the forms by the FORM_TYPE (i.e., by the XML character data of the <value/> element).
-        Collections.sort(dataForms);
+        dataForms.sort(null);
 
         // 7. For each extended service discovery information form:
         for (DataForm dataForm : dataForms) {
             List<DataForm.Field> fields = new ArrayList<>(dataForm.getFields());
             // 7.2. Sort the fields by the value of the "var" attribute.
             // This makes sure, that FORM_TYPE fields are always on zero position.
-            Collections.sort(fields);
+            fields.sort(null);
 
             if (!fields.isEmpty()) {
 
@@ -168,7 +167,7 @@ public final class EntityCapabilities extends StreamFeature {
                         sb.append("<");
 
                         // 7.3.2. Sort values by the XML character data of the <value/> element.
-                        Collections.sort(values);
+                        values.sort(null);
                     }
                     // 7.1. Append the XML character data of the FORM_TYPE field's <value/> element, followed by the '<' character.
                     // 7.3.3. For each <value/> element, append the XML character data, followed by the '<' character.

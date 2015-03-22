@@ -306,7 +306,7 @@ public class PresenceTest extends XmlTest {
         list.add(presencePrio1Unavailble);
 
         Collections.shuffle(list);
-        Collections.sort(list);
+        list.sort(null);
 
         Assert.assertEquals(list.get(0), presencePrio1);
         Assert.assertEquals(list.get(1), presenceChat);

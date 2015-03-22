@@ -60,7 +60,7 @@ public class ChatServiceTest {
         chatServices.add(chatService6);
 
         Collections.shuffle(chatServices);
-        Collections.sort(chatServices);
+        chatServices.sort(null);
 
         Assert.assertEquals(chatServices.get(0), chatService1);
         Assert.assertEquals(chatServices.get(1), chatService3);
@@ -90,7 +90,7 @@ public class ChatServiceTest {
         chatRooms.add(chatRoom6);
 
         Collections.shuffle(chatRooms);
-        Collections.sort(chatRooms);
+        chatRooms.sort(null);
 
         Assert.assertEquals(chatRooms.get(0), chatRoom1);
         Assert.assertEquals(chatRooms.get(1), chatRoom3);

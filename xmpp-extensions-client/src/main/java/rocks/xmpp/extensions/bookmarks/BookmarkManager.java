@@ -37,7 +37,6 @@ import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -128,7 +127,7 @@ public final class BookmarkManager extends ExtensionManager {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
 
         bookmarks.addAll(bookmarkStorage.getBookmarks().stream().filter(bookmark -> bookmark.getClass() == clazz).map(bookmark -> (T) bookmark).collect(Collectors.toList()));
-        Collections.sort(bookmarks);
+        bookmarks.sort(null);
         return bookmarks;
     }
 }

@@ -572,7 +572,7 @@ public class JidTest {
         jids.add(jid8);
 
         Collections.shuffle(jids);
-        Collections.sort(jids);
+        jids.sort(null);
 
         Assert.assertEquals(jids.get(0), jid1);
         Assert.assertEquals(jids.get(1), jid2);

@@ -167,7 +167,7 @@ public final class StreamFeaturesManager extends Manager {
             ((StartTls) featureList.get(0)).setMandatory(true);
         }
 
-        Collections.sort(sortedFeatureList);
+        sortedFeatureList.sort(null);
 
         // Store the list of features. Each feature will be negotiated sequentially, if there is a corresponding feature negotiator.
         featuresToNegotiate.addAll(sortedFeatureList);

@@ -92,7 +92,7 @@ public class OccupantTest {
         occupants.add(occupant6);
 
         Collections.shuffle(occupants);
-        Collections.sort(occupants);
+        occupants.sort(null);
 
         Iterator<Occupant> iterator = occupants.iterator();
 

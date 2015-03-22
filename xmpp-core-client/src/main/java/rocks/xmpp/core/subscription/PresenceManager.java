@@ -31,7 +31,6 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -127,7 +126,7 @@ public final class PresenceManager extends Manager {
             if (presencesPerResource != null) {
                 List<Presence> presences = new ArrayList<>(presencesPerResource.values());
                 if (!presences.isEmpty()) {
-                    Collections.sort(presences);
+                    presences.sort(null);
                     return presences.get(0);
                 }
             }

@@ -55,7 +55,6 @@ import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -357,7 +356,7 @@ public final class TcpConnection extends Connection {
                 }
 
                 // Sort the entries, so that the best one is tried first.
-                Collections.sort(dnsSrvRecords, (o1, o2) -> {
+                dnsSrvRecords.sort((o1, o2) -> {
                     int result = Integer.compare(o1.priority, o2.priority);
                     if (result == 0) {
                         result = Integer.compare(o2.weight, o1.weight);

@@ -320,7 +320,7 @@ public class PrivacyListTest extends XmlTest {
 
         Collections.shuffle(list);
 
-        Collections.sort(list);
+        list.sort(null);
 
         Assert.assertEquals(list.get(0), privacyList1);
         Assert.assertEquals(list.get(1), privacyList2);
@@ -348,7 +348,7 @@ public class PrivacyListTest extends XmlTest {
 
         Collections.shuffle(list);
 
-        Collections.sort(list);
+        list.sort(null);
 
         Assert.assertEquals(list.get(0), privacyRule1);
         Assert.assertEquals(list.get(1), privacyRule2);

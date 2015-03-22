@@ -226,7 +226,7 @@ public final class RosterManager extends Manager {
         List<Contact> updatedContacts = new ArrayList<>();
         List<Contact> removedContacts = new ArrayList<>();
         List<Contact> contacts = new ArrayList<>(roster.getContacts());
-        Collections.sort(contacts);
+        contacts.sort(null);
         synchronized (this) {
             if (!isRosterPush) {
                 rosterGroupMap.clear();

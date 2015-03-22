@@ -71,79 +71,102 @@ public final class GeoLocation {
     public static final String NAMESPACE = "http://jabber.org/protocol/geoloc";
 
     @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private String language;
+    private final String language;
 
     @XmlElement(name = "accuracy")
-    private Double accuracy;
+    private final Double accuracy;
 
     @XmlElement(name = "altitude")
-    private Double altitude;
+    private final Double altitude;
 
     @XmlElement(name = "area")
-    private String area;
+    private final String area;
 
     @XmlElement(name = "bearing")
-    private Double bearing;
+    private final Double bearing;
 
     @XmlElement(name = "building")
-    private String building;
+    private final String building;
 
     @XmlElement(name = "country")
-    private String country;
+    private final String country;
 
     @XmlElement(name = "countrycode")
-    private String countryCode;
+    private final String countryCode;
 
     @XmlElement(name = "datum")
-    private String datum;
+    private final String datum;
 
     @XmlElement(name = "description")
-    private String description;
+    private final String description;
 
     @XmlElement(name = "floor")
-    private String floor;
+    private final String floor;
 
     @XmlElement(name = "lat")
-    private Double latitude;
+    private final Double latitude;
 
     @XmlElement(name = "locality")
-    private String locality;
+    private final String locality;
 
     @XmlElement(name = "lon")
-    private Double longitude;
+    private final Double longitude;
 
     @XmlElement(name = "postalcode")
-    private String postalCode;
+    private final String postalCode;
 
     @XmlElement(name = "region")
-    private String region;
+    private final String region;
 
     @XmlElement(name = "room")
-    private String room;
+    private final String room;
 
     @XmlElement(name = "speed")
-    private Double speed;
+    private final Double speed;
 
     @XmlElement(name = "street")
-    private String street;
+    private final String street;
 
     @XmlElement(name = "text")
-    private String text;
+    private final String text;
 
     @XmlElement(name = "timestamp")
-    private Date timestamp;
+    private final Date timestamp;
 
     @XmlJavaTypeAdapter(TimeZoneAdapter.class)
     @XmlElement(name = "tzo")
-    private TimeZone timeZone;
+    private final TimeZone timeZone;
 
     @XmlElement(name = "uri")
-    private URI uri;
+    private final URI uri;
 
     /**
      * Creates an empty geolocation element.
      */
-    public GeoLocation() {
+    private GeoLocation() {
+        this.accuracy = null;
+        this.altitude = null;
+        this.area = null;
+        this.bearing = null;
+        this.building = null;
+        this.country = null;
+        this.countryCode = null;
+        this.datum = null;
+        this.description = null;
+        this.floor = null;
+        this.language = null;
+        this.latitude = null;
+        this.locality = null;
+        this.longitude = null;
+        this.postalCode = null;
+        this.region = null;
+        this.room = null;
+        this.speed = null;
+        this.street = null;
+        this.text = null;
+        this.timestamp = null;
+        this.timeZone = null;
+        this.uri = null;
     }
 
     private GeoLocation(Builder builder) {

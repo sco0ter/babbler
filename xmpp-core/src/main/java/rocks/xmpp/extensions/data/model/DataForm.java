@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -229,10 +230,23 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @param var The field name.
      * @return The value as date or null, if the field could not be found.
+     * @deprecated Use {@link #findValueAsInstant(String)}
      */
+    @Deprecated
     public final Date findValueAsDate(String var) {
         Field field = findField(var);
         return field == null ? null : field.getValueAsDate();
+    }
+
+    /**
+     * Finds the field and gets its value as instant.
+     *
+     * @param var The field name.
+     * @return The value as date or null, if the field could not be found.
+     */
+    public final Instant findValueAsInstant(String var) {
+        Field field = findField(var);
+        return field == null ? null : field.getValueAsInstant();
     }
 
     /**
@@ -543,12 +557,27 @@ public final class DataForm implements Comparable<DataForm> {
          * Returns the first value as date.
          *
          * @return The date or null, if the values are empty.
+         * @deprecated Use {@link #getValueAsInstant()}
          */
+        @Deprecated
         public final Date getValueAsDate() {
             if (values.isEmpty()) {
                 return null;
             } else {
                 return values.get(0) != null ? DatatypeConverter.parseDateTime(values.get(0)).getTime() : null;
+            }
+        }
+
+        /**
+         * Returns the first value as date.
+         *
+         * @return The date or null, if the values are empty.
+         */
+        public final Instant getValueAsInstant() {
+            if (values.isEmpty()) {
+                return null;
+            } else {
+                return values.get(0) != null ? Instant.parse(values.get(0)) : null;
             }
         }
 
@@ -846,6 +875,19 @@ public final class DataForm implements Comparable<DataForm> {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
                     value(DatatypeConverter.printDateTime(calendar));
+                }
+                return type(Type.TEXT_SINGLE);
+            }
+
+            /**
+             * Sets the value as date. This methods sets the field type implicitly to {@link Field.Type#TEXT_SINGLE}.
+             *
+             * @param instant The value.
+             * @return The builder.
+             */
+            public final Builder value(Instant instant) {
+                if (instant != null) {
+                    value(instant.toString());
                 }
                 return type(Type.TEXT_SINGLE);
             }

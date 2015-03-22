@@ -42,14 +42,12 @@ import rocks.xmpp.extensions.pubsub.model.PublisherModel;
 import rocks.xmpp.extensions.pubsub.model.SendLastPublishedItem;
 import rocks.xmpp.extensions.pubsub.model.SubscribeOptions;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * @author Christian Schudt
@@ -62,12 +60,10 @@ public class PubSubConfigurationFormsTest extends XmlTest {
 
     @Test
     public void testMetaData() throws JAXBException, XMLStreamException {
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
+        Instant now = Instant.now();
         NodeMetaData pubSubMetaDataForm = NodeMetaData.builder()
                 .contacts(Arrays.asList(Jid.valueOf("contact")))
-                .creationDate(date)
+                .creationDate(now)
                 .creator(Jid.valueOf("creator"))
                 .description("desc")
                 .language("de")
@@ -82,7 +78,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"result\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#meta-data</value></field>" +
                 "<field type=\"jid-multi\" var=\"pubsub#contact\"><value>contact</value></field>" +
-                "<field type=\"text-single\" var=\"pubsub#creation_date\"><value>" + DatatypeConverter.printDateTime(calendar) + "</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#creation_date\"><value>" + now + "</value></field>" +
                 "<field type=\"jid-single\" var=\"pubsub#creator\"><value>creator</value></field>" +
                 "<field type=\"text-single\" var=\"pubsub#description\"><value>desc</value></field>" +
                 "<field type=\"list-single\" var=\"pubsub#language\"><value>de</value></field>" +
@@ -94,7 +90,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 "</x>");
         DataForm dataForm = unmarshal(xml, DataForm.class);
         NodeMetaData pubSubMetaDataForm1 = new NodeMetaData(dataForm);
-        Assert.assertEquals(pubSubMetaDataForm1.getCreationDate(), date);
+        Assert.assertEquals(pubSubMetaDataForm1.getCreationDate(), now);
         Assert.assertEquals(pubSubMetaDataForm1.getCreator(), Jid.valueOf("creator"));
         Assert.assertEquals(pubSubMetaDataForm1.getDescription(), "desc");
         Assert.assertEquals(pubSubMetaDataForm1.getLanguage(), "de");
@@ -107,9 +103,6 @@ public class PubSubConfigurationFormsTest extends XmlTest {
 
     @Test
     public void testPublishOptions() throws JAXBException, XMLStreamException {
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
         PublishOptions publishOptions = PublishOptions.builder()
                 .accessModel(AccessModel.AUTHORIZE)
                 .persistItems(true)

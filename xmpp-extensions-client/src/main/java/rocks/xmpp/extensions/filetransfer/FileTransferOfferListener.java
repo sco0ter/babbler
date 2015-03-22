@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see FileTransferManager#addFileTransferOfferListener(rocks.xmpp.extensions.filetransfer.FileTransferOfferListener)
  */
+@FunctionalInterface
 public interface FileTransferOfferListener extends EventListener {
 
     /**
@@ -40,5 +41,4 @@ public interface FileTransferOfferListener extends EventListener {
      * @param e The file transfer event.
      */
     void fileTransferOffered(FileTransferOfferEvent e);
-
 }

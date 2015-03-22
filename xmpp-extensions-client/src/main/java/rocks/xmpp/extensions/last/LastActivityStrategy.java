@@ -31,8 +31,8 @@ import java.util.Date;
  *
  * @author Christian Schudt
  */
+@FunctionalInterface
 public interface LastActivityStrategy {
 
     Date getLastActivity();
-
 }

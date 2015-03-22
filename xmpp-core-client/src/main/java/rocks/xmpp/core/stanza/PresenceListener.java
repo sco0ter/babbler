@@ -33,6 +33,7 @@ import java.util.EventListener;
  * @see rocks.xmpp.core.session.XmppSession#addInboundPresenceListener(PresenceListener)
  * @see rocks.xmpp.core.session.XmppSession#addOutboundPresenceListener(PresenceListener)
  */
+@FunctionalInterface
 public interface PresenceListener extends EventListener {
 
     /**

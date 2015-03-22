@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see ChatManager#addChatSessionListener(ChatSessionListener)
  */
+@FunctionalInterface
 public interface ChatSessionListener extends EventListener {
 
     /**

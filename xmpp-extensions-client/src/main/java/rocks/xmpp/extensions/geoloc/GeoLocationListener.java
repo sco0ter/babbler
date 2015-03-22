@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see GeoLocationManager#addGeoLocationListener(rocks.xmpp.extensions.geoloc.GeoLocationListener)
  */
+@FunctionalInterface
 public interface GeoLocationListener extends EventListener {
 
     /**

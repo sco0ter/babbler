@@ -33,6 +33,7 @@ import java.util.EventListener;
  * @see rocks.xmpp.core.session.XmppSession#addInboundMessageListener(MessageListener)
  * @see rocks.xmpp.core.session.XmppSession#addOutboundMessageListener(MessageListener)
  */
+@FunctionalInterface
 public interface MessageListener extends EventListener {
     /**
      * Handles the inbound or outbound message.

@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see PrivacyListManager#addPrivacyListListener(rocks.xmpp.extensions.privacy.PrivacyListListener)
  */
+@FunctionalInterface
 public interface PrivacyListListener extends EventListener {
 
     /**

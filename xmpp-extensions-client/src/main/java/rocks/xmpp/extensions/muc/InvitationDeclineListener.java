@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see ChatRoom#addInvitationDeclineListener(rocks.xmpp.extensions.muc.InvitationDeclineListener)
  */
+@FunctionalInterface
 public interface InvitationDeclineListener extends EventListener {
 
     /**

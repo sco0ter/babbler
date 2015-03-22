@@ -35,6 +35,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.bytestreams.ByteStreamManager#addByteStreamListener(ByteStreamListener)
  */
+@FunctionalInterface
 public interface ByteStreamListener extends EventListener {
 
     /**

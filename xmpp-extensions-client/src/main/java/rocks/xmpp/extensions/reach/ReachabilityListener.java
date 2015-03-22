@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see ReachabilityManager#addReachabilityListener(rocks.xmpp.extensions.reach.ReachabilityListener)
  */
+@FunctionalInterface
 public interface ReachabilityListener extends EventListener {
 
     /**
@@ -40,5 +41,4 @@ public interface ReachabilityListener extends EventListener {
      * @param e The event object.
      */
     void reachabilityChanged(ReachabilityEvent e);
-
 }

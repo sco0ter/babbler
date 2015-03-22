@@ -32,6 +32,7 @@ import rocks.xmpp.core.stream.model.ClientStreamElement;
  *
  * @author Christian Schudt
  */
+@FunctionalInterface
 public interface StanzaFilter<T extends Stanza & ClientStreamElement> {
 
     /**

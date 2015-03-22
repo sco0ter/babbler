@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see BlockingManager#addBlockingListener(rocks.xmpp.extensions.blocking.BlockingListener)
  */
+@FunctionalInterface
 public interface BlockingListener extends EventListener {
 
     /**
@@ -40,5 +41,4 @@ public interface BlockingListener extends EventListener {
      * @param e The event object.
      */
     void blockListChanged(BlockingEvent e);
-
 }

@@ -40,6 +40,7 @@ import rocks.xmpp.core.stanza.model.client.IQ;
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-semantics-iq">8.2.3.  IQ Semantics</a>
  * @see rocks.xmpp.core.session.XmppSession#addIQHandler(Class, IQHandler)
  */
+@FunctionalInterface
 public interface IQHandler {
 
     /**

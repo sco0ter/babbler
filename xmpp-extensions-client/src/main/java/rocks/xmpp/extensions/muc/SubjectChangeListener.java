@@ -30,6 +30,7 @@ package rocks.xmpp.extensions.muc;
  * @author Christian Schudt
  * @see ChatRoom#addSubjectChangeListener(rocks.xmpp.extensions.muc.SubjectChangeListener)
  */
+@FunctionalInterface
 public interface SubjectChangeListener {
 
     /**

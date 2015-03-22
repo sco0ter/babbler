@@ -31,6 +31,7 @@ import java.util.EventListener;
  *
  * @author Christian Schudt
  */
+@FunctionalInterface
 public interface FileTransferStatusListener extends EventListener {
 
     /**
@@ -39,5 +40,4 @@ public interface FileTransferStatusListener extends EventListener {
      * @param e The file transfer event.
      */
     void fileTransferStatusChanged(FileTransferStatusEvent e);
-
 }

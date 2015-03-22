@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.XmppSession#addSessionStatusListener(SessionStatusListener)
  */
+@FunctionalInterface
 public interface SessionStatusListener extends EventListener {
 
     /**

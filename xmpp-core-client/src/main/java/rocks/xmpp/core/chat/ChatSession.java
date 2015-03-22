@@ -166,6 +166,7 @@ public final class ChatSession extends Chat {
      * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
      * @since 0.50
      */
+    @FunctionalInterface
     public static interface ChatPartnerListener {
 
         /**

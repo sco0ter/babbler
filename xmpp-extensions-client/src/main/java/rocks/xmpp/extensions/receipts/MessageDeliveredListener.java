@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see MessageDeliveryReceiptsManager#addMessageDeliveredListener(rocks.xmpp.extensions.receipts.MessageDeliveredListener)
  */
+@FunctionalInterface
 public interface MessageDeliveredListener extends EventListener {
 
     /**
@@ -40,5 +41,4 @@ public interface MessageDeliveredListener extends EventListener {
      * @param e The event object.
      */
     void messageDelivered(MessageDeliveredEvent e);
-
 }

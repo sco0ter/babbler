@@ -35,6 +35,7 @@ import java.util.List;
  * @author Christian Schudt
  * @see RpcManager#setRpcHandler(rocks.xmpp.extensions.rpc.RpcHandler)
  */
+@FunctionalInterface
 public interface RpcHandler {
 
     /**

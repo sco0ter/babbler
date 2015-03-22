@@ -30,6 +30,7 @@ package rocks.xmpp.core.session;
  * @author Christian Schudt
  * @see ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
  */
+@FunctionalInterface
 public interface ReconnectionStrategy {
     /**
      * Gets the time (in seconds) until the next reconnection is attempted.

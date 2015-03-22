@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see RosterManager#addRosterListener(RosterListener)
  */
+@FunctionalInterface
 public interface RosterListener extends EventListener {
 
     /**

@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.time.model;
+package rocks.xmpp.core.util.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.ZoneOffset;

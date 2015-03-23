@@ -24,17 +24,17 @@
 
 package rocks.xmpp.extensions.time.model;
 
+import rocks.xmpp.core.util.adapters.InstantAdapter;
+import rocks.xmpp.core.util.adapters.ZoneOffsetAdapter;
+
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;

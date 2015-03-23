@@ -67,7 +67,7 @@ public class EntityTimeTest extends XmlTest {
                 "    id='time_1'>\n" +
                 "  <time xmlns='urn:xmpp:time'>\n" +
                 "    <tzo>-06:00</tzo>\n" +
-                "    <utc>2006-12-g19T17:58:35Z</utc>\n" +
+                "    <utc>2006-12-19T17:58:35Z</utc>\n" +
                 "  </time>\n" +
                 "</iq>";
 

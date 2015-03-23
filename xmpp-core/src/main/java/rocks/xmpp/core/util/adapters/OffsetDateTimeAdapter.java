@@ -22,22 +22,25 @@
  * THE SOFTWARE.
  */
 
+package rocks.xmpp.core.util.adapters;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.time.OffsetDateTime;
+
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>.
- * <p>
- * It defines a protocol for making annotations about roster items and other entities.
- * </p>
+ * Converts an {@link java.time.OffsetDateTime} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
+ *
+ * @author Christian Schudt
  */
-@XmlJavaTypeAdapters({@XmlJavaTypeAdapter(JidAdapter.class), @XmlJavaTypeAdapter(OffsetDateTimeAdapter.class)})
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Annotation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.privatedata.rosternotes.model;
+public final class OffsetDateTimeAdapter extends XmlAdapter<String, OffsetDateTime> {
 
-import rocks.xmpp.core.JidAdapter;
-import rocks.xmpp.core.util.adapters.OffsetDateTimeAdapter;
+    @Override
+    public final OffsetDateTime unmarshal(String value) throws Exception {
+        return value != null ? OffsetDateTime.parse(value) : null;
+    }
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
+    @Override
+    public final String marshal(OffsetDateTime value) throws Exception {
+        return value != null ? value.toString() : null;
+    }
+}

@@ -30,10 +30,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -89,10 +89,10 @@ public final class Annotation {
         private final Jid jid;
 
         @XmlAttribute(name = "cdate")
-        private final Date creationDate;
+        private final OffsetDateTime creationDate;
 
         @XmlAttribute(name = "mdate")
-        private final Date modificationDate;
+        private final OffsetDateTime modificationDate;
 
         @XmlValue
         private final String value;
@@ -122,7 +122,7 @@ public final class Annotation {
          * @param creationDate     The creation date (optional).
          * @param modificationDate The modification date (optional).
          */
-        public Note(String note, Jid jid, Date creationDate, Date modificationDate) {
+        public Note(String note, Jid jid, OffsetDateTime creationDate, OffsetDateTime modificationDate) {
             this.value = note;
             this.jid = Objects.requireNonNull(jid, "jid must not be null.").asBareJid();
             this.creationDate = creationDate;
@@ -143,7 +143,7 @@ public final class Annotation {
          *
          * @return The modification date.
          */
-        public final Date getModificationDate() {
+        public final OffsetDateTime getModificationDate() {
             return modificationDate;
         }
 
@@ -152,7 +152,7 @@ public final class Annotation {
          *
          * @return The creation date.
          */
-        public final Date getCreationDate() {
+        public final OffsetDateTime getCreationDate() {
             return creationDate;
         }
 

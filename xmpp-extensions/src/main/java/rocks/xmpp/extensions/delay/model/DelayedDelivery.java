@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.delay.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -100,6 +101,21 @@ public final class DelayedDelivery {
         this.stamp = Objects.requireNonNull(timestamp);
         this.from = from;
         this.reason = reason;
+    }
+
+    /**
+     * Gets the delayed delivery date of a stanza or <code>Instant.now()</code>, if no delayed deliver information is available.
+     *
+     * @param stanza The stanza.
+     * @return The delayed delivery date or now.
+     */
+    public static Instant deliveryDateOrNow(Stanza stanza) {
+        DelayedDelivery delayedDelivery = stanza.getExtension(DelayedDelivery.class);
+        if (delayedDelivery != null) {
+            return delayedDelivery.getTimeStamp();
+        } else {
+            return Instant.now();
+        }
     }
 
     /**

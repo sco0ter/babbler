@@ -81,14 +81,7 @@ public final class ContactExchangeManager extends ExtensionManager {
                 if (contactExchange != null) {
                     List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
                     if (!items.isEmpty()) {
-                        Instant date;
-                        DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                        if (delayedDelivery != null) {
-                            date = delayedDelivery.getTimeStamp();
-                        } else {
-                            date = Instant.now();
-                        }
-                        processItems(items, message.getFrom(), message.getBody(), date);
+                        processItems(items, message.getFrom(), message.getBody(), DelayedDelivery.deliveryDateOrNow(message));
                     }
                 }
             }

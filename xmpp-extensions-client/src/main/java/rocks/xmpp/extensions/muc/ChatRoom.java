@@ -61,7 +61,6 @@ import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.muc.model.user.Status;
 import rocks.xmpp.extensions.register.model.Registration;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -122,14 +121,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
                     // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
                     if (message.getSubject() != null && message.getBody() == null) {
-                        Instant date;
-                        DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                        if (delayedDelivery != null) {
-                            date = delayedDelivery.getTimeStamp();
-                        } else {
-                            date = Instant.now();
-                        }
-                        notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), delayedDelivery != null, date));
+                        notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), message.getExtension(DelayedDelivery.class) != null, DelayedDelivery.deliveryDateOrNow(message)));
                     } else {
                         notifyInboundMessageListeners(new MessageEvent(ChatRoom.this, message, true));
                     }

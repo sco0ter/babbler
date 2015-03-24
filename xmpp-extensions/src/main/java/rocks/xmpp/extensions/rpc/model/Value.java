@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.rpc.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -108,8 +109,8 @@ public final class Value {
      *
      * @param date The date value.
      */
-    public Value(Date date) {
-        this.value = date;
+    public Value(Instant date) {
+        this.value = date != null ? Date.from(date) : null;
     }
 
     /**
@@ -192,8 +193,8 @@ public final class Value {
      *
      * @return The date or null.
      */
-    public final Date getAsDate() {
-        return value instanceof Date ? (Date) value : null;
+    public final Instant getAsInstant() {
+        return value instanceof Date ? ((Date) value).toInstant() : null;
     }
 
     /**

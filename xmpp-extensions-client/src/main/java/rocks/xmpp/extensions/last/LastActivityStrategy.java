@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.last;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Allows to specify an alternative strategy for determining last activity.
@@ -34,5 +34,5 @@ import java.util.Date;
 @FunctionalInterface
 public interface LastActivityStrategy {
 
-    Date getLastActivity();
+    Instant getLastActivity();
 }

@@ -31,7 +31,7 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -109,11 +109,11 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
             if (received != null) {
                 DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                Date deliveryDate;
+                Instant deliveryDate;
                 if (delayedDelivery != null) {
                     deliveryDate = delayedDelivery.getTimeStamp();
                 } else {
-                    deliveryDate = new Date();
+                    deliveryDate = Instant.now();
                 }
 
                 // Notify the listeners about the reception.

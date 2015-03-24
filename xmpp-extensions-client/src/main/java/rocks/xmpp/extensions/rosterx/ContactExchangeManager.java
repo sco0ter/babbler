@@ -40,9 +40,9 @@ import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -81,12 +81,12 @@ public final class ContactExchangeManager extends ExtensionManager {
                 if (contactExchange != null) {
                     List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
                     if (!items.isEmpty()) {
-                        Date date;
+                        Instant date;
                         DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
                         if (delayedDelivery != null) {
                             date = delayedDelivery.getTimeStamp();
                         } else {
-                            date = new Date();
+                            date = Instant.now();
                         }
                         processItems(items, message.getFrom(), message.getBody(), date);
                     }
@@ -103,7 +103,7 @@ public final class ContactExchangeManager extends ExtensionManager {
                 } else {
                     List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
                     if (!items.isEmpty()) {
-                        processItems(items, iq.getFrom(), null, new Date());
+                        processItems(items, iq.getFrom(), null, Instant.now());
                     }
                     return iq.createResult();
                 }
@@ -111,7 +111,7 @@ public final class ContactExchangeManager extends ExtensionManager {
         });
     }
 
-    private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Date date) {
+    private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Instant date) {
         if (getTrustedEntities().contains(sender.asBareJid())) {
             for (ContactExchange.Item item : items) {
                 try {

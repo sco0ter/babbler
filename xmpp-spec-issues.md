@@ -34,7 +34,7 @@ This is a list of various issues which have occurred while reading through and i
 5. `<subscription-required xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>` vs.
    `<presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/>` ?
 6. Example 18.: `pubsub#creation_date`: 2003-07-29T22:56Z does not adhere to the dateTime profile of XEP-0082 (seconds missing)
-7. Example 219.: `pubsub#expire`: 2006-03-31T23:59Z does not adhere to the dateTime profile of XEP-0082 (seconds missing)
+7. Example 219. + 220 + 221: `pubsub#expire`: 2006-03-31T23:59Z does not adhere to the dateTime profile of XEP-0082 (seconds missing)
 
 ## XEP-0065: SOCKS5 Bytestreams
 

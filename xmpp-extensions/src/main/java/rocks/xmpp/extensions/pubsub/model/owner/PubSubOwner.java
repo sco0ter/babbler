@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.pubsub.model.owner;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.AffiliationState;
@@ -36,10 +37,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -534,7 +536,8 @@ public final class PubSubOwner {
             private SubscriptionState status;
 
             @XmlAttribute(name = "expiry")
-            private Date expiry;
+            @XmlJavaTypeAdapter(InstantAdapter.class)
+            private Instant expiry;
 
             @XmlElement(name = "subscribe-options")
             private Options options;
@@ -560,7 +563,7 @@ public final class PubSubOwner {
             }
 
             @Override
-            public Date getExpiry() {
+            public Instant getExpiry() {
                 return expiry;
             }
 

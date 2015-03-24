@@ -40,7 +40,7 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * @author Christian Schudt
@@ -51,7 +51,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityManagerIsCleared() throws Exception {
         TestXmppSession xmppSession1 = new TestXmppSession();
         LastActivityManager lastActivityManager = xmppSession1.getManager(LastActivityManager.class);
-        lastActivityManager.setLastActivityStrategy(Date::new);
+        lastActivityManager.setLastActivityStrategy(Instant::now);
         xmppSession1.close();
         Assert.assertNull(lastActivityManager.getLastActivityStrategy());
     }
@@ -141,5 +141,10 @@ public class LastActivityManagerTest extends ExtensionTest {
         lastActivityManager.setEnabled(false);
         Assert.assertFalse(lastActivityManager.isEnabled());
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
+    }
+
+    @Test
+    public void testSeconds() {
+        Assert.assertEquals(LastActivityManager.getSecondsSince(Instant.now().minusSeconds(30)), 30);
     }
 }

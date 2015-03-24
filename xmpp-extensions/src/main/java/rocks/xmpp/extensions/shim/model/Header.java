@@ -28,9 +28,7 @@ import rocks.xmpp.extensions.time.model.EntityTime;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.Period;
 import java.util.Date;
 import java.util.Objects;
 

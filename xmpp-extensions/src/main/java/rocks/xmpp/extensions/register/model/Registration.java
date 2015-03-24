@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
-import java.util.Date;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:register} namespace.
@@ -94,7 +93,7 @@ public final class Registration {
     private URL url;
 
     @XmlElement(name = "date")
-    private Date date;
+    private String date;
 
     @XmlElement(name = "remove")
     private String remove;
@@ -290,7 +289,7 @@ public final class Registration {
      *
      * @return The date.
      */
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
@@ -345,7 +344,7 @@ public final class Registration {
 
         private URL url;
 
-        private Date date;
+        private String date;
 
         private DataForm dataForm;
 
@@ -514,7 +513,7 @@ public final class Registration {
          * @param date The date.
          * @return The builder.
          */
-        public Builder date(Date date) {
+        public Builder date(String date) {
             this.date = date;
             return this;
         }

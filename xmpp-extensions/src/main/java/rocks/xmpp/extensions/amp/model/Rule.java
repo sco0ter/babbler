@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.amp.model;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -75,11 +76,24 @@ public final class Rule {
      * @param action The action.
      * @param date   The expiration date.
      * @return The rule.
+     * @deprecated Use {@link #expireAt(rocks.xmpp.extensions.amp.model.Rule.Action, java.time.Instant)}
      */
+    @Deprecated
     public static Rule expireAt(Action action, Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return new Rule(action, Condition.EXPIRE_AT, DatatypeConverter.printDateTime(calendar));
+    }
+
+    /**
+     * Creates the defined "expire-at" rule.
+     *
+     * @param action  The action.
+     * @param instant The expiration date.
+     * @return The rule.
+     */
+    public static Rule expireAt(Action action, Instant instant) {
+        return new Rule(action, Condition.EXPIRE_AT, instant.toString());
     }
 
     /**

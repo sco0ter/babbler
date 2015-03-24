@@ -38,7 +38,8 @@ import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
@@ -79,6 +80,10 @@ public final class LastActivityManager extends ExtensionManager {
         setEnabled(true);
     }
 
+    static long getSecondsSince(Instant date) {
+        return Math.max(0, Duration.between(date, Instant.now()).getSeconds());
+    }
+
     @Override
     protected void initialize() {
         xmppSession.addSessionStatusListener(e -> {
@@ -109,10 +114,6 @@ public final class LastActivityManager extends ExtensionManager {
                 }
             }
         });
-    }
-
-    private long getSecondsSince(Date date) {
-        return Math.max(0, System.currentTimeMillis() - date.getTime()) / 1000;
     }
 
     /**
@@ -156,7 +157,7 @@ public final class LastActivityManager extends ExtensionManager {
      * The default strategy to determine last activity. It simply sets the date of last activity, whenever a message or presence is sent.
      */
     private static class DefaultLastActivityStrategy implements LastActivityStrategy, MessageListener, PresenceListener {
-        private volatile Date lastActivity;
+        private volatile Instant lastActivity;
 
         public DefaultLastActivityStrategy(XmppSession xmppSession) {
             xmppSession.addOutboundMessageListener(this);
@@ -164,20 +165,20 @@ public final class LastActivityManager extends ExtensionManager {
         }
 
         @Override
-        public Date getLastActivity() {
+        public Instant getLastActivity() {
             return lastActivity;
         }
 
         @Override
         public void handleMessage(MessageEvent e) {
-            lastActivity = new Date();
+            lastActivity = Instant.now();
         }
 
         @Override
         public void handlePresence(PresenceEvent e) {
             AbstractPresence presence = e.getPresence();
             if (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA) {
-                lastActivity = new Date();
+                lastActivity = Instant.now();
             }
         }
     }

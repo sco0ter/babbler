@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.pubsub.model.event;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
@@ -36,10 +37,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -282,7 +284,8 @@ public final class Event {
     private static final class SubscriptionInfo extends PubSubEventChildElement implements Subscription {
 
         @XmlAttribute(name = "expiry")
-        private Date expiry;
+        @XmlJavaTypeAdapter(InstantAdapter.class)
+        private Instant expiry;
 
         @XmlAttribute(name = "jid")
         private Jid jid;
@@ -309,7 +312,7 @@ public final class Event {
         }
 
         @Override
-        public Date getExpiry() {
+        public Instant getExpiry() {
             return expiry;
         }
 

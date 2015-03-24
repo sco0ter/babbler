@@ -31,7 +31,7 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * This manager allows to forward stanzas to other XMPP entities.
@@ -71,7 +71,7 @@ public final class StanzaForwardingManager extends ExtensionManager {
      */
     public void forwardMessage(Message message, Jid to) {
         Message outerMessage = new Message(to, message.getType());
-        outerMessage.getExtensions().add(new Forwarded(message, new DelayedDelivery(new Date())));
+        outerMessage.getExtensions().add(new Forwarded(message, new DelayedDelivery(Instant.now())));
         xmppSession.send(outerMessage);
     }
 }

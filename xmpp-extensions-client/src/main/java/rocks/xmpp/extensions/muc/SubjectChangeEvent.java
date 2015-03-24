@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.EventObject;
 
 /**
@@ -36,7 +36,7 @@ import java.util.EventObject;
 public final class SubjectChangeEvent extends EventObject {
     private final String subject;
 
-    private final Date date;
+    private final Instant date;
 
     private final boolean isDelayed;
 
@@ -49,7 +49,7 @@ public final class SubjectChangeEvent extends EventObject {
      * @param subject The subject.
      * @throws IllegalArgumentException if source is null.
      */
-    SubjectChangeEvent(Object source, String subject, String nick, boolean isDelayed, Date date) {
+    SubjectChangeEvent(Object source, String subject, String nick, boolean isDelayed, Instant date) {
         super(source);
         this.subject = subject;
         this.isDelayed = isDelayed;
@@ -71,7 +71,7 @@ public final class SubjectChangeEvent extends EventObject {
      *
      * @return The send date.
      */
-    public Date getDate() {
+    public Instant getDate() {
         return date;
     }
 

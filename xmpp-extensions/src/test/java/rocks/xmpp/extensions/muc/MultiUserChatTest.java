@@ -31,12 +31,9 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.muc.model.History;
 import rocks.xmpp.extensions.muc.model.Muc;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.time.Instant;
 
 /**
  * @author Christian Schudt
@@ -89,12 +86,10 @@ public class MultiUserChatTest extends XmlTest {
 
     @Test
     public void testEnterRoomWithHistorySince() throws JAXBException, XMLStreamException {
-        Date date = new Date();
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(date);
+        Instant now = Instant.now();
         Presence presence = new Presence();
-        presence.getExtensions().add(new Muc(History.since(date)));
+        presence.getExtensions().add(new Muc(History.since(now)));
         String xml = marshal(presence);
-        Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"><history since=\"" + DatatypeConverter.printDateTime(calendar) + "\"></history></x></presence>");
+        Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"><history since=\"" + now.toString() + "\"></history></x></presence>");
     }
 }

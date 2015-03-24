@@ -73,7 +73,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.text.DateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ResourceBundle;
 
 /**
@@ -145,7 +149,7 @@ public final class DebugController implements Initializable {
     private TableColumn<StanzaEntry, Boolean> columnInbound;
 
     @FXML
-    private TableColumn<StanzaEntry, Date> columnDate;
+    private TableColumn<StanzaEntry, LocalDateTime> columnDate;
 
     @FXML
     private TableColumn<StanzaEntry, String> columnStanza;
@@ -434,21 +438,21 @@ public final class DebugController implements Initializable {
         });
 
         columnDate.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getDate()));
-        columnDate.setCellFactory(new Callback<TableColumn<StanzaEntry, Date>, TableCell<StanzaEntry, Date>>() {
+        columnDate.setCellFactory(new Callback<TableColumn<StanzaEntry, LocalDateTime>, TableCell<StanzaEntry, LocalDateTime>>() {
             @Override
-            public TableCell<StanzaEntry, Date> call(TableColumn<StanzaEntry, Date> dateStanzaEntryTableColumn) {
-                TableCell<StanzaEntry, Date> cell = new TableCell<StanzaEntry, Date>() {
+            public TableCell<StanzaEntry, LocalDateTime> call(TableColumn<StanzaEntry, LocalDateTime> dateStanzaEntryTableColumn) {
+                TableCell<StanzaEntry, LocalDateTime> cell = new TableCell<StanzaEntry, LocalDateTime>() {
                     @Override
-                    protected void updateItem(Date item, boolean empty) {
+                    protected void updateItem(LocalDateTime item, boolean empty) {
                         super.updateItem(item, empty);
                         setText(null);
                         setTooltip(null);
 
                         if (!empty) {
-                            DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-                            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-                            setText(timeFormat.format(item));
-                            setTooltip(new Tooltip(dateFormat.format(item)));
+
+                            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+                            setText(formatter.format(item));
+                            setTooltip(new Tooltip(formatter.format(item)));
                         }
                     }
                 };

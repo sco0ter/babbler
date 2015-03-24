@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class is responsible for opening and closing the XMPP stream as well as writing any XML elements to the stream.
- * <p/>
+ * <p>
  * This class is thread-safe.
  *
  * @author Christian Schudt
@@ -127,9 +127,7 @@ final class XmppStreamWriter {
         if (!executor.isShutdown() && clientStreamElement != null) {
             executor.execute(() -> {
                 try {
-                    synchronized (marshaller) {
-                        marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
-                    }
+                    marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                     prefixFreeCanonicalizationWriter.flush();
 
                     // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
@@ -254,7 +252,7 @@ final class XmppStreamWriter {
     /**
      * Closes the stream by sending a closing {@code </stream:stream>} to the server.
      * This method waits until this task is completed, but not more than 0.25 seconds.
-     * <p/>
+     * <p>
      * Make sure to synchronize this method.
      * Otherwise multiple threads could call {@link #closeStream()} which may result in a {@link RejectedExecutionException}, if it has been shutdown by another thread in the meantime.
      */

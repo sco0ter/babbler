@@ -29,7 +29,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -72,7 +72,7 @@ public final class ReconnectionManager extends Manager {
 
     private ScheduledFuture<?> scheduledFuture;
 
-    private Date nextReconnectionAttempt;
+    private Instant nextReconnectionAttempt;
 
     private ReconnectionManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
@@ -126,7 +126,7 @@ public final class ReconnectionManager extends Manager {
                 logger.log(Level.FINE, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", new Object[]{attempt, seconds});
             }
 
-            nextReconnectionAttempt = new Date(System.currentTimeMillis() + seconds * 1000);
+            nextReconnectionAttempt = Instant.now().plusSeconds(seconds);
             scheduledFuture = scheduledExecutorService.schedule(() -> {
                 try {
                     xmppSession.connect();
@@ -162,7 +162,7 @@ public final class ReconnectionManager extends Manager {
      *
      * @return The next reconnection attempt or null if there is none.
      */
-    public final synchronized Date getNextReconnectionAttempt() {
+    public final synchronized Instant getNextReconnectionAttempt() {
         return nextReconnectionAttempt;
     }
 

@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Date;
+import java.time.Instant;
 import java.util.EventObject;
 import java.util.List;
 
@@ -99,7 +99,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     public FileTransfer accept(OutputStream outputStream) throws IOException {
         return fileTransferNegotiator.accept(iq, sessionId, fileTransferOffer, protocol, outputStream);
     }
-    
+
     /**
      * Accepts the inbound file transfer request.
      * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
@@ -142,7 +142,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     @Override
-    public Date getDate() {
+    public Instant getDate() {
         return fileTransferOffer.getDate();
     }
 

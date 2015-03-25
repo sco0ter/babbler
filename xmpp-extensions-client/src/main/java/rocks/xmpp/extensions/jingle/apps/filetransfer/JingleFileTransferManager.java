@@ -39,7 +39,7 @@ import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandBytestreamsTransp
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -59,7 +59,7 @@ public final class JingleFileTransferManager extends ExtensionManager {
     }
 
     public JingleFileTransferSession initiateFileTransferSession(final Jid responder, File file, String description, long timeout) throws XmppException, IOException {
-        JingleFileTransfer.File jingleFile = new JingleFileTransfer.File(file.getName(), file.length(), new Date(file.lastModified()), null, description);
+        JingleFileTransfer.File jingleFile = new JingleFileTransfer.File(file.getName(), file.length(), Instant.ofEpochMilli(file.lastModified()), null, description);
         JingleFileTransfer jingleFileTransfer = new JingleFileTransfer(jingleFile);
 
 

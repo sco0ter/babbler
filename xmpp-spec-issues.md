@@ -45,6 +45,10 @@ This is a list of various issues which have occurred while reading through and i
 1. Should probably make use of persistent storage ([XEP-0222](http://www.xmpp.org/extensions/xep-0222.html))?
 2. Example 4 is confusing because it uses only image/gif, although image/png is mandatory (?).
 
+## XEP-0096
+
+1. `<xs:attribute name='date' type='xs:string' use='optional'/>` should be `xsd:dateTime`
+
 ## XEP-0184: Message Delivery Receipts
 
 1. Should clarify message type of receipts.

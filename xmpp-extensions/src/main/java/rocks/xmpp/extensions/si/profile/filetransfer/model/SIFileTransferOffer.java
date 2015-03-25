@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.si.profile.filetransfer.model;
 
+import rocks.xmpp.core.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
@@ -31,10 +32,11 @@ import rocks.xmpp.extensions.hashes.model.Hash;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -61,7 +63,8 @@ public final class SIFileTransferOffer implements FileTransferOffer {
     private final String name;
 
     @XmlAttribute(name = "date")
-    private final Date date;
+    @XmlJavaTypeAdapter(InstantAdapter.class)
+    private final Instant date;
 
     @XmlAttribute(name = "hash")
     private final String hash;
@@ -80,7 +83,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
         this(name, size, null, null, null, null);
     }
 
-    public SIFileTransferOffer(String name, long size, Date lastModified, String hash, String description, SIRange range) {
+    public SIFileTransferOffer(String name, long size, Instant lastModified, String hash, String description, SIRange range) {
         this.name = name;
         this.size = size;
         this.date = lastModified;
@@ -112,7 +115,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The date.
      */
-    public final Date getDate() {
+    public final Instant getDate() {
         return date;
     }
 

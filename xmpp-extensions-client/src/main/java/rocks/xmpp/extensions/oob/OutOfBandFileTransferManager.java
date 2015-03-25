@@ -47,8 +47,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -90,7 +90,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                             length = connection.getContentLength();
                             lastModified = connection.getLastModified();
 
-                            final Date date = lastModified > 0 ? new Date(lastModified) : null;
+                            final Instant date = lastModified > 0 ? Instant.ofEpochMilli(lastModified) : null;
                             final String name = url.toString();
                             fileTransferManager.fileTransferOffered(iq, null, mimeType, null, new FileTransferOffer() {
                                 @Override
@@ -104,7 +104,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                                 }
 
                                 @Override
-                                public Date getDate() {
+                                public Instant getDate() {
                                     return date;
                                 }
 

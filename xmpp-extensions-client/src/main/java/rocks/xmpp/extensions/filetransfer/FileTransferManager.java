@@ -47,7 +47,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
@@ -149,7 +149,7 @@ public final class FileTransferManager extends ExtensionManager {
         if (Files.notExists(requireNonNull(source, "source must not be null."))) {
             throw new NoSuchFileException(source.getFileName().toString());
         }
-        return offerFile(Files.newInputStream(source), source.getFileName().toString(), Files.size(source), new Date(Files.getLastModifiedTime(source).toMillis()), description, recipient, timeout);
+        return offerFile(Files.newInputStream(source), source.getFileName().toString(), Files.size(source), Files.getLastModifiedTime(source).toInstant(), description, recipient, timeout);
     }
 
     /**
@@ -169,7 +169,7 @@ public final class FileTransferManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the recipient did not downloaded the file within the timeout.
      * @throws java.io.IOException                         If the file could not be read.
      */
-    public final FileTransfer offerFile(final InputStream source, final String fileName, final long fileSize, Date lastModified, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
+    public final FileTransfer offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
         if (!requireNonNull(recipient, "jid must not be null.").isFullJid()) {
             throw new IllegalArgumentException("recipient must be a full JID (including resource)");
         }

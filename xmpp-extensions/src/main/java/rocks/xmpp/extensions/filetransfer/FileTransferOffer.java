@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.filetransfer;
 
 import rocks.xmpp.extensions.hashes.model.Hash;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -58,7 +58,7 @@ public interface FileTransferOffer {
      *
      * @return The date.
      */
-    Date getDate();
+    Instant getDate();
 
     /**
      * Gets the hashes of the file contents.

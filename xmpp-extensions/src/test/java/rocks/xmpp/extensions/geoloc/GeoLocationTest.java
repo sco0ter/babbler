@@ -54,7 +54,6 @@ public class GeoLocationTest extends XmlTest {
                 "          <tzo>-08:00</tzo>\n" +
                 "        </geoloc>\n";
         GeoLocation geoLocation = unmarshal(xml, GeoLocation.class);
-        System.out.println(geoLocation);
         Assert.assertNotNull(geoLocation);
         Assert.assertEquals(geoLocation.getLanguage(), "en");
         Assert.assertEquals(geoLocation.getAccuracy(), 20.0);

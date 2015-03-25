@@ -676,6 +676,7 @@ public final class BoshConnection extends Connection {
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     // Marshaller needs to be recreated here, because it's not thread-safe.
                                     getXmppSession().createMarshaller().marshal(body, xmlStreamWriter);
+                                    xmlStreamWriter.flush();
 
                                     if (debugger != null) {
                                         debugger.writeStanza(byteArrayOutputStreamRequest.toString(), body);

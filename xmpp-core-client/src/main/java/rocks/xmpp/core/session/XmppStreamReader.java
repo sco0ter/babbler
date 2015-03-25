@@ -134,6 +134,7 @@ final class XmppStreamReader {
                                         StringWriter stringWriter = new StringWriter();
                                         XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
                                         marshaller.marshal(object, xmlStreamWriter);
+                                        xmlStreamWriter.flush();
                                         debugger.readStanza(stringWriter.toString(), object);
                                     }
                                 }

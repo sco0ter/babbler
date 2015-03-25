@@ -82,11 +82,6 @@ final class XmppStreamWriter {
     /**
      * Will be accessed only by the writer thread.
      */
-    private OutputStream lastOutputStream;
-
-    /**
-     * Will be accessed only by the writer thread.
-     */
     private ByteArrayOutputStream byteArrayOutputStream;
 
     /**
@@ -151,27 +146,18 @@ final class XmppStreamWriter {
         if (!executor.isShutdown()) {
             executor.execute(() -> {
                 try {
-                    // Only recreate the writer, if the stream has changed (e.g. due to TLS or compression)
-                    if (lastOutputStream != outputStream) {
-                        lastOutputStream = outputStream;
-                        if (prefixFreeCanonicalizationWriter != null) {
-                            // This also closes the xmlStreamWriter
-                            prefixFreeCanonicalizationWriter.close();
-                        }
 
-                        OutputStream xmppOutputStream;
-
-                        if (debugger != null) {
-                            byteArrayOutputStream = new ByteArrayOutputStream();
-                            xmppOutputStream = debugger.createOutputStream(XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream));
-                        } else {
-                            xmppOutputStream = outputStream;
-                        }
-                        xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8");
-
-                        prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-                        streamOpened = false;
+                    OutputStream xmppOutputStream;
+                    if (debugger != null) {
+                        byteArrayOutputStream = new ByteArrayOutputStream();
+                        xmppOutputStream = debugger.createOutputStream(XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream));
+                    } else {
+                        xmppOutputStream = outputStream;
                     }
+                    xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8");
+
+                    prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+                    streamOpened = false;
 
                     xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
                     xmlStreamWriter.writeStartElement("stream", "stream", "http://etherx.jabber.org/streams");
@@ -242,7 +228,6 @@ final class XmppStreamWriter {
                     exception.addSuppressed(e);
                 }
             }
-            lastOutputStream = null;
             byteArrayOutputStream = null;
         }
 

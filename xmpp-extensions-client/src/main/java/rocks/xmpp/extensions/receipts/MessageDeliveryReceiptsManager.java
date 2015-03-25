@@ -26,15 +26,13 @@ package rocks.xmpp.extensions.receipts;
 
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,7 +67,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
     final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
-    private final List<StanzaFilter<Message>> messageFilters = new CopyOnWriteArrayList<>();
+    private Predicate<Message> messageFilter;
 
     /**
      * Creates the manager.
@@ -84,11 +82,10 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
     protected void initialize() {
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
-        messageFilters.add(message -> message.getType() != Message.Type.ERROR);
+        Predicate<Message> errorFilter = message -> message.getType() != Message.Type.ERROR;
         xmppSession.addSessionStatusListener(e -> {
             if (e.getStatus() == XmppSession.Status.CLOSED) {
                 messageDeliveredListeners.clear();
-                messageFilters.clear();
             }
         });
         xmppSession.addInboundMessageListener(e -> {
@@ -96,7 +93,6 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                 return;
             }
             Message message = e.getMessage();
-
             // If a client requests a receipt, send an ack message.
             if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {
                 // Add an empty body. Otherwise some servers, won't store it in offline storage.
@@ -123,10 +119,16 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             }
             Message message = e.getMessage();
             // If we are sending a message, append a receipt request, if it passes all filters.
-            for (StanzaFilter<Message> messageFilter : messageFilters) {
-                if (!messageFilter.accept(message)) {
-                    return;
+            Predicate<Message> predicate;
+            synchronized (this) {
+                if (messageFilter != null) {
+                    predicate = errorFilter.and(messageFilter);
+                } else {
+                    predicate = errorFilter;
                 }
+            }
+            if (!predicate.test(message)) {
+                return;
             }
             // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
             // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
@@ -158,22 +160,11 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
     }
 
     /**
-     * Adds a message filter in order to filter messages for which receipts are requested.
+     * Outbound messages, which pass the filter automatically request a receipt, i.e. a {@code <request/>} extension.
      *
      * @param messageFilter The message filter.
-     * @see #removeMessageFilter(rocks.xmpp.core.stanza.StanzaFilter)
      */
-    public void addMessageFilter(StanzaFilter<Message> messageFilter) {
-        messageFilters.add(messageFilter);
-    }
-
-    /**
-     * Removes a previously added message filter.
-     *
-     * @param messageFilter The message filter.
-     * @see #addMessageFilter(rocks.xmpp.core.stanza.StanzaFilter)
-     */
-    public void removeMessageFilter(StanzaFilter<Message> messageFilter) {
-        messageFilters.remove(messageFilter);
+    public synchronized void setMessageFilter(Predicate<Message> messageFilter) {
+        this.messageFilter = messageFilter;
     }
 }

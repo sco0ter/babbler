@@ -41,7 +41,6 @@ import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -88,6 +87,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -606,14 +606,14 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final Presence sendAndAwaitPresence(ClientStreamElement stanza, final StanzaFilter<Presence> filter) throws XmppException {
+    public final Presence sendAndAwaitPresence(ClientStreamElement stanza, final Predicate<Presence> filter) throws XmppException {
         final Presence[] result = new Presence[1];
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
 
         final PresenceListener listener = e -> {
             Presence presence = e.getPresence();
-            if (filter.accept(presence)) {
+            if (filter.test(presence)) {
                 presenceLock.lock();
                 try {
                     result[0] = presence;
@@ -655,7 +655,7 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final Message sendAndAwaitMessage(ClientStreamElement stanza, final StanzaFilter<Message> filter) throws XmppException {
+    public final Message sendAndAwaitMessage(ClientStreamElement stanza, final Predicate<Message> filter) throws XmppException {
 
         final Message[] result = new Message[1];
         final Lock messageLock = new ReentrantLock();
@@ -663,7 +663,7 @@ public class XmppSession implements AutoCloseable {
 
         final MessageListener listener = e -> {
             Message message = e.getMessage();
-            if (filter.accept(message)) {
+            if (filter.test(message)) {
                 messageLock.lock();
                 try {
                     result[0] = message;

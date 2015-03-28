@@ -24,29 +24,11 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.subscription.PresenceManager;
-import rocks.xmpp.core.util.cache.DirectoryCache;
-import rocks.xmpp.extensions.address.model.Address;
-import rocks.xmpp.extensions.address.model.Addresses;
-import rocks.xmpp.extensions.avatar.model.data.AvatarData;
-import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
-import rocks.xmpp.extensions.muc.model.user.MucUser;
-import rocks.xmpp.extensions.pubsub.PubSubManager;
-import rocks.xmpp.extensions.pubsub.PubSubService;
-import rocks.xmpp.extensions.pubsub.model.Item;
-import rocks.xmpp.extensions.pubsub.model.event.Event;
-import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
-import rocks.xmpp.extensions.vcard.temp.VCardManager;
-import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import static java.util.Objects.requireNonNull;
+import static rocks.xmpp.core.util.conversions.Conversions.asAwtImage;
+import static rocks.xmpp.core.util.conversions.Conversions.asPNG;
 
+import java.awt.Image;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,6 +47,30 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
+import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.subscription.PresenceManager;
+import rocks.xmpp.core.util.cache.DirectoryCache;
+import rocks.xmpp.core.util.conversions.ConversionException;
+import rocks.xmpp.extensions.address.model.Address;
+import rocks.xmpp.extensions.address.model.Addresses;
+import rocks.xmpp.extensions.avatar.model.data.AvatarData;
+import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
+import rocks.xmpp.extensions.muc.model.user.MucUser;
+import rocks.xmpp.extensions.pubsub.PubSubManager;
+import rocks.xmpp.extensions.pubsub.PubSubService;
+import rocks.xmpp.extensions.pubsub.model.Item;
+import rocks.xmpp.extensions.pubsub.model.event.Event;
+import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
+import rocks.xmpp.extensions.vcard.temp.VCardManager;
+import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 
 /**
@@ -450,6 +456,26 @@ public final class AvatarManager extends ExtensionManager {
         return getAvatarByVCard(contact.asBareJid());
     }
 
+	/**
+	 * Gets the user avatar from the user's vCard.
+	 *
+	 * @param contact
+	 *            The contact. Must not be {@code null}.
+	 * @return The contact's avatar or null, if it has no avatar.
+	 * @throws rocks.xmpp.core.stanza.StanzaException
+	 *             If the entity returned a stanza error.
+	 * @throws rocks.xmpp.core.session.NoResponseException
+	 *             If the entity did not respond.
+	 */
+	public final Image getAvatarImage(final Jid contact) throws XmppException {
+		try {
+			final byte[] bitmap = this.getAvatar(requireNonNull(contact));
+			return bitmap == null ? null : asAwtImage(bitmap);
+		} catch (final ConversionException e) {
+			throw new XmppException(e);
+		}
+	}
+    
     /**
      * Publishes an avatar to your VCard.
      *
@@ -485,6 +511,27 @@ public final class AvatarManager extends ExtensionManager {
         }
     }
 
+	/**
+	 * Publishes an avatar to your VCard.
+	 *
+	 * @param awtImage
+	 *            The avatar image, which must be in PNG format. {@code null}
+	 *            resets the avatar.
+	 * @throws rocks.xmpp.core.stanza.StanzaException
+	 *             If the entity returned a stanza error.
+	 * @throws rocks.xmpp.core.session.NoResponseException
+	 *             If the entity did not respond.
+	 * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User
+	 *      Publishes Avatar</a>
+	 */
+	public final void publishAvatarImage(final Image awtImage) throws XmppException {
+		try {
+			this.publishAvatar(awtImage == null ? null : asPNG(awtImage));
+		} catch (final ConversionException e) {
+			throw new XmppException(e);
+		}
+	}
+    
     /**
      * Publishes an avatar to the VCard and uses XEP-0153 to notify the contacts about the update.
      *

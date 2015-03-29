@@ -194,7 +194,7 @@ public final class AvatarManager extends ExtensionManager {
                             try {
                                 notifyListeners(contact, getAvatarByVCard(contact));
                             } catch (XmppException e1) {
-                                logger.warning(String.format("Failed to retrieve vCard based avatar for user: %s", contact));
+                                logger.log(Level.WARNING, "Failed to retrieve vCard based avatar for user: {0}", contact);
                             }
                         });
                     }
@@ -307,7 +307,7 @@ public final class AvatarManager extends ExtensionManager {
                                         storeToCache(item.getId(), data);
                                         notifyListeners(message.getFrom().asBareJid(), data);
                                     } catch (IOException e1) {
-                                        logger.warning(String.format("Failed to download avatar from advertised URL: %s.", chosenInfo.getUrl()));
+                                        logger.log(Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                                     }
                                 } else {
                                     avatarRequester.execute(() -> {
@@ -323,7 +323,7 @@ public final class AvatarManager extends ExtensionManager {
                                                 }
                                             }
                                         } catch (XmppException e1) {
-                                            logger.warning(String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), message.getFrom()));
+                                            logger.log(Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '{0}'", item.getId(), message.getFrom()));
                                         }
                                     });
                                 }

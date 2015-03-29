@@ -24,6 +24,32 @@
 
 package rocks.xmpp.extensions.avatar;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
+
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
@@ -46,25 +72,6 @@ import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -187,7 +194,7 @@ public final class AvatarManager extends ExtensionManager {
                             try {
                                 notifyListeners(contact, getAvatarByVCard(contact));
                             } catch (XmppException e1) {
-                                logger.warning(String.format("Failed to retrieve vCard based avatar for user: %s", contact));
+                                logger.log(Level.WARNING, "Failed to retrieve vCard based avatar for user: {0}", contact);
                             }
                         });
                     }
@@ -300,7 +307,7 @@ public final class AvatarManager extends ExtensionManager {
                                         storeToCache(item.getId(), data);
                                         notifyListeners(message.getFrom().asBareJid(), data);
                                     } catch (IOException e1) {
-                                        logger.warning(String.format("Failed to download avatar from advertised URL: %s.", chosenInfo.getUrl()));
+                                        logger.log(Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                                     }
                                 } else {
                                     avatarRequester.execute(() -> {
@@ -316,7 +323,7 @@ public final class AvatarManager extends ExtensionManager {
                                                 }
                                             }
                                         } catch (XmppException e1) {
-                                            logger.warning(String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), message.getFrom()));
+                                            logger.log(Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '{0}'", item.getId(), message.getFrom()));
                                         }
                                     });
                                 }
@@ -450,6 +457,26 @@ public final class AvatarManager extends ExtensionManager {
         return getAvatarByVCard(contact.asBareJid());
     }
 
+	/**
+	 * Gets the user avatar from the user's vCard.
+	 *
+	 * @param contact
+	 *            The contact. Must not be {@code null}.
+	 * @return The contact's avatar or null, if it has no avatar.
+	 * @throws rocks.xmpp.core.stanza.StanzaException
+	 *             If the entity returned a stanza error.
+	 * @throws rocks.xmpp.core.session.NoResponseException
+	 *             If the entity did not respond.
+	 */
+	public final BufferedImage getAvatarImage(final Jid contact) throws XmppException {
+		try {
+			final byte[] bitmap = this.getAvatar(requireNonNull(contact));
+			return bitmap == null ? null : asBufferedImage(bitmap);
+		} catch (final ConversionException e) {
+			throw new XmppException(e);
+		}
+	}
+    
     /**
      * Publishes an avatar to your VCard.
      *
@@ -485,6 +512,27 @@ public final class AvatarManager extends ExtensionManager {
         }
     }
 
+	/**
+	 * Publishes an avatar to your VCard.
+	 *
+	 * @param bufferedImage
+	 *            The avatar image, which must be in PNG format. {@code null}
+	 *            resets the avatar.
+	 * @throws rocks.xmpp.core.stanza.StanzaException
+	 *             If the entity returned a stanza error.
+	 * @throws rocks.xmpp.core.session.NoResponseException
+	 *             If the entity did not respond.
+	 * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User
+	 *      Publishes Avatar</a>
+	 */
+	public final void publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
+		try {
+			this.publishAvatar(bufferedImage == null ? null : asPNG(bufferedImage));
+		} catch (final ConversionException e) {
+			throw new XmppException(e);
+		}
+	}
+    
     /**
      * Publishes an avatar to the VCard and uses XEP-0153 to notify the contacts about the update.
      *
@@ -562,4 +610,58 @@ public final class AvatarManager extends ExtensionManager {
     public final void removeAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
         avatarChangeListeners.remove(avatarChangeListener);
     }
+    
+	/**
+	 * Converts {@code bitmap} into {@link BufferedImage}.
+	 *
+	 * @param bitmap
+	 *            The bitmap to convert. Must not be {@code null}.
+	 * @return Instance of {@link BufferedImage} created from {@code bitmap}.
+	 *         Never {@code null}.
+	 * @throws ConversionException
+	 *             if conversion failed
+	 */
+	static final BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
+		try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(requireNonNull(bitmap))) {
+			return ofNullable(ImageIO.read(inputStream)).orElseThrow(ConversionException::new);
+		} catch (final IOException e) {
+			throw new ConversionException(e);
+		}
+	}
+
+	/**
+	 * Converts {@code image} into {@code byte[]}.
+	 *
+	 * @param bufferedImage
+	 *            The image to convert. Must not be {@code null}.
+	 * @return PNG bitmap created from {@code image}. Never {@code null}.
+	 * @throws ConversionException
+	 *             if conversion failed
+	 */
+	private static final byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
+		try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+			if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream))
+				throw new ConversionException();
+			return outputStream.toByteArray();
+		} catch (final IOException e) {
+			throw new ConversionException(e);
+		}
+	}
+	
+	/**
+	 * Indicates the inability to convert a value from one data type into
+	 * another.
+	 *
+	 * @author Markus KARG (markus@headcrashing.eu)
+	 */
+	@SuppressWarnings("serial")
+	static final class ConversionException extends Exception {
+		public ConversionException() {
+			// Intentionally left blank.
+		}
+
+		public ConversionException(final Throwable cause) {
+			super(cause);
+		}
+	}
 }

@@ -76,6 +76,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -88,6 +89,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  * The base class for establishing an XMPP session with a server.
@@ -218,6 +220,8 @@ public class XmppSession implements AutoCloseable {
     private volatile CallbackHandler lastCallbackHandler;
 
     private volatile boolean anonymous;
+
+    Collection<StanzaStream> inboundStanzaStreams = new CopyOnWriteArrayList<>();
 
     /**
      * Creates a session with the specified service domain, by using the default configuration.
@@ -798,6 +802,7 @@ public class XmppSession implements AutoCloseable {
         } catch (Exception e) {
             throwAsXmppExceptionIfNotNull(e);
         } finally {
+            inboundStanzaStreams.forEach(stream -> stream.stream().close());
             // Clear everything.
             inboundMessageListeners.clear();
             outboundMessageListeners.clear();
@@ -1112,10 +1117,13 @@ public class XmppSession implements AutoCloseable {
                     }
                 }
             }
+            addStanzaToInboundStreams(iq);
             stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true)));
         } else if (element instanceof Message) {
+            addStanzaToInboundStreams((Message) element);
             stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true)));
         } else if (element instanceof Presence) {
+            addStanzaToInboundStreams((Presence) element);
             stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true)));
         } else if (element instanceof StreamFeatures) {
             getManager(StreamFeaturesManager.class).processFeatures((StreamFeatures) element);
@@ -1327,6 +1335,25 @@ public class XmppSession implements AutoCloseable {
      */
     public final XmppDebugger getDebugger() {
         return debugger;
+    }
+
+    /**
+     * Creates an inbound blocking stanza stream.
+     * <p>
+     * Whenever a stanza is received, it will be enqueued to the stream.
+     * <p>
+     * This XMPP session will keep a reference to the stream until it's closed, therefore remember to {@linkplain Stream#close() close} the stream if you don't need it anymore.
+     *
+     * @return The stanza stream.
+     */
+    public final Stream<Stanza> newInboundStream() {
+        StanzaStream stream = new StanzaStream(this);
+        inboundStanzaStreams.add(stream);
+        return stream.stream();
+    }
+
+    private void addStanzaToInboundStreams(Stanza stanza) {
+        inboundStanzaStreams.forEach(stream -> stream.offer(stanza));
     }
 
     /**

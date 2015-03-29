@@ -24,15 +24,16 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import static rocks.xmpp.core.util.conversions.Conversions.asAwtImage;
+import static rocks.xmpp.extensions.avatar.AvatarManager.asBufferedImage;
 
 import java.awt.Image;
 import java.util.EventObject;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.util.conversions.ConversionException;
+import rocks.xmpp.extensions.avatar.AvatarManager.ConversionException;
 
 /**
  * The avatar change event to notify about avatar updates.
@@ -74,7 +75,7 @@ public final class AvatarChangeEvent extends EventObject {
 	 */
 	public final Image getAvatarImage() {
 		try {
-			return this.avatar == null ? null : asAwtImage(this.avatar);
+			return this.avatar == null ? null : asBufferedImage(this.avatar);
 		} catch (final ConversionException e) {
 			LOGGER.log(Level.SEVERE, "Cannot convert avatar image");
 			return null;

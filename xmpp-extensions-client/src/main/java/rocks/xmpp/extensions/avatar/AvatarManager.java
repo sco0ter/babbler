@@ -25,10 +25,10 @@
 package rocks.xmpp.extensions.avatar;
 
 import static java.util.Objects.requireNonNull;
-import static rocks.xmpp.core.util.conversions.Conversions.asAwtImage;
-import static rocks.xmpp.core.util.conversions.Conversions.asPNG;
+import static java.util.Optional.ofNullable;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +48,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
+
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
@@ -58,7 +60,6 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.util.cache.DirectoryCache;
-import rocks.xmpp.core.util.conversions.ConversionException;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
@@ -467,10 +468,10 @@ public final class AvatarManager extends ExtensionManager {
 	 * @throws rocks.xmpp.core.session.NoResponseException
 	 *             If the entity did not respond.
 	 */
-	public final Image getAvatarImage(final Jid contact) throws XmppException {
+	public final BufferedImage getAvatarImage(final Jid contact) throws XmppException {
 		try {
 			final byte[] bitmap = this.getAvatar(requireNonNull(contact));
-			return bitmap == null ? null : asAwtImage(bitmap);
+			return bitmap == null ? null : asBufferedImage(bitmap);
 		} catch (final ConversionException e) {
 			throw new XmppException(e);
 		}
@@ -514,7 +515,7 @@ public final class AvatarManager extends ExtensionManager {
 	/**
 	 * Publishes an avatar to your VCard.
 	 *
-	 * @param awtImage
+	 * @param bufferedImage
 	 *            The avatar image, which must be in PNG format. {@code null}
 	 *            resets the avatar.
 	 * @throws rocks.xmpp.core.stanza.StanzaException
@@ -524,9 +525,9 @@ public final class AvatarManager extends ExtensionManager {
 	 * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User
 	 *      Publishes Avatar</a>
 	 */
-	public final void publishAvatarImage(final Image awtImage) throws XmppException {
+	public final void publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
 		try {
-			this.publishAvatar(awtImage == null ? null : asPNG(awtImage));
+			this.publishAvatar(bufferedImage == null ? null : asPNG(bufferedImage));
 		} catch (final ConversionException e) {
 			throw new XmppException(e);
 		}
@@ -609,4 +610,58 @@ public final class AvatarManager extends ExtensionManager {
     public final void removeAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
         avatarChangeListeners.remove(avatarChangeListener);
     }
+    
+	/**
+	 * Converts {@code bitmap} into {@link BufferedImage}.
+	 *
+	 * @param bitmap
+	 *            The bitmap to convert. Must not be {@code null}.
+	 * @return Instance of {@link BufferedImage} created from {@code bitmap}.
+	 *         Never {@code null}.
+	 * @throws ConversionException
+	 *             if conversion failed
+	 */
+	static final BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
+		try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(requireNonNull(bitmap))) {
+			return ofNullable(ImageIO.read(inputStream)).orElseThrow(ConversionException::new);
+		} catch (final IOException e) {
+			throw new ConversionException(e);
+		}
+	}
+
+	/**
+	 * Converts {@code image} into {@code byte[]}.
+	 *
+	 * @param bufferedImage
+	 *            The image to convert. Must not be {@code null}.
+	 * @return PNG bitmap created from {@code image}. Never {@code null}.
+	 * @throws ConversionException
+	 *             if conversion failed
+	 */
+	private static final byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
+		try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+			if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream))
+				throw new ConversionException();
+			return outputStream.toByteArray();
+		} catch (final IOException e) {
+			throw new ConversionException(e);
+		}
+	}
+	
+	/**
+	 * Indicates the inability to convert a value from one data type into
+	 * another.
+	 *
+	 * @author Markus KARG (markus@headcrashing.eu)
+	 */
+	@SuppressWarnings("serial")
+	static final class ConversionException extends Exception {
+		public ConversionException() {
+			// Intentionally left blank.
+		}
+
+		public ConversionException(final Throwable cause) {
+			super(cause);
+		}
+	}
 }

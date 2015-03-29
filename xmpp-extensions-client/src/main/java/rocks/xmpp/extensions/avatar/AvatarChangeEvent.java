@@ -26,9 +26,8 @@ package rocks.xmpp.extensions.avatar;
 
 import static rocks.xmpp.extensions.avatar.AvatarManager.asBufferedImage;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.EventObject;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,7 +72,7 @@ public final class AvatarChangeEvent extends EventObject {
 	 * 
 	 * @return The avatar image.
 	 */
-	public final Image getAvatarImage() {
+	public final BufferedImage getAvatarImage() {
 		try {
 			return this.avatar == null ? null : asBufferedImage(this.avatar);
 		} catch (final ConversionException e) {

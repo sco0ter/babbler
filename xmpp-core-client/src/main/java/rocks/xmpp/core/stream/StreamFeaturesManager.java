@@ -26,8 +26,6 @@ package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.NoResponseException;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
@@ -98,29 +96,26 @@ public final class StreamFeaturesManager extends Manager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                switch (e.getStatus()) {
-                    // If we're (re)connecting, make sure any previous features are forgotten.
-                    case CONNECTING:
-                        synchronized (this) {
-                            featureNegotiationStartedConditions.clear();
-                            advertisedFeatures.clear();
-                            negotiatedFeatures.clear();
-                        }
-                        break;
-                    // If the connection is closed, clear everything.
-                    case CLOSED:
-                        synchronized (this) {
-                            featureNegotiationStartedConditions.clear();
-                            advertisedFeatures.clear();
-                            featuresToNegotiate.clear();
-                            negotiatedFeatures.clear();
-                            streamFeatureNegotiators.clear();
-                        }
-                        break;
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            switch (e.getStatus()) {
+                // If we're (re)connecting, make sure any previous features are forgotten.
+                case CONNECTING:
+                    synchronized (this) {
+                        featureNegotiationStartedConditions.clear();
+                        advertisedFeatures.clear();
+                        negotiatedFeatures.clear();
+                    }
+                    break;
+                // If the connection is closed, clear everything.
+                case CLOSED:
+                    synchronized (this) {
+                        featureNegotiationStartedConditions.clear();
+                        advertisedFeatures.clear();
+                        featuresToNegotiate.clear();
+                        negotiatedFeatures.clear();
+                        streamFeatureNegotiators.clear();
+                    }
+                    break;
             }
         });
     }

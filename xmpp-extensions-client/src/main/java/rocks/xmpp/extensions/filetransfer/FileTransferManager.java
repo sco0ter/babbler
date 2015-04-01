@@ -195,16 +195,13 @@ public final class FileTransferManager extends ExtensionManager {
     }
 
     public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {
-        fileTransferOfferExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                FileTransferOfferEvent fileTransferRequestEvent = new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator);
-                for (FileTransferOfferListener fileTransferOfferListener : fileTransferOfferListeners) {
-                    try {
-                        fileTransferOfferListener.fileTransferOffered(fileTransferRequestEvent);
-                    } catch (Exception e) {
-                        logger.log(Level.WARNING, e.getMessage(), e);
-                    }
+        fileTransferOfferExecutor.execute(() -> {
+            FileTransferOfferEvent fileTransferRequestEvent = new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator);
+            for (FileTransferOfferListener fileTransferOfferListener : fileTransferOfferListeners) {
+                try {
+                    fileTransferOfferListener.fileTransferOffered(fileTransferRequestEvent);
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
                 }
             }
         });

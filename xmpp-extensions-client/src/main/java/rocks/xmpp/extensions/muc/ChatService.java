@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * A chat service hosts chat rooms. It allows you to discover public chat rooms or create new (instant) rooms, if allowed by the service.
  * <p>
- * You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(rocks.xmpp.core.Jid)} method or by {@linkplain MultiUserChatManager#getChatServices() discovering} the chat services at your connected domain.
+ * You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(rocks.xmpp.core.Jid)} method or by {@linkplain rocks.xmpp.extensions.muc.MultiUserChatManager#discoverChatServices() discovering} the chat services at your connected domain.
  * </p>
  *
  * @author Christian Schudt

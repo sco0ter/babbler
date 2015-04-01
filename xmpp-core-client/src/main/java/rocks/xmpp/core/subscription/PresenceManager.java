@@ -92,13 +92,13 @@ public final class PresenceManager extends Manager {
         });
         xmppSession.addSessionStatusListener(e -> {
             if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
-                for (Jid contact : presenceMap.keySet()) {
+                presenceMap.keySet().forEach(contact -> {
                     try {
                         xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact));
                     } catch (Exception e1) {
                         logger.log(Level.WARNING, e1.getMessage(), e1);
                     }
-                }
+                });
             }
         });
     }

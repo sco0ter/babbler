@@ -32,7 +32,6 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -40,6 +39,7 @@ import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.Consumer;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
@@ -156,7 +156,7 @@ public final class LastActivityManager extends ExtensionManager {
     /**
      * The default strategy to determine last activity. It simply sets the date of last activity, whenever a message or presence is sent.
      */
-    private static class DefaultLastActivityStrategy implements LastActivityStrategy, MessageListener, PresenceListener {
+    private static class DefaultLastActivityStrategy implements LastActivityStrategy, MessageListener, Consumer<PresenceEvent> {
         private volatile Instant lastActivity;
 
         public DefaultLastActivityStrategy(XmppSession xmppSession) {
@@ -175,7 +175,7 @@ public final class LastActivityManager extends ExtensionManager {
         }
 
         @Override
-        public void handlePresence(PresenceEvent e) {
+        public void accept(PresenceEvent e) {
             AbstractPresence presence = e.getPresence();
             if (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA) {
                 lastActivity = Instant.now();

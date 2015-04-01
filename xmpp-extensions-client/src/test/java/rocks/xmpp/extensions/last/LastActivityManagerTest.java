@@ -26,11 +26,11 @@ package rocks.xmpp.extensions.last;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
@@ -41,6 +41,7 @@ import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Instant;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
@@ -85,9 +86,9 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInAwayPresence() {
         final TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addInboundPresenceListener(new PresenceListener() {
+        xmppSession1.addInboundPresenceListener(new Consumer<PresenceEvent>() {
             @Override
-            public void handlePresence(PresenceEvent e) {
+            public void accept(PresenceEvent e) {
                 xmppSession1.removeInboundPresenceListener(this);
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
             }

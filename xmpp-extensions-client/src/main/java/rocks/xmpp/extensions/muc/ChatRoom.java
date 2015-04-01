@@ -30,7 +30,7 @@ import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -71,6 +71,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,7 +104,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private final MessageListener messageListener;
 
-    private final PresenceListener presenceListener;
+    private final Consumer<PresenceEvent> presenceListener;
 
     private volatile String nick;
 

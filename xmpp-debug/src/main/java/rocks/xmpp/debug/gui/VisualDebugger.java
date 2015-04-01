@@ -43,10 +43,11 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import javax.swing.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,6 +56,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.function.Consumer;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -168,7 +170,7 @@ public final class VisualDebugger implements XmppDebugger {
         };
         xmppSession.addSessionStatusListener(connectionListener);
 
-        final PresenceListener presenceListener = e -> {
+        final Consumer<PresenceEvent> presenceListener = e -> {
             final Presence presence = e.getPresence();
             if (presence.getTo() == null) {
                 waitForPlatform();

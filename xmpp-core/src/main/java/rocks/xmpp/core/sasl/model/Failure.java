@@ -417,10 +417,10 @@ public final class Failure implements ServerStreamElement {
      */
     private static final class Text {
         @XmlValue
-        private String text;
+        private final String text;
 
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private String language;
+        private final String language;
 
         private Text() {
             this.text = null;

@@ -33,6 +33,7 @@ import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -170,17 +171,17 @@ public final class JingleSession {
      */
     public void replaceTransport(String contentName, TransportMethod transportMethod) throws XmppException {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE, Arrays.asList(content))));
+        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE, Collections.singletonList(content))));
     }
 
     public void acceptTransport(String contentName, TransportMethod transportMethod) throws XmppException {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT, Arrays.asList(content))));
+        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT, Collections.singletonList(content))));
     }
 
     public void rejectTransport(String contentName, TransportMethod transportMethod) throws XmppException {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Arrays.asList(content))));
+        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Collections.singletonList(content))));
     }
 
     /**

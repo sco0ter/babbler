@@ -152,7 +152,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         // Offer stream methods.
         List<DataForm.Option> options = supportedStreamMethod.stream().map(DataForm.Option::new).collect(Collectors.toList());
         DataForm.Field field = DataForm.Field.builder().var(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
-        DataForm dataForm = new DataForm(DataForm.Type.FORM, Arrays.asList(field));
+        DataForm dataForm = new DataForm(DataForm.Type.FORM, Collections.singletonList(field));
         // Offer the file to the recipient and wait until it's accepted.
         IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
 

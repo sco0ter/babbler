@@ -59,7 +59,7 @@ public final class JingleManager extends ExtensionManager {
 
     private final Set<JingleListener> jingleListeners = new CopyOnWriteArraySet<>();
 
-    private Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
+    private final Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
 
     private JingleManager(final XmppSession xmppSession) {
         super(xmppSession);

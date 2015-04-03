@@ -831,7 +831,7 @@ public class XmppSession implements AutoCloseable {
     public void send(ClientStreamElement element) {
 
         if (!isConnected() && getStatus() != Status.CONNECTING) {
-            throw new IllegalStateException(String.format("Session is not connected to server"));
+            throw new IllegalStateException("Session is not connected to server");
         }
         if (element instanceof Stanza) {
             Stanza stanza = (Stanza) element;

@@ -52,7 +52,7 @@ import java.io.File;
  */
 public class FileTransferSender extends Application {
 
-    private ObjectProperty<XmppSession> xmppSession = new SimpleObjectProperty<>();
+    private final ObjectProperty<XmppSession> xmppSession = new SimpleObjectProperty<>();
 
     @Override
     public void start(final Stage primaryStage) throws Exception {

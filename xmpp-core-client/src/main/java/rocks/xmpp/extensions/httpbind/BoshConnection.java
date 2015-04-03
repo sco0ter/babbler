@@ -60,7 +60,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayDeque;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -551,7 +551,7 @@ public final class BoshConnection extends Connection {
     public final void send(ClientStreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
         Body.Builder bodyBuilder = Body.builder()
-                .wrappedObjects(Arrays.asList(element))
+                .wrappedObjects(Collections.singletonList(element))
                 .requestId(rid.getAndIncrement())
                 .sessionId(getSessionId());
 

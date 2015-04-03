@@ -51,7 +51,7 @@ final class LocalSocks5Server {
 
     private volatile ServerSocket serverSocket;
 
-    private Map<String, Socket> socketMap = new ConcurrentHashMap<>();
+    private final Map<String, Socket> socketMap = new ConcurrentHashMap<>();
 
     /**
      * Starts the local SOCKS5 server.

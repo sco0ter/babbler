@@ -167,7 +167,7 @@ public final class ChatSession extends Chat {
      * @since 0.50
      */
     @FunctionalInterface
-    public static interface ChatPartnerListener {
+    public interface ChatPartnerListener {
 
         /**
          * Called, whenever the {@link ChatSession}'s partner was replaced.

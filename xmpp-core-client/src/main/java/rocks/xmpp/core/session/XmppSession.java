@@ -65,10 +65,12 @@ import javax.security.sasl.RealmCallback;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -299,15 +301,11 @@ public class XmppSession implements AutoCloseable {
             connections.add(TcpConnectionConfiguration.getDefault().createConnection(this));
             connections.add(BoshConnectionConfiguration.getDefault().createConnection(this));
         } else {
-            for (ConnectionConfiguration connectionConfiguration : connectionConfigurations) {
-                connections.add(connectionConfiguration.createConnection(this));
-            }
+        	Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
         }
 
-        for (Class<? extends Manager> cls : configuration.getInitialManagers()) {
-            // Initialize the managers.
-            getManager(cls);
-        }
+        // Initialize the managers.
+        configuration.getInitialManagers().forEach(cls -> getManager(cls));
     }
 
     private static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
@@ -912,8 +910,7 @@ public class XmppSession implements AutoCloseable {
         Objects.requireNonNull(password, "password must not be null.");
 
         // A default callback handler for username/password retrieval:
-        login(authorizationId, callbacks -> {
-            for (Callback callback : callbacks) {
+        login(authorizationId, callbacks -> Arrays.stream(callbacks).forEach(callback -> {
                 if (callback instanceof NameCallback) {
                     ((NameCallback) callback).setName(user);
                 }
@@ -923,8 +920,7 @@ public class XmppSession implements AutoCloseable {
                 if (callback instanceof RealmCallback) {
                     ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
                 }
-            }
-        }, resource);
+            }), resource);
     }
 
     /**
@@ -1012,10 +1008,10 @@ public class XmppSession implements AutoCloseable {
             }
 
             // After retrieving the roster, resend the last presence, if any (in reconnection case).
-            for (Presence presence : getManager(PresenceManager.class).getLastSentPresences()) {
+            getManager(PresenceManager.class).getLastSentPresences().forEach(presence -> {
                 presence.getExtensions().clear();
                 send(presence);
-            }
+            });
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // Revert status
@@ -1137,37 +1133,37 @@ public class XmppSession implements AutoCloseable {
     private void notifyIQListeners(IQ iq, boolean inbound) {
         IQEvent iqEvent = new IQEvent(this, iq, inbound);
         Iterable<IQListener> listeners = inbound ? inboundIQListeners : outboundIQListeners;
-        for (IQListener iqListener : listeners) {
+        listeners.forEach(iqListener -> {
             try {
                 iqListener.handleIQ(iqEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
-        }
+        });
     }
 
     private void notifyMessageListeners(Message message, boolean inbound) {
         MessageEvent messageEvent = new MessageEvent(this, message, inbound);
         Iterable<MessageListener> listeners = inbound ? inboundMessageListeners : outboundMessageListeners;
-        for (MessageListener messageListener : listeners) {
+        listeners.forEach(messageListener -> {
             try {
                 messageListener.handleMessage(messageEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
-        }
+        });
     }
 
     private void notifyPresenceListeners(Presence presence, boolean inbound) {
         PresenceEvent presenceEvent = new PresenceEvent(this, presence, inbound);
         Iterable<PresenceListener> listeners = inbound ? inboundPresenceListeners : outboundPresenceListeners;
-        for (PresenceListener presenceListener : listeners) {
+        listeners.forEach(presenceListener -> {
             try {
                 presenceListener.handlePresence(presenceEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
-        }
+        });
     }
 
     /**
@@ -1289,13 +1285,13 @@ public class XmppSession implements AutoCloseable {
 
     private void notifySessionStatusListeners(Status status, Status oldStatus, Throwable throwable) {
         SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, throwable);
-        for (SessionStatusListener sessionStatusListener : sessionStatusListeners) {
+        sessionStatusListeners.forEach(sessionStatusListener -> {
             try {
                 sessionStatusListener.sessionStatusChanged(sessionStatusEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
-        }
+        });
     }
 
     /**

@@ -57,7 +57,6 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
-import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
@@ -65,7 +64,6 @@ import javax.security.sasl.RealmCallback;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -305,7 +303,7 @@ public class XmppSession implements AutoCloseable {
         }
 
         // Initialize the managers.
-        configuration.getInitialManagers().forEach(cls -> getManager(cls));
+        configuration.getInitialManagers().forEach(this::getManager);
     }
 
     private static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {

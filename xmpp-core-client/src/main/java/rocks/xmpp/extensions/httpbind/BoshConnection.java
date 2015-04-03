@@ -174,16 +174,7 @@ public final class BoshConnection extends Connection {
             compressionMethods.put(compressionMethod.getName(), compressionMethod);
         }
         if (!compressionMethods.isEmpty()) {
-            // TODO Use String.join(",", compressionMethods.keySet()); when on Java 8
-            StringBuilder sb = new StringBuilder();
-            int i = 0;
-            for (String compressionMethodName : compressionMethods.keySet()) {
-                sb.append(compressionMethodName);
-                if (++i < compressionMethods.size()) {
-                    sb.append(",");
-                }
-            }
-            clientAcceptEncoding = sb.toString();
+            clientAcceptEncoding = String.join(",", compressionMethods.keySet());
         } else {
             clientAcceptEncoding = null;
         }

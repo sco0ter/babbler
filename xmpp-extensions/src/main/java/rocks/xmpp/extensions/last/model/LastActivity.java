@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:last} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a>
@@ -45,15 +47,17 @@ public final class LastActivity {
     public static final String NAMESPACE = "jabber:iq:last";
 
     @XmlAttribute
-    private Long seconds;
+    private final Long seconds;
 
     @XmlValue
-    private String status;
+    private final String status;
 
     /**
      * Creates an empty last activity instance, used for querying another entity.
      */
     public LastActivity() {
+        this.seconds = null;
+        this.status = null;
     }
 
     /**
@@ -72,7 +76,7 @@ public final class LastActivity {
      *
      * @return The number of seconds since the last activity.
      */
-    public long getSeconds() {
+    public final Long getSeconds() {
         return seconds;
     }
 
@@ -81,12 +85,12 @@ public final class LastActivity {
      *
      * @return The status message of the last unavailable presence received from the user or null.
      */
-    public String getStatus() {
+    public final String getStatus() {
         return status;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.valueOf(seconds) + " seconds";
     }
 }

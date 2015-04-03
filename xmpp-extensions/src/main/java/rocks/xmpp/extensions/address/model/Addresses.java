@@ -42,6 +42,8 @@ import java.util.List;
  * Message message = new Message(Jid.valueOf("romeo@example.net"));
  * message.getExtensions().add(addresses);
  * </code></pre>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
@@ -71,7 +73,7 @@ public final class Addresses {
      *
      * @return The addresses.
      */
-    public List<Address> getAddresses() {
+    public final List<Address> getAddresses() {
         return Collections.unmodifiableList(addresses);
     }
 }

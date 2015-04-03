@@ -27,9 +27,9 @@ package rocks.xmpp.extensions.pubsub.model;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -160,8 +160,8 @@ public final class NodeMetaData {
      *
      * @return The creation date.
      */
-    public Date getCreationDate() {
-        return dataForm.findValueAsDate(CREATION_DATE);
+    public Instant getCreationDate() {
+        return dataForm.findValueAsInstant(CREATION_DATE);
     }
 
     /**
@@ -242,7 +242,7 @@ public final class NodeMetaData {
     public static final class Builder extends DataForm.Builder<Builder> {
         private Collection<Jid> contacts;
 
-        private Date creationDate;
+        private Instant creationDate;
 
         private Jid creator;
 
@@ -280,7 +280,7 @@ public final class NodeMetaData {
          * @param creationDate The creation date.
          * @return The builder.
          */
-        public Builder creationDate(Date creationDate) {
+        public Builder creationDate(Instant creationDate) {
             this.creationDate = creationDate;
             return this;
         }

@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 
 /**
  * Manages support for <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
@@ -58,7 +59,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
     private HeaderManager(XmppSession xmppSession) {
         super(xmppSession, Headers.NAMESPACE);
         this.supportedHeaders = new CopyOnWriteArraySet<>();
-        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         setEnabled(false);
     }
 
@@ -112,9 +113,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
     public Set<Feature> getFeatures() {
         Set<Feature> features = new HashSet<>();
         // http://xmpp.org/extensions/xep-0131.html#disco-header
-        for (String supportedHeader : supportedHeaders) {
-            features.add(new Feature(Headers.NAMESPACE + "#" + supportedHeader));
-        }
+        features.addAll(supportedHeaders.stream().map(supportedHeader -> new Feature(Headers.NAMESPACE + "#" + supportedHeader)).collect(Collectors.toList()));
         return features;
     }
 

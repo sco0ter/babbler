@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +39,9 @@ public class HashManagerTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession xmppSession = new TestXmppSession();
-        HashManager hashManager = xmppSession.getExtensionManager(HashManager.class);
+        HashManager hashManager = xmppSession.getManager(HashManager.class);
         Assert.assertTrue(hashManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:hashes:1");
         Feature featureSha256 = new Feature("urn:xmpp:hash-function-text-names:sha-256");
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));

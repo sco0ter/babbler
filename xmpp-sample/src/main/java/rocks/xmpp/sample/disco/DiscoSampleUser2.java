@@ -44,39 +44,36 @@ public class DiscoSampleUser2 {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .secure(false)
-                            .build();
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .secure(false)
+                        .build();
 
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(VisualDebugger.class)
-                            .defaultResponseTimeout(5000)
-                            .build();
+                XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                        .debugger(VisualDebugger.class)
+                        .defaultResponseTimeout(5000)
+                        .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
 
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("222", "222", "disco");
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("222", "222", "disco");
+                // Send initial presence
+                xmppSession.send(new Presence());
 
-                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-                    ItemNode itemNode = serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forLimit(10));
+                ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+                ItemNode itemNode = serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forLimit(10));
 
-                    serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forNextPage(10, itemNode.getResultSetManagement().getLastItem()));
+                serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forNextPage(10, itemNode.getResultSetManagement().getLastItem()));
 
-                    serviceDiscoveryManager.discoverInformation(new Jid("111", xmppSession.getDomain(), "disco"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                serviceDiscoveryManager.discoverInformation(new Jid("111", xmppSession.getDomain(), "disco"));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

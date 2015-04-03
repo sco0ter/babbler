@@ -30,15 +30,16 @@ import java.util.TimeZone;
 /**
  * Converts a {@link java.util.TimeZone} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
  */
+@Deprecated
 public final class TimeZoneAdapter extends XmlAdapter<String, TimeZone> {
 
     @Override
-    public TimeZone unmarshal(String v) throws Exception {
+    public final TimeZone unmarshal(String v) throws Exception {
         return TimeZone.getTimeZone("GMT" + v);
     }
 
     @Override
-    public String marshal(TimeZone v) throws Exception {
+    public final String marshal(TimeZone v) throws Exception {
         int seconds = Math.abs(v.getRawOffset()) / 1000;
         int hours = seconds / 3600;
         int minutes = (seconds % 3600) / 60;

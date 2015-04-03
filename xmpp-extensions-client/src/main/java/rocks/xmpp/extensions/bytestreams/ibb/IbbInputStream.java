@@ -35,6 +35,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * An input stream implementation for in-band bytestreams.
+ * <p>
+ * This class is thread-safe.
+ *
  * @author Christian Schudt
  */
 final class IbbInputStream extends InputStream {
@@ -42,49 +46,71 @@ final class IbbInputStream extends InputStream {
 
     private final IbbSession ibbSession;
 
+    /**
+     * Guarded by "this"
+     */
     int readTimeout;
 
+    /**
+     * Guarded by "this"
+     */
     private byte[] buffer;
 
+    /**
+     * Guarded by "this"
+     */
     private int n = 0;
 
-    private volatile boolean closed;
+    /**
+     * Guarded by "this"
+     */
+    private boolean closed;
 
     IbbInputStream(IbbSession ibbSession) {
         this.ibbSession = ibbSession;
     }
 
     @Override
-    public synchronized int read() throws IOException {
+    public int read() throws IOException {
 
         // If the buffer is empty, retrieve the next data packet and load it into the buffer.
         if (n == 0) {
             try {
-                if (closed) {
-                    return -1;
+                int timeout;
+                synchronized (this) {
+                    if (closed) {
+                        return -1;
+                    }
+                    timeout = readTimeout;
                 }
                 InBandByteStream.Data data = null;
-                if (readTimeout <= 0) {
+                if (timeout <= 0) {
                     while (data == null) {
-                        // If the stream has been closed and there's no more data to process, return -1.
-                        if (closed && queue.isEmpty()) {
-                            return -1;
+                        synchronized (this) {
+                            // If the stream has been closed and there's no more data to process, return -1.
+                            if (closed && queue.isEmpty()) {
+                                return -1;
+                            }
                         }
                         // Let's see, if there's some data for me.
                         data = queue.poll(1, TimeUnit.SECONDS);
                     }
                 } else {
-                    data = queue.poll(readTimeout, TimeUnit.MILLISECONDS);
+                    data = queue.poll(timeout, TimeUnit.MILLISECONDS);
                     if (data == null) {
-                        if (closed) {
-                            return -1;
-                        } else {
-                            throw new SocketTimeoutException();
+                        synchronized (this) {
+                            if (closed) {
+                                return -1;
+                            } else {
+                                throw new SocketTimeoutException();
+                            }
                         }
                     }
                 }
-                // Assign the new buffer.
-                buffer = data.getBytes();
+                synchronized (this) {
+                    // Assign the new buffer.
+                    buffer = data.getBytes();
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 InterruptedIOException ie = new InterruptedIOException();
@@ -93,27 +119,32 @@ final class IbbInputStream extends InputStream {
             }
         }
 
-        // Store the nth byte (as int) of the buffer. Then increment n.
-        // Also convert the signed int value into an unsigned int by applying the & 0xFF bit operator.
-        int b = (int) buffer[n++] & 0xFF;
+        synchronized (this) {
+            // Store the nth byte (as int) of the buffer. Then increment n.
+            // Also convert the signed int value into an unsigned int by applying the & 0xFF bit operator.
+            int b = (int) buffer[n++] & 0xFF;
 
-        // If n is bigger than the buffer, reset n to 0 so that a new packet will be retrieved during the next read.
-        if (n >= buffer.length) {
-            n = 0;
+            // If n is bigger than the buffer, reset n to 0 so that a new packet will be retrieved during the next read.
+            if (n >= buffer.length) {
+                n = 0;
+            }
+            return b;
         }
-        return b;
     }
 
     @Override
-    public void close() throws IOException {
-        if (!closed) {
-            super.close();
-            closed = true;
-            try {
-                ibbSession.close();
-            } catch (Exception e) {
-                throw new IOException(e);
+    public final void close() throws IOException {
+        synchronized (this) {
+            if (closed) {
+                return;
             }
+            closed = true;
+        }
+        super.close();
+        try {
+            ibbSession.close();
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 }

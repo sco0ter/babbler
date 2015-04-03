@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see AvatarManager#addAvatarChangeListener(rocks.xmpp.extensions.avatar.AvatarChangeListener)
  */
+@FunctionalInterface
 public interface AvatarChangeListener extends EventListener {
     /**
      * Notifies the observer for avatar updates.

@@ -33,6 +33,8 @@ import java.util.Objects;
 
 /**
  * The implementation of the {@code <reach/>} element in the {@code urn:xmpp:reach:0} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>
@@ -58,12 +60,12 @@ public final class Reachability {
      *
      * @return The addresses.
      */
-    public List<Address> getAddresses() {
+    public final List<Address> getAddresses() {
         return Collections.unmodifiableList(addresses);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -76,12 +78,12 @@ public final class Reachability {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(addresses);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return addresses.toString();
     }
 }

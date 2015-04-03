@@ -27,11 +27,12 @@ package rocks.xmpp.extensions.rpc.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The value type, which is used by XML-RPC.
@@ -52,9 +53,10 @@ public final class Value {
             @XmlElement(name = "array", type = ArrayType.class),
             @XmlElement(name = "struct", type = StructType.class)
     })
-    private Object value;
+    private final Object value;
 
     private Value() {
+        this.value = null;
     }
 
     /**
@@ -107,8 +109,8 @@ public final class Value {
      *
      * @param date The date value.
      */
-    public Value(Date date) {
-        this.value = date;
+    public Value(Instant date) {
+        this.value = date != null ? Date.from(date) : null;
     }
 
     /**
@@ -119,10 +121,10 @@ public final class Value {
     public Value(List<Value> list) {
         if (list != null) {
             ArrayType arrayType = new ArrayType();
-            for (Value value : list) {
-                arrayType.values.add(value);
-            }
+            arrayType.values.addAll(list.stream().collect(Collectors.toList()));
             this.value = arrayType;
+        } else {
+            this.value = null;
         }
     }
 
@@ -134,10 +136,10 @@ public final class Value {
     public Value(Map<String, Value> map) {
         if (map != null) {
             StructType structType = new StructType();
-            for (Map.Entry<String, Value> entry : map.entrySet()) {
-                structType.values.add(new StructType.MemberType(entry.getKey(), entry.getValue()));
-            }
+            structType.values.addAll(map.entrySet().stream().map(entry -> new StructType.MemberType(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
             this.value = structType;
+        } else {
+            this.value = null;
         }
     }
 
@@ -146,7 +148,7 @@ public final class Value {
      *
      * @return The integer or null.
      */
-    public Integer getAsInteger() {
+    public final Integer getAsInteger() {
         return value instanceof Integer ? (Integer) value : null;
     }
 
@@ -155,7 +157,7 @@ public final class Value {
      *
      * @return The double or null.
      */
-    public Double getAsDouble() {
+    public final Double getAsDouble() {
         return value instanceof Double ? (Double) value : null;
     }
 
@@ -164,7 +166,7 @@ public final class Value {
      *
      * @return The string or null.
      */
-    public String getAsString() {
+    public final String getAsString() {
         return value instanceof String ? (String) value : null;
     }
 
@@ -173,7 +175,7 @@ public final class Value {
      *
      * @return The byte array or null.
      */
-    public byte[] getAsByteArray() {
+    public final byte[] getAsByteArray() {
         return value instanceof byte[] ? (byte[]) value : null;
     }
 
@@ -182,7 +184,7 @@ public final class Value {
      *
      * @return The boolean or null.
      */
-    public Boolean getAsBoolean() {
+    public final Boolean getAsBoolean() {
         return value instanceof NumericBoolean ? ((NumericBoolean) value).getAsBoolean() : null;
     }
 
@@ -191,8 +193,8 @@ public final class Value {
      *
      * @return The date or null.
      */
-    public Date getAsDate() {
-        return value instanceof Date ? (Date) value : null;
+    public final Instant getAsInstant() {
+        return value instanceof Date ? ((Date) value).toInstant() : null;
     }
 
     /**
@@ -200,14 +202,10 @@ public final class Value {
      *
      * @return The array or null.
      */
-    public List<Value> getAsArray() {
+    public final List<Value> getAsArray() {
         if (value instanceof ArrayType) {
             ArrayType arrayType = (ArrayType) value;
-            List<Value> result = new ArrayList<>();
-            for (Value value : arrayType.values) {
-                result.add(value);
-            }
-            return result;
+            return arrayType.values.stream().collect(Collectors.toList());
         }
         return null;
     }
@@ -217,7 +215,7 @@ public final class Value {
      *
      * @return The map or null.
      */
-    public Map<String, Value> getAsMap() {
+    public final Map<String, Value> getAsMap() {
         if (value instanceof StructType) {
             StructType structType = (StructType) value;
             Map<String, Value> result = new HashMap<>();

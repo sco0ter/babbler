@@ -33,23 +33,23 @@ import java.util.EventObject;
  * @see SessionStatusListener
  */
 public final class SessionStatusEvent extends EventObject {
-    private final Exception exception;
+    private final Throwable throwable;
 
     private final XmppSession.Status status;
 
     private final XmppSession.Status oldStatus;
 
     /**
-     * Constructs a connection event.
+     * Constructs a session status event.
      *
      * @param source    The object on which the event initially occurred.
      * @param status    The session status.
-     * @param exception An optionally exception.
+     * @param throwable An optional throwable.
      * @throws IllegalArgumentException if source is null.
      */
-    SessionStatusEvent(XmppSession source, XmppSession.Status status, XmppSession.Status oldStatus, Exception exception) {
+    SessionStatusEvent(XmppSession source, XmppSession.Status status, XmppSession.Status oldStatus, Throwable throwable) {
         super(source);
-        this.exception = exception;
+        this.throwable = throwable;
         this.status = status;
         this.oldStatus = oldStatus;
     }
@@ -57,19 +57,19 @@ public final class SessionStatusEvent extends EventObject {
     /**
      * Gets the session status.
      *
-     * @return The connection status.
+     * @return The session status.
      */
     public XmppSession.Status getStatus() {
         return status;
     }
 
     /**
-     * Gets the exception if the session abnormally disconnected or null.
+     * Gets the throwable if the session abnormally disconnected or null.
      *
-     * @return The exception, which caused a disconnection or null.
+     * @return The throwable, which caused a disconnection or null.
      */
-    public Exception getException() {
-        return exception;
+    public Throwable getThrowable() {
+        return throwable;
     }
 
     /**

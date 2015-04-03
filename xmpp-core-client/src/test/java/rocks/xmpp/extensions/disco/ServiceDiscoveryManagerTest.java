@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,8 +39,6 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,14 +50,14 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
     @Test
     public void testFeatureEquals() {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(new Feature("http://jabber.org/protocol/muc")));
     }
 
     @Test
     public void testItemsEquals() {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));
         Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(new Identity("conference", "text", "name2", "en")));
     }
@@ -69,7 +67,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         InfoNode result = serviceDiscoveryManager.discoverInformation(JULIET);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getFeatures().size() > 1);
@@ -80,7 +78,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(serviceDiscoveryManager.isEnabled());
         Feature featureInfo = new Feature("http://jabber.org/protocol/disco#info");
@@ -103,10 +101,10 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(Arrays.asList(new Item(Jid.valueOf("test"), "root", "name"))));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO);
         Assert.assertEquals(result.getItems().size(), 1);
         Assert.assertEquals(result.getItems().get(0).getNode(), "root");
@@ -119,12 +117,12 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
 
         DefaultItemProvider defaultItemProvider = new DefaultItemProvider(Arrays.asList(new Item(Jid.valueOf("test"), "node1")));
         serviceDiscoveryManager.setItemProvider("node1", defaultItemProvider);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO, "node1");
         Assert.assertEquals(result.getItems().size(), 1);
         Assert.assertEquals(result.getItems().get(0).getNode(), "node1");
@@ -135,7 +133,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
 
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
@@ -144,7 +142,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
 
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode resultItemCount = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forItemCount());
         Assert.assertTrue(resultItemCount.getItems().isEmpty());
         Assert.assertEquals(resultItemCount.getResultSetManagement().getItemCount(), Integer.valueOf(100));
@@ -180,14 +178,14 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             items.add(new Item(Jid.valueOf("test"), "item" + i));
         }
         serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode resultItemCount = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forItemCount());
         Assert.assertTrue(resultItemCount.getItems().isEmpty());
         Assert.assertEquals(resultItemCount.getResultSetManagement().getItemCount(), Integer.valueOf(30));
@@ -230,14 +228,9 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
     @Test
     public void testPropertyChangeHandler() {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         final int[] listenerCalled = {0};
-        serviceDiscoveryManager.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                listenerCalled[0]++;
-            }
-        });
+        serviceDiscoveryManager.addPropertyChangeListener(evt -> listenerCalled[0]++);
         serviceDiscoveryManager.addFeature(new Feature("dummy"));
         serviceDiscoveryManager.removeFeature(new Feature("dummy"));
         serviceDiscoveryManager.addIdentity(new Identity("cat", "type"));

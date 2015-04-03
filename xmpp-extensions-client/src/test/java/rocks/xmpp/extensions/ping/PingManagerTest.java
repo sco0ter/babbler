@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
@@ -44,7 +43,7 @@ public class PingManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
-        PingManager pingManager = connection1.getExtensionManager(PingManager.class);
+        PingManager pingManager = connection1.getManager(PingManager.class);
         pingManager.ping(JULIET);
     }
 
@@ -53,18 +52,18 @@ public class PingManagerTest extends ExtensionTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        connection2.getExtensionManager(PingManager.class).setEnabled(false);
-        PingManager pingManager = connection1.getExtensionManager(PingManager.class);
+        connection2.getManager(PingManager.class).setEnabled(false);
+        PingManager pingManager = connection1.getManager(PingManager.class);
         Assert.assertFalse(pingManager.ping(JULIET));
     }
 
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        PingManager pingManager = connection1.getExtensionManager(PingManager.class);
+        PingManager pingManager = connection1.getManager(PingManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(pingManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:ping");
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         pingManager.setEnabled(false);

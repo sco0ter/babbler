@@ -14,7 +14,7 @@ Discovering if an entity supports a particular feature is probably the most usef
 The following example checks, whether Juliet supports Chat State Notifications.
 
 ```java
-EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getExtensionManager(EntityCapabilitiesManager.class);
+EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
 boolean isSupported = entityCapabilitiesManager.isSupported("http://jabber.org/protocol/chatstates", Jid.valueOf("juliet@example.net/balcony"));
 ```
 

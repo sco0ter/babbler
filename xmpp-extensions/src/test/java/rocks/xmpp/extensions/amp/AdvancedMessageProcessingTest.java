@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,9 +39,9 @@ import rocks.xmpp.extensions.amp.model.errors.FailedRules;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 
 /**
  * @author Christian Schudt
@@ -230,11 +230,9 @@ public class AdvancedMessageProcessingTest extends XmlTest {
 
     @Test
     public void marshalExpireAt() throws XMLStreamException, JAXBException {
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.ALERT, date));
+        Instant now = Instant.now();
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.ALERT, now));
         String xml = marshal(amp);
-        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"expire-at\" value=\"" + DatatypeConverter.printDateTime(calendar) + "\"></rule></amp>");
+        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"expire-at\" value=\"" + now.toString() + "\"></rule></amp>");
     }
 }

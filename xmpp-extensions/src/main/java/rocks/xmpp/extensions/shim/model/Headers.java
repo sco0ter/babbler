@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.shim.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +35,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <headers/>} element in the {@code http://jabber.org/protocol/shim} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
@@ -65,7 +68,9 @@ public final class Headers {
      * @param stop  The stop date.
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     * @deprecated Use {@link #timePeriod(java.time.OffsetDateTime, java.time.OffsetDateTime)}
      */
+    @Deprecated
     public static Headers timePeriod(Date start, Date stop) {
         // If both a start time and a stop time are specified, the stop time MUST be later than the start time.
         if (start.after(stop)) {
@@ -75,16 +80,32 @@ public final class Headers {
     }
 
     /**
+     * Creates a headers element with a time period.
+     *
+     * @param start The start date.
+     * @param stop  The stop date.
+     * @return The header.
+     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     */
+    public static Headers timePeriod(OffsetDateTime start, OffsetDateTime stop) {
+        // If both a start time and a stop time are specified, the stop time MUST be later than the start time.
+        if (start.isAfter(stop)) {
+            throw new IllegalArgumentException("start date must not be after the start date.");
+        }
+        return new Headers(Header.start(start), Header.stop(stop));
+    }
+
+    /**
      * Gets the headers.
      *
      * @return The headers.
      */
-    public List<Header> getHeaders() {
+    public final List<Header> getHeaders() {
         return Collections.unmodifiableList(headers);
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return headers.toString();
     }
 }

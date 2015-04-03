@@ -28,10 +28,14 @@ import rocks.xmpp.extensions.time.model.EntityTime;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
+import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * A header element which hold stanza header information or internet metadata.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
@@ -41,12 +45,14 @@ import java.util.Date;
 public final class Header {
 
     @XmlAttribute(name = "name")
-    private String name;
+    private final String name;
 
     @XmlValue
-    private String value;
+    private final String value;
 
     private Header() {
+        this.name = null;
+        this.value = null;
     }
 
     /**
@@ -56,7 +62,7 @@ public final class Header {
      * @param value The header value.
      */
     public Header(String name, String value) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name);
         this.value = value;
     }
 
@@ -67,8 +73,20 @@ public final class Header {
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
+    @Deprecated
     public static Header start(Date date) {
         return new Header("Start", EntityTime.toUtcString(date));
+    }
+
+    /**
+     * Creates a header with a start date.
+     *
+     * @param dateTime The start date.
+     * @return The header.
+     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     */
+    public static Header start(OffsetDateTime dateTime) {
+        return new Header("Start", dateTime.toString());
     }
 
     /**
@@ -78,8 +96,20 @@ public final class Header {
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
+    @Deprecated
     public static Header stop(Date date) {
         return new Header("Stop", EntityTime.toUtcString(date));
+    }
+
+    /**
+     * Creates a header with a stop date.
+     *
+     * @param dateTime The stop date.
+     * @return The header.
+     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     */
+    public static Header stop(OffsetDateTime dateTime) {
+        return new Header("Stop", dateTime.toString());
     }
 
     /**
@@ -87,7 +117,7 @@ public final class Header {
      *
      * @return The header.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -96,12 +126,12 @@ public final class Header {
      *
      * @return The header.
      */
-    public String getValue() {
+    public final String getValue() {
         return value;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return name + ": " + value;
     }
 }

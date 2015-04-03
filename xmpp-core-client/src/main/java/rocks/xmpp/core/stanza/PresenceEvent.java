@@ -40,11 +40,11 @@ public final class PresenceEvent extends StanzaEvent<Presence> {
      *
      * @param source   The object on which the event initially occurred.
      * @param presence The presence stanza.
-     * @param incoming True, if the stanza is incoming.
+     * @param inbound  True, if the stanza is inbound.
      * @throws IllegalArgumentException if source is null.
      */
-    public PresenceEvent(Object source, Presence presence, boolean incoming) {
-        super(source, presence, incoming);
+    public PresenceEvent(Object source, Presence presence, boolean inbound) {
+        super(source, presence, inbound);
     }
 
     /**

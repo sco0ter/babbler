@@ -31,17 +31,30 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 /**
+ * An output stream implementation for in-band bytestreams.
+ * <p>
+ * This class is thread-safe.
+ *
  * @author Christian Schudt
  */
 final class IbbOutputStream extends OutputStream {
 
     private final IbbSession ibbSession;
 
+    /**
+     * Guarded by "this"
+     */
     private final byte[] buffer;
 
+    /**
+     * Guarded by "this"
+     */
     private int n;
 
-    private volatile boolean closed;
+    /**
+     * Guarded by "this"
+     */
+    private boolean closed;
 
     public IbbOutputStream(IbbSession ibbSession, int blockSize) {
         this.ibbSession = ibbSession;
@@ -57,7 +70,7 @@ final class IbbOutputStream extends OutputStream {
     }
 
     @Override
-    public synchronized void flush() throws IOException {
+    public synchronized final void flush() throws IOException {
         super.flush();
         if (closed) {
             throw new IOException("Stream is closed.");
@@ -76,16 +89,19 @@ final class IbbOutputStream extends OutputStream {
     }
 
     @Override
-    public void close() throws IOException {
-        if (!closed) {
+    public final void close() throws IOException {
+        synchronized (this) {
+            if (closed) {
+                return;
+            }
             super.close();
             flush();
             closed = true;
-            try {
-                ibbSession.close();
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
+        }
+        try {
+            ibbSession.close();
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 }

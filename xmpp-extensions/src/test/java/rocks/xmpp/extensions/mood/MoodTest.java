@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,6 +54,7 @@ public class MoodTest extends XmlTest {
         Assert.assertEquals(mood.getText(), "Yay, the mood spec has been approved!");
         Assert.assertTrue(mood.getValue() instanceof Mood.Happy);
         Assert.assertTrue(mood.getValue().getSpecificMood() != null);
+        Assert.assertEquals(mood.toString(), "happy (Yay, the mood spec has been approved!)");
     }
 
     @Test
@@ -464,6 +465,7 @@ public class MoodTest extends XmlTest {
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
         Assert.assertTrue(mood.getValue() instanceof Mood.Impressed);
+        Assert.assertEquals(mood.getValue().toString(), "impressed");
     }
 
     @Test
@@ -474,6 +476,7 @@ public class MoodTest extends XmlTest {
         Mood mood = unmarshal(xml, Mood.class);
         Assert.assertNotNull(mood);
         Assert.assertTrue(mood.getValue() instanceof Mood.InAwe);
+        Assert.assertEquals(mood.getValue().toString(), "in_awe");
     }
 
     @Test

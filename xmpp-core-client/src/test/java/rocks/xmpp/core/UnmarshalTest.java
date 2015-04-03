@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,11 +45,6 @@ public abstract class UnmarshalTest {
     private static final String END_STREAM = "</stream:stream>";
 
     private Unmarshaller unmarshaller;
-
-    @Deprecated
-    protected UnmarshalTest() {
-
-    }
 
     protected UnmarshalTest(Class<?>... context) throws JAXBException, XMLStreamException {
         JAXBContext jaxbContext = JAXBContext.newInstance(context);

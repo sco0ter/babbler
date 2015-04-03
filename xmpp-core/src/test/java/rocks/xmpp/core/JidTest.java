@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,26 +49,20 @@ public class JidTest {
     public static void main1(String[] args) {
         Executor executor = Executors.newFixedThreadPool(1);
 
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Executor executor1 = Executors.newCachedThreadPool();
-                for (int i = 0; i < 100; i++) {
-                    // Start 100 threads
-                    executor1.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            int j = 0;
-                            while (true) {
-                                j++;
-                                Jid.valueOf(j + "@test");
-                                if (j == 3000) {
-                                    j = 0;
-                                }
-                            }
+        executor.execute(() -> {
+            Executor executor1 = Executors.newCachedThreadPool();
+            for (int i = 0; i < 100; i++) {
+                // Start 100 threads
+                executor1.execute(() -> {
+                    int j = 0;
+                    while (true) {
+                        j++;
+                        Jid.valueOf(j + "@test");
+                        if (j == 3000) {
+                            j = 0;
                         }
-                    });
-                }
+                    }
+                });
             }
         });
 
@@ -578,7 +572,7 @@ public class JidTest {
         jids.add(jid8);
 
         Collections.shuffle(jids);
-        Collections.sort(jids);
+        jids.sort(null);
 
         Assert.assertEquals(jids.get(0), jid1);
         Assert.assertEquals(jids.get(1), jid2);

@@ -31,6 +31,7 @@ import java.util.EventListener;
  *
  * @author Christian Schudt
  */
+@FunctionalInterface
 public interface JingleListener extends EventListener {
 
     /**
@@ -39,5 +40,4 @@ public interface JingleListener extends EventListener {
      * @param e The event object.
      */
     void jingleReceived(JingleEvent e);
-
 }

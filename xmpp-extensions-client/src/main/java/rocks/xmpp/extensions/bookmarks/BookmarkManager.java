@@ -37,11 +37,13 @@ import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This manager facilitates the access to the private storage by providing convenient method for adding, retrieving or removing bookmarks.
+ * <p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
@@ -51,17 +53,17 @@ public final class BookmarkManager extends ExtensionManager {
 
     private BookmarkManager(XmppSession xmppSession) {
         super(xmppSession);
-        privateDataManager = xmppSession.getExtensionManager(PrivateDataManager.class);
+        privateDataManager = xmppSession.getManager(PrivateDataManager.class);
     }
 
     /**
      * Gets a sorted collection of chat room bookmarks.
      *
      * @return The chat room bookmarks.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public Collection<ChatRoomBookmark> getChatRoomBookmarks() throws XmppException {
+    public final Collection<ChatRoomBookmark> getChatRoomBookmarks() throws XmppException {
         return getBookmarks(ChatRoomBookmark.class);
     }
 
@@ -69,10 +71,10 @@ public final class BookmarkManager extends ExtensionManager {
      * Gets a sorted collection of web page bookmarks.
      *
      * @return The web page bookmarks.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public Collection<WebPageBookmark> getWebPageBookmarks() throws XmppException {
+    public final Collection<WebPageBookmark> getWebPageBookmarks() throws XmppException {
         return getBookmarks(WebPageBookmark.class);
     }
 
@@ -80,10 +82,10 @@ public final class BookmarkManager extends ExtensionManager {
      * Adds a bookmark.
      *
      * @param bookmark The bookmark.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void addBookmark(Bookmark bookmark) throws XmppException {
+    public final void addBookmark(Bookmark bookmark) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
         List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
         bookmarks.remove(bookmark);
@@ -95,10 +97,10 @@ public final class BookmarkManager extends ExtensionManager {
      * Removes a chat room bookmark.
      *
      * @param chatRoom The chat room.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void removeChatRoomBookmark(Jid chatRoom) throws XmppException {
+    public final void removeChatRoomBookmark(Jid chatRoom) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
         List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
         bookmarks.remove(new ChatRoomBookmark("", chatRoom));
@@ -109,10 +111,10 @@ public final class BookmarkManager extends ExtensionManager {
      * Removes a web page bookmark.
      *
      * @param webPage The web page.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void removeWebPageBookmark(URL webPage) throws XmppException {
+    public final void removeWebPageBookmark(URL webPage) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
         List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
         bookmarks.remove(new WebPageBookmark("", webPage));
@@ -124,12 +126,8 @@ public final class BookmarkManager extends ExtensionManager {
         List<T> bookmarks = new ArrayList<>();
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
 
-        for (Bookmark bookmark : bookmarkStorage.getBookmarks()) {
-            if (bookmark.getClass() == clazz) {
-                bookmarks.add((T) bookmark);
-            }
-        }
-        Collections.sort(bookmarks);
+        bookmarks.addAll(bookmarkStorage.getBookmarks().stream().filter(bookmark -> bookmark.getClass() == clazz).map(bookmark -> (T) bookmark).collect(Collectors.toList()));
+        bookmarks.sort(null);
         return bookmarks;
     }
 }

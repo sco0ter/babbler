@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -50,16 +51,16 @@ public final class RegistrationManager extends ExtensionManager {
      * Determines, if in-band registration is supported by the server.
      *
      * @return True if registration is supported by the server; otherwise false.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Condition#CONFLICT} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.Condition#NOT_ACCEPTABLE} (some required information not provided).
-     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Condition#CONFLICT} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.Condition#NOT_ACCEPTABLE} (some required information not provided).
+     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      */
     public boolean isRegistrationSupported() throws XmppException {
         // server returns a stream header to the client and MAY announce support for in-band registration by including the relevant stream feature.
-        boolean isSupported = xmppSession.getStreamFeaturesManager().getFeatures().containsKey(RegisterFeature.class);
+        boolean isSupported = xmppSession.getManager(StreamFeaturesManager.class).getFeatures().containsKey(RegisterFeature.class);
 
         // Since the stream feature is only optional, discover the server features, too.
         if (!isSupported) {
-            ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+            ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
             InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
             isSupported = infoNode.getFeatures().contains(new Feature("jabber:iq:register"));
         }
@@ -74,8 +75,8 @@ public final class RegistrationManager extends ExtensionManager {
      * If you are already registered to the server, this method returns your registration data and {@link rocks.xmpp.extensions.register.model.Registration#isRegistered()} returns true.
      *
      * @return The registration data.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      * @see rocks.xmpp.extensions.register.model.Registration
      */
@@ -88,8 +89,8 @@ public final class RegistrationManager extends ExtensionManager {
      * Registers a new account. Call this method before authenticating.
      *
      * @param registration The registration.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Condition#CONFLICT} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.Condition#NOT_ACCEPTABLE} (some required information not provided).
-     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Condition#CONFLICT} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.Condition#NOT_ACCEPTABLE} (some required information not provided).
+     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      */
     public void register(Registration registration) throws XmppException {
@@ -99,8 +100,8 @@ public final class RegistrationManager extends ExtensionManager {
     /**
      * Cancels a registration. This method must be called after having authenticated to the server.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing Registration</a>
      */
     public void cancelRegistration() throws XmppException {
@@ -112,8 +113,8 @@ public final class RegistrationManager extends ExtensionManager {
      *
      * @param username The user name.
      * @param password The password.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-changepw">3.3 User Changes Password</a>
      */
     public void changePassword(String username, String password) throws XmppException {

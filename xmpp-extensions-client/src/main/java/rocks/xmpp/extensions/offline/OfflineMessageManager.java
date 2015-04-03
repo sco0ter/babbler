@@ -33,13 +33,13 @@ import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.offline.model.OfflineMessage;
 import rocks.xmpp.extensions.offline.model.OfflineMessageHeader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This manager covers the use cases of <a href="http://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.
@@ -65,7 +65,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
      */
     public boolean isSupported() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
         return infoNode.getFeatures().contains(new Feature(OfflineMessage.NAMESPACE));
     }
@@ -79,7 +79,7 @@ public final class OfflineMessageManager extends ExtensionManager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-number">2.2 Requesting Number of Messages</a>
      */
     public int requestNumberOfMessages() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(null, OfflineMessage.NAMESPACE);
         if (!infoDiscovery.getExtensions().isEmpty()) {
             DataForm dataForm = infoDiscovery.getExtensions().get(0);
@@ -105,11 +105,9 @@ public final class OfflineMessageManager extends ExtensionManager {
      */
     public List<OfflineMessageHeader> requestMessageHeaders() throws XmppException {
         List<OfflineMessageHeader> result = new ArrayList<>();
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, OfflineMessage.NAMESPACE);
-        for (Item item : itemNode.getItems()) {
-            result.add(new OfflineMessageHeader(Jid.valueOf(item.getName()), item.getNode()));
-        }
+        result.addAll(itemNode.getItems().stream().map(item -> new OfflineMessageHeader(Jid.valueOf(item.getName()), item.getNode())).collect(Collectors.toList()));
         return result;
     }
 

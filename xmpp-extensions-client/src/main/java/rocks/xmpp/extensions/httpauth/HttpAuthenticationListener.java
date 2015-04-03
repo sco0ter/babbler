@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see HttpAuthenticationManager#addHttpAuthenticationListener(rocks.xmpp.extensions.httpauth.HttpAuthenticationListener)
  */
+@FunctionalInterface
 public interface HttpAuthenticationListener extends EventListener {
 
     /**
@@ -40,5 +41,4 @@ public interface HttpAuthenticationListener extends EventListener {
      * @param e The event object.
      */
     void confirmationRequested(HttpAuthenticationEvent e);
-
 }

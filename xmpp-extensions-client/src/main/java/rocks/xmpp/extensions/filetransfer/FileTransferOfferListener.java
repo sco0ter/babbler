@@ -27,18 +27,18 @@ package rocks.xmpp.extensions.filetransfer;
 import java.util.EventListener;
 
 /**
- * A listener, which allows to listen for incoming file transfer offers.
+ * A listener, which allows to listen for inbound file transfer offers.
  *
  * @author Christian Schudt
  * @see FileTransferManager#addFileTransferOfferListener(rocks.xmpp.extensions.filetransfer.FileTransferOfferListener)
  */
+@FunctionalInterface
 public interface FileTransferOfferListener extends EventListener {
 
     /**
-     * This method is called on an incoming file transfer offer.
+     * This method is called on an inbound file transfer offer.
      *
      * @param e The file transfer event.
      */
     void fileTransferOffered(FileTransferOfferEvent e);
-
 }

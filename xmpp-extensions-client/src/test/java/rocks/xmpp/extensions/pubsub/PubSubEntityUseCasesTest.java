@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ public class PubSubEntityUseCasesTest extends ExtensionTest {
         InfoDiscovery infoDiscovery = new InfoDiscovery(null, Arrays.asList(new Feature("http://jabber.org/protocol/pubsub#collections"),
                 new Feature("http://jabber.org/protocol/pubsub#config-node"),
                 new Feature("http://jabber.org/protocol/disco#info")));
-        PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+        PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
         Collection<PubSubFeature> pubSubFeatures = pubSubManager.createPubSubService(null).getFeatures(infoDiscovery);
 
         Assert.assertEquals(pubSubFeatures.size(), 2);

@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * <p><cite><a href="http://xmpp.org/extensions/xep-0108.html#activities">3. Activity Values</a></cite></p>
  * <p>Each activity has a REQUIRED general category and an OPTIONAL specific instance. One can understand each specifier as '[user] is [activity]' (e.g., 'Juliet is partying'), where the relevant value is the most specific activity provided (e.g., specifically "partying" rather than generally "relaxing").</p>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0108.html">XEP-0108: User Activity</a>
@@ -63,15 +64,17 @@ public final class Activity {
             @XmlElement(name = "undefined", type = AbstractCategory.Undefined.class),
             @XmlElement(name = "working", type = AbstractCategory.Working.class)
     })
-    private AbstractCategory category;
+    private final AbstractCategory category;
 
     @XmlElement(name = "text")
-    private String text;
+    private final String text;
 
     /**
      * Creates an empty activity which is used to disable publishing an activity.
      */
     public Activity() {
+        this.category = null;
+        this.text = null;
     }
 
     /**
@@ -112,10 +115,9 @@ public final class Activity {
      */
     public Activity(Category category, SpecificActivity specificActivity, String text) {
         try {
-            this.category = category.categoryClass.newInstance();
-            this.category.specificActivity = specificActivity;
+            this.category = category.categoryClass.getDeclaredConstructor(SpecificActivity.class).newInstance(specificActivity);
             this.text = text;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -125,7 +127,7 @@ public final class Activity {
      *
      * @return The text.
      */
-    public String getText() {
+    public final String getText() {
         return text;
     }
 
@@ -134,7 +136,7 @@ public final class Activity {
      *
      * @return The category.
      */
-    public Category getCategory() {
+    public final Category getCategory() {
         return category != null ? category.category : null;
     }
 
@@ -143,8 +145,24 @@ public final class Activity {
      *
      * @return The activity.
      */
-    public SpecificActivity getSpecificActivity() {
+    public final SpecificActivity getSpecificActivity() {
         return category != null ? category.specificActivity : null;
+    }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (category != null) {
+            sb.append(category);
+            if (category.specificActivity != null) {
+                sb.append(" / ").append(category.specificActivity);
+            }
+            if (text != null) {
+                sb.append(" (").append(text).append(")");
+            }
+            return sb.toString();
+        }
+        return super.toString();
     }
 
     /**
@@ -153,21 +171,23 @@ public final class Activity {
     abstract static class AbstractCategory {
 
         @XmlTransient
-        private Category category;
+        private final Category category;
 
         @XmlElementRef
-        private SpecificActivity specificActivity;
-
-        private AbstractCategory() {
-        }
+        private final SpecificActivity specificActivity;
 
         private AbstractCategory(Category category) {
-            this.category = category;
+            this(category, null);
         }
 
         private AbstractCategory(Category category, SpecificActivity specificActivity) {
             this.category = category;
             this.specificActivity = specificActivity;
+        }
+
+        @Override
+        public final String toString() {
+            return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
         }
 
         /**

@@ -12,7 +12,7 @@ Therefore it can be used, if you want to publish your [location][GeoLocation], [
 First you have to create the personal eventing service. Since it\'s just a subset of PubSub, you have to use the `PubSubManager` and the personal eventing service is just a `PubSubService`.
 
 ```java
-PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
 PubSubService personalEventingService = pubSubManager.createPersonalEventingService();
 ```
 
@@ -34,21 +34,19 @@ By default (i.e. if not otherwise configured) all your contacts now receive an e
 Now that you have published your geo location all your contacts will receive notifications about it. This is just a message with a \"PubSub event\" extension.
 
 ```java
-xmppSession.addMessageListener(new MessageListener() {
+xmppSession.addInboundMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
-            Message message = e.getMessage();
-            Event event = message.getExtension(Event.class);
-            if (event != null) {
-                if (GeoLocation.NAMESPACE.equals(event.getNode())) {
-                    for (Item item : event.getItems()) {
-                        if (item.getPayload() instanceof GeoLocation) {
-                            GeoLocation geoLocation = (GeoLocation) item.getPayload();
-                            Double latitude = geoLocation.getLatitude();   // 45.44
-                            Double longitude = geoLocation.getLongitude(); // 12.33
-                            // ...
-                        }
+        Message message = e.getMessage();
+        Event event = message.getExtension(Event.class);
+        if (event != null) {
+            if (GeoLocation.NAMESPACE.equals(event.getNode())) {
+                for (Item item : event.getItems()) {
+                    if (item.getPayload() instanceof GeoLocation) {
+                        GeoLocation geoLocation = (GeoLocation) item.getPayload();
+                        Double latitude = geoLocation.getLatitude();   // 45.44
+                        Double longitude = geoLocation.getLongitude(); // 12.33
+                        // ...
                     }
                 }
             }

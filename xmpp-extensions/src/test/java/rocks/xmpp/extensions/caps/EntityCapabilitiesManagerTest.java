@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,7 +83,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         identities.add(identity6);
 
         Collections.shuffle(identities);
-        Collections.sort(identities);
+        identities.sort(null);
 
         Assert.assertEquals(identities.get(0), identity2);
         Assert.assertEquals(identities.get(1), identity1);
@@ -110,7 +110,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         dataForms.add(dataForm3);
 
         Collections.shuffle(dataForms);
-        Collections.sort(dataForms);
+        dataForms.sort(null);
 
         Assert.assertEquals(dataForms.get(0), dataForm1);
         Assert.assertEquals(dataForms.get(1), dataForm3);
@@ -134,7 +134,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         dataFields.add(field5);
 
         Collections.shuffle(dataFields);
-        Collections.sort(dataFields);
+        dataFields.sort(null);
 
         Assert.assertEquals(dataFields.get(0), field2);
         Assert.assertEquals(dataFields.get(1), field3);

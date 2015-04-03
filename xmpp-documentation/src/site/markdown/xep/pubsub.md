@@ -6,7 +6,7 @@
 For all PubSub related operations you need the `PubSubManager`.
 
 ```java
-PubSubManager pubSubManager = xmppSession.getExtensionManager(PubSubManager.class);
+PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
 ```
 
 ## Discovering PubSub Services
@@ -92,16 +92,14 @@ pubSubNode.unsubscribe();
 For now, you have to just deal directly with the messages. This may change in the future.
 
 ```java
-xmppSession.addMessageListener(new MessageListener() {
+xmppSession.addInboundMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
-            Message message = e.getMessage();
-            Event event = message.getExtension(Event.class);
-            if (event != null) {
-                for (Item item : event.getItems()) {
-                    // ...
-                }
+        Message message = e.getMessage();
+        Event event = message.getExtension(Event.class);
+        if (event != null) {
+            for (Item item : event.getItems()) {
+                // ...
             }
         }
     }

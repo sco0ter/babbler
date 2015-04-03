@@ -24,13 +24,16 @@
 
 package rocks.xmpp.extensions.rosterx;
 
+import java.util.EventListener;
+
 /**
  * Allows to listen for contact exchange suggestions.
  *
  * @author Christian Schudt
  * @see ContactExchangeManager#addContactExchangeListener(rocks.xmpp.extensions.rosterx.ContactExchangeListener)
  */
-public interface ContactExchangeListener {
+@FunctionalInterface
+public interface ContactExchangeListener extends EventListener {
 
     /**
      * Called when another entity suggests to exchange a contact.

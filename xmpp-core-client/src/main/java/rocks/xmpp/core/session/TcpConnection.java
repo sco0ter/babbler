@@ -25,9 +25,9 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stream.StreamFeatureListener;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
@@ -55,8 +55,6 @@ import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -108,46 +106,39 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
-
-        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(new SecurityManager(xmppSession, new StreamFeatureListener() {
-            @Override
-            public void featureSuccessfullyNegotiated() throws StreamNegotiationException {
-                try {
-                    secureConnection();
-                } catch (Exception e) {
-                    throw new StreamNegotiationException(e);
-                }
+        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, () -> {
+            try {
+                secureConnection();
+            } catch (Exception e) {
+                throw new StreamNegotiationException(e);
             }
         }, configuration.isSecure()));
 
-        final CompressionManager compressionManager = new CompressionManager(xmppSession, configuration.getCompressionMethods());
-        compressionManager.addFeatureListener(new StreamFeatureListener() {
-            @Override
-            public void featureSuccessfullyNegotiated() {
-                CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
-                // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
-                // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
-                InputStream iStream;
-                OutputStream oStream;
-                synchronized (TcpConnection.this) {
-                    iStream = inputStream;
-                    oStream = outputStream;
-                }
+        final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
+        compressionManager.getConfiguredCompressionMethods().addAll(configuration.getCompressionMethods());
+        compressionManager.addFeatureListener(() -> {
+            CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
+            // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
+            // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
+            InputStream iStream;
+            OutputStream oStream;
+            synchronized (TcpConnection.this) {
+                iStream = inputStream;
+                oStream = outputStream;
+            }
+            try {
                 iStream = compressionMethod.decompress(iStream);
                 oStream = compressionMethod.compress(oStream);
                 synchronized (TcpConnection.this) {
                     inputStream = iStream;
                     outputStream = oStream;
                 }
+            } catch (IOException e) {
+                throw new StreamNegotiationException(e);
             }
         });
-        xmppSession.getStreamFeaturesManager().addFeatureNegotiator(compressionManager);
-    }
-
-    @Override
-    @Deprecated
-    public final synchronized void connect() throws IOException {
-        connect(null);
+        streamFeaturesManager.addFeatureNegotiator(compressionManager);
     }
 
     /**
@@ -164,6 +155,11 @@ public final class TcpConnection extends Connection {
      */
     @Override
     public final synchronized void connect(Jid from) throws IOException {
+
+        if (socket != null) {
+            // Already connected.
+            return;
+        }
 
         if (getXmppSession() == null) {
             throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
@@ -185,7 +181,7 @@ public final class TcpConnection extends Connection {
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), this, xmlOutputFactory);
+        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), xmlOutputFactory);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 
@@ -263,7 +259,9 @@ public final class TcpConnection extends Connection {
 
     @Override
     public final synchronized void send(ClientStreamElement element) {
-        xmppStreamWriter.send(element);
+        if (xmppStreamWriter != null) {
+            xmppStreamWriter.send(element);
+        }
     }
 
     @Override
@@ -292,14 +290,20 @@ public final class TcpConnection extends Connection {
             xmppStreamReader.shutdown();
             xmppStreamReader = null;
         }
+
+        inputStream = null;
+        outputStream = null;
+        streamId = null;
+
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
         // Now close the socket.
         if (socket != null) {
-            socket.close();
-            socket = null;
+            try {
+                socket.close();
+            } finally {
+                socket = null;
+            }
         }
-        inputStream = null;
-        outputStream = null;
     }
 
     /**
@@ -323,7 +327,12 @@ public final class TcpConnection extends Connection {
 
         Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-        env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(tcpConnectionConfiguration.getConnectTimeout()));
+        // 0 seems to mean "infinite", which is a bad idea.
+        if (tcpConnectionConfiguration.getConnectTimeout() > 0) {
+            // http://docs.oracle.com/javase/7/docs/technotes/guides/jndi/jndi-dns.html
+            // If this property has not been set, the default initial timeout is 1000 milliseconds.
+            env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(tcpConnectionConfiguration.getConnectTimeout()));
+        }
         env.put(Context.PROVIDER_URL, "dns:");
         try {
             DirContext ctx = new InitialDirContext(env);
@@ -347,15 +356,12 @@ public final class TcpConnection extends Connection {
                 }
 
                 // Sort the entries, so that the best one is tried first.
-                Collections.sort(dnsSrvRecords, new Comparator<DnsResourceRecord>() {
-                    @Override
-                    public int compare(DnsResourceRecord o1, DnsResourceRecord o2) {
-                        int result = Integer.compare(o1.priority, o2.priority);
-                        if (result == 0) {
-                            result = Integer.compare(o2.weight, o1.weight);
-                        }
-                        return result;
+                dnsSrvRecords.sort((o1, o2) -> {
+                    int result = Integer.compare(o1.priority, o2.priority);
+                    if (result == 0) {
+                        result = Integer.compare(o2.weight, o1.weight);
                     }
+                    return result;
                 });
 
                 for (DnsResourceRecord dnsResourceRecord : dnsSrvRecords) {

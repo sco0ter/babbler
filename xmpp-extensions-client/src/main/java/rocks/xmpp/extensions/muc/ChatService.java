@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * A chat service hosts chat rooms. It allows you to discover public chat rooms or create new (instant) rooms, if allowed by the service.
  * <p>
- * You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(rocks.xmpp.core.Jid)} method or by {@linkplain MultiUserChatManager#getChatServices() discovering} the chat services at your connected domain.
+ * You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(rocks.xmpp.core.Jid)} method or by {@linkplain rocks.xmpp.extensions.muc.MultiUserChatManager#discoverChatServices() discovering} the chat services at your connected domain.
  * </p>
  *
  * @author Christian Schudt
@@ -61,19 +61,6 @@ public final class ChatService implements Comparable<ChatService> {
         this.name = name;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
         this.multiUserChatManager = multiUserChatManager;
-    }
-
-    /**
-     * Gets the list of public chat rooms hosted by this chat service.
-     *
-     * @return The public rooms.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
-     * @deprecated Use {@link #discoverRooms()}
-     */
-    @Deprecated
-    public List<ChatRoom> getPublicRooms() throws XmppException {
-        return discoverRooms();
     }
 
     /**

@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-class LocalSocks5Server {
+final class LocalSocks5Server {
 
     private static final Logger logger = Logger.getLogger(LocalSocks5Server.class.getName());
 
@@ -51,7 +51,7 @@ class LocalSocks5Server {
 
     private volatile ServerSocket serverSocket;
 
-    private Map<String, Socket> socketMap = new ConcurrentHashMap<>();
+    private final Map<String, Socket> socketMap = new ConcurrentHashMap<>();
 
     /**
      * Starts the local SOCKS5 server.
@@ -63,21 +63,18 @@ class LocalSocks5Server {
                 if (serverSocket == null) {
                     try {
                         serverSocket = new ServerSocket(getPort());
-                        Thread thread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                while (serverSocket != null) {
-                                    Socket socket = null;
-                                    try {
-                                        socket = serverSocket.accept();
-                                        socketMap.put(Socks5Protocol.establishServerConnection(socket, allowedAddresses), socket);
-                                    } catch (IOException e) {
-                                        if (socket != null) {
-                                            try {
-                                                socket.close();
-                                            } catch (IOException e1) {
-                                                logger.log(Level.WARNING, e.getMessage(), e);
-                                            }
+                        Thread thread = new Thread(() -> {
+                            while (serverSocket != null) {
+                                Socket socket = null;
+                                try {
+                                    socket = serverSocket.accept();
+                                    socketMap.put(Socks5Protocol.establishServerConnection(socket, allowedAddresses), socket);
+                                } catch (IOException e) {
+                                    if (socket != null) {
+                                        try {
+                                            socket.close();
+                                        } catch (IOException e1) {
+                                            logger.log(Level.WARNING, e.getMessage(), e);
                                         }
                                     }
                                 }

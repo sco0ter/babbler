@@ -29,7 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 
 /**
+ * The implementation of the {@code <x/>} element in the {@code jabber:x:oob} namespace.
+ * <p>
+ * This class is immutable.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
  */
 @XmlRootElement(name = "x")
 public final class OobX {
@@ -40,12 +45,13 @@ public final class OobX {
     public static final String NAMESPACE = "jabber:x:oob";
 
     @XmlElement(name = "url")
-    private URL url;
+    private final URL url;
 
     @XmlElement(name = "desc")
-    private String description;
+    private final String description;
 
     private OobX() {
+        this(null);
     }
 
     public OobX(URL url) {
@@ -62,7 +68,7 @@ public final class OobX {
      *
      * @return The URL.
      */
-    public URL getUrl() {
+    public final URL getUrl() {
         return url;
     }
 
@@ -71,12 +77,12 @@ public final class OobX {
      *
      * @return The description.
      */
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return url != null ? url.toString() : null;
     }
 }

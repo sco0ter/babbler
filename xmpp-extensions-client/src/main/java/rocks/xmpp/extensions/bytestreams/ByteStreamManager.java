@@ -24,11 +24,8 @@
 
 package rocks.xmpp.extensions.bytestreams;
 
-import rocks.xmpp.core.session.IQExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -37,26 +34,32 @@ import java.util.logging.Logger;
 
 /**
  * An abstract class to manage both <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a> or <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
+ * <p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
-public abstract class ByteStreamManager extends IQExtensionManager implements SessionStatusListener {
+public abstract class ByteStreamManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ByteStreamManager.class.getName());
 
     private final Set<ByteStreamListener> byteStreamListeners = new CopyOnWriteArraySet<>();
 
     protected ByteStreamManager(XmppSession xmppSession, String... features) {
-        super(xmppSession, AbstractIQ.Type.SET, features);
+        super(xmppSession, features);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(this);
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                byteStreamListeners.clear();
+            }
+        });
     }
 
     /**
-     * Adds a byte stream listener, which allows to listen for incoming byte stream requests.
+     * Adds a byte stream listener, which allows to listen for inbound byte stream requests.
      *
      * @param byteStreamListener The listener.
      * @see #removeByteStreamListener(ByteStreamListener)
@@ -87,13 +90,6 @@ public abstract class ByteStreamManager extends IQExtensionManager implements Se
             } catch (Exception exc) {
                 logger.log(Level.WARNING, exc.getMessage(), exc);
             }
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            byteStreamListeners.clear();
         }
     }
 }

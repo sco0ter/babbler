@@ -146,7 +146,7 @@ public final class Rtp extends ApplicationFormat {
     public static final class Encryption {
 
         @XmlElement(name = "crypto")
-        private List<Crypto> cryptos = new ArrayList<>();
+        private final List<Crypto> cryptos = new ArrayList<>();
 
         public List<Crypto> getCrypto() {
             return cryptos;

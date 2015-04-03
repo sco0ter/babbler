@@ -24,13 +24,16 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.util.EventListener;
+
 /**
  * Allows to listen for subject changes within a chat room.
  *
  * @author Christian Schudt
  * @see ChatRoom#addSubjectChangeListener(rocks.xmpp.extensions.muc.SubjectChangeListener)
  */
-public interface SubjectChangeListener {
+@FunctionalInterface
+public interface SubjectChangeListener extends EventListener {
 
     /**
      * Called when the subject has changed.

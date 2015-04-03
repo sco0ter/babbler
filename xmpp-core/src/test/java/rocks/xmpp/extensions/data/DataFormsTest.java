@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,9 +35,8 @@ import rocks.xmpp.extensions.data.validate.model.Validation;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -236,13 +235,11 @@ public class DataFormsTest extends XmlTest {
 
     @Test
     public void marshalDateField() throws JAXBException, XMLStreamException {
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        DataForm.Field field = DataForm.Field.builder().var("test").value(date).build();
+        Instant now = Instant.now();
+        DataForm.Field field = DataForm.Field.builder().var("test").value(now).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(field));
         String xml = marshal(dataForm);
-        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\" var=\"test\"><value>" + DatatypeConverter.printDateTime(calendar) + "</value></field></x>");
+        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\" var=\"test\"><value>" + now + "</value></field></x>");
     }
 
     @Test
@@ -278,7 +275,7 @@ public class DataFormsTest extends XmlTest {
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
-        Date date = null;
+        Instant date = null;
         DataForm.Field field2 = DataForm.Field.builder()
                 .value(date)
                 .build();

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.si;
 
 import org.testng.Assert;
-import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
@@ -34,8 +33,6 @@ import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
-import rocks.xmpp.extensions.filetransfer.FileTransferOfferEvent;
-import rocks.xmpp.extensions.filetransfer.FileTransferOfferListener;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
 import java.io.ByteArrayOutputStream;
@@ -55,21 +52,18 @@ public class StreamInitiationManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-        FileTransferManager fileTransferManager = xmppSession2.getExtensionManager(FileTransferManager.class);
-        fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
-            @Override
-            public void fileTransferOffered(FileTransferOfferEvent e) {
-                if (!e.getName().equals("Filename") || e.getSize() != 123) {
-                    Assert.fail();
-                }
-                try {
-                    e.accept(new ByteArrayOutputStream());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+        FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
+        fileTransferManager.addFileTransferOfferListener(e -> {
+            if (!e.getName().equals("Filename") || e.getSize() != 123) {
+                Assert.fail();
+            }
+            try {
+                e.accept(new ByteArrayOutputStream());
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         });
-        StreamInitiationManager streamInitiationManager1 = xmppSession1.getExtensionManager(StreamInitiationManager.class);
+        StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
         OutputStream outputStream = streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000);
 
         // Stream Initiation should have been succeeded, if we have OutputStream and no exception has occurred.
@@ -84,17 +78,14 @@ public class StreamInitiationManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-        FileTransferManager fileTransferManager = xmppSession2.getExtensionManager(FileTransferManager.class);
-        fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
-            @Override
-            public void fileTransferOffered(FileTransferOfferEvent e) {
-                if (!e.getName().equals("Filename") || e.getSize() != 123) {
-                    Assert.fail();
-                }
-                e.reject();
+        FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
+        fileTransferManager.addFileTransferOfferListener(e -> {
+            if (!e.getName().equals("Filename") || e.getSize() != 123) {
+                Assert.fail();
             }
+            e.reject();
         });
-        StreamInitiationManager streamInitiationManager1 = xmppSession1.getExtensionManager(StreamInitiationManager.class);
+        StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
 
         try {
             streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000);

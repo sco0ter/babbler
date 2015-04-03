@@ -24,8 +24,6 @@
 
 package rocks.xmpp.debug.gui;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableView;
@@ -40,15 +38,12 @@ final class IQContextMenu extends ContextMenu {
 
     public IQContextMenu(final TableView<StanzaEntry> stanzaTableView) {
         MenuItem menuItem = new MenuItem("Go To Response");
-        menuItem.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                for (StanzaEntry entry : stanzaTableView.getItems()) {
-                    if (entry.getStanza() instanceof IQ && ((IQ) entry.getStanza()).getId().equals(((IQ) stanzaEntry.getStanza()).getId()) && (((IQ) entry.getStanza()).getType() == AbstractIQ.Type.RESULT || ((IQ) entry.getStanza()).getType() == AbstractIQ.Type.ERROR)) {
-                        stanzaTableView.getSelectionModel().select(entry);
-                        stanzaTableView.scrollTo(entry);
-                        break;
-                    }
+        menuItem.setOnAction(event -> {
+            for (StanzaEntry entry : stanzaTableView.getItems()) {
+                if (entry.getStanza() instanceof IQ && ((IQ) entry.getStanza()).getId().equals(((IQ) stanzaEntry.getStanza()).getId()) && (((IQ) entry.getStanza()).getType() == AbstractIQ.Type.RESULT || ((IQ) entry.getStanza()).getType() == AbstractIQ.Type.ERROR)) {
+                    stanzaTableView.getSelectionModel().select(entry);
+                    stanzaTableView.scrollTo(entry);
+                    break;
                 }
             }
         });

@@ -51,7 +51,7 @@ public final class InvalidRules {
      *
      * @return The invalid rules.
      */
-    public List<Rule> getRules() {
+    public final List<Rule> getRules() {
         return Collections.unmodifiableList(rules);
     }
 }

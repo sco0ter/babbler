@@ -30,9 +30,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.NodeType;
@@ -41,12 +39,12 @@ import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class acts a facade to deal with a remote pubsub service.
@@ -78,20 +76,6 @@ public final class PubSubService {
     }
 
     /**
-     * Gets the features, which are supported by the pubsub service.
-     *
-     * @return The set of supported features.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-features">5.1 Discover Features</a>
-     * @deprecated Use {@link #discoverFeatures()}
-     */
-    @Deprecated
-    public Collection<PubSubFeature> getFeatures() throws XmppException {
-        return discoverFeatures();
-    }
-
-    /**
      * Discovers the features, which are supported by the pubsub service.
      *
      * @return The set of supported features.
@@ -106,34 +90,18 @@ public final class PubSubService {
 
     Collection<PubSubFeature> getFeatures(InfoNode infoNode) {
         Collection<PubSubFeature> features = EnumSet.noneOf(PubSubFeature.class);
-        for (Feature feature : infoNode.getFeatures()) {
-            if (feature.getVar().startsWith(PubSub.NAMESPACE + "#")) {
-                String f = feature.getVar().substring(feature.getVar().indexOf("#") + 1);
-                try {
-                    PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace("-", "_"));
-                    if (pubSubFeature != null) {
-                        features.add(pubSubFeature);
-                    }
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Server advertised unknown pubsub feature: " + f);
+        infoNode.getFeatures().stream().filter(feature -> feature.getVar().startsWith(PubSub.NAMESPACE + "#")).forEach(feature -> {
+            String f = feature.getVar().substring(feature.getVar().indexOf("#") + 1);
+            try {
+                PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace("-", "_"));
+                if (pubSubFeature != null) {
+                    features.add(pubSubFeature);
                 }
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Server advertised unknown pubsub feature: {0}", f);
             }
-        }
+        });
         return features;
-    }
-
-    /**
-     * Gets the first-level nodes of this pubsub service.
-     *
-     * @return The list of nodes.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
-     * @deprecated Use {@link #discoverNodes()}
-     */
-    @Deprecated
-    public List<PubSubNode> getNodes() throws XmppException {
-        return discoverNodes();
     }
 
     /**
@@ -146,23 +114,7 @@ public final class PubSubService {
      */
     public List<PubSubNode> discoverNodes() throws XmppException {
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(service);
-        List<PubSubNode> nodes = new ArrayList<>();
-        for (Item item : itemNode.getItems()) {
-            nodes.add(new PubSubNode(item.getNode(), service, xmppSession));
-        }
-        return nodes;
-    }
-
-    /**
-     * Gets a node.
-     *
-     * @param node The node.
-     * @return The node.
-     * @deprecated Use {@link #node(String)} instead.
-     */
-    @Deprecated
-    public PubSubNode getNode(String node) {
-        return new PubSubNode(node, NodeType.LEAF, service, xmppSession);
+        return itemNode.getItems().stream().map(item -> new PubSubNode(item.getNode(), service, xmppSession)).collect(Collectors.toList());
     }
 
     /**

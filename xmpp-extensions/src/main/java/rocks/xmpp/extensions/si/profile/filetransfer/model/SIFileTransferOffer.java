@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.si.profile.filetransfer.model;
 
+import rocks.xmpp.core.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
@@ -31,14 +32,17 @@ import rocks.xmpp.extensions.hashes.model.Hash;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
  * The implementation of the file transfer profile, i.e. the {@code <file/>} element.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
@@ -47,35 +51,39 @@ import java.util.List;
 @XmlRootElement(name = "file")
 public final class SIFileTransferOffer implements FileTransferOffer {
 
+    /**
+     * http://jabber.org/protocol/si/profile/file-transfer
+     */
     public static final String NAMESPACE = "http://jabber.org/protocol/si/profile/file-transfer";
 
     @XmlAttribute(name = "size")
-    private Long size;
+    private final Long size;
 
     @XmlAttribute(name = "name")
-    private String name;
+    private final String name;
 
     @XmlAttribute(name = "date")
-    private Date date;
+    @XmlJavaTypeAdapter(InstantAdapter.class)
+    private final Instant date;
 
     @XmlAttribute(name = "hash")
-    private String hash;
+    private final String hash;
 
     @XmlElement(name = "desc")
-    private String description;
+    private final String description;
 
     @XmlElement(name = "range")
-    private SIRange range;
+    private final SIRange range;
 
     private SIFileTransferOffer() {
+        this(null, 0);
     }
 
     public SIFileTransferOffer(String name, long size) {
-        this.name = name;
-        this.size = size;
+        this(name, size, null, null, null, null);
     }
 
-    public SIFileTransferOffer(String name, long size, Date lastModified, String hash, String description, SIRange range) {
+    public SIFileTransferOffer(String name, long size, Instant lastModified, String hash, String description, SIRange range) {
         this.name = name;
         this.size = size;
         this.date = lastModified;
@@ -89,7 +97,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The size.
      */
-    public long getSize() {
+    public final long getSize() {
         return size != null ? size : 0;
     }
 
@@ -98,7 +106,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The file name.
      */
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -107,7 +115,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The date.
      */
-    public Date getDate() {
+    public final Instant getDate() {
         return date;
     }
 
@@ -116,7 +124,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The MD5 sum.
      */
-    public List<Hash> getHashes() {
+    public final List<Hash> getHashes() {
         if (hash != null) {
             // XEP-0096 seem to be hex encoded, while XEP-300 are base64 encoded. Convert from hex to byte array.
             return Collections.unmodifiableList(Arrays.asList(new Hash(new BigInteger(hash, 16).toByteArray(), "md5")));
@@ -130,7 +138,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The description.
      */
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
@@ -139,7 +147,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The range.
      */
-    public Range getRange() {
+    public final Range getRange() {
         return range;
     }
 
@@ -148,12 +156,13 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      */
     public static final class SIRange implements Range {
         @XmlAttribute
-        private long offset;
+        private final long offset;
 
         @XmlAttribute
-        private long length;
+        private final long length;
 
         private SIRange() {
+            this.offset = this.length = 0;
         }
 
         /**
@@ -170,7 +179,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
          *
          * @return The offset.
          */
-        public long getOffset() {
+        public final long getOffset() {
             return offset;
         }
 
@@ -179,7 +188,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
          *
          * @return The length.
          */
-        public long getLength() {
+        public final long getLength() {
             return length;
         }
     }

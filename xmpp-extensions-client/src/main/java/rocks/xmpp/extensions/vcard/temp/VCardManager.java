@@ -30,6 +30,7 @@ import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
@@ -54,8 +55,8 @@ public final class VCardManager extends ExtensionManager {
      * Gets the vCard of the current user.
      *
      * @return The vCard.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public VCard getVCard() throws XmppException {
         IQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
@@ -66,17 +67,17 @@ public final class VCardManager extends ExtensionManager {
      * Saves or updates a vCard.
      *
      * @param vCard The vCard.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public void setVCard(VCard vCard) throws XmppException {
         // Update the vCard
         xmppSession.query(new IQ(IQ.Type.SET, vCard));
 
         // Then inform about the update by sending a presence. The avatar manager will add the update extension.
-        AvatarManager avatarManager = xmppSession.getExtensionManager(AvatarManager.class);
+        AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
         if (isEnabled() && avatarManager.isEnabled()) {
-            Presence presence = xmppSession.getPresenceManager().getLastSentPresence();
+            Presence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
             if (presence == null) {
                 presence = new Presence();
             }
@@ -90,8 +91,8 @@ public final class VCardManager extends ExtensionManager {
      *
      * @param jid The user's JID.
      * @return The vCard of the other user or null, if it does not exist.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public VCard getVCard(Jid jid) throws XmppException {
         Objects.requireNonNull(jid, "jid must not be null.");

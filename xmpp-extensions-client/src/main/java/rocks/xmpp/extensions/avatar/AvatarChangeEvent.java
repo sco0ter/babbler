@@ -24,9 +24,15 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import rocks.xmpp.core.Jid;
+import static rocks.xmpp.extensions.avatar.AvatarManager.asBufferedImage;
 
+import java.awt.image.BufferedImage;
 import java.util.EventObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import rocks.xmpp.core.Jid;
+import rocks.xmpp.extensions.avatar.AvatarManager.ConversionException;
 
 /**
  * The avatar change event to notify about avatar updates.
@@ -34,6 +40,8 @@ import java.util.EventObject;
  * @author Christian Schudt
  */
 public final class AvatarChangeEvent extends EventObject {
+	private static final Logger LOGGER = Logger.getLogger(AvatarManager.class.getName());
+
     private final Jid contact;
 
     private final byte[] avatar;
@@ -50,11 +58,35 @@ public final class AvatarChangeEvent extends EventObject {
         this.avatar = avatar;
     }
 
-    public byte[] getAvatar() {
+    /**
+     * Gets the avatar image data.
+     *
+     * @return The avatar.
+     */
+    public final byte[] getAvatar() {
         return avatar;
     }
 
-    public Jid getContact() {
+	/**
+	 * Gets the avatar image, or {@code null} if there is none.
+	 * 
+	 * @return The avatar image.
+	 */
+	public final BufferedImage getAvatarImage() {
+		try {
+			return this.avatar == null ? null : asBufferedImage(this.avatar);
+		} catch (final ConversionException e) {
+			LOGGER.log(Level.SEVERE, "Cannot convert avatar image");
+			return null;
+		}
+	}
+    
+    /**
+     * Gets the bare JID of the contact who's associated with the avatar, i.e. who changed his or her avatar.
+     *
+     * @return The contact.
+     */
+    public final Jid getContact() {
         return contact;
     }
 }

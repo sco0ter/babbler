@@ -49,7 +49,7 @@
                 <Insets bottom="20" top="20" left="20" right="20"/>
             </padding>
 
-            <SplitPane orientation="VERTICAL" VBox.vgrow="ALWAYS" dividerPositions="0.66">
+            <SplitPane orientation="VERTICAL" VBox.vgrow="ALWAYS" dividerPositions="0.75">
                 <VBox>
                     <BorderPane styleClass="tool-bar">
                         <padding>

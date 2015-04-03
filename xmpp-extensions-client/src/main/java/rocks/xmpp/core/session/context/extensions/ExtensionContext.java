@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session.context.extensions;
 
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.address.model.Addresses;
@@ -39,11 +40,9 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
-import rocks.xmpp.extensions.carbons.model.Disable;
-import rocks.xmpp.extensions.carbons.model.Enable;
-import rocks.xmpp.extensions.carbons.model.Private;
-import rocks.xmpp.extensions.carbons.model.Sent;
+import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
+import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.forward.model.Forwarded;
@@ -52,6 +51,7 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.hashes.HashManager;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
+import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
@@ -103,7 +103,10 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
 import java.util.Arrays;
 
 /**
+ * Registers extensions and manager classes, (which should be initialized during the start of a session) to the {@link rocks.xmpp.core.session.XmppSession}.
+ *
  * @author Christian Schudt
+ * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#context(rocks.xmpp.core.session.context.CoreContext)
  */
 public class ExtensionContext extends CoreContext {
 
@@ -113,7 +116,8 @@ public class ExtensionContext extends CoreContext {
     }
 
     public ExtensionContext(Class<?>... extensions) {
-        super(Arrays.asList(
+        super(Arrays.<Class<? extends Manager>>asList(
+                AvatarManager.class, // Make sure to initialize AvatarManager before EntityCapabilitiesManager, because both send presence and due to XEP-0153 logic, it can happen that presences are sent twice, if multiple resources are online.
                 LastActivityManager.class,
                 InBandByteStreamManager.class,
                 VCardManager.class,
@@ -124,7 +128,6 @@ public class ExtensionContext extends CoreContext {
                 EntityCapabilitiesManager.class,
                 ContactExchangeManager.class,
                 ReachabilityManager.class,
-                AvatarManager.class,
                 MessageDeliveryReceiptsManager.class,
                 BlockingManager.class,
                 PingManager.class,
@@ -158,6 +161,9 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0048: BookmarkStorage
                 BookmarkStorage.class,
+
+                // XEP-0050: Ad-Hoc Commands
+                Command.class,
 
                 // XEP-0054: vcard-temp
                 VCard.class,
@@ -274,7 +280,7 @@ public class ExtensionContext extends CoreContext {
                 InBandBytestreamsTransportMethod.class,
 
                 // XEP-0280: Message Carbons
-                Enable.class, Disable.class, Private.class, rocks.xmpp.extensions.carbons.model.Received.class, Sent.class,
+                MessageCarbons.class,
 
                 // XEP-0297: Stanza Forwarding
                 Forwarded.class,
@@ -287,6 +293,9 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0308: Last Message Correction
                 Replace.class,
+
+                // XEP-0319: Last User Interaction in Presence
+                Idle.class,
 
                 // XEP-0335: JSON Containers
                 Json.class

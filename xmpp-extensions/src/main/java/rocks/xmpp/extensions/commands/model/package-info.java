@@ -29,7 +29,7 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "http://jabber.org/protocol/commands", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.commands.model;
+@XmlSchema(namespace = Command.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.commands.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

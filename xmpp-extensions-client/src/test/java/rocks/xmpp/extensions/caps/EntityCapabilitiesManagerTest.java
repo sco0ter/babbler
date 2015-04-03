@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,30 +46,24 @@ public class EntityCapabilitiesManagerTest extends ExtensionTest {
      */
     public static void main(String[] args) {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
+        Executors.newFixedThreadPool(1).execute(() -> {
 
-                MockServer mockServer = new MockServer();
+            MockServer mockServer = new MockServer();
 
-                final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-                XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+            final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+            XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
-                final EntityCapabilitiesManager entityCapabilitiesManager = xmppSession1.getExtensionManager(EntityCapabilitiesManager.class);
+            final EntityCapabilitiesManager entityCapabilitiesManager = xmppSession1.getManager(EntityCapabilitiesManager.class);
 
-                ExecutorService executorService = Executors.newCachedThreadPool();
-                for (int i = 0; i < 100; i++) {
-                    executorService.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Assert.assertNotNull(entityCapabilitiesManager.discoverCapabilities(JULIET));
-                            } catch (XmppException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
+            ExecutorService executorService = Executors.newCachedThreadPool();
+            for (int i = 0; i < 100; i++) {
+                executorService.execute(() -> {
+                    try {
+                        Assert.assertNotNull(entityCapabilitiesManager.discoverCapabilities(JULIET));
+                    } catch (XmppException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         });
     }

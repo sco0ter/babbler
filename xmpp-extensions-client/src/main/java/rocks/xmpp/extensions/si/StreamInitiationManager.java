@@ -26,12 +26,12 @@ package rocks.xmpp.extensions.si;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.IQExtensionManager;
+import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
@@ -61,11 +61,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
  */
-public final class StreamInitiationManager extends IQExtensionManager implements FileTransferNegotiator {
+public final class StreamInitiationManager extends ExtensionManager implements FileTransferNegotiator {
 
     private static final String STREAM_METHOD = "stream-method";
 
@@ -78,18 +79,15 @@ public final class StreamInitiationManager extends IQExtensionManager implements
     private final Socks5ByteStreamManager socks5ByteStreamManager;
 
     private StreamInitiationManager(final XmppSession xmppSession) {
-        super(xmppSession, AbstractIQ.Type.SET, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
+        super(xmppSession, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
 
-        inBandByteStreamManager = xmppSession.getExtensionManager(InBandByteStreamManager.class);
-        socks5ByteStreamManager = xmppSession.getExtensionManager(Socks5ByteStreamManager.class);
+        inBandByteStreamManager = xmppSession.getManager(InBandByteStreamManager.class);
+        socks5ByteStreamManager = xmppSession.getManager(Socks5ByteStreamManager.class);
 
         // Currently, there's only one profile in XMPP, namely XEP-0096 SI File Transfer.
-        profileManagers.put(SIFileTransferOffer.NAMESPACE, new ProfileManager() {
-            @Override
-            public void handle(IQ iq, StreamInitiation streamInitiation) {
-                FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
-                fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
-            }
+        profileManagers.put(SIFileTransferOffer.NAMESPACE, (iq, streamInitiation) -> {
+            FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
+            fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
         });
 
         setEnabled(true);
@@ -97,7 +95,41 @@ public final class StreamInitiationManager extends IQExtensionManager implements
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(StreamInitiation.class, this);
+        xmppSession.addIQHandler(StreamInitiation.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
+
+                FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
+                // Assume no valid streams by default, unless valid streams are found.
+                boolean noValidStreams = true;
+                if (featureNegotiation != null) {
+                    DataForm dataForm = featureNegotiation.getDataForm();
+                    if (dataForm != null) {
+                        DataForm.Field field = dataForm.findField(STREAM_METHOD);
+                        if (field != null) {
+                            List<String> streamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
+                            if (!Collections.disjoint(streamMethods, supportedStreamMethod)) {
+                                // Request contains valid streams
+                                noValidStreams = false;
+                            }
+                        }
+                    }
+                }
+                if (noValidStreams) {
+                    return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.NO_VALID_STREAMS));
+                } else {
+                    ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
+
+                    if (profileManager == null) {
+                        return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.BAD_PROFILE));
+                    } else {
+                        profileManager.handle(iq, streamInitiation);
+                        return null;
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -108,9 +140,9 @@ public final class StreamInitiationManager extends IQExtensionManager implements
      * @param mimeType The mime type of the stream.
      * @param timeout  The timeout, which wait until the stream has been negotiated.
      * @return The byte stream session which has been negotiated.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @throws java.io.IOException                          If an I/O error occurred during byte session establishment.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @throws java.io.IOException                         If an I/O error occurred during byte session establishment.
      */
     public OutputStream initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) throws XmppException, IOException {
 
@@ -118,12 +150,9 @@ public final class StreamInitiationManager extends IQExtensionManager implements
         String sessionId = UUID.randomUUID().toString();
 
         // Offer stream methods.
-        List<DataForm.Option> options = new ArrayList<>();
-        for (String streamMethod : supportedStreamMethod) {
-            options.add(new DataForm.Option(streamMethod));
-        }
+        List<DataForm.Option> options = supportedStreamMethod.stream().map(DataForm.Option::new).collect(Collectors.toList());
         DataForm.Field field = DataForm.Field.builder().var(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
-        DataForm dataForm = new DataForm(DataForm.Type.FORM, Arrays.asList(field));
+        DataForm dataForm = new DataForm(DataForm.Type.FORM, Collections.singletonList(field));
         // Offer the file to the recipient and wait until it's accepted.
         IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
 
@@ -158,13 +187,10 @@ public final class StreamInitiationManager extends IQExtensionManager implements
     public FileTransfer accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
         StreamInitiation streamInitiation = (StreamInitiation) protocol;
         DataForm.Field field = streamInitiation.getFeatureNegotiation().getDataForm().findField(STREAM_METHOD);
-        final List<String> offeredStreamMethods = new ArrayList<>();
-        for (DataForm.Option option : field.getOptions()) {
-            offeredStreamMethods.add(option.getValue());
-        }
+        final List<String> offeredStreamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
         offeredStreamMethods.retainAll(supportedStreamMethod);
         DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
-        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Arrays.asList(fieldReply));
+        DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 
         final Lock lock = new ReentrantLock();
@@ -174,21 +200,18 @@ public final class StreamInitiationManager extends IQExtensionManager implements
         final List<Exception> negotiationExceptions = new ArrayList<>();
         // Before we reply with the chosen stream method, we
         // register a byte stream listener, because we expect the initiator to open a byte stream with us.
-        ByteStreamListener byteStreamListener = new ByteStreamListener() {
-            @Override
-            public void byteStreamRequested(ByteStreamEvent e) {
-                if (sessionId.equals(e.getSessionId())) {
-                    lock.lock();
-                    try {
-                        // Auto-accept the incoming stream
-                        byteStreamSessions[0] = e.accept();
-                        // If no exception occurred during stream method negotiation, notify the waiting thread.
-                        byteStreamOpened.signal();
-                    } catch (Exception e1) {
-                        negotiationExceptions.add(e1);
-                    } finally {
-                        lock.unlock();
-                    }
+        ByteStreamListener byteStreamListener = e -> {
+            if (sessionId.equals(e.getSessionId())) {
+                lock.lock();
+                try {
+                    // Auto-accept the inbound stream
+                    byteStreamSessions[0] = e.accept();
+                    // If no exception occurred during stream method negotiation, notify the waiting thread.
+                    byteStreamOpened.signal();
+                } catch (Exception e1) {
+                    negotiationExceptions.add(e1);
+                } finally {
+                    lock.unlock();
                 }
             }
         };
@@ -222,43 +245,6 @@ public final class StreamInitiationManager extends IQExtensionManager implements
     @Override
     public void reject(IQ iq) {
         xmppSession.send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.FORBIDDEN));
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-        StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
-
-        FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
-        // Assume no valid streams by default, unless valid streams are found.
-        boolean noValidStreams = true;
-        if (featureNegotiation != null) {
-            DataForm dataForm = featureNegotiation.getDataForm();
-            if (dataForm != null) {
-                DataForm.Field field = dataForm.findField(STREAM_METHOD);
-                if (field != null) {
-                    List<String> streamMethods = new ArrayList<>();
-                    for (DataForm.Option option : field.getOptions()) {
-                        streamMethods.add(option.getValue());
-                    }
-                    if (!Collections.disjoint(streamMethods, supportedStreamMethod)) {
-                        // Request contains valid streams
-                        noValidStreams = false;
-                    }
-                }
-            }
-        }
-        if (noValidStreams) {
-            return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.NO_VALID_STREAMS));
-        } else {
-            ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
-
-            if (profileManager == null) {
-                return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.BAD_PROFILE));
-            } else {
-                profileManager.handle(iq, streamInitiation);
-                return null;
-            }
-        }
     }
 
     private interface ProfileManager {

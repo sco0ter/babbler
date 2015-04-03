@@ -30,7 +30,7 @@ package rocks.xmpp.extensions.soap.model.fault;
 abstract class SoapFault {
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "SOAP fault: " + getClass().getSimpleName();
     }
 }

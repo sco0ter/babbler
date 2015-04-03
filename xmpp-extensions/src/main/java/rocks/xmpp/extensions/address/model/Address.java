@@ -29,9 +29,12 @@ import rocks.xmpp.core.Jid;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <address/>} element in the {@code http://jabber.org/protocol/address} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
@@ -46,21 +49,26 @@ public final class Address {
     public static final String NAMESPACE = "http://jabber.org/protocol/address";
 
     @XmlAttribute(name = "type")
-    private Type type;
+    private final Type type;
 
     @XmlAttribute(name = "jid")
-    private Jid jid;
+    private final Jid jid;
 
     @XmlAttribute(name = "desc")
-    private String description;
+    private final String description;
 
     @XmlAttribute(name = "node")
-    private String node;
+    private final String node;
 
     @XmlAttribute(name = "uri")
-    private URI uri;
+    private final URI uri;
 
     private Address() {
+        this.type = null;
+        this.jid = null;
+        this.description = null;
+        this.node = null;
+        this.uri = null;
     }
 
     /**
@@ -87,10 +95,11 @@ public final class Address {
      * @param node        Specifies a sub-addressable unit at a particular JID, corresponding to a Service Discovery node.
      */
     public Address(Type type, Jid jid, String description, String node) {
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
         this.jid = jid;
         this.description = description;
         this.node = node;
+        this.uri = null;
     }
 
     /**
@@ -100,9 +109,11 @@ public final class Address {
      */
     public Address(Type type, URI uri, String description) {
         // If the 'uri' attribute is specified, the 'jid' and 'node' attributes MUST NOT be specified.
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
+        this.jid = null;
         this.uri = uri;
         this.description = description;
+        this.node = null;
     }
 
     /**
@@ -111,7 +122,7 @@ public final class Address {
      * @return The address type.
      * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type">4.6 'type' attribute</a>
      */
-    public Type getType() {
+    public final Type getType() {
         return type;
     }
 
@@ -121,7 +132,7 @@ public final class Address {
      * @return The JID.
      * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-jid">4.1 'jid' attribute</a>
      */
-    public Jid getJid() {
+    public final Jid getJid() {
         return jid;
     }
 
@@ -131,7 +142,7 @@ public final class Address {
      * @return The description.
      * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-desc">4.4 'desc' attribute</a>
      */
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
@@ -141,7 +152,7 @@ public final class Address {
      * @return The node.
      * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-node">4.3 'node' attribute</a>
      */
-    public String getNode() {
+    public final String getNode() {
         return node;
     }
 
@@ -151,7 +162,7 @@ public final class Address {
      * @return The URI.
      * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-uri">4.2 'uri' attribute</a>
      */
-    public URI getUri() {
+    public final URI getUri() {
         return uri;
     }
 
@@ -202,6 +213,13 @@ public final class Address {
          * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-to">4.6.1 Address type='to'</a>
          */
         @XmlEnumValue(value = "to")
-        TO
+        TO,
+        /**
+         * In Multi-User Chat, if the room is non-anonymous, notes the original full JID of the sender.
+         *
+         * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-history">7.2.14 Discussion History</a>
+         */
+        @XmlEnumValue(value = "ofrom")
+        OFROM
     }
 }

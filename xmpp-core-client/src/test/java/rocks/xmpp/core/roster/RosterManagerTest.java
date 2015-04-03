@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.ContactGroup;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -49,31 +50,28 @@ public class RosterManagerTest extends BaseTest {
     @Test
     public void testRosterListener() throws XMLStreamException, JAXBException {
         final int[] rosterPushCount = new int[1];
-
-        RosterManager rosterManager = new RosterManager(new TestXmppSession());
-        rosterManager.addRosterListener(new RosterListener() {
-            @Override
-            public void rosterChanged(RosterEvent e) {
-                if (rosterPushCount[0] == 0) {
-                    Assert.assertEquals(e.getAddedContacts().size(), 3);
-                    Assert.assertEquals(e.getUpdatedContacts().size(), 0);
-                    Assert.assertEquals(e.getRemovedContacts().size(), 0);
-                } else if (rosterPushCount[0] == 1) {
-                    Assert.assertEquals(e.getAddedContacts().size(), 1);
-                    Assert.assertEquals(e.getUpdatedContacts().size(), 0);
-                    Assert.assertEquals(e.getRemovedContacts().size(), 0);
-                } else if (rosterPushCount[0] == 2) {
-                    Assert.assertEquals(e.getAddedContacts().size(), 0);
-                    Assert.assertEquals(e.getUpdatedContacts().size(), 0);
-                    Assert.assertEquals(e.getRemovedContacts().size(), 1);
-                    Assert.assertEquals(e.getRemovedContacts().get(0).getJid(), Jid.valueOf("contact2@domain"));
-                } else if (rosterPushCount[0] == 3) {
-                    Assert.assertEquals(e.getAddedContacts().size(), 0);
-                    Assert.assertEquals(e.getUpdatedContacts().size(), 1);
-                    Assert.assertEquals(e.getRemovedContacts().size(), 0);
-                    Assert.assertEquals(e.getUpdatedContacts().get(0).getJid(), Jid.valueOf("contact1@domain"));
-                    Assert.assertEquals(e.getUpdatedContacts().get(0).getName(), "Name");
-                }
+        XmppSession xmppSession1 = new TestXmppSession();
+        RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
+        rosterManager.addRosterListener(e -> {
+            if (rosterPushCount[0] == 0) {
+                Assert.assertEquals(e.getAddedContacts().size(), 3);
+                Assert.assertEquals(e.getUpdatedContacts().size(), 0);
+                Assert.assertEquals(e.getRemovedContacts().size(), 0);
+            } else if (rosterPushCount[0] == 1) {
+                Assert.assertEquals(e.getAddedContacts().size(), 1);
+                Assert.assertEquals(e.getUpdatedContacts().size(), 0);
+                Assert.assertEquals(e.getRemovedContacts().size(), 0);
+            } else if (rosterPushCount[0] == 2) {
+                Assert.assertEquals(e.getAddedContacts().size(), 0);
+                Assert.assertEquals(e.getUpdatedContacts().size(), 0);
+                Assert.assertEquals(e.getRemovedContacts().size(), 1);
+                Assert.assertEquals(e.getRemovedContacts().get(0).getJid(), Jid.valueOf("contact2@domain"));
+            } else if (rosterPushCount[0] == 3) {
+                Assert.assertEquals(e.getAddedContacts().size(), 0);
+                Assert.assertEquals(e.getUpdatedContacts().size(), 1);
+                Assert.assertEquals(e.getRemovedContacts().size(), 0);
+                Assert.assertEquals(e.getUpdatedContacts().get(0).getJid(), Jid.valueOf("contact1@domain"));
+                Assert.assertEquals(e.getUpdatedContacts().get(0).getName(), "Name");
             }
         });
 
@@ -97,7 +95,8 @@ public class RosterManagerTest extends BaseTest {
 
     @Test
     public void testRosterGroups() {
-        RosterManager rosterManager = new RosterManager(new TestXmppSession());
+        XmppSession xmppSession1 = new TestXmppSession();
+        RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
 
         Roster roster1 = new Roster(new Contact(Jid.valueOf("contact1@domain"), "contact1", "Group1"),
                 new Contact(Jid.valueOf("contact2@domain"), "contact2", "Group2"),
@@ -122,7 +121,8 @@ public class RosterManagerTest extends BaseTest {
 
     @Test
     public void testNestedRosterGroups() {
-        RosterManager rosterManager = new RosterManager(new TestXmppSession());
+        XmppSession xmppSession1 = new TestXmppSession();
+        RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
         rosterManager.setGroupDelimiter("::");
         Roster roster1 = new Roster(new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3::SubGroup"),
                 new Contact(Jid.valueOf("contact4@domain"), "contact4", "Group3::SubGroup::3rdLevel"),
@@ -149,8 +149,8 @@ public class RosterManagerTest extends BaseTest {
 
     @Test
     public void testRosterIntegrity() {
-
-        RosterManager rosterManager = new RosterManager(new TestXmppSession());
+        XmppSession xmppSession1 = new TestXmppSession();
+        RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
 
         // Initial roster
         Roster roster1 = new Roster(new Contact(Jid.valueOf("contact1@domain"), "contact1", "group1"),

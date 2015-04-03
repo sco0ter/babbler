@@ -28,9 +28,9 @@ import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -167,10 +167,10 @@ public final class SubscribeOptions {
      *
      * @return The expiration date.
      */
-    public Date getExpire() {
+    public Instant getExpire() {
         DataForm.Field field = dataForm.findField(EXPIRE);
         if (!field.getValues().isEmpty() && field.getValues().get(0) != null && !field.getValues().get(0).equals("presence")) {
-            return field.getValueAsDate();
+            return field.getValueAsInstant();
         }
         return null;
     }
@@ -274,7 +274,7 @@ public final class SubscribeOptions {
 
         private Collection<Presence.Show> showValues;
 
-        private Date expireAt;
+        private Instant expireAt;
 
         private Boolean temporary;
 
@@ -348,7 +348,7 @@ public final class SubscribeOptions {
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
          */
-        public Builder expireAt(Date expireAt) {
+        public Builder expireAt(Instant expireAt) {
             this.expireAt = expireAt;
             return this;
         }

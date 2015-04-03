@@ -38,6 +38,7 @@ import java.lang.reflect.InvocationTargetException;
  * <p>
  * It allows to retrieve and store private data in the server's private XML storage.
  * </p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
@@ -53,11 +54,11 @@ public final class PrivateDataManager extends ExtensionManager {
      * @param type The class of the private data. Note that this class needs a no-arg default constructor.
      * @param <T>  The type of private data.
      * @return The list of stored items of the given type.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned an error, e.g. if the used namespace is reserved.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned an error, e.g. if the used namespace is reserved.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     @SuppressWarnings("unchecked")
-    public <T> T getData(Class<T> type) throws XmppException {
+    public final <T> T getData(Class<T> type) throws XmppException {
         try {
             Constructor<T> constructor = type.getDeclaredConstructor();
             constructor.setAccessible(true);
@@ -76,10 +77,10 @@ public final class PrivateDataManager extends ExtensionManager {
      * Stores private data.
      *
      * @param privateData The private data. The class of this object must be annotated with JAXB annotations and must known to the XMPP context in order to marshal und unmarshal it.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void storeData(Object privateData) throws XmppException {
+    public final void storeData(Object privateData) throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, new PrivateData(privateData)));
     }
 }

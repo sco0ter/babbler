@@ -28,12 +28,9 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.util.cache.DirectoryCache;
 import rocks.xmpp.core.util.cache.LruCache;
@@ -45,14 +42,10 @@ import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -75,13 +68,16 @@ import java.util.logging.Logger;
  * If this manager is enabled (default), entity capabilities are automatically included in every presence notification being sent.
  * </p>
  * <p>
- * You can check for an entity's capabilities by using {@link #getCapabilities(rocks.xmpp.core.Jid)}, which will either return cached capabilities or ask the entity.
+ * You can check for an entity's capabilities by using {@link #discoverCapabilities(rocks.xmpp.core.Jid)}, which will either return cached capabilities or ask the entity.
  * </p>
  * Similarly you can ask if an entity supports a particular feature via {@link #isSupported(String, rocks.xmpp.core.Jid)}.
+ * <p>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
  */
-public final class EntityCapabilitiesManager extends ExtensionManager implements SessionStatusListener, PresenceListener, PropertyChangeListener {
+public final class EntityCapabilitiesManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(EntityCapabilitiesManager.class.getName());
 
@@ -105,22 +101,21 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
 
     private final DirectoryCache directoryCapsCache;
 
+    /**
+     * Guarded by "serviceDiscoveryManager".
+     */
     private boolean capsSent;
 
+    /**
+     * Guarded by "this".
+     */
     private String node;
 
     private EntityCapabilitiesManager(final XmppSession xmppSession) {
         super(xmppSession, EntityCapabilities.NAMESPACE);
-        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
-        DirectoryCache cache;
-        try {
-            cache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "Unable to instantiate directory cache.", e);
-            cache = null;
-        }
-        directoryCapsCache = cache;
+        directoryCapsCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
         serviceDiscoverer = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Automatic Service Discovery Thread"));
         // no need for a synchronized map, since access to this is already synchronized by this class.
         publishedNodes = new LinkedHashMap<String, Verification>(10, 0.75F, false) {
@@ -140,9 +135,73 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
 
     @Override
     protected void initialize() {
-        serviceDiscoveryManager.addPropertyChangeListener(this);
-        xmppSession.addSessionStatusListener(this);
-        xmppSession.addPresenceListener(this);
+        serviceDiscoveryManager.addPropertyChangeListener(evt -> {
+            // If we haven't established a presence session yet, don't care about changes in service discovery.
+            // If we change features during a presence session, update the verification string and resend presence.
+
+            // http://xmpp.org/extensions/xep-0115.html#advertise:
+            // "If the supported features change during a generating entity's presence session (e.g., a user installs an updated version of a client plugin), the application MUST recompute the verification string and SHOULD send a new presence broadcast."
+            synchronized (serviceDiscoveryManager) {
+                if (capsSent) {
+                    // Whenever the verification string has changed, publish the info node.
+                    publishCapsNode();
+
+                    // Resend presence. This manager will add the caps extension later.
+                    PresenceManager presenceManager = xmppSession.getManager(PresenceManager.class);
+                    Presence lastPresence = presenceManager.getLastSentPresence();
+                    xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
+                }
+            }
+        });
+        xmppSession.addSessionStatusListener(e -> {
+            switch (e.getStatus()) {
+                case AUTHENTICATED:
+                    // As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
+                    EntityCapabilities serverCapabilities = (EntityCapabilities) xmppSession.getManager(StreamFeaturesManager.class).getFeatures().get(EntityCapabilities.class);
+                    // If yes, treat it as other caps.
+                    if (serverCapabilities != null) {
+                        handleEntityCaps(serverCapabilities, Jid.valueOf(xmppSession.getDomain()));
+                    }
+                    break;
+                case CLOSED:
+                    synchronized (serviceDiscoverer) {
+                        serviceDiscoverer.shutdown();
+                    }
+                    break;
+            }
+        });
+
+        xmppSession.addInboundPresenceListener(e -> {
+            if (isEnabled()) {
+                final Presence presence = e.getPresence();
+                if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
+                    final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
+                    if (entityCapabilities != null) {
+                        handleEntityCaps(entityCapabilities, presence.getFrom());
+                    }
+                }
+            }
+        });
+
+        xmppSession.addOutboundPresenceListener(e -> {
+            if (isEnabled()) {
+                final Presence presence = e.getPresence();
+                if (presence.isAvailable() && presence.getTo() == null) {
+                    // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
+                    synchronized (serviceDiscoveryManager) {
+                        if (publishedNodes.isEmpty()) {
+                            publishCapsNode();
+                        }
+                        // a client SHOULD include entity capabilities with every presence notification it sends.
+                        // Get the last generated verification string here.
+                        List<Verification> verifications = new ArrayList<>(publishedNodes.values());
+                        Verification verification = verifications.get(verifications.size() - 1);
+                        presence.getExtensions().add(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
+                        capsSent = true;
+                    }
+                }
+            }
+        });
     }
 
     private void publishCapsNode() {
@@ -212,11 +271,11 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
      *
      * @param jid The JID, which should usually be a full JID.
      * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
-    public InfoNode discoverCapabilities(Jid jid) throws XmppException {
+    public final InfoNode discoverCapabilities(Jid jid) throws XmppException {
         InfoNode infoNode = ENTITY_CAPABILITIES.get(jid);
         if (infoNode == null) {
             // Make sure, that for the same JID no multiple concurrent queries are sent. One is enough.
@@ -247,29 +306,15 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
     }
 
     /**
-     * Gets the capabilities of another XMPP entity.
-     *
-     * @param jid The JID, which should usually be a full JID.
-     * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @deprecated Use {@link #discoverCapabilities(rocks.xmpp.core.Jid)}
-     */
-    @Deprecated
-    public InfoNode getCapabilities(Jid jid) throws XmppException {
-        return discoverCapabilities(jid);
-    }
-
-    /**
      * Checks whether the entity supports the given feature. If the features are already known and cached
      *
      * @param feature The feature.
      * @param jid     The JID, which should usually be a full JID.
      * @return True, if this entity supports the feature.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public boolean isSupported(String feature, Jid jid) throws XmppException {
+    public final boolean isSupported(String feature, Jid jid) throws XmppException {
         InfoNode infoNode = discoverCapabilities(jid);
         return infoNode.getFeatures().contains(new Feature(feature));
     }
@@ -280,16 +325,20 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
             CAPS_CACHE.put(verification, infoNode);
 
             // Write to persistent cache.
-            try {
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream);
-                XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-                synchronized (xmppSession.getMarshaller()) {
-                    xmppSession.getMarshaller().marshal(infoNode, xmppStreamWriter);
+            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                XMLStreamWriter xmppStreamWriter = null;
+                try {
+                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(XMLOutputFactory.newFactory().createXMLStreamWriter(byteArrayOutputStream), true);
+                    xmppStreamWriter.flush();
+                    xmppSession.createMarshaller().marshal(infoNode, xmppStreamWriter);
+                } finally {
+                    if (xmppStreamWriter != null) {
+                        xmppStreamWriter.close();
+                    }
                 }
                 directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage(), e);
+                logger.log(Level.WARNING, e, () -> "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage());
             }
         }
     }
@@ -303,53 +352,21 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
             }
             // If it's not present, check the persistent cache.
             String fileName = XmppUtils.hash(verification.toString().getBytes()) + ".caps";
-            byte[] bytes = directoryCapsCache.get(fileName);
-            if (bytes != null) {
-                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-                try {
-                    synchronized (xmppSession.getUnmarshaller()) {
-                        infoNode = (InfoNode) xmppSession.getUnmarshaller().unmarshal(byteArrayInputStream);
+            try {
+                byte[] bytes = directoryCapsCache.get(fileName);
+                if (bytes != null) {
+                    try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+                        infoNode = (InfoNode) xmppSession.createUnmarshaller().unmarshal(byteArrayInputStream);
                         CAPS_CACHE.put(verification, infoNode);
                         return infoNode;
                     }
-                } catch (JAXBException e) {
-                    logger.log(Level.WARNING, "Could not read entity capabilities from persistent cache (file: " + fileName + ")", e);
                 }
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e, () -> "Could not read entity capabilities from persistent cache (file: " + fileName + ")");
             }
         }
         // The verification string is unknown, Service Discovery needs to be done.
         return null;
-    }
-
-    @Override
-    public void handlePresence(PresenceEvent e) {
-        if (isEnabled()) {
-            final Presence presence = e.getPresence();
-
-            if (!e.isIncoming()) {
-                if (presence.isAvailable() && presence.getTo() == null) {
-                    // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
-                    synchronized (serviceDiscoveryManager) {
-                        if (publishedNodes.isEmpty()) {
-                            publishCapsNode();
-                        }
-                        // a client SHOULD include entity capabilities with every presence notification it sends.
-                        // Get the last generated verification string here.
-                        List<Verification> verifications = new ArrayList<>(publishedNodes.values());
-                        Verification verification = verifications.get(verifications.size() - 1);
-                        presence.getExtensions().add(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
-                        capsSent = true;
-                    }
-                }
-            } else {
-                if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
-                    final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
-                    if (entityCapabilities != null) {
-                        handleEntityCaps(entityCapabilities, presence.getFrom());
-                    }
-                }
-            }
-        }
     }
 
     private void handleEntityCaps(final EntityCapabilities entityCapabilities, final Jid entity) {
@@ -367,111 +384,70 @@ public final class EntityCapabilitiesManager extends ExtensionManager implements
                     // Ask for being shutdown to prevent possible RejectedExecutionException.
                     // Need to synchronize this.
                     if (!serviceDiscoverer.isShutdown()) {
-                        serviceDiscoverer.execute(new Runnable() {
-                            @Override
-                            public void run() {
+                        serviceDiscoverer.execute(() -> {
+                            String node1 = entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString();
+                            try {
+                                // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
+                                final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
 
-                                try {
-                                    // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
-                                    final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
+                                // 3.1 Send a service discovery information request to the generating entity.
+                                // 3.2 Receive a service discovery information response from the generating entity.
+                                InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(entity, node);
+                                // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
+                                // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
+                                // => not possible due to java.util.Set semantics and equals method.
+                                // If the response had duplicates, just check the hash.
 
-                                    // 3.1 Send a service discovery information request to the generating entity.
-                                    // 3.2 Receive a service discovery information response from the generating entity.
-                                    InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(entity, entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString());
-                                    // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
-                                    // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
-                                    // => not possible due to java.util.Set semantics and equals method.
-                                    // If the response had duplicates, just check the hash.
-
-                                    // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
-                                    List<String> ftValues = new ArrayList<>();
-                                    for (DataForm dataForm : infoDiscovery.getExtensions()) {
-                                        DataForm.Field formType = dataForm.findField(DataForm.FORM_TYPE);
-                                        // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
-                                        if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
-                                            List<String> values = new ArrayList<>();
-                                            for (String value : formType.getValues()) {
-                                                if (values.contains(value)) {
-                                                    // ill-formed
-                                                    return;
-                                                }
-                                                values.add(value);
-                                            }
-                                            String value = formType.getValues().get(0);
-                                            if (ftValues.contains(value)) {
+                                // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
+                                List<String> ftValues = new ArrayList<>();
+                                for (DataForm dataForm : infoDiscovery.getExtensions()) {
+                                    DataForm.Field formType = dataForm.findField(DataForm.FORM_TYPE);
+                                    // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
+                                    if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
+                                        List<String> values = new ArrayList<>();
+                                        for (String value : formType.getValues()) {
+                                            if (values.contains(value)) {
                                                 // ill-formed
                                                 return;
                                             }
-                                            ftValues.add(value);
+                                            values.add(value);
                                         }
+                                        String value = formType.getValues().get(0);
+                                        if (ftValues.contains(value)) {
+                                            // ill-formed
+                                            return;
+                                        }
+                                        ftValues.add(value);
                                     }
+                                }
 
-                                    // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
-                                    String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
+                                // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
+                                String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
 
-                                    // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
-                                    if (verificationString.equals(entityCapabilities.getVerificationString())) {
-                                        writeToCache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
-                                    }
-                                    ENTITY_CAPABILITIES.put(entity, infoDiscovery);
+                                // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
+                                if (verificationString.equals(entityCapabilities.getVerificationString())) {
+                                    writeToCache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
+                                }
+                                ENTITY_CAPABILITIES.put(entity, infoDiscovery);
 
-                                    // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
-                                } catch (XmppException e1) {
-                                    logger.log(Level.WARNING, e1.getMessage(), e1);
-                                } catch (NoSuchAlgorithmException e1) {
-                                    // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
-                                    try {
-                                        // 2.1 Send a service discovery information request to the generating entity.
-                                        // 2.2 Receive a service discovery information response from the generating entity.
-                                        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(entity, entityCapabilities.getNode());
-                                        // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
-                                        ENTITY_CAPABILITIES.put(entity, infoNode);
-                                    } catch (XmppException e2) {
-                                        logger.log(Level.WARNING, e2.getMessage(), e2);
-                                    }
+                                // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
+                            } catch (XmppException e1) {
+                                logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, node});
+                            } catch (NoSuchAlgorithmException e1) {
+                                // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
+                                try {
+                                    // 2.1 Send a service discovery information request to the generating entity.
+                                    // 2.2 Receive a service discovery information response from the generating entity.
+                                    // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
+                                    ENTITY_CAPABILITIES.put(entity, serviceDiscoveryManager.discoverInformation(entity, node));
+                                } catch (XmppException e2) {
+                                    logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, node});
                                 }
                             }
                         });
                     }
                 }
             }
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        switch (e.getStatus()) {
-            case AUTHENTICATED:
-                // As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
-                EntityCapabilities serverCapabilities = (EntityCapabilities) xmppSession.getStreamFeaturesManager().getFeatures().get(EntityCapabilities.class);
-                // If yes, treat it as other caps.
-                if (serverCapabilities != null) {
-                    handleEntityCaps(serverCapabilities, Jid.valueOf(xmppSession.getDomain()));
-                }
-                break;
-            case CLOSED:
-                synchronized (serviceDiscoverer) {
-                    serviceDiscoverer.shutdown();
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        // If we haven't established a presence session yet, don't care about changes in service discovery.
-        // If we change features during a presence session, update the verification string and resend presence.
-
-        // http://xmpp.org/extensions/xep-0115.html#advertise:
-        // "If the supported features change during a generating entity's presence session (e.g., a user installs an updated version of a client plugin), the application MUST recompute the verification string and SHOULD send a new presence broadcast."
-        if (capsSent) {
-            // Whenever the verification string has changed, publish the info node.
-            publishCapsNode();
-
-            // Resend presence. This manager will add the caps extension later.
-            PresenceManager presenceManager = xmppSession.getPresenceManager();
-            Presence lastPresence = presenceManager.getLastSentPresence();
-            xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
         }
     }
 

@@ -73,6 +73,11 @@ public abstract class ChatState {
     private ChatState() {
     }
 
+    @Override
+    public final String toString() {
+        return getClass().getSimpleName().toLowerCase();
+    }
+
     /**
      * The implementation of the {@code <active/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents an active chat state.
      */

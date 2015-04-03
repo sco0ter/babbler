@@ -27,9 +27,9 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
@@ -38,29 +38,28 @@ public abstract class ExtensionManager extends Manager {
 
     protected final XmppSession xmppSession;
 
-    protected final Collection<String> features;
+    private final Collection<String> features;
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     protected ExtensionManager(XmppSession xmppSession, String... features) {
+        this(xmppSession, Arrays.asList(features));
+    }
+
+    protected ExtensionManager(XmppSession xmppSession, Collection<String> features) {
         this.xmppSession = xmppSession;
-        this.features = new ArrayList<>(Arrays.asList(features));
+        this.features = features;
 
         if (this instanceof ServiceDiscoveryManager) {
             serviceDiscoveryManager = (ServiceDiscoveryManager) this;
         } else {
-            serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+            serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         }
     }
 
     @Override
     public final boolean isEnabled() {
-        Collection<Feature> f = new ArrayList<>();
-        for (String namespace : features) {
-            f.add(new Feature(namespace));
-        }
-        return serviceDiscoveryManager.getFeatures().containsAll(f);
-
+        return serviceDiscoveryManager.getFeatures().containsAll(features.stream().map(Feature::new).collect(Collectors.toList()));
     }
 
     /**
@@ -81,14 +80,5 @@ public abstract class ExtensionManager extends Manager {
                 }
             }
         }
-    }
-
-    /**
-     * Initializes the manager. Logic which shouldn't be in the constructor can go here.
-     * This allows thread-safe construction of objects, e.g. when you need to publish the "this" reference.
-     *
-     * @see <a href="http://www.ibm.com/developerworks/library/j-jtp0618/">Java theory and practice: Safe construction techniques</a>
-     */
-    protected void initialize() {
     }
 }

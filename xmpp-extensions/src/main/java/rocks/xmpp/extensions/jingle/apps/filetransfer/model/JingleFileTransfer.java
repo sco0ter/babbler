@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer.model;
 
+import rocks.xmpp.core.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
@@ -33,9 +34,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,7 +72,8 @@ public final class JingleFileTransfer extends ApplicationFormat {
         private final List<Hash> hashes = new ArrayList<>();
 
         @XmlElement(name = "date")
-        private Date date;
+        @XmlJavaTypeAdapter(InstantAdapter.class)
+        private Instant date;
 
         @XmlElement(name = "desc")
         private String description;
@@ -92,7 +95,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
             this.size = size;
         }
 
-        public File(String name, long size, Date lastModified, String hash, String description) {
+        public File(String name, long size, Instant lastModified, String hash, String description) {
             this.name = name;
             this.size = size;
             this.date = lastModified;
@@ -110,7 +113,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
         }
 
         @Override
-        public Date getDate() {
+        public Instant getDate() {
             return date;
         }
 

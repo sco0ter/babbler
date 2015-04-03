@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see ChatRoom#addOccupantListener(rocks.xmpp.extensions.muc.OccupantListener)
  */
+@FunctionalInterface
 public interface OccupantListener extends EventListener {
     /**
      * Called, when the occupant status has changed.

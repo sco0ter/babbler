@@ -29,6 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <attention/>} element in the {@code urn:xmpp:attention:0} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a>

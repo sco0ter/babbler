@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see MultiUserChatManager#addInvitationListener(rocks.xmpp.extensions.muc.InvitationListener)
  */
+@FunctionalInterface
 public interface InvitationListener extends EventListener {
 
     /**

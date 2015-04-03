@@ -39,6 +39,8 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <amp/>} element in the {@code http://jabber.org/protocol/amp} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
@@ -57,18 +59,22 @@ public final class AdvancedMessageProcessing extends StreamFeature {
     private final List<Rule> rules = new ArrayList<>();
 
     @XmlAttribute(name = "from")
-    private Jid from;
+    private final Jid from;
 
     @XmlAttribute(name = "per-hop")
-    private Boolean perHop;
+    private final Boolean perHop;
 
     @XmlAttribute(name = "status")
-    private Rule.Action status;
+    private final Rule.Action status;
 
     @XmlAttribute(name = "to")
-    private Jid to;
+    private final Jid to;
 
     private AdvancedMessageProcessing() {
+        this.from = null;
+        this.perHop = null;
+        this.status = null;
+        this.to = null;
     }
 
     /**
@@ -77,7 +83,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      * @param rules The rules.
      */
     public AdvancedMessageProcessing(Rule... rules) {
-        this.rules.addAll(Arrays.asList(rules));
+        this(Arrays.asList(rules));
     }
 
     /**
@@ -86,7 +92,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      * @param rules The rules.
      */
     public AdvancedMessageProcessing(List<Rule> rules) {
-        this.rules.addAll(rules);
+        this(rules, null);
     }
 
     /**
@@ -95,9 +101,12 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      * @param rules  The rules.
      * @param perHop The per-hop attribute.
      */
-    public AdvancedMessageProcessing(List<Rule> rules, boolean perHop) {
+    public AdvancedMessageProcessing(List<Rule> rules, Boolean perHop) {
         this.rules.addAll(rules);
         this.perHop = perHop;
+        this.status = null;
+        this.from = null;
+        this.to = null;
     }
 
     /**
@@ -110,6 +119,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      */
     public AdvancedMessageProcessing(List<Rule> rules, Rule.Action status, Jid from, Jid to) {
         this.rules.addAll(rules);
+        this.perHop = null;
         this.status = status;
         this.from = from;
         this.to = to;
@@ -120,7 +130,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      *
      * @return The rules.
      */
-    public List<Rule> getRules() {
+    public final List<Rule> getRules() {
         return Collections.unmodifiableList(rules);
     }
 
@@ -129,7 +139,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      *
      * @return The per-hop attribute.
      */
-    public boolean isPerHop() {
+    public final boolean isPerHop() {
         return perHop != null && perHop;
     }
 
@@ -138,7 +148,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      *
      * @return The status.
      */
-    public Rule.Action getStatus() {
+    public final Rule.Action getStatus() {
         return status;
     }
 
@@ -147,7 +157,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      *
      * @return The from attribute.
      */
-    public Jid getFrom() {
+    public final Jid getFrom() {
         return from;
     }
 
@@ -156,12 +166,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      *
      * @return The to attribute.
      */
-    public Jid getTo() {
+    public final Jid getTo() {
         return to;
-    }
-
-    @Override
-    public int getPriority() {
-        return 0;
     }
 }

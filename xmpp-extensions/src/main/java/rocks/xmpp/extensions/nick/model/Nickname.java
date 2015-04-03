@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.nick.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <nick/>} element in the {@code http://jabber.org/protocol/nick} namespace.
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlValue;
  * <li>Message exchange</li>
  * </ul>
  * </blockquote>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>
@@ -54,9 +56,10 @@ public final class Nickname {
     public static final String NAMESPACE = "http://jabber.org/protocol/nick";
 
     @XmlValue
-    private String value;
+    private final String value;
 
     private Nickname() {
+        this.value = null;
     }
 
     /**
@@ -65,7 +68,7 @@ public final class Nickname {
      * @param value The actual nick name.
      */
     public Nickname(String value) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
     }
 
     /**
@@ -73,12 +76,12 @@ public final class Nickname {
      *
      * @return The nick name.
      */
-    public String getValue() {
+    public final String getValue() {
         return value;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return value;
     }
 }

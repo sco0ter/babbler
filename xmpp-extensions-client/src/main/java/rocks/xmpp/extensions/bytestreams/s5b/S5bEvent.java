@@ -54,7 +54,7 @@ final class S5bEvent extends ByteStreamEvent {
     }
 
     @Override
-    public ByteStreamSession accept() throws IOException {
+    public final ByteStreamSession accept() throws IOException {
         try {
             // 5.3.2 Target Establishes SOCKS5 Connection with StreamHost/Requester
             // 6.3.2 Target Establishes SOCKS5 Connection with Proxy
@@ -71,7 +71,7 @@ final class S5bEvent extends ByteStreamEvent {
     }
 
     @Override
-    public void reject() {
+    public final void reject() {
         // Else if the Target is unwilling to accept the bytestream, it MUST return an error of <not-acceptable/> to the Requester.
         xmppSession.send(iq.createError(Condition.NOT_ACCEPTABLE));
     }

@@ -48,27 +48,27 @@ final class S5bSession extends ByteStreamSession {
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException {
+    public final OutputStream getOutputStream() throws IOException {
         return socket.getOutputStream();
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
+    public final InputStream getInputStream() throws IOException {
         return socket.getInputStream();
     }
 
     @Override
-    public void close() throws Exception {
+    public final void close() throws Exception {
         socket.close();
     }
 
     @Override
-    public int getReadTimeout() throws IOException {
+    public final int getReadTimeout() throws IOException {
         return socket.getSoTimeout();
     }
 
     @Override
-    public void setReadTimeout(int readTimeout) throws IOException {
+    public final void setReadTimeout(int readTimeout) throws IOException {
         this.socket.getSoTimeout();
     }
 
@@ -77,12 +77,12 @@ final class S5bSession extends ByteStreamSession {
      *
      * @return The session.
      */
-    public Jid getStreamHost() {
+    public final Jid getStreamHost() {
         return streamHost;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "SOCKS5 Bytestream Session: " + getSessionId();
     }
 }

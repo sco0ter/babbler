@@ -33,7 +33,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Date;
+import java.time.Instant;
 import java.util.EventObject;
 import java.util.List;
 
@@ -89,7 +89,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Accepts the incoming file transfer request.
+     * Accepts the inbound file transfer request.
      * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
      *
      * @param outputStream The output stream, to which the file will be written.
@@ -99,9 +99,9 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     public FileTransfer accept(OutputStream outputStream) throws IOException {
         return fileTransferNegotiator.accept(iq, sessionId, fileTransferOffer, protocol, outputStream);
     }
-    
+
     /**
-     * Accepts the incoming file transfer request.
+     * Accepts the inbound file transfer request.
      * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
      *
      * @param destination The path of the file to be written.
@@ -113,7 +113,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Accepts the incoming file transfer request.
+     * Accepts the inbound file transfer request.
      * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
      *
      * @param target The file to be written.
@@ -125,7 +125,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Rejects the incoming file transfer request.
+     * Rejects the inbound file transfer request.
      */
     public void reject() {
         fileTransferNegotiator.reject(iq);
@@ -142,7 +142,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     @Override
-    public Date getDate() {
+    public Instant getDate() {
         return fileTransferOffer.getDate();
     }
 

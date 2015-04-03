@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.blocking.model;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <item/>} element in the {@code urn:xmpp:blocking} namespace.
@@ -44,15 +45,15 @@ final class Item {
     }
 
     public Item(Jid jid) {
-        this.jid = jid;
+        this.jid = Objects.requireNonNull(jid);
     }
 
-    public Jid getJid() {
+    public final Jid getJid() {
         return jid;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return jid.toString();
     }
 }

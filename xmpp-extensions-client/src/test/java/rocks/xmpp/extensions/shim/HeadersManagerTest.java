@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,11 +49,11 @@ public class HeadersManagerTest extends ExtensionTest {
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
 
         // JULIET supports the following headers:
-        HeaderManager headerManager = connection1.getExtensionManager(HeaderManager.class);
+        HeaderManager headerManager = connection1.getManager(HeaderManager.class);
         headerManager.getSupportedHeaders().add("In-Reply-To");
         headerManager.getSupportedHeaders().add("Keywords");
 
-        ServiceDiscoveryManager serviceDiscoveryManager = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = null;
         try {
             infoNode = serviceDiscoveryManager.discoverInformation(JULIET);
@@ -71,12 +71,12 @@ public class HeadersManagerTest extends ExtensionTest {
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
 
         // JULIET supports the following headers:
-        HeaderManager headerManager = connection1.getExtensionManager(HeaderManager.class);
+        HeaderManager headerManager = connection1.getManager(HeaderManager.class);
         headerManager.getSupportedHeaders().add("In-Reply-To");
         headerManager.getSupportedHeaders().add("Keywords");
         headerManager.setEnabled(true);
 
-        ServiceDiscoveryManager serviceDiscoveryManager = connection2.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = null;
         try {
             infoNode = serviceDiscoveryManager.discoverInformation(JULIET);
@@ -101,12 +101,12 @@ public class HeadersManagerTest extends ExtensionTest {
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
 
         // JULIET supports the following headers:
-        HeaderManager headerManager = connection1.getExtensionManager(HeaderManager.class);
+        HeaderManager headerManager = connection1.getManager(HeaderManager.class);
         headerManager.getSupportedHeaders().add("In-Reply-To");
         headerManager.getSupportedHeaders().add("Keywords");
         headerManager.setEnabled(true);
 
-        HeaderManager headerManager2 = connection2.getExtensionManager(HeaderManager.class);
+        HeaderManager headerManager2 = connection2.getManager(HeaderManager.class);
         List<String> headers = headerManager2.discoverSupportedHeaders(JULIET);
 
         Assert.assertEquals(headers.size(), 2);

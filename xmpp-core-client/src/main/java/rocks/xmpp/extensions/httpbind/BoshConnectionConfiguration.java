@@ -162,7 +162,6 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
 
         private Builder() {
             // default values
-            port(5280);
             wait(60);
             file("/http-bind/");
         }

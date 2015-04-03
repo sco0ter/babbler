@@ -32,12 +32,13 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.XmppSession#addSessionStatusListener(SessionStatusListener)
  */
+@FunctionalInterface
 public interface SessionStatusListener extends EventListener {
 
     /**
-     * Called, whenever the status of the connection changed.
+     * Called, whenever the status of the session has changed.
      *
-     * @param e The connection event.
+     * @param e The session status event.
      */
     void sessionStatusChanged(SessionStatusEvent e);
 }

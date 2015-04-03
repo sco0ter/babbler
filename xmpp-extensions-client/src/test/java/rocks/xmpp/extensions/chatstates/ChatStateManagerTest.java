@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2015 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,10 @@ package rocks.xmpp.extensions.chatstates;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.session.Chat;
+import rocks.xmpp.core.chat.Chat;
+import rocks.xmpp.core.chat.ChatManager;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -54,19 +53,16 @@ public class ChatStateManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET.asBareJid(), mockServer);
 
         final Collection<ChatState> chatStatesReceived = new ArrayList<>();
-        xmppSession2.addMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                ChatState chatState = e.getMessage().getExtension(ChatState.class);
-                if (e.isIncoming() && chatState != null) {
-                    chatStatesReceived.add(chatState);
-                }
+        xmppSession2.addInboundMessageListener(e -> {
+            ChatState chatState = e.getMessage().getExtension(ChatState.class);
+            if (chatState != null) {
+                chatStatesReceived.add(chatState);
             }
         });
 
-        ChatStateManager chatStateManager = xmppSession1.getExtensionManager(ChatStateManager.class);
+        ChatStateManager chatStateManager = xmppSession1.getManager(ChatStateManager.class);
         chatStateManager.setEnabled(true);
-        Chat chat = xmppSession1.getChatManager().createChatSession(JULIET.asBareJid());
+        Chat chat = xmppSession1.getManager(ChatManager.class).createChatSession(JULIET.asBareJid());
         // At this point it is unknown if the chat partner supports chat states. Therefore send it.
         Assert.assertTrue(chatStateManager.setChatState(ChatState.COMPOSING, chat));
         Assert.assertTrue(chatStatesReceived.contains(ChatState.COMPOSING));
@@ -84,10 +80,10 @@ public class ChatStateManagerTest extends ExtensionTest {
     public void testServiceDiscoveryEntry() {
 
         XmppSession xmppSession1 = new TestXmppSession();
-        ChatStateManager chatStateManager = xmppSession1.getExtensionManager(ChatStateManager.class);
+        ChatStateManager chatStateManager = xmppSession1.getManager(ChatStateManager.class);
         // By default, Chat States are disabled.
         Assert.assertFalse(chatStateManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("http://jabber.org/protocol/chatstates");
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         chatStateManager.setEnabled(true);

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
 
     @Test
     public void testRosterItemAdditionWhenContactDoesNotExist() {
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("contact@example.net"), "juliet", Arrays.asList("friends"), ContactExchange.Item.Action.ADD));
@@ -73,7 +73,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     @Test
     public void testRosterItemAdditionWhenContactAlreadyExists() throws Exception {
 
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Arrays.asList("friends"), ContactExchange.Item.Action.ADD));
@@ -97,7 +97,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
 
     @Test
     public void testRosterItemDeletionWhenContactDoesNotExist() throws Exception {
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("contact@example.net"), "juliet", Arrays.asList("friends"), ContactExchange.Item.Action.DELETE));
@@ -110,7 +110,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
 
     @Test
     public void testRosterItemDeletionWhenContactDoesExistButNotInSpecifiedGroup() throws Exception {
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Arrays.asList("otherGroup"), ContactExchange.Item.Action.DELETE));
@@ -124,7 +124,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     @Test
     public void testRosterItemDeletionWhenContactDoesExistInSpecifiedGroup() throws Exception {
 
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Arrays.asList("friends", "unknownGroup"), ContactExchange.Item.Action.DELETE));
@@ -141,7 +141,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     @Test
     public void testRosterItemDeletionWhenNoGroupSpecified() throws Exception {
 
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Collections.<String>emptyList(), ContactExchange.Item.Action.DELETE));
@@ -155,7 +155,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     @Test
     public void testRosterItemModificationIfContactDoesExist() throws Exception {
 
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "Juliet", Arrays.asList("newGroup1"), ContactExchange.Item.Action.MODIFY));
@@ -173,7 +173,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     @Test
     public void testRosterItemModification() throws Exception {
 
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("contact@example.net"), "contact", Collections.<String>emptyList(), ContactExchange.Item.Action.MODIFY));
@@ -188,7 +188,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     @Test
     public void testRosterItemApproval() throws Exception {
 
-        ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         // Does already exist, therefore return null.
         Assert.assertNull(contactExchangeManager.approve(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Arrays.asList("friends"), ContactExchange.Item.Action.ADD)));

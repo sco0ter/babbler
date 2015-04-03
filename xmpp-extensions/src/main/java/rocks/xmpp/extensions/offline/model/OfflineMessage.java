@@ -34,9 +34,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <offline/>} element in the {@code http://jabber.org/protocol/offline} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>
@@ -54,20 +57,27 @@ public final class OfflineMessage {
     private final List<Item> items = new ArrayList<>();
 
     @XmlElement(name = "fetch")
-    private String fetch;
+    private final String fetch;
 
     @XmlElement(name = "purge")
-    private String purge;
+    private final String purge;
 
-    public OfflineMessage() {
+    private OfflineMessage() {
+        this.fetch = null;
+        this.purge = null;
     }
 
     public OfflineMessage(Item... item) {
-        items.addAll(Arrays.asList(item));
+        this(Arrays.asList(item));
     }
 
     public OfflineMessage(Collection<Item> items) {
+        if (items.isEmpty()) {
+            throw new IllegalArgumentException("items must not be empty");
+        }
         this.items.addAll(items);
+        this.fetch = null;
+        this.purge = null;
     }
 
     public OfflineMessage(boolean fetch, boolean purge) {
@@ -98,16 +108,18 @@ public final class OfflineMessage {
 
     public static final class Item {
         @XmlAttribute(name = "node")
-        private String id;
+        private final String id;
 
         @XmlAttribute(name = "action")
-        private Action action;
+        private final Action action;
 
         private Item() {
+            this.id = null;
+            this.action = null;
         }
 
         public Item(String id, Action action) {
-            this.id = id;
+            this.id = Objects.requireNonNull(id);
             this.action = action;
         }
 
@@ -116,7 +128,7 @@ public final class OfflineMessage {
          *
          * @return The id.
          */
-        public String getId() {
+        public final String getId() {
             return id;
         }
 

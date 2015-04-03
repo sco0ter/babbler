@@ -27,9 +27,12 @@ package rocks.xmpp.extensions.hashes.model;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * This class represents a hash value in conjunction with its algorithm.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>
@@ -44,12 +47,14 @@ public final class Hash {
     public static final String NAMESPACE = "urn:xmpp:hashes:1";
 
     @XmlValue
-    private byte[] value;
+    private final byte[] value;
 
     @XmlAttribute(name = "algo")
-    private String algorithm;
+    private final String algorithm;
 
     private Hash() {
+        this.value = null;
+        this.algorithm = null;
     }
 
     /**
@@ -59,8 +64,8 @@ public final class Hash {
      * @param algorithm The hash algorithm.
      */
     public Hash(byte[] value, String algorithm) {
-        this.value = value;
-        this.algorithm = algorithm;
+        this.value = Objects.requireNonNull(value);
+        this.algorithm = Objects.requireNonNull(algorithm);
     }
 
     /**
@@ -68,7 +73,7 @@ public final class Hash {
      *
      * @return The hash algorithm.
      */
-    public String getAlgorithm() {
+    public final String getAlgorithm() {
         return algorithm;
     }
 
@@ -77,7 +82,7 @@ public final class Hash {
      *
      * @return The hash value.
      */
-    public byte[] getValue() {
+    public final byte[] getValue() {
         return value;
     }
 }

@@ -30,6 +30,8 @@ import java.util.Objects;
 
 /**
  * The implementation of the {@code <replace/>} element in the {@code urn:xmpp:message-correct:0} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>
@@ -44,9 +46,10 @@ public final class Replace {
     public static final String NAMESPACE = "urn:xmpp:message-correct:0";
 
     @XmlAttribute
-    private String id;
+    private final String id;
 
     private Replace() {
+        this.id = null;
     }
 
     /**
@@ -61,12 +64,12 @@ public final class Replace {
      *
      * @return The message id.
      */
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return id;
     }
 }

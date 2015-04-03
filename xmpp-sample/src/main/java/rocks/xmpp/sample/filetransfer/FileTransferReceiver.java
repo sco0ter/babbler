@@ -31,11 +31,8 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
-import rocks.xmpp.extensions.filetransfer.FileTransferOfferEvent;
-import rocks.xmpp.extensions.filetransfer.FileTransferOfferListener;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 
@@ -46,46 +43,40 @@ public class FileTransferReceiver {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .secure(false)
-                            .build();
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .secure(false)
+                        .build();
 
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(VisualDebugger.class)
-                            .defaultResponseTimeout(5000)
-                            .build();
+                XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                        .debugger(VisualDebugger.class)
+                        .defaultResponseTimeout(5000)
+                        .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
 
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("222", "222", "filetransfer");
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("222", "222", "filetransfer");
+                // Send initial presence
+                xmppSession.send(new Presence());
 
-                    FileTransferManager fileTransferManager = xmppSession.getExtensionManager(FileTransferManager.class);
-                    fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
-                        @Override
-                        public void fileTransferOffered(FileTransferOfferEvent e) {
-                            try {
-                                FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
-                                fileTransfer.transfer();
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
-                            }
-                        }
-                    });
+                FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
+                fileTransferManager.addFileTransferOfferListener(e -> {
+                    try {
+                        FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
+                        fileTransfer.transfer();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                });
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

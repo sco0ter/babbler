@@ -28,11 +28,10 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -43,7 +42,7 @@ import java.util.Collections;
  */
 @XmlRootElement(name = "message")
 @XmlType(propOrder = {"from", "id", "to", "type", "language", "subject", "body", "thread", "extensions", "error"})
-public final class Message extends AbstractMessage implements ClientStreamElement {
+public final class Message extends AbstractMessage implements ServerStreamElement {
     public Message() {
         this(null);
     }
@@ -100,7 +99,7 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param thread  The thread.
      */
     public Message(Jid to, Type type, String body, String subject, String thread) {
-        this(to, type, body != null ? Arrays.asList(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Arrays.asList(new Subject(subject)) : Collections.<Subject>emptyList(), thread, null, null, null, null, null, null);
+        this(to, type, body != null ? Collections.singleton(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Collections.singleton(new Subject(subject)) : Collections.<Subject>emptyList(), thread, null, null, null, null, null, null);
     }
 
     /**
@@ -119,7 +118,7 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param error        The error.
      */
     public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, Collection<Object> extensions, StanzaError error) {
-        this(to, type, body != null ? Arrays.asList(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Arrays.asList(new Subject(subject)) : Collections.<Subject>emptyList(), thread, parentThread, id, from, language, extensions, error);
+        this(to, type, body != null ? Collections.singleton(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Collections.singleton(new Subject(subject)) : Collections.<Subject>emptyList(), thread, parentThread, id, from, language, extensions, error);
     }
 
     /**

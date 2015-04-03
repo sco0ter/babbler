@@ -2,7 +2,7 @@
 
 It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 700+ unit tests).
 
-It supports the core specifications [RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html), (short of optional features like [Roster Versioning](http://xmpp.org/rfcs/rfc6121.html#roster-versioning)), as well as many [extensions](http://xmpp.org/xmpp-protocols/xmpp-extensions/).
+It supports the core specifications [RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html), as well as many [extensions](http://xmpp.org/xmpp-protocols/xmpp-extensions/).
 
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 
@@ -22,12 +22,45 @@ Since this project is quite young, the API might change. Comments on the API are
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
+</dependency>
+```
+
+## Snapshots
+
+Development snapshots are availble on OSS Sonatype nexus:
+
+```xml
+<repositories>
+    <repository>
+        <id>sonatype-nexus-snapshots</id>
+        <name>Sonatype Nexus Snapshots</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
+
+```xml
+<dependency>
+    <groupId>rocks.xmpp</groupId>
+    <artifactId>xmpp-core-client</artifactId>
+    <version>0.6.0-SNAPSHOT</version>
+</dependency>
+<dependency>
+    <groupId>rocks.xmpp</groupId>
+    <artifactId>xmpp-extensions-client</artifactId>
+    <version>0.6.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -112,6 +145,7 @@ Since this project is quite young, the API might change. Comments on the API are
 * ![supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 * ![in development][in development] [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
+* ![supported][supported]           [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
 
 Supported experimental XEPs:
 
@@ -217,7 +251,7 @@ Before connecting to a server, you should configure your XMPP session.
 
 You might want to do one of the following:
 
-* Adding event listeners in order to listen for incoming messages, roster and presence changes or to modify outgoing messages.
+* Adding event listeners in order to listen for inbound messages, roster and presence changes or to modify outbound messages.
 * Setting up a custom SSL context
 * Configuring extensions, e.g.
     * Enable or disable certain extensions
@@ -229,23 +263,21 @@ Here are some examples:
 
 ```java
 // Listen for presence changes
-xmppSession.addPresenceListener(new PresenceListener() {
+xmppSession.addInboundPresenceListener(new PresenceListener() {
     @Override
     public void handlePresence(PresenceEvent e) {
-        if (e.isIncoming()) {
-            // Handle incoming presence.
-        }
+        // Handle inbound presence.
     }
 });
 // Listen for messages
-xmppSession.addMessageListener(new MessageListener() {
+xmppSession.addInboundMessageListener(new MessageListener() {
     @Override
     public void handleMessage(MessageEvent e) {
-        // Handle outgoing or incoming message
+        // Handle inbound message
     }
 });
 // Listen for roster pushes
-xmppSession.getRosterManager().addRosterListener(new RosterListener() {
+xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
     @Override
     public void rosterChanged(RosterEvent e) {
 
@@ -260,8 +292,8 @@ If you have prepared your session, you are now ready to connect to the server:
 ```java
 try {
    xmppSession.connect();
-} catch (IOException e) {
-   // e.g. UnknownHostException
+} catch (XmppException e) {
+   // ...
 }
 ```
 

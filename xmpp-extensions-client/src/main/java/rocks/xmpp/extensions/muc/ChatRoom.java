@@ -26,15 +26,11 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.Chat;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.PresenceListener;
-import rocks.xmpp.core.stanza.StanzaFilter;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -67,7 +63,6 @@ import rocks.xmpp.extensions.register.model.Registration;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -84,7 +79,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ChatRoom extends Chat implements SessionStatusListener, MessageListener, PresenceListener, Comparable<ChatRoom> {
+public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private static final Logger logger = Logger.getLogger(ChatRoom.class.getName());
 
@@ -106,6 +101,10 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
 
     private final XmppSession xmppSession;
 
+    private final MessageListener messageListener;
+
+    private final PresenceListener presenceListener;
+
     private volatile String nick;
 
     private volatile boolean entered;
@@ -116,15 +115,103 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
         this.xmppSession = xmppSession;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
         this.multiUserChatManager = multiUserChatManager;
+        this.messageListener = e -> {
+            Message message = e.getMessage();
+            if (message.getFrom().asBareJid().equals(roomJid)) {
+                if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
+                    // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
+                    if (message.getSubject() != null && message.getBody() == null) {
+                        notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), message.getExtension(DelayedDelivery.class) != null, DelayedDelivery.deliveryDateOrNow(message)));
+                    } else {
+                        notifyInboundMessageListeners(new MessageEvent(ChatRoom.this, message, true));
+                    }
+                } else {
+                    MucUser mucUser = message.getExtension(MucUser.class);
+                    if (mucUser != null) {
+                        Decline decline = mucUser.getDecline();
+                        if (decline != null) {
+                            notifyInvitationDeclineListeners(new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
+                        }
+                    }
+                }
+            }
+        };
+
+        this.presenceListener = e -> {
+            Presence presence = e.getPresence();
+            // If the presence came from the room.
+            if (presence.getFrom() != null && presence.getFrom().asBareJid().equals(roomJid)) {
+                MucUser mucUser = presence.getExtension(MucUser.class);
+                if (mucUser != null) {
+                    String nick = presence.getFrom().getResource();
+
+                    if (nick != null) {
+                        boolean isSelfPresence = isSelfPresence(presence);
+                        if (presence.isAvailable()) {
+                            Occupant occupant = new Occupant(presence, isSelfPresence);
+                            Occupant previousOccupant = occupantMap.put(nick, occupant);
+                            // A new occupant entered the room.
+                            if (previousOccupant == null) {
+                                // Only notify about "joins", if it's not our own join and we are already in the room.
+                                if (!isSelfPresence && entered) {
+                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ENTERED, null, null, null));
+                                }
+                            } else {
+                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.STATUS_CHANGED, null, null, null));
+                            }
+                        } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
+                            // Occupant has exited the room.
+                            Occupant occupant = occupantMap.remove(nick);
+                            if (occupant != null) {
+                                if (mucUser.getItem() != null) {
+                                    Actor actor = mucUser.getItem().getActor();
+                                    String reason = mucUser.getItem().getReason();
+                                    if (!mucUser.getStatusCodes().isEmpty()) {
+                                        if (mucUser.getStatusCodes().contains(Status.KICKED)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null));
+                                        } else if (mucUser.getStatusCodes().contains(Status.BANNED)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null));
+                                        } else if (mucUser.getStatusCodes().contains(Status.MEMBERSHIP_REVOKED)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null));
+                                        } else if (mucUser.getStatusCodes().contains(Status.NICK_CHANGED)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null));
+                                        } else if (mucUser.getStatusCodes().contains(Status.SERVICE_SHUT_DOWN)) {
+                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null));
+                                        }
+                                    } else if (mucUser.getDestroy() != null) {
+                                        notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid()));
+                                    } else {
+                                        notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
+                                    }
+                                } else {
+                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
+                                }
+                            }
+                            if (isSelfPresence) {
+                                userHasExited();
+                            }
+                        }
+                    }
+                }
+            }
+        };
     }
 
     void initialize() {
-        xmppSession.addSessionStatusListener(this);
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                invitationDeclineListeners.clear();
+                subjectChangeListeners.clear();
+                occupantListeners.clear();
+                inboundMessageListeners.clear();
+                occupantMap.clear();
+            }
+        });
     }
 
     private void userHasExited() {
-        xmppSession.removeMessageListener(this);
-        xmppSession.removePresenceListener(this);
+        xmppSession.removeInboundMessageListener(messageListener);
+        xmppSession.removeInboundPresenceListener(presenceListener);
     }
 
     private void notifyInvitationDeclineListeners(InvitationDeclineEvent invitationDeclineEvent) {
@@ -162,7 +249,11 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null) {
             // If the presence is self-presence (110) or if the service assigned another nickname (210) to the user (but didn't include 110).
-            isSelfPresence = mucUser.getStatusCodes().contains(Status.self()) || mucUser.getStatusCodes().contains(Status.serviceHasAssignedOrModifiedNick());
+            boolean nicknameChanged = mucUser.getStatusCodes().contains(Status.SERVICE_HAS_ASSIGNED_OR_MODIFIED_NICK);
+            if (nicknameChanged) {
+                nick = presence.getFrom().getResource();
+            }
+            isSelfPresence = mucUser.getStatusCodes().contains(Status.SELF_PRESENCE) || nicknameChanged;
         }
         return isSelfPresence || nick != null && presence.getFrom() != null && nick.equals(presence.getFrom().getResource());
     }
@@ -231,8 +322,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Enters the room.
      *
      * @param nick The nickname.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public void enter(String nick) throws XmppException {
         enter(nick, null, null);
@@ -243,8 +334,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      *
      * @param nick     The nickname.
      * @param password The password.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public void enter(String nick, String password) throws XmppException {
         enter(nick, password, null);
@@ -255,8 +346,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      *
      * @param nick    The nickname.
      * @param history The history.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public void enter(String nick, History history) throws XmppException {
         enter(nick, null, history);
@@ -268,8 +359,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @param nick     The nickname.
      * @param password The password.
      * @param history  The history.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public synchronized void enter(final String nick, String password, History history) throws XmppException {
         Objects.requireNonNull(nick, "nick must not be null.");
@@ -279,22 +370,19 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
         }
 
         try {
-            xmppSession.addMessageListener(this);
-            xmppSession.addPresenceListener(this);
+            xmppSession.addInboundMessageListener(messageListener);
+            xmppSession.addInboundPresenceListener(presenceListener);
 
             final Presence enterPresence = new Presence(roomJid.withResource(nick));
             enterPresence.getExtensions().add(new Muc(password, history));
             this.nick = nick;
-            xmppSession.sendAndAwaitPresence(enterPresence, new StanzaFilter<Presence>() {
-                @Override
-                public boolean accept(Presence presence) {
-                    Jid room = presence.getFrom().asBareJid();
-                    return room.equals(roomJid) && isSelfPresence(presence);
-                }
+            xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
+                Jid room = presence.getFrom().asBareJid();
+                return presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
             });
         } catch (XmppException e) {
-            xmppSession.removeMessageListener(this);
-            xmppSession.removePresenceListener(this);
+            xmppSession.removeInboundMessageListener(messageListener);
+            xmppSession.removeInboundPresenceListener(presenceListener);
             throw e;
         }
         multiUserChatManager.roomEntered(this, nick);
@@ -305,43 +393,44 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Changes the room subject.
      *
      * @param subject The subject.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public void changeSubject(final String subject) throws XmppException {
         Message message = new Message(roomJid, Message.Type.GROUPCHAT, null, subject, null);
-        xmppSession.sendAndAwaitMessage(message, new StanzaFilter<Message>() {
-            @Override
-            public boolean accept(Message message) {
-                return message.getSubject() != null && message.getSubject().equals(subject);
-            }
-        });
+        xmppSession.sendAndAwaitMessage(message, message1 -> message1.getSubject() != null && message1.getSubject().equals(subject));
     }
 
     /**
      * Sends a message to the room.
      *
      * @param message The message text.
+     * @return The sent message.
      */
-    public void sendMessage(String message) {
-        xmppSession.send(new Message(roomJid, Message.Type.GROUPCHAT, message));
+    public Message sendMessage(String message) {
+        Message m = new Message(roomJid, Message.Type.GROUPCHAT, message);
+        xmppSession.send(m);
+        return m;
     }
 
     /**
      * Sends a message to the room.
      *
      * @param message The message.
+     * @return The sent message.
      */
-    public void sendMessage(Message message) {
-        xmppSession.send(new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(), message.getThread(), message.getParentThread(), message.getId(), message.getFrom(), message.getLanguage(), message.getExtensions(), message.getError()));
+    public Message sendMessage(Message message) {
+        Message m = new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(), message.getThread(), message.getParentThread(), message.getId(), message.getFrom(), message.getLanguage(), message.getExtensions(), message.getError());
+        xmppSession.send(m);
+        return m;
     }
 
     /**
      * Changes the nickname.
      *
      * @param newNickname The new nickname.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#changenick">7.6 Changing Nickname</a>
      */
     public synchronized void changeNickname(String newNickname) throws XmppException {
@@ -350,12 +439,7 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
         }
 
         final Presence changeNickNamePresence = new Presence(roomJid.withResource(newNickname));
-        xmppSession.sendAndAwaitPresence(changeNickNamePresence, new StanzaFilter<Presence>() {
-            @Override
-            public boolean accept(Presence presence) {
-                return presence.getFrom().equals(changeNickNamePresence.getTo());
-            }
-        });
+        xmppSession.sendAndAwaitPresence(changeNickNamePresence, presence -> presence.getFrom().equals(changeNickNamePresence.getTo()));
     }
 
     /**
@@ -408,8 +492,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the data form necessary to register with the room.
      *
      * @return The data form.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
@@ -424,26 +508,11 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
     }
 
     /**
-     * Submits the registration form.
-     *
-     * @param dataForm The data form.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
-     * @deprecated Use {@link #register(rocks.xmpp.extensions.register.model.Registration)}
-     */
-    @Deprecated
-    public void submitRegistrationForm(DataForm dataForm) throws XmppException {
-        register(Registration.builder().registrationForm(dataForm).build());
-    }
-
-    /**
      * Registers with the room.
      *
      * @param registration The registration.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
@@ -465,11 +534,11 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets your reserved room nickname.
      *
      * @return The reserved nickname or null, if you don't have a reserved nickname.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public String discoverReservedNickname() throws XmppException {
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid, "x-roomuser-item");
         if (infoNode != null) {
             for (Identity identity : infoNode.getIdentities()) {
@@ -496,9 +565,11 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
     /**
      * Exits the room.
      *
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    public void exit() {
+    public void exit() throws XmppException {
         exit(null);
     }
 
@@ -506,14 +577,19 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Exits the room with a custom message.
      *
      * @param message The exit message.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    public synchronized void exit(String message) {
+    public synchronized void exit(String message) throws XmppException {
 
         if (!entered) {
             throw new IllegalStateException("You can't exit a room, when you didn't enter it.");
         }
-        xmppSession.send(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message));
+        xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
+            Jid room = presence.getFrom().asBareJid();
+            return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
+        });
         userHasExited();
 
         nick = null;
@@ -526,8 +602,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the voice list.
      *
      * @return The voice list.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getVoiceList() throws XmppException {
@@ -540,8 +616,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Changes multiple affiliations or roles.
      *
      * @param items The items.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
@@ -556,8 +632,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the ban list.
      *
      * @return The ban list.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getBanList() throws XmppException {
@@ -584,8 +660,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @param affiliation The new affiliation for the user.
      * @param user        The user.
      * @param reason      The reason.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
@@ -614,8 +690,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * @param role     The new role for the user.
      * @param nickname The occupant's nickname.
      * @param reason   The reason.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
@@ -636,8 +712,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * </p>
      *
      * @return The members.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getMembers() throws XmppException {
@@ -650,8 +726,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the moderators.
      *
      * @return The moderators.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getModerators() throws XmppException {
@@ -663,8 +739,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
     /**
      * Creates an instant room.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant">10.1.2 Creating an Instant Room</a>
      */
     public void createRoom() throws XmppException {
@@ -676,8 +752,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the room information for this chat room.
      *
      * @return The room info.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
      */
     public RoomInformation getRoomInformation() throws XmppException {
@@ -717,8 +793,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Gets the occupants in this room, i.e. their nicknames. This method should be used, when you are not yet in the room.
      *
      * @return The occupants.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roomitems">6.5 Querying for Room Items</a>
      * @see #getOccupants()
      */
@@ -726,14 +802,12 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(roomJid);
         List<String> occupants = new ArrayList<>();
         List<Item> items = itemNode.getItems();
-        for (Item item : items) {
-            if (item.getJid() != null) {
-                String nickname = item.getJid().getResource();
-                if (nickname != null) {
-                    occupants.add(nickname);
-                }
+        items.stream().filter(item -> item.getJid() != null).forEach(item -> {
+            String nickname = item.getJid().getResource();
+            if (nickname != null) {
+                occupants.add(nickname);
             }
-        }
+        });
         return occupants;
     }
 
@@ -764,8 +838,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * </p>
      *
      * @return The configuration form.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see rocks.xmpp.extensions.muc.model.RoomConfiguration
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
@@ -777,35 +851,11 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
     }
 
     /**
-     * Submits the configuration form for this room.
-     *
-     * @param dataForm The data form.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
-     * @see #getConfigurationForm()
-     * @deprecated Use {@link #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)}
-     */
-    @Deprecated
-    public void submitConfigurationForm(DataForm dataForm) throws XmppException {
-        Objects.requireNonNull(dataForm, "dataForm must not be null.");
-        if (dataForm.getType() != DataForm.Type.SUBMIT && dataForm.getType() != DataForm.Type.CANCEL) {
-            throw new IllegalArgumentException("Data Form must be of type 'submit' or 'cancel'");
-        }
-        if (!"http://jabber.org/protocol/muc#roomconfig".equals(dataForm.getFormType())) {
-            throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#roomconfig'");
-        }
-        MucOwner mucOwner = new MucOwner(dataForm);
-        IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
-        xmppSession.query(iq);
-    }
-
-    /**
      * Configures this room.
      *
      * @param roomConfiguration The room configuration form.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #getConfigurationForm()
      */
@@ -829,8 +879,8 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Destroys the room.
      *
      * @param reason The reason for the room destruction.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
      */
     public void destroy(String reason) throws XmppException {
@@ -852,117 +902,12 @@ public final class ChatRoom extends Chat implements SessionStatusListener, Messa
      * Discovers the allowable traffic, i.e. the allowed extensions.
      *
      * @return The list of allowable features.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://www.xmpp.org/extensions/xep-0045.html#impl-service-traffic">17.1.1 Allowable Traffic</a>
      */
     public Set<Feature> discoverAllowableTraffic() throws XmppException {
         return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").getFeatures();
-    }
-
-    @Override
-    public void handleMessage(MessageEvent e) {
-        if (e.isIncoming()) {
-            Message message = e.getMessage();
-            if (message.getFrom().asBareJid().equals(roomJid)) {
-                if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
-                    // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
-                    if (message.getSubject() != null && message.getBody() == null) {
-                        Date date;
-                        DelayedDelivery delayedDelivery = message.getExtension(DelayedDelivery.class);
-                        if (delayedDelivery != null) {
-                            date = delayedDelivery.getTimeStamp();
-                        } else {
-                            date = new Date();
-                        }
-                        notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), delayedDelivery != null, date));
-                    } else {
-                        notifyMessageListeners(new MessageEvent(ChatRoom.this, message, true));
-                    }
-                } else {
-                    MucUser mucUser = message.getExtension(MucUser.class);
-                    if (mucUser != null) {
-                        Decline decline = mucUser.getDecline();
-                        if (decline != null) {
-                            notifyInvitationDeclineListeners(new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public void handlePresence(PresenceEvent e) {
-        Presence presence = e.getPresence();
-        // If the presence came from the room.
-        if (presence.getFrom() != null && presence.getFrom().asBareJid().equals(roomJid)) {
-            if (e.isIncoming()) {
-                MucUser mucUser = presence.getExtension(MucUser.class);
-                if (mucUser != null) {
-                    String nick = presence.getFrom().getResource();
-
-                    if (nick != null) {
-                        boolean isSelfPresence = isSelfPresence(presence);
-                        if (presence.isAvailable()) {
-                            Occupant occupant = new Occupant(presence, isSelfPresence);
-                            Occupant previousOccupant = occupantMap.put(nick, occupant);
-                            // A new occupant entered the room.
-                            if (previousOccupant == null) {
-                                // Only notify about "joins", if it's not our own join and we are already in the room.
-                                if (!isSelfPresence && entered) {
-                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ENTERED, null, null, null));
-                                }
-                            } else {
-                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.STATUS_CHANGED, null, null, null));
-                            }
-                        } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
-                            // Occupant has exited the room.
-                            Occupant occupant = occupantMap.remove(nick);
-                            if (occupant != null) {
-                                if (mucUser.getItem() != null) {
-                                    Actor actor = mucUser.getItem().getActor();
-                                    String reason = mucUser.getItem().getReason();
-                                    if (!mucUser.getStatusCodes().isEmpty()) {
-                                        if (mucUser.getStatusCodes().contains(Status.kicked())) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null));
-                                        } else if (mucUser.getStatusCodes().contains(Status.banned())) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null));
-                                        } else if (mucUser.getStatusCodes().contains(Status.membershipRevoked())) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null));
-                                        } else if (mucUser.getStatusCodes().contains(Status.nicknameChanged())) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null));
-                                        } else if (mucUser.getStatusCodes().contains(Status.systemShutdown())) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null));
-                                        }
-                                    } else if (mucUser.getDestroy() != null) {
-                                        notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid()));
-                                    } else {
-                                        notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
-                                    }
-                                } else {
-                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
-                                }
-                            }
-                            if (isSelfPresence) {
-                                userHasExited();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            invitationDeclineListeners.clear();
-            subjectChangeListeners.clear();
-            occupantListeners.clear();
-            messageListeners.clear();
-            occupantMap.clear();
-        }
     }
 
     @Override

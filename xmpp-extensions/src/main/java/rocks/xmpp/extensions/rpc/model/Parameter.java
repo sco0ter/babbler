@@ -32,16 +32,17 @@ import javax.xml.bind.annotation.XmlElement;
 final class Parameter {
 
     @XmlElement(name = "value")
-    private Value value;
+    private final Value value;
 
     private Parameter() {
+        this.value = null;
     }
 
     public Parameter(Value value) {
         this.value = value;
     }
 
-    public Value getValue() {
+    public final Value getValue() {
         return value;
     }
 }

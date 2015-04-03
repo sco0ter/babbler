@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <forwarded/>} element in the {@code urn:xmpp:forward:0} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0297.html">XEP-0297: Stanza Forwarding</a>
@@ -50,13 +52,15 @@ public final class Forwarded {
     public static final String NAMESPACE = "urn:xmpp:forward:0";
 
     @XmlElementRef
-    private DelayedDelivery delayedDelivery;
+    private final DelayedDelivery delayedDelivery;
 
     @XmlElementRefs({@XmlElementRef(type = Message.class), @XmlElementRef(type = Presence.class), @XmlElementRef(type = IQ.class),
             @XmlElementRef(type = rocks.xmpp.core.stanza.model.server.Message.class), @XmlElementRef(type = rocks.xmpp.core.stanza.model.server.Presence.class), @XmlElementRef(type = rocks.xmpp.core.stanza.model.server.IQ.class),})
-    private Stanza stanza;
+    private final Stanza stanza;
 
     private Forwarded() {
+        this.stanza = null;
+        this.delayedDelivery = null;
     }
 
     /**
@@ -75,8 +79,8 @@ public final class Forwarded {
      * @param stanza          The stanza to forward.
      */
     public Forwarded(Stanza stanza, DelayedDelivery delayedDelivery) {
-        this.delayedDelivery = delayedDelivery;
         this.stanza = stanza;
+        this.delayedDelivery = delayedDelivery;
     }
 
     /**
@@ -84,7 +88,7 @@ public final class Forwarded {
      *
      * @return The delay.
      */
-    public DelayedDelivery getDelayedDelivery() {
+    public final DelayedDelivery getDelayedDelivery() {
         return delayedDelivery;
     }
 
@@ -93,7 +97,7 @@ public final class Forwarded {
      *
      * @return The forwarded stanza.
      */
-    public Stanza getStanza() {
+    public final Stanza getStanza() {
         return stanza;
     }
 }

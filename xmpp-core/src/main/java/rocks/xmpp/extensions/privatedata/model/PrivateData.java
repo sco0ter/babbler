@@ -65,12 +65,12 @@ public final class PrivateData {
      *
      * @return The items.
      */
-    public Object getData() {
+    public final Object getData() {
         return privateData;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return privateData != null ? privateData.toString() : super.toString();
     }
 }

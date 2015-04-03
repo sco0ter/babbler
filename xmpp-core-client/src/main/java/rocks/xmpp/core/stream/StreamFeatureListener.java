@@ -32,6 +32,7 @@ import java.util.EventListener;
  * @author Christian Schudt
  * @see rocks.xmpp.core.stream.StreamFeatureNegotiator#addFeatureListener(StreamFeatureListener)
  */
+@FunctionalInterface
 public interface StreamFeatureListener extends EventListener {
 
     /**

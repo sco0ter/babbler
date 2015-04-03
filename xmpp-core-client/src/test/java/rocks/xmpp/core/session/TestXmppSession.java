@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,9 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQListener;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
@@ -85,11 +84,6 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void connect() throws IOException {
-
-            }
-
-            @Override
             public void connect(Jid from) throws IOException {
 
             }
@@ -114,7 +108,7 @@ public class TestXmppSession extends XmppSession {
         mockServer.registerConnection(this);
 
         // Auto-connect
-        updateStatus(Status.CONNECTED);
+        updateStatus(Status.AUTHENTICATED);
     }
 
     @Override
@@ -129,19 +123,16 @@ public class TestXmppSession extends XmppSession {
     public IQ query(final IQ iq) throws StanzaException, NoResponseException {
         final IQ[] result = new IQ[1];
 
-        final IQListener iqListener = new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                if (e.isIncoming() && e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
-                    result[0] = e.getIQ();
-                }
+        final IQListener iqListener = e -> {
+            if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
+                result[0] = e.getIQ();
             }
         };
 
-        addIQListener(iqListener);
+        addInboundIQListener(iqListener);
         send(iq);
 
-        removeIQListener(iqListener);
+        removeInboundIQListener(iqListener);
         IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
             throw new StanzaException(response);

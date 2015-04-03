@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.bytestreams.s5b.model;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Objects;
 
 /**
  * @author Christian Schudt
@@ -34,12 +35,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 final class StreamHostUsed {
 
     @XmlAttribute(name = "jid")
-    Jid jid;
+    final Jid jid;
 
     private StreamHostUsed() {
+        this.jid = null;
     }
 
     StreamHostUsed(Jid jid) {
-        this.jid = jid;
+        this.jid = Objects.requireNonNull(jid);
     }
 }

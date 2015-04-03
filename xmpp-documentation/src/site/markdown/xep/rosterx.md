@@ -10,17 +10,17 @@ Although there\'s also the possibility to suggest whether a contact is to be del
 This will suggest the contact \"Juliet\" to be added to \"Romeo\'s\" roster:
 
 ```java
-ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 contactExchangeManager.suggestContactAddition(Jid.valueOf("romeo@example.net"), new Contact(Jid.valueOf("juliet@example.net"), "Juliet"));
 ```
 
 ## Listening for Contact Exchange Suggestions
 
 If you want to support contact exchange and therefore indicate support for it you should first enable the manager.
-Once enabled, incoming contact exchange suggestions can be listened to by adding a listener to the manager. The event object will contain the suggested items.
+Once enabled, inbound contact exchange suggestions can be listened to by adding a listener to the manager. The event object will contain the suggested items.
 
 ```java
-final ContactExchangeManager contactExchangeManager = xmppSession.getExtensionManager(ContactExchangeManager.class);
+final ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 contactExchangeManager.setEnabled(true);
 contactExchangeManager.addContactExchangeListener(new ContactExchangeListener() {
     @Override

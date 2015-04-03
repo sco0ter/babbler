@@ -30,12 +30,14 @@ import java.util.EventListener;
  * A listener interface, which allows to listen for received or sent presence stanzas.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.session.XmppSession#addPresenceListener(PresenceListener)
+ * @see rocks.xmpp.core.session.XmppSession#addInboundPresenceListener(PresenceListener)
+ * @see rocks.xmpp.core.session.XmppSession#addOutboundPresenceListener(PresenceListener)
  */
+@FunctionalInterface
 public interface PresenceListener extends EventListener {
 
     /**
-     * Handles the incoming or outgoing presence.
+     * Handles the inbound or outbound presence.
      *
      * @param e The presence event.
      */

@@ -38,13 +38,13 @@ public final class MessageEvent extends StanzaEvent<Message> {
     /**
      * Constructs a message event.
      *
-     * @param source   The object on which the event initially occurred.
-     * @param message  The message stanza.
-     * @param incoming True, if the stanza is incoming.
+     * @param source  The object on which the event initially occurred.
+     * @param message The message stanza.
+     * @param inbound True, if the stanza is inbound.
      * @throws IllegalArgumentException if source is null.
      */
-    public MessageEvent(Object source, Message message, boolean incoming) {
-        super(source, message, incoming);
+    public MessageEvent(Object source, Message message, boolean inbound) {
+        super(source, message, inbound);
     }
 
     /**

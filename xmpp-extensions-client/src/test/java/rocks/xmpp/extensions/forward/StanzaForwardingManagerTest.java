@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,10 +39,10 @@ public class StanzaForwardingManagerTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        StanzaForwardingManager stanzaForwardingManager = connection1.getExtensionManager(StanzaForwardingManager.class);
+        StanzaForwardingManager stanzaForwardingManager = connection1.getManager(StanzaForwardingManager.class);
         // By default, the manager should be NOT enabled.
         Assert.assertFalse(stanzaForwardingManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Feature feature = new Feature("urn:xmpp:forward:0");
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         stanzaForwardingManager.setEnabled(true);

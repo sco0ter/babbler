@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -79,7 +79,7 @@ public class IbbTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
         Assert.assertNotNull(open);
-        Assert.assertEquals((int) open.getBlockSize(), 4096);
+        Assert.assertEquals(open.getBlockSize(), 4096);
         Assert.assertEquals(open.getSessionId(), "i781hf64");
         Assert.assertEquals(open.getStanzaType(), InBandByteStream.Open.StanzaType.IQ);
     }

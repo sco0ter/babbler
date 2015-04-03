@@ -30,11 +30,13 @@ import java.util.EventListener;
  * A listener interface, which allows to listen for received or sent IQ stanzas.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.session.XmppSession#addIQListener(IQListener)
+ * @see rocks.xmpp.core.session.XmppSession#addInboundIQListener(IQListener)
+ * @see rocks.xmpp.core.session.XmppSession#addOutboundIQListener(IQListener)
  */
+@FunctionalInterface
 public interface IQListener extends EventListener {
     /**
-     * Handles the incoming or outgoing IQ.
+     * Handles the inbound or outbound IQ.
      *
      * @param e The IQ event.
      */

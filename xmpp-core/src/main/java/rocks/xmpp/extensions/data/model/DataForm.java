@@ -38,19 +38,24 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:data} namespace, which represents data forms.
  * <blockquote>
  * <p>This specification defines an XMPP protocol extension for data forms that can be used in workflows such as service configuration as well as for application-specific data description and reporting. The protocol includes lightweight semantics for forms processing (such as request, response, submit, and cancel), defines several common field types (boolean, list options with single or multiple choice, text with single line or multiple lines, single or multiple JabberIDs, hidden fields, etc.), provides extensibility for future data types, and can be embedded in a wide range of applications. The protocol is not intended to provide complete forms-processing functionality as is provided in the W3C XForms technology, but instead provides a basic subset of such functionality for use by XMPP entities.</p>
  * </blockquote>
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>
@@ -82,16 +87,19 @@ public final class DataForm implements Comparable<DataForm> {
     private final List<Item> items = new ArrayList<>();
 
     @XmlAttribute
-    private Type type;
+    private final Type type;
 
     @XmlElement
-    private String title;
+    private final String title;
 
     @XmlElementWrapper(name = "reported")
     @XmlElement(name = "field")
-    private List<Field> reportedFields;
+    private final List<Field> reportedFields;
 
     private DataForm() {
+        this.type = null;
+        this.title = null;
+        this.reportedFields = null;
     }
 
     /**
@@ -100,7 +108,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param type The form type.
      */
     public DataForm(Type type) {
-        this.type = type;
+        this(type, null);
     }
 
     /**
@@ -110,7 +118,9 @@ public final class DataForm implements Comparable<DataForm> {
      * @param fields The fields.
      */
     public DataForm(Type type, Collection<Field> fields) {
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
+        this.title = null;
+        this.reportedFields = null;
         if (fields != null) {
             this.fields.addAll(fields);
         }
@@ -135,33 +145,9 @@ public final class DataForm implements Comparable<DataForm> {
         if (builder.reportedFields != null && !builder.reportedFields.isEmpty()) {
             this.reportedFields = new ArrayList<>();
             this.reportedFields.addAll(builder.reportedFields);
+        } else {
+            this.reportedFields = null;
         }
-    }
-
-    /**
-     * Creates a data form.
-     *
-     * @param type  The form type.
-     * @param title The form title.
-     */
-    @Deprecated
-    public DataForm(Type type, String title) {
-        this.type = type;
-        this.title = title;
-    }
-
-    /**
-     * Creates a data form.
-     *
-     * @param type         The form type.
-     * @param title        The form title.
-     * @param instructions The instructions.
-     */
-    @Deprecated
-    public DataForm(Type type, String title, String... instructions) {
-        this.type = type;
-        this.title = title;
-        this.instructions.addAll(Arrays.asList(instructions));
     }
 
     public DataForm(Type type, String title, Collection<Field> fields, Collection<Field> reportedFields, Collection<Item> items, Collection<String> instructions, Collection<Page> pages) {
@@ -182,6 +168,8 @@ public final class DataForm implements Comparable<DataForm> {
         if (reportedFields != null && !reportedFields.isEmpty()) {
             this.reportedFields = new ArrayList<>();
             this.reportedFields.addAll(reportedFields);
+        } else {
+            this.reportedFields = null;
         }
     }
 
@@ -201,7 +189,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param var The field name.
      * @return The value or null, if the field does not exist.
      */
-    public String findValue(String var) {
+    public final String findValue(String var) {
         List<String> values = findValues(var);
         return values.isEmpty() ? null : values.get(0);
     }
@@ -212,7 +200,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param var The field name.
      * @return The values.
      */
-    public List<String> findValues(String var) {
+    public final List<String> findValues(String var) {
         Field field = findField(var);
         return field == null ? Collections.<String>emptyList() : field.getValues();
     }
@@ -223,7 +211,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param var The field name.
      * @return The value as boolean.
      */
-    public boolean findValueAsBoolean(String var) {
+    public final boolean findValueAsBoolean(String var) {
         return parseBoolean(findValue(var));
     }
 
@@ -233,7 +221,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param var The field name.
      * @return The value as integer or null, if the field could not be found.
      */
-    public Integer findValueAsInteger(String var) {
+    public final Integer findValueAsInteger(String var) {
         Field field = findField(var);
         return field == null ? null : field.getValueAsInteger();
     }
@@ -243,10 +231,23 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @param var The field name.
      * @return The value as date or null, if the field could not be found.
+     * @deprecated Use {@link #findValueAsInstant(String)}
      */
-    public Date findValueAsDate(String var) {
+    @Deprecated
+    public final Date findValueAsDate(String var) {
         Field field = findField(var);
         return field == null ? null : field.getValueAsDate();
+    }
+
+    /**
+     * Finds the field and gets its value as instant.
+     *
+     * @param var The field name.
+     * @return The value as date or null, if the field could not be found.
+     */
+    public final Instant findValueAsInstant(String var) {
+        Field field = findField(var);
+        return field == null ? null : field.getValueAsInstant();
     }
 
     /**
@@ -255,7 +256,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param var The field name.
      * @return The value as JID or null, if the field could not be found.
      */
-    public Jid findValueAsJid(String var) {
+    public final Jid findValueAsJid(String var) {
         Field field = findField(var);
         return field == null ? null : field.getValueAsJid();
     }
@@ -266,7 +267,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param var The field name.
      * @return The values as JID list.
      */
-    public List<Jid> findValuesAsJid(String var) {
+    public final List<Jid> findValuesAsJid(String var) {
         Field field = findField(var);
         return field == null ? Collections.<Jid>emptyList() : field.getValuesAsJid();
     }
@@ -276,7 +277,7 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @return The form type or null, if there is no form type.
      */
-    public String getFormType() {
+    public final String getFormType() {
         for (Field field : getFields()) {
             if (FORM_TYPE.equals(field.getVar()) && !field.getValues().isEmpty()) {
                 return field.getValues().get(0);
@@ -293,20 +294,8 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @return The title.
      */
-    public String getTitle() {
+    public final String getTitle() {
         return title;
-    }
-
-    /**
-     * Sets the title of the form.
-     *
-     * @param title The title.
-     * @see #getTitle()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     /**
@@ -314,7 +303,7 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @return The fields.
      */
-    public List<Field> getFields() {
+    public final List<Field> getFields() {
         return Collections.unmodifiableList(fields);
     }
 
@@ -326,7 +315,7 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @return The instructions.
      */
-    public List<String> getInstructions() {
+    public final List<String> getInstructions() {
         return Collections.unmodifiableList(instructions);
     }
 
@@ -335,20 +324,8 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @return The type.
      */
-    public Type getType() {
+    public final Type getType() {
         return type;
-    }
-
-    /**
-     * Sets the form type.
-     *
-     * @param type The form type.
-     * @see #getType()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public void setType(Type type) {
-        this.type = type;
     }
 
     /**
@@ -356,7 +333,7 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @return The reported fields.
      */
-    public List<Field> getReportedFields() {
+    public final List<Field> getReportedFields() {
         return Collections.unmodifiableList(reportedFields);
     }
 
@@ -365,7 +342,7 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @return The items.
      */
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         return Collections.unmodifiableList(items);
     }
 
@@ -374,7 +351,7 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @return The pages.
      */
-    public List<Page> getPages() {
+    public final List<Page> getPages() {
         return Collections.unmodifiableList(pages);
     }
 
@@ -384,7 +361,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param name The name.
      * @return The field or null if the field could be found.
      */
-    public Field findField(String name) {
+    public final Field findField(String name) {
         if (name != null) {
             for (Field field : fields) {
                 if (name.equals(field.getVar())) {
@@ -404,7 +381,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @return The comparison result.
      */
     @Override
-    public int compareTo(DataForm o) {
+    public final int compareTo(DataForm o) {
         String ft = getFormType();
         String fto = o != null ? o.getFormType() : null;
         if (ft == null && fto == null) {
@@ -448,6 +425,8 @@ public final class DataForm implements Comparable<DataForm> {
 
     /**
      * A form field.
+     * <p>
+     * This class is immutable.
      *
      * @see <a href="http://xmpp.org/extensions/xep-0004.html#protocol-field">3.2 The Field Element</a>
      */
@@ -455,33 +434,40 @@ public final class DataForm implements Comparable<DataForm> {
     public static final class Field implements Comparable<Field> {
 
         @XmlElement(name = "desc")
-        private String description;
+        private final String description;
 
         @XmlElement(name = "required")
-        private String required;
+        private final String required;
 
         @XmlElementRef
-        private Validation validation;
+        private final Validation validation;
 
         @XmlElement(name = "value")
-        private List<String> values = new ArrayList<>();
+        private final List<String> values = new ArrayList<>();
 
         @XmlElement(name = "option")
-        private List<Option> options = new ArrayList<>();
+        private final List<Option> options = new ArrayList<>();
 
         @XmlElementRef
-        private Media media;
+        private final Media media;
 
         @XmlAttribute(name = "label")
-        private String label;
+        private final String label;
 
         @XmlAttribute(name = "type")
-        private Type type;
+        private final Type type;
 
         @XmlAttribute(name = "var")
-        private String var;
+        private final String var;
 
         private Field() {
+            this.type = null;
+            this.description = null;
+            this.required = null;
+            this.validation = null;
+            this.media = null;
+            this.label = null;
+            this.var = null;
         }
 
         private Field(Builder builder) {
@@ -494,31 +480,6 @@ public final class DataForm implements Comparable<DataForm> {
             this.media = builder.media;
             this.label = builder.label;
             this.var = builder.var;
-        }
-
-        /**
-         * Creates a field.
-         *
-         * @param type The field type.
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public Field(Type type) {
-            this.type = type;
-        }
-
-        /**
-         * Creates a field.
-         *
-         * @param type   The field type.
-         * @param var    The unique identifier for the field.
-         * @param values The values.
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        public Field(Type type, String var, String... values) {
-            this.type = type;
-            this.var = var;
-            this.values.addAll(Arrays.asList(values));
         }
 
         /**
@@ -535,63 +496,26 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The field type.
          */
-        public Type getType() {
+        public final Type getType() {
             return type;
-        }
-
-        /**
-         * Sets the field type.
-         *
-         * @param type The type.
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setType(Type type) {
-            this.type = type;
         }
 
         /**
          * Gets a unique identifier for the field in the context of the form.
          *
          * @return The var attribute.
-         * @see #setVar(String)
          */
-        public String getVar() {
+        public final String getVar() {
             return var;
-        }
-
-        /**
-         * Sets a unique identifier for the field in the context of the form.
-         *
-         * @param var The var attribute.
-         * @see #getVar()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setVar(String var) {
-            this.var = var;
         }
 
         /**
          * Gets the field label.
          *
          * @return The label.
-         * @see #setLabel(String)
          */
-        public String getLabel() {
+        public final String getLabel() {
             return label;
-        }
-
-        /**
-         * Sets the field label.
-         *
-         * @param label The label.
-         * @see #getLabel()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setLabel(String label) {
-            this.label = label;
         }
 
         /**
@@ -599,7 +523,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The options.
          */
-        public List<Option> getOptions() {
+        public final List<Option> getOptions() {
             return Collections.unmodifiableList(options);
         }
 
@@ -608,7 +532,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The values.
          */
-        public List<String> getValues() {
+        public final List<String> getValues() {
             return Collections.unmodifiableList(values);
         }
 
@@ -617,7 +541,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The value as boolean.
          */
-        public boolean getValueAsBoolean() {
+        public final boolean getValueAsBoolean() {
             return parseBoolean(values.isEmpty() ? null : values.get(0));
         }
 
@@ -626,7 +550,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The integer or null, if the values are empty.
          */
-        public Integer getValueAsInteger() {
+        public final Integer getValueAsInteger() {
             return values.isEmpty() ? null : Integer.valueOf(values.get(0));
         }
 
@@ -634,8 +558,10 @@ public final class DataForm implements Comparable<DataForm> {
          * Returns the first value as date.
          *
          * @return The date or null, if the values are empty.
+         * @deprecated Use {@link #getValueAsInstant()}
          */
-        public Date getValueAsDate() {
+        @Deprecated
+        public final Date getValueAsDate() {
             if (values.isEmpty()) {
                 return null;
             } else {
@@ -644,16 +570,25 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
+         * Returns the first value as date.
+         *
+         * @return The date or null, if the values are empty.
+         */
+        public final Instant getValueAsInstant() {
+            if (values.isEmpty()) {
+                return null;
+            } else {
+                return values.get(0) != null ? Instant.parse(values.get(0)) : null;
+            }
+        }
+
+        /**
          * Returns a JID list for the {@link Type#JID_MULTI} field type.
          *
          * @return The JID list.
          */
-        public List<Jid> getValuesAsJid() {
-            List<Jid> jids = new ArrayList<>();
-            for (String value : values) {
-                jids.add(Jid.valueOf(value, true));
-            }
-            return Collections.unmodifiableList(jids);
+        public final List<Jid> getValuesAsJid() {
+            return Collections.unmodifiableList(values.stream().map(value -> Jid.valueOf(value, true)).collect(Collectors.toList()));
         }
 
         /**
@@ -661,7 +596,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The JID or null, if the values are empty.
          */
-        public Jid getValueAsJid() {
+        public final Jid getValueAsJid() {
             return values.isEmpty() ? null : Jid.valueOf(values.get(0));
         }
 
@@ -670,20 +605,8 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The media element.
          */
-        public Media getMedia() {
+        public final Media getMedia() {
             return media;
-        }
-
-        /**
-         * Sets a media element.
-         *
-         * @param media The media element.
-         * @see #getMedia()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setMedia(Media media) {
-            this.media = media;
         }
 
         /**
@@ -691,20 +614,8 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The description.
          */
-        public String getDescription() {
+        public final String getDescription() {
             return description;
-        }
-
-        /**
-         * Sets a description of the field.
-         *
-         * @param description The description.
-         * @see #getDescription()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setDescription(String description) {
-            this.description = description;
         }
 
         /**
@@ -713,20 +624,8 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The validation.
          * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
          */
-        public Validation getValidation() {
+        public final Validation getValidation() {
             return validation;
-        }
-
-        /**
-         * Sets the validation for this field.
-         *
-         * @param validation The validation.
-         * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setValidation(Validation validation) {
-            this.validation = validation;
         }
 
         /**
@@ -734,24 +633,12 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return True, if the field is required.
          */
-        public boolean isRequired() {
+        public final boolean isRequired() {
             return required != null;
         }
 
-        /**
-         * Sets the field as required.
-         *
-         * @param required If the field is required.
-         * @see #isRequired()
-         * @deprecated Use {@link rocks.xmpp.extensions.data.model.DataForm.Field.Builder}.
-         */
-        @Deprecated
-        public void setRequired(boolean required) {
-            this.required = required ? "" : null;
-        }
-
         @Override
-        public int compareTo(Field o) {
+        public final int compareTo(Field o) {
 
             if (FORM_TYPE.equals(getVar()) && !FORM_TYPE.equals(o.getVar())) {
                 return -1;
@@ -860,7 +747,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param type The field type.
              * @return The builder.
              */
-            public Builder type(Type type) {
+            public final Builder type(Type type) {
                 this.type = type;
                 return this;
             }
@@ -871,7 +758,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param required If the field is required.
              * @return The builder.
              */
-            public Builder required(boolean required) {
+            public final Builder required(boolean required) {
                 this.required = required;
                 return this;
             }
@@ -882,7 +769,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param description The description.
              * @return The builder.
              */
-            public Builder description(String description) {
+            public final Builder description(String description) {
                 this.description = description;
                 return this;
             }
@@ -893,7 +780,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param media The media element.
              * @return The builder.
              */
-            public Builder media(Media media) {
+            public final Builder media(Media media) {
                 this.media = media;
                 return this;
             }
@@ -904,7 +791,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param validation The validation.
              * @return The builder.
              */
-            public Builder validation(Validation validation) {
+            public final Builder validation(Validation validation) {
                 this.validation = validation;
                 return this;
             }
@@ -915,7 +802,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param label The label.
              * @return The builder.
              */
-            public Builder label(String label) {
+            public final Builder label(String label) {
                 this.label = label;
                 return this;
             }
@@ -926,7 +813,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param var The var attribute.
              * @return The builder.
              */
-            public Builder var(String var) {
+            public final Builder var(String var) {
                 this.var = var;
                 return this;
             }
@@ -937,7 +824,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param value The value.
              * @return The builder.
              */
-            public Builder value(String value) {
+            public final Builder value(String value) {
                 this.values.clear();
                 this.values.add(value);
                 return type(Type.TEXT_SINGLE);
@@ -949,7 +836,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param value The value.
              * @return The builder.
              */
-            public Builder value(boolean value) {
+            public final Builder value(boolean value) {
                 value(value ? "1" : "0");
                 return type(Type.BOOLEAN);
             }
@@ -960,7 +847,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param value The value.
              * @return The builder.
              */
-            public Builder value(int value) {
+            public final Builder value(int value) {
                 value(String.valueOf(value));
                 return type(Type.TEXT_SINGLE);
             }
@@ -971,7 +858,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param value The value.
              * @return The builder.
              */
-            public Builder value(Jid value) {
+            public final Builder value(Jid value) {
                 if (value != null) {
                     value(value.toEscapedString());
                 }
@@ -984,11 +871,24 @@ public final class DataForm implements Comparable<DataForm> {
              * @param date The value.
              * @return The builder.
              */
-            public Builder value(Date date) {
+            public final Builder value(Date date) {
                 if (date != null) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
                     value(DatatypeConverter.printDateTime(calendar));
+                }
+                return type(Type.TEXT_SINGLE);
+            }
+
+            /**
+             * Sets the value as date. This methods sets the field type implicitly to {@link Field.Type#TEXT_SINGLE}.
+             *
+             * @param instant The value.
+             * @return The builder.
+             */
+            public final Builder value(Instant instant) {
+                if (instant != null) {
+                    value(instant.toString());
                 }
                 return type(Type.TEXT_SINGLE);
             }
@@ -999,7 +899,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param values The values.
              * @return The builder.
              */
-            public Builder values(Collection<String> values) {
+            public final Builder values(Collection<String> values) {
                 this.values.clear();
                 if (values != null) {
                     this.values.addAll(values);
@@ -1013,11 +913,9 @@ public final class DataForm implements Comparable<DataForm> {
              * @param values The values.
              * @return The builder.
              */
-            public Builder valuesEnum(Collection<? extends Enum<?>> values) {
+            public final Builder valuesEnum(Collection<? extends Enum<?>> values) {
                 this.values.clear();
-                for (Enum<?> enumValue : values) {
-                    this.values.add(enumValue.name().toLowerCase());
-                }
+                this.values.addAll(values.stream().map(enumValue -> enumValue.name().toLowerCase()).collect(Collectors.toList()));
                 return type(Type.LIST_SINGLE);
             }
 
@@ -1027,12 +925,10 @@ public final class DataForm implements Comparable<DataForm> {
              * @param values The values.
              * @return The builder.
              */
-            public Builder valuesJid(Collection<Jid> values) {
+            public final Builder valuesJid(Collection<Jid> values) {
                 this.values.clear();
                 if (values != null) {
-                    for (Jid value : values) {
-                        this.values.add(value.toEscapedString());
-                    }
+                    this.values.addAll(values.stream().map(Jid::toEscapedString).collect(Collectors.toList()));
                 }
                 return type(Type.JID_MULTI);
             }
@@ -1043,7 +939,7 @@ public final class DataForm implements Comparable<DataForm> {
              * @param options The options.
              * @return The builder.
              */
-            public Builder options(Collection<Option> options) {
+            public final Builder options(Collection<Option> options) {
                 this.options.clear();
                 this.options.addAll(options);
                 return this;
@@ -1054,7 +950,7 @@ public final class DataForm implements Comparable<DataForm> {
              *
              * @return The field.
              */
-            public Field build() {
+            public final Field build() {
                 return new Field(this);
             }
         }
@@ -1072,7 +968,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The fields.
          */
-        public List<Field> getFields() {
+        public final List<Field> getFields() {
             return fields;
         }
     }
@@ -1083,12 +979,14 @@ public final class DataForm implements Comparable<DataForm> {
     public static final class Option {
 
         @XmlAttribute(name = "label")
-        private String label;
+        private final String label;
 
         @XmlElement(name = "value")
-        private String value;
+        private final String value;
 
         private Option() {
+            this.value = null;
+            this.label = null;
         }
 
         /**
@@ -1097,7 +995,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @param value The option value.
          */
         public Option(String value) {
-            this.value = value;
+            this(value, null);
         }
 
         /**
@@ -1116,7 +1014,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The label.
          */
-        public String getLabel() {
+        public final String getLabel() {
             return label;
         }
 
@@ -1125,7 +1023,7 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The option.
          */
-        public String getValue() {
+        public final String getValue() {
             return value;
         }
     }

@@ -183,7 +183,7 @@ public class S5bTransportMethod extends TransportMethod {
 
             private final int preferenceValue;
 
-            private Type(int preferenceValue) {
+            Type(int preferenceValue) {
                 this.preferenceValue = preferenceValue;
             }
 

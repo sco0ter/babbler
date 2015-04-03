@@ -28,12 +28,7 @@ import javafx.application.Application;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -49,8 +44,6 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
-import rocks.xmpp.extensions.filetransfer.FileTransferStatusEvent;
-import rocks.xmpp.extensions.filetransfer.FileTransferStatusListener;
 
 import java.io.File;
 
@@ -59,7 +52,7 @@ import java.io.File;
  */
 public class FileTransferSender extends Application {
 
-    private ObjectProperty<XmppSession> xmppSession = new SimpleObjectProperty<>();
+    private final ObjectProperty<XmppSession> xmppSession = new SimpleObjectProperty<>();
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
@@ -89,17 +82,14 @@ public class FileTransferSender extends Application {
                 return xmppSession;
             }
         };
-        task.stateProperty().addListener(new ChangeListener<Worker.State>() {
-            @Override
-            public void changed(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue) {
-                switch (newValue) {
-                    case SUCCEEDED:
-                        xmppSession.set(task.getValue());
-                        break;
-                    case FAILED:
-                        task.getException().printStackTrace();
-                        break;
-                }
+        task.stateProperty().addListener((observable, oldValue, newValue) -> {
+            switch (newValue) {
+                case SUCCEEDED:
+                    xmppSession.set(task.getValue());
+                    break;
+                case FAILED:
+                    task.getException().printStackTrace();
+                    break;
             }
         });
 
@@ -121,55 +111,46 @@ public class FileTransferSender extends Application {
         final ProgressBar progressBar = new ProgressBar();
         final Label label = new Label();
 
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                FileChooser fileChooser = new FileChooser();
-                final File file = fileChooser.showOpenDialog(primaryStage);
+        button.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            final File file = fileChooser.showOpenDialog(primaryStage);
 
-                if (file != null) {
-                    final Task<Void> fileTransferTask = new Task<Void>() {
-                        @Override
-                        protected Void call() throws Exception {
-                            FileTransferManager fileTransferManager = xmppSession.get().getExtensionManager(FileTransferManager.class);
-                            updateMessage("Offering file... waiting for acceptance");
-                            FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", new Jid("222", xmppSession.get().getDomain(), "filetransfer"), 10000);
-                            fileTransfer.addFileTransferStatusListener(new FileTransferStatusListener() {
-                                @Override
-                                public void fileTransferStatusChanged(FileTransferStatusEvent e) {
-                                    System.out.println(e);
-                                    try {
-                                        Thread.sleep(100); // For visualization the progress only.
-                                    } catch (InterruptedException e1) {
-                                        e1.printStackTrace();
-                                    }
-                                    updateMessage(e.toString());
-                                    updateProgress(e.getBytesTransferred(), file.length());
-                                }
-                            });
-                            fileTransfer.transfer();
-                            return null;
-                        }
-                    };
-
-                    fileTransferTask.stateProperty().addListener(new ChangeListener<Worker.State>() {
-                        @Override
-                        public void changed(ObservableValue<? extends Worker.State> observable, Worker.State oldValue, Worker.State newValue) {
-                            switch (newValue) {
-                                case FAILED:
-                                    Throwable e = fileTransferTask.getException();
-                                    e.printStackTrace();
-                                    break;
-                                case SUCCEEDED:
-                                    break;
+            if (file != null) {
+                final Task<Void> fileTransferTask = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
+                        updateMessage("Offering file... waiting for acceptance");
+                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", new Jid("222", xmppSession.get().getDomain(), "filetransfer"), 10000);
+                        fileTransfer.addFileTransferStatusListener(e -> {
+                            System.out.println(e);
+                            try {
+                                Thread.sleep(100); // For visualization the progress only.
+                            } catch (InterruptedException e1) {
+                                e1.printStackTrace();
                             }
-                        }
-                    });
+                            updateMessage(e.toString());
+                            updateProgress(e.getBytesTransferred(), file.length());
+                        });
+                        fileTransfer.transfer();
+                        return null;
+                    }
+                };
 
-                    progressBar.progressProperty().bind(fileTransferTask.progressProperty());
-                    label.textProperty().bind(fileTransferTask.messageProperty());
-                    new Thread(fileTransferTask).start();
-                }
+                fileTransferTask.stateProperty().addListener((observable, oldValue, newValue) -> {
+                    switch (newValue) {
+                        case FAILED:
+                            Throwable e = fileTransferTask.getException();
+                            e.printStackTrace();
+                            break;
+                        case SUCCEEDED:
+                            break;
+                    }
+                });
+
+                progressBar.progressProperty().bind(fileTransferTask.progressProperty());
+                label.textProperty().bind(fileTransferTask.messageProperty());
+                new Thread(fileTransferTask).start();
             }
         });
 
@@ -184,7 +165,7 @@ public class FileTransferSender extends Application {
 //            return new Task<Void>() {
 //                @Override
 //                protected Void call() throws Exception {
-//                    FileTransferManager fileTransferManager = xmppSession.get().getExtensionManager(FileTransferManager.class);
+//                    FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
 //                    try {
 //                        updateMessage("Offering file... waiting for acceptance");
 //                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", new Jid("222", xmppSession.get().getDomain(), "filetransfer"), 10000);

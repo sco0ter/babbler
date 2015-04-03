@@ -30,11 +30,13 @@ import java.util.EventListener;
  * A listener interface, which allows to listen for received or sent messages.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.session.XmppSession#addMessageListener(MessageListener)
+ * @see rocks.xmpp.core.session.XmppSession#addInboundMessageListener(MessageListener)
+ * @see rocks.xmpp.core.session.XmppSession#addOutboundMessageListener(MessageListener)
  */
+@FunctionalInterface
 public interface MessageListener extends EventListener {
     /**
-     * Handles the incoming or outgoing message.
+     * Handles the inbound or outbound message.
      *
      * @param e The message event.
      */

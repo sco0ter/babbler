@@ -32,14 +32,14 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * This class is the entry point to work with pubsub.
  * <p>
  * You should first {@linkplain #createPubSubService(rocks.xmpp.core.Jid) create a pubsub service}, which allows you to work with that service.
- * If you don't know the service address, you can {@linkplain #getPubSubServices() discover} the pubsub services hosted at your server.
+ * If you don't know the service address, you can {@linkplain #discoverPubSubServices()} discover} the pubsub services hosted at your server.
  * <p>
  * It also allows you to {@linkplain #createPersonalEventingService() create a Personal Eventing Service}, which is a virtual pubsub service, bound to your account.
  *
@@ -54,20 +54,7 @@ public final class PubSubManager extends ExtensionManager {
 
     private PubSubManager(XmppSession xmppSession) {
         super(xmppSession);
-        serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
-    }
-
-    /**
-     * Discovers the publish-subscribe services for the current connection.
-     *
-     * @return The list of publish-subscribe services.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the server did not respond.
-     * @deprecated Use {@link #discoverPubSubServices()}
-     */
-    @Deprecated
-    public Collection<PubSubService> getPubSubServices() throws XmppException {
-        return discoverPubSubServices();
+        serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
     }
 
     /**
@@ -79,11 +66,7 @@ public final class PubSubManager extends ExtensionManager {
      */
     public Collection<PubSubService> discoverPubSubServices() throws XmppException {
         Collection<Item> services = serviceDiscoveryManager.discoverServices(PubSub.NAMESPACE);
-        Collection<PubSubService> pubSubServices = new ArrayList<>();
-        for (Item service : services) {
-            pubSubServices.add(new PubSubService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager));
-        }
-        return pubSubServices;
+        return services.stream().map(service -> new PubSubService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager)).collect(Collectors.toList());
     }
 
     /**

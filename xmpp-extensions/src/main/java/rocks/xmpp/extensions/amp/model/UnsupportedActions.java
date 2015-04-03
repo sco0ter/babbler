@@ -35,6 +35,7 @@ import java.util.List;
  * <p>
  * One or more rule's specified actions are not supported. It contains the rules that specify the unsupported actions.
  * </p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
@@ -51,7 +52,7 @@ public final class UnsupportedActions {
      *
      * @return The rules.
      */
-    public List<Rule> getRules() {
+    public final List<Rule> getRules() {
         return Collections.unmodifiableList(rules);
     }
 }

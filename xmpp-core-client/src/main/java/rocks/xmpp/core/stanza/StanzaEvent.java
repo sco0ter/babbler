@@ -38,31 +38,25 @@ public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extend
 
     protected final S stanza;
 
-    private final boolean incoming;
+    private final boolean inbound;
 
-    public StanzaEvent(Object source, S stanza, boolean incoming) {
+    public StanzaEvent(Object source, S stanza, boolean inbound) {
         super(source);
         this.stanza = stanza;
-        this.incoming = incoming;
+        this.inbound = inbound;
     }
 
     /**
-     * Indicates, whether the stanza has been received (incoming) or is about to being sent (outgoing).
+     * Indicates, whether the stanza has been received (inbound) or is about to being sent (outbound).
      *
-     * @return True, if the stanza is incoming; false if it is outgoing.
+     * @return True, if the stanza is inbound; false if it is outbound.
      */
-    public final boolean isIncoming() {
-        return incoming;
+    public final boolean isInbound() {
+        return inbound;
     }
 
-    /**
-     * Gets the stanza.
-     *
-     * @return The stanza.
-     * @deprecated Use getMessage(), getPresence() or getIQ().
-     */
-    @Deprecated
-    public final S getStanza() {
-        return stanza;
+    @Override
+    public final String toString() {
+        return (inbound ? "Inbound " : "Outbound ") + stanza;
     }
 }

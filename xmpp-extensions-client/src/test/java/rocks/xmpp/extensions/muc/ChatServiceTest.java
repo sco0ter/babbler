@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ public class ChatServiceTest {
     @Test
     public void testComparable() {
         XmppSession xmppSession = new TestXmppSession();
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         ChatService chatService1 = new ChatService(Jid.valueOf("aaa"), "aaa", xmppSession, serviceDiscoveryManager, null);
         ChatService chatService2 = new ChatService(Jid.valueOf("bbb"), "bbb", xmppSession, serviceDiscoveryManager,null);
         ChatService chatService3 = new ChatService(Jid.valueOf("ccc"), "aaa", xmppSession, serviceDiscoveryManager,null);
@@ -60,7 +60,7 @@ public class ChatServiceTest {
         chatServices.add(chatService6);
 
         Collections.shuffle(chatServices);
-        Collections.sort(chatServices);
+        chatServices.sort(null);
 
         Assert.assertEquals(chatServices.get(0), chatService1);
         Assert.assertEquals(chatServices.get(1), chatService3);
@@ -73,7 +73,7 @@ public class ChatServiceTest {
     @Test
     public void testChatRoomsComparable() {
         XmppSession xmppSession = new TestXmppSession();
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         ChatRoom chatRoom1 = new ChatRoom(Jid.valueOf("aaa"), "aaa", xmppSession, serviceDiscoveryManager,null);
         ChatRoom chatRoom2 = new ChatRoom(Jid.valueOf("bbb"), "bbb", xmppSession, serviceDiscoveryManager,null);
         ChatRoom chatRoom3 = new ChatRoom(Jid.valueOf("ccc"), "aaa", xmppSession, serviceDiscoveryManager,null);
@@ -90,7 +90,7 @@ public class ChatServiceTest {
         chatRooms.add(chatRoom6);
 
         Collections.shuffle(chatRooms);
-        Collections.sort(chatRooms);
+        chatRooms.sort(null);
 
         Assert.assertEquals(chatRooms.get(0), chatRoom1);
         Assert.assertEquals(chatRooms.get(1), chatRoom3);

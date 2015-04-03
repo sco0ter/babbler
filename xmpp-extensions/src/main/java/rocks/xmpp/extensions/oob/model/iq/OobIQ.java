@@ -30,7 +30,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 
 /**
+ * The implementation of the {@code <query/>} element in the {@code jabber:iq:oob} namespace.
+ * <p>
+ * This class is immutable.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
  */
 @XmlRootElement(name = "query")
 public final class OobIQ {
@@ -41,15 +46,16 @@ public final class OobIQ {
     public static final String NAMESPACE = "jabber:iq:oob";
 
     @XmlElement(name = "url")
-    private URL url;
+    private final URL url;
 
     @XmlElement(name = "desc")
-    private String description;
+    private final String description;
 
     @XmlAttribute(name = "sid")
-    private String sessionId;
+    private final String sessionId;
 
     private OobIQ() {
+        this(null, null, null);
     }
 
     public OobIQ(URL url) {
@@ -57,8 +63,7 @@ public final class OobIQ {
     }
 
     public OobIQ(URL url, String description) {
-        this.url = url;
-        this.description = description;
+        this(url, description, null);
     }
 
     public OobIQ(URL url, String description, String sessionId) {
@@ -72,7 +77,7 @@ public final class OobIQ {
      *
      * @return The URL.
      */
-    public URL getUrl() {
+    public final URL getUrl() {
         return url;
     }
 
@@ -81,7 +86,7 @@ public final class OobIQ {
      *
      * @return The description.
      */
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
@@ -90,12 +95,12 @@ public final class OobIQ {
      *
      * @return The session id.
      */
-    public String getSessionId() {
+    public final String getSessionId() {
         return sessionId;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return url != null ? url.toString() : null;
     }
 }

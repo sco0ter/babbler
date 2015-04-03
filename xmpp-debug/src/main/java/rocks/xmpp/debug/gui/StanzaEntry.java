@@ -31,25 +31,26 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.model.StreamError;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * @author Christian Schudt
  */
 final class StanzaEntry {
-    private final boolean incoming;
+    private final boolean inbound;
 
     private final String xml;
 
     private final Object stanza;
 
-    private final Date date;
+    private final LocalDateTime date;
 
-    public StanzaEntry(boolean incoming, String xml, Object stanza) {
-        this.incoming = incoming;
+    public StanzaEntry(boolean inbound, String xml, Object stanza) {
+        this.inbound = inbound;
         this.xml = xml;
         this.stanza = stanza;
-        this.date = new Date();
+        this.date = LocalDateTime.now();
     }
 
     public String getXml() {
@@ -61,10 +62,10 @@ final class StanzaEntry {
     }
 
     public boolean isInbound() {
-        return incoming;
+        return inbound;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
@@ -85,6 +86,6 @@ final class StanzaEntry {
 
     @Override
     public String toString() {
-        return (incoming ? "IN : " : "OUT: ") + xml;
+        return (inbound ? "IN : " : "OUT: ") + xml;
     }
 }

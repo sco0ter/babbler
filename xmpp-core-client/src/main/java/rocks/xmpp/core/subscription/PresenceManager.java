@@ -25,15 +25,12 @@
 package rocks.xmpp.core.subscription;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +51,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class PresenceManager implements SessionStatusListener, PresenceListener {
+public final class PresenceManager extends Manager {
 
     // TODO auto deny or auto approve some or all requests.
 
@@ -66,10 +63,44 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
 
     private final Map<String, Presence> lastSentPresences = new ConcurrentHashMap<>();
 
-    public PresenceManager(final XmppSession xmppSession) {
+    private PresenceManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
-        xmppSession.addPresenceListener(this);
-        xmppSession.addSessionStatusListener(this);
+    }
+
+    @Override
+    protected final void initialize() {
+        xmppSession.addInboundPresenceListener(e -> {
+            Presence presence = e.getPresence();
+            if (presence.getFrom() != null) {
+                // Store the user (bare JID) in the map, associated with different resources.
+                presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<>());
+                Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
+                // Update the contact's resource with the presence.
+                presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
+            }
+        });
+        xmppSession.addOutboundPresenceListener(e -> {
+            Presence presence = e.getPresence();
+            // Store the last sent presences, in order to automatically resend them, after a disconnect.
+            if (presence.getType() == null || presence.getType() == Presence.Type.UNAVAILABLE) {
+                if (presence.getTo() == null) {
+                    lastSentPresences.put("", presence);
+                } else {
+                    lastSentPresences.put(presence.getTo().toString(), presence);
+                }
+            }
+        });
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
+                presenceMap.keySet().forEach(contact -> {
+                    try {
+                        xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact));
+                    } catch (Exception e1) {
+                        logger.log(Level.WARNING, e1.getMessage(), e1);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -95,7 +126,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
             if (presencesPerResource != null) {
                 List<Presence> presences = new ArrayList<>(presencesPerResource.values());
                 if (!presences.isEmpty()) {
-                    Collections.sort(presences);
+                    presences.sort(null);
                     return presences.get(0);
                 }
             }
@@ -180,7 +211,7 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
     }
 
     /**
-     * Gets the last sent presence, that has been broadcast by the server.
+     * Gets the last sent (non-directed) presence, that has been broadcast by the server.
      *
      * @return The presence.
      */
@@ -188,44 +219,12 @@ public final class PresenceManager implements SessionStatusListener, PresenceLis
         return lastSentPresences.get("");
     }
 
-    @Override
-    public final void handlePresence(PresenceEvent e) {
-        Presence presence = e.getPresence();
-        if (e.isIncoming()) {
-            // Store the user (bare JID) in the map, associated with different resources.
-            presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<String, Presence>());
-            Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
-            // Update the contact's resource with the presence.
-            presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
-        } else {
-            // Store the last sent presences, in order to automatically resend them, after a disconnect.
-            if (presence.getType() == null || presence.getType() == Presence.Type.UNAVAILABLE) {
-                if (presence.getTo() == null) {
-                    lastSentPresences.put("", presence);
-                } else {
-                    lastSentPresences.put(presence.getTo().toString(), presence);
-                }
-            }
-        }
-    }
-
-    @Override
-    public final void sessionStatusChanged(SessionStatusEvent e) {
-        // Resend the last presences, as soon as we are reconnected.
-        if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
-            for (Presence presence : lastSentPresences.values()) {
-                presence.getExtensions().clear();
-                xmppSession.send(presence);
-            }
-        }
-        if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
-            for (Jid contact : presenceMap.keySet()) {
-                try {
-                    xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact));
-                } catch (Exception e1) {
-                    logger.log(Level.WARNING, e1.getMessage(), e1);
-                }
-            }
-        }
+    /**
+     * Gets the last sent presences, that have been sent, including directed presences.
+     *
+     * @return The presence.
+     */
+    public final Collection<Presence> getLastSentPresences() {
+        return lastSentPresences.values();
     }
 }

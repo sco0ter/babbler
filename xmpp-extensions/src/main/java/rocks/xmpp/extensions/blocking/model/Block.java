@@ -31,9 +31,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <block/>} element in the {@code urn:xmpp:blocking} namespace.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
@@ -48,11 +51,7 @@ public final class Block {
      * @param blockedItems The blocked items.
      */
     public Block(List<Jid> blockedItems) {
-        List<Item> items = new ArrayList<>();
-        for (Jid item : blockedItems) {
-            items.add(new Item(item));
-        }
-        this.items.addAll(items);
+        this.items.addAll(blockedItems.stream().map(Item::new).collect(Collectors.toList()));
     }
 
     private Block() {
@@ -63,16 +62,12 @@ public final class Block {
      *
      * @return The blocked items.
      */
-    public List<Jid> getItems() {
-        List<Jid> jids = new ArrayList<>();
-        for (Item item : items) {
-            jids.add(item.getJid());
-        }
-        return Collections.unmodifiableList(jids);
+    public final List<Jid> getItems() {
+        return Collections.unmodifiableList(items.stream().map(Item::getJid).collect(Collectors.toList()));
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return items.toString();
     }
 }

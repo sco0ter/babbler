@@ -24,8 +24,11 @@
 
 package rocks.xmpp.extensions.muc.model;
 
+import rocks.xmpp.core.util.adapters.InstantAdapter;
+
 import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Date;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.Instant;
 
 /**
  * The discussion history.
@@ -45,7 +48,8 @@ public final class History {
     private Integer seconds;
 
     @XmlAttribute(name = "since")
-    private Date since;
+    @XmlJavaTypeAdapter(InstantAdapter.class)
+    private Instant since;
 
     private History() {
     }
@@ -92,7 +96,7 @@ public final class History {
      * @param date The date.
      * @return The history.
      */
-    public static History since(Date date) {
+    public static History since(Instant date) {
         History history = new History();
         history.since = date;
         return history;

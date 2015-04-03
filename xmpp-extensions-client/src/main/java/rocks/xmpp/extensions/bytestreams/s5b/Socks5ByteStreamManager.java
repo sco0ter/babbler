@@ -27,8 +27,9 @@ package rocks.xmpp.extensions.bytestreams.s5b;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamManager;
@@ -62,15 +63,17 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
 
     private final LocalSocks5Server localSocks5Server;
 
+    /**
+     * Guarded by "this".
+     */
     private boolean localHostEnabled;
 
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession, Socks5ByteStream.NAMESPACE);
-        this.serviceDiscoveryManager = xmppSession.getExtensionManager(ServiceDiscoveryManager.class);
+        this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
         this.localSocks5Server = new LocalSocks5Server();
 
-        xmppSession.addIQHandler(Socks5ByteStream.class, this);
         setEnabled(true);
     }
 
@@ -99,12 +102,37 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         return new S5bSession(sessionId, socketUsed, streamHostUsed);
     }
 
+    @Override
+    protected void initialize() {
+        super.initialize();
+        xmppSession.addIQHandler(Socks5ByteStream.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
+
+                if (socks5ByteStream.getSessionId() == null) {
+                    // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
+                    return iq.createError(Condition.BAD_REQUEST);
+                } else {
+                    notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
+                    return null;
+                }
+            }
+        });
+        xmppSession.addSessionStatusListener(e -> {
+            if (e.getStatus() == XmppSession.Status.CLOSED) {
+                // Stop the server, when the session is closed.
+                localSocks5Server.stop();
+            }
+        });
+    }
+
     /**
      * Indicates whether the local host is enabled.
      *
      * @return If enabled.
      */
-    public boolean isLocalHostEnabled() {
+    public synchronized boolean isLocalHostEnabled() {
         return localHostEnabled;
     }
 
@@ -113,7 +141,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      *
      * @param enabled If enabled.
      */
-    public void setLocalHostEnabled(boolean enabled) {
+    public synchronized void setLocalHostEnabled(boolean enabled) {
         this.localHostEnabled = enabled;
         if (!enabled) {
             localSocks5Server.stop();
@@ -152,8 +180,8 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * Discovers the SOCKS5 proxies.
      *
      * @return The proxies.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0065.html#disco">4. Discovering Proxies</a>
      */
     public List<StreamHost> discoverProxies() throws XmppException {
@@ -203,9 +231,9 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * @param target    The target.
      * @param sessionId The session id.
      * @return The SOCKS5 byte stream session.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
-     * @throws java.io.IOException                          If the byte stream session could not be established.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @throws java.io.IOException                         If the byte stream session could not be established.
      */
     public ByteStreamSession initiateSession(Jid target, String sessionId) throws XmppException, IOException {
 
@@ -258,29 +286,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
             return new S5bSession(sessionId, socket, usedStreamHost.getJid());
         } finally {
             localSocks5Server.removeConnection(hash);
-        }
-    }
-
-    @Override
-    protected IQ processRequest(final IQ iq) {
-
-        Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
-
-        if (socks5ByteStream.getSessionId() == null) {
-            // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
-            return iq.createError(Condition.BAD_REQUEST);
-        } else {
-            notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
-            return null;
-        }
-    }
-
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        super.sessionStatusChanged(e);
-        if (e.getStatus() == XmppSession.Status.CLOSED) {
-            // Stop the server, when the session is closed.
-            localSocks5Server.stop();
         }
     }
 }

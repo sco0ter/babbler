@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.URI;
-import java.util.TimeZone;
+import java.time.ZoneOffset;
 
 /**
  * @author Christian Schudt
@@ -61,7 +61,7 @@ public class GeoLocationTest extends XmlTest {
         Assert.assertEquals(geoLocation.getLatitude(), 45.44);
         Assert.assertEquals(geoLocation.getLocality(), "Venice");
         Assert.assertEquals(geoLocation.getLongitude(), 12.33);
-        Assert.assertEquals(geoLocation.getTimeZone(), TimeZone.getTimeZone("GMT-08:00"));
+        Assert.assertEquals(geoLocation.getTimeZoneOffset(), ZoneOffset.of("-08:00"));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class GeoLocationTest extends XmlTest {
                 .speed(6.0)
                 .street("street")
                 .text("text")
-                .timeZone(TimeZone.getTimeZone("GMT+1"))
+                .timeZoneOffset(ZoneOffset.of("+01:00"))
                 .uri(URI.create("xmpp.org"))
                 .build();
 

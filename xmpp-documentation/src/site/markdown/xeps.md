@@ -46,8 +46,7 @@
 * ![supported][supported]           [XEP-0138: Stream Compression](http://xmpp.org/extensions/xep-0138.html)
 * ![supported][supported]           [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
 * ![supported][supported]           [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
-* ![supported
-][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
+* ![supported][supported]           [XEP-0145: Annotations](http://xmpp.org/extensions/xep-0145.html)
 * ![supported][supported]           [XEP-0152: Reachability Addresses](http://xmpp.org/extensions/xep-0152.html)
 * ![supported][supported]           [XEP-0153: vCard-Based Avatars](http://xmpp.org/extensions/xep-0153.html)
 * ![not supported][not supported]   [XEP-0155: Stanza Session Negotiation](http://xmpp.org/extensions/xep-0155.html)
@@ -82,6 +81,7 @@
 * ![supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 * ![in development][in development] [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
+* ![supported][supported]           [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
 
 Supported experimental XEPs:
 

@@ -145,6 +145,7 @@ Development snapshots are availble on OSS Sonatype nexus:
 * ![supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 * ![in development][in development] [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
+* ![supported][supported]           [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
 
 Supported experimental XEPs:
 

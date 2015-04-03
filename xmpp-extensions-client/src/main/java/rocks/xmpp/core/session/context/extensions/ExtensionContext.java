@@ -51,6 +51,7 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.hashes.HashManager;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
+import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
@@ -292,6 +293,9 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0308: Last Message Correction
                 Replace.class,
+
+                // XEP-0319: Last User Interaction in Presence
+                Idle.class,
 
                 // XEP-0335: JSON Containers
                 Json.class

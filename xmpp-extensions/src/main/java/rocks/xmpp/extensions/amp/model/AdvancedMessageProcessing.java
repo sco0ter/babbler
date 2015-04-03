@@ -169,9 +169,4 @@ public final class AdvancedMessageProcessing extends StreamFeature {
     public final Jid getTo() {
         return to;
     }
-
-    @Override
-    public final int getPriority() {
-        return 0;
-    }
 }

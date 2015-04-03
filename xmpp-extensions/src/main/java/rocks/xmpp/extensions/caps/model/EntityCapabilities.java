@@ -219,11 +219,6 @@ public final class EntityCapabilities extends StreamFeature {
     }
 
     @Override
-    public final int getPriority() {
-        return 0;
-    }
-
-    @Override
     public final String toString() {
         return ver;
     }

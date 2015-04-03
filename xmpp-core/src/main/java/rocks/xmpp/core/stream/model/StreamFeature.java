@@ -47,7 +47,9 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
      *
      * @return The priority.
      */
-    public abstract int getPriority();
+    public int getPriority() {
+        return 0;
+    }
 
     /**
      * Compares two features by their priority and mandatory-to-negotiate flag.

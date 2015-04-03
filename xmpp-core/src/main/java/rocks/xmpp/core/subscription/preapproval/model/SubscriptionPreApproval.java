@@ -51,9 +51,4 @@ public final class SubscriptionPreApproval extends StreamFeature {
     private static SubscriptionPreApproval create() {
         return INSTANCE;
     }
-
-    @Override
-    public final int getPriority() {
-        return 0;
-    }
 }

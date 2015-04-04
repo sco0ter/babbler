@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.receipts;
 
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -34,7 +35,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -105,13 +105,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
             if (received != null) {
                 // Notify the listeners about the reception.
-                for (Consumer<MessageDeliveredEvent> messageDeliveredListener : messageDeliveredListeners) {
-                    try {
-                        messageDeliveredListener.accept(new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.deliveryDateOrNow(message)));
-                    } catch (Exception ex) {
-                        logger.log(Level.WARNING, ex.getMessage(), ex);
-                    }
-                }
+                XmppUtils.notifyEventListeners(messageDeliveredListeners, new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.deliveryDateOrNow(message)));
             }
         });
         xmppSession.addOutboundMessageListener(e -> {

@@ -348,15 +348,7 @@ public final class AvatarManager extends ExtensionManager {
     }
 
     private void notifyListeners(Jid contact, byte[] avatar) {
-
-        AvatarChangeEvent avatarChangeEvent = new AvatarChangeEvent(AvatarManager.this, contact, avatar);
-        for (Consumer<AvatarChangeEvent> avatarChangeListener : avatarChangeListeners) {
-            try {
-                avatarChangeListener.accept(avatarChangeEvent);
-            } catch (Exception e1) {
-                logger.log(Level.WARNING, e1.getMessage(), e1);
-            }
-        }
+        XmppUtils.notifyEventListeners(avatarChangeListeners, new AvatarChangeEvent(AvatarManager.this, contact, avatar));
     }
 
     private byte[] getAvatarByVCard(Jid contact) throws XmppException {

@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.reach;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -37,6 +38,7 @@ import rocks.xmpp.extensions.reach.model.Address;
 import rocks.xmpp.extensions.reach.model.Reachability;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +46,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -85,7 +86,7 @@ public final class ReachabilityManager extends ExtensionManager {
             Jid contact = presence.getFrom().asBareJid();
             if (!hasReachability && reachabilities.remove(contact) != null) {
                 // If no reachability was found in presence, check, if the contact has previously sent any reachability via presence.
-                notifyReachabilityListeners(contact, new ArrayList<>());
+                XmppUtils.notifyEventListeners(reachabilityListeners, new ReachabilityEvent(ReachabilityManager.this, contact, Collections.emptyList()));
             }
         });
 
@@ -128,23 +129,12 @@ public final class ReachabilityManager extends ExtensionManager {
                     List<Address> oldReachabilityAddresses = reachabilities.get(contact);
                     if (oldReachabilityAddresses == null || !oldReachabilityAddresses.equals(reachability.getAddresses())) {
                         reachabilities.put(contact, reachability.getAddresses());
-                        notifyReachabilityListeners(contact, reachability.getAddresses());
+                        XmppUtils.notifyEventListeners(reachabilityListeners, new ReachabilityEvent(this, contact, reachability.getAddresses()));
                     }
                 }
             }
         }
         return reachability != null;
-    }
-
-    private void notifyReachabilityListeners(Jid from, List<Address> reachabilityAddresses) {
-        ReachabilityEvent reachabilityEvent = new ReachabilityEvent(ReachabilityManager.this, from, reachabilityAddresses);
-        for (Consumer<ReachabilityEvent> reachabilityListener : reachabilityListeners) {
-            try {
-                reachabilityListener.accept(reachabilityEvent);
-            } catch (Exception ex) {
-                logger.log(Level.WARNING, ex.getMessage(), ex);
-            }
-        }
     }
 
     /**

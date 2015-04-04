@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.bytestreams.ibb;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -76,7 +77,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                 } else {
                     // Somebody wants to create a IBB session with me.
                     // Notify the listeners.
-                    notifyByteStreamEvent(new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize()));
+                    XmppUtils.notifyEventListeners(byteStreamListeners, new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize()));
                     return null;
                 }
             }

@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.httpauth;
 
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -37,7 +37,6 @@ import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -66,10 +65,8 @@ public final class HttpAuthenticationManager extends ExtensionManager {
             @Override
             protected IQ processRequest(IQ iq) {
                 ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
-                if (notifyHttpAuthListeners(iq, confirmationRequest)) {
-                    return null;
-                }
-                return iq.createError(Condition.SERVICE_UNAVAILABLE);
+                XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq, confirmationRequest));
+                return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;
             }
         });
 
@@ -84,23 +81,10 @@ public final class HttpAuthenticationManager extends ExtensionManager {
             if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
                 ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
                 if (confirmationRequest != null) {
-                    notifyHttpAuthListeners(message, confirmationRequest);
+                    XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, message, confirmationRequest));
                 }
             }
         });
-    }
-
-    private boolean notifyHttpAuthListeners(Stanza stanza, ConfirmationRequest confirmationRequest) {
-        boolean handled = false;
-        for (Consumer<HttpAuthenticationEvent> httpAuthenticationListener : httpAuthenticationListeners) {
-            try {
-                httpAuthenticationListener.accept(new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, stanza, confirmationRequest));
-                handled = true;
-            } catch (Exception ex) {
-                logger.log(Level.WARNING, ex.getMessage(), ex);
-            }
-        }
-        return handled;
     }
 
     /**

@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.blocking;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -45,8 +46,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -59,8 +58,6 @@ import java.util.stream.Collectors;
  * @author Christian Schudt
  */
 public final class BlockingManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(BlockingManager.class.getName());
 
     private final Set<Jid> blockedContacts = new HashSet<>();
 
@@ -93,7 +90,7 @@ public final class BlockingManager extends ExtensionManager {
                                 pushedContacts.add(item);
                             }
                         }
-                        notifyListeners(pushedContacts, Collections.<Jid>emptyList());
+                        XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, pushedContacts, Collections.<Jid>emptyList()));
                         return iq.createResult();
                     } else {
                         Unblock unblock = iq.getExtension(Unblock.class);
@@ -111,7 +108,7 @@ public final class BlockingManager extends ExtensionManager {
                                     }
                                 }
                             }
-                            notifyListeners(Collections.<Jid>emptyList(), pushedContacts);
+                            XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, Collections.<Jid>emptyList(), pushedContacts));
                             return iq.createResult();
                         }
                     }
@@ -122,17 +119,6 @@ public final class BlockingManager extends ExtensionManager {
         // Listen for "un/block pushes"
         xmppSession.addIQHandler(Block.class, iqHandler, false);
         xmppSession.addIQHandler(Unblock.class, iqHandler, false);
-    }
-
-    private void notifyListeners(List<Jid> blockedContacts, List<Jid> unblockedContacts) {
-        BlockingEvent blockingEvent = new BlockingEvent(BlockingManager.this, blockedContacts, unblockedContacts);
-        for (Consumer<BlockingEvent> blockingListener : blockingListeners) {
-            try {
-                blockingListener.accept(blockingEvent);
-            } catch (Exception ex) {
-                logger.log(Level.WARNING, ex.getMessage(), ex);
-            }
-        }
     }
 
     /**

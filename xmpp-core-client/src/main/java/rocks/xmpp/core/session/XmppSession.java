@@ -835,11 +835,11 @@ public class XmppSession implements AutoCloseable {
                 throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
             }
             if (stanza instanceof Message) {
-                notifyMessageListeners((Message) stanza, false);
+                XmppUtils.notifyEventListeners(outboundMessageListeners, new MessageEvent(this, (Message) stanza, false));
             } else if (stanza instanceof Presence) {
-                notifyPresenceListeners((Presence) stanza, false);
+                XmppUtils.notifyEventListeners(outboundPresenceListeners, new PresenceEvent(this, (Presence) stanza, false));
             } else if (stanza instanceof IQ) {
-                notifyIQListeners((IQ) stanza, false);
+                XmppUtils.notifyEventListeners(outboundIQListeners, new IQEvent(this, (IQ) stanza, false));
             }
         }
         if (activeConnection != null) {
@@ -1105,11 +1105,11 @@ public class XmppSession implements AutoCloseable {
                     }
                 }
             }
-            stanzaListenerExecutor.execute(() -> notifyIQListeners(iq, true));
+            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true)));
         } else if (element instanceof Message) {
-            stanzaListenerExecutor.execute(() -> notifyMessageListeners((Message) element, true));
+            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true)));
         } else if (element instanceof Presence) {
-            stanzaListenerExecutor.execute(() -> notifyPresenceListeners((Presence) element, true));
+            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true)));
         } else if (element instanceof StreamFeatures) {
             getManager(StreamFeaturesManager.class).processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {
@@ -1119,42 +1119,6 @@ public class XmppSession implements AutoCloseable {
             return getManager(StreamFeaturesManager.class).processElement(element);
         }
         return false;
-    }
-
-    private void notifyIQListeners(IQ iq, boolean inbound) {
-        IQEvent iqEvent = new IQEvent(this, iq, inbound);
-        Iterable<Consumer<IQEvent>> listeners = inbound ? inboundIQListeners : outboundIQListeners;
-        listeners.forEach(iqListener -> {
-            try {
-                iqListener.accept(iqEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
-    }
-
-    private void notifyMessageListeners(Message message, boolean inbound) {
-        MessageEvent messageEvent = new MessageEvent(this, message, inbound);
-        Iterable<Consumer<MessageEvent>> listeners = inbound ? inboundMessageListeners : outboundMessageListeners;
-        listeners.forEach(messageListener -> {
-            try {
-                messageListener.accept(messageEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
-    }
-
-    private void notifyPresenceListeners(Presence presence, boolean inbound) {
-        PresenceEvent presenceEvent = new PresenceEvent(this, presence, inbound);
-        Iterable<Consumer<PresenceEvent>> listeners = inbound ? inboundPresenceListeners : outboundPresenceListeners;
-        listeners.forEach(presenceListener -> {
-            try {
-                presenceListener.accept(presenceEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
     }
 
     /**
@@ -1269,20 +1233,9 @@ public class XmppSession implements AutoCloseable {
         }
         if (status != oldStatus) {
             // Make sure to not call listeners from within synchronized region.
-            notifySessionStatusListeners(status, oldStatus, e);
+            XmppUtils.notifyEventListeners(sessionStatusListeners, new SessionStatusEvent(this, status, oldStatus, e));
         }
         return status != oldStatus;
-    }
-
-    private void notifySessionStatusListeners(Status status, Status oldStatus, Throwable throwable) {
-        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, throwable);
-        sessionStatusListeners.forEach(sessionStatusListener -> {
-            try {
-                sessionStatusListener.accept(sessionStatusEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
     }
 
     /**

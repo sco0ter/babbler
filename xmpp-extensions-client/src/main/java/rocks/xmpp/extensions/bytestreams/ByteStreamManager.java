@@ -30,8 +30,6 @@ import rocks.xmpp.core.session.XmppSession;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An abstract class to manage both <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a> or <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
@@ -42,9 +40,7 @@ import java.util.logging.Logger;
  */
 public abstract class ByteStreamManager extends ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(ByteStreamManager.class.getName());
-
-    private final Set<Consumer<ByteStreamEvent>> byteStreamListeners = new CopyOnWriteArraySet<>();
+    protected final Set<Consumer<ByteStreamEvent>> byteStreamListeners = new CopyOnWriteArraySet<>();
 
     protected ByteStreamManager(XmppSession xmppSession, String... features) {
         super(xmppSession, features);
@@ -77,20 +73,5 @@ public abstract class ByteStreamManager extends ExtensionManager {
      */
     public final void removeByteStreamListener(Consumer<ByteStreamEvent> byteStreamListener) {
         byteStreamListeners.remove(byteStreamListener);
-    }
-
-    /**
-     * Notifies the byte stream listener.
-     *
-     * @param byteStreamEvent The byte stream event.
-     */
-    protected final void notifyByteStreamEvent(ByteStreamEvent byteStreamEvent) {
-        for (Consumer<ByteStreamEvent> byteStreamListener : byteStreamListeners) {
-            try {
-                byteStreamListener.accept(byteStreamEvent);
-            } catch (Exception exc) {
-                logger.log(Level.WARNING, exc.getMessage(), exc);
-            }
-        }
     }
 }

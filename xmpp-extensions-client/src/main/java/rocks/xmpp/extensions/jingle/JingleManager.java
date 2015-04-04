@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.jingle;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -46,7 +47,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -139,7 +139,7 @@ public final class JingleManager extends ExtensionManager {
                                 // Everything is fine, create the session and notify the listeners.
                                 JingleSession jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
                                 jingleSessionMap.put(jingle.getSessionId(), jingleSession);
-                                notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                                XmppUtils.notifyEventListeners(jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                             }
                             // If the request was ok, immediately acknowledge the initiation request.
                             // See 6.3.1 Acknowledgement
@@ -157,7 +157,7 @@ public final class JingleManager extends ExtensionManager {
                         // return <item-not-found/> and <unknown-session/>
                         return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession()));
                     } else {
-                        jingleSession.notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                        XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                         return iq.createResult();
                     }
                 }
@@ -201,21 +201,5 @@ public final class JingleManager extends ExtensionManager {
      */
     public final void removeJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.remove(jingleListener);
-    }
-
-
-    /**
-     * Notifies the Jingle listeners.
-     *
-     * @param jingleEvent The Jingle event.
-     */
-    void notifyJingleListeners(JingleEvent jingleEvent) {
-        for (Consumer<JingleEvent> jingleListener : jingleListeners) {
-            try {
-                jingleListener.accept(jingleEvent);
-            } catch (Exception exc) {
-                logger.log(Level.WARNING, exc.getMessage(), exc);
-            }
-        }
     }
 }

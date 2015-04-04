@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.rosterx;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.session.ExtensionManager;
@@ -115,13 +116,7 @@ public final class ContactExchangeManager extends ExtensionManager {
                 }
             }
         } else {
-            for (Consumer<ContactExchangeEvent> contactExchangeListener : contactExchangeListeners) {
-                try {
-                    contactExchangeListener.accept(new ContactExchangeEvent(this, items, sender, message, date));
-                } catch (Exception ex) {
-                    logger.log(Level.WARNING, ex.getMessage(), ex);
-                }
-            }
+            XmppUtils.notifyEventListeners(contactExchangeListeners, new ContactExchangeEvent(this, items, sender, message, date));
         }
     }
 

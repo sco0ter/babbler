@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -48,7 +47,7 @@ public final class JingleSession {
 
     private static final Logger logger = Logger.getLogger(JingleManager.class.getName());
 
-    private final Set<Consumer<JingleEvent>> jingleListeners = new CopyOnWriteArraySet<>();
+    final Set<Consumer<JingleEvent>> jingleListeners = new CopyOnWriteArraySet<>();
 
     private final String sessionId;
 
@@ -219,22 +218,6 @@ public final class JingleSession {
     public final void removeJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.remove(jingleListener);
     }
-
-    /**
-     * Notifies the Jingle listeners.
-     *
-     * @param jingleEvent The Jingle event.
-     */
-    void notifyJingleListeners(JingleEvent jingleEvent) {
-        for (Consumer<JingleEvent> jingleListener : jingleListeners) {
-            try {
-                jingleListener.accept(jingleEvent);
-            } catch (Exception exc) {
-                logger.log(Level.WARNING, exc.getMessage(), exc);
-            }
-        }
-    }
-
 
     /**
      * Represents the state of a Jingle session.

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.privacy;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -83,10 +84,7 @@ public final class PrivacyListManager extends ExtensionManager {
                     if (privacy != null) {
                         List<PrivacyList> privacyLists = privacy.getPrivacyLists();
                         if (privacyLists.size() == 1) {
-                            // Notify the listeners about the reception.
-                            for (Consumer<PrivacyListEvent> privacyListListener : privacyListListeners) {
-                                privacyListListener.accept(new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
-                            }
+                            XmppUtils.notifyEventListeners(privacyListListeners, new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
                         }
                     }
                     // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.

@@ -114,7 +114,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                     // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
                     return iq.createError(Condition.BAD_REQUEST);
                 } else {
-                    notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
+                    XmppUtils.notifyEventListeners(byteStreamListeners, new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
                     return null;
                 }
             }

@@ -31,7 +31,11 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.EventObject;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class with static factory methods.
@@ -39,6 +43,8 @@ import java.util.concurrent.ThreadFactory;
  * @author Christian Schudt
  */
 public final class XmppUtils {
+
+    private static final Logger logger = Logger.getLogger(XmppUtils.class.getName());
 
     private XmppUtils() {
     }
@@ -145,5 +151,22 @@ public final class XmppUtils {
             thread.setDaemon(true);
             return thread;
         };
+    }
+
+    /**
+     * Invokes listeners in a fail-safe way.
+     *
+     * @param eventListeners The event listeners.
+     * @param e              The event object.
+     * @param <T>            The event object type.
+     */
+    public static <T extends EventObject> void notifyEventListeners(Iterable<Consumer<T>> eventListeners, T e) {
+        eventListeners.forEach(listener -> {
+            try {
+                listener.accept(e);
+            } catch (Exception ex) {
+                logger.log(Level.WARNING, ex.getMessage(), ex);
+            }
+        });
     }
 }

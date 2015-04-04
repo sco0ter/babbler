@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.geoloc;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -37,7 +38,6 @@ import rocks.xmpp.extensions.pubsub.model.event.Event;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -72,13 +72,7 @@ public final class GeoLocationManager extends ExtensionManager {
                         Object payload = item.getPayload();
                         if (payload instanceof GeoLocation) {
                             // Notify the listeners about the reception.
-                            for (Consumer<GeoLocationEvent> geoLocationListener : geoLocationListeners) {
-                                try {
-                                    geoLocationListener.accept(new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
-                                } catch (Exception ex) {
-                                    logger.log(Level.WARNING, ex.getMessage(), ex);
-                                }
-                            }
+                            XmppUtils.notifyEventListeners(geoLocationListeners, new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
                         }
                     }
                 }

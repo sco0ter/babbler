@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -43,8 +44,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +53,6 @@ import java.util.stream.Collectors;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
 public final class MultiUserChatManager extends ExtensionManager {
-    private static final Logger logger = Logger.getLogger(MultiUserChatManager.class.getName());
 
     private static final String ROOMS_NODE = "http://jabber.org/protocol/muc#rooms";
 
@@ -84,27 +82,17 @@ public final class MultiUserChatManager extends ExtensionManager {
             MucUser mucUser = message.getExtension(MucUser.class);
             if (mucUser != null) {
                 for (Invite invite : mucUser.getInvites()) {
-                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                    XmppUtils.notifyEventListeners(invitationListeners, new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
                 }
             } else {
                 // Check, if the message contains a direct invitation.
                 DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
                 if (directInvitation != null) {
-                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
+                    XmppUtils.notifyEventListeners(invitationListeners, new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
                 }
             }
         });
         serviceDiscoveryManager.setItemProvider(ROOMS_NODE, new DefaultItemProvider(enteredRoomsMap.values()));
-    }
-
-    private void notifyListeners(InvitationEvent invitationEvent) {
-        for (Consumer<InvitationEvent> invitationListener : invitationListeners) {
-            try {
-                invitationListener.accept(invitationEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
     }
 
     /**

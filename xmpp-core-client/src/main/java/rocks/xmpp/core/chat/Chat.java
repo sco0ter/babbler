@@ -80,14 +80,4 @@ public abstract class Chat {
     public final void removeInboundMessageListener(Consumer<MessageEvent> messageListener) {
         inboundMessageListeners.remove(messageListener);
     }
-
-    protected void notifyInboundMessageListeners(MessageEvent messageEvent) {
-        for (Consumer<MessageEvent> messageListener : inboundMessageListeners) {
-            try {
-                messageListener.accept(messageEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
 }

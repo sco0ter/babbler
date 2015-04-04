@@ -296,7 +296,7 @@ public final class RosterManager extends Manager {
             }
             cacheRoster(roster.getVersion());
         }
-        notifyRosterListeners(new RosterEvent(this, addedContacts, updatedContacts, removedContacts));
+        XmppUtils.notifyEventListeners(rosterListeners, new RosterEvent(this, addedContacts, updatedContacts, removedContacts));
     }
 
     private void cacheRoster(String version) {
@@ -427,16 +427,6 @@ public final class RosterManager extends Manager {
      */
     public final void removeRosterListener(Consumer<RosterEvent> rosterListener) {
         rosterListeners.remove(rosterListener);
-    }
-
-    private void notifyRosterListeners(RosterEvent rosterEvent) {
-        for (Consumer<RosterEvent> rosterListener : rosterListeners) {
-            try {
-                rosterListener.accept(rosterEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
     }
 
     /**

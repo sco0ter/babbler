@@ -25,6 +25,7 @@
 package rocks.xmpp.core.chat;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -39,7 +40,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -52,7 +52,7 @@ import java.util.logging.Logger;
  * <p>When a contact initiates a new chat session with you, you can listen for it with {@link #addChatSessionListener(Consumer)}.
  * The listener will be called either if you created the session programmatically as shown above, or if it is created by a contact, i.e. because he or she sent you a chat message.
  * </p>
- * <p>You should add a {@link rocks.xmpp.core.stanza.MessageListener} to the chat session in order to listen for messages.</p>
+ * <p>You should add a {@link ChatSession#addInboundMessageListener(Consumer)} to the chat session in order to listen for messages.</p>
  * <pre><code>
  * xmppSession.getManager(ChatManager.class).addChatSessionListener(new ChatSessionListener() {
  *     {@literal @}Override
@@ -109,7 +109,7 @@ public final class ChatManager extends Manager {
                             // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
                             chatSession.setChatPartner(message.getFrom());
                         }
-                        chatSession.notifyInboundMessageListeners(new MessageEvent(chatSession, message, e.isInbound()));
+                        XmppUtils.notifyEventListeners(chatSession.inboundMessageListeners, new MessageEvent(chatSession, message, e.isInbound()));
                     }
                 }
             }
@@ -155,17 +155,6 @@ public final class ChatManager extends Manager {
         chatSessionListeners.remove(chatSessionListener);
     }
 
-    private void notifyChatSessionCreated(ChatSession chatSession, boolean createdByInboundMessage) {
-        ChatSessionEvent chatSessionEvent = new ChatSessionEvent(this, chatSession, createdByInboundMessage);
-        for (Consumer<ChatSessionEvent> chatSessionListener : chatSessionListeners) {
-            try {
-                chatSessionListener.accept(chatSessionEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
     /**
      * Creates a new chat session and notifies any {@linkplain Consumer chat session listeners} about it.
      *
@@ -188,7 +177,7 @@ public final class ChatManager extends Manager {
         if (!chatSessionMap.containsKey(threadId)) {
             ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession);
             chatSessionMap.put(threadId, chatSession);
-            notifyChatSessionCreated(chatSession, inbound);
+            XmppUtils.notifyEventListeners(chatSessionListeners, new ChatSessionEvent(this, chatSession, inbound));
         }
         return chatSessionMap.get(threadId);
     }

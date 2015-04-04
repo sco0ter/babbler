@@ -52,6 +52,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,7 +69,7 @@ public final class FileTransferManager extends ExtensionManager {
 
     private final EntityCapabilitiesManager entityCapabilitiesManager;
 
-    private final Set<FileTransferOfferListener> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<FileTransferOfferEvent>> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
 
     private final ExecutorService fileTransferOfferExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Offer Thread"));
 
@@ -197,9 +198,9 @@ public final class FileTransferManager extends ExtensionManager {
     public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {
         fileTransferOfferExecutor.execute(() -> {
             FileTransferOfferEvent fileTransferRequestEvent = new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator);
-            for (FileTransferOfferListener fileTransferOfferListener : fileTransferOfferListeners) {
+            for (Consumer<FileTransferOfferEvent> fileTransferOfferListener : fileTransferOfferListeners) {
                 try {
-                    fileTransferOfferListener.fileTransferOffered(fileTransferRequestEvent);
+                    fileTransferOfferListener.accept(fileTransferRequestEvent);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
@@ -211,9 +212,9 @@ public final class FileTransferManager extends ExtensionManager {
      * Adds a file transfer listener, which allows to listen for inbound file transfer requests.
      *
      * @param fileTransferOfferListener The listener.
-     * @see #removeFileTransferOfferListener(FileTransferOfferListener)
+     * @see #removeFileTransferOfferListener(Consumer)
      */
-    public void addFileTransferOfferListener(FileTransferOfferListener fileTransferOfferListener) {
+    public void addFileTransferOfferListener(Consumer<FileTransferOfferEvent> fileTransferOfferListener) {
         fileTransferOfferListeners.add(fileTransferOfferListener);
     }
 
@@ -221,9 +222,9 @@ public final class FileTransferManager extends ExtensionManager {
      * Removes a previously added file transfer listener.
      *
      * @param fileTransferOfferListener The listener.
-     * @see #addFileTransferOfferListener(FileTransferOfferListener)
+     * @see #addFileTransferOfferListener(Consumer)
      */
-    public void removeFileTransferOfferListener(FileTransferOfferListener fileTransferOfferListener) {
+    public void removeFileTransferOfferListener(Consumer<FileTransferOfferEvent> fileTransferOfferListener) {
         fileTransferOfferListeners.remove(fileTransferOfferListener);
     }
 }

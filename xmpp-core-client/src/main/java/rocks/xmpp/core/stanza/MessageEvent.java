@@ -26,13 +26,16 @@ package rocks.xmpp.core.stanza;
 
 import rocks.xmpp.core.stanza.model.client.Message;
 
+import java.util.function.Consumer;
+
 /**
  * A message event is fired whenever a message is received or sent.
  * <p>
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see MessageListener
+ * @see rocks.xmpp.core.session.XmppSession#addInboundMessageListener(Consumer)
+ * @see rocks.xmpp.core.session.XmppSession#addOutboundMessageListener(Consumer)
  */
 public final class MessageEvent extends StanzaEvent<Message> {
     /**

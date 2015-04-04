@@ -43,11 +43,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and notifies {@linkplain ReachabilityListener}s,
+ * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and notifies {@linkplain Consumer}s,
  * when the reachability of a contact has changed either via presence or PEP.
  * <p>
  * By default this manager is not enabled. If you support reachability addresses you have to {@linkplain #setEnabled(boolean) enable} it.
@@ -59,7 +60,7 @@ public final class ReachabilityManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ReachabilityManager.class.getName());
 
-    private final Set<ReachabilityListener> reachabilityListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<ReachabilityEvent>> reachabilityListeners = new CopyOnWriteArraySet<>();
 
     private final Map<Jid, List<Address>> reachabilities = new ConcurrentHashMap<>();
 
@@ -137,9 +138,9 @@ public final class ReachabilityManager extends ExtensionManager {
 
     private void notifyReachabilityListeners(Jid from, List<Address> reachabilityAddresses) {
         ReachabilityEvent reachabilityEvent = new ReachabilityEvent(ReachabilityManager.this, from, reachabilityAddresses);
-        for (ReachabilityListener reachabilityListener : reachabilityListeners) {
+        for (Consumer<ReachabilityEvent> reachabilityListener : reachabilityListeners) {
             try {
-                reachabilityListener.reachabilityChanged(reachabilityEvent);
+                reachabilityListener.accept(reachabilityEvent);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, ex.getMessage(), ex);
             }
@@ -150,9 +151,9 @@ public final class ReachabilityManager extends ExtensionManager {
      * Adds a reachability listener, which allows to listen for reachability updates.
      *
      * @param reachabilityListener The listener.
-     * @see #removeReachabilityListener(ReachabilityListener)
+     * @see #removeReachabilityListener(Consumer)
      */
-    public void addReachabilityListener(ReachabilityListener reachabilityListener) {
+    public void addReachabilityListener(Consumer<ReachabilityEvent> reachabilityListener) {
         reachabilityListeners.add(reachabilityListener);
     }
 
@@ -160,9 +161,9 @@ public final class ReachabilityManager extends ExtensionManager {
      * Removes a previously added reachability listener.
      *
      * @param reachabilityListener The listener.
-     * @see #addReachabilityListener(ReachabilityListener)
+     * @see #addReachabilityListener(Consumer)
      */
-    public void removeReachabilityListener(ReachabilityListener reachabilityListener) {
+    public void removeReachabilityListener(Consumer<ReachabilityEvent> reachabilityListener) {
         reachabilityListeners.remove(reachabilityListener);
     }
 

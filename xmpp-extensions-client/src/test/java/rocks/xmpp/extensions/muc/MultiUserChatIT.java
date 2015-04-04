@@ -33,12 +33,13 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
@@ -85,7 +86,7 @@ public class MultiUserChatIT extends IntegrationTest {
     public void testMessageListener() throws XmppException, InterruptedException {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        MessageListener messageListener = e -> {
+        Consumer<MessageEvent> messageListener = e -> {
             if (e.getMessage().getBody().equals("Hello")) {
                 countDownLatch.countDown();
             }

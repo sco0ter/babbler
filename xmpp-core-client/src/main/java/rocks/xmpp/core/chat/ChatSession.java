@@ -33,6 +33,7 @@ import java.util.EventObject;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,7 +53,7 @@ public final class ChatSession extends Chat {
 
     private static final Logger LOGGER = Logger.getLogger(ChatSession.class.getName());
 
-    private final Set<ChatPartnerListener> chatPartnerListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<ChatPartnerEvent>> chatPartnerListeners = new CopyOnWriteArraySet<>();
 
     private final String thread;
 
@@ -71,12 +72,11 @@ public final class ChatSession extends Chat {
      * Adds a chat partner listener.
      *
      * @param chatPartnerListener The listener to add. Must not be {@code null}.
-     * @see #removeChatPartnerListener(ChatPartnerListener)
-     * @see ChatPartnerListener
+     * @see #removeChatPartnerListener(Consumer)
      * @see ChatPartnerEvent
      * @since 0.5.0
      */
-    public final void addChatPartnerListener(final ChatPartnerListener chatPartnerListener) {
+    public final void addChatPartnerListener(final Consumer<ChatPartnerEvent> chatPartnerListener) {
         chatPartnerListeners.add(requireNonNull(chatPartnerListener, "chatPartnerListener must not be null"));
     }
 
@@ -84,20 +84,19 @@ public final class ChatSession extends Chat {
      * Removes a chat partner listener.
      *
      * @param chatPartnerListener The listener to remove. Must not be {@code null}.
-     * @see #addChatPartnerListener(ChatPartnerListener)
-     * @see ChatPartnerListener
+     * @see #addChatPartnerListener(Consumer)
      * @see ChatPartnerEvent
      * @since 0.5.0
      */
-    public final void removeChatPartnerListener(final ChatPartnerListener chatPartnerListener) {
+    public final void removeChatPartnerListener(final Consumer<ChatPartnerEvent> chatPartnerListener) {
         chatPartnerListeners.remove(requireNonNull(chatPartnerListener, "chatPartnerListener must not be nulll"));
     }
 
     private final void notifyChatPartnerListeners(final ChatPartnerEvent chatPartnerEvent) {
         requireNonNull(chatPartnerEvent, "chatPartnerEvent must not be null");
-        for (final ChatPartnerListener chatPartnerListener : chatPartnerListeners) {
+        for (final Consumer<ChatPartnerEvent> chatPartnerListener : chatPartnerListeners) {
             try {
-                chatPartnerListener.chatPartnerChanged(chatPartnerEvent);
+                chatPartnerListener.accept(chatPartnerEvent);
             } catch (final Exception e) {
                 LOGGER.log(Level.WARNING, e.getMessage(), e);
             }
@@ -158,33 +157,12 @@ public final class ChatSession extends Chat {
     }
 
     /**
-     * A listener interface which allows to listen for partner changes in chat sessions.
-     *
-     * @author Markus KARG (markus@headcrashing.eu)
-     * @see ChatPartnerEvent
-     * @see ChatSession#addChatPartnerListener(ChatPartnerListener)
-     * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
-     * @since 0.50
-     */
-    @FunctionalInterface
-    public interface ChatPartnerListener {
-
-        /**
-         * Called, whenever the {@link ChatSession}'s partner was replaced.
-         *
-         * @param chatPartnerEvent The chat partner event.
-         */
-        void chatPartnerChanged(ChatPartnerEvent chatPartnerEvent);
-    }
-
-    /**
      * A {@code ChatPartnerEvent} is fired, whenever a {@link ChatSession}'s partner was
      * replaced.
      *
      * @author Markus KARG (markus@headcrashing.eu)
-     * @see ChatSession#addChatPartnerListener(ChatPartnerListener)
-     * @see ChatSession#removeChatPartnerListener(ChatPartnerListener)
-     * @see ChatPartnerListener
+     * @see ChatSession#addChatPartnerListener(Consumer)
+     * @see ChatSession#removeChatPartnerListener(Consumer)
      * @since 0.5.0
      */
     @SuppressWarnings("serial")

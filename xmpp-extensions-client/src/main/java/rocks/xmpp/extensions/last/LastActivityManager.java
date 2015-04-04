@@ -30,7 +30,6 @@ import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
@@ -39,7 +38,6 @@ import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.function.Consumer;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
@@ -156,26 +154,24 @@ public final class LastActivityManager extends ExtensionManager {
     /**
      * The default strategy to determine last activity. It simply sets the date of last activity, whenever a message or presence is sent.
      */
-    private static class DefaultLastActivityStrategy implements LastActivityStrategy, MessageListener, Consumer<PresenceEvent> {
+    private static class DefaultLastActivityStrategy implements LastActivityStrategy {
         private volatile Instant lastActivity;
 
         public DefaultLastActivityStrategy(XmppSession xmppSession) {
-            xmppSession.addOutboundMessageListener(this);
-            xmppSession.addOutboundPresenceListener(this);
+            xmppSession.addOutboundMessageListener(this::handleMessage);
+            xmppSession.addOutboundPresenceListener(this::handlePresence);
         }
 
         @Override
-        public Instant getLastActivity() {
+        public synchronized Instant getLastActivity() {
             return lastActivity;
         }
 
-        @Override
-        public void handleMessage(MessageEvent e) {
+        private synchronized void handleMessage(MessageEvent e) {
             lastActivity = Instant.now();
         }
 
-        @Override
-        public void accept(PresenceEvent e) {
+        private synchronized void handlePresence(PresenceEvent e) {
             AbstractPresence presence = e.getPresence();
             if (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA) {
                 lastActivity = Instant.now();

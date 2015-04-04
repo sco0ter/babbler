@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -63,7 +64,7 @@ public final class BlockingManager extends ExtensionManager {
 
     private final Set<Jid> blockedContacts = new HashSet<>();
 
-    private final Set<BlockingListener> blockingListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<BlockingEvent>> blockingListeners = new CopyOnWriteArraySet<>();
 
     private BlockingManager(final XmppSession xmppSession) {
         super(xmppSession);
@@ -125,9 +126,9 @@ public final class BlockingManager extends ExtensionManager {
 
     private void notifyListeners(List<Jid> blockedContacts, List<Jid> unblockedContacts) {
         BlockingEvent blockingEvent = new BlockingEvent(BlockingManager.this, blockedContacts, unblockedContacts);
-        for (BlockingListener blockingListener : blockingListeners) {
+        for (Consumer<BlockingEvent> blockingListener : blockingListeners) {
             try {
-                blockingListener.blockListChanged(blockingEvent);
+                blockingListener.accept(blockingEvent);
             } catch (Exception ex) {
                 logger.log(Level.WARNING, ex.getMessage(), ex);
             }
@@ -138,9 +139,9 @@ public final class BlockingManager extends ExtensionManager {
      * Adds a blocking listener, which allows to listen for block and unblock pushes.
      *
      * @param blockingListener The listener.
-     * @see #removeBlockingListener(BlockingListener)
+     * @see #removeBlockingListener(Consumer)
      */
-    public final void addBlockingListener(BlockingListener blockingListener) {
+    public final void addBlockingListener(Consumer<BlockingEvent> blockingListener) {
         blockingListeners.add(blockingListener);
     }
 
@@ -148,9 +149,9 @@ public final class BlockingManager extends ExtensionManager {
      * Removes a previously added blocking listener.
      *
      * @param blockingListener The listener.
-     * @see #addBlockingListener(BlockingListener)
+     * @see #addBlockingListener(Consumer)
      */
-    public final void removeBlockingListener(BlockingListener blockingListener) {
+    public final void removeBlockingListener(Consumer<BlockingEvent> blockingListener) {
         blockingListeners.remove(blockingListener);
     }
 

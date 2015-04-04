@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private final Set<InvitationListener> invitationListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<InvitationEvent>> invitationListeners = new CopyOnWriteArraySet<>();
 
     private final Map<Jid, Item> enteredRoomsMap = new ConcurrentHashMap<>();
 
@@ -97,9 +98,9 @@ public final class MultiUserChatManager extends ExtensionManager {
     }
 
     private void notifyListeners(InvitationEvent invitationEvent) {
-        for (InvitationListener invitationListener : invitationListeners) {
+        for (Consumer<InvitationEvent> invitationListener : invitationListeners) {
             try {
-                invitationListener.invitationReceived(invitationEvent);
+                invitationListener.accept(invitationEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -110,9 +111,9 @@ public final class MultiUserChatManager extends ExtensionManager {
      * Adds an invitation listener, which allows to listen for inbound multi-user chat invitations.
      *
      * @param invitationListener The listener.
-     * @see #removeInvitationListener(InvitationListener)
+     * @see #removeInvitationListener(Consumer)
      */
-    public void addInvitationListener(InvitationListener invitationListener) {
+    public void addInvitationListener(Consumer<InvitationEvent> invitationListener) {
         invitationListeners.add(invitationListener);
     }
 
@@ -120,9 +121,9 @@ public final class MultiUserChatManager extends ExtensionManager {
      * Removes a previously added invitation listener.
      *
      * @param invitationListener The listener.
-     * @see #addInvitationListener(InvitationListener)
+     * @see #addInvitationListener(Consumer)
      */
-    public void removeInvitationListener(InvitationListener invitationListener) {
+    public void removeInvitationListener(Consumer<InvitationEvent> invitationListener) {
         invitationListeners.remove(invitationListener);
     }
 

@@ -35,7 +35,6 @@ import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.filetransfer.FileTransferNegotiator;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.FileTransferStatusEvent;
-import rocks.xmpp.extensions.filetransfer.FileTransferStatusListener;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
@@ -50,6 +49,7 @@ import java.net.URLConnection;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
@@ -147,9 +147,9 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
             URL url = new URL(fileTransferOffer.getName());
             URLConnection urlConnection = url.openConnection();
             final FileTransfer fileTransfer = new FileTransfer(urlConnection.getInputStream(), outputStream, fileTransferOffer.getSize());
-            fileTransfer.addFileTransferStatusListener(new FileTransferStatusListener() {
+            fileTransfer.addFileTransferStatusListener(new Consumer<FileTransferStatusEvent>() {
                 @Override
-                public void fileTransferStatusChanged(FileTransferStatusEvent e) {
+                public void accept(FileTransferStatusEvent e) {
                     if (e.getStatus() == FileTransfer.Status.COMPLETED) {
                         xmppSession.send(iq.createResult());
                         fileTransfer.removeFileTransferStatusListener(this);

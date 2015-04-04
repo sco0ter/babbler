@@ -40,7 +40,7 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -72,7 +72,7 @@ public final class VisualDebugger implements XmppDebugger {
         initializeLogging();
     }
 
-    private static final Map<Tab, SessionStatusListener> CONNECTION_LISTENER_MAP = new HashMap<>();
+    private static final Map<Tab, Consumer<SessionStatusEvent>> CONNECTION_LISTENER_MAP = new HashMap<>();
 
     private static final Queue<LogRecord> LOG_RECORDS = new ArrayDeque<>();
 
@@ -152,7 +152,7 @@ public final class VisualDebugger implements XmppDebugger {
     @Override
     public void initialize(final XmppSession xmppSession) {
 
-        final SessionStatusListener connectionListener = e -> {
+        final Consumer<SessionStatusEvent> connectionListener = e -> {
             waitForPlatform();
             Platform.runLater(() -> {
                 if (e.getStatus() == XmppSession.Status.CONNECTED && xmppSession.getActiveConnection() != null) {

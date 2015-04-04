@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +48,7 @@ public final class JingleSession {
 
     private static final Logger logger = Logger.getLogger(JingleManager.class.getName());
 
-    private final Set<JingleListener> jingleListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<JingleEvent>> jingleListeners = new CopyOnWriteArraySet<>();
 
     private final String sessionId;
 
@@ -90,8 +91,8 @@ public final class JingleSession {
     /**
      * Initiates the session.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#protocol-initiate">6.2 Initiation</a>
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-initiate">7.2.10 session-initiate</a>
      */
@@ -110,8 +111,8 @@ public final class JingleSession {
      * Accepts the session. You must at least provide one content element.
      *
      * @param contents The contents.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-acceptance">6.5 Acceptance</a>
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-accept">7.2.8 session-accept</a>
      */
@@ -144,8 +145,8 @@ public final class JingleSession {
      * Terminates the Jingle session.
      *
      * @param reason The reason for termination.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-terminate">6.7 Termination</a>
      */
     public void terminate(Jingle.Reason reason) throws XmppException {
@@ -165,8 +166,8 @@ public final class JingleSession {
     /**
      * @param contentName     The content name.
      * @param transportMethod The replaced transport method.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-transport-replace">7.2.15 transport-replace</a>
      */
     public void replaceTransport(String contentName, TransportMethod transportMethod) throws XmppException {
@@ -188,8 +189,8 @@ public final class JingleSession {
      * Sends a session info.
      *
      * @param object The session info payload.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-info">7.2.9 session-info</a>
      */
     public void sendSessionInfo(Object object) throws XmppException {
@@ -203,9 +204,9 @@ public final class JingleSession {
      * Adds a Jingle listener, which allows to listen for Jingle events.
      *
      * @param jingleListener The listener.
-     * @see #removeJingleListener(JingleListener)
+     * @see #removeJingleListener(Consumer)
      */
-    public final void addJingleListener(JingleListener jingleListener) {
+    public final void addJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.add(jingleListener);
     }
 
@@ -213,9 +214,9 @@ public final class JingleSession {
      * Removes a previously added Jingle listener.
      *
      * @param jingleListener The listener.
-     * @see #addJingleListener(JingleListener)
+     * @see #addJingleListener(Consumer)
      */
-    public final void removeJingleListener(JingleListener jingleListener) {
+    public final void removeJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.remove(jingleListener);
     }
 
@@ -225,9 +226,9 @@ public final class JingleSession {
      * @param jingleEvent The Jingle event.
      */
     void notifyJingleListeners(JingleEvent jingleEvent) {
-        for (JingleListener jingleListener : jingleListeners) {
+        for (Consumer<JingleEvent> jingleListener : jingleListeners) {
             try {
-                jingleListener.jingleReceived(jingleEvent);
+                jingleListener.accept(jingleEvent);
             } catch (Exception exc) {
                 logger.log(Level.WARNING, exc.getMessage(), exc);
             }

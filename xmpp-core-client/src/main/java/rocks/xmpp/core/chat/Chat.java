@@ -25,11 +25,11 @@
 package rocks.xmpp.core.chat;
 
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.model.client.Message;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +43,7 @@ public abstract class Chat {
 
     private static final Logger logger = Logger.getLogger(Chat.class.getName());
 
-    protected final Set<MessageListener> inboundMessageListeners = new CopyOnWriteArraySet<>();
+    protected final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
     /**
      * Sends a message to the chat.
@@ -65,9 +65,9 @@ public abstract class Chat {
      * Adds a message listener, which allows to listen for inbound messages.
      *
      * @param messageListener The listener.
-     * @see #removeInboundMessageListener(rocks.xmpp.core.stanza.MessageListener)
+     * @see #removeInboundMessageListener(Consumer)
      */
-    public final void addInboundMessageListener(MessageListener messageListener) {
+    public final void addInboundMessageListener(Consumer<MessageEvent> messageListener) {
         inboundMessageListeners.add(messageListener);
     }
 
@@ -75,16 +75,16 @@ public abstract class Chat {
      * Removes a previously added message listener.
      *
      * @param messageListener The listener.
-     * @see #addInboundMessageListener(rocks.xmpp.core.stanza.MessageListener)
+     * @see #addInboundMessageListener(Consumer)
      */
-    public final void removeInboundMessageListener(MessageListener messageListener) {
+    public final void removeInboundMessageListener(Consumer<MessageEvent> messageListener) {
         inboundMessageListeners.remove(messageListener);
     }
 
     protected void notifyInboundMessageListeners(MessageEvent messageEvent) {
-        for (MessageListener messageListener : inboundMessageListeners) {
+        for (Consumer<MessageEvent> messageListener : inboundMessageListeners) {
             try {
-                messageListener.handleMessage(messageEvent);
+                messageListener.accept(messageEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }

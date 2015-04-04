@@ -40,7 +40,6 @@ import java.util.EventObject;
  * This event notifies listeners, when a HTTP authentication confirmation request has been received.
  *
  * @author Christian Schudt
- * @see HttpAuthenticationListener
  */
 public final class HttpAuthenticationEvent extends EventObject {
 

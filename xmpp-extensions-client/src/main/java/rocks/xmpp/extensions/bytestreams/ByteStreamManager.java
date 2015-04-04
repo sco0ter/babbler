@@ -29,6 +29,7 @@ import rocks.xmpp.core.session.XmppSession;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,7 +44,7 @@ public abstract class ByteStreamManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ByteStreamManager.class.getName());
 
-    private final Set<ByteStreamListener> byteStreamListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<ByteStreamEvent>> byteStreamListeners = new CopyOnWriteArraySet<>();
 
     protected ByteStreamManager(XmppSession xmppSession, String... features) {
         super(xmppSession, features);
@@ -62,9 +63,9 @@ public abstract class ByteStreamManager extends ExtensionManager {
      * Adds a byte stream listener, which allows to listen for inbound byte stream requests.
      *
      * @param byteStreamListener The listener.
-     * @see #removeByteStreamListener(ByteStreamListener)
+     * @see #removeByteStreamListener(Consumer)
      */
-    public final void addByteStreamListener(ByteStreamListener byteStreamListener) {
+    public final void addByteStreamListener(Consumer<ByteStreamEvent> byteStreamListener) {
         byteStreamListeners.add(byteStreamListener);
     }
 
@@ -72,9 +73,9 @@ public abstract class ByteStreamManager extends ExtensionManager {
      * Removes a previously added byte stream listener.
      *
      * @param byteStreamListener The listener.
-     * @see #addByteStreamListener(ByteStreamListener)
+     * @see #addByteStreamListener(Consumer)
      */
-    public final void removeByteStreamListener(ByteStreamListener byteStreamListener) {
+    public final void removeByteStreamListener(Consumer<ByteStreamEvent> byteStreamListener) {
         byteStreamListeners.remove(byteStreamListener);
     }
 
@@ -84,9 +85,9 @@ public abstract class ByteStreamManager extends ExtensionManager {
      * @param byteStreamEvent The byte stream event.
      */
     protected final void notifyByteStreamEvent(ByteStreamEvent byteStreamEvent) {
-        for (ByteStreamListener byteStreamListener : byteStreamListeners) {
+        for (Consumer<ByteStreamEvent> byteStreamListener : byteStreamListeners) {
             try {
-                byteStreamListener.byteStreamRequested(byteStreamEvent);
+                byteStreamListener.accept(byteStreamEvent);
             } catch (Exception exc) {
                 logger.log(Level.WARNING, exc.getMessage(), exc);
             }

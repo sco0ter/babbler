@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,7 +59,7 @@ public final class ContactExchangeManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ContactExchangeManager.class.getName());
 
-    private final Set<ContactExchangeListener> contactExchangeListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<ContactExchangeEvent>> contactExchangeListeners = new CopyOnWriteArraySet<>();
 
     private final Collection<Jid> trustedEntities = new CopyOnWriteArraySet<>();
 
@@ -114,9 +115,9 @@ public final class ContactExchangeManager extends ExtensionManager {
                 }
             }
         } else {
-            for (ContactExchangeListener contactExchangeListener : contactExchangeListeners) {
+            for (Consumer<ContactExchangeEvent> contactExchangeListener : contactExchangeListeners) {
                 try {
-                    contactExchangeListener.contactExchangeSuggested(new ContactExchangeEvent(this, items, sender, message, date));
+                    contactExchangeListener.accept(new ContactExchangeEvent(this, items, sender, message, date));
                 } catch (Exception ex) {
                     logger.log(Level.WARNING, ex.getMessage(), ex);
                 }
@@ -290,9 +291,9 @@ public final class ContactExchangeManager extends ExtensionManager {
      * Adds a contact exchange listener.
      *
      * @param contactExchangeListener The listener.
-     * @see #removeContactExchangeListener(ContactExchangeListener)
+     * @see #removeContactExchangeListener(Consumer)
      */
-    public void addContactExchangeListener(ContactExchangeListener contactExchangeListener) {
+    public void addContactExchangeListener(Consumer<ContactExchangeEvent> contactExchangeListener) {
         contactExchangeListeners.add(contactExchangeListener);
     }
 
@@ -300,9 +301,9 @@ public final class ContactExchangeManager extends ExtensionManager {
      * Removes a previously added contact exchange listener.
      *
      * @param contactExchangeListener The listener.
-     * @see #addContactExchangeListener(ContactExchangeListener)
+     * @see #addContactExchangeListener(Consumer)
      */
-    public void removeContactExchangeListener(ContactExchangeListener contactExchangeListener) {
+    public void removeContactExchangeListener(Consumer<ContactExchangeEvent> contactExchangeListener) {
         contactExchangeListeners.remove(contactExchangeListener);
     }
 }

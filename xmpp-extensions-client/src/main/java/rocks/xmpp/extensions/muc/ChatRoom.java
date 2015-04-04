@@ -29,7 +29,6 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -84,11 +83,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private static final Logger logger = Logger.getLogger(ChatRoom.class.getName());
 
-    private final Set<InvitationDeclineListener> invitationDeclineListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<InvitationDeclineEvent>> invitationDeclineListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<SubjectChangeListener> subjectChangeListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<SubjectChangeEvent>> subjectChangeListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<OccupantListener> occupantListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<OccupantEvent>> occupantListeners = new CopyOnWriteArraySet<>();
 
     private final Map<String, Occupant> occupantMap = new HashMap<>();
 
@@ -102,7 +101,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private final XmppSession xmppSession;
 
-    private final MessageListener messageListener;
+    private final Consumer<MessageEvent> messageListener;
 
     private final Consumer<PresenceEvent> presenceListener;
 
@@ -216,9 +215,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     private void notifyInvitationDeclineListeners(InvitationDeclineEvent invitationDeclineEvent) {
-        for (InvitationDeclineListener invitationDeclineListener : invitationDeclineListeners) {
+        for (Consumer<InvitationDeclineEvent> invitationDeclineListener : invitationDeclineListeners) {
             try {
-                invitationDeclineListener.invitationDeclined(invitationDeclineEvent);
+                invitationDeclineListener.accept(invitationDeclineEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -226,9 +225,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     private void notifyOccupantListeners(OccupantEvent occupantEvent) {
-        for (OccupantListener occupantListener : occupantListeners) {
+        for (Consumer<OccupantEvent> occupantListener : occupantListeners) {
             try {
-                occupantListener.occupantChanged(occupantEvent);
+                occupantListener.accept(occupantEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -236,9 +235,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     private void notifySubjectChangeListeners(SubjectChangeEvent subjectChangeEvent) {
-        for (SubjectChangeListener subjectChangeListener : subjectChangeListeners) {
+        for (Consumer<SubjectChangeEvent> subjectChangeListener : subjectChangeListeners) {
             try {
-                subjectChangeListener.subjectChanged(subjectChangeEvent);
+                subjectChangeListener.accept(subjectChangeEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -263,9 +262,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Adds a invitation decline listener, which allows to listen for invitation declines.
      *
      * @param invitationDeclineListener The listener.
-     * @see #removeInvitationDeclineListener(InvitationDeclineListener)
+     * @see #removeInvitationDeclineListener(Consumer)
      */
-    public void addInvitationDeclineListener(InvitationDeclineListener invitationDeclineListener) {
+    public void addInvitationDeclineListener(Consumer<InvitationDeclineEvent> invitationDeclineListener) {
         invitationDeclineListeners.add(invitationDeclineListener);
     }
 
@@ -273,9 +272,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Removes a previously added invitation decline listener.
      *
      * @param invitationDeclineListener The listener.
-     * @see #addInvitationDeclineListener(InvitationDeclineListener)
+     * @see #addInvitationDeclineListener(Consumer)
      */
-    public void removeInvitationDeclineListener(InvitationDeclineListener invitationDeclineListener) {
+    public void removeInvitationDeclineListener(Consumer<InvitationDeclineEvent> invitationDeclineListener) {
         invitationDeclineListeners.remove(invitationDeclineListener);
     }
 
@@ -283,9 +282,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Adds a subject change listener, which allows to listen for subject changes.
      *
      * @param subjectChangeListener The listener.
-     * @see #removeSubjectChangeListener(SubjectChangeListener)
+     * @see #removeSubjectChangeListener(Consumer)
      */
-    public void addSubjectChangeListener(SubjectChangeListener subjectChangeListener) {
+    public void addSubjectChangeListener(Consumer<SubjectChangeEvent> subjectChangeListener) {
         subjectChangeListeners.add(subjectChangeListener);
     }
 
@@ -293,9 +292,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Removes a previously added subject change listener.
      *
      * @param subjectChangeListener The listener.
-     * @see #addSubjectChangeListener(SubjectChangeListener)
+     * @see #addSubjectChangeListener(Consumer)
      */
-    public void removeSubjectChangeListener(SubjectChangeListener subjectChangeListener) {
+    public void removeSubjectChangeListener(Consumer<SubjectChangeEvent> subjectChangeListener) {
         subjectChangeListeners.remove(subjectChangeListener);
     }
 
@@ -303,9 +302,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Adds an occupant listener, which allows to listen for presence changes of occupants, e.g. "joins" and "leaves".
      *
      * @param occupantListener The listener.
-     * @see #removeOccupantListener(OccupantListener)
+     * @see #removeOccupantListener(Consumer)
      */
-    public void addOccupantListener(OccupantListener occupantListener) {
+    public void addOccupantListener(Consumer<OccupantEvent> occupantListener) {
         occupantListeners.add(occupantListener);
     }
 
@@ -313,9 +312,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Removes a previously added occupant listener.
      *
      * @param occupantListener The listener.
-     * @see #addOccupantListener(OccupantListener)
+     * @see #addOccupantListener(Consumer)
      */
-    public void removeOccupantListener(OccupantListener occupantListener) {
+    public void removeOccupantListener(Consumer<OccupantEvent> occupantListener) {
         occupantListeners.remove(occupantListener);
     }
 

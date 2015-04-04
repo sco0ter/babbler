@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +49,7 @@ import java.util.logging.Logger;
  * <code>ChatSession chatSession = xmppSession.getManager(ChatManager.class).createChatSession(chatPartner);</code>
  * </pre>
  * <h3>Listen for new chat sessions</h3>
- * <p>When a contact initiates a new chat session with you, you can listen for it with the {@link ChatSessionListener}.
+ * <p>When a contact initiates a new chat session with you, you can listen for it with {@link #addChatSessionListener(Consumer)}.
  * The listener will be called either if you created the session programmatically as shown above, or if it is created by a contact, i.e. because he or she sent you a chat message.
  * </p>
  * <p>You should add a {@link rocks.xmpp.core.stanza.MessageListener} to the chat session in order to listen for messages.</p>
@@ -81,7 +82,7 @@ public final class ChatManager extends Manager {
      */
     private final Map<Jid, Map<String, ChatSession>> chatSessions = new ConcurrentHashMap<>();
 
-    private final Set<ChatSessionListener> chatSessionListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<ChatSessionEvent>> chatSessionListeners = new CopyOnWriteArraySet<>();
 
     /**
      * Creates the chat manager.
@@ -138,9 +139,9 @@ public final class ChatManager extends Manager {
      * Adds a chat session listener.
      *
      * @param chatSessionListener The listener.
-     * @see #removeChatSessionListener(ChatSessionListener)
+     * @see #removeChatSessionListener(Consumer)
      */
-    public void addChatSessionListener(ChatSessionListener chatSessionListener) {
+    public void addChatSessionListener(Consumer<ChatSessionEvent> chatSessionListener) {
         chatSessionListeners.add(chatSessionListener);
     }
 
@@ -148,17 +149,17 @@ public final class ChatManager extends Manager {
      * Removes a previously added chat session listener.
      *
      * @param chatSessionListener The listener.
-     * @see #addChatSessionListener(ChatSessionListener)
+     * @see #addChatSessionListener(Consumer)
      */
-    public void removeChatSessionListener(ChatSessionListener chatSessionListener) {
+    public void removeChatSessionListener(Consumer<ChatSessionEvent> chatSessionListener) {
         chatSessionListeners.remove(chatSessionListener);
     }
 
     private void notifyChatSessionCreated(ChatSession chatSession, boolean createdByInboundMessage) {
         ChatSessionEvent chatSessionEvent = new ChatSessionEvent(this, chatSession, createdByInboundMessage);
-        for (ChatSessionListener chatSessionListener : chatSessionListeners) {
+        for (Consumer<ChatSessionEvent> chatSessionListener : chatSessionListeners) {
             try {
-                chatSessionListener.chatSessionCreated(chatSessionEvent);
+                chatSessionListener.accept(chatSessionEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -166,7 +167,7 @@ public final class ChatManager extends Manager {
     }
 
     /**
-     * Creates a new chat session and notifies any {@linkplain ChatSessionListener chat session listeners} about it.
+     * Creates a new chat session and notifies any {@linkplain Consumer chat session listeners} about it.
      *
      * @param chatPartner The chat partner.
      * @return The chat session.

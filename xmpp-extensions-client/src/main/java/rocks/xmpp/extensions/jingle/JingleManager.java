@@ -45,6 +45,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +58,7 @@ public final class JingleManager extends ExtensionManager {
 
     private final Set<Class<? extends ApplicationFormat>> supportedApplicationFormats = new HashSet<>();
 
-    private final Set<JingleListener> jingleListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<JingleEvent>> jingleListeners = new CopyOnWriteArraySet<>();
 
     private final Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
 
@@ -186,9 +187,9 @@ public final class JingleManager extends ExtensionManager {
      * Adds a Jingle listener, which allows to listen for Jingle events.
      *
      * @param jingleListener The listener.
-     * @see #removeJingleListener(JingleListener)
+     * @see #removeJingleListener(Consumer)
      */
-    public final void addJingleListener(JingleListener jingleListener) {
+    public final void addJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.add(jingleListener);
     }
 
@@ -196,9 +197,9 @@ public final class JingleManager extends ExtensionManager {
      * Removes a previously added Jingle listener.
      *
      * @param jingleListener The listener.
-     * @see #addJingleListener(JingleListener)
+     * @see #addJingleListener(Consumer)
      */
-    public final void removeJingleListener(JingleListener jingleListener) {
+    public final void removeJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.remove(jingleListener);
     }
 
@@ -209,9 +210,9 @@ public final class JingleManager extends ExtensionManager {
      * @param jingleEvent The Jingle event.
      */
     void notifyJingleListeners(JingleEvent jingleEvent) {
-        for (JingleListener jingleListener : jingleListeners) {
+        for (Consumer<JingleEvent> jingleListener : jingleListeners) {
             try {
-                jingleListener.jingleReceived(jingleEvent);
+                jingleListener.accept(jingleEvent);
             } catch (Exception exc) {
                 logger.log(Level.WARNING, exc.getMessage(), exc);
             }

@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 
 /**
  * This class manages privacy lists, which allow users to block communications from other users as described in <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
@@ -61,7 +62,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author Christian Schudt
  */
 public final class PrivacyListManager extends ExtensionManager {
-    private final Set<PrivacyListListener> privacyListListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<PrivacyListEvent>> privacyListListeners = new CopyOnWriteArraySet<>();
 
     private PrivacyListManager(final XmppSession xmppSession) {
         super(xmppSession);
@@ -83,8 +84,8 @@ public final class PrivacyListManager extends ExtensionManager {
                         List<PrivacyList> privacyLists = privacy.getPrivacyLists();
                         if (privacyLists.size() == 1) {
                             // Notify the listeners about the reception.
-                            for (PrivacyListListener privacyListListener : privacyListListeners) {
-                                privacyListListener.privacyListUpdated(new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
+                            for (Consumer<PrivacyListEvent> privacyListListener : privacyListListeners) {
+                                privacyListListener.accept(new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
                             }
                         }
                     }
@@ -100,9 +101,9 @@ public final class PrivacyListManager extends ExtensionManager {
      * Adds a privacy list listener.
      *
      * @param privacyListListener The listener.
-     * @see #removePrivacyListListener(PrivacyListListener)
+     * @see #removePrivacyListListener(Consumer)
      */
-    public void addPrivacyListListener(PrivacyListListener privacyListListener) {
+    public void addPrivacyListListener(Consumer<PrivacyListEvent> privacyListListener) {
         privacyListListeners.add(privacyListListener);
     }
 
@@ -110,9 +111,9 @@ public final class PrivacyListManager extends ExtensionManager {
      * Removes a previously added privacy list listener.
      *
      * @param privacyListListener The listener.
-     * @see #addPrivacyListListener(PrivacyListListener)
+     * @see #addPrivacyListListener(Consumer)
      */
-    public void removePrivacyListListener(PrivacyListListener privacyListListener) {
+    public void removePrivacyListListener(Consumer<PrivacyListEvent> privacyListListener) {
         privacyListListeners.remove(privacyListListener);
     }
 

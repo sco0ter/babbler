@@ -59,6 +59,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,7 +76,7 @@ import java.util.logging.Logger;
  * <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting the roster}.
  * You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix roster group delimiter.
  * <p>
- * You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain #addRosterListener(RosterListener) adding} a {@link RosterListener}.
+ * You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain #addRosterListener(Consumer) adding} a {@link Consumer}.
  * </p>
  * This class is unconditionally thread-safe.
  *
@@ -89,7 +90,7 @@ public final class RosterManager extends Manager {
 
     private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();
 
-    private final Set<RosterListener> rosterListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<RosterEvent>> rosterListeners = new CopyOnWriteArraySet<>();
 
     private final XmppSession xmppSession;
 
@@ -412,9 +413,9 @@ public final class RosterManager extends Manager {
      * Adds a roster listener, which will get notified, whenever the roster changes.
      *
      * @param rosterListener The roster listener.
-     * @see #removeRosterListener(RosterListener)
+     * @see #removeRosterListener(Consumer)
      */
-    public final void addRosterListener(RosterListener rosterListener) {
+    public final void addRosterListener(Consumer<RosterEvent> rosterListener) {
         rosterListeners.add(rosterListener);
     }
 
@@ -422,16 +423,16 @@ public final class RosterManager extends Manager {
      * Removes a previously added roster listener.
      *
      * @param rosterListener The roster listener.
-     * @see #addRosterListener(RosterListener)
+     * @see #addRosterListener(Consumer)
      */
-    public final void removeRosterListener(RosterListener rosterListener) {
+    public final void removeRosterListener(Consumer<RosterEvent> rosterListener) {
         rosterListeners.remove(rosterListener);
     }
 
     private void notifyRosterListeners(RosterEvent rosterEvent) {
-        for (RosterListener rosterListener : rosterListeners) {
+        for (Consumer<RosterEvent> rosterListener : rosterListeners) {
             try {
-                rosterListener.rosterChanged(rosterEvent);
+                rosterListener.accept(rosterEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }
@@ -462,8 +463,8 @@ public final class RosterManager extends Manager {
     }
 
     /**
-     * Requests the roster from the server. When the server returns the result, the {@link RosterListener} are notified.
-     * That means, you should first {@linkplain #addRosterListener(RosterListener) register} a {@link RosterListener} prior to calling this method.
+     * Requests the roster from the server. When the server returns the result, the {@link Consumer} are notified.
+     * That means, you should first {@linkplain #addRosterListener(Consumer) register} a {@link Consumer} prior to calling this method.
      * <p>
      * <a href="http://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which means that this method checks
      * if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.

@@ -26,12 +26,13 @@ package rocks.xmpp.extensions.muc;
 
 import java.time.Instant;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * This event is fired, when the subject in a chat room has changed.
  *
  * @author Christian Schudt
- * @see SubjectChangeListener
+ * @see ChatRoom#addSubjectChangeListener(Consumer)
  */
 public final class SubjectChangeEvent extends EventObject {
     private final String subject;

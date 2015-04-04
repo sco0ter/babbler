@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,7 +66,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(MessageDeliveryReceiptsManager.class.getName());
 
-    final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
+    final Set<Consumer<MessageDeliveredEvent>> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
     private Predicate<Message> messageFilter;
 
@@ -104,9 +105,9 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
             if (received != null) {
                 // Notify the listeners about the reception.
-                for (MessageDeliveredListener messageDeliveredListener : messageDeliveredListeners) {
+                for (Consumer<MessageDeliveredEvent> messageDeliveredListener : messageDeliveredListeners) {
                     try {
-                        messageDeliveredListener.messageDelivered(new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.deliveryDateOrNow(message)));
+                        messageDeliveredListener.accept(new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.deliveryDateOrNow(message)));
                     } catch (Exception ex) {
                         logger.log(Level.WARNING, ex.getMessage(), ex);
                     }
@@ -143,9 +144,9 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      * Adds a message delivered listener, which allows to listen for delivered messages.
      *
      * @param messageDeliveredListener The listener.
-     * @see #removeMessageDeliveredListener(MessageDeliveredListener)
+     * @see #removeMessageDeliveredListener(Consumer)
      */
-    public void addMessageDeliveredListener(MessageDeliveredListener messageDeliveredListener) {
+    public void addMessageDeliveredListener(Consumer<MessageDeliveredEvent> messageDeliveredListener) {
         messageDeliveredListeners.add(messageDeliveredListener);
     }
 
@@ -153,9 +154,9 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      * Removes a previously added message delivered listener.
      *
      * @param messageDeliveredListener The listener.
-     * @see #addMessageDeliveredListener(MessageDeliveredListener)
+     * @see #addMessageDeliveredListener(Consumer)
      */
-    public void removeMessageDeliveredListener(MessageDeliveredListener messageDeliveredListener) {
+    public void removeMessageDeliveredListener(Consumer<MessageDeliveredEvent> messageDeliveredListener) {
         messageDeliveredListeners.remove(messageDeliveredListener);
     }
 

@@ -66,6 +66,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,7 +97,7 @@ public final class AvatarManager extends ExtensionManager {
 
     private final ConcurrentHashMap<Jid, Lock> requestingAvatarLocks = new ConcurrentHashMap<>();
 
-    private final Set<AvatarChangeListener> avatarChangeListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<AvatarChangeEvent>> avatarChangeListeners = new CopyOnWriteArraySet<>();
 
     private final ExecutorService avatarRequester;
 
@@ -349,9 +350,9 @@ public final class AvatarManager extends ExtensionManager {
     private void notifyListeners(Jid contact, byte[] avatar) {
 
         AvatarChangeEvent avatarChangeEvent = new AvatarChangeEvent(AvatarManager.this, contact, avatar);
-        for (AvatarChangeListener avatarChangeListener : avatarChangeListeners) {
+        for (Consumer<AvatarChangeEvent> avatarChangeListener : avatarChangeListeners) {
             try {
-                avatarChangeListener.avatarChanged(avatarChangeEvent);
+                avatarChangeListener.accept(avatarChangeEvent);
             } catch (Exception e1) {
                 logger.log(Level.WARNING, e1.getMessage(), e1);
             }
@@ -456,26 +457,23 @@ public final class AvatarManager extends ExtensionManager {
         return getAvatarByVCard(contact.asBareJid());
     }
 
-	/**
-	 * Gets the user avatar from the user's vCard.
-	 *
-	 * @param contact
-	 *            The contact. Must not be {@code null}.
-	 * @return The contact's avatar or null, if it has no avatar.
-	 * @throws rocks.xmpp.core.stanza.StanzaException
-	 *             If the entity returned a stanza error.
-	 * @throws rocks.xmpp.core.session.NoResponseException
-	 *             If the entity did not respond.
-	 */
-	public final BufferedImage getAvatarImage(final Jid contact) throws XmppException {
-		try {
-			final byte[] bitmap = this.getAvatar(requireNonNull(contact));
-			return bitmap == null ? null : asBufferedImage(bitmap);
-		} catch (final ConversionException e) {
-			throw new XmppException(e);
-		}
-	}
-    
+    /**
+     * Gets the user avatar from the user's vCard.
+     *
+     * @param contact The contact. Must not be {@code null}.
+     * @return The contact's avatar or null, if it has no avatar.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     */
+    public final BufferedImage getAvatarImage(final Jid contact) throws XmppException {
+        try {
+            final byte[] bitmap = this.getAvatar(requireNonNull(contact));
+            return bitmap == null ? null : asBufferedImage(bitmap);
+        } catch (final ConversionException e) {
+            throw new XmppException(e);
+        }
+    }
+
     /**
      * Publishes an avatar to your VCard.
      *
@@ -511,27 +509,24 @@ public final class AvatarManager extends ExtensionManager {
         }
     }
 
-	/**
-	 * Publishes an avatar to your VCard.
-	 *
-	 * @param bufferedImage
-	 *            The avatar image, which must be in PNG format. {@code null}
-	 *            resets the avatar.
-	 * @throws rocks.xmpp.core.stanza.StanzaException
-	 *             If the entity returned a stanza error.
-	 * @throws rocks.xmpp.core.session.NoResponseException
-	 *             If the entity did not respond.
-	 * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User
-	 *      Publishes Avatar</a>
-	 */
-	public final void publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
-		try {
-			this.publishAvatar(bufferedImage == null ? null : asPNG(bufferedImage));
-		} catch (final ConversionException e) {
-			throw new XmppException(e);
-		}
-	}
-    
+    /**
+     * Publishes an avatar to your VCard.
+     *
+     * @param bufferedImage The avatar image, which must be in PNG format. {@code null}
+     *                      resets the avatar.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User
+     * Publishes Avatar</a>
+     */
+    public final void publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
+        try {
+            this.publishAvatar(bufferedImage == null ? null : asPNG(bufferedImage));
+        } catch (final ConversionException e) {
+            throw new XmppException(e);
+        }
+    }
+
     /**
      * Publishes an avatar to the VCard and uses XEP-0153 to notify the contacts about the update.
      *
@@ -597,7 +592,7 @@ public final class AvatarManager extends ExtensionManager {
      *
      * @param avatarChangeListener The avatar listener.
      */
-    public final void addAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
+    public final void addAvatarChangeListener(Consumer<AvatarChangeEvent> avatarChangeListener) {
         avatarChangeListeners.add(avatarChangeListener);
     }
 
@@ -606,61 +601,57 @@ public final class AvatarManager extends ExtensionManager {
      *
      * @param avatarChangeListener The avatar listener.
      */
-    public final void removeAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
+    public final void removeAvatarChangeListener(Consumer<AvatarChangeEvent> avatarChangeListener) {
         avatarChangeListeners.remove(avatarChangeListener);
     }
-    
-	/**
-	 * Converts {@code bitmap} into {@link BufferedImage}.
-	 *
-	 * @param bitmap
-	 *            The bitmap to convert. Must not be {@code null}.
-	 * @return Instance of {@link BufferedImage} created from {@code bitmap}.
-	 *         Never {@code null}.
-	 * @throws ConversionException
-	 *             if conversion failed
-	 */
-	static final BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
-		try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(requireNonNull(bitmap))) {
-			return ofNullable(ImageIO.read(inputStream)).orElseThrow(ConversionException::new);
-		} catch (final IOException e) {
-			throw new ConversionException(e);
-		}
-	}
 
-	/**
-	 * Converts {@code image} into {@code byte[]}.
-	 *
-	 * @param bufferedImage
-	 *            The image to convert. Must not be {@code null}.
-	 * @return PNG bitmap created from {@code image}. Never {@code null}.
-	 * @throws ConversionException
-	 *             if conversion failed
-	 */
-	private static final byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
-		try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-			if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream))
-				throw new ConversionException();
-			return outputStream.toByteArray();
-		} catch (final IOException e) {
-			throw new ConversionException(e);
-		}
-	}
-	
-	/**
-	 * Indicates the inability to convert a value from one data type into
-	 * another.
-	 *
-	 * @author Markus KARG (markus@headcrashing.eu)
-	 */
-	@SuppressWarnings("serial")
-	static final class ConversionException extends Exception {
-		public ConversionException() {
-			// Intentionally left blank.
-		}
+    /**
+     * Converts {@code bitmap} into {@link BufferedImage}.
+     *
+     * @param bitmap The bitmap to convert. Must not be {@code null}.
+     * @return Instance of {@link BufferedImage} created from {@code bitmap}.
+     * Never {@code null}.
+     * @throws ConversionException if conversion failed
+     */
+    static final BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
+        try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(requireNonNull(bitmap))) {
+            return ofNullable(ImageIO.read(inputStream)).orElseThrow(ConversionException::new);
+        } catch (final IOException e) {
+            throw new ConversionException(e);
+        }
+    }
 
-		public ConversionException(final Throwable cause) {
-			super(cause);
-		}
-	}
+    /**
+     * Converts {@code image} into {@code byte[]}.
+     *
+     * @param bufferedImage The image to convert. Must not be {@code null}.
+     * @return PNG bitmap created from {@code image}. Never {@code null}.
+     * @throws ConversionException if conversion failed
+     */
+    private static final byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream))
+                throw new ConversionException();
+            return outputStream.toByteArray();
+        } catch (final IOException e) {
+            throw new ConversionException(e);
+        }
+    }
+
+    /**
+     * Indicates the inability to convert a value from one data type into
+     * another.
+     *
+     * @author Markus KARG (markus@headcrashing.eu)
+     */
+    @SuppressWarnings("serial")
+    static final class ConversionException extends Exception {
+        public ConversionException() {
+            // Intentionally left blank.
+        }
+
+        public ConversionException(final Throwable cause) {
+            super(cause);
+        }
+    }
 }

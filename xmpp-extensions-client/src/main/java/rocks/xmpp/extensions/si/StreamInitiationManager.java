@@ -32,7 +32,7 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
+import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
@@ -61,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -200,7 +201,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         final List<Exception> negotiationExceptions = new ArrayList<>();
         // Before we reply with the chosen stream method, we
         // register a byte stream listener, because we expect the initiator to open a byte stream with us.
-        ByteStreamListener byteStreamListener = e -> {
+        Consumer<ByteStreamEvent> byteStreamListener = e -> {
             if (sessionId.equals(e.getSessionId())) {
                 lock.lock();
                 try {

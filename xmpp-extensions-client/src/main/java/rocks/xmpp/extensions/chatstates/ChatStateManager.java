@@ -28,7 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
@@ -36,6 +36,7 @@ import rocks.xmpp.extensions.chatstates.model.ChatState;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * This class manages Chat State Notifications, which are used to communicate the status of a user in a chat session, thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused, inactive, or gone.
@@ -88,7 +89,7 @@ public final class ChatStateManager extends ExtensionManager {
                 contactSupportsChatStateNotifications.clear();
             }
         });
-        MessageListener messageListener = e -> {
+        Consumer<MessageEvent> messageListener = e -> {
             if (isEnabled()) {
                 Message message = e.getMessage();
                 // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".

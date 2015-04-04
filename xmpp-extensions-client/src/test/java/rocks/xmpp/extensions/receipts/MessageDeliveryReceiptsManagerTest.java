@@ -36,6 +36,7 @@ import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 import java.util.Collections;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
@@ -148,7 +149,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
 
-        MessageDeliveredListener messageDeliveredListener = e -> {
+        Consumer<MessageDeliveredEvent> messageDeliveredListener = e -> {
 
         };
         messageDeliveryReceiptsManager.addMessageDeliveredListener(messageDeliveredListener);

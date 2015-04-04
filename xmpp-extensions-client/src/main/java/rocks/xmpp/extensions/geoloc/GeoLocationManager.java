@@ -38,7 +38,6 @@ import rocks.xmpp.extensions.pubsub.model.event.Event;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Manages the publishing of user location and the notification of it.
@@ -47,8 +46,6 @@ import java.util.logging.Logger;
  * @see <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
  */
 public final class GeoLocationManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(GeoLocationManager.class.getName());
 
     private final Set<Consumer<GeoLocationEvent>> geoLocationListeners = new CopyOnWriteArraySet<>();
 

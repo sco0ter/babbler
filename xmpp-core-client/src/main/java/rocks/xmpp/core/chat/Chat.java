@@ -30,8 +30,6 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An abstract chat class, which represents either a one-to-one chat session or a group chat session.
@@ -40,8 +38,6 @@ import java.util.logging.Logger;
  * @see ChatSession
  */
 public abstract class Chat {
-
-    private static final Logger logger = Logger.getLogger(Chat.class.getName());
 
     protected final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
 

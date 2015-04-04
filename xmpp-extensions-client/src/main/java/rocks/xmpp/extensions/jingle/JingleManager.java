@@ -54,8 +54,6 @@ import java.util.logging.Logger;
  */
 public final class JingleManager extends ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(JingleManager.class.getName());
-
     private final Set<Class<? extends ApplicationFormat>> supportedApplicationFormats = new HashSet<>();
 
     private final Set<Consumer<JingleEvent>> jingleListeners = new CopyOnWriteArraySet<>();

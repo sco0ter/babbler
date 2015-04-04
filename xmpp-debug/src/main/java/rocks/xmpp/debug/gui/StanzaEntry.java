@@ -31,7 +31,6 @@ import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.model.StreamError;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 /**

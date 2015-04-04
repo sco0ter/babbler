@@ -289,7 +289,7 @@ public final class StanzaError {
 
         private final String errorText;
 
-        private Type(String errorText) {
+        Type(String errorText) {
             this.errorText = errorText;
         }
 

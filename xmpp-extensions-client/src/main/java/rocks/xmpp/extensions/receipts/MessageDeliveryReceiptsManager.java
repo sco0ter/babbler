@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.logging.Logger;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.
@@ -63,8 +62,6 @@ import java.util.logging.Logger;
  * </pre>
  */
 public final class MessageDeliveryReceiptsManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(MessageDeliveryReceiptsManager.class.getName());
 
     final Set<Consumer<MessageDeliveredEvent>> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 

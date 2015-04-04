@@ -46,7 +46,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and notifies {@linkplain Consumer}s,
@@ -58,8 +57,6 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 public final class ReachabilityManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(ReachabilityManager.class.getName());
 
     private final Set<Consumer<ReachabilityEvent>> reachabilityListeners = new CopyOnWriteArraySet<>();
 

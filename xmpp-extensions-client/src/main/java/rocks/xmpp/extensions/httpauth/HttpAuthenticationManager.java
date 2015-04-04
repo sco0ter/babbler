@@ -37,7 +37,6 @@ import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * This manager allows to listen for inbound requests (by an XMPP server) to confirm that the current XMPP user made an HTTP request, i.e. to verify that the HTTP request was in fact made by the XMPP user.
@@ -49,8 +48,6 @@ import java.util.logging.Logger;
  * @see <a href="http://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
  */
 public final class HttpAuthenticationManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(HttpAuthenticationManager.class.getName());
 
     private final Set<Consumer<HttpAuthenticationEvent>> httpAuthenticationListeners = new CopyOnWriteArraySet<>();
 

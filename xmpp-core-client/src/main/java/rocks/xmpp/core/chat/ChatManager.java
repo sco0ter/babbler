@@ -40,7 +40,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * This class manages one-to-one chat sessions, which are described in <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="http://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
@@ -70,8 +69,6 @@ import java.util.logging.Logger;
  * </pre>
  */
 public final class ChatManager extends Manager {
-
-    private static final Logger logger = Logger.getLogger(ChatManager.class.getName());
 
     private final XmppSession xmppSession;
 

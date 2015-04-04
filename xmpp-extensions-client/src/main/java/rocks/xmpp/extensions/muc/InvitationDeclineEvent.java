@@ -27,12 +27,13 @@ package rocks.xmpp.extensions.muc;
 import rocks.xmpp.core.Jid;
 
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * The multi-user chat invitation decline event, which is triggered when an invitee declines a multi-user chat invitation.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.extensions.muc.InvitationDeclineListener
+ * @see ChatRoom#addInvitationDeclineListener(Consumer)
  */
 public final class InvitationDeclineEvent extends EventObject {
 

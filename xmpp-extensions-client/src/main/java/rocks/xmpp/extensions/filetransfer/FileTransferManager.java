@@ -53,7 +53,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 
@@ -61,8 +60,6 @@ import static java.util.Objects.requireNonNull;
  * @author Christian Schudt
  */
 public final class FileTransferManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(FileTransferManager.class.getName());
 
     private final StreamInitiationManager streamInitiationManager;
 
@@ -195,9 +192,7 @@ public final class FileTransferManager extends ExtensionManager {
     }
 
     public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {
-        fileTransferOfferExecutor.execute(() -> {
-            XmppUtils.notifyEventListeners(fileTransferOfferListeners, new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator));
-        });
+        fileTransferOfferExecutor.execute(() -> XmppUtils.notifyEventListeners(fileTransferOfferListeners, new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator)));
     }
 
     /**

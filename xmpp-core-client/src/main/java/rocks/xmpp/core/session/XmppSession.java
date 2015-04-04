@@ -39,7 +39,6 @@ import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -87,6 +86,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -133,12 +133,7 @@ import java.util.logging.Logger;
  * });
  *
  * // Listen for presence changes
- * xmppSession.addInboundPresenceListener(new PresenceListener() {
- *     {@literal @}Override
- *     public void handlePresence(PresenceEvent e) {
- *         // Handle inbound presence.
- *     }
- * });
+ * xmppSession.addInboundPresenceListener(e -> /* Handle inbound presence. / );
  * </code>
  * </pre>
  * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
@@ -158,9 +153,9 @@ public class XmppSession implements AutoCloseable {
 
     private final Set<MessageListener> outboundMessageListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<PresenceListener> inboundPresenceListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<PresenceEvent>> inboundPresenceListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<PresenceListener> outboundPresenceListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<PresenceEvent>> outboundPresenceListeners = new CopyOnWriteArraySet<>();
 
     private final Set<IQListener> inboundIQListeners = new CopyOnWriteArraySet<>();
 
@@ -299,7 +294,7 @@ public class XmppSession implements AutoCloseable {
             connections.add(TcpConnectionConfiguration.getDefault().createConnection(this));
             connections.add(BoshConnectionConfiguration.getDefault().createConnection(this));
         } else {
-        	Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
+            Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
         }
 
         // Initialize the managers.
@@ -382,9 +377,9 @@ public class XmppSession implements AutoCloseable {
      * Adds an inbound presence listener to the session, which will get notified, whenever a presence is received.
      *
      * @param presenceListener The presence listener.
-     * @see #removeInboundPresenceListener(PresenceListener)
+     * @see #removeInboundPresenceListener(Consumer<PresenceEvent>)
      */
-    public final void addInboundPresenceListener(PresenceListener presenceListener) {
+    public final void addInboundPresenceListener(Consumer<PresenceEvent> presenceListener) {
         inboundPresenceListeners.add(presenceListener);
     }
 
@@ -392,9 +387,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added inbound presence listener from the session.
      *
      * @param presenceListener The presence listener.
-     * @see #addInboundPresenceListener(PresenceListener)
+     * @see #addInboundPresenceListener(Consumer<PresenceEvent>)
      */
-    public final void removeInboundPresenceListener(PresenceListener presenceListener) {
+    public final void removeInboundPresenceListener(Consumer<PresenceEvent> presenceListener) {
         inboundPresenceListeners.remove(presenceListener);
     }
 
@@ -402,9 +397,9 @@ public class XmppSession implements AutoCloseable {
      * Adds an outbound presence listener to the session, which will get notified, whenever a presence is sent.
      *
      * @param presenceListener The presence listener.
-     * @see #removeOutboundPresenceListener(PresenceListener)
+     * @see #removeOutboundPresenceListener(Consumer<PresenceEvent>)
      */
-    public final void addOutboundPresenceListener(PresenceListener presenceListener) {
+    public final void addOutboundPresenceListener(Consumer<PresenceEvent> presenceListener) {
         outboundPresenceListeners.add(presenceListener);
     }
 
@@ -412,9 +407,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added outbound presence listener from the session.
      *
      * @param presenceListener The presence listener.
-     * @see #addOutboundPresenceListener(PresenceListener)
+     * @see #addOutboundPresenceListener(Consumer<PresenceEvent>)
      */
-    public final void removeOutboundPresenceListener(PresenceListener presenceListener) {
+    public final void removeOutboundPresenceListener(Consumer<PresenceEvent> presenceListener) {
         outboundPresenceListeners.remove(presenceListener);
     }
 
@@ -607,7 +602,7 @@ public class XmppSession implements AutoCloseable {
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
 
-        final PresenceListener listener = e -> {
+        final Consumer<PresenceEvent> listener = e -> {
             Presence presence = e.getPresence();
             if (filter.test(presence)) {
                 presenceLock.lock();
@@ -909,16 +904,16 @@ public class XmppSession implements AutoCloseable {
 
         // A default callback handler for username/password retrieval:
         login(authorizationId, callbacks -> Arrays.stream(callbacks).forEach(callback -> {
-                if (callback instanceof NameCallback) {
-                    ((NameCallback) callback).setName(user);
-                }
-                if (callback instanceof PasswordCallback) {
-                    ((PasswordCallback) callback).setPassword(password.toCharArray());
-                }
-                if (callback instanceof RealmCallback) {
-                    ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
-                }
-            }), resource);
+            if (callback instanceof NameCallback) {
+                ((NameCallback) callback).setName(user);
+            }
+            if (callback instanceof PasswordCallback) {
+                ((PasswordCallback) callback).setPassword(password.toCharArray());
+            }
+            if (callback instanceof RealmCallback) {
+                ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
+            }
+        }), resource);
     }
 
     /**
@@ -1154,10 +1149,10 @@ public class XmppSession implements AutoCloseable {
 
     private void notifyPresenceListeners(Presence presence, boolean inbound) {
         PresenceEvent presenceEvent = new PresenceEvent(this, presence, inbound);
-        Iterable<PresenceListener> listeners = inbound ? inboundPresenceListeners : outboundPresenceListeners;
+        Iterable<Consumer<PresenceEvent>> listeners = inbound ? inboundPresenceListeners : outboundPresenceListeners;
         listeners.forEach(presenceListener -> {
             try {
-                presenceListener.handlePresence(presenceEvent);
+                presenceListener.accept(presenceEvent);
             } catch (Exception e) {
                 logger.log(Level.WARNING, e.getMessage(), e);
             }

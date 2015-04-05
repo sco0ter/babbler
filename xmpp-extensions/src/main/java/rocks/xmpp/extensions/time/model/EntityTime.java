@@ -28,7 +28,6 @@ import rocks.xmpp.core.util.adapters.InstantAdapter;
 import rocks.xmpp.core.util.adapters.ZoneOffsetAdapter;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
@@ -58,11 +57,9 @@ public final class EntityTime {
     public static final String NAMESPACE = "urn:xmpp:time";
 
     @XmlJavaTypeAdapter(ZoneOffsetAdapter.class)
-    @XmlElement(name = "tzo")
     private final ZoneOffset tzo;
 
     @XmlJavaTypeAdapter(InstantAdapter.class)
-    @XmlElement(name = "utc")
     private final Instant utc;
 
     /**

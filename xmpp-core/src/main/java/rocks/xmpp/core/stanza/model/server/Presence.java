@@ -40,8 +40,8 @@ import java.util.Collections;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "presence")
-@XmlType(propOrder = {"from", "id", "to", "type", "language", "show", "status", "priority", "extensions", "error"})
+@XmlRootElement
+@XmlType(propOrder = {"from", "id", "to", "type", "lang", "show", "status", "priority", "extensions", "error"})
 public final class Presence extends AbstractPresence implements ServerStreamElement {
     /**
      * Constructs an empty presence to indicate availability.

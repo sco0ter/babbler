@@ -29,7 +29,6 @@ import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.muc.model.Destroy;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -46,7 +45,6 @@ public final class MucOwner {
     @XmlElementRef
     private DataForm dataForm;
 
-    @XmlElement(name = "destroy")
     private MucOwnerDestroy destroy;
 
     /**
@@ -114,10 +112,10 @@ public final class MucOwner {
     }
 
     private static final class MucOwnerDestroy implements Destroy {
-        @XmlElement(name = "reason")
+
         private String reason;
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
         private MucOwnerDestroy() {

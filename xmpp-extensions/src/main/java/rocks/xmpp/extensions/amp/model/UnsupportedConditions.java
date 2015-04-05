@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.amp.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,8 +43,7 @@ import java.util.List;
 @XmlRootElement(name = "unsupported-conditions")
 public final class UnsupportedConditions {
 
-    @XmlElement(name = "rule")
-    private final List<Rule> rules = new ArrayList<>();
+    private final List<Rule> rule = new ArrayList<>();
 
     /**
      * Gets the rules, that specify the unsupported conditions.
@@ -53,6 +51,6 @@ public final class UnsupportedConditions {
      * @return The rules.
      */
     public final List<Rule> getRules() {
-        return Collections.unmodifiableList(rules);
+        return Collections.unmodifiableList(rule);
     }
 }

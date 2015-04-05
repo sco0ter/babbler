@@ -73,22 +73,18 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public static final String FORM_TYPE = "FORM_TYPE";
 
-    @XmlElement
     private final List<String> instructions = new ArrayList<>();
 
     @XmlElementRef
     private final List<Page> pages = new ArrayList<>();
 
-    @XmlElement(name = "field")
-    private final List<Field> fields = new ArrayList<>();
+    private final List<Field> field = new ArrayList<>();
 
-    @XmlElement(name = "item")
-    private final List<Item> items = new ArrayList<>();
+    private final List<Item> item = new ArrayList<>();
 
     @XmlAttribute
     private final Type type;
 
-    @XmlElement
     private final String title;
 
     @XmlElementWrapper(name = "reported")
@@ -121,19 +117,19 @@ public final class DataForm implements Comparable<DataForm> {
         this.title = null;
         this.reportedFields = null;
         if (fields != null) {
-            this.fields.addAll(fields);
+            this.field.addAll(fields);
         }
     }
 
     public DataForm(Builder<? extends Builder> builder) {
         if (builder.formType != null) {
-            this.fields.add(Field.builder().var(FORM_TYPE).value(builder.formType).type(Field.Type.HIDDEN).build());
+            this.field.add(Field.builder().var(FORM_TYPE).value(builder.formType).type(Field.Type.HIDDEN).build());
         }
-        this.fields.addAll(builder.fields);
+        this.field.addAll(builder.fields);
         this.type = builder.type;
         this.title = builder.title;
         if (builder.items != null) {
-            this.items.addAll(builder.items);
+            this.item.addAll(builder.items);
         }
         if (builder.instructions != null) {
             this.instructions.addAll(builder.instructions);
@@ -159,10 +155,10 @@ public final class DataForm implements Comparable<DataForm> {
             this.pages.addAll(pages);
         }
         if (fields != null) {
-            this.fields.addAll(fields);
+            this.field.addAll(fields);
         }
         if (items != null) {
-            this.items.addAll(items);
+            this.item.addAll(items);
         }
         if (reportedFields != null && !reportedFields.isEmpty()) {
             this.reportedFields = new ArrayList<>();
@@ -303,7 +299,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @return The fields.
      */
     public final List<Field> getFields() {
-        return Collections.unmodifiableList(fields);
+        return Collections.unmodifiableList(field);
     }
 
     /**
@@ -342,7 +338,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @return The items.
      */
     public final List<Item> getItems() {
-        return Collections.unmodifiableList(items);
+        return Collections.unmodifiableList(item);
     }
 
     /**
@@ -362,7 +358,7 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public final Field findField(String name) {
         if (name != null) {
-            for (Field field : fields) {
+            for (Field field : this.field) {
                 if (name.equals(field.getVar())) {
                     return field;
                 }
@@ -429,39 +425,36 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0004.html#protocol-field">3.2 The Field Element</a>
      */
-    @XmlRootElement(name = "field")
+    @XmlRootElement
     public static final class Field implements Comparable<Field> {
 
-        @XmlElement(name = "desc")
-        private final String description;
+        private final String desc;
 
-        @XmlElement(name = "required")
         private final String required;
 
         @XmlElementRef
         private final Validation validation;
 
-        @XmlElement(name = "value")
-        private final List<String> values = new ArrayList<>();
+        //@XmlElement
+        private final List<String> value = new ArrayList<>();
 
-        @XmlElement(name = "option")
-        private final List<Option> options = new ArrayList<>();
+        private final List<Option> option = new ArrayList<>();
 
         @XmlElementRef
         private final Media media;
 
-        @XmlAttribute(name = "label")
+        @XmlAttribute
         private final String label;
 
-        @XmlAttribute(name = "type")
+        @XmlAttribute
         private final Type type;
 
-        @XmlAttribute(name = "var")
+        @XmlAttribute
         private final String var;
 
         private Field() {
             this.type = null;
-            this.description = null;
+            this.desc = null;
             this.required = null;
             this.validation = null;
             this.media = null;
@@ -471,11 +464,11 @@ public final class DataForm implements Comparable<DataForm> {
 
         private Field(Builder builder) {
             this.type = builder.type;
-            this.description = builder.description;
+            this.desc = builder.description;
             this.required = builder.required ? "" : null;
             this.validation = builder.validation;
-            this.values.addAll(builder.values);
-            this.options.addAll(builder.options);
+            this.value.addAll(builder.values);
+            this.option.addAll(builder.options);
             this.media = builder.media;
             this.label = builder.label;
             this.var = builder.var;
@@ -523,7 +516,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The options.
          */
         public final List<Option> getOptions() {
-            return Collections.unmodifiableList(options);
+            return Collections.unmodifiableList(option);
         }
 
         /**
@@ -532,7 +525,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The values.
          */
         public final List<String> getValues() {
-            return Collections.unmodifiableList(values);
+            return Collections.unmodifiableList(value);
         }
 
         /**
@@ -541,7 +534,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The value as boolean.
          */
         public final boolean getValueAsBoolean() {
-            return parseBoolean(values.isEmpty() ? null : values.get(0));
+            return parseBoolean(value.isEmpty() ? null : value.get(0));
         }
 
         /**
@@ -550,7 +543,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The integer or null, if the values are empty.
          */
         public final Integer getValueAsInteger() {
-            return values.isEmpty() ? null : Integer.valueOf(values.get(0));
+            return value.isEmpty() ? null : Integer.valueOf(value.get(0));
         }
 
         /**
@@ -561,10 +554,10 @@ public final class DataForm implements Comparable<DataForm> {
          */
         @Deprecated
         public final Date getValueAsDate() {
-            if (values.isEmpty()) {
+            if (value.isEmpty()) {
                 return null;
             } else {
-                return values.get(0) != null ? DatatypeConverter.parseDateTime(values.get(0)).getTime() : null;
+                return value.get(0) != null ? DatatypeConverter.parseDateTime(value.get(0)).getTime() : null;
             }
         }
 
@@ -574,10 +567,10 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The date or null, if the values are empty.
          */
         public final Instant getValueAsInstant() {
-            if (values.isEmpty()) {
+            if (value.isEmpty()) {
                 return null;
             } else {
-                return values.get(0) != null ? Instant.parse(values.get(0)) : null;
+                return value.get(0) != null ? Instant.parse(value.get(0)) : null;
             }
         }
 
@@ -587,7 +580,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The JID list.
          */
         public final List<Jid> getValuesAsJid() {
-            return Collections.unmodifiableList(values.stream().map(value -> Jid.valueOf(value, true)).collect(Collectors.toList()));
+            return Collections.unmodifiableList(value.stream().map(value -> Jid.valueOf(value, true)).collect(Collectors.toList()));
         }
 
         /**
@@ -596,7 +589,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The JID or null, if the values are empty.
          */
         public final Jid getValueAsJid() {
-            return values.isEmpty() ? null : Jid.valueOf(values.get(0));
+            return value.isEmpty() ? null : Jid.valueOf(value.get(0));
         }
 
         /**
@@ -614,7 +607,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The description.
          */
         public final String getDescription() {
-            return description;
+            return desc;
         }
 
         /**
@@ -825,7 +818,9 @@ public final class DataForm implements Comparable<DataForm> {
              */
             public final Builder value(String value) {
                 this.values.clear();
-                this.values.add(value);
+                if (value != null) {
+                    this.values.add(value);
+                }
                 return type(Type.TEXT_SINGLE);
             }
 
@@ -959,8 +954,7 @@ public final class DataForm implements Comparable<DataForm> {
      * An item which can be understood as a table row. The fields can be understood as table cells.
      */
     public static final class Item {
-        @XmlElement(name = "field")
-        private final List<Field> fields = new ArrayList<>();
+        private final List<Field> field = new ArrayList<>();
 
         /**
          * Gets the fields.
@@ -968,7 +962,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The fields.
          */
         public final List<Field> getFields() {
-            return fields;
+            return field;
         }
     }
 
@@ -977,10 +971,9 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public static final class Option {
 
-        @XmlAttribute(name = "label")
+        @XmlAttribute
         private final String label;
 
-        @XmlElement(name = "value")
         private final String value;
 
         private Option() {

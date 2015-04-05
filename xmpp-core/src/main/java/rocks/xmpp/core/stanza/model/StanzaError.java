@@ -45,10 +45,10 @@ import java.util.Objects;
  */
 public final class StanzaError {
 
-    @XmlAttribute(name = "by")
+    @XmlAttribute
     private final Jid by;
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private final Type type;
 
     @XmlElementRef

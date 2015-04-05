@@ -37,13 +37,12 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public final class Invite {
 
-    @XmlElement(name = "reason")
     private String reason;
 
-    @XmlAttribute(name = "from")
+    @XmlAttribute
     private Jid from;
 
-    @XmlAttribute(name = "to")
+    @XmlAttribute
     private Jid to;
 
     @XmlElement(name = "continue")

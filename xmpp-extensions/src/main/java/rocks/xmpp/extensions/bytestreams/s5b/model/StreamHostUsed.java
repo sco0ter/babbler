@@ -34,7 +34,7 @@ import java.util.Objects;
  */
 final class StreamHostUsed {
 
-    @XmlAttribute(name = "jid")
+    @XmlAttribute
     final Jid jid;
 
     private StreamHostUsed() {

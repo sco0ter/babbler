@@ -356,8 +356,7 @@ public final class PubSubOwner {
 
     private static final class Affiliations extends PubSubOwnerChildElement {
 
-        @XmlElement(name = "affiliation")
-        private final List<AffiliationNodeOwner> affiliations = new ArrayList<>();
+        private final List<AffiliationNodeOwner> affiliation = new ArrayList<>();
 
         private Affiliations() {
             super(null);
@@ -370,23 +369,23 @@ public final class PubSubOwner {
                 affiliationNodeOwner.affiliation = affiliation.getAffiliationState();
                 affiliationNodeOwner.jid = affiliation.getJid();
                 affiliationNodeOwner.node = affiliation.getNode();
-                this.affiliations.add(affiliationNodeOwner);
+                this.affiliation.add(affiliationNodeOwner);
             }
         }
 
         private List<? extends Affiliation> getAffiliations() {
-            return affiliations;
+            return affiliation;
         }
 
         private static final class AffiliationNodeOwner implements Affiliation {
 
-            @XmlAttribute(name = "node")
+            @XmlAttribute
             private String node;
 
-            @XmlAttribute(name = "affiliation")
+            @XmlAttribute
             private AffiliationState affiliation;
 
-            @XmlAttribute(name = "jid")
+            @XmlAttribute
             private Jid jid;
 
             @Override
@@ -447,7 +446,6 @@ public final class PubSubOwner {
 
     private static final class Delete extends PubSubOwnerChildElement {
 
-        @XmlElement(name = "redirect")
         private Redirect redirect;
 
         private Delete() {
@@ -467,7 +465,7 @@ public final class PubSubOwner {
         }
 
         private static final class Redirect {
-            @XmlAttribute(name = "uri")
+            @XmlAttribute
             private URI uri;
 
             private Redirect() {
@@ -495,8 +493,7 @@ public final class PubSubOwner {
 
     private static final class Subscriptions extends PubSubOwnerChildElement {
 
-        @XmlElement(name = "subscription")
-        private final List<SubscriptionOwner> subscriptions = new ArrayList<>();
+        private final List<SubscriptionOwner> subscription = new ArrayList<>();
 
         private Subscriptions() {
         }
@@ -509,33 +506,33 @@ public final class PubSubOwner {
                 subscriptionOwner.jid = subscription.getJid();
                 subscriptionOwner.node = subscription.getNode();
                 subscriptionOwner.subid = subscription.getSubId();
-                subscriptionOwner.status = subscription.getSubscriptionState();
+                subscriptionOwner.subscription = subscription.getSubscriptionState();
                 subscriptionOwner.options = subscription.isConfigurationSupported() ? new SubscriptionOwner.Options() : null;
                 if (subscription.isConfigurationRequired() && subscriptionOwner.options != null) {
                     subscriptionOwner.options.required = "";
                 }
-                this.subscriptions.add(subscriptionOwner);
+                this.subscription.add(subscriptionOwner);
             }
         }
 
         private List<SubscriptionOwner> getSubscriptions() {
-            return subscriptions;
+            return subscription;
         }
 
         private static final class SubscriptionOwner implements Subscription {
-            @XmlAttribute(name = "node")
+            @XmlAttribute
             private String node;
 
-            @XmlAttribute(name = "jid")
+            @XmlAttribute
             private Jid jid;
 
-            @XmlAttribute(name = "subid")
+            @XmlAttribute
             private String subid;
 
-            @XmlAttribute(name = "subscription")
-            private SubscriptionState status;
+            @XmlAttribute
+            private SubscriptionState subscription;
 
-            @XmlAttribute(name = "expiry")
+            @XmlAttribute
             @XmlJavaTypeAdapter(InstantAdapter.class)
             private Instant expiry;
 
@@ -544,7 +541,7 @@ public final class PubSubOwner {
 
             @Override
             public SubscriptionState getSubscriptionState() {
-                return status;
+                return subscription;
             }
 
             @Override
@@ -579,7 +576,6 @@ public final class PubSubOwner {
 
             private static final class Options {
 
-                @XmlElement(name = "required")
                 private String required;
 
                 private boolean isRequired() {
@@ -591,7 +587,7 @@ public final class PubSubOwner {
 
     private abstract static class PubSubOwnerChildElement {
 
-        @XmlAttribute(name = "node")
+        @XmlAttribute
         private String node;
 
         private PubSubOwnerChildElement() {

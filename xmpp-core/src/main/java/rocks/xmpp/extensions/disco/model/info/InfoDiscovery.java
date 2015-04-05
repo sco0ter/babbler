@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.disco.model.info;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -55,11 +54,9 @@ public final class InfoDiscovery implements InfoNode {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/disco#info";
 
-    @XmlElement(name = "identity")
-    private final Set<Identity> identities = new TreeSet<>();
+    private final Set<Identity> identity = new TreeSet<>();
 
-    @XmlElement(name = "feature")
-    private final Set<Feature> features = new TreeSet<>();
+    private final Set<Feature> feature = new TreeSet<>();
 
     @XmlElementRef
     private final List<DataForm> extensions = new ArrayList<>();
@@ -115,10 +112,10 @@ public final class InfoDiscovery implements InfoNode {
     public InfoDiscovery(String node, Collection<Identity> identities, Collection<Feature> features, Collection<DataForm> extensions) {
         this.node = node;
         if (identities != null) {
-            this.identities.addAll(identities);
+            this.identity.addAll(identities);
         }
         if (features != null) {
-            this.features.addAll(features);
+            this.feature.addAll(features);
         }
         if (extensions != null) {
             this.extensions.addAll(extensions);
@@ -127,12 +124,12 @@ public final class InfoDiscovery implements InfoNode {
 
     @Override
     public final Set<Identity> getIdentities() {
-        return Collections.unmodifiableSet(identities);
+        return Collections.unmodifiableSet(identity);
     }
 
     @Override
     public final Set<Feature> getFeatures() {
-        return Collections.unmodifiableSet(features);
+        return Collections.unmodifiableSet(feature);
     }
 
     @Override
@@ -147,6 +144,6 @@ public final class InfoDiscovery implements InfoNode {
 
     @Override
     public final String toString() {
-        return "Identity: " + identities + "; Features: " + features;
+        return "Identity: " + identity + "; Features: " + feature;
     }
 }

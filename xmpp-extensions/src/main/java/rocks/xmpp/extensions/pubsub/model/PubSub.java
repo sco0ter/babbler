@@ -87,16 +87,12 @@ public final class PubSub {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/pubsub";
 
-    @XmlElement(name = "create")
     private Create create;
 
-    @XmlElement(name = "configure")
     private Configure configure;
 
-    @XmlElement(name = "subscribe")
     private Subscribe subscribe;
 
-    @XmlElement(name = "options")
     private Options options;
 
     @XmlElements({
@@ -614,7 +610,7 @@ public final class PubSub {
 
     private static final class Subscribe extends PubSubChildElement {
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
         private Subscribe() {
@@ -632,13 +628,13 @@ public final class PubSub {
      * @see #withOptions(String, rocks.xmpp.core.Jid, String, rocks.xmpp.extensions.data.model.DataForm)
      */
     public static final class Options {
-        @XmlAttribute(name = "node")
+        @XmlAttribute
         private String node;
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "subid")
+        @XmlAttribute
         private String subid;
 
         @XmlElementRef
@@ -670,8 +666,7 @@ public final class PubSub {
 
     private static final class AffiliationsElement extends PubSubChildElement {
 
-        @XmlElement(name = "affiliation")
-        private final List<AffiliationInfo> affiliations = new ArrayList<>();
+        private final List<AffiliationInfo> affiliation = new ArrayList<>();
 
         private AffiliationsElement() {
         }
@@ -681,18 +676,18 @@ public final class PubSub {
         }
 
         private List<? extends Affiliation> getAffiliations() {
-            return affiliations;
+            return affiliation;
         }
 
         private static final class AffiliationInfo implements Affiliation {
 
-            @XmlAttribute(name = "node")
+            @XmlAttribute
             private String node;
 
-            @XmlAttribute(name = "affiliation")
+            @XmlAttribute
             private AffiliationState affiliation;
 
-            @XmlAttribute(name = "jid")
+            @XmlAttribute
             private Jid jid;
 
             @Override
@@ -719,7 +714,7 @@ public final class PubSub {
      */
     public static final class Default extends PubSubChildElement {
 
-        @XmlAttribute(name = "type")
+        @XmlAttribute
         private Type type;
 
         @XmlElementRef
@@ -752,16 +747,14 @@ public final class PubSub {
 
     private static final class Items extends PubSubChildElement {
 
-        @XmlElement(name = "item")
-        private final List<ItemElement> items = new ArrayList<>();
+        private final List<ItemElement> item = new ArrayList<>();
 
         @XmlAttribute(name = "max_items")
         private Integer maxItems;
 
-        @XmlAttribute(name = "subid")
+        @XmlAttribute
         private String subid;
 
-        @XmlElement(name = "retract")
         private Retract retract;
 
         private Items() {
@@ -778,11 +771,11 @@ public final class PubSub {
 
         private Items(String node, List<ItemElement> items) {
             super(node);
-            this.items.addAll(items);
+            this.item.addAll(items);
         }
 
         private List<? extends Item> getItems() {
-            return items;
+            return item;
         }
     }
 
@@ -793,7 +786,6 @@ public final class PubSub {
      */
     public static final class Publish extends PubSubChildElement {
 
-        @XmlElement(name = "item")
         private ItemElement item;
 
         private Publish() {
@@ -834,10 +826,9 @@ public final class PubSub {
 
     private static final class Retract extends PubSubChildElement {
 
-        @XmlAttribute(name = "notify")
+        @XmlAttribute
         private Boolean notify;
 
-        @XmlElement
         private ItemElement item;
 
         @XmlAttribute
@@ -860,16 +851,16 @@ public final class PubSub {
 
     private static final class SubscriptionInfo extends PubSubChildElement implements Subscription {
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "subid")
+        @XmlAttribute
         private String subid;
 
-        @XmlAttribute(name = "subscription")
-        private SubscriptionState type;
+        @XmlAttribute
+        private SubscriptionState subscription;
 
-        @XmlAttribute(name = "expiry")
+        @XmlAttribute
         @XmlJavaTypeAdapter(InstantAdapter.class)
         private Instant expiry;
 
@@ -883,7 +874,7 @@ public final class PubSub {
 
         @Override
         public SubscriptionState getSubscriptionState() {
-            return type;
+            return subscription;
         }
 
         @Override
@@ -908,7 +899,6 @@ public final class PubSub {
 
         private static final class SubscribeOptions {
 
-            @XmlElement(name = "required")
             private String required;
 
             private boolean isRequired() {
@@ -919,8 +909,7 @@ public final class PubSub {
 
     private static final class Subscriptions extends PubSubChildElement {
 
-        @XmlElement(name = "subscription")
-        private final List<SubscriptionInfo> subscriptions = new ArrayList<>();
+        private final List<SubscriptionInfo> subscription = new ArrayList<>();
 
         private Subscriptions() {
         }
@@ -930,19 +919,19 @@ public final class PubSub {
         }
 
         private List<? extends Subscription> getSubscriptions() {
-            return subscriptions;
+            return subscription;
         }
     }
 
     private static final class Unsubscribe extends PubSubChildElement {
 
-        @XmlAttribute(name = "node")
+        @XmlAttribute
         private String node;
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "subid")
+        @XmlAttribute
         private String subid;
 
         private Unsubscribe() {
@@ -956,7 +945,7 @@ public final class PubSub {
     }
 
     private static final class Configure {
-        @XmlAttribute(name = "node")
+        @XmlAttribute
         private String node;
 
         @XmlElementRef
@@ -984,7 +973,7 @@ public final class PubSub {
         @XmlAnyElement(lax = true)
         private Object object;
 
-        @XmlAttribute(name = "id")
+        @XmlAttribute
         private String id;
 
         private ItemElement() {
@@ -1022,7 +1011,7 @@ public final class PubSub {
 
     private abstract static class PubSubChildElement {
 
-        @XmlAttribute(name = "node")
+        @XmlAttribute
         private String node;
 
         private PubSubChildElement() {

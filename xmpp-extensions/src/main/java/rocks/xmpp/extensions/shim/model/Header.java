@@ -44,7 +44,7 @@ import java.util.Objects;
  */
 public final class Header {
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute
     private final String name;
 
     @XmlValue

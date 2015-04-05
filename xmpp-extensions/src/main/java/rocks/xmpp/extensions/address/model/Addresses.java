@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.address.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,11 +49,10 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0033.html#schema">XML Schema</a>
  * @see Address
  */
-@XmlRootElement(name = "addresses")
+@XmlRootElement
 public final class Addresses {
 
-    @XmlElement(name = "address")
-    private final List<Address> addresses = new ArrayList<>();
+    private final List<Address> address = new ArrayList<>();
 
     private Addresses() {
     }
@@ -65,7 +63,7 @@ public final class Addresses {
      * @param addresses The address headers.
      */
     public Addresses(List<Address> addresses) {
-        this.addresses.addAll(addresses);
+        this.address.addAll(addresses);
     }
 
     /**
@@ -74,6 +72,6 @@ public final class Addresses {
      * @return The addresses.
      */
     public final List<Address> getAddresses() {
-        return Collections.unmodifiableList(addresses);
+        return Collections.unmodifiableList(address);
     }
 }

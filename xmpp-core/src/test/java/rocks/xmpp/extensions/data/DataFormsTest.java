@@ -32,7 +32,6 @@ import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.data.validate.model.Validation;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.time.Instant;

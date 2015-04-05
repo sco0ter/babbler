@@ -33,13 +33,13 @@ import java.util.Objects;
 /**
  * The {@code <text/>} element.
  */
-@XmlRootElement(name = "text")
+@XmlRootElement
 public final class Text {
     @XmlValue
     private final String text;
 
-    @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private final String language;
+    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+    private final String lang;
 
     /**
      * Default constructor for unmarshalling.
@@ -47,12 +47,12 @@ public final class Text {
     @SuppressWarnings("unused")
     private Text() {
         this.text = null;
-        this.language = null;
+        this.lang = null;
     }
 
     public Text(String text, String language) {
         this.text = Objects.requireNonNull(text);
-        this.language = language;
+        this.lang = language;
     }
 
     /**
@@ -70,6 +70,6 @@ public final class Text {
      * @return The language.
      */
     public final String getLanguage() {
-        return language;
+        return lang;
     }
 }

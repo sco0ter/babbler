@@ -51,22 +51,20 @@ public final class Socks5ByteStream {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/bytestreams";
 
-    @XmlElement(name = "streamhost")
-    private final List<StreamHost> streamHosts = new ArrayList<>();
+    private final List<StreamHost> streamhost = new ArrayList<>();
 
     @XmlElement(name = "streamhost-used")
     private StreamHostUsed streamHostUsed;
 
-    @XmlAttribute(name = "dstaddr")
+    @XmlAttribute
     private String dstaddr;
 
-    @XmlElement(name = "activate")
     private Jid activate;
 
-    @XmlAttribute(name = "mode")
+    @XmlAttribute
     private Mode mode;
 
-    @XmlAttribute(name = "sid")
+    @XmlAttribute
     private String sid;
 
     /**
@@ -84,7 +82,7 @@ public final class Socks5ByteStream {
      */
     public Socks5ByteStream(String sessionId, List<StreamHost> streamHosts, String dstaddr) {
         this.sid = Objects.requireNonNull(sessionId);
-        this.streamHosts.addAll(streamHosts);
+        this.streamhost.addAll(streamHosts);
         this.dstaddr = dstaddr;
     }
 
@@ -141,7 +139,7 @@ public final class Socks5ByteStream {
      * @return The stream hosts.
      */
     public final List<StreamHost> getStreamHosts() {
-        return Collections.unmodifiableList(streamHosts);
+        return Collections.unmodifiableList(streamhost);
     }
 
     /**

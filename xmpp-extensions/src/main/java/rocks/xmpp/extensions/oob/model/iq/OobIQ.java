@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.oob.model.iq;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 
@@ -45,14 +44,12 @@ public final class OobIQ {
      */
     public static final String NAMESPACE = "jabber:iq:oob";
 
-    @XmlElement(name = "url")
     private final URL url;
 
-    @XmlElement(name = "desc")
-    private final String description;
+    private final String desc;
 
-    @XmlAttribute(name = "sid")
-    private final String sessionId;
+    @XmlAttribute
+    private final String sid;
 
     private OobIQ() {
         this(null, null, null);
@@ -68,8 +65,8 @@ public final class OobIQ {
 
     public OobIQ(URL url, String description, String sessionId) {
         this.url = url;
-        this.description = description;
-        this.sessionId = sessionId;
+        this.desc = description;
+        this.sid = sessionId;
     }
 
     /**
@@ -87,7 +84,7 @@ public final class OobIQ {
      * @return The description.
      */
     public final String getDescription() {
-        return description;
+        return desc;
     }
 
     /**
@@ -96,7 +93,7 @@ public final class OobIQ {
      * @return The session id.
      */
     public final String getSessionId() {
-        return sessionId;
+        return sid;
     }
 
     @Override

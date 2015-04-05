@@ -29,7 +29,6 @@ import rocks.xmpp.core.Jid;
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -65,7 +64,6 @@ public final class Body {
     @XmlAnyElement(lax = true)
     private final List<Object> wrappedObjects = new ArrayList<>();
 
-    @XmlElement
     private final URI uri;
 
     /**
@@ -173,13 +171,13 @@ public final class Body {
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private final String lang;
 
-    @XmlAttribute(name = "version", namespace = XBOSH_NAMESPACE)
+    @XmlAttribute(namespace = XBOSH_NAMESPACE)
     private final String version;
 
-    @XmlAttribute(name = "restartlogic", namespace = XBOSH_NAMESPACE)
-    private final Boolean restartLogic;
+    @XmlAttribute(namespace = XBOSH_NAMESPACE)
+    private final Boolean restartlogic;
 
-    @XmlAttribute(name = "restart", namespace = XBOSH_NAMESPACE)
+    @XmlAttribute(namespace = XBOSH_NAMESPACE)
     private final Boolean restart;
 
     private Body() {
@@ -212,7 +210,7 @@ public final class Body {
         this.requests = null;
         this.stream = null;
         this.time = null;
-        this.restartLogic = true;
+        this.restartlogic = true;
     }
 
     private Body(Builder builder) {
@@ -246,7 +244,7 @@ public final class Body {
         this.requests = null;
         this.stream = null;
         this.time = null;
-        this.restartLogic = null;
+        this.restartlogic = null;
     }
 
     /**
@@ -489,7 +487,7 @@ public final class Body {
     }
 
     public final Boolean getRestartLogic() {
-        return restartLogic;
+        return restartlogic;
     }
 
     public final Boolean getRestart() {

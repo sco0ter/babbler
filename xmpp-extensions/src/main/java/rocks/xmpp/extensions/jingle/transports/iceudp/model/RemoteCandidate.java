@@ -31,13 +31,13 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public class RemoteCandidate {
 
-    @XmlAttribute(name = "component")
+    @XmlAttribute
     private Integer component;
 
-    @XmlAttribute(name = "ip")
-    private String ipAddress;
+    @XmlAttribute
+    private String ip;
 
-    @XmlAttribute(name = "port")
+    @XmlAttribute
     private Integer port;
 
     public int getComponent() {
@@ -45,7 +45,7 @@ public class RemoteCandidate {
     }
 
     public String getIpAddress() {
-        return ipAddress;
+        return ip;
     }
 
     public Integer getPort() {

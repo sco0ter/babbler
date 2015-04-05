@@ -48,25 +48,25 @@ public final class Address {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/address";
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private final Type type;
 
-    @XmlAttribute(name = "jid")
+    @XmlAttribute
     private final Jid jid;
 
-    @XmlAttribute(name = "desc")
-    private final String description;
+    @XmlAttribute
+    private final String desc;
 
-    @XmlAttribute(name = "node")
+    @XmlAttribute
     private final String node;
 
-    @XmlAttribute(name = "uri")
+    @XmlAttribute
     private final URI uri;
 
     private Address() {
         this.type = null;
         this.jid = null;
-        this.description = null;
+        this.desc = null;
         this.node = null;
         this.uri = null;
     }
@@ -97,7 +97,7 @@ public final class Address {
     public Address(Type type, Jid jid, String description, String node) {
         this.type = Objects.requireNonNull(type);
         this.jid = jid;
-        this.description = description;
+        this.desc = description;
         this.node = node;
         this.uri = null;
     }
@@ -112,7 +112,7 @@ public final class Address {
         this.type = Objects.requireNonNull(type);
         this.jid = null;
         this.uri = uri;
-        this.description = description;
+        this.desc = description;
         this.node = null;
     }
 
@@ -143,7 +143,7 @@ public final class Address {
      * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-desc">4.4 'desc' attribute</a>
      */
     public final String getDescription() {
-        return description;
+        return desc;
     }
 
     /**

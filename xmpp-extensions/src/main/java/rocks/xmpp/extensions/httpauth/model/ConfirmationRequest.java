@@ -45,13 +45,13 @@ public final class ConfirmationRequest {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/http-auth";
 
-    @XmlAttribute(name = "id")
+    @XmlAttribute
     private final String id;
 
-    @XmlAttribute(name = "method")
+    @XmlAttribute
     private final String method;
 
-    @XmlAttribute(name = "url")
+    @XmlAttribute
     private final URL url;
 
     private ConfirmationRequest() {

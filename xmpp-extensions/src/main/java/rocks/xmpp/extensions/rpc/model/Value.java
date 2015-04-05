@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.rpc.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "value")
 public final class Value {
 
     @XmlElements(value = {
@@ -136,7 +134,7 @@ public final class Value {
     public Value(Map<String, Value> map) {
         if (map != null) {
             StructType structType = new StructType();
-            structType.values.addAll(map.entrySet().stream().map(entry -> new StructType.MemberType(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
+            structType.member.addAll(map.entrySet().stream().map(entry -> new StructType.MemberType(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
             this.value = structType;
         } else {
             this.value = null;
@@ -219,7 +217,7 @@ public final class Value {
         if (value instanceof StructType) {
             StructType structType = (StructType) value;
             Map<String, Value> result = new HashMap<>();
-            for (StructType.MemberType member : structType.values) {
+            for (StructType.MemberType member : structType.member) {
                 result.put(member.name, member.value);
             }
             return result;

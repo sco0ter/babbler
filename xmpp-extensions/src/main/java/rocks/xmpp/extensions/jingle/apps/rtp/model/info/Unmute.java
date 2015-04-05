@@ -32,6 +32,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0167.html#info-mute">8.3 Mute</a>
  */
-@XmlRootElement(name = "unmute")
+@XmlRootElement
 public final class Unmute extends MutingInfo {
 }

@@ -67,13 +67,13 @@ public final class StreamInitiation {
      */
     public static final Object NO_VALID_STREAMS = new NoValidStreams();
 
-    @XmlAttribute(name = "id")
+    @XmlAttribute
     private final String id;
 
     @XmlAttribute(name = "mime-type")
     private final String mimeType;
 
-    @XmlAttribute(name = "profile")
+    @XmlAttribute
     private final String profile;
 
     @XmlAnyElement(lax = true)

@@ -47,22 +47,16 @@ public final class Registration {
      */
     public static final String NAMESPACE = "jabber:iq:register";
 
-    @XmlElement(name = "registered")
     private String registered;
 
-    @XmlElement(name = "instructions")
     private String instructions;
 
-    @XmlElement(name = "username")
     private String username;
 
-    @XmlElement(name = "nick")
-    private String nickname;
+    private String nick;
 
-    @XmlElement(name = "password")
     private String password;
 
-    @XmlElement(name = "name")
     private String name;
 
     @XmlElement(name = "first")
@@ -71,16 +65,13 @@ public final class Registration {
     @XmlElement(name = "last")
     private String familyName;
 
-    @XmlElement(name = "email")
     private String email;
 
     @XmlElement(name = "address")
     private String street;
 
-    @XmlElement(name = "city")
     private String city;
 
-    @XmlElement(name = "region")
     private String region;
 
     @XmlElement(name = "zip")
@@ -89,13 +80,10 @@ public final class Registration {
     @XmlElement(name = "phone")
     private String telephone;
 
-    @XmlElement(name = "url")
     private URL url;
 
-    @XmlElement(name = "date")
     private String date;
 
-    @XmlElement(name = "remove")
     private String remove;
 
     @XmlElementRef
@@ -106,7 +94,7 @@ public final class Registration {
 
     private Registration(Builder builder) {
         this.username = builder.username;
-        this.nickname = builder.nickname;
+        this.nick = builder.nickname;
         this.password = builder.password;
         this.name = builder.name;
         this.givenName = builder.givenName;
@@ -182,7 +170,7 @@ public final class Registration {
      * @return The nickname.
      */
     public String getNickname() {
-        return nickname;
+        return nick;
     }
 
     /**

@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.shim.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0131.html#schema">XML Schema</a>
  * @see Header
  */
-@XmlRootElement(name = "headers")
+@XmlRootElement
 public final class Headers {
 
     /**
@@ -51,14 +50,13 @@ public final class Headers {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/shim";
 
-    @XmlElement(name = "header")
-    private final List<Header> headers = new ArrayList<>();
+    private final List<Header> header = new ArrayList<>();
 
     private Headers() {
     }
 
     public Headers(Header... headers) {
-        this.headers.addAll(Arrays.asList(headers));
+        this.header.addAll(Arrays.asList(headers));
     }
 
     /**
@@ -101,11 +99,11 @@ public final class Headers {
      * @return The headers.
      */
     public final List<Header> getHeaders() {
-        return Collections.unmodifiableList(headers);
+        return Collections.unmodifiableList(header);
     }
 
     @Override
     public final String toString() {
-        return headers.toString();
+        return header.toString();
     }
 }

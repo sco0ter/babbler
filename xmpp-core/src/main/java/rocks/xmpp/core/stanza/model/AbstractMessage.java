@@ -29,7 +29,6 @@ import rocks.xmpp.core.Jid;
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -50,10 +49,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @XmlTransient
 public abstract class AbstractMessage extends Stanza {
-    @XmlElement(name = "subject")
+
     private final List<Subject> subject = new CopyOnWriteArrayList<>();
 
-    @XmlElement(name = "body")
     private final List<Body> body = new CopyOnWriteArrayList<>();
 
     @XmlAnyElement(lax = true)
@@ -62,7 +60,6 @@ public abstract class AbstractMessage extends Stanza {
     @XmlAttribute
     private Type type;
 
-    @XmlElement
     private Thread thread;
 
     /**
@@ -381,8 +378,8 @@ public abstract class AbstractMessage extends Stanza {
      * </blockquote>
      */
     public static final class Body {
-        @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private String language;
+        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+        private String lang;
 
         @XmlValue
         private String text;
@@ -411,7 +408,7 @@ public abstract class AbstractMessage extends Stanza {
          */
         public Body(String text, String language) {
             this.text = text;
-            this.language = language;
+            this.lang = language;
         }
 
         /**
@@ -420,7 +417,7 @@ public abstract class AbstractMessage extends Stanza {
          * @return The language.
          */
         public String getLanguage() {
-            return language;
+            return lang;
         }
 
         /**
@@ -431,7 +428,7 @@ public abstract class AbstractMessage extends Stanza {
          */
         @Deprecated
         public void setLanguage(String language) {
-            this.language = language;
+            this.lang = language;
         }
 
         /**
@@ -469,8 +466,8 @@ public abstract class AbstractMessage extends Stanza {
      * </blockquote>
      */
     public static final class Subject {
-        @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private String language;
+        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+        private String lang;
 
         @XmlValue
         private String text;
@@ -499,7 +496,7 @@ public abstract class AbstractMessage extends Stanza {
          */
         public Subject(String text, String language) {
             this.text = text;
-            this.language = language;
+            this.lang = language;
         }
 
         /**
@@ -508,7 +505,7 @@ public abstract class AbstractMessage extends Stanza {
          * @return The language.
          */
         public String getLanguage() {
-            return language;
+            return lang;
         }
 
         /**
@@ -519,7 +516,7 @@ public abstract class AbstractMessage extends Stanza {
          */
         @Deprecated
         public void setLanguage(String language) {
-            this.language = language;
+            this.lang = language;
         }
 
         /**
@@ -557,7 +554,7 @@ public abstract class AbstractMessage extends Stanza {
      */
     private static final class Thread {
 
-        @XmlAttribute(name = "parent")
+        @XmlAttribute
         private String parent;
 
         @XmlValue

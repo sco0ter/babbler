@@ -38,16 +38,16 @@ import java.time.Instant;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-managehistory">7.2.15 Managing Discussion History</a>
  */
 public final class History {
-    @XmlAttribute(name = "maxchars")
-    private Integer maxChars;
+    @XmlAttribute
+    private Integer maxchars;
 
-    @XmlAttribute(name = "maxstanzas")
-    private Integer maxStanzas;
+    @XmlAttribute
+    private Integer maxstanzas;
 
-    @XmlAttribute(name = "seconds")
+    @XmlAttribute
     private Integer seconds;
 
-    @XmlAttribute(name = "since")
+    @XmlAttribute
     @XmlJavaTypeAdapter(InstantAdapter.class)
     private Instant since;
 
@@ -62,7 +62,7 @@ public final class History {
      */
     public static History forMaxChars(int maxChars) {
         History history = new History();
-        history.maxChars = maxChars;
+        history.maxchars = maxChars;
         return history;
     }
 
@@ -74,7 +74,7 @@ public final class History {
      */
     public static History forMaxMessages(int maxMessages) {
         History history = new History();
-        history.maxStanzas = maxMessages;
+        history.maxstanzas = maxMessages;
         return history;
     }
 
@@ -109,7 +109,7 @@ public final class History {
      */
     public static History none() {
         History history = new History();
-        history.maxChars = 0;
+        history.maxchars = 0;
         return history;
     }
 }

@@ -37,7 +37,7 @@ import java.util.Objects;
  * @author Christian Schudt
  */
 public final class WebPageBookmark extends Bookmark {
-    @XmlAttribute(name = "url")
+    @XmlAttribute
     private final URL url;
 
     private WebPageBookmark() {

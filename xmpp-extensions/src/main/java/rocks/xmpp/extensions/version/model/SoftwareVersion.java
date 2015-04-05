@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.version.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
@@ -45,13 +44,10 @@ public final class SoftwareVersion {
      */
     public static final String NAMESPACE = "jabber:iq:version";
 
-    @XmlElement
     private final String name;
 
-    @XmlElement
     private final String version;
 
-    @XmlElement
     private final String os;
 
     public SoftwareVersion() {

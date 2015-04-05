@@ -134,7 +134,7 @@ public final class Status {
      */
     public static final Status SERVICE_SHUT_DOWN = new Status(332);
 
-    @XmlAttribute(name = "code")
+    @XmlAttribute
     private Integer code;
 
     private Status() {

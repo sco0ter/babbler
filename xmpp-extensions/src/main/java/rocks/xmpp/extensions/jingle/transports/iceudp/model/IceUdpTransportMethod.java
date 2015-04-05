@@ -43,27 +43,26 @@ public final class IceUdpTransportMethod extends TransportMethod {
      */
     public static final String NAMESPACE = "urn:xmpp:jingle:transports:ice-udp:1";
 
-    @XmlElement(name = "candidate")
-    private final List<Candidate> candidates = new ArrayList<>();
+    private final List<Candidate> candidate = new ArrayList<>();
 
-    @XmlAttribute(name = "pwd")
-    private String password;
+    @XmlAttribute
+    private String pwd;
 
-    @XmlAttribute(name = "ufrag")
-    private String userFragment;
+    @XmlAttribute
+    private String ufrag;
 
     @XmlElement(name = "remote-candidate")
     private RemoteCandidate remoteCandidate;
 
     public List<Candidate> getCandidates() {
-        return candidates;
+        return candidate;
     }
 
     public String getPassword() {
-        return password;
+        return pwd;
     }
 
     public String getUserFragment() {
-        return userFragment;
+        return ufrag;
     }
 }

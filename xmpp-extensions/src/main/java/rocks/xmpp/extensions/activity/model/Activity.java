@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @see <a href="http://xmpp.org/extensions/xep-0108.html">XEP-0108: User Activity</a>
  * @see <a href="http://xmpp.org/extensions/xep-0108.html#schema">XML Schema</a>
  */
-@XmlRootElement(name = "activity")
+@XmlRootElement
 public final class Activity {
 
     /**
@@ -66,7 +66,6 @@ public final class Activity {
     })
     private final AbstractCategory category;
 
-    @XmlElement(name = "text")
     private final String text;
 
     /**

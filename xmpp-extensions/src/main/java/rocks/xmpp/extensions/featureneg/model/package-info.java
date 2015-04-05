@@ -28,7 +28,10 @@
  * It defines an XMPP protocol extension that enables two entities to mutually negotiate feature options, such as parameters related to a file transfer or a communications session.
  * </p>
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = FeatureNegotiation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.featureneg.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

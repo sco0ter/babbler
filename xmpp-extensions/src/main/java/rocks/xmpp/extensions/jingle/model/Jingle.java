@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-@XmlRootElement(name = "jingle")
+@XmlRootElement
 public final class Jingle {
 
     /**
@@ -49,22 +49,20 @@ public final class Jingle {
      */
     public static final String NAMESPACE = "urn:xmpp:jingle:1";
 
-    @XmlElement(name = "content")
-    private final List<Content> contents = new ArrayList<>();
+    private final List<Content> content = new ArrayList<>();
 
-    @XmlAttribute(name = "action")
+    @XmlAttribute
     private Action action;
 
-    @XmlAttribute(name = "initiator")
+    @XmlAttribute
     private Jid initiator;
 
-    @XmlAttribute(name = "responder")
+    @XmlAttribute
     private Jid responder;
 
-    @XmlAttribute(name = "sid")
-    private String sessionId;
+    @XmlAttribute
+    private String sid;
 
-    @XmlElement(name = "reason")
     private Reason reason;
 
     @XmlAnyElement(lax = true)
@@ -74,32 +72,32 @@ public final class Jingle {
     }
 
     public Jingle(String sessionId, Action action, Reason reason) {
-        this.sessionId = sessionId;
+        this.sid = sessionId;
         this.action = action;
         this.reason = reason;
     }
 
     public Jingle(String sessionId, Action action, Object payload) {
-        this.sessionId = sessionId;
+        this.sid = sessionId;
         this.action = action;
         this.payload = payload;
     }
 
     public static Jingle initiator(Jid initiator, String sessionId, Action action, List<Content> contents) {
         Jingle jingle = new Jingle();
-        jingle.sessionId = sessionId;
+        jingle.sid = sessionId;
         jingle.action = action;
         jingle.initiator = initiator;
-        jingle.contents.addAll(contents);
+        jingle.content.addAll(contents);
         return jingle;
     }
 
     public static Jingle responder(Jid responder, String sessionId, Action action, List<Content> contents) {
         Jingle jingle = new Jingle();
-        jingle.sessionId = sessionId;
+        jingle.sid = sessionId;
         jingle.action = action;
         jingle.responder = responder;
-        jingle.contents.addAll(contents);
+        jingle.content.addAll(contents);
         return jingle;
     }
 
@@ -146,7 +144,7 @@ public final class Jingle {
      * @return The session id.
      */
     public String getSessionId() {
-        return sessionId;
+        return sid;
     }
 
     /**
@@ -155,7 +153,7 @@ public final class Jingle {
      * @return The contents.
      */
     public List<Content> getContents() {
-        return contents;
+        return content;
     }
 
     /**
@@ -276,16 +274,16 @@ public final class Jingle {
         @XmlElementRef
         private TransportMethod transportMethod;
 
-        @XmlAttribute(name = "creator")
+        @XmlAttribute
         private Creator creator;
 
-        @XmlAttribute(name = "disposition")
+        @XmlAttribute
         private String disposition;
 
-        @XmlAttribute(name = "name")
+        @XmlAttribute
         private String name;
 
-        @XmlAttribute(name = "senders")
+        @XmlAttribute
         private Senders senders;
 
         private Content() {
@@ -445,7 +443,6 @@ public final class Jingle {
         })
         private Condition condition;
 
-        @XmlElement(name = "text")
         private String text;
 
         @XmlAnyElement(lax = true)
@@ -527,14 +524,13 @@ public final class Jingle {
          */
         public static final class AlternativeSession extends Condition {
 
-            @XmlElement(name = "sid")
-            private String sessionId;
+            private String sid;
 
             private AlternativeSession() {
             }
 
             public AlternativeSession(String sessionId) {
-                this.sessionId = sessionId;
+                this.sid = sessionId;
             }
 
             /**
@@ -543,7 +539,7 @@ public final class Jingle {
              * @return The alternative session id.
              */
             public String getSessionId() {
-                return sessionId;
+                return sid;
             }
         }
 

@@ -27,7 +27,6 @@ package rocks.xmpp.core.roster.model;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
@@ -57,7 +56,6 @@ public final class Contact implements Comparable<Contact> {
     @XmlAttribute
     private final Boolean ask;
 
-    @XmlElement
     private final List<String> group = new ArrayList<>();
 
     @XmlAttribute

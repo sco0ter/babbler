@@ -29,7 +29,6 @@ import rocks.xmpp.core.Jid;
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
@@ -58,13 +57,10 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new CopyOnWriteArrayList<>();
 
-    @XmlElement
     private final List<Status> status = new CopyOnWriteArrayList<>();
 
-    @XmlElement
     private Byte priority;
 
-    @XmlElement
     private Show show;
 
     @XmlAttribute
@@ -400,8 +396,8 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      * </blockquote>
      */
     public static final class Status {
-        @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private String language;
+        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+        private String lang;
 
         @XmlValue
         private String text;
@@ -430,7 +426,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
          */
         public Status(String text, String language) {
             this.text = text;
-            this.language = language;
+            this.lang = language;
         }
 
         /**
@@ -439,7 +435,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
          * @return The language.
          */
         public String getLanguage() {
-            return language;
+            return lang;
         }
 
         /**
@@ -450,7 +446,7 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
          */
         @Deprecated
         public void setLanguage(String language) {
-            this.language = language;
+            this.lang = language;
         }
 
         /**

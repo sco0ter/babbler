@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.privacy.model;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,10 +46,10 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
  */
 public final class PrivacyList implements Comparable<PrivacyList> {
-    @XmlElement(name = "item")
-    private final List<PrivacyRule> items = new ArrayList<>();
 
-    @XmlAttribute(name = "name")
+    private final List<PrivacyRule> item = new ArrayList<>();
+
+    @XmlAttribute
     private final String name;
 
     @XmlTransient
@@ -72,7 +71,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     public PrivacyList(String name, Collection<PrivacyRule> items) {
         this.name = Objects.requireNonNull(name);
         if (items != null) {
-            this.items.addAll(items);
+            this.item.addAll(items);
         }
     }
 
@@ -176,7 +175,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @return The privacy rules.
      */
     public final List<PrivacyRule> getPrivacyRules() {
-        return Collections.unmodifiableList(items);
+        return Collections.unmodifiableList(item);
     }
 
     /**
@@ -213,7 +212,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see #isActive()
      */
     public final PrivacyList asActive() {
-        PrivacyList privacyList = new PrivacyList(name, items);
+        PrivacyList privacyList = new PrivacyList(name, item);
         privacyList.isActive = true;
         return privacyList;
     }
@@ -225,7 +224,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see #isDefault()
      */
     public final PrivacyList asDefault() {
-        PrivacyList privacyList = new PrivacyList(name, items);
+        PrivacyList privacyList = new PrivacyList(name, item);
         privacyList.isDefault = true;
         return privacyList;
     }

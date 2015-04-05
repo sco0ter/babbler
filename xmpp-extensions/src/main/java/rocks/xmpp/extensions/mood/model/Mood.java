@@ -43,7 +43,7 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a>
  * @see <a href="http://xmpp.org/extensions/xep-0107.html#schema">XML Schema</a>
  */
-@XmlRootElement(name = "mood")
+@XmlRootElement
 @XmlSeeAlso({
         Mood.Afraid.class,
         Mood.Amazed.class,
@@ -137,7 +137,6 @@ public final class Mood {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/mood";
 
-    @XmlElement
     private final String text;
 
     @XmlElements({@XmlElement(name = "afraid", type = Afraid.class),

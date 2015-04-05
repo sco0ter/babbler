@@ -30,7 +30,6 @@ import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigInteger;
@@ -55,23 +54,21 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/si/profile/file-transfer";
 
-    @XmlAttribute(name = "size")
+    @XmlAttribute
     private final Long size;
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute
     private final String name;
 
-    @XmlAttribute(name = "date")
+    @XmlAttribute
     @XmlJavaTypeAdapter(InstantAdapter.class)
     private final Instant date;
 
-    @XmlAttribute(name = "hash")
+    @XmlAttribute
     private final String hash;
 
-    @XmlElement(name = "desc")
-    private final String description;
+    private final String desc;
 
-    @XmlElement(name = "range")
     private final SIRange range;
 
     private SIFileTransferOffer() {
@@ -87,7 +84,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
         this.size = size;
         this.date = lastModified;
         this.hash = hash;
-        this.description = description;
+        this.desc = description;
         this.range = range;
     }
 
@@ -138,7 +135,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      * @return The description.
      */
     public final String getDescription() {
-        return description;
+        return desc;
     }
 
     /**

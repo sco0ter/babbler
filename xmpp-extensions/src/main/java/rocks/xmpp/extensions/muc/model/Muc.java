@@ -28,7 +28,6 @@ import rocks.xmpp.extensions.muc.model.admin.MucAdmin;
 import rocks.xmpp.extensions.muc.model.owner.MucOwner;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
@@ -48,10 +47,8 @@ public final class Muc {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/muc";
 
-    @XmlElement(name = "password")
     private String password;
 
-    @XmlElement(name = "history")
     private History history;
 
     /**

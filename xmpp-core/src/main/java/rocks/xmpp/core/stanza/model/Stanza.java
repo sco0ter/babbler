@@ -29,7 +29,6 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -53,10 +52,9 @@ public abstract class Stanza {
     @XmlAttribute
     private Jid to;
 
-    @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private String language;
+    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+    private String lang;
 
-    @XmlElement
     private StanzaError error;
 
     protected Stanza() {
@@ -66,7 +64,7 @@ public abstract class Stanza {
         this.to = to;
         this.from = from;
         this.id = id;
-        this.language = language;
+        this.lang = language;
         this.error = error;
     }
 
@@ -166,7 +164,7 @@ public abstract class Stanza {
      * @return The language.
      */
     public final String getLanguage() {
-        return language;
+        return lang;
     }
 
     /**
@@ -178,7 +176,7 @@ public abstract class Stanza {
      */
     @Deprecated
     public final void setLanguage(String language) {
-        this.language = language;
+        this.lang = language;
     }
 
     /**

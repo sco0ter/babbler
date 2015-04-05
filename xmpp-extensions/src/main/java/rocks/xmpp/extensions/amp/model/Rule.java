@@ -42,13 +42,13 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-amp">XML Schema</a>
  */
 public final class Rule {
-    @XmlAttribute(name = "action")
+    @XmlAttribute
     private final Action action;
 
-    @XmlAttribute(name = "condition")
+    @XmlAttribute
     private final Condition condition;
 
-    @XmlAttribute(name = "value")
+    @XmlAttribute
     private final String value;
 
     private Rule() {

@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @see #CONFLICT
  */
-@XmlRootElement(name = "conflict")
+@XmlRootElement
 @XmlType(factoryMethod = "create")
 final class Conflict extends Condition {
 

@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.blocking.model;
 
 import rocks.xmpp.core.Jid;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,16 +41,16 @@ import java.util.stream.Collectors;
  * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
  * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
  */
-@XmlRootElement(name = "block")
+@XmlRootElement
 public final class Block {
-    @XmlElement(name = "item")
-    private final List<Item> items = new ArrayList<>();
+
+    private final List<Item> item = new ArrayList<>();
 
     /**
      * @param blockedItems The blocked items.
      */
     public Block(List<Jid> blockedItems) {
-        this.items.addAll(blockedItems.stream().map(Item::new).collect(Collectors.toList()));
+        this.item.addAll(blockedItems.stream().map(Item::new).collect(Collectors.toList()));
     }
 
     private Block() {
@@ -63,11 +62,11 @@ public final class Block {
      * @return The blocked items.
      */
     public final List<Jid> getItems() {
-        return Collections.unmodifiableList(items.stream().map(Item::getJid).collect(Collectors.toList()));
+        return Collections.unmodifiableList(item.stream().map(Item::getJid).collect(Collectors.toList()));
     }
 
     @Override
     public final String toString() {
-        return items.toString();
+        return item.toString();
     }
 }

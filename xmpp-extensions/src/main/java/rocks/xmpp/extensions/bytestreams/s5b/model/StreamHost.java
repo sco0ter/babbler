@@ -36,13 +36,13 @@ import java.util.Objects;
  */
 public final class StreamHost {
 
-    @XmlAttribute(name = "jid")
+    @XmlAttribute
     private final Jid jid;
 
-    @XmlAttribute(name = "host")
+    @XmlAttribute
     private final String host;
 
-    @XmlAttribute(name = "port")
+    @XmlAttribute
     private final int port;
 
     private StreamHost() {

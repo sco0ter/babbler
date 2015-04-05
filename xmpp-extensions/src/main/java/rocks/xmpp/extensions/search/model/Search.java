@@ -29,7 +29,6 @@ import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -54,22 +53,16 @@ public final class Search {
      */
     public static final String NAMESPACE = "jabber:iq:search";
 
-    @XmlElement(name = "item")
-    private final List<Item> items = new ArrayList<>();
+    private final List<Item> item = new ArrayList<>();
 
-    @XmlElement
     private final String instructions;
 
-    @XmlElement
     private final String first;
 
-    @XmlElement
     private final String last;
 
-    @XmlElement
     private final String nick;
 
-    @XmlElement
     private final String email;
 
     @XmlElementRef
@@ -168,7 +161,7 @@ public final class Search {
      * @return The items.
      */
     public final List<Item> getItems() {
-        return Collections.unmodifiableList(items);
+        return Collections.unmodifiableList(item);
     }
 
     /**
@@ -201,19 +194,15 @@ public final class Search {
      */
     public static final class Item {
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private final Jid jid;
 
-        @XmlElement(name = "first")
         private final String first;
 
-        @XmlElement(name = "last")
         private final String last;
 
-        @XmlElement(name = "nick")
         private final String nick;
 
-        @XmlElement(name = "email")
         private final String email;
 
         private Item() {

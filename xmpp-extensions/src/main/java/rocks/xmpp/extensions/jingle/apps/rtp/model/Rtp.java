@@ -55,19 +55,17 @@ public final class Rtp extends ApplicationFormat {
      */
     public static final String NAMESPACE = "urn:xmpp:jingle:apps:rtp:1";
 
-    @XmlAttribute(name = "media")
+    @XmlAttribute
     private String media;
 
-    @XmlAttribute(name = "ssrc")
+    @XmlAttribute
     private String ssrc;
 
     @XmlElement(name = "payload-type")
     private List<PayloadType> payloadTypes = new ArrayList<>();
 
-    @XmlElement(name = "encryption")
     private Encryption encryption;
 
-    @XmlElement(name = "bandwidth")
     private Bandwidth bandwidth;
 
     private Rtp() {
@@ -145,11 +143,10 @@ public final class Rtp extends ApplicationFormat {
      */
     public static final class Encryption {
 
-        @XmlElement(name = "crypto")
-        private final List<Crypto> cryptos = new ArrayList<>();
+        private final List<Crypto> crypto = new ArrayList<>();
 
         public List<Crypto> getCrypto() {
-            return cryptos;
+            return crypto;
         }
     }
 
@@ -169,7 +166,7 @@ public final class Rtp extends ApplicationFormat {
         @XmlAttribute(name = "session-params")
         private String sessionParams;
 
-        @XmlAttribute(name = "tag")
+        @XmlAttribute
         private String tag;
 
         private Crypto() {
@@ -203,7 +200,7 @@ public final class Rtp extends ApplicationFormat {
      */
     public static final class Bandwidth {
 
-        @XmlAttribute(name = "type")
+        @XmlAttribute
         private String type;
 
         private Bandwidth() {
@@ -233,25 +230,24 @@ public final class Rtp extends ApplicationFormat {
      */
     public static final class PayloadType {
 
-        @XmlElement(name = "parameter")
-        private List<Parameter> parameters = new ArrayList<>();
+        private List<Parameter> parameter = new ArrayList<>();
 
-        @XmlAttribute(name = "channels")
+        @XmlAttribute
         private int channels = 1;
 
-        @XmlAttribute(name = "clockrate")
+        @XmlAttribute
         private long clockrate;
 
-        @XmlAttribute(name = "id")
+        @XmlAttribute
         private int id;
 
-        @XmlAttribute(name = "maxptime")
+        @XmlAttribute
         private long maxptime;
 
-        @XmlAttribute(name = "name")
+        @XmlAttribute
         private String name;
 
-        @XmlAttribute(name = "ptime")
+        @XmlAttribute
         private long ptime;
 
         private PayloadType() {
@@ -318,7 +314,7 @@ public final class Rtp extends ApplicationFormat {
          * @return The parameters.
          */
         public List<Parameter> getParameters() {
-            return parameters;
+            return parameter;
         }
 
         /**
@@ -353,10 +349,10 @@ public final class Rtp extends ApplicationFormat {
          */
         public static final class Parameter {
 
-            @XmlAttribute(name = "name")
+            @XmlAttribute
             private String name;
 
-            @XmlAttribute(name = "value")
+            @XmlAttribute
             private String value;
 
             private Parameter() {

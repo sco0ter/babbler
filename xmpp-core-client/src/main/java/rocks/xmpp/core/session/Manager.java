@@ -30,6 +30,18 @@ package rocks.xmpp.core.session;
  * @author Christian Schudt
  */
 public abstract class Manager {
+    protected final XmppSession xmppSession;
+
+    protected Manager(XmppSession xmppSession, boolean disposable) {
+        this.xmppSession = xmppSession;
+        if (disposable) {
+            xmppSession.addSessionStatusListener(e -> {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    dispose();
+                }
+            });
+        }
+    }
 
     private volatile boolean enabled;
 
@@ -60,5 +72,11 @@ public abstract class Manager {
      * @see <a href="http://www.ibm.com/developerworks/library/j-jtp0618/">Java theory and practice: Safe construction techniques</a>
      */
     protected void initialize() {
+    }
+
+    /**
+     * Called when the session gets closed.
+     */
+    protected void dispose() {
     }
 }

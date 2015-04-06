@@ -70,19 +70,9 @@ public final class FileTransferManager extends ExtensionManager {
     private final ExecutorService fileTransferOfferExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Offer Thread"));
 
     private FileTransferManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, true);
         this.streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
-    }
-
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                fileTransferOfferListeners.clear();
-                fileTransferOfferExecutor.shutdown();
-            }
-        });
     }
 
     /**
@@ -213,5 +203,11 @@ public final class FileTransferManager extends ExtensionManager {
      */
     public void removeFileTransferOfferListener(Consumer<FileTransferOfferEvent> fileTransferOfferListener) {
         fileTransferOfferListeners.remove(fileTransferOfferListener);
+    }
+
+    @Override
+    protected void dispose() {
+        fileTransferOfferListeners.clear();
+        fileTransferOfferExecutor.shutdown();
     }
 }

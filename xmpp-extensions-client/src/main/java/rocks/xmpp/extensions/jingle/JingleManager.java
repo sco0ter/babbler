@@ -60,19 +60,13 @@ public final class JingleManager extends ExtensionManager {
     private final Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
 
     private JingleManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, true);
 
         supportedApplicationFormats.add(JingleFileTransfer.class);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                jingleListeners.clear();
-                jingleSessionMap.clear();
-            }
-        });
         xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
             public IQ processRequest(IQ iq) {
@@ -198,5 +192,11 @@ public final class JingleManager extends ExtensionManager {
      */
     public final void removeJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.remove(jingleListener);
+    }
+
+    @Override
+    protected void dispose() {
+        jingleListeners.clear();
+        jingleSessionMap.clear();
     }
 }

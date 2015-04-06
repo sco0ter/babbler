@@ -92,8 +92,6 @@ public final class RosterManager extends Manager {
 
     private final Set<Consumer<RosterEvent>> rosterListeners = new CopyOnWriteArraySet<>();
 
-    private final XmppSession xmppSession;
-
     private final Map<String, byte[]> rosterCacheDirectory;
 
     /**
@@ -129,7 +127,7 @@ public final class RosterManager extends Manager {
     private String groupDelimiter;
 
     private RosterManager(final XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
+        super(xmppSession, true);
         privateDataManager = xmppSession.getManager(PrivateDataManager.class);
 
         this.rosterCacheDirectory = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("rosterver")) : null;
@@ -195,11 +193,6 @@ public final class RosterManager extends Manager {
                 }
             }
         }, false); // Roster pushes should be processed in order as they arrive, so that they don't mess up the roster.
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                rosterListeners.clear();
-            }
-        });
     }
 
     /**
@@ -686,5 +679,10 @@ public final class RosterManager extends Manager {
      */
     public boolean isRosterVersioningSupported() {
         return xmppSession.getManager(StreamFeaturesManager.class).getFeatures().containsKey(RosterVersioning.class);
+    }
+
+    @Override
+    protected void dispose() {
+        rosterListeners.clear();
     }
 }

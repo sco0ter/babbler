@@ -45,16 +45,11 @@ class BitsOfBinaryManager extends ExtensionManager {
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 
     private BitsOfBinaryManager(final XmppSession xmppSession) {
-        super(xmppSession, Data.NAMESPACE);
+        super(xmppSession, true, Data.NAMESPACE);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                dataCache.clear();
-            }
-        });
         xmppSession.addIQHandler(Data.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -97,5 +92,10 @@ class BitsOfBinaryManager extends ExtensionManager {
      */
     public void put(Data data) {
         dataCache.put(data.getContentId(), data);
+    }
+
+    @Override
+    protected void dispose() {
+        dataCache.clear();
     }
 }

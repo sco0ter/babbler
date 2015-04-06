@@ -65,18 +65,11 @@ public final class ReachabilityManager extends ExtensionManager {
     private final List<Address> addresses = new CopyOnWriteArrayList<>();
 
     private ReachabilityManager(final XmppSession xmppSession) {
-        super(xmppSession, Reachability.NAMESPACE);
+        super(xmppSession, true, Reachability.NAMESPACE);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                reachabilityListeners.clear();
-                reachabilities.clear();
-                addresses.clear();
-            }
-        });
         xmppSession.addInboundPresenceListener(e -> {
             AbstractPresence presence = e.getPresence();
             boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
@@ -170,5 +163,12 @@ public final class ReachabilityManager extends ExtensionManager {
             return reachability.getAddresses();
         }
         return null;
+    }
+
+    @Override
+    protected void dispose() {
+        reachabilityListeners.clear();
+        reachabilities.clear();
+        addresses.clear();
     }
 }

@@ -88,10 +88,8 @@ public final class StreamFeaturesManager extends Manager {
 
     private final Condition negotiationCompleted = lock.newCondition();
 
-    private final XmppSession xmppSession;
-
     private StreamFeaturesManager(XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
+        super(xmppSession, false);
     }
 
     @Override

@@ -262,7 +262,7 @@ public class XmppSession implements AutoCloseable {
         authenticationManager = new AuthenticationManager(this);
 
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
-        streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(Bind.class) {
+        streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(this, Bind.class) {
             @Override
             public Status processNegotiation(Object element) throws StreamNegotiationException {
                 // Resource binding will be negotiated manually

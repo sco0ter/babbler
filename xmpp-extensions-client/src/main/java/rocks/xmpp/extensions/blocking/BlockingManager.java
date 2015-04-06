@@ -64,19 +64,11 @@ public final class BlockingManager extends ExtensionManager {
     private final Set<Consumer<BlockingEvent>> blockingListeners = new CopyOnWriteArraySet<>();
 
     private BlockingManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, true);
     }
 
     @Override
     protected final void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                blockingListeners.clear();
-                synchronized (blockedContacts) {
-                    blockedContacts.clear();
-                }
-            }
-        });
         IQHandler iqHandler = new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -187,5 +179,13 @@ public final class BlockingManager extends ExtensionManager {
         List<Jid> items = new ArrayList<>();
         Collections.addAll(items, jids);
         xmppSession.query(new IQ(IQ.Type.SET, new Unblock(items)));
+    }
+
+    @Override
+    protected void dispose() {
+        blockingListeners.clear();
+        synchronized (blockedContacts) {
+            blockedContacts.clear();
+        }
     }
 }

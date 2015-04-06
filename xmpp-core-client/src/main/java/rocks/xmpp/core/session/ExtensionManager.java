@@ -36,18 +36,20 @@ import java.util.stream.Collectors;
  */
 public abstract class ExtensionManager extends Manager {
 
-    protected final XmppSession xmppSession;
-
     private final Collection<String> features;
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     protected ExtensionManager(XmppSession xmppSession, String... features) {
-        this(xmppSession, Arrays.asList(features));
+        this(xmppSession, false, features);
     }
 
-    protected ExtensionManager(XmppSession xmppSession, Collection<String> features) {
-        this.xmppSession = xmppSession;
+    protected ExtensionManager(XmppSession xmppSession, boolean disposable, String... features) {
+        this(xmppSession, disposable, Arrays.asList(features));
+    }
+
+    protected ExtensionManager(XmppSession xmppSession, boolean disposable, Collection<String> features) {
+        super(xmppSession, disposable);
         this.features = features;
 
         if (this instanceof ServiceDiscoveryManager) {

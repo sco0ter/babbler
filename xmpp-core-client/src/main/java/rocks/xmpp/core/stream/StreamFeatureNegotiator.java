@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 import java.util.Set;
@@ -50,7 +51,8 @@ public abstract class StreamFeatureNegotiator extends Manager {
      *
      * @param featureClass The feature class, which represents the feature, which will be negotiated.
      */
-    public StreamFeatureNegotiator(Class<? extends StreamFeature> featureClass) {
+    public StreamFeatureNegotiator(XmppSession xmppSession, Class<? extends StreamFeature> featureClass) {
+        super(xmppSession, false);
         this.featureClass = featureClass;
         setEnabled(true);
     }

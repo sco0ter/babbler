@@ -70,8 +70,6 @@ import java.util.function.Consumer;
  */
 public final class ChatManager extends Manager {
 
-    private final XmppSession xmppSession;
-
     /**
      * <blockquote>
      * <p>For {@code <message/>} stanzas of type "chat" exchanged between two entities, the value of the {@code <thread/>} element shall be considered equivalent to a unique identifier for the chat session or conversation thread.</p>
@@ -87,7 +85,7 @@ public final class ChatManager extends Manager {
      * @param xmppSession The connection.
      */
     private ChatManager(final XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
+        super(xmppSession, true);
     }
 
     @Override
@@ -122,12 +120,6 @@ public final class ChatManager extends Manager {
                         chatSession.setChatPartner(contact);
                     }
                 }
-            }
-        });
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                chatSessionListeners.clear();
-                chatSessions.clear();
             }
         });
     }
@@ -191,5 +183,11 @@ public final class ChatManager extends Manager {
                 }
             }
         }
+    }
+
+    @Override
+    protected void dispose() {
+        chatSessionListeners.clear();
+        chatSessions.clear();
     }
 }

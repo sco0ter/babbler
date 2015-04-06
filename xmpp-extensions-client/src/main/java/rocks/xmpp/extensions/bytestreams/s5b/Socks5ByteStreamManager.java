@@ -119,12 +119,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                 }
             }
         });
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                // Stop the server, when the session is closed.
-                localSocks5Server.stop();
-            }
-        });
     }
 
     /**
@@ -287,5 +281,11 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         } finally {
             localSocks5Server.removeConnection(hash);
         }
+    }
+
+    @Override
+    protected void dispose() {
+        super.dispose();
+        localSocks5Server.stop();
     }
 }

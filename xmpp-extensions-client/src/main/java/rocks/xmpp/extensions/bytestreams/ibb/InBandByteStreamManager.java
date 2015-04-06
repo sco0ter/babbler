@@ -139,12 +139,6 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                 }
             }
         });
-
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                ibbSessionMap.clear();
-            }
-        });
     }
 
     /**
@@ -178,5 +172,11 @@ public final class InBandByteStreamManager extends ByteStreamManager {
         IbbSession ibbSession = createSession(receiver, sessionId, blockSize);
         ibbSession.open();
         return ibbSession;
+    }
+
+    @Override
+    protected void dispose() {
+        super.dispose();
+        ibbSessionMap.clear();
     }
 }

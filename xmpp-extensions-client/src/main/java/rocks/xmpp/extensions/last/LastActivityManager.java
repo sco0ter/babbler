@@ -73,7 +73,7 @@ public final class LastActivityManager extends ExtensionManager {
     private volatile LastActivityStrategy lastActivityStrategy;
 
     private LastActivityManager(final XmppSession xmppSession) {
-        super(xmppSession, LastActivity.NAMESPACE);
+        super(xmppSession, true, LastActivity.NAMESPACE);
         lastActivityStrategy = new DefaultLastActivityStrategy(xmppSession);
         setEnabled(true);
     }
@@ -84,11 +84,7 @@ public final class LastActivityManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                lastActivityStrategy = null;
-            }
-        });
+
         xmppSession.addOutboundPresenceListener(e -> {
             if (isEnabled()) {
                 AbstractPresence presence = e.getPresence();
@@ -177,5 +173,10 @@ public final class LastActivityManager extends ExtensionManager {
                 lastActivity = Instant.now();
             }
         }
+    }
+
+    @Override
+    protected void dispose() {
+        lastActivityStrategy = null;
     }
 }

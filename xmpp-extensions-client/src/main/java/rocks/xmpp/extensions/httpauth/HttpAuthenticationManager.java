@@ -53,7 +53,7 @@ public final class HttpAuthenticationManager extends ExtensionManager {
 
     private HttpAuthenticationManager(XmppSession xmppSession) {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
-        super(xmppSession);
+        super(xmppSession, true);
     }
 
     @Override
@@ -64,12 +64,6 @@ public final class HttpAuthenticationManager extends ExtensionManager {
                 ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
                 XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq, confirmationRequest));
                 return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;
-            }
-        });
-
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                httpAuthenticationListeners.clear();
             }
         });
 
@@ -102,5 +96,10 @@ public final class HttpAuthenticationManager extends ExtensionManager {
      */
     public void removeHttpAuthenticationListener(Consumer<HttpAuthenticationEvent> httpAuthenticationListener) {
         httpAuthenticationListeners.remove(httpAuthenticationListener);
+    }
+
+    @Override
+    protected void dispose() {
+        httpAuthenticationListeners.clear();
     }
 }

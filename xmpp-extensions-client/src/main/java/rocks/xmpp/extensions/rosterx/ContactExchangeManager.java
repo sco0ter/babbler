@@ -65,17 +65,11 @@ public final class ContactExchangeManager extends ExtensionManager {
     private final Collection<Jid> trustedEntities = new CopyOnWriteArraySet<>();
 
     private ContactExchangeManager(final XmppSession xmppSession) {
-        super(xmppSession, ContactExchange.NAMESPACE);
+        super(xmppSession, true, ContactExchange.NAMESPACE);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                contactExchangeListeners.clear();
-                trustedEntities.clear();
-            }
-        });
         xmppSession.addInboundMessageListener(e -> {
             if (isEnabled()) {
                 Message message = e.getMessage();
@@ -300,5 +294,11 @@ public final class ContactExchangeManager extends ExtensionManager {
      */
     public void removeContactExchangeListener(Consumer<ContactExchangeEvent> contactExchangeListener) {
         contactExchangeListeners.remove(contactExchangeListener);
+    }
+
+    @Override
+    protected void dispose() {
+        contactExchangeListeners.clear();
+        trustedEntities.clear();
     }
 }

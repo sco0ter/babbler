@@ -89,22 +89,12 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
-        super(xmppSession, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
+        super(xmppSession, true, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
         setEnabled(true);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
-                    pcs.removePropertyChangeListener(propertyChangeListener);
-                }
-            }
-            infoNodeMap.clear();
-            itemProviders.clear();
-        });
-
         xmppSession.addIQHandler(InfoDiscovery.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -471,5 +461,14 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
         } else {
             itemProviders.put(node, itemProvider);
         }
+    }
+
+    @Override
+    protected void dispose() {
+        for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
+            pcs.removePropertyChangeListener(propertyChangeListener);
+        }
+        infoNodeMap.clear();
+        itemProviders.clear();
     }
 }

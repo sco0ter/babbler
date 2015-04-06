@@ -125,15 +125,12 @@ public final class CompressionManager extends StreamFeatureNegotiator {
         };
     }
 
-    private final XmppSession xmppSession;
-
     private final List<CompressionMethod> compressionMethods = new CopyOnWriteArrayList<>();
 
     private CompressionMethod negotiatedCompressionMethod;
 
     private CompressionManager(XmppSession xmppSession) {
-        super(CompressionFeature.class);
-        this.xmppSession = xmppSession;
+        super(xmppSession, CompressionFeature.class);
     }
 
     @Override

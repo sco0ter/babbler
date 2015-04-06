@@ -43,16 +43,7 @@ public abstract class ByteStreamManager extends ExtensionManager {
     protected final Set<Consumer<ByteStreamEvent>> byteStreamListeners = new CopyOnWriteArraySet<>();
 
     protected ByteStreamManager(XmppSession xmppSession, String... features) {
-        super(xmppSession, features);
-    }
-
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                byteStreamListeners.clear();
-            }
-        });
+        super(xmppSession, true, features);
     }
 
     /**
@@ -73,5 +64,10 @@ public abstract class ByteStreamManager extends ExtensionManager {
      */
     public final void removeByteStreamListener(Consumer<ByteStreamEvent> byteStreamListener) {
         byteStreamListeners.remove(byteStreamListener);
+    }
+
+    @Override
+    protected void dispose() {
+        byteStreamListeners.clear();
     }
 }

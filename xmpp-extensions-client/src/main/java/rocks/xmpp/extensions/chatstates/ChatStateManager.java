@@ -78,17 +78,11 @@ public final class ChatStateManager extends ExtensionManager {
     private final Map<Jid, Boolean> contactSupportsChatStateNotifications = new ConcurrentHashMap<>();
 
     private ChatStateManager(final XmppSession xmppSession) {
-        super(xmppSession, ChatState.NAMESPACE);
+        super(xmppSession, true, ChatState.NAMESPACE);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                chatMap.clear();
-                contactSupportsChatStateNotifications.clear();
-            }
-        });
         Consumer<MessageEvent> messageListener = e -> {
             if (isEnabled()) {
                 Message message = e.getMessage();
@@ -142,5 +136,11 @@ public final class ChatStateManager extends ExtensionManager {
         message.getExtensions().add(chatState);
         chat.sendMessage(message);
         return true;
+    }
+
+    @Override
+    protected void dispose() {
+        chatMap.clear();
+        contactSupportsChatStateNotifications.clear();
     }
 }

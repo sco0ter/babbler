@@ -66,16 +66,12 @@ public final class PrivacyListManager extends ExtensionManager {
     private final Set<Consumer<PrivacyListEvent>> privacyListListeners = new CopyOnWriteArraySet<>();
 
     private PrivacyListManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, true);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                privacyListListeners.clear();
-            }
-        });
+
         xmppSession.addIQHandler(Privacy.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -232,5 +228,10 @@ public final class PrivacyListManager extends ExtensionManager {
 
     private void setPrivacy(Privacy privacy) throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, privacy));
+    }
+
+    @Override
+    protected void dispose() {
+        privacyListListeners.clear();
     }
 }

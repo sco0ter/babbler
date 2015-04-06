@@ -50,16 +50,11 @@ public final class GeoLocationManager extends ExtensionManager {
     private final Set<Consumer<GeoLocationEvent>> geoLocationListeners = new CopyOnWriteArraySet<>();
 
     private GeoLocationManager(XmppSession xmppSession) {
-        super(xmppSession, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
+        super(xmppSession, true, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                geoLocationListeners.clear();
-            }
-        });
         xmppSession.addInboundMessageListener(e -> {
             if (isEnabled()) {
                 Message message = e.getMessage();
@@ -107,5 +102,10 @@ public final class GeoLocationManager extends ExtensionManager {
      */
     public void removeGeoLocationListener(Consumer<GeoLocationEvent> geoLocationListener) {
         geoLocationListeners.remove(geoLocationListener);
+    }
+
+    @Override
+    protected void dispose() {
+        geoLocationListeners.clear();
     }
 }

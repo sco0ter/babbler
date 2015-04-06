@@ -72,7 +72,7 @@ public final class PingManager extends ExtensionManager {
      * @param xmppSession The underlying XMPP session.
      */
     private PingManager(final XmppSession xmppSession) {
-        super(xmppSession, Ping.NAMESPACE);
+        super(xmppSession, true, Ping.NAMESPACE);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
         setEnabled(true);
     }
@@ -84,15 +84,6 @@ public final class PingManager extends ExtensionManager {
             protected IQ processRequest(IQ iq) {
                 return iq.createResult();
             }
-        });
-        xmppSession.addSessionStatusListener(e -> {
-			if (e.getStatus() == XmppSession.Status.CLOSED) {
-				// Shutdown the ping executor service and cancel the next ping.
-				synchronized (this) {
-					cancelNextPing();
-					scheduledExecutorService.shutdown();
-				}
-			}
         });
 
         // Reschedule server pings whenever we receive a stanza from the server.
@@ -208,6 +199,15 @@ public final class PingManager extends ExtensionManager {
         if (nextPing != null) {
             nextPing.cancel(true);
             nextPing = null;
+        }
+    }
+
+    @Override
+    protected void dispose() {
+        // Shutdown the ping executor service and cancel the next ping.
+        synchronized (this) {
+            cancelNextPing();
+            scheduledExecutorService.shutdown();
         }
     }
 }

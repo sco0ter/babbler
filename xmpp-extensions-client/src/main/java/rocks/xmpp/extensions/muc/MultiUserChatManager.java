@@ -63,17 +63,12 @@ public final class MultiUserChatManager extends ExtensionManager {
     private final Map<Jid, Item> enteredRoomsMap = new ConcurrentHashMap<>();
 
     private MultiUserChatManager(final XmppSession xmppSession) {
-        super(xmppSession, Muc.NAMESPACE);
+        super(xmppSession, true, Muc.NAMESPACE);
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                invitationListeners.clear();
-            }
-        });
 
         // Listen for inbound invitations.
         xmppSession.addInboundMessageListener(e -> {
@@ -157,5 +152,10 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     void roomExited(ChatRoom chatRoom) {
         enteredRoomsMap.remove(chatRoom.getAddress());
+    }
+
+    @Override
+    protected void dispose() {
+        invitationListeners.clear();
     }
 }

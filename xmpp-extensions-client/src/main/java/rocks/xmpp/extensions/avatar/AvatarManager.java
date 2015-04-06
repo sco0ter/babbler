@@ -108,7 +108,7 @@ public final class AvatarManager extends ExtensionManager {
     private final Map<String, byte[]> avatarCache;
 
     private AvatarManager(final XmppSession xmppSession) {
-        super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
+        super(xmppSession, true, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
 
         vCardManager = xmppSession.getManager(VCardManager.class);
         avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
@@ -120,15 +120,6 @@ public final class AvatarManager extends ExtensionManager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                avatarChangeListeners.clear();
-                requestingAvatarLocks.clear();
-                nonConformingResources.clear();
-                userHashes.clear();
-                avatarRequester.shutdown();
-            }
-        });
         xmppSession.addInboundPresenceListener(e -> {
             // If vCard based avatars are enabled.
             if (!isEnabled()) {
@@ -645,5 +636,14 @@ public final class AvatarManager extends ExtensionManager {
         public ConversionException(final Throwable cause) {
             super(cause);
         }
+    }
+
+    @Override
+    protected void dispose() {
+        avatarChangeListeners.clear();
+        requestingAvatarLocks.clear();
+        nonConformingResources.clear();
+        userHashes.clear();
+        avatarRequester.shutdown();
     }
 }

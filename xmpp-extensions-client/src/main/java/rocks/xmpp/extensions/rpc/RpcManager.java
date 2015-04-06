@@ -61,12 +61,7 @@ public final class RpcManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                rpcHandler = null;
-            }
-        });
+
         xmppSession.addIQHandler(Rpc.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
@@ -131,5 +126,10 @@ public final class RpcManager extends ExtensionManager {
     public synchronized void setRpcHandler(RpcHandler rpcHandler) {
         this.rpcHandler = rpcHandler;
         setEnabled(rpcHandler != null);
+    }
+
+    @Override
+    protected void dispose() {
+        rpcHandler = null;
     }
 }

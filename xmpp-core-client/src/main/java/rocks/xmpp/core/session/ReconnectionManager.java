@@ -66,8 +66,6 @@ public final class ReconnectionManager extends Manager {
 
     private final ScheduledExecutorService scheduledExecutorService;
 
-    private final XmppSession xmppSession;
-
     private ReconnectionStrategy reconnectionStrategy;
 
     private ScheduledFuture<?> scheduledFuture;
@@ -75,7 +73,7 @@ public final class ReconnectionManager extends Manager {
     private Instant nextReconnectionAttempt;
 
     private ReconnectionManager(final XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
+        super(xmppSession, false);
         this.reconnectionStrategy = new TruncatedBinaryExponentialBackoffStrategy(60, 5);
 
         // Enable by default.

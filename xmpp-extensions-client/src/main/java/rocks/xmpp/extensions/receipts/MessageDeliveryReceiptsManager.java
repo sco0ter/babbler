@@ -73,7 +73,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      * @param xmppSession The underlying connection.
      */
     private MessageDeliveryReceiptsManager(final XmppSession xmppSession) {
-        super(xmppSession, MessageDeliveryReceipts.NAMESPACE);
+        super(xmppSession, true, MessageDeliveryReceipts.NAMESPACE);
     }
 
     @Override
@@ -81,11 +81,6 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
         // Add a default filter
         // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
         Predicate<Message> errorFilter = message -> message.getType() != Message.Type.ERROR;
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                messageDeliveredListeners.clear();
-            }
-        });
         xmppSession.addInboundMessageListener(e -> {
             if (!isEnabled()) {
                 return;
@@ -158,5 +153,10 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      */
     public synchronized void setMessageFilter(Predicate<Message> messageFilter) {
         this.messageFilter = messageFilter;
+    }
+
+    @Override
+    protected void dispose() {
+        messageDeliveredListeners.clear();
     }
 }

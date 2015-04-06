@@ -97,7 +97,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
 
             @Override
             public InputStream decompress(InputStream inputStream) throws IOException {
-                return new GZIPInputStream(inputStream);
+                return new GZIPInputStream(inputStream, 65536);
             }
 
             @Override

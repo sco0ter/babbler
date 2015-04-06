@@ -253,7 +253,8 @@ public final class TcpConnection extends Connection {
 
         synchronized (this) {
             outputStream = new BufferedOutputStream(socket.getOutputStream());
-            inputStream = new BufferedInputStream(socket.getInputStream());
+            // http://java-performance.info/java-io-bufferedinputstream-and-java-util-zip-gzipinputstream/
+            inputStream = new BufferedInputStream(socket.getInputStream(), 65536);
         }
     }
 

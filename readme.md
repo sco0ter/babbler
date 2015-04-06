@@ -263,25 +263,16 @@ Here are some examples:
 
 ```java
 // Listen for presence changes
-xmppSession.addInboundPresenceListener(new PresenceListener() {
-    @Override
-    public void handlePresence(PresenceEvent e) {
-        // Handle inbound presence.
-    }
+xmppSession.addInboundPresenceListener(e -> {
+    // Handle inbound presence.
 });
 // Listen for messages
-xmppSession.addInboundMessageListener(new MessageListener() {
-    @Override
-    public void handleMessage(MessageEvent e) {
-        // Handle inbound message
-    }
+xmppSession.addInboundMessageListener(e -> {
+    // Handle inbound message
 });
 // Listen for roster pushes
-xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
-    @Override
-    public void rosterChanged(RosterEvent e) {
+xmppSession.getManager(RosterManager.class).addRosterListener(e -> {
 
-    }
 });
 ```
 

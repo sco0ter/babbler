@@ -10,7 +10,7 @@ By default avatars are disabled, which means you have to enable it, if you want 
 
 ## Publishing your Avatar
 
-Here\'s an example, which utilizes the JavaFX file chooser to choose an image, then resize it, and then publish it.
+Here's an example, which utilizes the JavaFX file chooser to choose an image, then resize it, and then publish it.
 
 Publishing means, it is published to your vCard (XEP-0153) as well as to the Personal Eventing Service (XEP-0084).
 
@@ -46,24 +46,21 @@ try {
 
 ## Listening for Avatar Updates
 
-You can listen for your contacts\' avatar updates by adding a listener to the manager:
+You can listen for your contacts' avatar updates by adding a listener to the manager:
 
 ```java
 AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
 avatarManager.setEnabled(true);
-avatarManager.addAvatarChangeListener(new AvatarChangeListener() {
-    @Override
-    public void avatarChanged(AvatarChangeEvent e) {
-        BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(e.getAvatar()));
-        // ...
-    }
+avatarManager.addAvatarChangeListener(e -> {
+    BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(e.getAvatar()));
+    // ...
 });
 ```
 
 ## Avatar Cache
 
-There\'s also a file based cache for downloaded avatars, so that they don't need to be downloaded again.
-Avatars are cached in the folder "avatars" in your execution directory.
+There's also a file based cache for downloaded avatars, so that they don't need to be downloaded again.
+Avatars are cached in the folder "avatars" in your cache directory (configurable in `XmppSessionConfiguration`)
 
 [User Avatar]: http://xmpp.org/extensions/xep-0084.html "XEP-0084: User Avatar"
 [vCard-Based Avatars]: http://xmpp.org/extensions/xep-0153.html "XEP-0153: vCard-Based Avatars"

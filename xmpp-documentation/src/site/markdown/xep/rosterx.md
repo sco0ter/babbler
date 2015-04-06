@@ -22,12 +22,9 @@ Once enabled, inbound contact exchange suggestions can be listened to by adding 
 ```java
 final ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 contactExchangeManager.setEnabled(true);
-contactExchangeManager.addContactExchangeListener(new ContactExchangeListener() {
-    @Override
-    public void contactExchangeSuggested(ContactExchangeEvent e) {
-        for (ContactExchange.Item item : e.getItems()) {
-            // ... Here are some items for you
-        }
+contactExchangeManager.addContactExchangeListener(e -> {
+    for (ContactExchange.Item item : e.getItems()) {
+        // ... Here are some items for you
     }
 });
 ```

@@ -92,15 +92,12 @@ pubSubNode.unsubscribe();
 For now, you have to just deal directly with the messages. This may change in the future.
 
 ```java
-xmppSession.addInboundMessageListener(new MessageListener() {
-    @Override
-    public void handleMessage(MessageEvent e) {
-        Message message = e.getMessage();
-        Event event = message.getExtension(Event.class);
-        if (event != null) {
-            for (Item item : event.getItems()) {
-                // ...
-            }
+xmppSession.addInboundMessageListener(e -> {
+    Message message = e.getMessage();
+    Event event = message.getExtension(Event.class);
+    if (event != null) {
+        for (Item item : event.getItems()) {
+            // ...
         }
     }
 });
@@ -117,13 +114,10 @@ try {
     PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.yourdomain"));
     PubSubNode pubSubNode = pubSubService.node("princely_musings");
     pubSubNode.subscribe();
-} catch (XmppException e) {
-    if (e instanceof StanzaException) {
-        StanzaException stanzaException = (StanzaException) e;
-        Object extension = stanzaException.getStanza().getError().getExtension();
-        if (extension instanceof PresenceSubscriptionRequired) {
-            // PubSub error <presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/> occurred.
-        }
+}  catch (StanzaException e) {
+    Object extension = e.getStanza().getError().getExtension();
+    if (extension instanceof PresenceSubscriptionRequired) {
+        // PubSub error <presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/> occurred.
     }
 }
 ```

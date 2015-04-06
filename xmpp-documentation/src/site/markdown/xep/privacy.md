@@ -63,11 +63,8 @@ privacyListManager.declineDefaultList();
 Whenever a privacy list is updated, the server will notify all connected resources about the updated list. You can listen for these \"pushes\" in the following way:
 
 ```java
-privacyListManager.addPrivacyListListener(new PrivacyListListener() {
-    @Override
-    public void privacyListUpdated(PrivacyListEvent e) {
-        // e.getListName() has been updated.
-    }
+privacyListManager.addPrivacyListListener(e -> {
+    // e.getListName() has been updated.
 });
 ```
 
@@ -84,8 +81,8 @@ privacyList.getPrivacyRules().add(new PrivacyRule(PrivacyRule.Action.DENY, 1, Ji
 Privacy rules can also be defined more granular. E.g. if you only want to block IQ stanzas, but allow presences and messages, you would define the rule like:
 
 ```java
-PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.valueOf("tybalt@example.com"));
-privacyRule.setFilterIQ(true);
+PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.valueOf("tybalt@example.com"))
+    .filterIQ();
 ```
 
 

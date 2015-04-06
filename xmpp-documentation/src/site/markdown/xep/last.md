@@ -36,12 +36,9 @@ You can also set the strategy for determining idle time of your session/client. 
 You can set a different strategy for determining idle time:
 
 ```java
-lastActivityManager.setLastActivityStrategy(new LastActivityStrategy() {
-    @Override
-    public Date getLastActivity() {
-        // Return whatever you think is your client's last activity.
-        return new Date();
-    }
+lastActivityManager.setLastActivityStrategy(() -> {
+    // Return whatever you think is your client's last activity.
+    return Instant.now();
 });
 ```
 

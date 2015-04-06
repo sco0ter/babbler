@@ -23,7 +23,7 @@ Let\'s say, you enabled Message Carbons for your resource `A` and your other res
 You can get the original sent message by checking for the `Sent` extension:
 
 ```java
-Sent sent = message.getExtension(Sent.class);
+MessageCarbons.Sent sent = message.getExtension(MessageCarbons.Sent.class);
 if (sent != null) {
     Forwarded forwardedMessage = sent.getForwardedMessage();
     Stanza stanza = forwardedMessage.getStanza();
@@ -41,7 +41,7 @@ Similarly, if your resource `B` receives a message (to its full JID), resource `
 You can get the original message (sent to `B`) by checking for the `Received` extension:
 
 ```java
-Received received = message.getExtension(Received.class);
+MessageCarbons.Received received = message.getExtension(MessageCarbons.Received.class);
 if (received != null) {
     Forwarded forwardedMessage = received.getForwardedMessage();
     Stanza stanza = forwardedMessage.getStanza();

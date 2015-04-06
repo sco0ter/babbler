@@ -76,17 +76,12 @@ try {
 
 ```java
 FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
-fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
-    @Override
-    public void fileTransferOffered(FileTransferOfferEvent e) {
-        try {
-
-            final FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
-            fileTransfer.transfer();
-
-        } catch (IOException e1) {
-            // ...
-        }
+fileTransferManager.addFileTransferOfferListener(e -> {
+    try {
+        FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
+        fileTransfer.transfer();
+    } catch (IOException e1) {
+        // ...
     }
 });
 ```

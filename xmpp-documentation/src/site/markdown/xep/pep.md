@@ -23,8 +23,11 @@ If you want to publish data to a node in your personal service, you create a loc
 Here\'s an example to publish your geo location. As per [XEP-0080: User Location][GeoLocation] you want to publish it to the node \"`http://jabber.org/protocol/geoloc`\" which is `GeoLocation.NAMESPACE`.
 
 ```java
-PubSubNode pubSubNode = personalEventingService.getNode(GeoLocation.NAMESPACE);
-pubSubNode.publish(new GeoLocation(45.44, 12.33));
+PubSubNode pubSubNode = personalEventingService.node(GeoLocation.NAMESPACE);
+pubSubNode.publish(GeoLocation.builder()
+    .latitude(45.44)
+    .longitude(12.33)
+    .build());
 ```
 
 By default (i.e. if not otherwise configured) all your contacts now receive an event notification about your new geo location.
@@ -34,20 +37,17 @@ By default (i.e. if not otherwise configured) all your contacts now receive an e
 Now that you have published your geo location all your contacts will receive notifications about it. This is just a message with a \"PubSub event\" extension.
 
 ```java
-xmppSession.addInboundMessageListener(new MessageListener() {
-    @Override
-    public void handleMessage(MessageEvent e) {
-        Message message = e.getMessage();
-        Event event = message.getExtension(Event.class);
-        if (event != null) {
-            if (GeoLocation.NAMESPACE.equals(event.getNode())) {
-                for (Item item : event.getItems()) {
-                    if (item.getPayload() instanceof GeoLocation) {
-                        GeoLocation geoLocation = (GeoLocation) item.getPayload();
-                        Double latitude = geoLocation.getLatitude();   // 45.44
-                        Double longitude = geoLocation.getLongitude(); // 12.33
-                        // ...
-                    }
+xmppSession.addInboundMessageListener(e -> {
+    Message message = e.getMessage();
+    Event event = message.getExtension(Event.class);
+    if (event != null) {
+        if (GeoLocation.NAMESPACE.equals(event.getNode())) {
+            for (Item item : event.getItems()) {
+                if (item.getPayload() instanceof GeoLocation) {
+                    GeoLocation geoLocation = (GeoLocation) item.getPayload();
+                    Double latitude = geoLocation.getLatitude();   // 45.44
+                    Double longitude = geoLocation.getLongitude(); // 12.33
+                    // ...
                 }
             }
         }

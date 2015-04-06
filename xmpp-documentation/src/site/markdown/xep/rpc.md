@@ -9,18 +9,15 @@ If you want to respond to requests, you have to set an `RpcHandler`, which handl
 
 ```java
 RpcManager rpcManager = xmppSession.getManager(RpcManager.class);
-rpcManager.setRpcHandler(new RpcHandler() {
-    @Override
-    public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
-        if (methodName.equals("examples.getStateName")) {
-            if (!parameters.isEmpty()) {
-                if (parameters.get(0).getAsInteger() == 6) {
-                    return new Value("Colorado");
-                }
+rpcManager.setRpcHandler((requester, methodName, parameters) -> {
+    if (methodName.equals("examples.getStateName")) {
+        if (!parameters.isEmpty()) {
+            if (parameters.get(0).getAsInteger() == 6) {
+                return new Value("Colorado");
             }
         }
-        throw new RpcException(123, "Invalid method name or parameter.");
     }
+    throw new RpcException(123, "Invalid method name or parameter.");
 });
 ```
 

@@ -12,11 +12,8 @@ If you enable the `MessageDeliverReceiptsManager`, your XMPP session automatical
 MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
 messageDeliveryReceiptsManager.setEnabled(true);
 
-messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
-    @Override
-    public void messageDelivered(MessageDeliveredEvent e) {
+messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> {
         // Message with ID 'e.getMessageId()' has been received!
-    }
 });
 ```
 
@@ -26,12 +23,7 @@ In order to request receipts, you need to enable the manager. Simply enabling it
 If you want to request receipts only for a messages, you can add a filter. The following example would request receipts only for message of type `normal`.
 
 ```java
-messageDeliveryReceiptsManager.addMessageFilter(new StanzaFilter<Message>() {
-    @Override
-    public boolean accept(Message message) {
-        return message.getType() == Message.Type.NORMAL;
-    }
-});
+messageDeliveryReceiptsManager.setMessageFilter(message -> message.getType() == Message.Type.NORMAL);
 ```
 
 

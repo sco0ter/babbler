@@ -5,7 +5,7 @@ There is one abstract `XmppException` for most kind of exceptions, which are rel
 
 For now, there are three subclasses of it:
 
-* `StreamException`  for [Stream Errors][Stream Errors].
+* `StreamErrorException`  for [Stream Errors][Stream Errors].
 * `StanzaException` for [Stanza Errors][Stanza Errors].
 * `NoResponseException` for IQ queries, which didn\'t receive a response.
 
@@ -17,14 +17,11 @@ XMPP Stream Errors are unrecoverable, which means the session will get disconnec
 Here's an example how to react to stream errors.
 
 ```java
-xmppSession.addSessionStatusListener(new SessionStatusListener() {
-    @Override
-    public void sessionStatusChanged(SessionStatusEvent e) {
-        if (e.getException() instanceof StreamException) {
-            StreamException streamException = (StreamException) e.getException();
-            if (streamException.getStreamError().getCondition() == Condition.SYSTEM_SHUTDOWN) {
-                // Server was shut down.
-            }
+xmppSession.addSessionStatusListener(e -> {
+    if (e.getThrowable() instanceof StreamErrorException){
+        StreamErrorException streamException = (StreamErrorException) e.getThrowable();
+        if (streamException.getStreamError().getCondition() == Condition.SYSTEM_SHUTDOWN) {
+            // Server was shut down.
         }
     }
 });

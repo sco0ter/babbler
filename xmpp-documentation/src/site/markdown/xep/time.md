@@ -9,8 +9,7 @@ Here\'s a simple example:
 EntityTimeManager entityTimeManager = xmppSession.getManager(EntityTimeManager.class);
 EntityTime entityTime = entityTimeManager.getEntityTime(Jid.valueOf("juliet@example.net/balcony"));
 
-Date date = entityTime.getDate();
-TimeZone timeZone = entityTime.getTimezone();
+OffsetDateTime date = entityTime.getDateTime();
 ```
 
 

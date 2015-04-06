@@ -244,7 +244,7 @@ public class CommandsTest extends XmlTest {
 
     @Test
     public void marshalCommand() throws XMLStreamException, JAXBException {
-        Command command = new Command("node", "sid", Command.Status.CANCELED, Arrays.asList(Command.Action.PREV), Command.Action.NEXT, Collections.emptyList());
+        Command command = new Command("node", "sid", Command.Status.CANCELED, Collections.singletonList(Command.Action.PREV), Command.Action.NEXT, Collections.emptyList());
         String xml = marshal(command);
         Assert.assertEquals(xml, "<command xmlns=\"http://jabber.org/protocol/commands\" node=\"node\" sessionid=\"sid\" status=\"canceled\"><actions execute=\"next\"><prev></prev></actions></command>");
     }

@@ -167,16 +167,12 @@ public final class ChatManager extends Manager {
     private final ChatSession buildChatSession(final Jid chatPartner, final String threadId, final XmppSession xmppSession, final boolean inbound) {
         Jid contact = chatPartner.asBareJid();
         // If there are no chat sessions with that contact yet, put the contact into the map.
-        if (!chatSessions.containsKey(contact)) {
-            chatSessions.put(contact, new HashMap<>());
-        }
-        Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
-        if (!chatSessionMap.containsKey(threadId)) {
+        Map<String, ChatSession> chatSessionMap = chatSessions.computeIfAbsent(contact, k -> new HashMap<>());
+        return chatSessionMap.computeIfAbsent(threadId, k -> {
             ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession);
-            chatSessionMap.put(threadId, chatSession);
             XmppUtils.notifyEventListeners(chatSessionListeners, new ChatSessionEvent(this, chatSession, inbound));
-        }
-        return chatSessionMap.get(threadId);
+            return chatSession;
+        });
     }
 
     /**
@@ -187,8 +183,8 @@ public final class ChatManager extends Manager {
     public void destroyChatSession(ChatSession chatSession) {
         Jid user = Objects.requireNonNull(chatSession, "chatSession must not be null.").getChatPartner().asBareJid();
         synchronized (chatSessions) {
-            if (chatSessions.containsKey(user)) {
-                Map<String, ChatSession> chatSessionMap = chatSessions.get(user);
+            Map<String, ChatSession> chatSessionMap = chatSessions.get(user);
+            if (chatSessionMap != null) {
                 chatSessionMap.remove(chatSession.getThread());
                 if (chatSessionMap.isEmpty()) {
                     chatSessions.remove(user);

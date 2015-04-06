@@ -112,7 +112,7 @@ public final class HttpAuthenticationEvent extends EventObject {
             // MUST mirror the <thread/> ID (if provided by the XMPP Server),
             // MUST contain the original <confirm/> child element,
             // and MUST specify an error, which SHOULD be <not-authorized/>
-            xmppSession.send(new Message(getRequester(), Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, ((Message) stanza).getThread(), null, null, null, null, Collections.singleton(confirmationRequest), new StanzaError(Condition.NOT_AUTHORIZED)));
+            xmppSession.send(new Message(getRequester(), Message.Type.ERROR, Collections.emptyList(), null, ((Message) stanza).getThread(), null, null, null, null, Collections.singleton(confirmationRequest), new StanzaError(Condition.NOT_AUTHORIZED)));
         }
     }
 }

@@ -66,7 +66,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
             receivedId[0] = e.getMessageId();
         });
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
 
         Assert.assertTrue(messageReceived[0]);
@@ -89,7 +89,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         messageDeliveryReceiptsManager1.addMessageDeliveredListener(e -> messageReceived[0] = true);
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
 
         Assert.assertFalse(messageReceived[0]);
@@ -120,7 +120,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addInboundMessageListener(e -> Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class)));
 
-        Message message = new Message(JULIET, Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, Message.Type.ERROR, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
     }
 
@@ -132,7 +132,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         xmppSession1.addInboundMessageListener(e -> Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class)));
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
     }
 

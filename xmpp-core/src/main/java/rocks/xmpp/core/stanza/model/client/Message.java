@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.client;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
@@ -100,7 +101,7 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param thread  The thread.
      */
     public Message(Jid to, Type type, String body, String subject, String thread) {
-        this(to, type, body != null ? Collections.singleton(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Collections.singleton(new Subject(subject)) : Collections.<Subject>emptyList(), thread, null, null, null, null, null, null);
+        this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(), subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread, null, null, null, null, null, null);
     }
 
     /**
@@ -119,7 +120,7 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param error        The error.
      */
     public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
-        this(to, type, body != null ? Collections.singleton(new Body(body)) : Collections.<Body>emptyList(), subject != null ? Collections.singleton(new Subject(subject)) : Collections.<Subject>emptyList(), thread, parentThread, id, from, language, extensions, error);
+        this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(), subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread, parentThread, id, from, language, extensions, error);
     }
 
     /**
@@ -137,7 +138,7 @@ public final class Message extends AbstractMessage implements ClientStreamElemen
      * @param extensions   The extensions.
      * @param error        The error.
      */
-    public Message(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    public Message(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
         super(to, type, bodies, subjects, thread, parentThread, from, id, language, extensions, error);
     }
 

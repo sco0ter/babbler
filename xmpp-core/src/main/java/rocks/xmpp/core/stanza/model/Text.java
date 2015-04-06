@@ -22,37 +22,63 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stanza.model.errors;
+package rocks.xmpp.core.stanza.model;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Objects;
 
 /**
- * The {@code <text/>} element.
+ * A common "text" element which is used for a message's body or subject, a presence's status or a stanza error's text element.
+ *
+ * @author Christian Schudt
+ * @see AbstractMessage#getBodies()
+ * @see AbstractMessage#getSubjects()
+ * @see AbstractPresence#getStatuses()
  */
-@XmlRootElement
 public final class Text {
-    @XmlValue
-    private final String text;
-
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private final String lang;
 
+    @XmlValue
+    private final String text;
+
     /**
-     * Default constructor for unmarshalling.
+     * Private default constructor, needed for unmarshalling.
      */
     @SuppressWarnings("unused")
-    private Text() {
+    Text() {
         this.text = null;
         this.lang = null;
     }
 
+    /**
+     * Constructs a default status.
+     *
+     * @param text The text.
+     */
+    public Text(String text) {
+        this(text, null);
+    }
+
+    /**
+     * Constructs a status with a language attribute.
+     *
+     * @param text     The text
+     * @param language The language.
+     */
     public Text(String text, String language) {
-        this.text = Objects.requireNonNull(text);
+        this.text = text;
         this.lang = language;
+    }
+
+    /**
+     * Gets the language.
+     *
+     * @return The language.
+     */
+    public final String getLanguage() {
+        return lang;
     }
 
     /**
@@ -64,12 +90,8 @@ public final class Text {
         return text;
     }
 
-    /**
-     * Gets the language.
-     *
-     * @return The language.
-     */
-    public final String getLanguage() {
-        return lang;
+    @Override
+    public final String toString() {
+        return text;
     }
 }

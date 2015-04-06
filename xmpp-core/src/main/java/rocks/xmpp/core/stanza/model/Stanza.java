@@ -44,20 +44,25 @@ import javax.xml.bind.annotation.XmlTransient;
 public abstract class Stanza {
 
     @XmlAttribute
-    private Jid from;
+    private final Jid from;
 
     @XmlAttribute
-    private String id;
+    private final String id;
 
     @XmlAttribute
-    private Jid to;
+    private final Jid to;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private String lang;
+    private final String lang;
 
-    private StanzaError error;
+    private final StanzaError error;
 
     protected Stanza() {
+        this.to = null;
+        this.from = null;
+        this.id = null;
+        this.lang = null;
+        this.error = null;
     }
 
     protected Stanza(Jid to, Jid from, String id, String language, StanzaError error) {
@@ -82,18 +87,6 @@ public abstract class Stanza {
     }
 
     /**
-     * Sets the stanza's 'to' attribute.
-     *
-     * @param to The JID.
-     * @see #getTo()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setTo(Jid to) {
-        this.to = to;
-    }
-
-    /**
      * Gets the stanza's 'id' attribute.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-id">8.1.3.  id</a></cite></p>
@@ -110,18 +103,6 @@ public abstract class Stanza {
     }
 
     /**
-     * Sets the stanza's 'id' attribute.
-     *
-     * @param id The id.
-     * @see #getId()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setId(String id) {
-        this.id = id;
-    }
-
-    /**
      * Gets the stanza's 'from' attribute.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-from">8.1.2.  from</a></cite></p>
@@ -132,18 +113,6 @@ public abstract class Stanza {
      */
     public final Jid getFrom() {
         return from;
-    }
-
-    /**
-     * Sets the stanza's 'from' attribute.
-     *
-     * @param from The JID.
-     * @see #getFrom()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setFrom(Jid from) {
-        this.from = from;
     }
 
     /**
@@ -168,18 +137,6 @@ public abstract class Stanza {
     }
 
     /**
-     * Sets the stanza's 'xml:lang' attribute.
-     *
-     * @param language The language.
-     * @see #getLanguage()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setLanguage(String language) {
-        this.lang = language;
-    }
-
-    /**
      * Gets the stanza's 'error' element.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a></cite></p>
@@ -199,18 +156,6 @@ public abstract class Stanza {
      */
     public final StanzaError getError() {
         return error;
-    }
-
-    /**
-     * Sets the stanza's 'error' element.
-     *
-     * @param stanzaError The stanza error.
-     * @see #getError()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setError(StanzaError stanzaError) {
-        this.error = stanzaError;
     }
 
     /**

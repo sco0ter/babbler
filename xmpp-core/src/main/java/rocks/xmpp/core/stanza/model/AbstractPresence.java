@@ -26,15 +26,12 @@ package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -57,29 +54,31 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new CopyOnWriteArrayList<>();
 
-    private final List<Status> status = new CopyOnWriteArrayList<>();
+    private final List<Text> status = new CopyOnWriteArrayList<>();
 
-    private Byte priority;
+    private final Byte priority;
 
-    private Show show;
+    private final Show show;
 
     @XmlAttribute
-    private Type type;
+    private final Type type;
 
     /**
      * Constructs an empty presence.
      */
     protected AbstractPresence() {
+        this.show = null;
+        this.type = null;
+        this.priority = null;
     }
 
     /**
      * Constructs an full presence with all possible values.
      */
-    protected AbstractPresence(Jid to, Type type, Show show, Collection<Status> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    protected AbstractPresence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, error);
         this.show = show;
         this.type = type;
-        this.show = show;
         if (status != null) {
             this.status.addAll(status);
         }
@@ -107,22 +106,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @return The {@code <show/>} element.
      * @see Show
-     * @see #setShow(Show)
      */
     public final Show getShow() {
         return show;
-    }
-
-    /**
-     * Sets the {@code <show/>} element.
-     *
-     * @param show The {@code <show/>} element.
-     * @see #getShow()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setShow(Show show) {
-        this.show = show;
     }
 
     /**
@@ -133,22 +119,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      * </blockquote>
      *
      * @return The priority.
-     * @see #setPriority(Byte)
      */
     public final Byte getPriority() {
         return priority;
-    }
-
-    /**
-     * Sets the priority.
-     *
-     * @param priority The priority.
-     * @see #getPriority()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setPriority(Byte priority) {
-        this.priority = priority;
     }
 
     /**
@@ -156,36 +129,24 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @return The type.
      * @see Type
-     * @see #setType(Type)
      */
     public final Type getType() {
         return type;
     }
 
     /**
-     * Sets the type of the presence.
-     *
-     * @param type The type.
-     * @see #getType()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setType(Type type) {
-        this.type = type;
-    }
-
-    /**
      * Gets the statuses.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status">4.7.2.2.  Status Element</a></cite></p>
+     * <p>The OPTIONAL {@code <status/>} element contains human-readable XML character data specifying a natural-language description of an entity's availability. It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no 'type' attribute.</p>
      * <p>Multiple instances of the {@code <status/>} element MAY be included, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
      * </blockquote>
      *
      * @return The statuses.
      * @see #getStatus()
      */
-    public final List<Status> getStatuses() {
-        return Collections.unmodifiableList(status);
+    public final List<Text> getStatuses() {
+        return status;
     }
 
     /**
@@ -199,10 +160,9 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
      *
      * @return The status or null.
      * @see #getStatuses()
-     * @see #setStatus(String)
      */
     public final String getStatus() {
-        for (Status status : this.status) {
+        for (Text status : this.status) {
             if (status.getLanguage() == null || status.getLanguage().isEmpty()) {
                 return status.getText();
             }
@@ -211,28 +171,6 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
             return status.get(0).getText();
         }
         return null;
-    }
-
-    /**
-     * Sets the default status element.
-     *
-     * @param text The status text.
-     * @see #getStatus() ()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setStatus(String text) {
-        if (text != null) {
-            for (Status s : status) {
-                if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
-                    s.setText(text);
-                    return;
-                }
-            }
-            this.status.add(new Status(text));
-        } else {
-            this.status.clear();
-        }
     }
 
     /**
@@ -386,87 +324,5 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
          */
         @XmlEnumValue(value = "unsubscribed")
         UNSUBSCRIBED
-    }
-
-    /**
-     * The implementation of a presence's {@code <status/>} element.
-     * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status">4.7.2.2.  Status Element</a></cite></p>
-     * <p>The OPTIONAL {@code <status/>} element contains human-readable XML character data specifying a natural-language description of an entity's availability. It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no 'type' attribute.</p>
-     * </blockquote>
-     */
-    public static final class Status {
-        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-        private String lang;
-
-        @XmlValue
-        private String text;
-
-        /**
-         * Private default constructor, needed for unmarshalling.
-         */
-        @SuppressWarnings("unused")
-        private Status() {
-        }
-
-        /**
-         * Constructs a default status.
-         *
-         * @param text The text.
-         */
-        public Status(String text) {
-            this.text = text;
-        }
-
-        /**
-         * Constructs a status with a language attribute.
-         *
-         * @param text     The text
-         * @param language The language.
-         */
-        public Status(String text, String language) {
-            this.text = text;
-            this.lang = language;
-        }
-
-        /**
-         * Gets the language.
-         *
-         * @return The language.
-         */
-        public String getLanguage() {
-            return lang;
-        }
-
-        /**
-         * Sets the language.
-         *
-         * @param language The language.
-         * @deprecated Use constructor.
-         */
-        @Deprecated
-        public void setLanguage(String language) {
-            this.lang = language;
-        }
-
-        /**
-         * Gets the text.
-         *
-         * @return The text.
-         */
-        public String getText() {
-            return text;
-        }
-
-        /**
-         * Sets the text.
-         *
-         * @param text The text.
-         * @deprecated Use constructor.
-         */
-        @Deprecated
-        public void setText(String text) {
-            this.text = text;
-        }
     }
 }

@@ -26,10 +26,10 @@ package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stanza.model.errors.Text;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
@@ -54,7 +54,7 @@ public final class StanzaError {
     @XmlElementRef
     private final Condition condition;
 
-    @XmlElementRef
+    @XmlElement(namespace = "urn:ietf:params:xml:ns:xmpp-stanzas")
     private final Text text;
 
     @XmlAnyElement(lax = true)

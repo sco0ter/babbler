@@ -197,7 +197,7 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public final List<String> findValues(String var) {
         Field field = findField(var);
-        return field == null ? Collections.<String>emptyList() : field.getValues();
+        return field == null ? Collections.emptyList() : field.getValues();
     }
 
     /**
@@ -264,7 +264,7 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public final List<Jid> findValuesAsJid(String var) {
         Field field = findField(var);
-        return field == null ? Collections.<Jid>emptyList() : field.getValuesAsJid();
+        return field == null ? Collections.emptyList() : field.getValuesAsJid();
     }
 
     /**

@@ -24,7 +24,6 @@
 
 package rocks.xmpp.core.session.context.extensions;
 
-import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.address.model.Addresses;
@@ -116,7 +115,7 @@ public class ExtensionContext extends CoreContext {
     }
 
     public ExtensionContext(Class<?>... extensions) {
-        super(Arrays.<Class<? extends Manager>>asList(
+        super(Arrays.asList(
                 AvatarManager.class, // Make sure to initialize AvatarManager before EntityCapabilitiesManager, because both send presence and due to XEP-0153 logic, it can happen that presences are sent twice, if multiple resources are online.
                 LastActivityManager.class,
                 InBandByteStreamManager.class,

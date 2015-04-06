@@ -95,7 +95,7 @@ public final class Contact implements Comparable<Contact> {
      * @param name The name.
      */
     public Contact(Jid jid, String name) {
-        this(jid, name, Collections.<String>emptyList());
+        this(jid, name, Collections.emptyList());
     }
 
     /**

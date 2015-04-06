@@ -536,7 +536,7 @@ public final class RosterManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final void removeContact(Jid jid) throws XmppException {
-        Roster roster = new Roster(new Contact(jid, null, null, null, Contact.Subscription.REMOVE, Collections.<String>emptyList()));
+        Roster roster = new Roster(new Contact(jid, null, null, null, Contact.Subscription.REMOVE, Collections.emptyList()));
         xmppSession.query(new IQ(IQ.Type.SET, roster));
     }
 

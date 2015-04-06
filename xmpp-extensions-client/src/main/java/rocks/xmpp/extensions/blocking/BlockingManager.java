@@ -90,7 +90,7 @@ public final class BlockingManager extends ExtensionManager {
                                 pushedContacts.add(item);
                             }
                         }
-                        XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, pushedContacts, Collections.<Jid>emptyList()));
+                        XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, pushedContacts, Collections.emptyList()));
                         return iq.createResult();
                     } else {
                         Unblock unblock = iq.getExtension(Unblock.class);
@@ -108,7 +108,7 @@ public final class BlockingManager extends ExtensionManager {
                                     }
                                 }
                             }
-                            XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, Collections.<Jid>emptyList(), pushedContacts));
+                            XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, Collections.emptyList(), pushedContacts));
                             return iq.createResult();
                         }
                     }

@@ -75,7 +75,7 @@ public class CoreContext {
     private final Collection<Class<? extends Manager>> managers = new ArrayList<>();
 
     public CoreContext(Class<?>... extensions) {
-        this(Collections.<Class<? extends Manager>>emptyList(), extensions);
+        this(Collections.emptyList(), extensions);
     }
 
     public CoreContext(Collection<Class<? extends Manager>> managers, Class<?>... extensions) {

@@ -38,6 +38,7 @@ import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.EnumSet;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
@@ -169,7 +170,7 @@ public final class LastActivityManager extends ExtensionManager {
 
         private synchronized void handlePresence(PresenceEvent e) {
             AbstractPresence presence = e.getPresence();
-            if (!presence.isAvailable() || presence.getShow() != AbstractPresence.Show.AWAY && presence.getShow() != AbstractPresence.Show.XA) {
+            if (!presence.isAvailable() || !EnumSet.of(AbstractPresence.Show.AWAY, AbstractPresence.Show.XA).contains(presence.getShow())) {
                 lastActivity = Instant.now();
             }
         }

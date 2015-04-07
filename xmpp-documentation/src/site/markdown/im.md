@@ -1,7 +1,7 @@
 # Contacts, Presence and Messaging
 ---
 
-For XMPP core aspects like roster and presence management, there\'s a corresponding manager class, directly on the `XmppSession` instance.
+For XMPP core aspects like roster and presence management, there's a corresponding manager class, directly on the `XmppSession` instance.
 
 ## Adding Contacts to Your Roster
 
@@ -76,7 +76,7 @@ xmppSession.addInboundMessageListener(e -> {
 
 ## Intercepting Outbound Messages (or Stanzas in General)
 
-The same approach as for inbound messages is also used for outbound messages. The only difference is the \'inbound\’ property of the event.
+The same approach as for inbound messages is also used for outbound messages. The only difference is the 'inbound’ property of the event.
 
 You can use this, if you want to add extensions to a stanza or otherwise modify the stanza.
 

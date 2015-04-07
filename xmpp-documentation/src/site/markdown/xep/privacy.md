@@ -16,7 +16,7 @@ Collection<PrivacyList> privacyLists = privacyListManager.getPrivacyLists();
 
 ### Creating or Updating a Privacy List
 
-Creating or updating a privacy list use the same protocol, therefore there\'s only one method for both use cases.
+Creating or updating a privacy list use the same protocol, therefore there's only one method for both use cases.
 
 ```java
 PrivacyList privacyList = new PrivacyList("listName");
@@ -60,7 +60,7 @@ privacyListManager.declineDefaultList();
 
 ## Listening for Privacy List Changes
 
-Whenever a privacy list is updated, the server will notify all connected resources about the updated list. You can listen for these \"pushes\" in the following way:
+Whenever a privacy list is updated, the server will notify all connected resources about the updated list. You can listen for these "pushes" in the following way:
 
 ```java
 privacyListManager.addPrivacyListListener(e -> {
@@ -90,7 +90,7 @@ PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.valueO
 
 [XEP-0126: Invisibility][Invisibility] defines a recommendation for using Privacy Lists for invisibility.
 
-You can create an \"invisibility\" list with a handful of static factory methods, e.g.:
+You can create an "invisibility" list with a handful of static factory methods, e.g.:
 
 ```java
 PrivacyList invisibilityList = PrivacyList.createInvisibilityList();

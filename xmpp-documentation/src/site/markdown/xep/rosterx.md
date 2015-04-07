@@ -3,11 +3,11 @@
 
 [XEP-0144: Roster Item Exchange][Roster Item Exchange] allows you to exchange contacts with other contacts.
 
-Although there\'s also the possibility to suggest whether a contact is to be deleted or modified, a client should only be allowed to suggest contacts to be added.
+Although there's also the possibility to suggest whether a contact is to be deleted or modified, a client should only be allowed to suggest contacts to be added.
 
 ## Suggesting a Contact to Be Added
 
-This will suggest the contact \"Juliet\" to be added to \"Romeo\'s\" roster:
+This will suggest the contact "Juliet" to be added to "Romeo's" roster:
 
 ```java
 ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);

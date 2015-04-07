@@ -4,7 +4,7 @@
 [XEP-0115: Entity Capabilities][Entity Capabilities] is an XMPP protocol extension for broadcasting and dynamically discovering client, device, or generic entity capabilities.
 It caches the capabilities of entities thus obviating the need for extensive service discovery requests.
 
-Managing this extension is actually pretty easy, since there\'s nothing much you need to do here. It all happens automatically under the hood.
+Managing this extension is actually pretty easy, since there's nothing much you need to do here. It all happens automatically under the hood.
 
 Entity Capabilities are enabled by default since they are generally beneficial.
 

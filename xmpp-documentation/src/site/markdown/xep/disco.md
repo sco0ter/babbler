@@ -30,7 +30,7 @@ ItemNode itemNode = serviceDiscoveryManager.discoverItems(Jid.valueOf("example.n
 List<Item> items = itemNode.getItems();
 ```
 
-This will discover items at the \"root\" node, but you can also discover items at another node:
+This will discover items at the "root" node, but you can also discover items at another node:
 
 ```java
 ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);

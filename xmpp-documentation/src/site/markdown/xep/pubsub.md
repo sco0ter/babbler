@@ -11,13 +11,13 @@ PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
 
 ## Discovering PubSub Services
 
-If you don\'t know the address of your server\'s pubsub service, you can discover pubsub services like that:
+If you don't know the address of your server's pubsub service, you can discover pubsub services like that:
 
 ```java
 Collection<PubSubService> pubSubServices = pubSubManager.discoverPubSubServices();
 ```
 
-The resulting list will contain the available PubSub services on your server. Most often it\'s probably only one: \"pubsub.yourxmppdomain\".
+The resulting list will contain the available PubSub services on your server. Most often it's probably only one: "pubsub.yourxmppdomain".
 
 ## Using a PubSub Service
 
@@ -69,7 +69,7 @@ The following publishes a [Tune][Tune] to the node.
 pubSubNode.publish(new Tune("Artist", "Title"));
 ```
 
-*(Note, that this works, because `Tune` is known to the JAXB Context. Unknown objects won\'t work)*
+*(Note, that this works, because `Tune` is known to the JAXB Context. Unknown objects won't work)*
 
 ### Subscribing to a Node
 

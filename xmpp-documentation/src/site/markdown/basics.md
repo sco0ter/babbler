@@ -55,7 +55,7 @@ XmppSession xmppSession = new XmppSession("domain", tcpConfiguration, boshConfig
 
 During connecting, the session will try all configured connections in order, until a connection is established.
 
-Here\'s an overview over the relation between the session and connections:
+Here's an overview over the relation between the session and connections:
 
 ![Architecture](XmppSession.png)
 
@@ -126,7 +126,7 @@ Connecting involves opening the initial XMPP stream header and negotiate any fea
 
 ## Authenticating and Binding a Resource
 
-After connecting, you have to authenticate and bind a resource, in order to become a \"connected resource\". Both steps are understood as \"login\":
+After connecting, you have to authenticate and bind a resource, in order to become a "connected resource". Both steps are understood as "login":
 
 ```java
 try {
@@ -146,7 +146,7 @@ After you are connected, authenticated and have bound a resource, you should now
 xmppSession.send(new Presence());
 ```
 
-You are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
+You are now an "available resource" (you will appear online to your contacts) and can now start sending messages.
 
 ## Sending a Message
 
@@ -158,7 +158,7 @@ xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHA
 
 ## Changing Availability
 
-If you want to change your presence availability, just send a new presence with a \"show\" value.
+If you want to change your presence availability, just send a new presence with a "show" value.
 
 ```java
 xmppSession.send(new Presence(Presence.Show.AWAY));

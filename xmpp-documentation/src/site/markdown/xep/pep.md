@@ -9,7 +9,7 @@ Therefore it can be used, if you want to publish your [location][GeoLocation], [
 
 ## Creating the Personal Eventing Service
 
-First you have to create the personal eventing service. Since it\'s just a subset of PubSub, you have to use the `PubSubManager` and the personal eventing service is just a `PubSubService`.
+First you have to create the personal eventing service. Since it's just a subset of PubSub, you have to use the `PubSubManager` and the personal eventing service is just a `PubSubService`.
 
 ```java
 PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
@@ -20,7 +20,7 @@ PubSubService personalEventingService = pubSubManager.createPersonalEventingServ
 
 If you want to publish data to a node in your personal service, you create a local `PubSubNode` instance so that you can work with it, then publish data to that node.
 
-Here\'s an example to publish your geo location. As per [XEP-0080: User Location][GeoLocation] you want to publish it to the node \"`http://jabber.org/protocol/geoloc`\" which is `GeoLocation.NAMESPACE`.
+Here's an example to publish your geo location. As per [XEP-0080: User Location][GeoLocation] you want to publish it to the node "`http://jabber.org/protocol/geoloc`" which is `GeoLocation.NAMESPACE`.
 
 ```java
 PubSubNode pubSubNode = personalEventingService.node(GeoLocation.NAMESPACE);
@@ -34,7 +34,7 @@ By default (i.e. if not otherwise configured) all your contacts now receive an e
 
 ## Listening for PEP Events
 
-Now that you have published your geo location all your contacts will receive notifications about it. This is just a message with a \"PubSub event\" extension.
+Now that you have published your geo location all your contacts will receive notifications about it. This is just a message with a "PubSub event" extension.
 
 ```java
 xmppSession.addInboundMessageListener(e -> {

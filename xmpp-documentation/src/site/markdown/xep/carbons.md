@@ -18,7 +18,7 @@ Your server now copies all inbound and outbound chat messages to all connected r
 
 ## Get Outbound Copies of a Message
 
-Let\'s say, you enabled Message Carbons for your resource `A` and your other resource `B` sends a message to one of your contacts, resource `A` should then receive a copy of `B`\'s message.
+Let's say, you enabled Message Carbons for your resource `A` and your other resource `B` sends a message to one of your contacts, resource `A` should then receive a copy of `B`'s message.
 
 You can get the original sent message by checking for the `Sent` extension:
 

@@ -97,7 +97,7 @@
     * xmpp-client, which contains business logic, used by XMPP clients (e.g. connection logic, roster management, ...)
 * The base `Connection` class is now called `XmppSession`, which can have multiple connection methods. Each connection method is tried while connecting. That way a XMPP session can have a normal `TcpConnection` and an alternative `BoshConnection`, which is tried as fallback.
 * Move Message, Presence and IQ classes from `org.xmpp.stanza` to `org.xmpp.stanza.client package (API change).
-* The \'from\' attribute of roster/privacy lists/blocking command pushes are now checked to prevent IQ spoofing.
+* The 'from' attribute of roster/privacy lists/blocking command pushes are now checked to prevent IQ spoofing.
 * Update [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html) implementation from version 1.7 to 1.8.
 * Provide convenience methods for creating [XEP-0126: Invisibility](http://xmpp.org/extensions/xep-0126.html) privacy lists.
 * Implement `Comparable` interface for `PrivacyList` and `PrivacyRule`.

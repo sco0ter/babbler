@@ -9,7 +9,7 @@ MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChat
 
 ## Chat Services
 
-If you don\'t have an idea, which chat services your XMPP domain hosts, you can easily discover them:
+If you don't have an idea, which chat services your XMPP domain hosts, you can easily discover them:
 
 ```java
 Collection<ChatService> chatServices = multiUserChatManager.discoverChatServices();
@@ -50,7 +50,7 @@ Once you have a `ChatRoom` instance, you can now do multiple things with it:
 * Entering (aka joining) and exiting (aka leaving) the room.
 * Configuring a room.
 * Sending messages.
-* Listening to messages, subject changes, occupant events (\"leaves\" and \"joins\"), ...
+* Listening to messages, subject changes, occupant events ("leaves" and "joins"), ...
 
 ### Discovering Occupants and Room Info
 
@@ -72,7 +72,7 @@ These are the use cases, when you are *in* the room (or want to enter the room).
 
 #### Entering a Room
 
-Before entering a room, you should add listeners to it, if you want to listen for occupants \"joins\" and \"leaves\", subject changes or messages being sent by the room, then enter the room with your desired nickname:
+Before entering a room, you should add listeners to it, if you want to listen for occupants "joins" and "leaves", subject changes or messages being sent by the room, then enter the room with your desired nickname:
 
 ```java
 chatRoom.addOccupantListener(e -> {
@@ -217,7 +217,7 @@ ChatService chatService = multiUserChatManager.createChatService(new Jid(e.getRo
 ChatRoom chatRoom = chatService.createRoom(e.getRoomAddress().getLocal());
 ```
 
-When you\'ve created the room, you should add listeners to it and then enter it.
+When you've created the room, you should add listeners to it and then enter it.
 
 ### Declining an Invitation
 

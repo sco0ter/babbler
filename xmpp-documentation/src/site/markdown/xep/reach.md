@@ -1,9 +1,9 @@
 # XEP-0202: Entity Time
 ---
 
-[XEP-0202: Entity Time][Entity Time] allows you to request another entity\'s time and timezone.
+[XEP-0202: Entity Time][Entity Time] allows you to request another entity's time and timezone.
 
-Here\'s a simple example:
+Here's a simple example:
 
 ```java
 EntityTimeManager entityTimeManager = xmppSession.getManager(EntityTimeManager.class);

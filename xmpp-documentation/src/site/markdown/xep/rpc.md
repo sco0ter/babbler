@@ -5,7 +5,7 @@
 
 ## Responding to XML-RPC Requests
 
-If you want to respond to requests, you have to set an `RpcHandler`, which handles inbound requests. Here\'s an example:
+If you want to respond to requests, you have to set an `RpcHandler`, which handles inbound requests. Here's an example:
 
 ```java
 RpcManager rpcManager = xmppSession.getManager(RpcManager.class);
@@ -54,7 +54,7 @@ If any other exception occurs during processing, an XMPP `<internal-server-error
 
 ## Calling a Remote Procedure
 
-We now consider the requester\'s side, i.e. if you want to call a remote procedure.
+We now consider the requester's side, i.e. if you want to call a remote procedure.
 
 Assume you want to call the above remote procedure (`examples.getStateName`), you can do it like this:
 

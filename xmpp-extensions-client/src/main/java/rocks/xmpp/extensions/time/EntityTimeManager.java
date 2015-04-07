@@ -68,8 +68,9 @@ public final class EntityTimeManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public EntityTime getEntityTime(Jid jid) throws XmppException {
+    public OffsetDateTime getEntityTime(Jid jid) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
-        return result.getExtension(EntityTime.class);
+        EntityTime entityTime = result.getExtension(EntityTime.class);
+        return entityTime != null ? entityTime.getDateTime() : null;
     }
 }

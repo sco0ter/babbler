@@ -33,7 +33,8 @@ import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Feature;
-import rocks.xmpp.extensions.time.model.EntityTime;
+
+import java.time.OffsetDateTime;
 
 /**
  * @author Christian Schudt
@@ -46,10 +47,8 @@ public class EntityTimeManagerTest extends ExtensionTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
         EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
-        EntityTime entityTime = entityTimeManager.getEntityTime(JULIET);
+        OffsetDateTime entityTime = entityTimeManager.getEntityTime(JULIET);
         Assert.assertNotNull(entityTime);
-        Assert.assertNotNull(entityTime.getDate());
-        Assert.assertNotNull(entityTime.getTimezone());
     }
 
     @Test

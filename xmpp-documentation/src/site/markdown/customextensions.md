@@ -53,6 +53,22 @@ public class Product {
 }
 ```
 
+Note: Experience has shown that it's often easier and more intuitive to declare the namespace once for the whole package. Otherwise it can happen that JAXB assumes another namespace for certain elements (e.g. subclasses, lists, more complex types) and fails to (un)marshal as expected (unless you redeclare the namespace on the elements).
+
+Create a `package-info.java` and put JAXB annotations in it, like this:
+
+```
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "yournamespace", elementFormDefault = XmlNsForm.QUALIFIED)
+package yourpackage;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;
+```
+
+
 Then you have to create a configuration for the session. If you only use core functionality, you have to extend the `CoreContext` class by your extension:
 
 ```java

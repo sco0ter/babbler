@@ -28,7 +28,6 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 
 import java.io.IOException;
@@ -62,8 +61,6 @@ public class GeolocationPublisher {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("111", "111", "geolocation");
-                // Send initial presence
-                xmppSession.send(new Presence());
 
 //                    GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
 //                    geoLocationManager.publish(new GeoLocation(123, 321));

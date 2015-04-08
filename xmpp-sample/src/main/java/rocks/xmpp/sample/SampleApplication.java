@@ -28,7 +28,6 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
@@ -116,8 +115,6 @@ public class SampleApplication {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("admin", "admin", "xmpp");
-                // Send initial presence
-                xmppSession.send(new Presence());
 
                 System.out.println(xmppSession.getActiveConnection());
             } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {

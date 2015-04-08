@@ -138,15 +138,7 @@ try {
 }
 ```
 
-## Establishing a Presence Session
-
-After you are connected, authenticated and have bound a resource, you should now establish a [presence session](http://xmpp.org/rfcs/rfc6121.html#presence-fundamentals), by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
-
-```java
-xmppSession.send(new Presence());
-```
-
-You are now an "available resource" (you will appear online to your contacts) and can now start sending messages.
+Initial presence is sent automatically, so that you are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
 
 ## Sending a Message
 

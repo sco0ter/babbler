@@ -99,7 +99,6 @@ import java.util.logging.Logger;
  * XmppSession xmppSession = new XmppSession("domain");
  * xmppSession.connect();
  * xmppSession.login("username", "password");
- * xmppSession.send(new Presence());
  * }
  * </pre>
  * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback.
@@ -997,12 +996,20 @@ public class XmppSession implements AutoCloseable {
                 logger.fine("Retrieving roster on login (as per configuration).");
                 rosterManager.requestRoster();
             }
-
-            // After retrieving the roster, resend the last presence, if any (in reconnection case).
-            getManager(PresenceManager.class).getLastSentPresences().forEach(presence -> {
-                presence.getExtensions().clear();
-                send(presence);
-            });
+            PresenceManager presenceManager = getManager(PresenceManager.class);
+            if (presenceManager.getLastSentPresence() != null) {
+                // After retrieving the roster, resend the last presence, if any (in reconnection case).
+                presenceManager.getLastSentPresences().forEach(presence -> {
+                    presence.getExtensions().clear();
+                    send(presence);
+                });
+            } else if (configuration.getInitialPresence() != null) {
+                // Or send initial presence
+                Presence initialPresence = configuration.getInitialPresence().get();
+                if (initialPresence != null) {
+                    send(initialPresence);
+                }
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // Revert status

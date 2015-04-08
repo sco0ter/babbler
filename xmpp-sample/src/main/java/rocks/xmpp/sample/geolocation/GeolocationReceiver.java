@@ -27,7 +27,7 @@ package rocks.xmpp.sample.geolocation;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.extensions.geoloc.GeoLocationManager;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -53,17 +53,14 @@ public class GeolocationReceiver {
                 // Login
                 xmppSession.login("222", "222", "geolocation");
 
-//                    GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
-//                    geoLocationManager.setEnabled(true);
-//                    geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
-//                        @Override
-//                        public void geoLocationUpdated(GeoLocationEvent e) {
-//                            System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());
-//                        }
-//                    });
+                GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
+                geoLocationManager.setEnabled(true);
+                geoLocationManager.addGeoLocationListener(e -> {
+                    System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());
+
+                });
 
                 // Send initial presence
-                xmppSession.send(new Presence());
 
             } catch (XmppException e) {
                 e.printStackTrace();

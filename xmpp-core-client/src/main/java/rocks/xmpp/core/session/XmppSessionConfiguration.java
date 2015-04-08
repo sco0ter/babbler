@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.stanza.model.client.Presence;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -37,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A configuration for an {@link XmppSession}.
@@ -97,6 +99,8 @@ public final class XmppSessionConfiguration {
 
     private final Path cacheDirectory;
 
+    private final Supplier<Presence> initialPresence;
+
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
@@ -107,6 +111,7 @@ public final class XmppSessionConfiguration {
         this.defaultResponseTimeout = builder.defaultResponseTimeout;
         this.authenticationMechanisms = builder.authenticationMechanisms;
         this.cacheDirectory = builder.cacheDirectory;
+        this.initialPresence = builder.initialPresence;
 
         CoreContext context = builder.context;
 
@@ -236,6 +241,16 @@ public final class XmppSessionConfiguration {
     }
 
     /**
+     * Gets a supplier for initial presence which is sent during login.
+     *
+     * @return The initial presence supplier.
+     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#presence-initial">4.2.  Initial Presence</a>
+     */
+    public Supplier<Presence> getInitialPresence() {
+        return initialPresence;
+    }
+
+    /**
      * A builder to create an {@link XmppSessionConfiguration} instance.
      */
     public static final class Builder {
@@ -248,6 +263,8 @@ public final class XmppSessionConfiguration {
 
         private Path cacheDirectory;
 
+        private Supplier<Presence> initialPresence;
+
         /**
          * The default preferred SASL mechanisms.
          */
@@ -259,7 +276,8 @@ public final class XmppSessionConfiguration {
                 "ANONYMOUS");
 
         private Builder() {
-            defaultResponseTimeout(5000).cacheDirectory(DEFAULT_APPLICATION_DATA_PATH);
+            defaultResponseTimeout(5000).cacheDirectory(DEFAULT_APPLICATION_DATA_PATH)
+                    .initialPresence(Presence::new);
         }
 
         /**
@@ -336,6 +354,18 @@ public final class XmppSessionConfiguration {
                 throw new IllegalArgumentException("path is not a directory.");
             }
             this.cacheDirectory = path;
+            return this;
+        }
+
+        /**
+         * Sets a supplier for initial presence which is sent during login. If the supplier is null or returns null, no initial presence is sent.
+         *
+         * @param presenceSupplier The presence supplier.
+         * @return The builder.
+         * @see <a href="http://xmpp.org/rfcs/rfc6121.html#presence-initial">4.2.  Initial Presence</a>
+         */
+        public final Builder initialPresence(Supplier<Presence> presenceSupplier) {
+            this.initialPresence = presenceSupplier;
             return this;
         }
 

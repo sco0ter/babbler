@@ -54,11 +54,9 @@ public class InBandByteStreamIT extends IntegrationTest {
 
         xmppSession1.connect();
         xmppSession1.login(USER_1, PASSWORD_1);
-        xmppSession1.send(new Presence());
 
         xmppSession2.connect();
         xmppSession2.login(USER_2, PASSWORD_2);
-        xmppSession2.send(new Presence());
 
         final Lock lock = new ReentrantLock();
         final Condition condition = lock.newCondition();

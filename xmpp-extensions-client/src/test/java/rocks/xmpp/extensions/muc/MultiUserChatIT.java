@@ -34,7 +34,6 @@ import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -60,13 +59,10 @@ public class MultiUserChatIT extends IntegrationTest {
         xmppSession[0] = new XmppSession(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
         xmppSession[0].connect();
         xmppSession[0].login(USER_1, PASSWORD_1);
-        xmppSession[0].send(new Presence());
-
 
         xmppSession[1] = new XmppSession(DOMAIN, TcpConnectionConfiguration.getDefault());
         xmppSession[1].connect();
         xmppSession[1].login(USER_2, PASSWORD_2);
-        xmppSession[1].send(new Presence());
 
         multiUserChatManager[0] = xmppSession[0].getManager(MultiUserChatManager.class);
         multiUserChatManager[1] = xmppSession[1].getManager(MultiUserChatManager.class);

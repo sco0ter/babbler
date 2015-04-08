@@ -30,7 +30,6 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.context.extensions.ExtensionContext;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import java.io.IOException;
@@ -72,8 +71,6 @@ public class CustomIQHandlerResponder {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("111", "111", "iq");
-                // Send initial presence
-                xmppSession.send(new Presence());
 
 
             } catch (Exception e) {

@@ -52,16 +52,24 @@ import java.util.function.Predicate;
  * <pre>
  * <code>
  * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
- * messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
- *    {@literal @}Override
- *    public void messageDelivered(MessageDeliveredEvent e) {
- *       System.out.println("Message delivered: " + e.getMessageId());
- *    }
- * });
+ * messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> System.out.println("Message delivered: " + e.getMessageId()));
  * </code>
  * </pre>
  */
 public final class MessageDeliveryReceiptsManager extends ExtensionManager {
+
+    /**
+     * A default filter for automatic receipt request on outbound messages.
+     */
+    private static final Predicate<Message> DEFAULT_FILTER = message ->
+            // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
+            message.getType() != Message.Type.ERROR
+                    // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
+                    && message.getExtension(MessageDeliveryReceipts.Received.class) == null
+                    // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
+                    && message.getId() != null
+                    // The message must not have a request extension already.
+                    && message.getExtension(MessageDeliveryReceipts.Request.class) == null;
 
     final Set<Consumer<MessageDeliveredEvent>> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
@@ -78,9 +86,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        // Add a default filter
-        // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
-        Predicate<Message> errorFilter = message -> message.getType() != Message.Type.ERROR;
+
         xmppSession.addInboundMessageListener(e -> {
             if (!isEnabled()) {
                 return;
@@ -109,20 +115,15 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             Predicate<Message> predicate;
             synchronized (this) {
                 if (messageFilter != null) {
-                    predicate = errorFilter.and(messageFilter);
+                    predicate = DEFAULT_FILTER.and(messageFilter);
                 } else {
-                    predicate = errorFilter;
+                    predicate = DEFAULT_FILTER;
                 }
             }
             if (!predicate.test(message)) {
                 return;
             }
-            // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
-            // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
-            if (message.getExtension(MessageDeliveryReceipts.Received.class) == null && message.getId() != null) {
-                // Add a delivery receipt request.
-                message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
-            }
+            message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
         });
     }
 

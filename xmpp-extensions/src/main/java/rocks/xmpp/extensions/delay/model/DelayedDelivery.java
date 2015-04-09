@@ -104,12 +104,12 @@ public final class DelayedDelivery {
     }
 
     /**
-     * Gets the delayed delivery date of a stanza or <code>Instant.now()</code>, if no delayed deliver information is available.
+     * Gets the original send date of a stanza, i.e. <code>Instant.now()</code>, if no delayed deliver information is available or the timestamp of delayed delivery.
      *
      * @param stanza The stanza.
-     * @return The delayed delivery date or now.
+     * @return The original send date of a stanza or <code>Instant.now()</code>.
      */
-    public static Instant deliveryDateOrNow(Stanza stanza) {
+    public static Instant sendDate(Stanza stanza) {
         DelayedDelivery delayedDelivery = stanza.getExtension(DelayedDelivery.class);
         if (delayedDelivery != null) {
             return delayedDelivery.getTimeStamp();

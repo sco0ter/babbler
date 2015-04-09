@@ -103,7 +103,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
             if (received != null) {
                 // Notify the listeners about the reception.
-                XmppUtils.notifyEventListeners(messageDeliveredListeners, new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.deliveryDateOrNow(message)));
+                XmppUtils.notifyEventListeners(messageDeliveredListeners, new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.sendDate(message)));
             }
         });
         xmppSession.addOutboundMessageListener(e -> {

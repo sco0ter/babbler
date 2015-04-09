@@ -118,7 +118,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
                     // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
                     if (message.getSubject() != null && message.getBody() == null) {
-                        XmppUtils.notifyEventListeners(subjectChangeListeners, new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), message.getExtension(DelayedDelivery.class) != null, DelayedDelivery.deliveryDateOrNow(message)));
+                        XmppUtils.notifyEventListeners(subjectChangeListeners, new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), message.getExtension(DelayedDelivery.class) != null, DelayedDelivery.sendDate(message)));
                     } else {
                         XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(ChatRoom.this, message, true));
                     }

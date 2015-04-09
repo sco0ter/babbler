@@ -90,7 +90,7 @@ public final class Idle {
         // Check XEP-0256: Last Activity in Presence
         // When a client automatically sets the user's <show/> value to "away" or "xa" (extended away), it can indicate when that particular was last active during the current presence session.
         if (lastActivity != null && EnumSet.of(AbstractPresence.Show.AWAY, AbstractPresence.Show.XA).contains(presence.getShow())) {
-            return DelayedDelivery.deliveryDateOrNow(presence).minusSeconds(lastActivity.getSeconds());
+            return DelayedDelivery.sendDate(presence).minusSeconds(lastActivity.getSeconds());
         }
         return null;
     }

@@ -1,6 +1,19 @@
 # Changelog
 ---
 
+## Version 0.6.0-SNAPSHOT
+
+* Add support for [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
+* Use [Java 8's Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html):
+    * All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda expressions, nothing has changed for you)
+* Use [Java 8's Date-Time API](https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html):
+    * `java.util.TimeZone` has been replaced with `java.time.ZoneOffset`
+    * `java.util.Date` has been replaced with `java.time.OffsetDateTime` or `java.time.Instant`
+* Reduce logging overhead by deferred string building.
+* `Message.Body`, `Message.Subject`, `Presence.Status` classes have been replaced by a common `Text` class, since they are all the same.
+* Add support for [Woodstox JAXB implementation](http://woodstox.codehaus.org/).
+
+
 ## Version 0.5.0 (2015-03-21)
 
 * Add support for [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
@@ -33,7 +46,6 @@
 
 
 ## Version 0.4.0 (2014-11-01)
-
 
 * Add support for [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * Add support for [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)

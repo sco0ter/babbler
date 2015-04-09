@@ -29,16 +29,15 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.idle.IdleManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.EnumSet;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
@@ -52,9 +51,7 @@ import java.util.EnumSet;
  * <p>When a client automatically sets the user's {@code <show/>} value to "away" or "xa" (extended away), it can indicate when that particular was last active during the current presence session.</p>
  * </blockquote>
  * <p>
- * By default last activity for the connected resource is updated whenever a message or available non-away, non-xa presence is sent.
- * This strategy of determining last activity can be changed by {@linkplain #setLastActivityStrategy(LastActivityStrategy) setting another strategy}, e.g. a strategy which determines
- * last activity by idle mouse activity.
+ * This manager has a dependency to {@link IdleManager}, i.e. it uses the same idle time as that one.
  * </p>
  * <p>
  * Automatic inclusion of last activity information in presence stanzas and support for this protocol can be {@linkplain #setEnabled(boolean)} enabled or disabled}.
@@ -68,14 +65,15 @@ import java.util.EnumSet;
  * </pre>
  *
  * @author Christian Schudt
+ * @see IdleManager
  */
 public final class LastActivityManager extends ExtensionManager {
 
-    private volatile LastActivityStrategy lastActivityStrategy;
+    private final IdleManager idleManager;
 
     private LastActivityManager(final XmppSession xmppSession) {
-        super(xmppSession, true, LastActivity.NAMESPACE);
-        lastActivityStrategy = new DefaultLastActivityStrategy(xmppSession);
+        super(xmppSession, LastActivity.NAMESPACE);
+        this.idleManager = xmppSession.getManager(IdleManager.class);
         setEnabled(true);
     }
 
@@ -92,8 +90,8 @@ public final class LastActivityManager extends ExtensionManager {
                 if (presence.getTo() == null) {
                     synchronized (LastActivityManager.this) {
                         // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                        if (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
-                            presence.getExtensions().add(new LastActivity(getSecondsSince(lastActivityStrategy.getLastActivity()), presence.getStatus()));
+                        if (idleManager.getIdleStrategy() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                            presence.getExtensions().add(new LastActivity(getSecondsSince(idleManager.getIdleStrategy().get()), presence.getStatus()));
                         }
                     }
                 }
@@ -103,9 +101,14 @@ public final class LastActivityManager extends ExtensionManager {
             @Override
             protected IQ processRequest(IQ iq) {
                 // If someone asks me to get my last activity, reply.
-                synchronized (LastActivityManager.this) {
-                    long seconds = (lastActivityStrategy != null && lastActivityStrategy.getLastActivity() != null) ? getSecondsSince(lastActivityStrategy.getLastActivity()) : 0;
-                    return iq.createResult(new LastActivity(seconds, null));
+                synchronized (idleManager) {
+                    Instant idleSince = idleManager.getIdleStrategy() != null ? idleManager.getIdleStrategy().get() : null;
+                    if (idleSince != null) {
+                        return iq.createResult(new LastActivity(getSecondsSince(idleSince), null));
+                    } else {
+                        // A client that does not support the protocol, or that does not wish to divulge this information, MUST return a <service-unavailable/> error.
+                        return iq.createError(Condition.SERVICE_UNAVAILABLE);
+                    }
                 }
             }
         });
@@ -126,58 +129,5 @@ public final class LastActivityManager extends ExtensionManager {
     public LastActivity getLastActivity(Jid jid) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
         return result.getExtension(LastActivity.class);
-    }
-
-    /**
-     * Gets the currently used strategy to determine last activity of a client.
-     *
-     * @return The strategy.
-     * @see #setLastActivityStrategy(LastActivityStrategy)
-     */
-    public synchronized LastActivityStrategy getLastActivityStrategy() {
-        return this.lastActivityStrategy;
-    }
-
-    /**
-     * Sets a strategy, which is used to determine last activity of a client.
-     *
-     * @param lastActivityStrategy The strategy.
-     * @see #getLastActivityStrategy()
-     */
-    public synchronized void setLastActivityStrategy(LastActivityStrategy lastActivityStrategy) {
-        this.lastActivityStrategy = lastActivityStrategy;
-    }
-
-    /**
-     * The default strategy to determine last activity. It simply sets the date of last activity, whenever a message or presence is sent.
-     */
-    private static class DefaultLastActivityStrategy implements LastActivityStrategy {
-        private volatile Instant lastActivity;
-
-        public DefaultLastActivityStrategy(XmppSession xmppSession) {
-            xmppSession.addOutboundMessageListener(this::handleMessage);
-            xmppSession.addOutboundPresenceListener(this::handlePresence);
-        }
-
-        @Override
-        public synchronized Instant getLastActivity() {
-            return lastActivity;
-        }
-
-        private synchronized void handleMessage(MessageEvent e) {
-            lastActivity = Instant.now();
-        }
-
-        private synchronized void handlePresence(PresenceEvent e) {
-            AbstractPresence presence = e.getPresence();
-            if (!presence.isAvailable() || !EnumSet.of(AbstractPresence.Show.AWAY, AbstractPresence.Show.XA).contains(presence.getShow())) {
-                lastActivity = Instant.now();
-            }
-        }
-    }
-
-    @Override
-    protected void dispose() {
-        lastActivityStrategy = null;
     }
 }

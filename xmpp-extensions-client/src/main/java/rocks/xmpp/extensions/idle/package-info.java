@@ -22,17 +22,11 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.last;
-
-import java.time.Instant;
-
 /**
- * Allows to specify an alternative strategy for determining last activity.
- *
- * @author Christian Schudt
+ * Provides classes for <a href="http://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a>.
+ * <p>
+ * It defines a way to communicate time of last user interaction with her system using XMPP presence notifications.
+ * </p>
  */
-@FunctionalInterface
-public interface LastActivityStrategy {
+package rocks.xmpp.extensions.idle;
 
-    Instant getLastActivity();
-}

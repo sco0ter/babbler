@@ -50,6 +50,7 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.hashes.HashManager;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
+import rocks.xmpp.extensions.idle.IdleManager;
 import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
@@ -118,6 +119,7 @@ public class ExtensionContext extends CoreContext {
         super(Arrays.asList(
                 AvatarManager.class, // Make sure to initialize AvatarManager before EntityCapabilitiesManager, because both send presence and due to XEP-0153 logic, it can happen that presences are sent twice, if multiple resources are online.
                 LastActivityManager.class,
+                IdleManager.class,
                 InBandByteStreamManager.class,
                 VCardManager.class,
                 OutOfBandFileTransferManager.class,

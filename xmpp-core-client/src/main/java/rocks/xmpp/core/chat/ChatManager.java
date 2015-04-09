@@ -161,7 +161,7 @@ public final class ChatManager extends Manager {
         // If there are no chat sessions with that contact yet, put the contact into the map.
         Map<String, ChatSession> chatSessionMap = chatSessions.computeIfAbsent(contact, k -> new HashMap<>());
         return chatSessionMap.computeIfAbsent(threadId, k -> {
-            ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession);
+            ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession, this);
             XmppUtils.notifyEventListeners(chatSessionListeners, new ChatSessionEvent(this, chatSession, inbound));
             return chatSession;
         });
@@ -171,7 +171,9 @@ public final class ChatManager extends Manager {
      * Destroys the chat session.
      *
      * @param chatSession The chat session.
+     * @deprecated Use {@link ChatSession#close()}
      */
+    @Deprecated
     public void destroyChatSession(ChatSession chatSession) {
         Jid user = Objects.requireNonNull(chatSession, "chatSession must not be null.").getChatPartner().asBareJid();
         synchronized (chatSessions) {

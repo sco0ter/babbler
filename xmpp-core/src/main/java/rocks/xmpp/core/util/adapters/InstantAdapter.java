@@ -26,6 +26,7 @@ package rocks.xmpp.core.util.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 /**
  * Converts an {@link java.time.Instant} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
@@ -34,7 +35,7 @@ public final class InstantAdapter extends XmlAdapter<String, Instant> {
 
     @Override
     public final Instant unmarshal(String v) throws Exception {
-        return v != null ? Instant.parse(v) : null;
+        return v != null ? OffsetDateTime.parse(v).toInstant() : null;
     }
 
     @Override

@@ -32,7 +32,12 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
+
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This manager implements <a href="http://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
@@ -44,6 +49,23 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
  * @author Christian Schudt
  */
 public final class SoftwareVersionManager extends ExtensionManager {
+
+    private static final Logger logger = Logger.getLogger(VCardManager.class.getName());
+
+    private static final SoftwareVersion DEFAULT_VERSION;
+
+    static {
+        Properties properties = new Properties();
+        SoftwareVersion version;
+        try {
+            properties.load(SoftwareVersionManager.class.getResourceAsStream("version.properties"));
+            version = new SoftwareVersion("Babbler", properties.getProperty("version"));
+        } catch (Exception e) {
+            version = null;
+            logger.log(Level.WARNING, "Couldn't load version information", e);
+        }
+        DEFAULT_VERSION = version;
+    }
 
     private SoftwareVersion softwareVersion;
 
@@ -61,6 +83,9 @@ public final class SoftwareVersionManager extends ExtensionManager {
                     if (softwareVersion != null) {
                         return iq.createResult(softwareVersion);
                     }
+                }
+                if (DEFAULT_VERSION != null) {
+                    return iq.createResult(DEFAULT_VERSION);
                 }
                 return iq.createError(Condition.SERVICE_UNAVAILABLE);
             }

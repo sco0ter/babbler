@@ -92,6 +92,7 @@
             <item href="xep/time.html" name="XEP-0202: Entity Time"/>
             <item href="xep/delay.html" name="XEP-0203: Delayed Delivery"/>
             <item href="xep/carbons.html" name="XEP-0280: Message Carbons"/>
+            <item href="xep/rtt.html" name="XEP-0301: In-Band Real Time Text"/>
             <item href="xep/message-correct.html" name="XEP-0308: Last Message Correction"/>
         </menu>
         <menu name="API Documentation">

@@ -53,17 +53,11 @@ import java.util.function.Consumer;
  * </p>
  * <p>You should add a {@link ChatSession#addInboundMessageListener(Consumer)} to the chat session in order to listen for messages.</p>
  * <pre><code>
- * xmppSession.getManager(ChatManager.class).addChatSessionListener(new ChatSessionListener() {
- *     {@literal @}Override
- *     public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
- *         ChatSession chatSession = chatSessionEvent.getChatSession();
- *         chatSession.addInboundMessageListener(new MessageListener() {
- *             {@literal @}Override
- *             public void handleMessage(MessageEvent e) {
- *                 Message message = e.getMessage();
- *             }
- *         });
- *     }
+ * xmppSession.getManager(ChatManager.class).addChatSessionListener(chatSessionEvent -> {
+ *     ChatSession chatSession = chatSessionEvent.getChatSession();
+ *     chatSession.addInboundMessageListener(e -> {
+ *         Message message = e.getMessage();
+ *     });
  * });
  * </code>
  * </pre>

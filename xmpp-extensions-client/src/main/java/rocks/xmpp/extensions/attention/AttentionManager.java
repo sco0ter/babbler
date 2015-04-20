@@ -40,16 +40,13 @@ import rocks.xmpp.extensions.attention.model.Attention;
  * </p>
  * <h3>Sample</h3>
  * <pre>
- * <code>
- * xmppSession.addInboundMessageListener(new MessageListener() {
- *     {@literal @}Override
- *     public void handleMessage(MessageEvent e) {
- *         if (e.isInbound() &amp;&amp; e.getMessage().getExtension(Attention.class) != null) {
- *             // Handle attention request.
- *         }
+ * {@code
+ * xmppSession.addInboundMessageListener(e -> {
+ *     if (e.getMessage().getExtension(Attention.class) != null) {
+ *         // Handle attention request.
  *     }
  * });
- * </code>
+ * }
  * </pre>
  * <p>If you use attentions, enable this manager class, in order to register this extension in service discovery:</p>
  * <pre>

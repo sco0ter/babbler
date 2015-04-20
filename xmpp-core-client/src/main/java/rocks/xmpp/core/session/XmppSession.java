@@ -120,18 +120,17 @@ import java.util.logging.Logger;
  * <h3>Listening for Messages and Presence</h3>
  * <b>Note:</b> Adding the following listeners should be added before logging in, otherwise they might not trigger.
  * <pre>
- * <code>
+ * {@code
  * // Listen for messages
- * xmppSession.addInboundMessageListener(new MessageListener() {
- *     {@literal @}Override
- *     public void handleMessage(MessageEvent e) {
- *         // Handle inbound message
- *     }
- * });
+ * xmppSession.addInboundMessageListener(e ->
+ *     // Handle inbound message.
+ * );
  *
  * // Listen for presence changes
- * xmppSession.addInboundPresenceListener(e -> /* Handle inbound presence. / );
- * </code>
+ * xmppSession.addInboundPresenceListener(e ->
+ *     // Handle inbound presence.
+ * );
+ * }
  * </pre>
  * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
  *

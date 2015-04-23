@@ -114,8 +114,6 @@ public final class AvatarManager extends ExtensionManager {
         avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
 
         avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
-
-        setEnabled(false);
     }
 
     @Override
@@ -194,6 +192,9 @@ public final class AvatarManager extends ExtensionManager {
         });
 
         xmppSession.addOutboundPresenceListener(e -> {
+            if (!isEnabled()) {
+                return;
+            }
             final Presence presence = e.getPresence();
             if (presence.isAvailable() && nonConformingResources.isEmpty()) {
                 // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.

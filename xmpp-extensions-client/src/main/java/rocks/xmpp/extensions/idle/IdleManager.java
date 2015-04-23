@@ -55,7 +55,6 @@ public final class IdleManager extends ExtensionManager {
 
     private IdleManager(XmppSession xmppSession) {
         super(xmppSession, Idle.NAMESPACE);
-        this.setEnabled(true);
         this.idleStrategy = this::getLastSentStanzaTime;
     }
 

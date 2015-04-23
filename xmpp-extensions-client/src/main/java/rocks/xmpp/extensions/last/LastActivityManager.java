@@ -74,7 +74,6 @@ public final class LastActivityManager extends ExtensionManager {
     private LastActivityManager(final XmppSession xmppSession) {
         super(xmppSession, LastActivity.NAMESPACE);
         this.idleManager = xmppSession.getManager(IdleManager.class);
-        setEnabled(true);
     }
 
     static long getSecondsSince(Instant date) {

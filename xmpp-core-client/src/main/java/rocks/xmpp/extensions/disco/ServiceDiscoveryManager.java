@@ -78,8 +78,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private final Set<Identity> identities = new ConcurrentSkipListSet<>();
 
-    private final Set<Feature> features = new ConcurrentSkipListSet<>();
-
     private final List<DataForm> extensions = new CopyOnWriteArrayList<>();
 
     private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
@@ -90,7 +88,6 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, true, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
-        setEnabled(true);
     }
 
     @Override
@@ -195,7 +192,11 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #removeFeature(rocks.xmpp.extensions.disco.model.info.Feature)
      */
     public Set<Feature> getFeatures() {
-        return Collections.unmodifiableSet(new HashSet<>(features));
+        Set<Feature> features = new HashSet<>();
+        for (String feature : xmppSession.getEnabledFeatures()) {
+            features.add(new Feature(feature));
+        }
+        return Collections.unmodifiableSet(features);
     }
 
     /**
@@ -246,7 +247,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      */
     public synchronized void addFeature(Feature feature) {
         Set<Feature> oldList = getFeatures();
-        features.add(feature);
+        xmppSession.enableFeature(feature.getVar());
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
 
@@ -259,7 +260,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      */
     public synchronized void removeFeature(Feature feature) {
         Set<Feature> oldList = getFeatures();
-        features.remove(feature);
+        xmppSession.disableFeature(feature.getVar());
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
 

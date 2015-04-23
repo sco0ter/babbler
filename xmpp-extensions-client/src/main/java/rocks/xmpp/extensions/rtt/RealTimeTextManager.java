@@ -58,7 +58,6 @@ public final class RealTimeTextManager extends ExtensionManager {
 
     private RealTimeTextManager(final XmppSession xmppSession) {
         super(xmppSession, RealTimeText.NAMESPACE);
-        setEnabled(true);
     }
 
     @Override

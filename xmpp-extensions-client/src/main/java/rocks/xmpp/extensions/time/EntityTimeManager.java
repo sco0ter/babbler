@@ -47,7 +47,6 @@ public final class EntityTimeManager extends ExtensionManager {
 
     private EntityTimeManager(final XmppSession xmppSession) {
         super(xmppSession, EntityTime.NAMESPACE);
-        setEnabled(true);
     }
 
     @Override

@@ -71,7 +71,6 @@ public final class SoftwareVersionManager extends ExtensionManager {
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
         super(xmppSession, SoftwareVersion.NAMESPACE);
-        setEnabled(true);
     }
 
     @Override

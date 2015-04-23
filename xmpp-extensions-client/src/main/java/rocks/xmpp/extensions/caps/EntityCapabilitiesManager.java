@@ -118,6 +118,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
         directoryCapsCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
         serviceDiscoverer = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Automatic Service Discovery Thread"));
         // no need for a synchronized map, since access to this is already synchronized by this class.
+
         publishedNodes = new LinkedHashMap<String, Verification>(10, 0.75F, false) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<String, Verification> eldest) {
@@ -129,8 +130,6 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 return false;
             }
         };
-
-        setEnabled(true);
     }
 
     @Override

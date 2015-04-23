@@ -73,8 +73,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
         this.localSocks5Server = new LocalSocks5Server();
-
-        setEnabled(true);
     }
 
     static S5bSession createS5bSession(Jid requester, Jid target, String sessionId, List<StreamHost> streamHosts) throws IOException {

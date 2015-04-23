@@ -24,35 +24,46 @@
 
 package rocks.xmpp.core.session.context.extensions;
 
+import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.address.model.Addresses;
+import rocks.xmpp.extensions.attention.AttentionManager;
 import rocks.xmpp.extensions.attention.model.Attention;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.blocking.BlockingManager;
 import rocks.xmpp.extensions.blocking.model.BlockList;
+import rocks.xmpp.extensions.bob.model.Data;
 import rocks.xmpp.extensions.bookmarks.model.BookmarkStorage;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
+import rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
+import rocks.xmpp.extensions.carbons.MessageCarbonsManager;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
+import rocks.xmpp.extensions.chatstates.ChatStateManager;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
+import rocks.xmpp.extensions.filetransfer.FileTransferManager;
+import rocks.xmpp.extensions.forward.StanzaForwardingManager;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.geoloc.GeoLocationManager;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.hashes.HashManager;
 import rocks.xmpp.extensions.hashes.model.Hash;
+import rocks.xmpp.extensions.httpauth.HttpAuthenticationManager;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import rocks.xmpp.extensions.idle.IdleManager;
 import rocks.xmpp.extensions.idle.model.Idle;
+import rocks.xmpp.extensions.invisible.InvisibilityManager;
 import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
+import rocks.xmpp.extensions.jingle.JingleManager;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
@@ -62,30 +73,39 @@ import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 import rocks.xmpp.extensions.json.model.Json;
 import rocks.xmpp.extensions.last.LastActivityManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
+import rocks.xmpp.extensions.messagecorrect.MessageCorrectionManager;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
+import rocks.xmpp.extensions.mood.MoodManager;
 import rocks.xmpp.extensions.mood.model.Mood;
+import rocks.xmpp.extensions.muc.MultiUserChatManager;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.nick.model.Nickname;
+import rocks.xmpp.extensions.offline.OfflineMessageManager;
 import rocks.xmpp.extensions.offline.model.OfflineMessage;
 import rocks.xmpp.extensions.oob.OutOfBandFileTransferManager;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.oob.model.x.OobX;
 import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.ping.model.Ping;
+import rocks.xmpp.extensions.privacy.PrivacyListManager;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
 import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.extensions.receipts.MessageDeliveryReceiptsManager;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
+import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
+import rocks.xmpp.extensions.rpc.RpcManager;
 import rocks.xmpp.extensions.rpc.model.Rpc;
+import rocks.xmpp.extensions.rtt.RealTimeTextManager;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.extensions.search.model.Search;
+import rocks.xmpp.extensions.shim.HeaderManager;
 import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
@@ -100,7 +120,11 @@ import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.extensions.version.SoftwareVersionManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Registers extensions and manager classes, (which should be initialized during the start of a session) to the {@link rocks.xmpp.core.session.XmppSession}.
@@ -110,201 +134,206 @@ import java.util.Arrays;
  */
 public class ExtensionContext extends CoreContext {
 
+    private static final String[] REGISTERED_HASH_ALGORITHMS = new String[]{"md5", "sha-1", "sha-224", "sha-256", "sha-384", "sha-512"};
+
+    private static final Set<String> HASH_FEATURES = new HashSet<>();
+
+    static {
+        for (String algorithm : REGISTERED_HASH_ALGORITHMS) {
+            try {
+                MessageDigest.getInstance(algorithm);
+                HASH_FEATURES.add("urn:xmpp:hash-function-text-names:" + algorithm);
+            } catch (NoSuchAlgorithmException e) {
+                // ignore
+            }
+        }
+    }
+
     public ExtensionContext() {
         // no-args-default constructor needed for implicit instantiation
-        this(new Class[0]);
+        this(new Extension[0]);
     }
 
     public ExtensionContext(Class<?>... extensions) {
-        super(Arrays.asList(
-                AvatarManager.class, // Make sure to initialize AvatarManager before EntityCapabilitiesManager, because both send presence and due to XEP-0153 logic, it can happen that presences are sent twice, if multiple resources are online.
-                LastActivityManager.class,
-                IdleManager.class,
-                InBandByteStreamManager.class,
-                VCardManager.class,
-                OutOfBandFileTransferManager.class,
-                GeoLocationManager.class,
-                SoftwareVersionManager.class,
-                StreamInitiationManager.class,
-                EntityCapabilitiesManager.class,
-                ContactExchangeManager.class,
-                ReachabilityManager.class,
-                MessageDeliveryReceiptsManager.class,
-                BlockingManager.class,
-                PingManager.class,
-                EntityTimeManager.class,
-                HashManager.class
-        ), concatenateArrays(extensions,
+        this(Arrays.asList(extensions).stream().map(Extension::of).toArray(Extension[]::new));
+    }
+
+    public ExtensionContext(Extension... extensions) {
+        super(concatenateArrays(extensions,
 
                 // XEP-0009: Jabber-RPC
-                Rpc.class,
+                Extension.of(Rpc.NAMESPACE, RpcManager.class, false, Rpc.class),
 
                 // XEP-0012: Last Activity
-                LastActivity.class,
+                Extension.of(LastActivity.NAMESPACE, LastActivityManager.class, true, LastActivity.class),
 
                 // XEP-0013: Flexible Offline Message Retrieval
-                OfflineMessage.class,
+                Extension.of(OfflineMessage.NAMESPACE, OfflineMessageManager.class, false, OfflineMessage.class),
 
                 // XEP-0016: Privacy Lists
-                Privacy.class,
+                Extension.of(Privacy.NAMESPACE, PrivacyListManager.class, false, Privacy.class),
 
                 // XEP-0020: Feature Negotiation
-                FeatureNegotiation.class,
+                Extension.of(FeatureNegotiation.NAMESPACE, true, FeatureNegotiation.class),
 
                 // XEP-0033: Extended Stanza Addressing
-                Addresses.class,
+                Extension.of(Addresses.class),
 
                 // XEP-0045: Multi-User Chat
-                Muc.class,
+                Extension.of(Muc.NAMESPACE, MultiUserChatManager.class, true, Muc.class),
 
                 // XEP-0047: In-Band Bytestreams
-                InBandByteStream.class,
+                Extension.of(InBandByteStream.NAMESPACE, InBandByteStreamManager.class, true, InBandByteStream.class),
 
                 // XEP-0048: BookmarkStorage
-                BookmarkStorage.class,
+                Extension.of(BookmarkStorage.class),
 
                 // XEP-0050: Ad-Hoc Commands
-                Command.class,
+                // TODO add manager class when implemented
+                Extension.of(Command.NAMESPACE, false, Command.class),
 
                 // XEP-0054: vcard-temp
-                VCard.class,
+                Extension.of(VCard.NAMESPACE, VCardManager.class, true, VCard.class),
 
                 // XEP-0055: Jabber Search
-                Search.class,
+                Extension.of(Search.class),
 
                 // XEP-0060: Publish-Subscribe
-                PubSub.class,
+                Extension.of(PubSub.class),
 
                 // XEP-0065: SOCKS5 Bytestreams
-                Socks5ByteStream.class,
+                Extension.of(Socks5ByteStream.NAMESPACE, Socks5ByteStreamManager.class, true, Socks5ByteStream.class),
 
                 // XEP-0066: Out of Band Data
-                OobIQ.class, OobX.class,
+                Extension.of(OobIQ.NAMESPACE, OutOfBandFileTransferManager.class, true, OobIQ.class),
+
+                // XEP-0066: Out of Band Data
+                Extension.of(OobX.NAMESPACE, false, OobX.class),
 
                 // XEP-0070: Verifying HTTP Requests via XMPP
-                ConfirmationRequest.class,
+                Extension.of(ConfirmationRequest.NAMESPACE, HttpAuthenticationManager.class, false, ConfirmationRequest.class),
 
                 // XEP-0077: In-Band Registration
-                RegisterFeature.class, Registration.class,
+                Extension.of(Registration.NAMESPACE, RegistrationManager.class, false, RegisterFeature.class, Registration.class),
 
                 // XEP-0080: User Location
-                GeoLocation.class,
+                Extension.of(GeoLocation.NAMESPACE, GeoLocationManager.class, true, false, GeoLocation.class),
 
                 // XEP-0084: User Avatar
-                AvatarData.class, AvatarMetadata.class,
+                Extension.of(AvatarData.NAMESPACE, AvatarManager.class, true, false, AvatarData.class, AvatarMetadata.class),
 
                 // XEP-0085: Chat State Notifications
-                ChatState.class,
+                Extension.of(ChatState.NAMESPACE, ChatStateManager.class, false, ChatState.class),
 
                 // XEP-0092: Software Version
-                SoftwareVersion.class,
+                Extension.of(SoftwareVersion.NAMESPACE, SoftwareVersionManager.class, true, SoftwareVersion.class),
 
                 // XEP-0095: Stream Initiation
-                StreamInitiation.class,
+                Extension.of(StreamInitiation.NAMESPACE, StreamInitiationManager.class, false, StreamInitiation.class),
 
                 // XEP-0096: SI File Transfer
-                SIFileTransferOffer.class,
+                Extension.of(SIFileTransferOffer.NAMESPACE, FileTransferManager.class, false, SIFileTransferOffer.class),
 
                 // XEP-0107: User Mood
-                Mood.class,
+                Extension.of(Mood.NAMESPACE, MoodManager.class, true, false, Mood.class),
 
                 // XEP-0108: User Activity
-                Activity.class,
+                Extension.of(Activity.NAMESPACE, null, true, false, Activity.class),
 
                 // XEP-0115: Entity Capabilities
-                EntityCapabilities.class,
+                Extension.of(EntityCapabilities.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities.class),
 
                 // XEP-0118: User Tune
-                Tune.class,
+                Extension.of(Tune.NAMESPACE, null, true, false, Tune.class),
 
                 // XEP-0131: Stanza Headers and Internet Metadata
-                Headers.class,
+                Extension.of(Headers.NAMESPACE, HeaderManager.class, false, Headers.class),
 
                 // XEP-0144: Roster Item Exchange
-                ContactExchange.class,
+                Extension.of(ContactExchange.NAMESPACE, ContactExchangeManager.class, false, ContactExchange.class),
 
                 // XEP-0152: Reachability Addresses
-                Reachability.class,
+                Extension.of(Reachability.NAMESPACE, ReachabilityManager.class, false, Reachability.class),
 
                 // XEP-0153: vCard-Based Avatars
-                AvatarUpdate.class,
+                Extension.of(AvatarUpdate.NAMESPACE, AvatarManager.class, false, AvatarUpdate.class),
 
                 // XEP-0166: Jingle
-                Jingle.class,
+                Extension.of(Jingle.NAMESPACE, JingleManager.class, false, Jingle.class),
 
                 // XEP-0167: Jingle RTP Sessions
-                Rtp.class,
+                Extension.of(Rtp.NAMESPACE, null, false, Rtp.class),
 
                 // XEP-0172: User Nickname
-                Nickname.class,
+                Extension.of(Nickname.class),
 
                 // XEP-0176: Jingle ICE-UDP Transport Method
-                IceUdpTransportMethod.class,
+                Extension.of(IceUdpTransportMethod.class),
 
                 // XEP-0184: Message Delivery Receipts
-                MessageDeliveryReceipts.class,
+                Extension.of(MessageDeliveryReceipts.NAMESPACE, MessageDeliveryReceiptsManager.class, false, MessageDeliveryReceipts.class),
 
                 // XEP-0186: Invisible Command
-                InvisibleCommand.class,
+                Extension.of(InvisibleCommand.NAMESPACE, InvisibilityManager.class, false, InvisibleCommand.class),
 
                 // XEP-0191: Blocking Command
-                BlockList.class,
+                Extension.of(BlockList.NAMESPACE, BlockingManager.class, false, BlockList.class),
 
                 // XEP-0198: Stream Management
-                StreamManagement.class,
+                Extension.of(StreamManagement.class),
 
                 // XEP-0199: XMPP Ping
-                Ping.class,
+                Extension.of(Ping.NAMESPACE, PingManager.class, true, Ping.class),
 
                 // XEP-0202: Entity Time
-                EntityTime.class,
+                Extension.of(EntityTime.NAMESPACE, EntityTimeManager.class, true, EntityTime.class),
 
                 // XEP-0203: Delayed Delivery
-                DelayedDelivery.class,
+                Extension.of(DelayedDelivery.class),
 
                 // XEP-0224: Attention
-                Attention.class,
+                Extension.of(Attention.NAMESPACE, AttentionManager.class, false, Attention.class),
 
                 // XEP-0231: Bits of Binary
-                InBandByteStream.Data.class,
+                Extension.of(Data.NAMESPACE, null, false, Data.class),
 
                 // XEP-0234: Jingle File Transfer
-                JingleFileTransfer.class,
+                Extension.of(JingleFileTransfer.NAMESPACE, FileTransferManager.class, false, JingleFileTransfer.class),
 
                 // XEP-0249: Direct MUC Invitations
-                DirectInvitation.class,
+                Extension.of(DirectInvitation.NAMESPACE, MultiUserChatManager.class, true, DirectInvitation.class),
 
                 // XEP-0260: Jingle SOCKS5 Bytestreams Transport Method
-                S5bTransportMethod.class,
+                Extension.of(S5bTransportMethod.NAMESPACE, null, false, S5bTransportMethod.class),
 
                 // XEP-0261: Jingle In-Band Bytestreams Transport Method
-                InBandBytestreamsTransportMethod.class,
+                Extension.of(InBandBytestreamsTransportMethod.NAMESPACE, null, false, InBandBytestreamsTransportMethod.class),
 
                 // XEP-0280: Message Carbons
-                MessageCarbons.class,
+                Extension.of(MessageCarbons.NAMESPACE, MessageCarbonsManager.class, false, MessageCarbons.class),
 
                 // XEP-0297: Stanza Forwarding
-                Forwarded.class,
+                Extension.of(Forwarded.NAMESPACE, StanzaForwardingManager.class, false, Forwarded.class),
 
                 // XEP-0300: Use of Cryptographic Hash Functions in XMPP
-                Hash.class,
+                Extension.of(Hash.NAMESPACE, HashManager.class, HASH_FEATURES, true, Hash.class),
 
                 // XEP-0301: In-Band Real Time Text
-                RealTimeText.class,
+                Extension.of(RealTimeText.NAMESPACE, RealTimeTextManager.class, false, RealTimeText.class),
 
                 // XEP-0308: Last Message Correction
-                Replace.class,
+                Extension.of(Replace.NAMESPACE, MessageCorrectionManager.class, false, Replace.class),
 
                 // XEP-0319: Last User Interaction in Presence
-                Idle.class,
+                Extension.of(Idle.NAMESPACE, IdleManager.class, true, Idle.class),
 
                 // XEP-0335: JSON Containers
-                Json.class
+                Extension.of(Json.class)
         ));
     }
 
-    private static Class<?>[] concatenateArrays(Class<?>[] customExtensions, Class<?>... xmppExtensions) {
-        Class<?>[] combined = Arrays.copyOf(customExtensions, customExtensions.length + xmppExtensions.length);
+    private static Extension[] concatenateArrays(Extension[] customExtensions, Extension... xmppExtensions) {
+        Extension[] combined = Arrays.copyOf(customExtensions, customExtensions.length + xmppExtensions.length);
         System.arraycopy(xmppExtensions, 0, combined, customExtensions.length, xmppExtensions.length);
         return combined;
     }

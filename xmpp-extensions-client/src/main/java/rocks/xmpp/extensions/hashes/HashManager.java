@@ -55,7 +55,6 @@ public final class HashManager extends ExtensionManager {
     }
 
     private HashManager(XmppSession xmppSession) {
-        super(xmppSession, false, FEATURES);
-        setEnabled(true);
+        super(xmppSession, false);
     }
 }

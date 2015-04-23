@@ -60,7 +60,6 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
         super(xmppSession, Headers.NAMESPACE);
         this.supportedHeaders = new CopyOnWriteArraySet<>();
         serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        setEnabled(false);
     }
 
     /**

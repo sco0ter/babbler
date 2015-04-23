@@ -90,8 +90,6 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
             fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
         });
-
-        setEnabled(true);
     }
 
     @Override

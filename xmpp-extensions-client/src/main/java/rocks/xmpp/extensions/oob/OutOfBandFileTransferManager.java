@@ -60,7 +60,6 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
     private OutOfBandFileTransferManager(final XmppSession xmppSession) {
         super(xmppSession, OobIQ.NAMESPACE, OobX.NAMESPACE);
         fileTransferManager = xmppSession.getManager(FileTransferManager.class);
-        setEnabled(true);
     }
 
     @Override

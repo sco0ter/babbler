@@ -74,7 +74,6 @@ public final class PingManager extends ExtensionManager {
     private PingManager(final XmppSession xmppSession) {
         super(xmppSession, true, Ping.NAMESPACE);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
-        setEnabled(true);
     }
 
     @Override

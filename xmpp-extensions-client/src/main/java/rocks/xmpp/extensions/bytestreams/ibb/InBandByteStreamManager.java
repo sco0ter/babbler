@@ -61,7 +61,6 @@ public final class InBandByteStreamManager extends ByteStreamManager {
 
     private InBandByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession, InBandByteStream.NAMESPACE);
-        setEnabled(true);
     }
 
     @Override

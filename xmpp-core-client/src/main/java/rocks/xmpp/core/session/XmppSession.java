@@ -169,6 +169,8 @@ public class XmppSession implements AutoCloseable {
 
     private final XmppSessionConfiguration configuration;
 
+    private final FeatureRegistry featureRegistry;
+
     ExecutorService iqHandlerExecutor;
 
     ExecutorService stanzaListenerExecutor;
@@ -272,6 +274,8 @@ public class XmppSession implements AutoCloseable {
                 return false;
             }
         });
+        this.featureRegistry = new FeatureRegistry(this);
+
 
         // Every connection supports XEP-106 JID Escaping.
         getManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
@@ -293,8 +297,7 @@ public class XmppSession implements AutoCloseable {
             Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
         }
 
-        // Initialize the managers.
-        configuration.getInitialManagers().forEach(this::getManager);
+        configuration.getExtensions().forEach(featureRegistry::registerFeature);
     }
 
     private static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
@@ -1326,6 +1329,61 @@ public class XmppSession implements AutoCloseable {
      */
     public final XmppDebugger getDebugger() {
         return debugger;
+    }
+
+    /**
+     * Enables a feature by its name, usually a protocol namespace.
+     *
+     * @param name The associated manager class.
+     */
+    public final void enableFeature(String name) {
+        featureRegistry.enableFeature(name);
+    }
+
+    /**
+     * Disables a feature by its name, usually a protocol namespace.
+     *
+     * @param name The associated manager class.
+     */
+    public final void disableFeature(String name) {
+        featureRegistry.disableFeature(name);
+    }
+
+    /**
+     * Enables a feature by its manager class.
+     *
+     * @param managerClass The associated manager class.
+     */
+    public final void enableFeature(Class<? extends Manager> managerClass) {
+        featureRegistry.enableFeature(managerClass);
+    }
+
+    /**
+     * Disables a feature by its manager class.
+     *
+     * @param managerClass The associated manager class.
+     */
+    public final void disableFeature(Class<? extends Manager> managerClass) {
+        featureRegistry.disableFeature(managerClass);
+    }
+
+    /**
+     * Checks if a feature is enabled.
+     *
+     * @param feature The feature.
+     * @return If the feature is enabled.
+     */
+    public final boolean isFeatureEnabled(String feature) {
+        return getEnabledFeatures().contains(feature);
+    }
+
+    /**
+     * Gets the enabled features.
+     *
+     * @return The enabled features.
+     */
+    public final Collection<String> getEnabledFeatures() {
+        return featureRegistry.getEnabledFeatures();
     }
 
     /**

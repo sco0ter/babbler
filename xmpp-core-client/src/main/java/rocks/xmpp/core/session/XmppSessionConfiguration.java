@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -87,8 +89,6 @@ public final class XmppSessionConfiguration {
 
     private static volatile XmppSessionConfiguration defaultConfiguration;
 
-    private final Collection<Class<? extends Manager>> initialExtensionManagers = new ArrayList<>();
-
     private final JAXBContext jaxbContext;
 
     private final Class<? extends XmppDebugger> xmppDebugger;
@@ -100,6 +100,8 @@ public final class XmppSessionConfiguration {
     private final Path cacheDirectory;
 
     private final Supplier<Presence> initialPresence;
+
+    private final Set<Extension> extensions;
 
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
@@ -119,20 +121,20 @@ public final class XmppSessionConfiguration {
             try {
                 Class<?> extensionContext = Class.forName(CoreContext.class.getPackage().getName() + ".extensions.ExtensionContext");
                 context = (CoreContext) extensionContext.newInstance();
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                context = new CoreContext();
+            } catch (ReflectiveOperationException e) {
+                context = new CoreContext(new Extension[0]);
             }
         }
 
-        // These are the manager classes which are loaded immediately, when the XmppSession is initialized,
-        // Typically the add listeners to the session, e.g. to automatically reply.
-        initialExtensionManagers.addAll(context.getManagers());
+        this.extensions = new HashSet<>(context.getExtensions());
 
-        Class<?>[] classesToBeBound = new Class<?>[context.getExtensions().size()];
-        context.getExtensions().toArray(classesToBeBound);
+        Collection<Class<?>> classesToBeBound = new ArrayList<>();
+        for (Extension extension : extensions) {
+            classesToBeBound.addAll(extension.getClasses());
+        }
 
         try {
-            jaxbContext = JAXBContext.newInstance(classesToBeBound);
+            jaxbContext = JAXBContext.newInstance(classesToBeBound.toArray(new Class<?>[classesToBeBound.size()]));
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
@@ -182,15 +184,6 @@ public final class XmppSessionConfiguration {
      */
     JAXBContext getJAXBContext() {
         return jaxbContext;
-    }
-
-    /**
-     * Gets the initial managers. Theses managers are initialized when the session is initialized, thus allowing them to immediately add listeners to the session e.g. to react to inbound stanzas.
-     *
-     * @return The initial managers.
-     */
-    Collection<Class<? extends Manager>> getInitialManagers() {
-        return initialExtensionManagers;
     }
 
     /**
@@ -246,8 +239,12 @@ public final class XmppSessionConfiguration {
      * @return The initial presence supplier.
      * @see <a href="http://xmpp.org/rfcs/rfc6121.html#presence-initial">4.2.  Initial Presence</a>
      */
-    public Supplier<Presence> getInitialPresence() {
+    public final Supplier<Presence> getInitialPresence() {
         return initialPresence;
+    }
+
+    final Collection<Extension> getExtensions() {
+        return extensions;
     }
 
     /**

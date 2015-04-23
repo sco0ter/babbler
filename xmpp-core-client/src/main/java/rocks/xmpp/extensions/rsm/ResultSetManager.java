@@ -42,7 +42,6 @@ import java.util.List;
 public final class ResultSetManager extends ExtensionManager {
     private ResultSetManager(XmppSession xmppSession) {
         super(xmppSession, ResultSetManagement.NAMESPACE);
-        setEnabled(true);
     }
 
     /**

@@ -210,7 +210,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             }
             return jidValue;
         } else {
-            throw new IllegalArgumentException("Could not parse JID.");
+            throw new IllegalArgumentException("Could not parse JID: " + jid);
         }
     }
 
@@ -344,10 +344,10 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     private void validateLength(String value, String part) {
         if (value != null) {
             if (value.isEmpty()) {
-                throw new IllegalArgumentException(String.format("%s must not be empty.", part));
+                throw new IllegalArgumentException(part + " must not be empty.");
             }
             if (value.length() > 1023) {
-                throw new IllegalArgumentException(String.format("%s must not be greater than 1023 characters.", part));
+                throw new IllegalArgumentException(part + " must not be greater than 1023 characters.");
             }
         }
     }

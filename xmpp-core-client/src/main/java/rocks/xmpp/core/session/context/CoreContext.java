@@ -48,6 +48,9 @@ import rocks.xmpp.extensions.data.validate.model.Validation;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
+import rocks.xmpp.extensions.errors.model.ResourceLimitExceeded;
+import rocks.xmpp.extensions.errors.model.StanzaTooBig;
+import rocks.xmpp.extensions.errors.model.TooManyStanzas;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
@@ -114,6 +117,9 @@ public class CoreContext {
 
                 // XEP-0145: Annotations
                 Annotation.class,
+
+                // XEP-0205: Best Practices to Discourage Denial of Service Attacks
+                ResourceLimitExceeded.class, StanzaTooBig.class, TooManyStanzas.class,
 
                 // XEP-0221: Data Forms Media Element
                 Media.class

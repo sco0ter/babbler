@@ -1089,7 +1089,7 @@ public class XmppSession implements AutoCloseable {
                     synchronized (iqHandlerMap) {
                         iqHandler = iqHandlerMap.get(payload.getClass());
                         // If the handler is to be invoked asynchronously, get the iqHandlerExecutor, otherwise use stanzaListenerExecutor (which is a single thread executor).
-                        executor = iqHandlerInvocationModes.get(payload.getClass()) ? iqHandlerExecutor : stanzaListenerExecutor;
+                        executor = iqHandler != null ? (iqHandlerInvocationModes.get(payload.getClass()) ? iqHandlerExecutor : stanzaListenerExecutor) : null;
                     }
 
                     if (iqHandler != null) {

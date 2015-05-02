@@ -341,6 +341,6 @@ try (XmppSession xmppSession = new XmppSession("domain")) {
 }
 ```
 
-[supported]: /sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/supported.png "Is supported"
-[not supported]: /sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/notsupported.png "Is not supported"
-[in development]: /sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/development.png "Is in development or planned"
+[supported]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/supported.png "Is supported"
+[not supported]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/notsupported.png "Is not supported"
+[in development]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/development.png "Is in development or planned"

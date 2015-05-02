@@ -1175,7 +1175,7 @@ public class XmppSession implements AutoCloseable {
                         instance.initialize();
                         instances.put(clazz, instance);
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                        throw new IllegalArgumentException("Can't instantiate the provided class.", e);
+                        throw new IllegalArgumentException("Can't instantiate the provided class:" + clazz, e);
                     }
                 }
             }

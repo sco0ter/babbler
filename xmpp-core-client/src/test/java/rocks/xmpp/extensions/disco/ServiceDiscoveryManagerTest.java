@@ -57,6 +57,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
     @Test
     public void testItemsEquals() {
+        // Tests if two Identities are equal although their name is different. That is because there must not be multiple identities with the same category+type+xml:lang but different names.
+        // From XEP-0030: the <query/> element MAY include multiple <identity/> elements with the same category+type but with different 'xml:lang' values, however the <query/> element MUST NOT include multiple <identity/> elements with the same category+type+xml:lang but with different 'name' values
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));
         Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(new Identity("conference", "text", "name2", "en")));

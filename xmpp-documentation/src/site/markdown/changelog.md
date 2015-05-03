@@ -3,7 +3,11 @@
 
 ## Version 0.6.0-SNAPSHOT
 
+* Add support for [XEP-0205: Best Practices to Discourage Denial of Service Attacks](http://www.xmpp.org/extensions/xep-0205.html) (error conditions)
+* Add support for [XEP-0301: In-Band Real Time Text](http://www.xmpp.org/extensions/xep-0301.html)
 * Add support for [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
+* Send initial presence automatically during login (no need to do it manually anymore).
+* XEP-0092 Software Version now responds with Babbler's version automatically.
 * Use [Java 8's Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html):
     * All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda expressions, nothing has changed for you)
 * Use [Java 8's Date-Time API](https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html):

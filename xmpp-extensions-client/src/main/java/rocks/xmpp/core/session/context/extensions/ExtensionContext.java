@@ -55,7 +55,6 @@ import rocks.xmpp.extensions.forward.StanzaForwardingManager;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.geoloc.GeoLocationManager;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
-import rocks.xmpp.extensions.hashes.HashManager;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.HttpAuthenticationManager;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
@@ -316,7 +315,7 @@ public class ExtensionContext extends CoreContext {
                 Extension.of(Forwarded.NAMESPACE, StanzaForwardingManager.class, false, Forwarded.class),
 
                 // XEP-0300: Use of Cryptographic Hash Functions in XMPP
-                Extension.of(Hash.NAMESPACE, HashManager.class, HASH_FEATURES, true, Hash.class),
+                Extension.of(Hash.NAMESPACE, null, HASH_FEATURES, true, Hash.class),
 
                 // XEP-0301: In-Band Real Time Text
                 Extension.of(RealTimeText.NAMESPACE, RealTimeTextManager.class, false, RealTimeText.class),

@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.rpc.model.Value;
 
 /**
@@ -46,7 +45,7 @@ public class RpcManagerTest extends ExtensionTest {
         RpcManager rpcManager = connection1.getManager(RpcManager.class);
         Assert.assertFalse(rpcManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("jabber:iq:rpc");
+        String feature = "jabber:iq:rpc";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         rpcManager.setEnabled(true);
         Assert.assertTrue(rpcManager.isEnabled());

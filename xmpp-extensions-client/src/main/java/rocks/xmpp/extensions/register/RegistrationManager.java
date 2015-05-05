@@ -31,7 +31,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
@@ -62,7 +61,7 @@ public final class RegistrationManager extends ExtensionManager {
         if (!isSupported) {
             ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
             InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
-            isSupported = infoNode.getFeatures().contains(new Feature("jabber:iq:register"));
+            isSupported = infoNode.getFeatures().contains(Registration.NAMESPACE);
         }
         return isSupported;
     }

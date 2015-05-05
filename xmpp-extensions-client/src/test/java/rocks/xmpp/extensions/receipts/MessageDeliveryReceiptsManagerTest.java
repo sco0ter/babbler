@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 import java.util.Collections;
@@ -171,7 +170,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:receipts");
+        String feature = "urn:xmpp:receipts";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         messageDeliveryReceiptsManager.setEnabled(true);
         Assert.assertTrue(messageDeliveryReceiptsManager.isEnabled());

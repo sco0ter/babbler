@@ -33,7 +33,6 @@ import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.attention.model.Attention;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 /**
  * @author Christian Schudt
@@ -70,7 +69,7 @@ public class AttentionManagerTest extends ExtensionTest {
         AttentionManager attentionManager = connection1.getManager(AttentionManager.class);
         Assert.assertFalse(attentionManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:attention:0");
+        String feature = "urn:xmpp:attention:0";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         attentionManager.setEnabled(true);
         Assert.assertTrue(attentionManager.isEnabled());

@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.ping.model.Ping;
 
@@ -42,21 +41,21 @@ public class FeatureRegistryTest {
     public void test() {
         XmppSession xmppSession = new TestXmppSession();
         // By default ping is enabled.
-        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(new Feature(Ping.NAMESPACE)));
+        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(Ping.NAMESPACE));
         Assert.assertTrue(xmppSession.getManager(PingManager.class).isEnabled());
 
         // Then remove the feature from service discovery
-        xmppSession.getManager(ServiceDiscoveryManager.class).removeFeature(new Feature(Ping.NAMESPACE));
+        xmppSession.getManager(ServiceDiscoveryManager.class).removeFeature(Ping.NAMESPACE);
 
         // As a consequence PingManager should be disabled.
         Assert.assertFalse(xmppSession.getManager(PingManager.class).isEnabled());
-        Assert.assertFalse(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(new Feature(Ping.NAMESPACE)));
+        Assert.assertFalse(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(Ping.NAMESPACE));
         Assert.assertFalse(xmppSession.isFeatureEnabled(Ping.NAMESPACE));
 
         // Enable by namespace.
         xmppSession.enableFeature(Ping.NAMESPACE);
 
         Assert.assertTrue(xmppSession.getManager(PingManager.class).isEnabled());
-        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(new Feature(Ping.NAMESPACE)));
+        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(Ping.NAMESPACE));
     }
 }

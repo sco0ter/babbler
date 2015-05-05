@@ -37,7 +37,6 @@ import rocks.xmpp.core.util.cache.LruCache;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -227,7 +226,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                 }
 
                 @Override
-                public Set<Feature> getFeatures() {
+                public Set<String> getFeatures() {
                     return infoDiscovery.getFeatures();
                 }
 
@@ -315,7 +314,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
      */
     public final boolean isSupported(String feature, Jid jid) throws XmppException {
         InfoNode infoNode = discoverCapabilities(jid);
-        return infoNode.getFeatures().contains(new Feature(feature));
+        return infoNode.getFeatures().contains(feature);
     }
 
     private void writeToCache(Verification verification, InfoNode infoNode) {

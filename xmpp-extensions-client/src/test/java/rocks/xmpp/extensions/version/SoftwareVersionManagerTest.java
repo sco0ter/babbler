@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 /**
@@ -76,7 +75,7 @@ public class SoftwareVersionManagerTest extends ExtensionTest {
         // By default, the manager should be enabled.
         Assert.assertTrue(softwareVersionManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("jabber:iq:version");
+        String feature = "jabber:iq:version";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         softwareVersionManager.setEnabled(false);
         Assert.assertFalse(softwareVersionManager.isEnabled());

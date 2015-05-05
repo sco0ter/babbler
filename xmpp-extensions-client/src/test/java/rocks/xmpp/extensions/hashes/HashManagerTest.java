@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 /**
  * @author Christian Schudt
@@ -42,8 +41,8 @@ public class HashManagerTest extends ExtensionTest {
         HashManager hashManager = xmppSession.getManager(HashManager.class);
         Assert.assertTrue(hashManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:hashes:1");
-        Feature featureSha256 = new Feature("urn:xmpp:hash-function-text-names:sha-256");
+        String feature = "urn:xmpp:hashes:1";
+        String featureSha256 = "urn:xmpp:hash-function-text-names:sha-256";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(featureSha256));
         hashManager.setEnabled(false);

@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 import java.time.OffsetDateTime;
 
@@ -73,7 +72,7 @@ public class EntityTimeManagerTest extends ExtensionTest {
         // By default, the manager should be enabled.
         Assert.assertTrue(entityTimeManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:time");
+        String feature = "urn:xmpp:time";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         entityTimeManager.setEnabled(false);
         Assert.assertFalse(entityTimeManager.isEnabled());

@@ -33,7 +33,6 @@ import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -188,15 +187,11 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * Gets an unmodifiable set of features.
      *
      * @return The features.
-     * @see #addFeature(rocks.xmpp.extensions.disco.model.info.Feature)
-     * @see #removeFeature(rocks.xmpp.extensions.disco.model.info.Feature)
+     * @see #addFeature(String)
+     * @see #removeFeature(String)
      */
-    public Set<Feature> getFeatures() {
-        Set<Feature> features = new HashSet<>();
-        for (String feature : xmppSession.getEnabledFeatures()) {
-            features.add(new Feature(feature));
-        }
-        return Collections.unmodifiableSet(features);
+    public Set<String> getFeatures() {
+        return Collections.unmodifiableSet(new HashSet<>(xmppSession.getEnabledFeatures()));
     }
 
     /**
@@ -242,12 +237,12 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * That way, supported features are consistent with enabled extension managers and service discovery won't reveal features, that are in fact not supported.
      *
      * @param feature The feature.
-     * @see #removeFeature(rocks.xmpp.extensions.disco.model.info.Feature)
+     * @see #removeFeature(String)
      * @see #getFeatures()
      */
-    public synchronized void addFeature(Feature feature) {
-        Set<Feature> oldList = getFeatures();
-        xmppSession.enableFeature(feature.getVar());
+    public synchronized void addFeature(String feature) {
+        Set<String> oldList = getFeatures();
+        xmppSession.enableFeature(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
 
@@ -255,12 +250,12 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * Removes a feature.
      *
      * @param feature The feature.
-     * @see #addFeature(rocks.xmpp.extensions.disco.model.info.Feature)
+     * @see #addFeature(String)
      * @see #getFeatures()
      */
-    public synchronized void removeFeature(Feature feature) {
-        Set<Feature> oldList = getFeatures();
-        xmppSession.disableFeature(feature.getVar());
+    public synchronized void removeFeature(String feature) {
+        Set<String> oldList = getFeatures();
+        xmppSession.disableFeature(feature);
         this.pcs.firePropertyChange("features", oldList, getFeatures());
     }
 
@@ -399,7 +394,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
         for (Item item : itemDiscovery.getItems()) {
             try {
                 InfoNode infoDiscovery = discoverInformation(item.getJid());
-                if (infoDiscovery.getFeatures().contains(new Feature(feature))) {
+                if (infoDiscovery.getFeatures().contains(feature)) {
                     services.add(item);
                 }
             } catch (XmppException e) {

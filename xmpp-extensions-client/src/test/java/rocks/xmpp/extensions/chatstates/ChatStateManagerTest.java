@@ -34,7 +34,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,7 +83,7 @@ public class ChatStateManagerTest extends ExtensionTest {
         // By default, Chat States are disabled.
         Assert.assertFalse(chatStateManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("http://jabber.org/protocol/chatstates");
+        String feature = "http://jabber.org/protocol/chatstates";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         chatStateManager.setEnabled(true);
         Assert.assertTrue(chatStateManager.isEnabled());

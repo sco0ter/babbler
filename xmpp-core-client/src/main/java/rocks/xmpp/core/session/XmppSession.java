@@ -50,8 +50,6 @@ import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.PresenceManager;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -275,10 +273,6 @@ public class XmppSession implements AutoCloseable {
             }
         });
         this.featureRegistry = new FeatureRegistry(this);
-
-
-        // Every connection supports XEP-106 JID Escaping.
-        getManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
 
         if (configuration.getDebugger() != null) {
             try {
@@ -1382,7 +1376,7 @@ public class XmppSession implements AutoCloseable {
      *
      * @return The enabled features.
      */
-    public final Collection<String> getEnabledFeatures() {
+    public final Set<String> getEnabledFeatures() {
         return featureRegistry.getEnabledFeatures();
     }
 

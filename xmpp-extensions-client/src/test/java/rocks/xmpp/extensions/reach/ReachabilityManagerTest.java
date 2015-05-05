@@ -34,7 +34,6 @@ import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.attention.AttentionManager;
 import rocks.xmpp.extensions.attention.model.Attention;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 /**
  * @author Christian Schudt
@@ -70,7 +69,7 @@ public class ReachabilityManagerTest extends ExtensionTest {
         ReachabilityManager reachabilityManager = connection1.getManager(ReachabilityManager.class);
         Assert.assertFalse(reachabilityManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:reach:0");
+        String feature = "urn:xmpp:reach:0";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         reachabilityManager.setEnabled(true);
         Assert.assertTrue(reachabilityManager.isEnabled());

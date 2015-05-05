@@ -32,7 +32,6 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -51,8 +50,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     @Test
     public void testFeatureEquals() {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(new Feature("http://jabber.org/protocol/muc")));
+        serviceDiscoveryManager.addFeature("http://jabber.org/protocol/muc");
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains("http://jabber.org/protocol/muc"));
     }
 
     @Test
@@ -83,8 +82,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(serviceDiscoveryManager.isEnabled());
-        Feature featureInfo = new Feature("http://jabber.org/protocol/disco#info");
-        Feature featureItems = new Feature("http://jabber.org/protocol/disco#items");
+        String featureInfo = "http://jabber.org/protocol/disco#info";
+        String featureItems = "http://jabber.org/protocol/disco#items";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(featureInfo));
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(featureItems));
         serviceDiscoveryManager.setEnabled(false);
@@ -233,8 +232,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         final int[] listenerCalled = {0};
         serviceDiscoveryManager.addPropertyChangeListener(evt -> listenerCalled[0]++);
-        serviceDiscoveryManager.addFeature(new Feature("dummy"));
-        serviceDiscoveryManager.removeFeature(new Feature("dummy"));
+        serviceDiscoveryManager.addFeature("dummy");
+        serviceDiscoveryManager.removeFeature("dummy");
         serviceDiscoveryManager.addIdentity(new Identity("cat", "type"));
         serviceDiscoveryManager.removeIdentity(new Identity("cat", "type"));
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);

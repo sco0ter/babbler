@@ -30,13 +30,10 @@ import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.shim.model.Headers;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -90,12 +87,7 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
      */
     public List<String> discoverSupportedHeaders(Jid jid) throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(jid, Headers.NAMESPACE);
-        List<String> result = new ArrayList<>();
-        for (Feature feature : infoNode.getFeatures()) {
-            String var = feature.getVar();
-            result.add(var.substring(var.indexOf("#") + 1));
-        }
-        return result;
+        return infoNode.getFeatures().stream().map(feature -> feature.substring(feature.indexOf("#") + 1)).collect(Collectors.toList());
     }
 
     @Override
@@ -109,11 +101,9 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
     }
 
     @Override
-    public Set<Feature> getFeatures() {
-        Set<Feature> features = new HashSet<>();
+    public Set<String> getFeatures() {
         // http://xmpp.org/extensions/xep-0131.html#disco-header
-        features.addAll(supportedHeaders.stream().map(supportedHeader -> new Feature(Headers.NAMESPACE + "#" + supportedHeader)).collect(Collectors.toList()));
-        return features;
+        return supportedHeaders.stream().map(supportedHeader -> Headers.NAMESPACE + "#" + supportedHeader).collect(Collectors.toSet());
     }
 
     @Override

@@ -46,7 +46,7 @@ import java.time.OffsetDateTime;
 public final class EntityTimeManager extends ExtensionManager {
 
     private EntityTimeManager(final XmppSession xmppSession) {
-        super(xmppSession, EntityTime.NAMESPACE);
+        super(xmppSession);
     }
 
     @Override

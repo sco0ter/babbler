@@ -29,12 +29,8 @@ package rocks.xmpp.core.session;
  */
 public abstract class ExtensionManager extends Manager {
 
-    protected ExtensionManager(XmppSession xmppSession, String... features) {
-        this(xmppSession, false, features);
-    }
-
-    protected ExtensionManager(XmppSession xmppSession, boolean disposable, String... features) {
-        this(xmppSession, disposable);
+    protected ExtensionManager(XmppSession xmppSession) {
+        this(xmppSession, false);
     }
 
     protected ExtensionManager(XmppSession xmppSession, boolean disposable) {

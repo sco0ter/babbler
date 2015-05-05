@@ -65,7 +65,7 @@ public final class ContactExchangeManager extends ExtensionManager {
     private final Collection<Jid> trustedEntities = new CopyOnWriteArraySet<>();
 
     private ContactExchangeManager(final XmppSession xmppSession) {
-        super(xmppSession, true, ContactExchange.NAMESPACE);
+        super(xmppSession, true);
     }
 
     @Override

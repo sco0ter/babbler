@@ -72,7 +72,7 @@ public final class PingManager extends ExtensionManager {
      * @param xmppSession The underlying XMPP session.
      */
     private PingManager(final XmppSession xmppSession) {
-        super(xmppSession, true, Ping.NAMESPACE);
+        super(xmppSession, true);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
     }
 

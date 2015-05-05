@@ -65,7 +65,7 @@ public final class ReachabilityManager extends ExtensionManager {
     private final List<Address> addresses = new CopyOnWriteArrayList<>();
 
     private ReachabilityManager(final XmppSession xmppSession) {
-        super(xmppSession, true, Reachability.NAMESPACE);
+        super(xmppSession, true);
     }
 
     @Override

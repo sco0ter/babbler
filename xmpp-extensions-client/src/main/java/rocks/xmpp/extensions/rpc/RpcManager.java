@@ -56,7 +56,7 @@ public final class RpcManager extends ExtensionManager {
     private RpcHandler rpcHandler;
 
     private RpcManager(final XmppSession xmppSession) {
-        super(xmppSession, Rpc.NAMESPACE);
+        super(xmppSession);
     }
 
     @Override

@@ -108,7 +108,7 @@ public final class AvatarManager extends ExtensionManager {
     private final Map<String, byte[]> avatarCache;
 
     private AvatarManager(final XmppSession xmppSession) {
-        super(xmppSession, true, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
+        super(xmppSession, true);
 
         vCardManager = xmppSession.getManager(VCardManager.class);
         avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;

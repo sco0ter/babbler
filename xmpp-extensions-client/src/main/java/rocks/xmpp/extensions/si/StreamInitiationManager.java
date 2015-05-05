@@ -80,7 +80,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     private final Socks5ByteStreamManager socks5ByteStreamManager;
 
     private StreamInitiationManager(final XmppSession xmppSession) {
-        super(xmppSession, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
+        super(xmppSession);
 
         inBandByteStreamManager = xmppSession.getManager(InBandByteStreamManager.class);
         socks5ByteStreamManager = xmppSession.getManager(Socks5ByteStreamManager.class);

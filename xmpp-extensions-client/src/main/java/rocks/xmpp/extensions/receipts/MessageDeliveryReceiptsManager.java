@@ -81,7 +81,7 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      * @param xmppSession The underlying connection.
      */
     private MessageDeliveryReceiptsManager(final XmppSession xmppSession) {
-        super(xmppSession, true, MessageDeliveryReceipts.NAMESPACE);
+        super(xmppSession, true);
     }
 
     @Override

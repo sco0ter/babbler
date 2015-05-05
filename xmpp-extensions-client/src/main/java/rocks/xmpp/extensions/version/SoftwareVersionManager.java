@@ -70,7 +70,7 @@ public final class SoftwareVersionManager extends ExtensionManager {
     private SoftwareVersion softwareVersion;
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
-        super(xmppSession, SoftwareVersion.NAMESPACE);
+        super(xmppSession);
     }
 
     @Override

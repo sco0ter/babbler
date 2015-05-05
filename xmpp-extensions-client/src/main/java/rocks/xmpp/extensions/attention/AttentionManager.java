@@ -61,7 +61,7 @@ import rocks.xmpp.extensions.attention.model.Attention;
 public final class AttentionManager extends ExtensionManager {
 
     private AttentionManager(XmppSession xmppSession) {
-        super(xmppSession, Attention.NAMESPACE);
+        super(xmppSession);
     }
 
     /**

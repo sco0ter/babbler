@@ -72,7 +72,7 @@ public final class LastActivityManager extends ExtensionManager {
     private final IdleManager idleManager;
 
     private LastActivityManager(final XmppSession xmppSession) {
-        super(xmppSession, LastActivity.NAMESPACE);
+        super(xmppSession);
         this.idleManager = xmppSession.getManager(IdleManager.class);
     }
 

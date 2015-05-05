@@ -50,7 +50,7 @@ public final class GeoLocationManager extends ExtensionManager {
     private final Set<Consumer<GeoLocationEvent>> geoLocationListeners = new CopyOnWriteArraySet<>();
 
     private GeoLocationManager(XmppSession xmppSession) {
-        super(xmppSession, true, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
+        super(xmppSession, true);
     }
 
     @Override

@@ -79,7 +79,7 @@ public final class ChatStateManager extends ExtensionManager {
     private final Map<Jid, Boolean> contactSupportsChatStateNotifications = new ConcurrentHashMap<>();
 
     private ChatStateManager(final XmppSession xmppSession) {
-        super(xmppSession, true, ChatState.NAMESPACE);
+        super(xmppSession, true);
     }
 
     @Override

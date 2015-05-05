@@ -63,7 +63,7 @@ public final class MultiUserChatManager extends ExtensionManager {
     private final Map<Jid, Item> enteredRoomsMap = new ConcurrentHashMap<>();
 
     private MultiUserChatManager(final XmppSession xmppSession) {
-        super(xmppSession, true, Muc.NAMESPACE);
+        super(xmppSession, true);
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
     }
 

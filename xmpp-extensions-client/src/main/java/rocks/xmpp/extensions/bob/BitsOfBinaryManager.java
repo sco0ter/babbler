@@ -45,7 +45,7 @@ class BitsOfBinaryManager extends ExtensionManager {
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 
     private BitsOfBinaryManager(final XmppSession xmppSession) {
-        super(xmppSession, true, Data.NAMESPACE);
+        super(xmppSession, true);
     }
 
     @Override

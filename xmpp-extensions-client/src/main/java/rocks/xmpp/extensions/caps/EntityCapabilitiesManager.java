@@ -111,7 +111,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
     private String node;
 
     private EntityCapabilitiesManager(final XmppSession xmppSession) {
-        super(xmppSession, EntityCapabilities.NAMESPACE);
+        super(xmppSession);
         serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
         directoryCapsCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;

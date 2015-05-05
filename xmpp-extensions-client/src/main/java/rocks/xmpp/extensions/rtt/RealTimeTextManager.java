@@ -57,7 +57,7 @@ public final class RealTimeTextManager extends ExtensionManager {
     private final Set<Consumer<RealTimeMessageEvent>> inboundRealTimeMessageListeners = new CopyOnWriteArraySet<>();
 
     private RealTimeTextManager(final XmppSession xmppSession) {
-        super(xmppSession, RealTimeText.NAMESPACE);
+        super(xmppSession);
     }
 
     @Override

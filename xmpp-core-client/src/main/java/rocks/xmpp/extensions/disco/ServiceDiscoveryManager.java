@@ -86,7 +86,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
-        super(xmppSession, true, InfoDiscovery.NAMESPACE, ItemDiscovery.NAMESPACE);
+        super(xmppSession, true);
     }
 
     @Override

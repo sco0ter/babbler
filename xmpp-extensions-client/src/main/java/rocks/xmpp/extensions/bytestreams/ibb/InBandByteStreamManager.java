@@ -60,7 +60,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
     final Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
     private InBandByteStreamManager(final XmppSession xmppSession) {
-        super(xmppSession, InBandByteStream.NAMESPACE);
+        super(xmppSession);
     }
 
     @Override

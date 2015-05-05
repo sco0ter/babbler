@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session.context;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Roster;
@@ -102,7 +103,7 @@ public class CoreContext {
                 Extension.of(RosterDelimiter.class),
 
                 // XEP-0106: JID Escaping
-                Extension.of("jid\\20escaping"),
+                Extension.of(Jid.ESCAPING_FEATURE),
 
                 // XEP-0122: Data Forms Validation
                 Extension.of(Validation.NAMESPACE, false, Validation.class),

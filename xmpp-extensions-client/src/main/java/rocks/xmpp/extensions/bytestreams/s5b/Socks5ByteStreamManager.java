@@ -103,7 +103,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     @Override
     protected void initialize() {
         super.initialize();
-        xmppSession.addIQHandler(Socks5ByteStream.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Socks5ByteStream.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
@@ -159,9 +159,19 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        if (!enabled || !isLocalHostEnabled()) {
+    public void onEnable() {
+        super.onEnable();
+        if (isLocalHostEnabled()) {
+            // Only stop the server here, if we disable support.
+            // It will be enabled, when needed.
+            localSocks5Server.start();
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        if (!isLocalHostEnabled()) {
             // Only stop the server here, if we disable support.
             // It will be enabled, when needed.
             localSocks5Server.stop();

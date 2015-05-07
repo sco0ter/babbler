@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -67,15 +68,13 @@ public final class SoftwareVersionManager extends ExtensionManager {
         DEFAULT_VERSION = version;
     }
 
+    private final IQHandler iqHandler;
+
     private SoftwareVersion softwareVersion;
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
         super(xmppSession);
-    }
-
-    @Override
-    protected void initialize() {
-        xmppSession.addIQHandler(SoftwareVersion.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 synchronized (SoftwareVersionManager.this) {
@@ -88,7 +87,19 @@ public final class SoftwareVersionManager extends ExtensionManager {
                 }
                 return iq.createError(Condition.SERVICE_UNAVAILABLE);
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(SoftwareVersion.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(SoftwareVersion.class);
     }
 
     /**

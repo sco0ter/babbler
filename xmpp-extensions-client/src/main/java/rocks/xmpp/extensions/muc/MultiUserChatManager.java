@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -37,6 +38,7 @@ import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
+import rocks.xmpp.extensions.rsm.ResultSetProvider;
 
 import java.util.Collection;
 import java.util.Map;
@@ -62,16 +64,14 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     private final Map<Jid, Item> enteredRoomsMap = new ConcurrentHashMap<>();
 
+    private final Consumer<MessageEvent> messageListener;
+
+    private final ResultSetProvider<Item> itemProvider;
+
     private MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, true);
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-    }
-
-    @Override
-    protected void initialize() {
-
-        // Listen for inbound invitations.
-        xmppSession.addInboundMessageListener(e -> {
+        this.messageListener = e -> {
             Message message = e.getMessage();
             // Check, if the message contains a mediated invitation.
             MucUser mucUser = message.getExtension(MucUser.class);
@@ -86,8 +86,23 @@ public final class MultiUserChatManager extends ExtensionManager {
                     XmppUtils.notifyEventListeners(invitationListeners, new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
                 }
             }
-        });
-        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, new DefaultItemProvider(enteredRoomsMap.values()));
+        };
+        itemProvider = new DefaultItemProvider(enteredRoomsMap.values());
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        // Listen for inbound invitations.
+        xmppSession.addInboundMessageListener(messageListener);
+        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, itemProvider);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(messageListener);
+        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, null);
     }
 
     /**

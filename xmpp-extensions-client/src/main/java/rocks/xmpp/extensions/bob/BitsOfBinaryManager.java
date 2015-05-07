@@ -50,7 +50,7 @@ class BitsOfBinaryManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(Data.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        xmppSession.addIQHandler(Data.class, new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 Data data = iq.getExtension(Data.class);

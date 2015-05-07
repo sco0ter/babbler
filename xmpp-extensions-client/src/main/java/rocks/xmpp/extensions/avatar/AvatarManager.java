@@ -29,6 +29,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
@@ -107,6 +109,12 @@ public final class AvatarManager extends ExtensionManager {
 
     private final Map<String, byte[]> avatarCache;
 
+    private final Consumer<PresenceEvent> inboundPresenceListener;
+
+    private final Consumer<PresenceEvent> outboundPresenceListener;
+
+    private final Consumer<MessageEvent> inboundMessageListener;
+
     private AvatarManager(final XmppSession xmppSession) {
         super(xmppSession, true);
 
@@ -114,15 +122,8 @@ public final class AvatarManager extends ExtensionManager {
         avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
 
         avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
-    }
 
-    @Override
-    protected final void initialize() {
-        xmppSession.addInboundPresenceListener(e -> {
-            // If vCard based avatars are enabled.
-            if (!isEnabled()) {
-                return;
-            }
+        inboundPresenceListener = e -> {
             final Presence presence = e.getPresence();
 
             // If the presence has an avatar update information.
@@ -189,12 +190,10 @@ public final class AvatarManager extends ExtensionManager {
                     }
                 }
             }
-        });
+        };
 
-        xmppSession.addOutboundPresenceListener(e -> {
-            if (!isEnabled()) {
-                return;
-            }
+        this.outboundPresenceListener = e -> {
+
             final Presence presence = e.getPresence();
             if (presence.isAvailable() && nonConformingResources.isEmpty()) {
                 // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
@@ -229,12 +228,9 @@ public final class AvatarManager extends ExtensionManager {
                     presence.getExtensions().add(new AvatarUpdate(myHash));
                 }
             }
-        });
+        };
 
-        xmppSession.addInboundMessageListener(e -> {
-            if (!isEnabled()) {
-                return;
-            }
+        this.inboundMessageListener = e -> {
             final Message message = e.getMessage();
             Event event = message.getExtension(Event.class);
             if (event != null) {
@@ -324,7 +320,23 @@ public final class AvatarManager extends ExtensionManager {
                     }
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected final void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundPresenceListener(inboundPresenceListener);
+        xmppSession.addOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+    }
+
+    @Override
+    protected final void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
+        xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
     }
 
     private void resetHash() {

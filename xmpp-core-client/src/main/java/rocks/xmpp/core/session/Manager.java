@@ -51,7 +51,7 @@ public abstract class Manager {
      * @return True, if this manager is enabled.
      * @see #setEnabled(boolean)
      */
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         return enabled;
     }
 
@@ -61,8 +61,26 @@ public abstract class Manager {
      * @param enabled If the manager gets enabled.
      * @see #isEnabled()
      */
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(boolean enabled) {
+        boolean wasEnabled = this.enabled;
         this.enabled = enabled;
+        if (enabled && !wasEnabled) {
+            onEnable();
+        } else if (!enabled && wasEnabled) {
+            onDisable();
+        }
+    }
+
+    /**
+     * Called when the manager is enabled.
+     */
+    protected void onEnable() {
+    }
+
+    /**
+     * Called when the manager is disabled.
+     */
+    protected void onDisable() {
     }
 
     /**

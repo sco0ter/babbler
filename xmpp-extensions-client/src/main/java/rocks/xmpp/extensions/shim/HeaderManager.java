@@ -82,8 +82,8 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
      *
      * @param jid The JID.
      * @return The list of supported headers.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public List<String> discoverSupportedHeaders(Jid jid) throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(jid, Headers.NAMESPACE);
@@ -91,13 +91,15 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        if (!enabled) {
-            serviceDiscoveryManager.removeInfoNode(Headers.NAMESPACE);
-        } else {
-            serviceDiscoveryManager.addInfoNode(this);
-        }
+    public void onEnable() {
+        super.onEnable();
+        serviceDiscoveryManager.addInfoNode(this);
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        serviceDiscoveryManager.removeInfoNode(getNode());
     }
 
     @Override

@@ -67,7 +67,7 @@ public final class JingleManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             public IQ processRequest(IQ iq) {
                 Jingle jingle = iq.getExtension(Jingle.class);

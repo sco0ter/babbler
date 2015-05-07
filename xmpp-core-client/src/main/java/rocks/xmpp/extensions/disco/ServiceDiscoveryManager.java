@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -85,13 +86,14 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+    private final IQHandler discoInfoHandler;
+
+    private final IQHandler discoItemHandler;
+
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-    }
 
-    @Override
-    protected void initialize() {
-        xmppSession.addIQHandler(InfoDiscovery.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        this.discoInfoHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
@@ -108,8 +110,8 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
                     }
                 }
             }
-        });
-        xmppSession.addIQHandler(ItemDiscovery.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        };
+        this.discoItemHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
@@ -127,7 +129,21 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
                     }
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(InfoDiscovery.class, discoInfoHandler);
+        xmppSession.addIQHandler(ItemDiscovery.class, discoItemHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(InfoDiscovery.class);
+        xmppSession.removeIQHandler(ItemDiscovery.class);
     }
 
     /**

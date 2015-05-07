@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.idle;
 
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.extensions.idle.model.Idle;
 
@@ -33,6 +34,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.EnumSet;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -53,9 +55,26 @@ public final class IdleManager extends ExtensionManager {
 
     private Instant lastSentStanza = Instant.now();
 
+    private final Consumer<PresenceEvent> presenceListener;
+
     private IdleManager(XmppSession xmppSession) {
         super(xmppSession);
         this.idleStrategy = this::getLastSentStanzaTime;
+        this.presenceListener = e -> {
+            AbstractPresence presence = e.getPresence();
+            synchronized (this) {
+                if (presence.isAvailable() && EnumSet.of(AbstractPresence.Show.AWAY, AbstractPresence.Show.XA).contains(presence.getShow())) {
+                    if (idleStrategy != null && presence.getExtension(Idle.class) == null) {
+                        Instant idleSince = idleStrategy.get();
+                        if (idleSince != null) {
+                            presence.getExtensions().add(new Idle(OffsetDateTime.ofInstant(idleSince, ZoneOffset.UTC)));
+                        }
+                    }
+                } else {
+                    lastSentStanza = Instant.now();
+                }
+            }
+        };
     }
 
     @Override
@@ -65,23 +84,18 @@ public final class IdleManager extends ExtensionManager {
                 lastSentStanza = Instant.now();
             }
         });
-        xmppSession.addOutboundPresenceListener(e -> {
-            if (isEnabled()) {
-                AbstractPresence presence = e.getPresence();
-                synchronized (this) {
-                    if (presence.isAvailable() && EnumSet.of(AbstractPresence.Show.AWAY, AbstractPresence.Show.XA).contains(presence.getShow())) {
-                        if (idleStrategy != null && presence.getExtension(Idle.class) == null) {
-                            Instant idleSince = idleStrategy.get();
-                            if (idleSince != null) {
-                                presence.getExtensions().add(new Idle(OffsetDateTime.ofInstant(idleSince, ZoneOffset.UTC)));
-                            }
-                        }
-                    } else {
-                        lastSentStanza = Instant.now();
-                    }
-                }
-            }
-        });
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addOutboundPresenceListener(presenceListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeOutboundPresenceListener(presenceListener);
     }
 
     /**

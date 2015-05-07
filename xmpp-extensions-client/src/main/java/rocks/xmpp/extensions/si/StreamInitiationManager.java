@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -79,6 +80,8 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
     private final Socks5ByteStreamManager socks5ByteStreamManager;
 
+    private final IQHandler iqHandler;
+
     private StreamInitiationManager(final XmppSession xmppSession) {
         super(xmppSession);
 
@@ -90,11 +93,8 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
             fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
         });
-    }
 
-    @Override
-    protected void initialize() {
-        xmppSession.addIQHandler(StreamInitiation.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
@@ -128,7 +128,19 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                     }
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(StreamInitiation.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(StreamInitiation.class);
     }
 
     /**

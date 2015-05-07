@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -53,16 +54,14 @@ public final class RpcManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(RpcManager.class.getName());
 
+    private final IQHandler iqHandler;
+
     private RpcHandler rpcHandler;
 
     private RpcManager(final XmppSession xmppSession) {
         super(xmppSession);
-    }
 
-    @Override
-    protected void initialize() {
-
-        xmppSession.addIQHandler(Rpc.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 Rpc rpc = iq.getExtension(Rpc.class);
@@ -87,7 +86,19 @@ public final class RpcManager extends ExtensionManager {
                 }
                 return iq.createError(Condition.SERVICE_UNAVAILABLE);
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(Rpc.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(Rpc.class);
     }
 
     /**

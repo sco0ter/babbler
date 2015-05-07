@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.receipts;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
@@ -73,6 +74,10 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
     final Set<Consumer<MessageDeliveredEvent>> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
+    private final Consumer<MessageEvent> inboundMessageListener;
+
+    private final Consumer<MessageEvent> outboundMessageListener;
+
     private Predicate<Message> messageFilter;
 
     /**
@@ -82,15 +87,8 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      */
     private MessageDeliveryReceiptsManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-    }
 
-    @Override
-    protected void initialize() {
-
-        xmppSession.addInboundMessageListener(e -> {
-            if (!isEnabled()) {
-                return;
-            }
+        this.inboundMessageListener = e -> {
             Message message = e.getMessage();
             // If a client requests a receipt, send an ack message.
             if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {
@@ -105,11 +103,9 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                 // Notify the listeners about the reception.
                 XmppUtils.notifyEventListeners(messageDeliveredListeners, new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.sendDate(message)));
             }
-        });
-        xmppSession.addOutboundMessageListener(e -> {
-            if (!isEnabled()) {
-                return;
-            }
+        };
+
+        this.outboundMessageListener = e -> {
             Message message = e.getMessage();
             // If we are sending a message, append a receipt request, if it passes all filters.
             Predicate<Message> predicate;
@@ -124,7 +120,21 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
                 return;
             }
             message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+        xmppSession.addOutboundMessageListener(outboundMessageListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
+        xmppSession.removeOutboundMessageListener(outboundMessageListener);
     }
 
     /**

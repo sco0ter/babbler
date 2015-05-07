@@ -38,24 +38,12 @@ public abstract class ExtensionManager extends Manager {
     }
 
     @Override
-    public final boolean isEnabled() {
-        return super.isEnabled();
+    protected void onEnable() {
+        xmppSession.enableFeature(getClass());
     }
 
-    /**
-     * Enables or disables support for the extension.
-     *
-     * @param enabled True, if support for the managed extension should be enabled; otherwise false.
-     * @see #isEnabled()
-     */
     @Override
-    public void setEnabled(boolean enabled) {
-        boolean wasEnabled = isEnabled();
-        super.setEnabled(enabled);
-        if (enabled && !wasEnabled) {
-            xmppSession.enableFeature(getClass());
-        } else if (!enabled && wasEnabled) {
-            xmppSession.disableFeature(getClass());
-        }
+    protected void onDisable() {
+        xmppSession.disableFeature(getClass());
     }
 }

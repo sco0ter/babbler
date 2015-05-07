@@ -177,7 +177,7 @@ public final class RosterManager extends Manager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             public IQ processRequest(IQ iq) {
                 Roster roster = iq.getExtension(Roster.class);

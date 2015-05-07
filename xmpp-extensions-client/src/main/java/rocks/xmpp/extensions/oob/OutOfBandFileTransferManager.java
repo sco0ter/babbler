@@ -64,7 +64,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(OobIQ.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(OobIQ.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 OobIQ oobIQ = iq.getExtension(OobIQ.class);

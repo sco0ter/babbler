@@ -32,6 +32,8 @@ import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -64,25 +66,24 @@ public final class ContactExchangeManager extends ExtensionManager {
 
     private final Collection<Jid> trustedEntities = new CopyOnWriteArraySet<>();
 
-    private ContactExchangeManager(final XmppSession xmppSession) {
-        super(xmppSession, true);
-    }
+    private final Consumer<MessageEvent> inboundMessageListener;
 
-    @Override
-    protected void initialize() {
-        xmppSession.addInboundMessageListener(e -> {
-            if (isEnabled()) {
-                Message message = e.getMessage();
-                ContactExchange contactExchange = message.getExtension(ContactExchange.class);
-                if (contactExchange != null) {
-                    List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                    if (!items.isEmpty()) {
-                        processItems(items, message.getFrom(), message.getBody(), DelayedDelivery.sendDate(message));
-                    }
+    private final IQHandler iqHandler;
+
+    private ContactExchangeManager(final XmppSession xmppSession) {
+        super(xmppSession);
+        this.inboundMessageListener = e -> {
+            Message message = e.getMessage();
+            ContactExchange contactExchange = message.getExtension(ContactExchange.class);
+            if (contactExchange != null) {
+                List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+                if (!items.isEmpty()) {
+                    processItems(items, message.getFrom(), message.getBody(), DelayedDelivery.sendDate(message));
+
                 }
             }
-        });
-        xmppSession.addIQHandler(ContactExchange.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        };
+        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
@@ -97,7 +98,21 @@ public final class ContactExchangeManager extends ExtensionManager {
                     return iq.createResult();
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+        xmppSession.addIQHandler(ContactExchange.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
+        xmppSession.removeIQHandler(ContactExchange.class);
     }
 
     private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Instant date) {

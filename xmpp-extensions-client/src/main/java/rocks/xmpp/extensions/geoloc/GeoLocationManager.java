@@ -28,6 +28,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.pubsub.PubSubManager;
@@ -49,27 +50,36 @@ public final class GeoLocationManager extends ExtensionManager {
 
     private final Set<Consumer<GeoLocationEvent>> geoLocationListeners = new CopyOnWriteArraySet<>();
 
+    private final Consumer<MessageEvent> messageListener;
+
     private GeoLocationManager(XmppSession xmppSession) {
         super(xmppSession, true);
-    }
 
-    @Override
-    protected void initialize() {
-        xmppSession.addInboundMessageListener(e -> {
-            if (isEnabled()) {
-                Message message = e.getMessage();
-                Event event = message.getExtension(Event.class);
-                if (event != null) {
-                    for (Item item : event.getItems()) {
-                        Object payload = item.getPayload();
-                        if (payload instanceof GeoLocation) {
-                            // Notify the listeners about the reception.
-                            XmppUtils.notifyEventListeners(geoLocationListeners, new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
-                        }
+        messageListener = e -> {
+            Message message = e.getMessage();
+            Event event = message.getExtension(Event.class);
+            if (event != null) {
+                for (Item item : event.getItems()) {
+                    Object payload = item.getPayload();
+                    if (payload instanceof GeoLocation) {
+                        // Notify the listeners about the reception.
+                        XmppUtils.notifyEventListeners(geoLocationListeners, new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
                     }
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundMessageListener(messageListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(messageListener);
     }
 
     /**

@@ -30,6 +30,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
@@ -56,70 +57,78 @@ public final class RealTimeTextManager extends ExtensionManager {
 
     private final Set<Consumer<RealTimeMessageEvent>> inboundRealTimeMessageListeners = new CopyOnWriteArraySet<>();
 
+    private final Consumer<MessageEvent> messageListener;
+
     private RealTimeTextManager(final XmppSession xmppSession) {
         super(xmppSession);
-    }
 
-    @Override
-    protected void initialize() {
-        xmppSession.addInboundMessageListener(e -> {
-            if (isEnabled()) {
-                Message message = e.getMessage();
-                if (message.getType() == Message.Type.CHAT || message.getType() == Message.Type.GROUPCHAT) {
-                    // Recipient clients MUST keep track of separate real-time messages on a per-contact basis
-                    // Participants that enable real-time text during group chat need to keep track of multiple concurrent real-time messages on a per-participant basis.
-                    Jid sender = message.getFrom();
-                    Jid trackingJid = message.getType() == Message.Type.CHAT ? sender.asBareJid() : sender;
+        messageListener = e -> {
+            Message message = e.getMessage();
+            if (message.getType() == Message.Type.CHAT || message.getType() == Message.Type.GROUPCHAT) {
+                // Recipient clients MUST keep track of separate real-time messages on a per-contact basis
+                // Participants that enable real-time text during group chat need to keep track of multiple concurrent real-time messages on a per-participant basis.
+                Jid sender = message.getFrom();
+                Jid trackingJid = message.getType() == Message.Type.CHAT ? sender.asBareJid() : sender;
 
-                    RealTimeText rtt = message.getExtension(RealTimeText.class);
-                    if (rtt != null && rtt.getSequence() != null) {
-                        TrackingKey trackingKey = new TrackingKey(trackingJid, rtt.getId());
-                        if (rtt.getEvent() == null || rtt.getEvent() == RealTimeText.Event.EDIT) {
-                            // If the 'event' attribute is omitted, event="edit" is assumed as the default.
-                            InboundRealTimeMessage realTimeMessage = realTimeMessageMap.get(trackingKey);
-                            // Recipient clients must verify that the 'seq' attribute increments by 1 in consecutively received <rtt/> elements from the same sender.
-                            if (realTimeMessage != null && realTimeMessage.getSequence() + 1 == rtt.getSequence()) {
-                                // If 'seq' increments as expected, the Action Elements (e.g., text insertions and deletions) included with this element MUST be processed to modify the existing real-time message.
-                                realTimeMessage.processActions(rtt.getActions(), true);
-                            }
-                        } else if (rtt.getEvent() == RealTimeText.Event.RESET) {
-                            InboundRealTimeMessage realTimeMessage = realTimeMessageMap.get(trackingKey);
-                            if (realTimeMessage != null) {
-                                realTimeMessage.reset(rtt.getSequence(), rtt.getId());
-                            } else {
-                                realTimeMessage = new InboundRealTimeMessage(message.getFrom(), rtt.getSequence(), rtt.getId());
-                                realTimeMessageMap.put(trackingKey, realTimeMessage);
-                                XmppUtils.notifyEventListeners(inboundRealTimeMessageListeners, new RealTimeMessageEvent(RealTimeTextManager.this, realTimeMessage));
-                            }
-                            realTimeMessage.processActions(rtt.getActions(), false);
-                        } else if (rtt.getEvent() == RealTimeText.Event.NEW) {
-                            InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(message.getFrom(), rtt.getSequence(), rtt.getId());
-                            InboundRealTimeMessage oldRealTimeMessage = realTimeMessageMap.put(trackingKey, realTimeMessage);
-                            if (oldRealTimeMessage != null) {
-                                oldRealTimeMessage.complete();
-                            }
-                            XmppUtils.notifyEventListeners(inboundRealTimeMessageListeners, new RealTimeMessageEvent(RealTimeTextManager.this, realTimeMessage));
-                            realTimeMessage.processActions(rtt.getActions(), false);
-                        } else if (rtt.getEvent() == RealTimeText.Event.CANCEL) {
-                            XmppUtils.notifyEventListeners(realTimeTextActivationListeners, new RealTimeTextActivationEvent(RealTimeTextManager.this, sender, false));
-                        } else if (rtt.getEvent() == RealTimeText.Event.INIT) {
-                            XmppUtils.notifyEventListeners(realTimeTextActivationListeners, new RealTimeTextActivationEvent(RealTimeTextManager.this, sender, true));
+                RealTimeText rtt = message.getExtension(RealTimeText.class);
+                if (rtt != null && rtt.getSequence() != null) {
+                    TrackingKey trackingKey = new TrackingKey(trackingJid, rtt.getId());
+                    if (rtt.getEvent() == null || rtt.getEvent() == RealTimeText.Event.EDIT) {
+                        // If the 'event' attribute is omitted, event="edit" is assumed as the default.
+                        InboundRealTimeMessage realTimeMessage = realTimeMessageMap.get(trackingKey);
+                        // Recipient clients must verify that the 'seq' attribute increments by 1 in consecutively received <rtt/> elements from the same sender.
+                        if (realTimeMessage != null && realTimeMessage.getSequence() + 1 == rtt.getSequence()) {
+                            // If 'seq' increments as expected, the Action Elements (e.g., text insertions and deletions) included with this element MUST be processed to modify the existing real-time message.
+                            realTimeMessage.processActions(rtt.getActions(), true);
                         }
-                    }
-                    if (message.getBody() != null) {
-                        Replace replace = message.getExtension(Replace.class);
-                        String id = replace != null ? replace.getId() : null;
-                        TrackingKey trackingKey = new TrackingKey(trackingJid, id);
-                        InboundRealTimeMessage realTimeMessage = realTimeMessageMap.remove(trackingKey);
+                    } else if (rtt.getEvent() == RealTimeText.Event.RESET) {
+                        InboundRealTimeMessage realTimeMessage = realTimeMessageMap.get(trackingKey);
                         if (realTimeMessage != null) {
-                            realTimeMessage.complete();
+                            realTimeMessage.reset(rtt.getSequence(), rtt.getId());
+                        } else {
+                            realTimeMessage = new InboundRealTimeMessage(message.getFrom(), rtt.getSequence(), rtt.getId());
+                            realTimeMessageMap.put(trackingKey, realTimeMessage);
+                            XmppUtils.notifyEventListeners(inboundRealTimeMessageListeners, new RealTimeMessageEvent(RealTimeTextManager.this, realTimeMessage));
                         }
+                        realTimeMessage.processActions(rtt.getActions(), false);
+                    } else if (rtt.getEvent() == RealTimeText.Event.NEW) {
+                        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(message.getFrom(), rtt.getSequence(), rtt.getId());
+                        InboundRealTimeMessage oldRealTimeMessage = realTimeMessageMap.put(trackingKey, realTimeMessage);
+                        if (oldRealTimeMessage != null) {
+                            oldRealTimeMessage.complete();
+                        }
+                        XmppUtils.notifyEventListeners(inboundRealTimeMessageListeners, new RealTimeMessageEvent(RealTimeTextManager.this, realTimeMessage));
+                        realTimeMessage.processActions(rtt.getActions(), false);
+                    } else if (rtt.getEvent() == RealTimeText.Event.CANCEL) {
+                        XmppUtils.notifyEventListeners(realTimeTextActivationListeners, new RealTimeTextActivationEvent(RealTimeTextManager.this, sender, false));
+                    } else if (rtt.getEvent() == RealTimeText.Event.INIT) {
+                        XmppUtils.notifyEventListeners(realTimeTextActivationListeners, new RealTimeTextActivationEvent(RealTimeTextManager.this, sender, true));
+                    }
+                }
+                if (message.getBody() != null) {
+                    Replace replace = message.getExtension(Replace.class);
+                    String id = replace != null ? replace.getId() : null;
+                    TrackingKey trackingKey = new TrackingKey(trackingJid, id);
+                    InboundRealTimeMessage realTimeMessage = realTimeMessageMap.remove(trackingKey);
+                    if (realTimeMessage != null) {
+                        realTimeMessage.complete();
                     }
                 }
             }
-        });
+        };
     }
 
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundMessageListener(messageListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(messageListener);
+    }
 
     /**
      * Creates a new real-time message for sending real-time text.

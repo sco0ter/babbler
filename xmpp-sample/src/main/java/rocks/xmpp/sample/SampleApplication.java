@@ -30,6 +30,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.compress.CompressionManager;
+import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.net.ssl.SSLContext;
@@ -115,6 +116,8 @@ public class SampleApplication {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("admin", "admin", "xmpp");
+
+                xmppSession.disableFeature(ItemDiscovery.NAMESPACE);
 
                 System.out.println(xmppSession.getActiveConnection());
             } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {

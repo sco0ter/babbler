@@ -228,10 +228,10 @@ public class ExtensionContext extends CoreContext {
                 Extension.of(SoftwareVersion.NAMESPACE, SoftwareVersionManager.class, true, SoftwareVersion.class),
 
                 // XEP-0095: Stream Initiation
-                Extension.of(StreamInitiation.NAMESPACE, StreamInitiationManager.class, false, StreamInitiation.class),
+                Extension.of(StreamInitiation.NAMESPACE, StreamInitiationManager.class, true, StreamInitiation.class),
 
                 // XEP-0096: SI File Transfer
-                Extension.of(SIFileTransferOffer.NAMESPACE, FileTransferManager.class, false, SIFileTransferOffer.class),
+                Extension.of(SIFileTransferOffer.NAMESPACE, FileTransferManager.class, true, SIFileTransferOffer.class),
 
                 // XEP-0107: User Mood
                 Extension.of(Mood.NAMESPACE, MoodManager.class, true, false, Mood.class),

@@ -399,14 +399,14 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
                     // Need to synchronize this.
                     if (!serviceDiscoverer.isShutdown()) {
                         serviceDiscoverer.execute(() -> {
-                            String node1 = entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString();
+                            String nodeToDiscover = entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString();
                             try {
                                 // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
                                 final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
 
                                 // 3.1 Send a service discovery information request to the generating entity.
                                 // 3.2 Receive a service discovery information response from the generating entity.
-                                InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(entity, node);
+                                InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover);
                                 // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
                                 // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
                                 // => not possible due to java.util.Set semantics and equals method.
@@ -446,16 +446,16 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
                                 // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
                             } catch (XmppException e1) {
-                                logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, node});
+                                logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, nodeToDiscover});
                             } catch (NoSuchAlgorithmException e1) {
                                 // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
                                 try {
                                     // 2.1 Send a service discovery information request to the generating entity.
                                     // 2.2 Receive a service discovery information response from the generating entity.
                                     // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
-                                    ENTITY_CAPABILITIES.put(entity, serviceDiscoveryManager.discoverInformation(entity, node));
+                                    ENTITY_CAPABILITIES.put(entity, serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover));
                                 } catch (XmppException e2) {
-                                    logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, node});
+                                    logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, nodeToDiscover});
                                 }
                             }
                         });

@@ -241,7 +241,8 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * Sends a message refresh, if you want to switch the message, which is being edited.
      * Use this method, if you are composing a new message and want to switch to another (previous) message.
      *
-     * @param id The message id for the message which is edited.
+     * @param id   The message id for the message which is edited.
+     * @param text The text to reset this message to.
      * @see <a href="http://www.xmpp.org/extensions/xep-0301.html#usage_with_last_message_correction">7.5.3 Usage with Last Message Correction</a>
      */
     public synchronized final void reset(String id, String text) {
@@ -263,6 +264,8 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
 
     /**
      * Commits the real-time message.
+     *
+     * @return The final message.
      */
     public final Message commit() {
         if (complete) {

@@ -89,7 +89,6 @@ import java.util.logging.Logger;
 
 /**
  * The base class for establishing an XMPP session with a server.
- * <p>
  * <h3>Establishing an XMPP Session</h3>
  * The following example shows the most simple way to establish a session:
  * <pre>
@@ -101,7 +100,6 @@ import java.util.logging.Logger;
  * </pre>
  * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback.
  * You can configure a session and its connection methods by passing appropriate configurations in its constructor.
- * <p>
  * <h3>Sending Messages</h3>
  * Once connected, you can send messages:
  * <pre>
@@ -1384,7 +1382,6 @@ public class XmppSession implements AutoCloseable {
      * Represents the session status.
      * <p>
      * The following chart illustrates the valid status transitions:
-     * <p>
      * <pre>
      * &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; INITIAL
      * &#x2502;          &#x2502;

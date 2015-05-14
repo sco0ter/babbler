@@ -51,10 +51,10 @@ import java.util.function.Predicate;
  * </p>
  * <h3>Code sample</h3>
  * <pre>
- * <code>
+ * {@code
  * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
  * messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> System.out.println("Message delivered: " + e.getMessageId()));
- * </code>
+ * }
  * </pre>
  */
 public final class MessageDeliveryReceiptsManager extends ExtensionManager {

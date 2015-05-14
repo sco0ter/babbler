@@ -93,11 +93,13 @@ public final class Search {
     /**
      * Creates a search request, consisting of multiple search parameters.
      *
-     * @param first     The first name.
-     * @param last      The last name.
-     * @param nick      The nick name.
-     * @param email     The email.
-     * @param resultSet The result set information.
+     * @param first        The first name.
+     * @param last         The last name.
+     * @param nick         The nick name.
+     * @param email        The email.
+     * @param resultSet    The result set information.
+     * @param instructions The instructions.
+     * @param dataForm     The data form.
      */
     public Search(String first, String last, String nick, String email, ResultSetManagement resultSet, String instructions, DataForm dataForm) {
         this.first = first;

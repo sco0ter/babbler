@@ -69,7 +69,7 @@ public final class StreamFeaturesManager extends Manager {
     /**
      * The features which have been advertised by the server.
      */
-    private final Map<Class<? extends StreamFeature>, StreamFeature> advertisedFeatures = new HashMap<>();
+    private final HashMap<Class<? extends StreamFeature>, StreamFeature> advertisedFeatures = new HashMap<>();
 
     /**
      * The list of features, which the server advertised and have not yet been negotiated.
@@ -123,9 +123,10 @@ public final class StreamFeaturesManager extends Manager {
      *
      * @return The features.
      */
+    @SuppressWarnings("unchecked")
     public final Map<Class<? extends StreamFeature>, StreamFeature> getFeatures() {
         // return defensive copies of mutable internal fields
-        return Collections.unmodifiableMap(new HashMap<>(advertisedFeatures));
+        return Collections.unmodifiableMap((HashMap<Class<? extends StreamFeature>, StreamFeature>) advertisedFeatures.clone());
     }
 
     /**

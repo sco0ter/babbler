@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -74,11 +73,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class ServiceDiscoveryManager extends ExtensionManager {
 
-    private static Identity defaultIdentity = new Identity("client", "pc");
+    private static final Set<Identity> DEFAULT_IDENTITY = Collections.singleton(new Identity("client", "pc"));
 
-    private final Set<Identity> identities = new ConcurrentSkipListSet<>();
+    private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private final List<DataForm> extensions = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
 
     private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
 
@@ -188,15 +187,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      */
     public synchronized Set<Identity> getIdentities() {
-        Set<Identity> ids;
-        //  Every entity MUST have at least one identity
-        if (!identities.isEmpty()) {
-            ids = new HashSet<>(identities);
-        } else {
-            ids = new HashSet<>();
-            ids.add(defaultIdentity);
-        }
-        return Collections.unmodifiableSet(ids);
+        return identities.isEmpty() ? DEFAULT_IDENTITY : Collections.unmodifiableSet(new HashSet<>(identities));
     }
 
     /**
@@ -218,8 +209,9 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #removeExtension(rocks.xmpp.extensions.data.model.DataForm)
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
+    @SuppressWarnings("unchecked")
     public List<DataForm> getExtensions() {
-        return Collections.unmodifiableList(new ArrayList<>(extensions));
+        return Collections.unmodifiableList((List<DataForm>) extensions.clone());
     }
 
     /**

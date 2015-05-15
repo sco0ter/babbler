@@ -25,11 +25,11 @@
 package rocks.xmpp.extensions.caps;
 
 import org.testng.Assert;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.extensions.ExtensionTest;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 /**
  * @author Christian Schudt
  */
-public class EntityCapabilitiesManagerTest extends ExtensionTest {
+public class EntityCapabilitiesManagerTest extends BaseTest {
 
     /**
      * This is for checking the double-checked locking of discoverCapabilities method (through debugging).
@@ -50,8 +50,8 @@ public class EntityCapabilitiesManagerTest extends ExtensionTest {
 
             MockServer mockServer = new MockServer();
 
-            final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-            XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+            final XmppSession xmppSession1 = new TestXmppSession(BaseTest.ROMEO, mockServer);
+            XmppSession xmppSession2 = new TestXmppSession(BaseTest.JULIET, mockServer);
 
             final EntityCapabilitiesManager entityCapabilitiesManager = xmppSession1.getManager(EntityCapabilitiesManager.class);
 
@@ -59,7 +59,7 @@ public class EntityCapabilitiesManagerTest extends ExtensionTest {
             for (int i = 0; i < 100; i++) {
                 executorService.execute(() -> {
                     try {
-                        Assert.assertNotNull(entityCapabilitiesManager.discoverCapabilities(JULIET));
+                        Assert.assertNotNull(entityCapabilitiesManager.discoverCapabilities(BaseTest.JULIET));
                     } catch (XmppException e) {
                         e.printStackTrace();
                     }

@@ -1361,16 +1361,6 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Checks if a feature is enabled.
-     *
-     * @param feature The feature.
-     * @return If the feature is enabled.
-     */
-    public final boolean isFeatureEnabled(String feature) {
-        return getEnabledFeatures().contains(feature);
-    }
-
-    /**
      * Gets the enabled features.
      *
      * @return The enabled features.

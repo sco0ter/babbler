@@ -50,7 +50,7 @@ public class FeatureRegistryTest {
         // As a consequence PingManager should be disabled.
         Assert.assertFalse(xmppSession.getManager(PingManager.class).isEnabled());
         Assert.assertFalse(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(Ping.NAMESPACE));
-        Assert.assertFalse(xmppSession.isFeatureEnabled(Ping.NAMESPACE));
+        Assert.assertFalse(xmppSession.getEnabledFeatures().contains(Ping.NAMESPACE));
 
         // Enable by namespace.
         xmppSession.enableFeature(Ping.NAMESPACE);

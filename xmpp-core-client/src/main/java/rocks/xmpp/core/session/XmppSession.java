@@ -50,6 +50,7 @@ import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.PresenceManager;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
@@ -1367,6 +1368,22 @@ public class XmppSession implements AutoCloseable {
      */
     public final Set<String> getEnabledFeatures() {
         return serviceDiscoveryManager.getFeatures();
+    }
+
+    /**
+     * Determines support of another XMPP entity for a given feature.
+     * <p>
+     * Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
+     * If you want to determine the server's capabilities provide only the domain JID of the server.
+     * <p>
+     * This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.
+     *
+     * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
+     * @param jid     The XMPP entity.
+     * @return True, if the XMPP entity supports the given feature; otherwise false.
+     */
+    public final boolean isSupported(String feature, Jid jid) throws XmppException {
+        return getManager(EntityCapabilitiesManager.class).isSupported(feature, jid);
     }
 
     /**

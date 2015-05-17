@@ -30,6 +30,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.subscription.PresenceManager;
@@ -325,12 +326,15 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
      * @param feature The feature.
      * @param jid     The JID, which should usually be a full JID.
      * @return True, if this entity supports the feature.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final boolean isSupported(String feature, Jid jid) throws XmppException {
-        InfoNode infoNode = discoverCapabilities(jid);
-        return infoNode.getFeatures().contains(feature);
+        try {
+            InfoNode infoNode = discoverCapabilities(jid);
+            return infoNode.getFeatures().contains(feature);
+        } catch (StanzaException e) {
+            return false;
+        }
     }
 
     private void writeToCache(Verification verification, InfoNode infoNode) {

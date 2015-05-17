@@ -150,7 +150,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
             final Presence presence = e.getPresence();
             if (presence.isAvailable() && presence.getTo() == null) {
                 // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
-                synchronized (serviceDiscoveryManager) {
+                synchronized (publishedNodes) {
                     if (publishedNodes.isEmpty()) {
                         publishCapsNode();
                     }
@@ -187,7 +187,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
             // http://xmpp.org/extensions/xep-0115.html#advertise:
             // "If the supported features change during a generating entity's presence session (e.g., a user installs an updated version of a client plugin), the application MUST recompute the verification string and SHOULD send a new presence broadcast."
-            synchronized (serviceDiscoveryManager) {
+            synchronized (publishedNodes) {
                 if (capsSent) {
                     // Whenever the verification string has changed, publish the info node.
                     publishCapsNode();

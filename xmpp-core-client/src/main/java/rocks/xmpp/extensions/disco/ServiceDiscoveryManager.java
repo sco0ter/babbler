@@ -26,7 +26,10 @@ package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
+import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -45,17 +48,19 @@ import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSet;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EventObject;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 
 /**
  * Manages <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
@@ -77,17 +82,23 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
     private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    private final Set<String> features = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
 
     private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
 
     private final Map<String, ResultSetProvider<Item>> itemProviders = new ConcurrentHashMap<>();
 
-    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private final Set<Consumer<EventObject>> capabilitiesChangeListeners = new CopyOnWriteArraySet<>();
 
     private final IQHandler discoInfoHandler;
 
     private final IQHandler discoItemHandler;
+
+    private final Map<String, Extension> featureToExtension = new HashMap<>();
+
+    private final Map<Class<? extends Manager>, Set<Extension>> managersToExtensions = new HashMap<>();
 
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, true);
@@ -149,20 +160,20 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * Adds a property change listener, which listens for changes in the {@linkplain #getIdentities() identities}, {@linkplain #getFeatures() features}, {@linkplain #getExtensions() extensions} and {@linkplain #getItems() items} collections.
      *
      * @param listener The listener.
-     * @see #removePropertyChangeListener(java.beans.PropertyChangeListener)
+     * @see #removeCapabilitiesChangeListener(Consumer)
      */
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        this.pcs.addPropertyChangeListener(listener);
+    public final void addCapabilitiesChangeListener(Consumer<EventObject> listener) {
+        this.capabilitiesChangeListeners.add(listener);
     }
 
     /**
      * Removes a property change listener.
      *
      * @param listener The listener.
-     * @see #addPropertyChangeListener(java.beans.PropertyChangeListener)
+     * @see #addCapabilitiesChangeListener(Consumer)
      */
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.pcs.removePropertyChangeListener(listener);
+    public final void removeCapabilitiesChangeListener(Consumer<EventObject> listener) {
+        this.capabilitiesChangeListeners.remove(listener);
     }
 
     /**
@@ -170,7 +181,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @return The items.
      */
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
         if (rootItemProvider != null) {
             return Collections.unmodifiableList(rootItemProvider.getItems());
@@ -186,7 +197,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #addIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      */
-    public synchronized Set<Identity> getIdentities() {
+    public final Set<Identity> getIdentities() {
         return identities.isEmpty() ? DEFAULT_IDENTITY : Collections.unmodifiableSet(new HashSet<>(identities));
     }
 
@@ -197,8 +208,8 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #addFeature(String)
      * @see #removeFeature(String)
      */
-    public Set<String> getFeatures() {
-        return Collections.unmodifiableSet(new HashSet<>(xmppSession.getEnabledFeatures()));
+    public final Set<String> getFeatures() {
+        return Collections.unmodifiableSet(new HashSet<>(features));
     }
 
     /**
@@ -221,10 +232,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      * @see #getIdentities()
      */
-    public synchronized void addIdentity(Identity identity) {
-        Set<Identity> oldList = getIdentities();
-        identities.add(identity);
-        this.pcs.firePropertyChange("identities", oldList, getIdentities());
+    public final void addIdentity(Identity identity) {
+        if (identities.add(identity)) {
+            XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+        }
     }
 
     /**
@@ -234,10 +245,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #addIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      * @see #getIdentities()
      */
-    public synchronized void removeIdentity(Identity identity) {
-        Set<Identity> oldList = getIdentities();
-        identities.remove(identity);
-        this.pcs.firePropertyChange("identities", oldList, getIdentities());
+    public final void removeIdentity(Identity identity) {
+        if (identities.remove(identity)) {
+            XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+        }
     }
 
     /**
@@ -248,10 +259,12 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #removeFeature(String)
      * @see #getFeatures()
      */
-    public synchronized void addFeature(String feature) {
-        Set<String> oldList = getFeatures();
-        xmppSession.enableFeature(feature);
-        this.pcs.firePropertyChange("features", oldList, getFeatures());
+    public final void addFeature(String feature) {
+        if (features.add(feature)) {
+            Extension extension = featureToExtension.get(feature);
+            setEnabled(extension != null ? Collections.singleton(extension) : null, feature, true);
+            XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+        }
     }
 
     /**
@@ -261,10 +274,36 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #addFeature(String)
      * @see #getFeatures()
      */
-    public synchronized void removeFeature(String feature) {
-        Set<String> oldList = getFeatures();
-        xmppSession.disableFeature(feature);
-        this.pcs.firePropertyChange("features", oldList, getFeatures());
+    public final void removeFeature(String feature) {
+        if (features.remove(feature)) {
+            Extension extension = featureToExtension.get(feature);
+            setEnabled(extension != null ? Collections.singleton(extension) : null, feature, false);
+            XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+        }
+    }
+
+    /**
+     * Adds a feature by its manager class.
+     *
+     * @param managerClass The manager class.
+     * @see #addFeature(String)
+     * @see #getFeatures()
+     */
+    public final void addFeature(Class<? extends Manager> managerClass) {
+        // This will eventually call addFeature(String)
+        setEnabled(managersToExtensions.get(managerClass), null, true);
+    }
+
+    /**
+     * Removes a feature by its manager class.
+     *
+     * @param managerClass The feature.
+     * @see #addFeature(String)
+     * @see #getFeatures()
+     */
+    public final void removeFeature(Class<? extends Manager> managerClass) {
+        // This will eventually call addFeature(String)
+        setEnabled(managersToExtensions.get(managerClass), null, false);
     }
 
     /**
@@ -275,10 +314,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #getExtensions()
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
-    public synchronized void addExtension(DataForm extension) {
-        List<DataForm> oldList = getExtensions();
-        extensions.add(extension);
-        this.pcs.firePropertyChange("extensions", oldList, getExtensions());
+    public final void addExtension(DataForm extension) {
+        if (extensions.add(extension)) {
+            XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+        }
     }
 
     /**
@@ -289,10 +328,10 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @see #getExtensions()
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
-    public synchronized void removeExtension(DataForm extension) {
-        List<DataForm> oldList = getExtensions();
-        extensions.remove(extension);
-        this.pcs.firePropertyChange("extensions", oldList, getExtensions());
+    public final void removeExtension(DataForm extension) {
+        if (extensions.remove(extension)) {
+            XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+        }
     }
 
     /**
@@ -311,7 +350,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public InfoNode discoverInformation(Jid jid) throws XmppException {
+    public final InfoNode discoverInformation(Jid jid) throws XmppException {
         return discoverInformation(jid, null);
     }
 
@@ -329,7 +368,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see #discoverInformation(rocks.xmpp.core.Jid)
      */
-    public InfoNode discoverInformation(Jid jid, String node) throws XmppException {
+    public final InfoNode discoverInformation(Jid jid, String node) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new InfoDiscovery(node)));
         return result.getExtension(InfoDiscovery.class);
     }
@@ -342,7 +381,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public ItemNode discoverItems(Jid jid) throws XmppException {
+    public final ItemNode discoverItems(Jid jid) throws XmppException {
         return discoverItems(jid, null, null);
     }
 
@@ -355,7 +394,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public ItemNode discoverItems(Jid jid, ResultSetManagement resultSet) throws XmppException {
+    public final ItemNode discoverItems(Jid jid, ResultSetManagement resultSet) throws XmppException {
         return discoverItems(jid, null, resultSet);
     }
 
@@ -368,7 +407,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public ItemNode discoverItems(Jid jid, String node) throws XmppException {
+    public final ItemNode discoverItems(Jid jid, String node) throws XmppException {
         return discoverItems(jid, node, null);
     }
 
@@ -382,7 +421,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
+    public final ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
         return result.getExtension(ItemDiscovery.class);
     }
@@ -395,7 +434,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      */
-    public Collection<Item> discoverServices(String feature) throws XmppException {
+    public final Collection<Item> discoverServices(String feature) throws XmppException {
         ItemNode itemDiscovery = discoverItems(Jid.valueOf(xmppSession.getDomain()));
         Collection<Item> services = new ArrayList<>();
         XmppException exception = null;
@@ -423,7 +462,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @param infoNode The info node.
      */
-    public void addInfoNode(InfoNode infoNode) {
+    public final void addInfoNode(InfoNode infoNode) {
         infoNodeMap.put(infoNode.getNode(), infoNode);
     }
 
@@ -432,7 +471,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @param node The node name.
      */
-    public void removeInfoNode(String node) {
+    public final void removeInfoNode(String node) {
         infoNodeMap.remove(node);
     }
 
@@ -443,7 +482,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      *
      * @param itemProvider The item provider.
      */
-    public void setItemProvider(ResultSetProvider<Item> itemProvider) {
+    public final void setItemProvider(ResultSetProvider<Item> itemProvider) {
         if (itemProvider == null) {
             itemProviders.remove("");
         } else {
@@ -459,7 +498,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
      * @param node         The node name.
      * @param itemProvider The item provider.
      */
-    public void setItemProvider(String node, ResultSetProvider<Item> itemProvider) {
+    public final void setItemProvider(String node, ResultSetProvider<Item> itemProvider) {
         if (itemProvider == null) {
             itemProviders.remove(node);
         } else {
@@ -469,10 +508,54 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
 
     @Override
     protected void dispose() {
-        for (PropertyChangeListener propertyChangeListener : pcs.getPropertyChangeListeners()) {
-            pcs.removePropertyChangeListener(propertyChangeListener);
-        }
+        capabilitiesChangeListeners.clear();
         infoNodeMap.clear();
         itemProviders.clear();
+    }
+
+    private void setEnabled(Iterable<Extension> extensions, String feature, boolean enabled) {
+        if (extensions != null) {
+            for (Extension extension : extensions) {
+                Class<? extends Manager> managerClass = extension.getManager();
+                if (managerClass != null) {
+                    Manager manager = xmppSession.getManager(managerClass);
+                    manager.setEnabled(enabled);
+                }
+                enableFeature(extension.getNamespace(), enabled);
+                for (String subFeature : extension.getFeatures()) {
+                    enableFeature(subFeature, enabled);
+                }
+            }
+        } else {
+            enableFeature(feature, enabled);
+        }
+    }
+
+    private void enableFeature(String feature, boolean enabled) {
+        if (feature != null) {
+            if (enabled) {
+                addFeature(feature);
+            } else {
+                removeFeature(feature);
+            }
+        }
+    }
+
+    /**
+     * Registers a feature / extension.
+     *
+     * @param extension The extension.
+     */
+    public final void registerFeature(Extension extension) {
+        if (extension.getNamespace() != null) {
+            featureToExtension.put(extension.getNamespace(), extension);
+        }
+        if (extension.getManager() != null) {
+            Set<Extension> extensions = managersToExtensions.computeIfAbsent(extension.getManager(), key -> new HashSet<>());
+            extensions.add(extension);
+        }
+        if (extension.isEnabled()) {
+            setEnabled(Collections.singleton(extension), null, true);
+        }
     }
 }

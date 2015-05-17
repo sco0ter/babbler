@@ -181,7 +181,7 @@ public final class EntityCapabilitiesManager extends ExtensionManager {
 
     @Override
     protected void initialize() {
-        serviceDiscoveryManager.addPropertyChangeListener(evt -> {
+        serviceDiscoveryManager.addCapabilitiesChangeListener(evt -> {
             // If we haven't established a presence session yet, don't care about changes in service discovery.
             // If we change features during a presence session, update the verification string and resend presence.
 

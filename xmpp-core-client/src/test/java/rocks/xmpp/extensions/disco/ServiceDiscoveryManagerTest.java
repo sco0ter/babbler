@@ -231,7 +231,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testPropertyChangeHandler() {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         final int[] listenerCalled = {0};
-        serviceDiscoveryManager.addPropertyChangeListener(evt -> listenerCalled[0]++);
+        serviceDiscoveryManager.addCapabilitiesChangeListener(evt -> listenerCalled[0]++);
         serviceDiscoveryManager.addFeature("dummy");
         serviceDiscoveryManager.removeFeature("dummy");
         serviceDiscoveryManager.addIdentity(new Identity("cat", "type"));

@@ -50,6 +50,7 @@ import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.PresenceManager;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -165,7 +166,7 @@ public class XmppSession implements AutoCloseable {
 
     private final XmppSessionConfiguration configuration;
 
-    private final FeatureRegistry featureRegistry;
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     ExecutorService iqHandlerExecutor;
 
@@ -270,7 +271,7 @@ public class XmppSession implements AutoCloseable {
                 return false;
             }
         });
-        this.featureRegistry = new FeatureRegistry(this);
+        this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
 
         if (configuration.getDebugger() != null) {
             try {
@@ -289,7 +290,7 @@ public class XmppSession implements AutoCloseable {
             Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
         }
 
-        configuration.getExtensions().forEach(featureRegistry::registerFeature);
+        configuration.getExtensions().forEach(serviceDiscoveryManager::registerFeature);
     }
 
     private static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
@@ -1329,7 +1330,7 @@ public class XmppSession implements AutoCloseable {
      * @param name The associated manager class.
      */
     public final void enableFeature(String name) {
-        featureRegistry.enableFeature(name);
+        serviceDiscoveryManager.addFeature(name);
     }
 
     /**
@@ -1338,7 +1339,7 @@ public class XmppSession implements AutoCloseable {
      * @param name The associated manager class.
      */
     public final void disableFeature(String name) {
-        featureRegistry.disableFeature(name);
+        serviceDiscoveryManager.removeFeature(name);
     }
 
     /**
@@ -1347,7 +1348,7 @@ public class XmppSession implements AutoCloseable {
      * @param managerClass The associated manager class.
      */
     public final void enableFeature(Class<? extends Manager> managerClass) {
-        featureRegistry.enableFeature(managerClass);
+        serviceDiscoveryManager.addFeature(managerClass);
     }
 
     /**
@@ -1356,7 +1357,7 @@ public class XmppSession implements AutoCloseable {
      * @param managerClass The associated manager class.
      */
     public final void disableFeature(Class<? extends Manager> managerClass) {
-        featureRegistry.disableFeature(managerClass);
+        serviceDiscoveryManager.removeFeature(managerClass);
     }
 
     /**
@@ -1375,7 +1376,7 @@ public class XmppSession implements AutoCloseable {
      * @return The enabled features.
      */
     public final Set<String> getEnabledFeatures() {
-        return featureRegistry.getEnabledFeatures();
+        return serviceDiscoveryManager.getFeatures();
     }
 
     /**

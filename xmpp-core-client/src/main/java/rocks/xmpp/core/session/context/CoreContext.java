@@ -56,7 +56,6 @@ import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
-import rocks.xmpp.extensions.rsm.ResultSetManager;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.util.ArrayList;
@@ -94,7 +93,7 @@ public class CoreContext {
                 Extension.of(ItemDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true, ItemDiscovery.class),
 
                 // XEP-0059: Result Set Management
-                Extension.of(ResultSetManagement.NAMESPACE, ResultSetManager.class, true, ResultSetManagement.class),
+                Extension.of(ResultSetManagement.NAMESPACE, true, ResultSetManagement.class),
 
                 // XEP-0049: Private XML Storage
                 Extension.of(PrivateData.class),

@@ -43,9 +43,8 @@ import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
-import rocks.xmpp.extensions.rsm.ResultSetManager;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
-import rocks.xmpp.extensions.rsm.model.ResultSet;
+import rocks.xmpp.extensions.rsm.ResultSet;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.util.ArrayList;
@@ -127,7 +126,7 @@ public final class ServiceDiscoveryManager extends ExtensionManager {
                 ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
                 ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
                 if (itemProvider != null) {
-                    ResultSet<Item> resultSet = ResultSetManager.createResultSet(itemProvider, itemDiscovery.getResultSetManagement());
+                    ResultSet<Item> resultSet = ResultSet.create(itemProvider, itemDiscovery.getResultSetManagement());
                     return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
                 } else {
                     if (itemDiscovery.getNode() == null) {

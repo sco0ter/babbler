@@ -79,7 +79,7 @@ public final class StreamFeaturesManager extends Manager {
     /**
      * The feature for which negotiation has started.
      */
-    private final Set<Class<? extends StreamFeature>> negotiatedFeatures = new HashSet<>();
+    private final Set<Class<? extends StreamFeature>> negotiatingFeatures = new HashSet<>();
 
     /**
      * The feature negotiators, which are responsible to negotiate each individual feature.
@@ -101,7 +101,7 @@ public final class StreamFeaturesManager extends Manager {
                     synchronized (this) {
                         featureNegotiationStartedConditions.clear();
                         advertisedFeatures.clear();
-                        negotiatedFeatures.clear();
+                        negotiatingFeatures.clear();
                     }
                     break;
                 // If the connection is closed, clear everything.
@@ -110,7 +110,7 @@ public final class StreamFeaturesManager extends Manager {
                         featureNegotiationStartedConditions.clear();
                         advertisedFeatures.clear();
                         featuresToNegotiate.clear();
-                        negotiatedFeatures.clear();
+                        negotiatingFeatures.clear();
                         streamFeatureNegotiators.clear();
                     }
                     break;
@@ -182,10 +182,10 @@ public final class StreamFeaturesManager extends Manager {
         for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
             if (streamFeatureNegotiator.getFeatureClass() == element || streamFeatureNegotiator.canProcess(element)) {
                 StreamFeatureNegotiator.Status status = streamFeatureNegotiator.processNegotiation(element);
+                // Mark the feature negotiation as started.
+                negotiatingFeatures.add(streamFeatureNegotiator.getFeatureClass());
                 // If the feature has been successfully negotiated.
                 if (EnumSet.of(StreamFeatureNegotiator.Status.SUCCESS, StreamFeatureNegotiator.Status.IGNORE).contains(status)) {
-                    // Mark the feature negotiation as completed.
-                    negotiatedFeatures.add(streamFeatureNegotiator.getFeatureClass());
                     // Check if the feature expects a restart now.
                     if (status == StreamFeatureNegotiator.Status.SUCCESS && streamFeatureNegotiator.needsRestart()) {
                         return true;
@@ -208,7 +208,7 @@ public final class StreamFeaturesManager extends Manager {
     private synchronized boolean negotiateNextFeature() throws StreamNegotiationException {
         if (!featuresToNegotiate.isEmpty()) {
             StreamFeature advertisedFeature = featuresToNegotiate.remove(0);
-            if (!negotiatedFeatures.contains(advertisedFeature.getClass())) {
+            if (!negotiatingFeatures.contains(advertisedFeature.getClass())) {
                 StreamFeatureNegotiator.Status negotiationStatus = StreamFeatureNegotiator.Status.IGNORE;
                 // See if there's a feature negotiator associated with the feature.
                 for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
@@ -218,9 +218,9 @@ public final class StreamFeaturesManager extends Manager {
                         break;
                     }
                 }
-                if (EnumSet.of(StreamFeatureNegotiator.Status.SUCCESS, StreamFeatureNegotiator.Status.IGNORE).contains(negotiationStatus)) {
-                    negotiatedFeatures.add(advertisedFeature.getClass());
-                }
+
+                negotiatingFeatures.add(advertisedFeature.getClass());
+
                 // Check if there's a condition waiting for that feature to be negotiated.
                 Condition condition = featureNegotiationStartedConditions.remove(advertisedFeature.getClass());
                 if (condition != null) {
@@ -261,7 +261,7 @@ public final class StreamFeaturesManager extends Manager {
 
         synchronized (this) {
             // Check if the feature is already negotiated and if there's no condition yet registered.
-            if (negotiatedFeatures.contains(streamFeature) || featureNegotiationStartedConditions.containsKey(streamFeature)) {
+            if (negotiatingFeatures.contains(streamFeature) || featureNegotiationStartedConditions.containsKey(streamFeature)) {
                 return;
             }
         }

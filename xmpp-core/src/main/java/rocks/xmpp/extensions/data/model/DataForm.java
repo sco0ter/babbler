@@ -174,7 +174,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param value The value.
      * @return The parsed boolean value.
      */
-    public static boolean parseBoolean(String value) {
+    private static boolean parseBoolean(String value) {
         return Boolean.parseBoolean(value) || "1".equals(value);
     }
 

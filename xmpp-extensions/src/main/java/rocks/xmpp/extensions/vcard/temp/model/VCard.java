@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.vcard.temp.model;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -37,13 +36,11 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * The implementation of the {@code <vCard/>} element in the {@code vcard-temp} namespace.
@@ -96,7 +93,7 @@ public final class VCard {
      */
     @XmlJavaTypeAdapter(DateFormatterAdapter.class)
     @XmlElement(name = "BDAY")
-    private Date birthday;
+    private LocalDate birthday;
 
     /**
      * To specify a uniform resource locator associated with the object that the vCard refers to.
@@ -335,9 +332,9 @@ public final class VCard {
      * </pre>
      *
      * @return The birth day.
-     * @see #setBirthday(java.util.Date)
+     * @see #setBirthday(LocalDate)
      */
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
@@ -356,7 +353,7 @@ public final class VCard {
      * @param birthday The birthday.
      * @see #getBirthday()
      */
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 
@@ -2183,24 +2180,20 @@ public final class VCard {
         }
     }
 
-    private static final class DateFormatterAdapter extends XmlAdapter<String, Date> {
+    private static final class DateFormatterAdapter extends XmlAdapter<String, LocalDate> {
 
         @Override
-        public Date unmarshal(final String v) throws Exception {
+        public LocalDate unmarshal(final String v) throws Exception {
             if (v != null) {
-                Calendar calendar = DatatypeConverter.parseDate(v);
-                return calendar.getTime();
+                return LocalDate.parse(v);
             }
             return null;
         }
 
         @Override
-        public String marshal(final Date v) throws Exception {
+        public String marshal(final LocalDate v) throws Exception {
             if (v != null) {
-                Calendar calendar = new GregorianCalendar();
-                calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-                calendar.setTime(v);
-                return DatatypeConverter.printDate(calendar);
+                return v.toString();
             }
             return null;
         }

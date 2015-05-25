@@ -29,7 +29,6 @@ import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -40,10 +39,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -219,19 +216,6 @@ public final class DataForm implements Comparable<DataForm> {
     public final Integer findValueAsInteger(String var) {
         Field field = findField(var);
         return field == null ? null : field.getValueAsInteger();
-    }
-
-    /**
-     * Finds the field and gets its value as date.
-     *
-     * @param var The field name.
-     * @return The value as date or null, if the field could not be found.
-     * @deprecated Use {@link #findValueAsInstant(String)}
-     */
-    @Deprecated
-    public final Date findValueAsDate(String var) {
-        Field field = findField(var);
-        return field == null ? null : field.getValueAsDate();
     }
 
     /**
@@ -550,21 +534,6 @@ public final class DataForm implements Comparable<DataForm> {
          * Returns the first value as date.
          *
          * @return The date or null, if the values are empty.
-         * @deprecated Use {@link #getValueAsInstant()}
-         */
-        @Deprecated
-        public final Date getValueAsDate() {
-            if (value.isEmpty()) {
-                return null;
-            } else {
-                return value.get(0) != null ? DatatypeConverter.parseDateTime(value.get(0)).getTime() : null;
-            }
-        }
-
-        /**
-         * Returns the first value as date.
-         *
-         * @return The date or null, if the values are empty.
          */
         public final Instant getValueAsInstant() {
             if (value.isEmpty()) {
@@ -857,21 +826,6 @@ public final class DataForm implements Comparable<DataForm> {
                     value(value.toEscapedString());
                 }
                 return type(Type.JID_SINGLE);
-            }
-
-            /**
-             * Sets the value as date. This methods sets the field type implicitly to {@link Field.Type#TEXT_SINGLE}.
-             *
-             * @param date The value.
-             * @return The builder.
-             */
-            public final Builder value(Date date) {
-                if (date != null) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(date);
-                    value(DatatypeConverter.printDateTime(calendar));
-                }
-                return type(Type.TEXT_SINGLE);
             }
 
             /**

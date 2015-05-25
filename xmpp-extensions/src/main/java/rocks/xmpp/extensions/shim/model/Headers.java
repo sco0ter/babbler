@@ -29,7 +29,6 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,24 +56,6 @@ public final class Headers {
 
     public Headers(Header... headers) {
         this.header.addAll(Arrays.asList(headers));
-    }
-
-    /**
-     * Creates a headers element with a time period.
-     *
-     * @param start The start date.
-     * @param stop  The stop date.
-     * @return The header.
-     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
-     * @deprecated Use {@link #timePeriod(java.time.OffsetDateTime, java.time.OffsetDateTime)}
-     */
-    @Deprecated
-    public static Headers timePeriod(Date start, Date stop) {
-        // If both a start time and a stop time are specified, the stop time MUST be later than the start time.
-        if (start.after(stop)) {
-            throw new IllegalArgumentException("start date must not be later than the start date.");
-        }
-        return new Headers(Header.start(start), Header.stop(stop));
     }
 
     /**

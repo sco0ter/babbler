@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.TimeZone;
 
 /**
  * The implementation of the {@code <geoloc/>} element in the {@code http://jabber.org/protocol/geoloc} namespace.
@@ -378,17 +377,6 @@ public final class GeoLocation {
      */
     public final String getLanguage() {
         return lang;
-    }
-
-    /**
-     * Gets the time zone offset from UTC for the current location.
-     *
-     * @return The time zone offset.
-     * @deprecated Use {@link #getTimeZoneOffset()}
-     */
-    @Deprecated
-    public final TimeZone getTimeZone() {
-        return TimeZone.getTimeZone(tzo);
     }
 
     /**
@@ -798,22 +786,6 @@ public final class GeoLocation {
          */
         public Builder timestamp(Instant timestamp) {
             this.timestamp = timestamp;
-            return this;
-        }
-
-        /**
-         * Sets the time zone offset from UTC for the current location.
-         *
-         * @param timeZone The time zone offset.
-         * @return The builder.
-         * @deprecated Use {@link #timeZoneOffset(java.time.ZoneOffset)}
-         */
-        @Deprecated
-        public Builder timeZone(TimeZone timeZone) {
-            int seconds = Math.abs(timeZone.getRawOffset()) / 1000;
-            int hours = seconds / 3600;
-            int minutes = (seconds % 3600) / 60;
-            this.zoneOffset = ZoneOffset.of((timeZone.getRawOffset() < 0 ? "-" : "+") + String.format("%02d:%02d", hours, minutes));
             return this;
         }
 

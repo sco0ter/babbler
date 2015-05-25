@@ -36,10 +36,10 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -202,7 +202,7 @@ public final class VCard {
      * To specify revision information about the current vCard.
      */
     @XmlElement(name = "REV")
-    private Date revision;
+    private Instant revision;
 
     /**
      * To specify the family name or given name text to be used for national-language-specific sorting of the FN and N types.
@@ -661,9 +661,9 @@ public final class VCard {
      * Gets revision information about the current vCard.
      *
      * @return The revision.
-     * @see #setRevision(java.util.Date)
+     * @see #setRevision(Instant)
      */
-    public Date getRevision() {
+    public Instant getRevision() {
         return revision;
     }
 
@@ -673,7 +673,7 @@ public final class VCard {
      * @param revision The revision information.
      * @see #getRevision()
      */
-    public void setRevision(Date revision) {
+    public void setRevision(Instant revision) {
         this.revision = revision;
     }
 

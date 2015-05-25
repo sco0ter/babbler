@@ -52,7 +52,7 @@ import java.time.ZoneOffset;
  *     .countryCode("de")
  *     .latitude(50.2)
  *     .longitude(7.5)
- *     .timeZone(TimeZone.getTimeZone("GMT+1"))
+ *     .timeZoneOffset(ZoneOffset.of("+01:00"))
  *     .build();
  * }
  * </pre>

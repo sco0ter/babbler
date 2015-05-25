@@ -320,16 +320,6 @@ public final class VCard {
 
     /**
      * Gets the birthday.
-     * <p><b>Code sample:</b></p>
-     * <pre>
-     * <code>
-     * Calendar calendar = new GregorianCalendar();
-     * calendar.setTime(vCard.getBirthday());
-     * int year = calendar.get(Calendar.YEAR);
-     * int month = calendar.get(Calendar.MONTH);
-     * int day = calendar.get(Calendar.DATE);
-     * </code>
-     * </pre>
      *
      * @return The birth day.
      * @see #setBirthday(LocalDate)
@@ -340,15 +330,6 @@ public final class VCard {
 
     /**
      * Sets the birthday.
-     * <pre>
-     * <code>
-     * Calendar calendar = new GregorianCalendar();
-     * calendar.set(Calendar.YEAR, 2004);
-     * calendar.set(Calendar.MONTH, Calendar.MARCH);
-     * calendar.set(Calendar.DATE, 19);
-     * vCard.setBirthday(calendar.getTime());
-     * </code>
-     * </pre>
      *
      * @param birthday The birthday.
      * @see #getBirthday()

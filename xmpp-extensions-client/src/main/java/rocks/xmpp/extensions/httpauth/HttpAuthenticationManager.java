@@ -24,11 +24,13 @@
 
 package rocks.xmpp.extensions.httpauth;
 
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -36,13 +38,12 @@ import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 /**
  * This manager allows to listen for inbound requests (by an XMPP server) to confirm that the current XMPP user made an HTTP request, i.e. to verify that the HTTP request was in fact made by the XMPP user.
  * <p>
- * If you want to confirm or deny HTTP requests, {@linkplain #addHttpAuthenticationListener(HttpAuthenticationListener) add a listener} and call {@link HttpAuthenticationEvent#confirm()} or {@link HttpAuthenticationEvent#deny()} on the event object.
+ * If you want to confirm or deny HTTP requests, {@linkplain #addHttpAuthenticationListener(Consumer) add a listener} and call {@link HttpAuthenticationEvent#confirm()} or {@link HttpAuthenticationEvent#deny()} on the event object.
  * </p>
  *
  * @author Christian Schudt
@@ -50,65 +51,57 @@ import java.util.logging.Logger;
  */
 public final class HttpAuthenticationManager extends ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(HttpAuthenticationManager.class.getName());
+    private final Set<Consumer<HttpAuthenticationEvent>> httpAuthenticationListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<HttpAuthenticationListener> httpAuthenticationListeners = new CopyOnWriteArraySet<>();
+    private final IQHandler iqHandler;
+
+    private final Consumer<MessageEvent> inboundMessageListener;
 
     private HttpAuthenticationManager(XmppSession xmppSession) {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
-        super(xmppSession);
-    }
+        super(xmppSession, true);
 
-    @Override
-    protected void initialize() {
-        xmppSession.addIQHandler(ConfirmationRequest.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
-                if (notifyHttpAuthListeners(iq, confirmationRequest)) {
-                    return null;
-                }
-                return iq.createError(Condition.SERVICE_UNAVAILABLE);
+                XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq, confirmationRequest));
+                return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;
             }
-        });
+        };
 
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                httpAuthenticationListeners.clear();
-            }
-        });
-
-        xmppSession.addInboundMessageListener(e -> {
+        inboundMessageListener = e -> {
             Message message = e.getMessage();
             if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
                 ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
                 if (confirmationRequest != null) {
-                    notifyHttpAuthListeners(message, confirmationRequest);
+                    XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, message, confirmationRequest));
                 }
             }
-        });
+        };
     }
 
-    private boolean notifyHttpAuthListeners(Stanza stanza, ConfirmationRequest confirmationRequest) {
-        boolean handled = false;
-        for (HttpAuthenticationListener httpAuthenticationListener : httpAuthenticationListeners) {
-            try {
-                httpAuthenticationListener.confirmationRequested(new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, stanza, confirmationRequest));
-                handled = true;
-            } catch (Exception ex) {
-                logger.log(Level.WARNING, ex.getMessage(), ex);
-            }
-        }
-        return handled;
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(ConfirmationRequest.class, iqHandler);
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(ConfirmationRequest.class);
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
     }
 
     /**
      * Adds a HTTP authentication listener, which allows to listen for HTTP authentication confirmation requests.
      *
      * @param httpAuthenticationListener The listener.
-     * @see #removeHttpAuthenticationListener(HttpAuthenticationListener)
+     * @see #removeHttpAuthenticationListener(Consumer)
      */
-    public void addHttpAuthenticationListener(HttpAuthenticationListener httpAuthenticationListener) {
+    public void addHttpAuthenticationListener(Consumer<HttpAuthenticationEvent> httpAuthenticationListener) {
         httpAuthenticationListeners.add(httpAuthenticationListener);
     }
 
@@ -116,9 +109,14 @@ public final class HttpAuthenticationManager extends ExtensionManager {
      * Removes a previously added HTTP authentication listener.
      *
      * @param httpAuthenticationListener The listener.
-     * @see #addHttpAuthenticationListener(HttpAuthenticationListener)
+     * @see #addHttpAuthenticationListener(Consumer)
      */
-    public void removeHttpAuthenticationListener(HttpAuthenticationListener httpAuthenticationListener) {
+    public void removeHttpAuthenticationListener(Consumer<HttpAuthenticationEvent> httpAuthenticationListener) {
         httpAuthenticationListeners.remove(httpAuthenticationListener);
+    }
+
+    @Override
+    protected void dispose() {
+        httpAuthenticationListeners.clear();
     }
 }

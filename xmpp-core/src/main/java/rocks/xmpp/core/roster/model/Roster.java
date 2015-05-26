@@ -25,7 +25,6 @@
 package rocks.xmpp.core.roster.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +46,6 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class Roster {
 
-    @XmlElement
     private final List<Contact> item = new ArrayList<>();
 
     @XmlAttribute

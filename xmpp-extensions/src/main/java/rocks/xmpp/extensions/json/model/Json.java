@@ -37,7 +37,7 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0335.html">XEP-0335: JSON Containers</a>
  * @see <a href="http://xmpp.org/extensions/xep-0335.html#schema">XML Schema</a>
  */
-@XmlRootElement(name = "json")
+@XmlRootElement
 public final class Json {
 
     /**

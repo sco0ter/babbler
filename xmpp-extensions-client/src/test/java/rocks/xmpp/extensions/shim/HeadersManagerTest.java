@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
 import java.util.List;
@@ -61,7 +60,7 @@ public class HeadersManagerTest extends ExtensionTest {
             Assert.fail();
         }
         // By default headers are not support, unless they are enabled.
-        Assert.assertFalse(infoNode.getFeatures().contains(new Feature("http://jabber.org/protocol/shim")));
+        Assert.assertFalse(infoNode.getFeatures().contains("http://jabber.org/protocol/shim"));
     }
 
     @Test
@@ -83,12 +82,12 @@ public class HeadersManagerTest extends ExtensionTest {
         } catch (StanzaException e) {
             Assert.fail();
         }
-        Assert.assertTrue(infoNode.getFeatures().contains(new Feature("http://jabber.org/protocol/shim")));
+        Assert.assertTrue(infoNode.getFeatures().contains("http://jabber.org/protocol/shim"));
 
         try {
             InfoNode infoNode1 = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim");
-            Assert.assertTrue(infoNode1.getFeatures().contains(new Feature("http://jabber.org/protocol/shim#In-Reply-To")));
-            Assert.assertTrue(infoNode1.getFeatures().contains(new Feature("http://jabber.org/protocol/shim#Keywords")));
+            Assert.assertTrue(infoNode1.getFeatures().contains("http://jabber.org/protocol/shim#In-Reply-To"));
+            Assert.assertTrue(infoNode1.getFeatures().contains("http://jabber.org/protocol/shim#Keywords"));
         } catch (StanzaException e) {
             Assert.fail();
         }

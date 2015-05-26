@@ -26,11 +26,11 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -38,7 +38,6 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -71,8 +70,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 /**
  * Represents a chat room.
@@ -81,13 +79,11 @@ import java.util.logging.Logger;
  */
 public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
-    private static final Logger logger = Logger.getLogger(ChatRoom.class.getName());
+    private final Set<Consumer<InvitationDeclineEvent>> invitationDeclineListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<InvitationDeclineListener> invitationDeclineListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<SubjectChangeEvent>> subjectChangeListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<SubjectChangeListener> subjectChangeListeners = new CopyOnWriteArraySet<>();
-
-    private final Set<OccupantListener> occupantListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<OccupantEvent>> occupantListeners = new CopyOnWriteArraySet<>();
 
     private final Map<String, Occupant> occupantMap = new HashMap<>();
 
@@ -101,9 +97,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private final XmppSession xmppSession;
 
-    private final MessageListener messageListener;
+    private final Consumer<MessageEvent> messageListener;
 
-    private final PresenceListener presenceListener;
+    private final Consumer<PresenceEvent> presenceListener;
 
     private volatile String nick;
 
@@ -121,16 +117,16 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
                     // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
                     if (message.getSubject() != null && message.getBody() == null) {
-                        notifySubjectChangeListeners(new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), message.getExtension(DelayedDelivery.class) != null, DelayedDelivery.deliveryDateOrNow(message)));
+                        XmppUtils.notifyEventListeners(subjectChangeListeners, new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), message.getExtension(DelayedDelivery.class) != null, DelayedDelivery.sendDate(message)));
                     } else {
-                        notifyInboundMessageListeners(new MessageEvent(ChatRoom.this, message, true));
+                        XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(ChatRoom.this, message, true));
                     }
                 } else {
                     MucUser mucUser = message.getExtension(MucUser.class);
                     if (mucUser != null) {
                         Decline decline = mucUser.getDecline();
                         if (decline != null) {
-                            notifyInvitationDeclineListeners(new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
+                            XmppUtils.notifyEventListeners(invitationDeclineListeners, new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
                         }
                     }
                 }
@@ -154,37 +150,41 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                             if (previousOccupant == null) {
                                 // Only notify about "joins", if it's not our own join and we are already in the room.
                                 if (!isSelfPresence && entered) {
-                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ENTERED, null, null, null));
+                                    XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ENTERED, null, null, null));
                                 }
                             } else {
-                                notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.STATUS_CHANGED, null, null, null));
+                                XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.STATUS_CHANGED, null, null, null));
                             }
                         } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
                             // Occupant has exited the room.
                             Occupant occupant = occupantMap.remove(nick);
                             if (occupant != null) {
+                                OccupantEvent occupantEvent = null;
                                 if (mucUser.getItem() != null) {
                                     Actor actor = mucUser.getItem().getActor();
                                     String reason = mucUser.getItem().getReason();
                                     if (!mucUser.getStatusCodes().isEmpty()) {
                                         if (mucUser.getStatusCodes().contains(Status.KICKED)) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null));
+                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null);
                                         } else if (mucUser.getStatusCodes().contains(Status.BANNED)) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null));
+                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null);
                                         } else if (mucUser.getStatusCodes().contains(Status.MEMBERSHIP_REVOKED)) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null));
+                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null);
                                         } else if (mucUser.getStatusCodes().contains(Status.NICK_CHANGED)) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null));
+                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null);
                                         } else if (mucUser.getStatusCodes().contains(Status.SERVICE_SHUT_DOWN)) {
-                                            notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null));
+                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null);
                                         }
                                     } else if (mucUser.getDestroy() != null) {
-                                        notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid()));
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid());
                                     } else {
-                                        notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null);
                                     }
                                 } else {
-                                    notifyOccupantListeners(new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null));
+                                    occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null);
+                                }
+                                if (occupantEvent != null) {
+                                    XmppUtils.notifyEventListeners(occupantListeners, occupantEvent);
                                 }
                             }
                             if (isSelfPresence) {
@@ -214,36 +214,6 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         xmppSession.removeInboundPresenceListener(presenceListener);
     }
 
-    private void notifyInvitationDeclineListeners(InvitationDeclineEvent invitationDeclineEvent) {
-        for (InvitationDeclineListener invitationDeclineListener : invitationDeclineListeners) {
-            try {
-                invitationDeclineListener.invitationDeclined(invitationDeclineEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
-    private void notifyOccupantListeners(OccupantEvent occupantEvent) {
-        for (OccupantListener occupantListener : occupantListeners) {
-            try {
-                occupantListener.occupantChanged(occupantEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
-    private void notifySubjectChangeListeners(SubjectChangeEvent subjectChangeEvent) {
-        for (SubjectChangeListener subjectChangeListener : subjectChangeListeners) {
-            try {
-                subjectChangeListener.subjectChanged(subjectChangeEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
     private boolean isSelfPresence(Presence presence) {
         boolean isSelfPresence = false;
         MucUser mucUser = presence.getExtension(MucUser.class);
@@ -262,9 +232,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Adds a invitation decline listener, which allows to listen for invitation declines.
      *
      * @param invitationDeclineListener The listener.
-     * @see #removeInvitationDeclineListener(InvitationDeclineListener)
+     * @see #removeInvitationDeclineListener(Consumer)
      */
-    public void addInvitationDeclineListener(InvitationDeclineListener invitationDeclineListener) {
+    public void addInvitationDeclineListener(Consumer<InvitationDeclineEvent> invitationDeclineListener) {
         invitationDeclineListeners.add(invitationDeclineListener);
     }
 
@@ -272,9 +242,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Removes a previously added invitation decline listener.
      *
      * @param invitationDeclineListener The listener.
-     * @see #addInvitationDeclineListener(InvitationDeclineListener)
+     * @see #addInvitationDeclineListener(Consumer)
      */
-    public void removeInvitationDeclineListener(InvitationDeclineListener invitationDeclineListener) {
+    public void removeInvitationDeclineListener(Consumer<InvitationDeclineEvent> invitationDeclineListener) {
         invitationDeclineListeners.remove(invitationDeclineListener);
     }
 
@@ -282,9 +252,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Adds a subject change listener, which allows to listen for subject changes.
      *
      * @param subjectChangeListener The listener.
-     * @see #removeSubjectChangeListener(SubjectChangeListener)
+     * @see #removeSubjectChangeListener(Consumer)
      */
-    public void addSubjectChangeListener(SubjectChangeListener subjectChangeListener) {
+    public void addSubjectChangeListener(Consumer<SubjectChangeEvent> subjectChangeListener) {
         subjectChangeListeners.add(subjectChangeListener);
     }
 
@@ -292,9 +262,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Removes a previously added subject change listener.
      *
      * @param subjectChangeListener The listener.
-     * @see #addSubjectChangeListener(SubjectChangeListener)
+     * @see #addSubjectChangeListener(Consumer)
      */
-    public void removeSubjectChangeListener(SubjectChangeListener subjectChangeListener) {
+    public void removeSubjectChangeListener(Consumer<SubjectChangeEvent> subjectChangeListener) {
         subjectChangeListeners.remove(subjectChangeListener);
     }
 
@@ -302,9 +272,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Adds an occupant listener, which allows to listen for presence changes of occupants, e.g. "joins" and "leaves".
      *
      * @param occupantListener The listener.
-     * @see #removeOccupantListener(OccupantListener)
+     * @see #removeOccupantListener(Consumer)
      */
-    public void addOccupantListener(OccupantListener occupantListener) {
+    public void addOccupantListener(Consumer<OccupantEvent> occupantListener) {
         occupantListeners.add(occupantListener);
     }
 
@@ -312,9 +282,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Removes a previously added occupant listener.
      *
      * @param occupantListener The listener.
-     * @see #addOccupantListener(OccupantListener)
+     * @see #addOccupantListener(Consumer)
      */
-    public void removeOccupantListener(OccupantListener occupantListener) {
+    public void removeOccupantListener(Consumer<OccupantEvent> occupantListener) {
         occupantListeners.remove(occupantListener);
     }
 
@@ -769,9 +739,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             if (iterator.hasNext()) {
                 identity = iterator.next();
             }
-            for (Feature feature : infoNode.getFeatures()) {
+            for (String feature : infoNode.getFeatures()) {
                 for (MucFeature mucFeature : MucFeature.values()) {
-                    if (mucFeature.getServiceDiscoveryFeature().equals(feature.getVar())) {
+                    if (mucFeature.getServiceDiscoveryFeature().equals(feature)) {
                         mucFeatures.add(mucFeature);
                     }
                 }
@@ -906,7 +876,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://www.xmpp.org/extensions/xep-0045.html#impl-service-traffic">17.1.1 Allowable Traffic</a>
      */
-    public Set<Feature> discoverAllowableTraffic() throws XmppException {
+    public Set<String> discoverAllowableTraffic() throws XmppException {
         return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").getFeatures();
     }
 

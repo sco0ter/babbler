@@ -52,7 +52,7 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "html")
+@XmlRootElement
 public final class Html {
 
     /**

@@ -60,7 +60,7 @@ public abstract class InvisibleCommand {
     /**
      * The implementation of the {@code <invisible/>} element in the {@code urn:xmpp:invisible:0} namespace.
      */
-    @XmlRootElement(name = "invisible")
+    @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Invisible extends InvisibleCommand {
         private Invisible() {
@@ -74,7 +74,7 @@ public abstract class InvisibleCommand {
     /**
      * The implementation of the {@code <visible/>} element in the {@code urn:xmpp:invisible:0} namespace.
      */
-    @XmlRootElement(name = "visible")
+    @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Visible extends InvisibleCommand {
         private Visible() {

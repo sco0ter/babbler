@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "iq")
-@XmlType(propOrder = {"from", "id", "to", "type", "language", "extension", "error"})
+@XmlType(propOrder = {"from", "id", "to", "type", "lang", "extension", "error"})
 public final class IQ extends AbstractIQ implements ClientStreamElement {
     /**
      * Default constructor for unmarshalling.

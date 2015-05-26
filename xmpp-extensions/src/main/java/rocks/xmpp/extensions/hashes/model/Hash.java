@@ -38,7 +38,7 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>
  * @see <a href="http://xmpp.org/extensions/xep-0300.html#schema">XML Schema</a>
  */
-@XmlRootElement(name = "hash")
+@XmlRootElement
 public final class Hash {
 
     /**
@@ -49,12 +49,12 @@ public final class Hash {
     @XmlValue
     private final byte[] value;
 
-    @XmlAttribute(name = "algo")
-    private final String algorithm;
+    @XmlAttribute
+    private final String algo;
 
     private Hash() {
         this.value = null;
-        this.algorithm = null;
+        this.algo = null;
     }
 
     /**
@@ -65,7 +65,7 @@ public final class Hash {
      */
     public Hash(byte[] value, String algorithm) {
         this.value = Objects.requireNonNull(value);
-        this.algorithm = Objects.requireNonNull(algorithm);
+        this.algo = Objects.requireNonNull(algorithm);
     }
 
     /**
@@ -74,7 +74,7 @@ public final class Hash {
      * @return The hash algorithm.
      */
     public final String getAlgorithm() {
-        return algorithm;
+        return algo;
     }
 
     /**

@@ -29,10 +29,11 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
+import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
@@ -61,6 +62,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -70,16 +72,16 @@ public final class StreamInitiationManager extends ExtensionManager implements F
 
     private static final String STREAM_METHOD = "stream-method";
 
-    private final Collection<String> supportedStreamMethod = new ArrayList<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
-
     private final Map<String, ProfileManager> profileManagers = new ConcurrentHashMap<>();
 
     private final InBandByteStreamManager inBandByteStreamManager;
 
     private final Socks5ByteStreamManager socks5ByteStreamManager;
 
+    private final IQHandler iqHandler;
+
     private StreamInitiationManager(final XmppSession xmppSession) {
-        super(xmppSession, StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
+        super(xmppSession);
 
         inBandByteStreamManager = xmppSession.getManager(InBandByteStreamManager.class);
         socks5ByteStreamManager = xmppSession.getManager(Socks5ByteStreamManager.class);
@@ -90,12 +92,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
             fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
         });
 
-        setEnabled(true);
-    }
-
-    @Override
-    protected void initialize() {
-        xmppSession.addIQHandler(StreamInitiation.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
@@ -109,7 +106,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                         DataForm.Field field = dataForm.findField(STREAM_METHOD);
                         if (field != null) {
                             List<String> streamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
-                            if (!Collections.disjoint(streamMethods, supportedStreamMethod)) {
+                            if (!Collections.disjoint(streamMethods, getSupportedStreamMethods())) {
                                 // Request contains valid streams
                                 noValidStreams = false;
                             }
@@ -129,7 +126,19 @@ public final class StreamInitiationManager extends ExtensionManager implements F
                     }
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(StreamInitiation.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(StreamInitiation.class);
     }
 
     /**
@@ -150,7 +159,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         String sessionId = UUID.randomUUID().toString();
 
         // Offer stream methods.
-        List<DataForm.Option> options = supportedStreamMethod.stream().map(DataForm.Option::new).collect(Collectors.toList());
+        List<DataForm.Option> options = getSupportedStreamMethods().stream().map(DataForm.Option::new).collect(Collectors.toList());
         DataForm.Field field = DataForm.Field.builder().var(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
         DataForm dataForm = new DataForm(DataForm.Type.FORM, Collections.singletonList(field));
         // Offer the file to the recipient and wait until it's accepted.
@@ -188,7 +197,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         StreamInitiation streamInitiation = (StreamInitiation) protocol;
         DataForm.Field field = streamInitiation.getFeatureNegotiation().getDataForm().findField(STREAM_METHOD);
         final List<String> offeredStreamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
-        offeredStreamMethods.retainAll(supportedStreamMethod);
+        offeredStreamMethods.retainAll(getSupportedStreamMethods());
         DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
@@ -200,7 +209,7 @@ public final class StreamInitiationManager extends ExtensionManager implements F
         final List<Exception> negotiationExceptions = new ArrayList<>();
         // Before we reply with the chosen stream method, we
         // register a byte stream listener, because we expect the initiator to open a byte stream with us.
-        ByteStreamListener byteStreamListener = e -> {
+        Consumer<ByteStreamEvent> byteStreamListener = e -> {
             if (sessionId.equals(e.getSessionId())) {
                 lock.lock();
                 try {
@@ -245,6 +254,12 @@ public final class StreamInitiationManager extends ExtensionManager implements F
     @Override
     public void reject(IQ iq) {
         xmppSession.send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.FORBIDDEN));
+    }
+
+    Collection<String> getSupportedStreamMethods() {
+        Collection<String> allStreamMethods = new ArrayList<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
+        allStreamMethods.retainAll(xmppSession.getEnabledFeatures());
+        return allStreamMethods;
     }
 
     private interface ProfileManager {

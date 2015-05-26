@@ -25,6 +25,7 @@
 package rocks.xmpp.core.chat;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -38,8 +39,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 /**
  * This class manages one-to-one chat sessions, which are described in <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="http://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
@@ -48,31 +48,22 @@ import java.util.logging.Logger;
  * <code>ChatSession chatSession = xmppSession.getManager(ChatManager.class).createChatSession(chatPartner);</code>
  * </pre>
  * <h3>Listen for new chat sessions</h3>
- * <p>When a contact initiates a new chat session with you, you can listen for it with the {@link ChatSessionListener}.
+ * <p>When a contact initiates a new chat session with you, you can listen for it with {@link #addChatSessionListener(Consumer)}.
  * The listener will be called either if you created the session programmatically as shown above, or if it is created by a contact, i.e. because he or she sent you a chat message.
  * </p>
- * <p>You should add a {@link rocks.xmpp.core.stanza.MessageListener} to the chat session in order to listen for messages.</p>
- * <pre><code>
- * xmppSession.getManager(ChatManager.class).addChatSessionListener(new ChatSessionListener() {
- *     {@literal @}Override
- *     public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
- *         ChatSession chatSession = chatSessionEvent.getChatSession();
- *         chatSession.addInboundMessageListener(new MessageListener() {
- *             {@literal @}Override
- *             public void handleMessage(MessageEvent e) {
- *                 Message message = e.getMessage();
- *             }
- *         });
- *     }
+ * <p>You should add a {@link ChatSession#addInboundMessageListener(Consumer)} to the chat session in order to listen for messages.</p>
+ * <pre>
+ * {@code
+ * xmppSession.getManager(ChatManager.class).addChatSessionListener(chatSessionEvent -> {
+ *     ChatSession chatSession = chatSessionEvent.getChatSession();
+ *     chatSession.addInboundMessageListener(e -> {
+ *         Message message = e.getMessage();
+ *     });
  * });
- * </code>
+ * }
  * </pre>
  */
 public final class ChatManager extends Manager {
-
-    private static final Logger logger = Logger.getLogger(ChatManager.class.getName());
-
-    private final XmppSession xmppSession;
 
     /**
      * <blockquote>
@@ -81,7 +72,7 @@ public final class ChatManager extends Manager {
      */
     private final Map<Jid, Map<String, ChatSession>> chatSessions = new ConcurrentHashMap<>();
 
-    private final Set<ChatSessionListener> chatSessionListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<ChatSessionEvent>> chatSessionListeners = new CopyOnWriteArraySet<>();
 
     /**
      * Creates the chat manager.
@@ -89,7 +80,7 @@ public final class ChatManager extends Manager {
      * @param xmppSession The connection.
      */
     private ChatManager(final XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
+        super(xmppSession, true);
     }
 
     @Override
@@ -108,7 +99,7 @@ public final class ChatManager extends Manager {
                             // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
                             chatSession.setChatPartner(message.getFrom());
                         }
-                        chatSession.notifyInboundMessageListeners(new MessageEvent(chatSession, message, e.isInbound()));
+                        XmppUtils.notifyEventListeners(chatSession.inboundMessageListeners, new MessageEvent(chatSession, message, e.isInbound()));
                     }
                 }
             }
@@ -126,21 +117,15 @@ public final class ChatManager extends Manager {
                 }
             }
         });
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                chatSessionListeners.clear();
-                chatSessions.clear();
-            }
-        });
     }
 
     /**
      * Adds a chat session listener.
      *
      * @param chatSessionListener The listener.
-     * @see #removeChatSessionListener(ChatSessionListener)
+     * @see #removeChatSessionListener(Consumer)
      */
-    public void addChatSessionListener(ChatSessionListener chatSessionListener) {
+    public void addChatSessionListener(Consumer<ChatSessionEvent> chatSessionListener) {
         chatSessionListeners.add(chatSessionListener);
     }
 
@@ -148,25 +133,14 @@ public final class ChatManager extends Manager {
      * Removes a previously added chat session listener.
      *
      * @param chatSessionListener The listener.
-     * @see #addChatSessionListener(ChatSessionListener)
+     * @see #addChatSessionListener(Consumer)
      */
-    public void removeChatSessionListener(ChatSessionListener chatSessionListener) {
+    public void removeChatSessionListener(Consumer<ChatSessionEvent> chatSessionListener) {
         chatSessionListeners.remove(chatSessionListener);
     }
 
-    private void notifyChatSessionCreated(ChatSession chatSession, boolean createdByInboundMessage) {
-        ChatSessionEvent chatSessionEvent = new ChatSessionEvent(this, chatSession, createdByInboundMessage);
-        for (ChatSessionListener chatSessionListener : chatSessionListeners) {
-            try {
-                chatSessionListener.chatSessionCreated(chatSessionEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
     /**
-     * Creates a new chat session and notifies any {@linkplain ChatSessionListener chat session listeners} about it.
+     * Creates a new chat session and notifies any {@linkplain Consumer chat session listeners} about it.
      *
      * @param chatPartner The chat partner.
      * @return The chat session.
@@ -180,33 +154,37 @@ public final class ChatManager extends Manager {
     private final ChatSession buildChatSession(final Jid chatPartner, final String threadId, final XmppSession xmppSession, final boolean inbound) {
         Jid contact = chatPartner.asBareJid();
         // If there are no chat sessions with that contact yet, put the contact into the map.
-        if (!chatSessions.containsKey(contact)) {
-            chatSessions.put(contact, new HashMap<>());
-        }
-        Map<String, ChatSession> chatSessionMap = chatSessions.get(contact);
-        if (!chatSessionMap.containsKey(threadId)) {
-            ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession);
-            chatSessionMap.put(threadId, chatSession);
-            notifyChatSessionCreated(chatSession, inbound);
-        }
-        return chatSessionMap.get(threadId);
+        Map<String, ChatSession> chatSessionMap = chatSessions.computeIfAbsent(contact, k -> new HashMap<>());
+        return chatSessionMap.computeIfAbsent(threadId, k -> {
+            ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession, this);
+            XmppUtils.notifyEventListeners(chatSessionListeners, new ChatSessionEvent(this, chatSession, inbound));
+            return chatSession;
+        });
     }
 
     /**
      * Destroys the chat session.
      *
      * @param chatSession The chat session.
+     * @deprecated Use {@link ChatSession#close()}
      */
+    @Deprecated
     public void destroyChatSession(ChatSession chatSession) {
         Jid user = Objects.requireNonNull(chatSession, "chatSession must not be null.").getChatPartner().asBareJid();
         synchronized (chatSessions) {
-            if (chatSessions.containsKey(user)) {
-                Map<String, ChatSession> chatSessionMap = chatSessions.get(user);
+            Map<String, ChatSession> chatSessionMap = chatSessions.get(user);
+            if (chatSessionMap != null) {
                 chatSessionMap.remove(chatSession.getThread());
                 if (chatSessionMap.isEmpty()) {
                     chatSessions.remove(user);
                 }
             }
         }
+    }
+
+    @Override
+    protected void dispose() {
+        chatSessionListeners.clear();
+        chatSessions.clear();
     }
 }

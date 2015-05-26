@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
@@ -63,8 +62,6 @@ public class FileTransferSender {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("111", "111", "filetransfer");
-                // Send initial presence
-                xmppSession.send(new Presence());
 
                 FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
                 FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("info.png"), "Description", new Jid("222", xmppSession.getDomain(), "filetransfer"), 5000);

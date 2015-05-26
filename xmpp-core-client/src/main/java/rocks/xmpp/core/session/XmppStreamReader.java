@@ -29,7 +29,6 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.core.stream.model.errors.Text;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -161,7 +160,7 @@ final class XmppStreamReader {
                     if (!doRestart && xmppSession.getStatus() != XmppSession.Status.CLOSING) {
                         // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
                         // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred.
-                        throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, new Text("Stream closed by server", "en"), null));
+                        throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", "en", null));
                     }
                 } catch (Exception e) {
                     synchronized (XmppStreamReader.this) {

@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#continue">7.9 Converting a One-to-One Chat Into a Multi-User Conference</a>
  */
 public final class Continue {
-    @XmlAttribute(name = "thread")
+    @XmlAttribute
     private String thread;
 
     private Continue() {

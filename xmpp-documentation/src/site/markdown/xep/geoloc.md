@@ -24,11 +24,8 @@ Here's a sample, how to listen for location updates:
 ```
 GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
 geoLocationManager.setEnabled(true);
-geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
-    @Override
-    public void geoLocationUpdated(GeoLocationEvent e) {
-        System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());
-    }
+geoLocationManager.addGeoLocationListener(e -> {
+    System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());
 });
 ```
 

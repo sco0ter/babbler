@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.blocking.model;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.blocking.model.errors.Blocked;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
@@ -53,8 +52,7 @@ public final class BlockList {
      */
     public static final String NAMESPACE = "urn:xmpp:blocking";
 
-    @XmlElement(name = "item")
-    private final List<Item> items = new ArrayList<>();
+    private final List<Item> item = new ArrayList<>();
 
     /**
      * Creates an empty {@code <blocklist/>} element, used to ask the server for the block list.
@@ -68,7 +66,7 @@ public final class BlockList {
      * @param blockedItems The blocked items.
      */
     public BlockList(List<Jid> blockedItems) {
-        this.items.addAll(blockedItems.stream().map(Item::new).collect(Collectors.toList()));
+        this.item.addAll(blockedItems.stream().map(Item::new).collect(Collectors.toList()));
     }
 
     /**
@@ -77,11 +75,11 @@ public final class BlockList {
      * @return The items.
      */
     public final List<Jid> getItems() {
-        return Collections.unmodifiableList(items.stream().map(Item::getJid).collect(Collectors.toList()));
+        return Collections.unmodifiableList(item.stream().map(Item::getJid).collect(Collectors.toList()));
     }
 
     @Override
     public final String toString() {
-        return items.toString();
+        return item.toString();
     }
 }

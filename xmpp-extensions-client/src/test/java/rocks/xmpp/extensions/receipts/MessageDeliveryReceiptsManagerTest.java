@@ -32,10 +32,10 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 import java.util.Collections;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
@@ -65,7 +65,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
             receivedId[0] = e.getMessageId();
         });
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
 
         Assert.assertTrue(messageReceived[0]);
@@ -88,7 +88,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         messageDeliveryReceiptsManager1.addMessageDeliveredListener(e -> messageReceived[0] = true);
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
 
         Assert.assertFalse(messageReceived[0]);
@@ -119,7 +119,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         messageDeliveryReceiptsManager1.setEnabled(true);
         xmppSession1.addInboundMessageListener(e -> Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class)));
 
-        Message message = new Message(JULIET, Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, Message.Type.ERROR, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
     }
 
@@ -131,7 +131,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         xmppSession1.addInboundMessageListener(e -> Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class)));
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
     }
 
@@ -148,7 +148,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
 
-        MessageDeliveredListener messageDeliveredListener = e -> {
+        Consumer<MessageDeliveredEvent> messageDeliveredListener = e -> {
 
         };
         messageDeliveryReceiptsManager.addMessageDeliveredListener(messageDeliveredListener);
@@ -170,7 +170,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:receipts");
+        String feature = "urn:xmpp:receipts";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         messageDeliveryReceiptsManager.setEnabled(true);
         Assert.assertTrue(messageDeliveryReceiptsManager.isEnabled());

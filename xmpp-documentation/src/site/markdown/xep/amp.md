@@ -13,7 +13,7 @@ message.getExtensions().add(amp);
 ```
 
 ```java
-AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.DROP, new Date()));
+AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.DROP, Instant.now()));
 message.getExtensions().add(amp);
 ```
 

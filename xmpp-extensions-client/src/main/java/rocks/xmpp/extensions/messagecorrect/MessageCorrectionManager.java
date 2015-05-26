@@ -54,7 +54,7 @@ import java.util.Objects;
 public final class MessageCorrectionManager extends ExtensionManager {
 
     private MessageCorrectionManager(XmppSession xmppSession) {
-        super(xmppSession, Replace.NAMESPACE);
+        super(xmppSession);
     }
 
     /**

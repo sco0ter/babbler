@@ -25,12 +25,13 @@
 package rocks.xmpp.core.session;
 
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * An XMPP session event is fired, whenever the status of a session has changed, e.g. when it is abnormally disconnected.
  *
  * @author Christian Schudt
- * @see SessionStatusListener
+ * @see XmppSession#addSessionStatusListener(Consumer)
  */
 public final class SessionStatusEvent extends EventObject {
     private final Throwable throwable;

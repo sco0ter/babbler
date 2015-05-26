@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Manages SASL authentication as described in <a href="http://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
@@ -69,8 +68,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
         });
     }
 
-    private final XmppSession xmppSession;
-
     /**
      * Stores the supported and preferred SASL mechanisms of the server.
      */
@@ -88,8 +85,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @param xmppSession The session.
      */
     public AuthenticationManager(final XmppSession xmppSession) {
-        super(Mechanisms.class);
-        this.xmppSession = Objects.requireNonNull(xmppSession, "xmppSession must not be null.");
+        super(xmppSession, Mechanisms.class);
         this.supportedMechanisms = new ArrayList<>();
     }
 

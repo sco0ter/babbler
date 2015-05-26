@@ -27,6 +27,7 @@ package rocks.xmpp.core.stanza.model.client;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 
@@ -40,8 +41,8 @@ import java.util.Collections;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "presence")
-@XmlType(propOrder = {"from", "id", "to", "type", "language", "show", "status", "priority", "extensions", "error"})
+@XmlRootElement
+@XmlType(propOrder = {"from", "id", "to", "type", "lang", "show", "status", "priority", "extensions", "error"})
 public final class Presence extends AbstractPresence implements ClientStreamElement {
     /**
      * Constructs an empty presence to indicate availability.
@@ -113,7 +114,7 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param status The status.
      */
     public Presence(Jid to, Show show, String status) {
-        this(to, null, show, status != null ? Collections.singleton(new Status(status)) : null, null, null, null, null, null, null);
+        this(to, null, show, status != null ? Collections.singleton(new Text(status)) : null, null, null, null, null, null, null);
     }
 
     /**
@@ -136,7 +137,7 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param id     The id.
      */
     public Presence(Jid to, Type type, String status, String id) {
-        this(to, type, null, status != null ? Collections.singleton(new Status(status)) : null, null, id, null, null, null, null);
+        this(to, type, null, status != null ? Collections.singleton(new Text(status)) : null, null, id, null, null, null, null);
     }
 
     /**
@@ -153,7 +154,7 @@ public final class Presence extends AbstractPresence implements ClientStreamElem
      * @param extensions The extensions.
      * @param error      The stanza error.
      */
-    public Presence(Jid to, Type type, Show show, Collection<Status> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    public Presence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
         super(to, type, show, status, priority, id, from, language, extensions, error);
     }
 

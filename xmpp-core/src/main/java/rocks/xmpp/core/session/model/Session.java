@@ -26,7 +26,6 @@ package rocks.xmpp.core.session.model;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -45,7 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public final class Session extends StreamFeature {
-    @XmlElement
+
     private final String optional;
 
     public Session() {

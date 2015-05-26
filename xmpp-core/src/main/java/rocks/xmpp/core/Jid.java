@@ -66,6 +66,11 @@ import java.util.regex.Pattern;
 public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
 
     /**
+     * The service discovery feature used for determining support of JID escaping (<code>jid\20escaping</code>).
+     */
+    public static final String ESCAPING_FEATURE = "jid\\20escaping";
+
+    /**
      * Escapes all disallowed characters and also backslash, when followed by a defined hex code for escaping. See 4. Business Rules.
      */
     private static final Pattern ESCAPE_PATTERN = Pattern.compile("[ \"&'/:<>@]|\\\\(?=20|22|26|27|2f|3a|3c|3e|40|5c)");
@@ -210,7 +215,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             }
             return jidValue;
         } else {
-            throw new IllegalArgumentException("Could not parse JID.");
+            throw new IllegalArgumentException("Could not parse JID: " + jid);
         }
     }
 
@@ -344,10 +349,10 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     private void validateLength(String value, String part) {
         if (value != null) {
             if (value.isEmpty()) {
-                throw new IllegalArgumentException(String.format("%s must not be empty.", part));
+                throw new IllegalArgumentException(part + " must not be empty.");
             }
             if (value.length() > 1023) {
-                throw new IllegalArgumentException(String.format("%s must not be greater than 1023 characters.", part));
+                throw new IllegalArgumentException(part + " must not be greater than 1023 characters.");
             }
         }
     }

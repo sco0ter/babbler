@@ -26,8 +26,10 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -36,14 +38,14 @@ import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
+import rocks.xmpp.extensions.rsm.ResultSetProvider;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -53,66 +55,63 @@ import java.util.stream.Collectors;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
 public final class MultiUserChatManager extends ExtensionManager {
-    private static final Logger logger = Logger.getLogger(MultiUserChatManager.class.getName());
 
     private static final String ROOMS_NODE = "http://jabber.org/protocol/muc#rooms";
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private final Set<InvitationListener> invitationListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<InvitationEvent>> invitationListeners = new CopyOnWriteArraySet<>();
 
     private final Map<Jid, Item> enteredRoomsMap = new ConcurrentHashMap<>();
 
+    private final Consumer<MessageEvent> messageListener;
+
+    private final ResultSetProvider<Item> itemProvider;
+
     private MultiUserChatManager(final XmppSession xmppSession) {
-        super(xmppSession, Muc.NAMESPACE);
+        super(xmppSession, true);
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-    }
-
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                invitationListeners.clear();
-            }
-        });
-
-        // Listen for inbound invitations.
-        xmppSession.addInboundMessageListener(e -> {
+        this.messageListener = e -> {
             Message message = e.getMessage();
             // Check, if the message contains a mediated invitation.
             MucUser mucUser = message.getExtension(MucUser.class);
             if (mucUser != null) {
                 for (Invite invite : mucUser.getInvites()) {
-                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                    XmppUtils.notifyEventListeners(invitationListeners, new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
                 }
             } else {
                 // Check, if the message contains a direct invitation.
                 DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
                 if (directInvitation != null) {
-                    notifyListeners(new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
+                    XmppUtils.notifyEventListeners(invitationListeners, new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
                 }
             }
-        });
-        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, new DefaultItemProvider(enteredRoomsMap.values()));
+        };
+        itemProvider = new DefaultItemProvider(enteredRoomsMap.values());
     }
 
-    private void notifyListeners(InvitationEvent invitationEvent) {
-        for (InvitationListener invitationListener : invitationListeners) {
-            try {
-                invitationListener.invitationReceived(invitationEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        // Listen for inbound invitations.
+        xmppSession.addInboundMessageListener(messageListener);
+        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, itemProvider);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(messageListener);
+        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, null);
     }
 
     /**
      * Adds an invitation listener, which allows to listen for inbound multi-user chat invitations.
      *
      * @param invitationListener The listener.
-     * @see #removeInvitationListener(InvitationListener)
+     * @see #removeInvitationListener(Consumer)
      */
-    public void addInvitationListener(InvitationListener invitationListener) {
+    public void addInvitationListener(Consumer<InvitationEvent> invitationListener) {
         invitationListeners.add(invitationListener);
     }
 
@@ -120,9 +119,9 @@ public final class MultiUserChatManager extends ExtensionManager {
      * Removes a previously added invitation listener.
      *
      * @param invitationListener The listener.
-     * @see #addInvitationListener(InvitationListener)
+     * @see #addInvitationListener(Consumer)
      */
-    public void removeInvitationListener(InvitationListener invitationListener) {
+    public void removeInvitationListener(Consumer<InvitationEvent> invitationListener) {
         invitationListeners.remove(invitationListener);
     }
 
@@ -168,5 +167,10 @@ public final class MultiUserChatManager extends ExtensionManager {
 
     void roomExited(ChatRoom chatRoom) {
         enteredRoomsMap.remove(chatRoom.getAddress());
+    }
+
+    @Override
+    protected void dispose() {
+        invitationListeners.clear();
     }
 }

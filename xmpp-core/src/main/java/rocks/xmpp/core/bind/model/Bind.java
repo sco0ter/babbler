@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -51,11 +50,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement
 public final class Bind extends StreamFeature {
 
-    @XmlElement
     @XmlJavaTypeAdapter(JidAdapter.class)
     private final Jid jid;
 
-    @XmlElement
     private final String resource;
 
     /**

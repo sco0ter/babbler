@@ -29,8 +29,7 @@ import rocks.xmpp.core.session.XmppSession;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 /**
  * An abstract class to manage both <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a> or <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
@@ -41,30 +40,19 @@ import java.util.logging.Logger;
  */
 public abstract class ByteStreamManager extends ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(ByteStreamManager.class.getName());
+    protected final Set<Consumer<ByteStreamEvent>> byteStreamListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<ByteStreamListener> byteStreamListeners = new CopyOnWriteArraySet<>();
-
-    protected ByteStreamManager(XmppSession xmppSession, String... features) {
-        super(xmppSession, features);
-    }
-
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                byteStreamListeners.clear();
-            }
-        });
+    protected ByteStreamManager(XmppSession xmppSession) {
+        super(xmppSession, true);
     }
 
     /**
      * Adds a byte stream listener, which allows to listen for inbound byte stream requests.
      *
      * @param byteStreamListener The listener.
-     * @see #removeByteStreamListener(ByteStreamListener)
+     * @see #removeByteStreamListener(Consumer)
      */
-    public final void addByteStreamListener(ByteStreamListener byteStreamListener) {
+    public final void addByteStreamListener(Consumer<ByteStreamEvent> byteStreamListener) {
         byteStreamListeners.add(byteStreamListener);
     }
 
@@ -72,24 +60,14 @@ public abstract class ByteStreamManager extends ExtensionManager {
      * Removes a previously added byte stream listener.
      *
      * @param byteStreamListener The listener.
-     * @see #addByteStreamListener(ByteStreamListener)
+     * @see #addByteStreamListener(Consumer)
      */
-    public final void removeByteStreamListener(ByteStreamListener byteStreamListener) {
+    public final void removeByteStreamListener(Consumer<ByteStreamEvent> byteStreamListener) {
         byteStreamListeners.remove(byteStreamListener);
     }
 
-    /**
-     * Notifies the byte stream listener.
-     *
-     * @param byteStreamEvent The byte stream event.
-     */
-    protected final void notifyByteStreamEvent(ByteStreamEvent byteStreamEvent) {
-        for (ByteStreamListener byteStreamListener : byteStreamListeners) {
-            try {
-                byteStreamListener.byteStreamRequested(byteStreamEvent);
-            } catch (Exception exc) {
-                logger.log(Level.WARNING, exc.getMessage(), exc);
-            }
-        }
+    @Override
+    protected void dispose() {
+        byteStreamListeners.clear();
     }
 }

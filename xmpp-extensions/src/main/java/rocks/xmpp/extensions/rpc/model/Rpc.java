@@ -52,10 +52,8 @@ public final class Rpc {
      */
     public static final String NAMESPACE = "jabber:iq:rpc";
 
-    @XmlElement(name = "methodCall")
     private MethodCall methodCall;
 
-    @XmlElement(name = "methodResponse")
     private MethodResponse methodResponse;
 
     private Rpc() {
@@ -117,7 +115,6 @@ public final class Rpc {
         @XmlElement(name = "param")
         private final List<Parameter> parameters = new ArrayList<>();
 
-        @XmlElement(name = "methodName")
         private final String methodName;
 
         private MethodCall() {
@@ -159,7 +156,6 @@ public final class Rpc {
         @XmlElement(name = "param")
         private final List<Parameter> parameters = new ArrayList<>();
 
-        @XmlElement(name = "fault")
         private Fault fault;
 
         private MethodResponse() {
@@ -198,7 +194,7 @@ public final class Rpc {
          * The implementation of a RPC fault.
          */
         public static final class Fault {
-            @XmlElement(name = "value")
+
             private Value value;
 
             private Fault() {

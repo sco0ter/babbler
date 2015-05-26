@@ -31,7 +31,6 @@ import java.util.EventObject;
  * This event notifies listeners, when a message has been successfully delivered.
  *
  * @author Christian Schudt
- * @see MessageDeliveredListener
  */
 public final class MessageDeliveredEvent extends EventObject {
     private final String messageId;

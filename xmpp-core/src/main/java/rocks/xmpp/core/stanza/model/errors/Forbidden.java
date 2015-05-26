@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @see #FORBIDDEN
  */
-@XmlRootElement(name = "forbidden")
+@XmlRootElement
 @XmlType(factoryMethod = "create")
 final class Forbidden extends Condition {
 

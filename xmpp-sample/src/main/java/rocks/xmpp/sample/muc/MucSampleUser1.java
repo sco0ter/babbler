@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.muc.ChatRoom;
 import rocks.xmpp.extensions.muc.ChatService;
@@ -64,8 +63,6 @@ public class MucSampleUser1 {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("111", "111", "muc");
-                // Send initial presence
-                xmppSession.send(new Presence());
 
                 MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChatManager.class);
                 ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference." + xmppSession.getDomain()));

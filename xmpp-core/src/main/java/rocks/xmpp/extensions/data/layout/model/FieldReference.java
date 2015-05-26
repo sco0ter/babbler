@@ -40,7 +40,7 @@ import java.util.Objects;
  */
 public final class FieldReference {
 
-    @XmlAttribute(name = "var")
+    @XmlAttribute
     private final String var;
 
     private FieldReference() {

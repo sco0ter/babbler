@@ -65,7 +65,7 @@ public abstract class StreamCompression {
      * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
      * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
-    @XmlRootElement(name = "failure")
+    @XmlRootElement
     public static final class Failure extends StreamCompression implements ServerStreamElement {
 
         @XmlElements({@XmlElement(name = "setup-failed", type = SetupFailed.class),
@@ -176,10 +176,9 @@ public abstract class StreamCompression {
      * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
      * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
-    @XmlRootElement(name = "compress")
+    @XmlRootElement
     public static final class Compress implements ClientStreamElement {
 
-        @XmlElement
         private final String method;
 
         private Compress() {
@@ -207,7 +206,7 @@ public abstract class StreamCompression {
      * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
      * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
-    @XmlRootElement(name = "compressed")
+    @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Compressed extends StreamCompression implements ServerStreamElement {
         private Compressed() {

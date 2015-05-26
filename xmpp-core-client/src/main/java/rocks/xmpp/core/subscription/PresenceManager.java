@@ -57,14 +57,12 @@ public final class PresenceManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(PresenceManager.class.getName());
 
-    private final XmppSession xmppSession;
-
-    private final ConcurrentHashMap<Jid, Map<String, Presence>> presenceMap = new ConcurrentHashMap<>();
+    private final Map<Jid, Map<String, Presence>> presenceMap = new ConcurrentHashMap<>();
 
     private final Map<String, Presence> lastSentPresences = new ConcurrentHashMap<>();
 
     private PresenceManager(final XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
+        super(xmppSession, false);
     }
 
     @Override

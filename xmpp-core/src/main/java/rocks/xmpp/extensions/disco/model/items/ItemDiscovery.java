@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.disco.model.items;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -52,10 +51,9 @@ public final class ItemDiscovery implements ItemNode {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/disco#items";
 
-    @XmlElement(name = "item")
-    private final List<Item> items = new ArrayList<>();
+    private final List<Item> item = new ArrayList<>();
 
-    @XmlAttribute(name = "node")
+    @XmlAttribute
     private final String node;
 
     @XmlElementRef
@@ -126,14 +124,14 @@ public final class ItemDiscovery implements ItemNode {
     public ItemDiscovery(String node, Collection<Item> items, ResultSetManagement resultSetManagement) {
         this.node = node;
         if (items != null) {
-            this.items.addAll(items);
+            this.item.addAll(items);
         }
         this.resultSetManagement = resultSetManagement;
     }
 
     @Override
     public final List<Item> getItems() {
-        return Collections.unmodifiableList(items);
+        return Collections.unmodifiableList(item);
     }
 
     @Override
@@ -152,11 +150,11 @@ public final class ItemDiscovery implements ItemNode {
         if (node != null) {
             sb.append(node);
         }
-        if (!items.isEmpty()) {
+        if (!item.isEmpty()) {
             if (!sb.toString().isEmpty()) {
                 sb.append(": ");
             }
-            sb.append(items.toString());
+            sb.append(item.toString());
         }
         return sb.toString();
     }

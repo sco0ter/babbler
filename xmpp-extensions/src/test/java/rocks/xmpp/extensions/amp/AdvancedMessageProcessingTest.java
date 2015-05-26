@@ -36,11 +36,9 @@ import rocks.xmpp.extensions.amp.model.UnsupportedActions;
 import rocks.xmpp.extensions.amp.model.UnsupportedConditions;
 import rocks.xmpp.extensions.amp.model.errors.FailedRules;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.time.Instant;
-import java.util.Calendar;
 import java.util.Collections;
 
 /**
@@ -209,7 +207,7 @@ public class AdvancedMessageProcessingTest extends XmlTest {
 
     @Test
     public void marshalAmp() throws XMLStreamException, JAXBException {
-        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Collections.<Rule>emptyList());
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Collections.emptyList());
         String xml = marshal(amp);
         Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"></amp>");
     }

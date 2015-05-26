@@ -52,7 +52,6 @@ public final class JingleFileTransfer extends ApplicationFormat {
      */
     public static final String NAMESPACE = "urn:xmpp:jingle:apps:file-transfer:4";
 
-    @XmlElement(name = "file")
     private File file;
 
     private JingleFileTransfer() {
@@ -71,20 +70,16 @@ public final class JingleFileTransfer extends ApplicationFormat {
         @XmlElementRef
         private final List<Hash> hashes = new ArrayList<>();
 
-        @XmlElement(name = "date")
         @XmlJavaTypeAdapter(InstantAdapter.class)
         private Instant date;
 
-        @XmlElement(name = "desc")
-        private String description;
+        private String desc;
 
         @XmlElement(name = "media-type")
         private String mediaType;
 
-        @XmlElement(name = "name")
         private String name;
 
-        @XmlElement(name = "size")
         private long size;
 
         private File() {
@@ -99,7 +94,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
             this.name = name;
             this.size = size;
             this.date = lastModified;
-            this.description = description;
+            this.desc = description;
         }
 
         @Override
@@ -124,7 +119,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
 
         @Override
         public String getDescription() {
-            return description;
+            return desc;
         }
 
         @Override
@@ -137,10 +132,9 @@ public final class JingleFileTransfer extends ApplicationFormat {
         }
     }
 
-    @XmlRootElement(name = "checksum")
+    @XmlRootElement
     public static final class Checksum {
 
-        @XmlElement(name = "file")
         private File file;
 
         private Checksum() {

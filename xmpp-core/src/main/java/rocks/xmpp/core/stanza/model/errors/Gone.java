@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @see #gone(String)
  */
-@XmlRootElement(name = "gone")
+@XmlRootElement
 public final class Gone extends Condition {
 
     Gone() {

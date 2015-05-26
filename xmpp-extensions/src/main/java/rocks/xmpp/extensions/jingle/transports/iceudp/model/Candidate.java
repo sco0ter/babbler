@@ -33,22 +33,22 @@ import javax.xml.bind.annotation.XmlEnumValue;
 public final class Candidate extends RemoteCandidate {
 
 
-    @XmlAttribute(name = "foundation")
+    @XmlAttribute
     private Short foundation;
 
-    @XmlAttribute(name = "generation")
+    @XmlAttribute
     private Short generation;
 
-    @XmlAttribute(name = "id")
+    @XmlAttribute
     private String id;
 
-    @XmlAttribute(name = "network")
+    @XmlAttribute
     private Short network;
 
-    @XmlAttribute(name = "priority")
+    @XmlAttribute
     private Integer priority;
 
-    @XmlAttribute(name = "protocol")
+    @XmlAttribute
     private String protocol;
 
     @XmlAttribute(name = "rel-address")
@@ -57,7 +57,7 @@ public final class Candidate extends RemoteCandidate {
     @XmlAttribute(name = "rel-port")
     private Integer relatedPort;
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private Type type;
 
     public Short getFoundation() {

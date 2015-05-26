@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -65,8 +64,6 @@ public class DiscoSampleUser1 {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("111", "111", "disco");
-                // Send initial presence
-                xmppSession.send(new Presence());
 
                 List<Item> myItems = new ArrayList<>();
                 for (int i = 0; i < 100; i++) {

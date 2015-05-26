@@ -36,7 +36,7 @@ import java.util.Objects;
  *
  * @see #redirect(String)
  */
-@XmlRootElement(name = "redirect")
+@XmlRootElement
 public final class Redirect extends Condition {
 
     Redirect() {

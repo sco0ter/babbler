@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.privatedata.rosternotes.model;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import java.time.OffsetDateTime;
@@ -59,15 +58,14 @@ public final class Annotation {
      */
     public static final String NAMESPACE = "storage:rosternotes";
 
-    @XmlElement(name = "note")
-    private final List<Note> notes = new ArrayList<>();
+    private final List<Note> note = new ArrayList<>();
 
     private Annotation() {
     }
 
     public Annotation(Collection<Note> notes) {
         if (notes != null) {
-            this.notes.addAll(notes);
+            this.note.addAll(notes);
         }
     }
 
@@ -77,7 +75,7 @@ public final class Annotation {
      * @return The notes.
      */
     public final List<Note> getNotes() {
-        return Collections.unmodifiableList(notes);
+        return Collections.unmodifiableList(note);
     }
 
     /**
@@ -85,14 +83,14 @@ public final class Annotation {
      */
     public static final class Note {
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private final Jid jid;
 
-        @XmlAttribute(name = "cdate")
-        private final OffsetDateTime creationDate;
+        @XmlAttribute
+        private final OffsetDateTime cdate;
 
-        @XmlAttribute(name = "mdate")
-        private final OffsetDateTime modificationDate;
+        @XmlAttribute
+        private final OffsetDateTime mdate;
 
         @XmlValue
         private final String value;
@@ -100,8 +98,8 @@ public final class Annotation {
         private Note() {
             this.value = null;
             this.jid = null;
-            this.creationDate = null;
-            this.modificationDate = null;
+            this.cdate = null;
+            this.mdate = null;
         }
 
         /**
@@ -125,8 +123,8 @@ public final class Annotation {
         public Note(String note, Jid jid, OffsetDateTime creationDate, OffsetDateTime modificationDate) {
             this.value = note;
             this.jid = Objects.requireNonNull(jid, "jid must not be null.").asBareJid();
-            this.creationDate = creationDate;
-            this.modificationDate = modificationDate;
+            this.cdate = creationDate;
+            this.mdate = modificationDate;
         }
 
         /**
@@ -144,7 +142,7 @@ public final class Annotation {
          * @return The modification date.
          */
         public final OffsetDateTime getModificationDate() {
-            return modificationDate;
+            return mdate;
         }
 
         /**
@@ -153,7 +151,7 @@ public final class Annotation {
          * @return The creation date.
          */
         public final OffsetDateTime getCreationDate() {
-            return creationDate;
+            return cdate;
         }
 
         /**

@@ -43,7 +43,7 @@ public class SoapManager extends ExtensionManager {
     private final EntityCapabilitiesManager entityCapabilitiesManager;
 
     private SoapManager(XmppSession xmppSession) {
-        super(xmppSession, NAMESPACE);
+        super(xmppSession);
         entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
     }
 

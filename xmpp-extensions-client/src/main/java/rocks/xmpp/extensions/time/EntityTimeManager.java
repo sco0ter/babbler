@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
@@ -45,19 +46,28 @@ import java.time.OffsetDateTime;
  */
 public final class EntityTimeManager extends ExtensionManager {
 
-    private EntityTimeManager(final XmppSession xmppSession) {
-        super(xmppSession, EntityTime.NAMESPACE);
-        setEnabled(true);
-    }
+    private final IQHandler iqHandler;
 
-    @Override
-    protected void initialize() {
-        xmppSession.addIQHandler(EntityTime.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+    private EntityTimeManager(final XmppSession xmppSession) {
+        super(xmppSession);
+        iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 return iq.createResult(new EntityTime(OffsetDateTime.now()));
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(EntityTime.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(EntityTime.class);
     }
 
     /**
@@ -68,8 +78,9 @@ public final class EntityTimeManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public EntityTime getEntityTime(Jid jid) throws XmppException {
+    public OffsetDateTime getEntityTime(Jid jid) throws XmppException {
         IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
-        return result.getExtension(EntityTime.class);
+        EntityTime entityTime = result.getExtension(EntityTime.class);
+        return entityTime != null ? entityTime.getDateTime() : null;
     }
 }

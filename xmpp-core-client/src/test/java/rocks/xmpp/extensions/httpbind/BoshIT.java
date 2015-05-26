@@ -46,7 +46,6 @@ public class BoshIT extends IntegrationTest {
                 System.out.println(i);
                 xmppSession.connect();
                 xmppSession.login("admin", "admin", null);
-                xmppSession.send(new Presence());
                 xmppSession.getManager(RosterManager.class).requestRoster();
             }
         }

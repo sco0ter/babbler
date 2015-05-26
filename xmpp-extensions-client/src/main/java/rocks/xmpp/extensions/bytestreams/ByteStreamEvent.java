@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.bytestreams;
 
 import java.io.IOException;
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * A byte stream event, which notifies a listener about inbound byte stream requests.
@@ -34,7 +35,7 @@ import java.util.EventObject;
  * To reject the byte stream, use {@link #reject()}, which will return a {@code <not-acceptable/>} error to the sender.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.extensions.bytestreams.ByteStreamListener
+ * @see ByteStreamManager#addByteStreamListener(Consumer)
  */
 public abstract class ByteStreamEvent extends EventObject {
 

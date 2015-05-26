@@ -32,7 +32,6 @@ import rocks.xmpp.extensions.muc.model.Item;
 import rocks.xmpp.extensions.muc.model.Role;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,29 +48,23 @@ import java.util.List;
 @XmlRootElement(name = "x")
 public final class MucUser {
 
-    @XmlElement(name = "status")
-    private final List<Status> statusCodes = new ArrayList<>();
+    private final List<Status> status = new ArrayList<>();
 
-    @XmlElement(name = "invite")
-    private final List<Invite> invites = new ArrayList<>();
+    private final List<Invite> invite = new ArrayList<>();
 
-    @XmlElement(name = "item")
     private MucUserItem item;
 
-    @XmlElement(name = "decline")
     private Decline decline;
 
-    @XmlElement(name = "destroy")
     private MucUserDestroy destroy;
 
-    @XmlElement(name = "password")
     private String password;
 
     private MucUser() {
     }
 
     private MucUser(String password, Invite... invite) {
-        this.invites.addAll(Arrays.asList(invite));
+        this.invite.addAll(Arrays.asList(invite));
         this.password = password;
     }
 
@@ -81,7 +74,7 @@ public final class MucUser {
 
     private MucUser(MucUserItem item, Status... status) {
         this.item = item;
-        this.statusCodes.addAll(Arrays.asList(status));
+        this.status.addAll(Arrays.asList(status));
     }
 
     private MucUser(MucUserItem item, MucUserDestroy destroy) {
@@ -372,7 +365,7 @@ public final class MucUser {
      * @return The status codes.
      */
     public List<Status> getStatusCodes() {
-        return Collections.unmodifiableList(statusCodes);
+        return Collections.unmodifiableList(status);
     }
 
     /**
@@ -390,7 +383,7 @@ public final class MucUser {
      * @return The invites.
      */
     public List<Invite> getInvites() {
-        return Collections.unmodifiableList(invites);
+        return Collections.unmodifiableList(invite);
     }
 
     /**
@@ -422,22 +415,20 @@ public final class MucUser {
 
     private static final class MucUserItem implements Item {
 
-        @XmlElement(name = "actor")
         private MucUserActor actor;
 
-        @XmlElement(name = "reason")
         private String reason;
 
-        @XmlAttribute(name = "affiliation")
+        @XmlAttribute
         private Affiliation affiliation;
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "nick")
+        @XmlAttribute
         private String nick;
 
-        @XmlAttribute(name = "role")
+        @XmlAttribute
         private Role role;
 
         private MucUserItem() {
@@ -485,10 +476,9 @@ public final class MucUser {
 
     private static final class MucUserDestroy implements Destroy {
 
-        @XmlElement(name = "reason")
         private String reason;
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
         private MucUserDestroy() {
@@ -511,10 +501,10 @@ public final class MucUser {
     }
 
     private static final class MucUserActor implements Actor {
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "nick")
+        @XmlAttribute
         private String nick;
 
         private MucUserActor() {

@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.rpc.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,14 +32,12 @@ import java.util.List;
  */
 final class StructType {
 
-    @XmlElement(name = "member")
-    final List<MemberType> values = new ArrayList<>();
+    final List<MemberType> member = new ArrayList<>();
 
     static final class MemberType {
-        @XmlElement(name = "name")
+
         final String name;
 
-        @XmlElement(name = "value")
         final Value value;
 
         private MemberType() {

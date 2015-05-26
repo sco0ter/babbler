@@ -29,6 +29,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
@@ -66,6 +68,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,7 +99,7 @@ public final class AvatarManager extends ExtensionManager {
 
     private final ConcurrentHashMap<Jid, Lock> requestingAvatarLocks = new ConcurrentHashMap<>();
 
-    private final Set<AvatarChangeListener> avatarChangeListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<AvatarChangeEvent>> avatarChangeListeners = new CopyOnWriteArraySet<>();
 
     private final ExecutorService avatarRequester;
 
@@ -106,33 +109,21 @@ public final class AvatarManager extends ExtensionManager {
 
     private final Map<String, byte[]> avatarCache;
 
+    private final Consumer<PresenceEvent> inboundPresenceListener;
+
+    private final Consumer<PresenceEvent> outboundPresenceListener;
+
+    private final Consumer<MessageEvent> inboundMessageListener;
+
     private AvatarManager(final XmppSession xmppSession) {
-        super(xmppSession, AvatarMetadata.NAMESPACE + "+notify", AvatarMetadata.NAMESPACE);
+        super(xmppSession, true);
 
         vCardManager = xmppSession.getManager(VCardManager.class);
         avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
 
         avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
 
-        setEnabled(false);
-    }
-
-    @Override
-    protected final void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                avatarChangeListeners.clear();
-                requestingAvatarLocks.clear();
-                nonConformingResources.clear();
-                userHashes.clear();
-                avatarRequester.shutdown();
-            }
-        });
-        xmppSession.addInboundPresenceListener(e -> {
-            // If vCard based avatars are enabled.
-            if (!isEnabled()) {
-                return;
-            }
+        inboundPresenceListener = e -> {
             final Presence presence = e.getPresence();
 
             // If the presence has an avatar update information.
@@ -199,9 +190,10 @@ public final class AvatarManager extends ExtensionManager {
                     }
                 }
             }
-        });
+        };
 
-        xmppSession.addOutboundPresenceListener(e -> {
+        this.outboundPresenceListener = e -> {
+
             final Presence presence = e.getPresence();
             if (presence.isAvailable() && nonConformingResources.isEmpty()) {
                 // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
@@ -236,12 +228,9 @@ public final class AvatarManager extends ExtensionManager {
                     presence.getExtensions().add(new AvatarUpdate(myHash));
                 }
             }
-        });
+        };
 
-        xmppSession.addInboundMessageListener(e -> {
-            if (!isEnabled()) {
-                return;
-            }
+        this.inboundMessageListener = e -> {
             final Message message = e.getMessage();
             Event event = message.getExtension(Event.class);
             if (event != null) {
@@ -331,7 +320,23 @@ public final class AvatarManager extends ExtensionManager {
                     }
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected final void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundPresenceListener(inboundPresenceListener);
+        xmppSession.addOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+    }
+
+    @Override
+    protected final void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
+        xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
     }
 
     private void resetHash() {
@@ -347,15 +352,7 @@ public final class AvatarManager extends ExtensionManager {
     }
 
     private void notifyListeners(Jid contact, byte[] avatar) {
-
-        AvatarChangeEvent avatarChangeEvent = new AvatarChangeEvent(AvatarManager.this, contact, avatar);
-        for (AvatarChangeListener avatarChangeListener : avatarChangeListeners) {
-            try {
-                avatarChangeListener.avatarChanged(avatarChangeEvent);
-            } catch (Exception e1) {
-                logger.log(Level.WARNING, e1.getMessage(), e1);
-            }
-        }
+        XmppUtils.notifyEventListeners(avatarChangeListeners, new AvatarChangeEvent(AvatarManager.this, contact, avatar));
     }
 
     private byte[] getAvatarByVCard(Jid contact) throws XmppException {
@@ -456,26 +453,23 @@ public final class AvatarManager extends ExtensionManager {
         return getAvatarByVCard(contact.asBareJid());
     }
 
-	/**
-	 * Gets the user avatar from the user's vCard.
-	 *
-	 * @param contact
-	 *            The contact. Must not be {@code null}.
-	 * @return The contact's avatar or null, if it has no avatar.
-	 * @throws rocks.xmpp.core.stanza.StanzaException
-	 *             If the entity returned a stanza error.
-	 * @throws rocks.xmpp.core.session.NoResponseException
-	 *             If the entity did not respond.
-	 */
-	public final BufferedImage getAvatarImage(final Jid contact) throws XmppException {
-		try {
-			final byte[] bitmap = this.getAvatar(requireNonNull(contact));
-			return bitmap == null ? null : asBufferedImage(bitmap);
-		} catch (final ConversionException e) {
-			throw new XmppException(e);
-		}
-	}
-    
+    /**
+     * Gets the user avatar from the user's vCard.
+     *
+     * @param contact The contact. Must not be {@code null}.
+     * @return The contact's avatar or null, if it has no avatar.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     */
+    public final BufferedImage getAvatarImage(final Jid contact) throws XmppException {
+        try {
+            final byte[] bitmap = this.getAvatar(requireNonNull(contact));
+            return bitmap == null ? null : asBufferedImage(bitmap);
+        } catch (final ConversionException e) {
+            throw new XmppException(e);
+        }
+    }
+
     /**
      * Publishes an avatar to your VCard.
      *
@@ -511,27 +505,24 @@ public final class AvatarManager extends ExtensionManager {
         }
     }
 
-	/**
-	 * Publishes an avatar to your VCard.
-	 *
-	 * @param bufferedImage
-	 *            The avatar image, which must be in PNG format. {@code null}
-	 *            resets the avatar.
-	 * @throws rocks.xmpp.core.stanza.StanzaException
-	 *             If the entity returned a stanza error.
-	 * @throws rocks.xmpp.core.session.NoResponseException
-	 *             If the entity did not respond.
-	 * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User
-	 *      Publishes Avatar</a>
-	 */
-	public final void publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
-		try {
-			this.publishAvatar(bufferedImage == null ? null : asPNG(bufferedImage));
-		} catch (final ConversionException e) {
-			throw new XmppException(e);
-		}
-	}
-    
+    /**
+     * Publishes an avatar to your VCard.
+     *
+     * @param bufferedImage The avatar image, which must be in PNG format. {@code null}
+     *                      resets the avatar.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User
+     * Publishes Avatar</a>
+     */
+    public final void publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
+        try {
+            this.publishAvatar(bufferedImage == null ? null : asPNG(bufferedImage));
+        } catch (final ConversionException e) {
+            throw new XmppException(e);
+        }
+    }
+
     /**
      * Publishes an avatar to the VCard and uses XEP-0153 to notify the contacts about the update.
      *
@@ -597,7 +588,7 @@ public final class AvatarManager extends ExtensionManager {
      *
      * @param avatarChangeListener The avatar listener.
      */
-    public final void addAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
+    public final void addAvatarChangeListener(Consumer<AvatarChangeEvent> avatarChangeListener) {
         avatarChangeListeners.add(avatarChangeListener);
     }
 
@@ -606,61 +597,66 @@ public final class AvatarManager extends ExtensionManager {
      *
      * @param avatarChangeListener The avatar listener.
      */
-    public final void removeAvatarChangeListener(AvatarChangeListener avatarChangeListener) {
+    public final void removeAvatarChangeListener(Consumer<AvatarChangeEvent> avatarChangeListener) {
         avatarChangeListeners.remove(avatarChangeListener);
     }
-    
-	/**
-	 * Converts {@code bitmap} into {@link BufferedImage}.
-	 *
-	 * @param bitmap
-	 *            The bitmap to convert. Must not be {@code null}.
-	 * @return Instance of {@link BufferedImage} created from {@code bitmap}.
-	 *         Never {@code null}.
-	 * @throws ConversionException
-	 *             if conversion failed
-	 */
-	static final BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
-		try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(requireNonNull(bitmap))) {
-			return ofNullable(ImageIO.read(inputStream)).orElseThrow(ConversionException::new);
-		} catch (final IOException e) {
-			throw new ConversionException(e);
-		}
-	}
 
-	/**
-	 * Converts {@code image} into {@code byte[]}.
-	 *
-	 * @param bufferedImage
-	 *            The image to convert. Must not be {@code null}.
-	 * @return PNG bitmap created from {@code image}. Never {@code null}.
-	 * @throws ConversionException
-	 *             if conversion failed
-	 */
-	private static final byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
-		try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-			if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream))
-				throw new ConversionException();
-			return outputStream.toByteArray();
-		} catch (final IOException e) {
-			throw new ConversionException(e);
-		}
-	}
-	
-	/**
-	 * Indicates the inability to convert a value from one data type into
-	 * another.
-	 *
-	 * @author Markus KARG (markus@headcrashing.eu)
-	 */
-	@SuppressWarnings("serial")
-	static final class ConversionException extends Exception {
-		public ConversionException() {
-			// Intentionally left blank.
-		}
+    /**
+     * Converts {@code bitmap} into {@link BufferedImage}.
+     *
+     * @param bitmap The bitmap to convert. Must not be {@code null}.
+     * @return Instance of {@link BufferedImage} created from {@code bitmap}.
+     * Never {@code null}.
+     * @throws ConversionException if conversion failed
+     */
+    static final BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
+        try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(requireNonNull(bitmap))) {
+            return ofNullable(ImageIO.read(inputStream)).orElseThrow(ConversionException::new);
+        } catch (final IOException e) {
+            throw new ConversionException(e);
+        }
+    }
 
-		public ConversionException(final Throwable cause) {
-			super(cause);
-		}
-	}
+    /**
+     * Converts {@code image} into {@code byte[]}.
+     *
+     * @param bufferedImage The image to convert. Must not be {@code null}.
+     * @return PNG bitmap created from {@code image}. Never {@code null}.
+     * @throws ConversionException if conversion failed
+     */
+    private static final byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream))
+                throw new ConversionException();
+            return outputStream.toByteArray();
+        } catch (final IOException e) {
+            throw new ConversionException(e);
+        }
+    }
+
+    /**
+     * Indicates the inability to convert a value from one data type into
+     * another.
+     *
+     * @author Markus KARG (markus@headcrashing.eu)
+     */
+    @SuppressWarnings("serial")
+    static final class ConversionException extends Exception {
+        public ConversionException() {
+            // Intentionally left blank.
+        }
+
+        public ConversionException(final Throwable cause) {
+            super(cause);
+        }
+    }
+
+    @Override
+    protected void dispose() {
+        avatarChangeListeners.clear();
+        requestingAvatarLocks.clear();
+        nonConformingResources.clear();
+        userHashes.clear();
+        avatarRequester.shutdown();
+    }
 }

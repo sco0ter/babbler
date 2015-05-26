@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.context.extensions.ExtensionContext;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -64,8 +63,6 @@ public class CustomIQHandlerRequester {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("222", "222", "iq");
-                // Send initial presence
-                xmppSession.send(new Presence());
 
                 Addition addition = new Addition(52, 22);
                 System.out.println("Requesting: " + addition);

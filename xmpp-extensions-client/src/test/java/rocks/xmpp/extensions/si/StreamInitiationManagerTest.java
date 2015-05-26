@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.si;
 
 import org.testng.Assert;
+import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
@@ -32,6 +33,8 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ExtensionTest;
+import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
+import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
@@ -97,5 +100,24 @@ public class StreamInitiationManagerTest extends ExtensionTest {
             }
         }
         Assert.fail();
+    }
+
+    @Test
+    public void testSupportedStreamMethods() {
+        StreamInitiationManager streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
+        // By default Socks5 and IBB should be supported.
+        Assert.assertEquals(streamInitiationManager.getSupportedStreamMethods().size(), 2);
+        // If IBB gets disabled...
+        xmppSession.disableFeature(InBandByteStream.NAMESPACE);
+        // Only Socks5 should be advertises by Stream Initiation.
+        Assert.assertEquals(streamInitiationManager.getSupportedStreamMethods().size(), 1);
+        Assert.assertTrue(streamInitiationManager.getSupportedStreamMethods().contains(Socks5ByteStream.NAMESPACE));
+        // If IBB gets enabled again...
+        xmppSession.enableFeature(InBandByteStream.NAMESPACE);
+        // and Socks5 gets disabled...
+        xmppSession.disableFeature(Socks5ByteStream.NAMESPACE);
+        Assert.assertEquals(streamInitiationManager.getSupportedStreamMethods().size(), 1);
+        // Only IBB should be advertised by SI
+        Assert.assertTrue(streamInitiationManager.getSupportedStreamMethods().contains(InBandByteStream.NAMESPACE));
     }
 }

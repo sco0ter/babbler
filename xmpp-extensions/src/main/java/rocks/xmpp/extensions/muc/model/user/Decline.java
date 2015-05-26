@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.muc.model.user;
 import rocks.xmpp.core.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 /**
  * The implementation of the {@code <decline/>} element.
@@ -37,13 +36,12 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public final class Decline {
 
-    @XmlElement(name = "reason")
     private String reason;
 
-    @XmlAttribute(name = "from")
+    @XmlAttribute
     private Jid from;
 
-    @XmlAttribute(name = "to")
+    @XmlAttribute
     private Jid to;
 
     private Decline() {

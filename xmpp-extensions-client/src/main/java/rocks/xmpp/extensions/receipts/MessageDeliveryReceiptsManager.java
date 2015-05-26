@@ -24,17 +24,18 @@
 
 package rocks.xmpp.extensions.receipts;
 
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.
@@ -50,22 +51,32 @@ import java.util.logging.Logger;
  * </p>
  * <h3>Code sample</h3>
  * <pre>
- * <code>
+ * {@code
  * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
- * messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
- *    {@literal @}Override
- *    public void messageDelivered(MessageDeliveredEvent e) {
- *       System.out.println("Message delivered: " + e.getMessageId());
- *    }
- * });
- * </code>
+ * messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> System.out.println("Message delivered: " + e.getMessageId()));
+ * }
  * </pre>
  */
 public final class MessageDeliveryReceiptsManager extends ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(MessageDeliveryReceiptsManager.class.getName());
+    /**
+     * A default filter for automatic receipt request on outbound messages.
+     */
+    private static final Predicate<Message> DEFAULT_FILTER = message ->
+            // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
+            message.getType() != Message.Type.ERROR
+                    // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
+                    && message.getExtension(MessageDeliveryReceipts.Received.class) == null
+                    // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
+                    && message.getId() != null
+                    // The message must not have a request extension already.
+                    && message.getExtension(MessageDeliveryReceipts.Request.class) == null;
 
-    final Set<MessageDeliveredListener> messageDeliveredListeners = new CopyOnWriteArraySet<>();
+    final Set<Consumer<MessageDeliveredEvent>> messageDeliveredListeners = new CopyOnWriteArraySet<>();
+
+    private final Consumer<MessageEvent> inboundMessageListener;
+
+    private final Consumer<MessageEvent> outboundMessageListener;
 
     private Predicate<Message> messageFilter;
 
@@ -75,23 +86,9 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      * @param xmppSession The underlying connection.
      */
     private MessageDeliveryReceiptsManager(final XmppSession xmppSession) {
-        super(xmppSession, MessageDeliveryReceipts.NAMESPACE);
-    }
+        super(xmppSession, true);
 
-    @Override
-    protected void initialize() {
-        // Add a default filter
-        // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
-        Predicate<Message> errorFilter = message -> message.getType() != Message.Type.ERROR;
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                messageDeliveredListeners.clear();
-            }
-        });
-        xmppSession.addInboundMessageListener(e -> {
-            if (!isEnabled()) {
-                return;
-            }
+        this.inboundMessageListener = e -> {
             Message message = e.getMessage();
             // If a client requests a receipt, send an ack message.
             if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {
@@ -104,48 +101,49 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
             MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
             if (received != null) {
                 // Notify the listeners about the reception.
-                for (MessageDeliveredListener messageDeliveredListener : messageDeliveredListeners) {
-                    try {
-                        messageDeliveredListener.messageDelivered(new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.deliveryDateOrNow(message)));
-                    } catch (Exception ex) {
-                        logger.log(Level.WARNING, ex.getMessage(), ex);
-                    }
-                }
+                XmppUtils.notifyEventListeners(messageDeliveredListeners, new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.sendDate(message)));
             }
-        });
-        xmppSession.addOutboundMessageListener(e -> {
-            if (!isEnabled()) {
-                return;
-            }
+        };
+
+        this.outboundMessageListener = e -> {
             Message message = e.getMessage();
             // If we are sending a message, append a receipt request, if it passes all filters.
             Predicate<Message> predicate;
             synchronized (this) {
                 if (messageFilter != null) {
-                    predicate = errorFilter.and(messageFilter);
+                    predicate = DEFAULT_FILTER.and(messageFilter);
                 } else {
-                    predicate = errorFilter;
+                    predicate = DEFAULT_FILTER;
                 }
             }
             if (!predicate.test(message)) {
                 return;
             }
-            // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
-            // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
-            if (message.getExtension(MessageDeliveryReceipts.Received.class) == null && message.getId() != null) {
-                // Add a delivery receipt request.
-                message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
-            }
-        });
+            message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+        xmppSession.addOutboundMessageListener(outboundMessageListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
+        xmppSession.removeOutboundMessageListener(outboundMessageListener);
     }
 
     /**
      * Adds a message delivered listener, which allows to listen for delivered messages.
      *
      * @param messageDeliveredListener The listener.
-     * @see #removeMessageDeliveredListener(MessageDeliveredListener)
+     * @see #removeMessageDeliveredListener(Consumer)
      */
-    public void addMessageDeliveredListener(MessageDeliveredListener messageDeliveredListener) {
+    public void addMessageDeliveredListener(Consumer<MessageDeliveredEvent> messageDeliveredListener) {
         messageDeliveredListeners.add(messageDeliveredListener);
     }
 
@@ -153,9 +151,9 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      * Removes a previously added message delivered listener.
      *
      * @param messageDeliveredListener The listener.
-     * @see #addMessageDeliveredListener(MessageDeliveredListener)
+     * @see #addMessageDeliveredListener(Consumer)
      */
-    public void removeMessageDeliveredListener(MessageDeliveredListener messageDeliveredListener) {
+    public void removeMessageDeliveredListener(Consumer<MessageDeliveredEvent> messageDeliveredListener) {
         messageDeliveredListeners.remove(messageDeliveredListener);
     }
 
@@ -166,5 +164,10 @@ public final class MessageDeliveryReceiptsManager extends ExtensionManager {
      */
     public synchronized void setMessageFilter(Predicate<Message> messageFilter) {
         this.messageFilter = messageFilter;
+    }
+
+    @Override
+    protected void dispose() {
+        messageDeliveredListeners.clear();
     }
 }

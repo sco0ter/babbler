@@ -59,6 +59,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,7 +76,7 @@ import java.util.logging.Logger;
  * <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting the roster}.
  * You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix roster group delimiter.
  * <p>
- * You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain #addRosterListener(RosterListener) adding} a {@link RosterListener}.
+ * You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain #addRosterListener(Consumer) adding} a {@link Consumer}.
  * </p>
  * This class is unconditionally thread-safe.
  *
@@ -89,21 +90,19 @@ public final class RosterManager extends Manager {
 
     private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();
 
-    private final Set<RosterListener> rosterListeners = new CopyOnWriteArraySet<>();
-
-    private final XmppSession xmppSession;
+    private final Set<Consumer<RosterEvent>> rosterListeners = new CopyOnWriteArraySet<>();
 
     private final Map<String, byte[]> rosterCacheDirectory;
 
     /**
      * guarded by "this"
      */
-    private final Set<ContactGroup> groups = new TreeSet<>();
+    private final TreeSet<ContactGroup> groups = new TreeSet<>();
 
     /**
      * guarded by "this"
      */
-    private final Set<Contact> unaffiliatedContacts = new TreeSet<>();
+    private final TreeSet<Contact> unaffiliatedContacts = new TreeSet<>();
 
     /**
      * guarded by "this"
@@ -128,7 +127,7 @@ public final class RosterManager extends Manager {
     private String groupDelimiter;
 
     private RosterManager(final XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
+        super(xmppSession, true);
         privateDataManager = xmppSession.getManager(PrivateDataManager.class);
 
         this.rosterCacheDirectory = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("rosterver")) : null;
@@ -178,7 +177,7 @@ public final class RosterManager extends Manager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             public IQ processRequest(IQ iq) {
                 Roster roster = iq.getExtension(Roster.class);
@@ -194,11 +193,6 @@ public final class RosterManager extends Manager {
                 }
             }
         }, false); // Roster pushes should be processed in order as they arrive, so that they don't mess up the roster.
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                rosterListeners.clear();
-            }
-        });
     }
 
     /**
@@ -295,7 +289,7 @@ public final class RosterManager extends Manager {
             }
             cacheRoster(roster.getVersion());
         }
-        notifyRosterListeners(new RosterEvent(this, addedContacts, updatedContacts, removedContacts));
+        XmppUtils.notifyEventListeners(rosterListeners, new RosterEvent(this, addedContacts, updatedContacts, removedContacts));
     }
 
     private void cacheRoster(String version) {
@@ -353,7 +347,7 @@ public final class RosterManager extends Manager {
     private void removeContactsFromGroups(Contact contact, Collection<ContactGroup> contactGroups) {
         List<ContactGroup> emptyGroups = new ArrayList<>();
         // Recursively remove the contact from the nested subgroups.
-// If the nested group is empty, it can be removed.
+        // If the nested group is empty, it can be removed.
         contactGroups.stream().filter(group -> removeRecursively(contact, group)).forEach(group -> {
             emptyGroups.add(group);
             rosterGroupMap.remove(group.getFullName());
@@ -393,9 +387,10 @@ public final class RosterManager extends Manager {
      *
      * @return The contact groups.
      */
+    @SuppressWarnings("unchecked")
     public final synchronized Collection<ContactGroup> getContactGroups() {
         // return defensive copies of mutable internal fields
-        return Collections.unmodifiableCollection(new ArrayList<>(groups));
+        return Collections.unmodifiableCollection((TreeSet<ContactGroup>) groups.clone());
     }
 
     /**
@@ -403,18 +398,19 @@ public final class RosterManager extends Manager {
      *
      * @return The contacts, which are not affiliated to any group.
      */
+    @SuppressWarnings("unchecked")
     public final synchronized Collection<Contact> getUnaffiliatedContacts() {
         // return defensive copies of mutable internal fields
-        return Collections.unmodifiableCollection(new ArrayList<>(unaffiliatedContacts));
+        return Collections.unmodifiableCollection((TreeSet<Contact>) unaffiliatedContacts.clone());
     }
 
     /**
      * Adds a roster listener, which will get notified, whenever the roster changes.
      *
      * @param rosterListener The roster listener.
-     * @see #removeRosterListener(RosterListener)
+     * @see #removeRosterListener(Consumer)
      */
-    public final void addRosterListener(RosterListener rosterListener) {
+    public final void addRosterListener(Consumer<RosterEvent> rosterListener) {
         rosterListeners.add(rosterListener);
     }
 
@@ -422,20 +418,10 @@ public final class RosterManager extends Manager {
      * Removes a previously added roster listener.
      *
      * @param rosterListener The roster listener.
-     * @see #addRosterListener(RosterListener)
+     * @see #addRosterListener(Consumer)
      */
-    public final void removeRosterListener(RosterListener rosterListener) {
+    public final void removeRosterListener(Consumer<RosterEvent> rosterListener) {
         rosterListeners.remove(rosterListener);
-    }
-
-    private void notifyRosterListeners(RosterEvent rosterEvent) {
-        for (RosterListener rosterListener : rosterListeners) {
-            try {
-                rosterListener.rosterChanged(rosterEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
     }
 
     /**
@@ -462,8 +448,8 @@ public final class RosterManager extends Manager {
     }
 
     /**
-     * Requests the roster from the server. When the server returns the result, the {@link RosterListener} are notified.
-     * That means, you should first {@linkplain #addRosterListener(RosterListener) register} a {@link RosterListener} prior to calling this method.
+     * Requests the roster from the server. When the server returns the result, the {@link Consumer} are notified.
+     * That means, you should first {@linkplain #addRosterListener(Consumer) register} a {@link Consumer} prior to calling this method.
      * <p>
      * <a href="http://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which means that this method checks
      * if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.
@@ -545,7 +531,7 @@ public final class RosterManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final void removeContact(Jid jid) throws XmppException {
-        Roster roster = new Roster(new Contact(jid, null, null, null, Contact.Subscription.REMOVE, Collections.<String>emptyList()));
+        Roster roster = new Roster(new Contact(jid, null, null, null, Contact.Subscription.REMOVE, Collections.emptyList()));
         xmppSession.query(new IQ(IQ.Type.SET, roster));
     }
 
@@ -695,5 +681,10 @@ public final class RosterManager extends Manager {
      */
     public boolean isRosterVersioningSupported() {
         return xmppSession.getManager(StreamFeaturesManager.class).getFeatures().containsKey(RosterVersioning.class);
+    }
+
+    @Override
+    protected void dispose() {
+        rosterListeners.clear();
     }
 }

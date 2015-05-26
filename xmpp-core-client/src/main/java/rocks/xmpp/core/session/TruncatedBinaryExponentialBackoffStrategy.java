@@ -24,8 +24,7 @@
 
 package rocks.xmpp.core.session;
 
-import java.security.SecureRandom;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
@@ -51,8 +50,6 @@ import java.util.Random;
  */
 public final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
 
-    private static final Random RANDOM = new SecureRandom();
-
     private final int slotTime;
 
     private final int ceiling;
@@ -74,6 +71,6 @@ public final class TruncatedBinaryExponentialBackoffStrategy implements Reconnec
         // For the fourth attempt choose a random number between 0 and 900.
         // For the fifth attempt choose a random number between 0 and 1860.
         // ==> max wait time: 1860 seconds = 31 minutes. (if ceiling == 4)
-        return RANDOM.nextInt((int) (Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime);
+        return ThreadLocalRandom.current().nextInt((int) (Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime);
     }
 }

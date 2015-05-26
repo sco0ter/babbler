@@ -27,7 +27,6 @@ package rocks.xmpp.core.tls.model;
 import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
@@ -46,7 +45,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlSeeAlso({Proceed.class, Failure.class})
 public final class StartTls extends StreamFeature implements ClientStreamElement {
 
-    @XmlElement
     private String required;
 
     public StartTls() {

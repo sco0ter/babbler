@@ -47,8 +47,8 @@ public final class Validation {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/xdata-validate";
 
-    @XmlAttribute(name = "datatype")
-    private final String dataType;
+    @XmlAttribute
+    private final String datatype;
 
     @XmlElements({@XmlElement(name = "basic", type = ValidationMethod.Basic.class),
             @XmlElement(name = "open", type = ValidationMethod.Open.class),
@@ -99,7 +99,7 @@ public final class Validation {
      * @param listRange        The list range, used for {@link rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI} fields.
      */
     public Validation(String dataType, ValidationMethod validationMethod, ListRange listRange) {
-        this.dataType = dataType;
+        this.datatype = dataType;
         this.validationMethod = validationMethod;
         this.listRange = listRange;
     }
@@ -123,7 +123,7 @@ public final class Validation {
      * @return The data type.
      */
     public final String getDataType() {
-        return dataType;
+        return datatype;
     }
 
     /**
@@ -173,10 +173,10 @@ public final class Validation {
          */
         public static final class Range extends ValidationMethod {
 
-            @XmlAttribute(name = "min")
+            @XmlAttribute
             private final String min;
 
-            @XmlAttribute(name = "max")
+            @XmlAttribute
             private final String max;
 
             private Range() {
@@ -244,10 +244,10 @@ public final class Validation {
      * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-ranges">3.3 Selection Ranges in "list-multi"</a>
      */
     public static final class ListRange {
-        @XmlAttribute(name = "min")
+        @XmlAttribute
         private final Integer min;
 
-        @XmlAttribute(name = "max")
+        @XmlAttribute
         private final Integer max;
 
         private ListRange() {

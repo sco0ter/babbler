@@ -26,11 +26,14 @@ package rocks.xmpp.extensions.rosterx;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -46,6 +49,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,35 +62,28 @@ public final class ContactExchangeManager extends ExtensionManager {
 
     private static final Logger logger = Logger.getLogger(ContactExchangeManager.class.getName());
 
-    private final Set<ContactExchangeListener> contactExchangeListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<ContactExchangeEvent>> contactExchangeListeners = new CopyOnWriteArraySet<>();
 
     private final Collection<Jid> trustedEntities = new CopyOnWriteArraySet<>();
 
-    private ContactExchangeManager(final XmppSession xmppSession) {
-        super(xmppSession, ContactExchange.NAMESPACE);
-    }
+    private final Consumer<MessageEvent> inboundMessageListener;
 
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                contactExchangeListeners.clear();
-                trustedEntities.clear();
-            }
-        });
-        xmppSession.addInboundMessageListener(e -> {
-            if (isEnabled()) {
-                Message message = e.getMessage();
-                ContactExchange contactExchange = message.getExtension(ContactExchange.class);
-                if (contactExchange != null) {
-                    List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                    if (!items.isEmpty()) {
-                        processItems(items, message.getFrom(), message.getBody(), DelayedDelivery.deliveryDateOrNow(message));
-                    }
+    private final IQHandler iqHandler;
+
+    private ContactExchangeManager(final XmppSession xmppSession) {
+        super(xmppSession);
+        this.inboundMessageListener = e -> {
+            Message message = e.getMessage();
+            ContactExchange contactExchange = message.getExtension(ContactExchange.class);
+            if (contactExchange != null) {
+                List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+                if (!items.isEmpty()) {
+                    processItems(items, message.getFrom(), message.getBody(), DelayedDelivery.sendDate(message));
+
                 }
             }
-        });
-        xmppSession.addIQHandler(ContactExchange.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        };
+        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
@@ -101,7 +98,21 @@ public final class ContactExchangeManager extends ExtensionManager {
                     return iq.createResult();
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+        xmppSession.addIQHandler(ContactExchange.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
+        xmppSession.removeIQHandler(ContactExchange.class);
     }
 
     private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Instant date) {
@@ -114,13 +125,7 @@ public final class ContactExchangeManager extends ExtensionManager {
                 }
             }
         } else {
-            for (ContactExchangeListener contactExchangeListener : contactExchangeListeners) {
-                try {
-                    contactExchangeListener.contactExchangeSuggested(new ContactExchangeEvent(this, items, sender, message, date));
-                } catch (Exception ex) {
-                    logger.log(Level.WARNING, ex.getMessage(), ex);
-                }
-            }
+            XmppUtils.notifyEventListeners(contactExchangeListeners, new ContactExchangeEvent(this, items, sender, message, date));
         }
     }
 
@@ -290,9 +295,9 @@ public final class ContactExchangeManager extends ExtensionManager {
      * Adds a contact exchange listener.
      *
      * @param contactExchangeListener The listener.
-     * @see #removeContactExchangeListener(ContactExchangeListener)
+     * @see #removeContactExchangeListener(Consumer)
      */
-    public void addContactExchangeListener(ContactExchangeListener contactExchangeListener) {
+    public void addContactExchangeListener(Consumer<ContactExchangeEvent> contactExchangeListener) {
         contactExchangeListeners.add(contactExchangeListener);
     }
 
@@ -300,9 +305,15 @@ public final class ContactExchangeManager extends ExtensionManager {
      * Removes a previously added contact exchange listener.
      *
      * @param contactExchangeListener The listener.
-     * @see #addContactExchangeListener(ContactExchangeListener)
+     * @see #addContactExchangeListener(Consumer)
      */
-    public void removeContactExchangeListener(ContactExchangeListener contactExchangeListener) {
+    public void removeContactExchangeListener(Consumer<ContactExchangeEvent> contactExchangeListener) {
         contactExchangeListeners.remove(contactExchangeListener);
+    }
+
+    @Override
+    protected void dispose() {
+        contactExchangeListeners.clear();
+        trustedEntities.clear();
     }
 }

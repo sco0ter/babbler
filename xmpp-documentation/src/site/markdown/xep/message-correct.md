@@ -14,7 +14,7 @@ messageCorrectionManager.setEnabled(true);
 
 ## Correcting a Message
 
-Let\'s say you send a message with a typo in it:
+Let's say you send a message with a typo in it:
 
 ```java
 Message message = new Message(Jid.valueOf("juliet@example.net/balcony"), Message.Type.CHAT, "Hello, my frind");
@@ -42,6 +42,6 @@ if (replace != null) {
 }
 ```
 
-Keeping track of the message ids is of course the developer\'s responsibility.
+Keeping track of the message ids is of course the developer's responsibility.
 
 [Last Message Correction]: http://xmpp.org/extensions/xep-0308.html "XEP-0308: Last Message Correction"

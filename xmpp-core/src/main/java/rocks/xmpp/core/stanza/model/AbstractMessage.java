@@ -26,16 +26,13 @@ package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -50,20 +47,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @XmlTransient
 public abstract class AbstractMessage extends Stanza {
-    @XmlElement(name = "subject")
-    private final List<Subject> subject = new CopyOnWriteArrayList<>();
 
-    @XmlElement(name = "body")
-    private final List<Body> body = new CopyOnWriteArrayList<>();
+    private final List<Text> subject = new CopyOnWriteArrayList<>();
+
+    private final List<Text> body = new CopyOnWriteArrayList<>();
 
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new CopyOnWriteArrayList<>();
 
     @XmlAttribute
-    private Type type;
+    private final Type type;
 
-    @XmlElement
-    private Thread thread;
+    private final Thread thread;
 
     /**
      * Constructs a message with all possible values.
@@ -72,7 +67,7 @@ public abstract class AbstractMessage extends Stanza {
      * @param bodies The message bodies.
      * @param type   The message type.
      */
-    protected AbstractMessage(Jid to, Type type, Collection<Body> bodies, Collection<Subject> subjects, String thread, String parentThread, Jid from, String id, String language, Collection<?> extensions, StanzaError error) {
+    protected AbstractMessage(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, Jid from, String id, String language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, error);
         this.type = type;
         if (bodies != null) {
@@ -82,9 +77,9 @@ public abstract class AbstractMessage extends Stanza {
             this.subject.addAll(subjects);
         }
         if (thread != null || parentThread != null) {
-            this.thread = new Thread();
-            this.thread.value = thread;
-            this.thread.parent = parentThread;
+            this.thread = new Thread(thread, parentThread);
+        } else {
+            this.thread = null;
         }
         if (extensions != null) {
             this.extensions.addAll(extensions);
@@ -95,14 +90,15 @@ public abstract class AbstractMessage extends Stanza {
      * Gets the bodies.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax-body">5.2.3.  Body Element</a></cite></p>
-     * <p>Multiple instances of the {@code <body/>} element MAY be included in a message stanza for the purpose of providing alternate versions of the same body, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
+     * <p>The {@code <body/>} element contains human-readable XML character data that specifies the textual contents of the message; this child element is normally included but is OPTIONAL.</p>
+     * <p>There are no attributes defined for the {@code <body/>} element, with the exception of the 'xml:lang' attribute. Multiple instances of the {@code <body/>} element MAY be included in a message stanza for the purpose of providing alternate versions of the same body, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
      * </blockquote>
      *
-     * @return The unmodifiable list of bodies.
+     * @return The list of bodies.
      * @see #getBody()
      */
-    public final List<Body> getBodies() {
-        return Collections.unmodifiableList(body);
+    public final List<Text> getBodies() {
+        return body;
     }
 
     /**
@@ -120,7 +116,7 @@ public abstract class AbstractMessage extends Stanza {
      * @see #getBodies()
      */
     public final String getBody() {
-        for (Body body : this.body) {
+        for (Text body : this.body) {
             if (body.getLanguage() == null || body.getLanguage().isEmpty()) {
                 return body.getText();
             }
@@ -132,39 +128,18 @@ public abstract class AbstractMessage extends Stanza {
     }
 
     /**
-     * Sets the default body element.
-     *
-     * @param body The body text.
-     * @see #getBody()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setBody(String body) {
-        if (body != null) {
-            for (Body b : this.body) {
-                if (b.getLanguage() == null || b.getLanguage().isEmpty()) {
-                    b.setText(body);
-                    return;
-                }
-            }
-            this.body.add(new Body(body));
-        } else {
-            this.body.clear();
-        }
-    }
-
-    /**
      * Gets the subjects.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax-subject">5.2.4.  Subject Element</a></cite></p>
-     * <p>Multiple instances of the {@code <subject/>} element MAY be included for the purpose of providing alternate versions of the same subject, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
+     * <p>The {@code <subject/>} element contains human-readable XML character data that specifies the topic of the message.</p>
+     * <p>There are no attributes defined for the {@code <subject/>} element, with the exception of the 'xml:lang' attribute inherited from [XML]. Multiple instances of the {@code <subject/>} element MAY be included for the purpose of providing alternate versions of the same subject, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
      * </blockquote>
      *
-     * @return The unmodifiable list of subjects.
+     * @return The list of subjects.
      * @see #getSubject()
      */
-    public final List<Subject> getSubjects() {
-        return Collections.unmodifiableList(subject);
+    public final List<Text> getSubjects() {
+        return subject;
     }
 
     /**
@@ -180,7 +155,7 @@ public abstract class AbstractMessage extends Stanza {
      * @see #getSubjects()
      */
     public final String getSubject() {
-        for (Subject subject : this.subject) {
+        for (Text subject : this.subject) {
             if (subject.getLanguage() == null || subject.getLanguage().isEmpty()) {
                 return subject.getText();
             }
@@ -189,28 +164,6 @@ public abstract class AbstractMessage extends Stanza {
             return subject.get(0).getText();
         }
         return null;
-    }
-
-    /**
-     * Sets the default subject.
-     *
-     * @param subject The subject text.
-     * @see #getSubject()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setSubject(String subject) {
-        if (subject != null) {
-            for (Subject s : this.subject) {
-                if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
-                    s.setText(subject);
-                    return;
-                }
-            }
-            this.subject.add(new Subject(subject));
-        } else {
-            this.subject.clear();
-        }
     }
 
     /**
@@ -224,18 +177,6 @@ public abstract class AbstractMessage extends Stanza {
      */
     public final Type getType() {
         return type;
-    }
-
-    /**
-     * Sets the message type.
-     *
-     * @param type The message type.
-     * @see #getType()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setType(Type type) {
-        this.type = type;
     }
 
     /**
@@ -255,21 +196,6 @@ public abstract class AbstractMessage extends Stanza {
     }
 
     /**
-     * Sets the thread.
-     *
-     * @param thread The thread.
-     * @see #getThread()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setThread(String thread) {
-        if (this.thread == null) {
-            this.thread = new Thread();
-        }
-        this.thread.value = thread;
-    }
-
-    /**
      * Gets the parent thread.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax-thread">5.2.5.  Thread Element</a></cite></p>
@@ -283,21 +209,6 @@ public abstract class AbstractMessage extends Stanza {
             return thread.parent;
         }
         return null;
-    }
-
-    /**
-     * Sets the parent thread.
-     *
-     * @param parent The parent thread.
-     * @see #getParentThread()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setParentThread(String parent) {
-        if (this.thread == null) {
-            this.thread = new Thread();
-        }
-        this.thread.parent = parent;
     }
 
     /**
@@ -373,182 +284,6 @@ public abstract class AbstractMessage extends Stanza {
     }
 
     /**
-     * The implementation of a message's {@code <body/>} element.
-     * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax-body">5.2.3.  Body Element</a></cite></p>
-     * <p>The {@code <body/>} element contains human-readable XML character data that specifies the textual contents of the message; this child element is normally included but is OPTIONAL.</p>
-     * <p>There are no attributes defined for the {@code <body/>} element, with the exception of the 'xml:lang' attribute. Multiple instances of the {@code <body/>} element MAY be included in a message stanza for the purpose of providing alternate versions of the same body, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
-     * </blockquote>
-     */
-    public static final class Body {
-        @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private String language;
-
-        @XmlValue
-        private String text;
-
-        /**
-         * Private default constructor, needed for unmarshalling.
-         */
-        @SuppressWarnings("unused")
-        private Body() {
-        }
-
-        /**
-         * Constructs a default body.
-         *
-         * @param text The text.
-         */
-        public Body(String text) {
-            this.text = text;
-        }
-
-        /**
-         * Constructs a body with a language attribute.
-         *
-         * @param text     The text
-         * @param language The language.
-         */
-        public Body(String text, String language) {
-            this.text = text;
-            this.language = language;
-        }
-
-        /**
-         * Gets the language.
-         *
-         * @return The language.
-         */
-        public String getLanguage() {
-            return language;
-        }
-
-        /**
-         * Sets the language.
-         *
-         * @param language The language.
-         * @deprecated Use constructor.
-         */
-        @Deprecated
-        public void setLanguage(String language) {
-            this.language = language;
-        }
-
-        /**
-         * Gets the text.
-         *
-         * @return The text.
-         */
-        public String getText() {
-            return text;
-        }
-
-        /**
-         * Sets the text.
-         *
-         * @param text The text.
-         * @deprecated Use constructor.
-         */
-        @Deprecated
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        @Override
-        public String toString() {
-            return text;
-        }
-    }
-
-    /**
-     * The implementation of a message's {@code <subject/>} element.
-     * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax-subject">5.2.4.  Subject Element</a></cite></p>
-     * <p>The {@code <subject/>} element contains human-readable XML character data that specifies the topic of the message.</p>
-     * <p>There are no attributes defined for the {@code <subject/>} element, with the exception of the 'xml:lang' attribute inherited from [XML]. Multiple instances of the {@code <subject/>} element MAY be included for the purpose of providing alternate versions of the same subject, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
-     * </blockquote>
-     */
-    public static final class Subject {
-        @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private String language;
-
-        @XmlValue
-        private String text;
-
-        /**
-         * Private default constructor, needed for unmarshalling.
-         */
-        @SuppressWarnings("unused")
-        private Subject() {
-        }
-
-        /**
-         * Constructs a default subject.
-         *
-         * @param text The text.
-         */
-        public Subject(String text) {
-            this.text = text;
-        }
-
-        /**
-         * Constructs a subject with a language attribute.
-         *
-         * @param text     The text
-         * @param language The language.
-         */
-        public Subject(String text, String language) {
-            this.text = text;
-            this.language = language;
-        }
-
-        /**
-         * Gets the language.
-         *
-         * @return The language.
-         */
-        public String getLanguage() {
-            return language;
-        }
-
-        /**
-         * Sets the language.
-         *
-         * @param language The language.
-         * @deprecated Use constructor.
-         */
-        @Deprecated
-        public void setLanguage(String language) {
-            this.language = language;
-        }
-
-        /**
-         * Gets the text.
-         *
-         * @return The text.
-         */
-        public String getText() {
-            return text;
-        }
-
-        /**
-         * Sets the text.
-         *
-         * @param text The text.
-         * @deprecated Use constructor.
-         */
-        @Deprecated
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        @Override
-        public String toString() {
-            return text;
-        }
-    }
-
-    /**
      * The implementation of the message's {@code <thread/>} element.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax-thread">5.2.5.  Thread Element</a></cite></p>
@@ -557,17 +292,23 @@ public abstract class AbstractMessage extends Stanza {
      */
     private static final class Thread {
 
-        @XmlAttribute(name = "parent")
-        private String parent;
+        @XmlAttribute
+        private final String parent;
 
         @XmlValue
-        private String value;
+        private final String value;
 
         private Thread() {
+            this(null, null);
+        }
+
+        private Thread(String value, String parent) {
+            this.value = value;
+            this.parent = parent;
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return value;
         }
     }

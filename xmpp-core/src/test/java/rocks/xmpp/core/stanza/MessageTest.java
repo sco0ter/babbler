@@ -29,8 +29,8 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Roster;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
@@ -190,49 +190,49 @@ public class MessageTest extends XmlTest {
 
     @Test
     public void marshalMessage() throws JAXBException, XMLStreamException {
-        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Collections.<AbstractMessage.Body>emptyList(), null, null, null, "id", new Jid("from", "domain"), null, null, null);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null, null, null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"></message>");
     }
 
     @Test
     public void marshalMessageThread() throws JAXBException, XMLStreamException {
-        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Collections.<Message.Body>emptyList(), null, "thread", null, "id", new Jid("from", "domain"), null, null, null);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null, "thread", null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread>thread</thread></message>");
     }
 
     @Test
     public void marshalMessageParentThread() throws JAXBException, XMLStreamException {
-        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Collections.<Message.Body>emptyList(), null, "thread", "parentThread", "id", new Jid("from", "domain"), null, null, null);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null, "thread", "parentThread", "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\">thread</thread></message>");
     }
 
     @Test
     public void marshalMessageParentThreadWithoutThread() throws JAXBException, XMLStreamException {
-        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Collections.<Message.Body>emptyList(), null, null, "parentThread", "id", new Jid("from", "domain"), null, null, null);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null, null, "parentThread", "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\"></thread></message>");
     }
 
     @Test
     public void marshalMessageBody() throws JAXBException, XMLStreamException {
-        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Arrays.asList(new AbstractMessage.Body("body", "de"), new AbstractMessage.Body("body2", "fr")), null, null, null, "id", new Jid("from", "domain"), null, null, null);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, Arrays.asList(new Text("body", "de"), new Text("body2", "fr")), null, null, null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><body xml:lang=\"de\">body</body><body xml:lang=\"fr\">body2</body></message>");
     }
 
     @Test
     public void marshalMessageSubject() throws JAXBException, XMLStreamException {
-        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, null, Arrays.asList(new AbstractMessage.Subject("subject1", "de"), new AbstractMessage.Subject("subject2", "fr")), null, null, "id", new Jid("from", "domain"), null, null, null);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, null, Arrays.asList(new Text("subject1", "de"), new Text("subject2", "fr")), null, null, "id", new Jid("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><subject xml:lang=\"de\">subject1</subject><subject xml:lang=\"fr\">subject2</subject></message>");
     }
 
     @Test
     public void testWithFrom() throws JAXBException, XMLStreamException {
-        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, "body", "subject", "thread", null, "id", null, null, Arrays.asList(new Roster()), null);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, "body", "subject", "thread", null, "id", null, null, Collections.singletonList(new Roster()), null);
         Message withFrom = message.withFrom(Jid.valueOf("from"));
         Assert.assertEquals(withFrom.getType(), Message.Type.CHAT);
         Assert.assertEquals(withFrom.getId(), "id");

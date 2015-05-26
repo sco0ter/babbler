@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
  * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking-errors">XML Schema</a>
  */
-@XmlRootElement(name = "blocked")
+@XmlRootElement
 @XmlType(factoryMethod = "create")
 public final class Blocked {
 

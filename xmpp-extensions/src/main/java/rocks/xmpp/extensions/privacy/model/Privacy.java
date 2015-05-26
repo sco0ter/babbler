@@ -55,8 +55,7 @@ public final class Privacy {
      */
     public static final String NAMESPACE = "jabber:iq:privacy";
 
-    @XmlElement(name = "list")
-    private final List<PrivacyList> privacyLists = new ArrayList<>();
+    private final List<PrivacyList> list = new ArrayList<>();
 
     @XmlJavaTypeAdapter(ActiveNameAdapter.class)
     @XmlElement(name = "active")
@@ -93,7 +92,7 @@ public final class Privacy {
         this.activeName = activeName;
         this.defaultName = defaultName;
         if (privacyLists != null) {
-            this.privacyLists.addAll(privacyLists);
+            this.list.addAll(privacyLists);
         }
     }
 
@@ -141,21 +140,21 @@ public final class Privacy {
      * @return The privacy lists.
      */
     public final List<PrivacyList> getPrivacyLists() {
-        return Collections.unmodifiableList(privacyLists);
+        return Collections.unmodifiableList(list);
     }
 
     @Override
     public final String toString() {
-        return privacyLists.toString();
+        return list.toString();
     }
 
     private static final class Active {
-        @XmlAttribute(name = "name")
+        @XmlAttribute
         private String name;
     }
 
     private static final class Default {
-        @XmlAttribute(name = "name")
+        @XmlAttribute
         private String name;
     }
 

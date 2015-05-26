@@ -28,13 +28,14 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.extensions.muc.model.Actor;
 
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * An event which is triggered by an occupant in a chat room.
  * Typical events are "joins" and "leaves", as well as "bans" or "kicks".
  *
  * @author Christian Schudt
- * @see rocks.xmpp.extensions.muc.OccupantListener
+ * @see ChatRoom#addOccupantListener(Consumer)
  */
 public final class OccupantEvent extends EventObject {
 

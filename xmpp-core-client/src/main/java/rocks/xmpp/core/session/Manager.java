@@ -30,6 +30,18 @@ package rocks.xmpp.core.session;
  * @author Christian Schudt
  */
 public abstract class Manager {
+    protected final XmppSession xmppSession;
+
+    protected Manager(XmppSession xmppSession, boolean disposable) {
+        this.xmppSession = xmppSession;
+        if (disposable) {
+            xmppSession.addSessionStatusListener(e -> {
+                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                    dispose();
+                }
+            });
+        }
+    }
 
     private volatile boolean enabled;
 
@@ -39,7 +51,7 @@ public abstract class Manager {
      * @return True, if this manager is enabled.
      * @see #setEnabled(boolean)
      */
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         return enabled;
     }
 
@@ -49,8 +61,26 @@ public abstract class Manager {
      * @param enabled If the manager gets enabled.
      * @see #isEnabled()
      */
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(boolean enabled) {
+        boolean wasEnabled = this.enabled;
         this.enabled = enabled;
+        if (enabled && !wasEnabled) {
+            onEnable();
+        } else if (!enabled && wasEnabled) {
+            onDisable();
+        }
+    }
+
+    /**
+     * Called when the manager is enabled.
+     */
+    protected void onEnable() {
+    }
+
+    /**
+     * Called when the manager is disabled.
+     */
+    protected void onDisable() {
     }
 
     /**
@@ -60,5 +90,11 @@ public abstract class Manager {
      * @see <a href="http://www.ibm.com/developerworks/library/j-jtp0618/">Java theory and practice: Safe construction techniques</a>
      */
     protected void initialize() {
+    }
+
+    /**
+     * Called when the session gets closed.
+     */
+    protected void dispose() {
     }
 }

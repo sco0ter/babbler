@@ -25,8 +25,10 @@
 package rocks.xmpp.extensions.geoloc;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.pubsub.PubSubManager;
@@ -36,8 +38,7 @@ import rocks.xmpp.extensions.pubsub.model.event.Event;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 /**
  * Manages the publishing of user location and the notification of it.
@@ -47,42 +48,38 @@ import java.util.logging.Logger;
  */
 public final class GeoLocationManager extends ExtensionManager {
 
-    private static final Logger logger = Logger.getLogger(GeoLocationManager.class.getName());
+    private final Set<Consumer<GeoLocationEvent>> geoLocationListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<GeoLocationListener> geoLocationListeners = new CopyOnWriteArraySet<>();
+    private final Consumer<MessageEvent> messageListener;
 
     private GeoLocationManager(XmppSession xmppSession) {
-        super(xmppSession, GeoLocation.NAMESPACE, GeoLocation.NAMESPACE + "+notify");
-    }
+        super(xmppSession, true);
 
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                geoLocationListeners.clear();
-            }
-        });
-        xmppSession.addInboundMessageListener(e -> {
-            if (isEnabled()) {
-                Message message = e.getMessage();
-                Event event = message.getExtension(Event.class);
-                if (event != null) {
-                    for (Item item : event.getItems()) {
-                        Object payload = item.getPayload();
-                        if (payload instanceof GeoLocation) {
-                            // Notify the listeners about the reception.
-                            for (GeoLocationListener geoLocationListener : geoLocationListeners) {
-                                try {
-                                    geoLocationListener.geoLocationUpdated(new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
-                                } catch (Exception ex) {
-                                    logger.log(Level.WARNING, ex.getMessage(), ex);
-                                }
-                            }
-                        }
+        messageListener = e -> {
+            Message message = e.getMessage();
+            Event event = message.getExtension(Event.class);
+            if (event != null) {
+                for (Item item : event.getItems()) {
+                    Object payload = item.getPayload();
+                    if (payload instanceof GeoLocation) {
+                        // Notify the listeners about the reception.
+                        XmppUtils.notifyEventListeners(geoLocationListeners, new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
                     }
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundMessageListener(messageListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(messageListener);
     }
 
     /**
@@ -101,9 +98,9 @@ public final class GeoLocationManager extends ExtensionManager {
      * Adds a listener, which allows to listen for geo location changes.
      *
      * @param geoLocationListener The listener.
-     * @see #removeGeoLocationListener(GeoLocationListener)
+     * @see #removeGeoLocationListener(Consumer)
      */
-    public void addGeoLocationListener(GeoLocationListener geoLocationListener) {
+    public void addGeoLocationListener(Consumer<GeoLocationEvent> geoLocationListener) {
         geoLocationListeners.add(geoLocationListener);
     }
 
@@ -111,9 +108,14 @@ public final class GeoLocationManager extends ExtensionManager {
      * Removes a previously added geo location listener.
      *
      * @param geoLocationListener The listener.
-     * @see #addGeoLocationListener(GeoLocationListener)
+     * @see #addGeoLocationListener(Consumer)
      */
-    public void removeGeoLocationListener(GeoLocationListener geoLocationListener) {
+    public void removeGeoLocationListener(Consumer<GeoLocationEvent> geoLocationListener) {
         geoLocationListeners.remove(geoLocationListener);
+    }
+
+    @Override
+    protected void dispose() {
+        geoLocationListeners.clear();
     }
 }

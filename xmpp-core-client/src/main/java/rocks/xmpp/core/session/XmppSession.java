@@ -35,11 +35,8 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.IQListener;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -53,8 +50,8 @@ import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.PresenceManager;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -87,13 +84,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * The base class for establishing an XMPP session with a server.
- * <p>
  * <h3>Establishing an XMPP Session</h3>
  * The following example shows the most simple way to establish a session:
  * <pre>
@@ -101,12 +98,10 @@ import java.util.logging.Logger;
  * XmppSession xmppSession = new XmppSession("domain");
  * xmppSession.connect();
  * xmppSession.login("username", "password");
- * xmppSession.send(new Presence());
  * }
  * </pre>
  * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback.
  * You can configure a session and its connection methods by passing appropriate configurations in its constructor.
- * <p>
  * <h3>Sending Messages</h3>
  * Once connected, you can send messages:
  * <pre>
@@ -123,23 +118,17 @@ import java.util.logging.Logger;
  * <h3>Listening for Messages and Presence</h3>
  * <b>Note:</b> Adding the following listeners should be added before logging in, otherwise they might not trigger.
  * <pre>
- * <code>
+ * {@code
  * // Listen for messages
- * xmppSession.addInboundMessageListener(new MessageListener() {
- *     {@literal @}Override
- *     public void handleMessage(MessageEvent e) {
- *         // Handle inbound message
- *     }
- * });
+ * xmppSession.addInboundMessageListener(e ->
+ *     // Handle inbound message.
+ * );
  *
  * // Listen for presence changes
- * xmppSession.addInboundPresenceListener(new PresenceListener() {
- *     {@literal @}Override
- *     public void handlePresence(PresenceEvent e) {
- *         // Handle inbound presence.
- *     }
- * });
- * </code>
+ * xmppSession.addInboundPresenceListener(e ->
+ *     // Handle inbound presence.
+ * );
+ * }
  * </pre>
  * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
  *
@@ -154,29 +143,31 @@ public class XmppSession implements AutoCloseable {
 
     private final AuthenticationManager authenticationManager;
 
-    private final Set<MessageListener> inboundMessageListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<MessageListener> outboundMessageListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<MessageEvent>> outboundMessageListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<PresenceListener> inboundPresenceListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<PresenceEvent>> inboundPresenceListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<PresenceListener> outboundPresenceListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<PresenceEvent>> outboundPresenceListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<IQListener> inboundIQListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<IQEvent>> inboundIQListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<IQListener> outboundIQListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<IQEvent>> outboundIQListeners = new CopyOnWriteArraySet<>();
 
     private final Map<Class<?>, IQHandler> iqHandlerMap = new HashMap<>();
 
     private final Map<Class<?>, Boolean> iqHandlerInvocationModes = new HashMap<>();
 
-    private final Set<SessionStatusListener> sessionStatusListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<SessionStatusEvent>> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
     private final Map<Class<? extends Manager>, Manager> instances = new ConcurrentHashMap<>();
 
     private final List<Connection> connections = new ArrayList<>();
 
     private final XmppSessionConfiguration configuration;
+
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     ExecutorService iqHandlerExecutor;
 
@@ -269,7 +260,7 @@ public class XmppSession implements AutoCloseable {
         authenticationManager = new AuthenticationManager(this);
 
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
-        streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(Bind.class) {
+        streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(this, Bind.class) {
             @Override
             public Status processNegotiation(Object element) throws StreamNegotiationException {
                 // Resource binding will be negotiated manually
@@ -281,9 +272,7 @@ public class XmppSession implements AutoCloseable {
                 return false;
             }
         });
-
-        // Every connection supports XEP-106 JID Escaping.
-        getManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
+        this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
 
         if (configuration.getDebugger() != null) {
             try {
@@ -299,11 +288,10 @@ public class XmppSession implements AutoCloseable {
             connections.add(TcpConnectionConfiguration.getDefault().createConnection(this));
             connections.add(BoshConnectionConfiguration.getDefault().createConnection(this));
         } else {
-        	Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
+            Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
         }
 
-        // Initialize the managers.
-        configuration.getInitialManagers().forEach(this::getManager);
+        configuration.getExtensions().forEach(serviceDiscoveryManager::registerFeature);
     }
 
     private static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
@@ -342,9 +330,9 @@ public class XmppSession implements AutoCloseable {
      * Adds an inbound message listener to the session, which will get notified, whenever a message is received.
      *
      * @param messageListener The message listener.
-     * @see #removeInboundMessageListener(MessageListener)
+     * @see #removeInboundMessageListener(Consumer)
      */
-    public final void addInboundMessageListener(MessageListener messageListener) {
+    public final void addInboundMessageListener(Consumer<MessageEvent> messageListener) {
         inboundMessageListeners.add(messageListener);
     }
 
@@ -352,9 +340,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added inbound message listener from the session.
      *
      * @param messageListener The message listener.
-     * @see #addInboundMessageListener(MessageListener)
+     * @see #addInboundMessageListener(Consumer)
      */
-    public final void removeInboundMessageListener(MessageListener messageListener) {
+    public final void removeInboundMessageListener(Consumer<MessageEvent> messageListener) {
         inboundMessageListeners.remove(messageListener);
     }
 
@@ -362,9 +350,9 @@ public class XmppSession implements AutoCloseable {
      * Adds an outbound message listener to the session, which will get notified, whenever a message is sent.
      *
      * @param messageListener The message listener.
-     * @see #removeOutboundMessageListener(MessageListener)
+     * @see #removeOutboundMessageListener(Consumer)
      */
-    public final void addOutboundMessageListener(MessageListener messageListener) {
+    public final void addOutboundMessageListener(Consumer<MessageEvent> messageListener) {
         outboundMessageListeners.add(messageListener);
     }
 
@@ -372,9 +360,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added outbound message listener from the session.
      *
      * @param messageListener The message listener.
-     * @see #addOutboundMessageListener(MessageListener)
+     * @see #addOutboundMessageListener(Consumer)
      */
-    public final void removeOutboundMessageListener(MessageListener messageListener) {
+    public final void removeOutboundMessageListener(Consumer<MessageEvent> messageListener) {
         outboundMessageListeners.remove(messageListener);
     }
 
@@ -382,9 +370,9 @@ public class XmppSession implements AutoCloseable {
      * Adds an inbound presence listener to the session, which will get notified, whenever a presence is received.
      *
      * @param presenceListener The presence listener.
-     * @see #removeInboundPresenceListener(PresenceListener)
+     * @see #removeInboundPresenceListener(Consumer)
      */
-    public final void addInboundPresenceListener(PresenceListener presenceListener) {
+    public final void addInboundPresenceListener(Consumer<PresenceEvent> presenceListener) {
         inboundPresenceListeners.add(presenceListener);
     }
 
@@ -392,9 +380,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added inbound presence listener from the session.
      *
      * @param presenceListener The presence listener.
-     * @see #addInboundPresenceListener(PresenceListener)
+     * @see #addInboundPresenceListener(Consumer)
      */
-    public final void removeInboundPresenceListener(PresenceListener presenceListener) {
+    public final void removeInboundPresenceListener(Consumer<PresenceEvent> presenceListener) {
         inboundPresenceListeners.remove(presenceListener);
     }
 
@@ -402,9 +390,9 @@ public class XmppSession implements AutoCloseable {
      * Adds an outbound presence listener to the session, which will get notified, whenever a presence is sent.
      *
      * @param presenceListener The presence listener.
-     * @see #removeOutboundPresenceListener(PresenceListener)
+     * @see #removeOutboundPresenceListener(Consumer)
      */
-    public final void addOutboundPresenceListener(PresenceListener presenceListener) {
+    public final void addOutboundPresenceListener(Consumer<PresenceEvent> presenceListener) {
         outboundPresenceListeners.add(presenceListener);
     }
 
@@ -412,9 +400,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added outbound presence listener from the session.
      *
      * @param presenceListener The presence listener.
-     * @see #addOutboundPresenceListener(PresenceListener)
+     * @see #addOutboundPresenceListener(Consumer)
      */
-    public final void removeOutboundPresenceListener(PresenceListener presenceListener) {
+    public final void removeOutboundPresenceListener(Consumer<PresenceEvent> presenceListener) {
         outboundPresenceListeners.remove(presenceListener);
     }
 
@@ -422,9 +410,9 @@ public class XmppSession implements AutoCloseable {
      * Adds an inbound IQ listener to the session, which will get notified, whenever an IQ stanza is received.
      *
      * @param iqListener The IQ listener.
-     * @see #removeInboundIQListener(IQListener)
+     * @see #removeInboundIQListener(Consumer)
      */
-    public final void addInboundIQListener(IQListener iqListener) {
+    public final void addInboundIQListener(Consumer<IQEvent> iqListener) {
         inboundIQListeners.add(iqListener);
     }
 
@@ -432,9 +420,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added inbound IQ listener from the session.
      *
      * @param iqListener The IQ listener.
-     * @see #addInboundIQListener(IQListener)
+     * @see #addInboundIQListener(Consumer)
      */
-    public final void removeInboundIQListener(IQListener iqListener) {
+    public final void removeInboundIQListener(Consumer<IQEvent> iqListener) {
         inboundIQListeners.remove(iqListener);
     }
 
@@ -442,9 +430,9 @@ public class XmppSession implements AutoCloseable {
      * Adds an outbound IQ listener to the session, which will get notified, whenever an IQ stanza is sent.
      *
      * @param iqListener The IQ listener.
-     * @see #removeOutboundIQListener(IQListener)
+     * @see #removeOutboundIQListener(Consumer)
      */
-    public final void addOutboundIQListener(IQListener iqListener) {
+    public final void addOutboundIQListener(Consumer<IQEvent> iqListener) {
         outboundIQListeners.add(iqListener);
     }
 
@@ -452,9 +440,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added outbound IQ listener from the session.
      *
      * @param iqListener The IQ listener.
-     * @see #addOutboundIQListener(IQListener)
+     * @see #addOutboundIQListener(Consumer)
      */
-    public final void removeOutboundIQListener(IQListener iqListener) {
+    public final void removeOutboundIQListener(Consumer<IQEvent> iqListener) {
         outboundIQListeners.remove(iqListener);
     }
 
@@ -506,9 +494,9 @@ public class XmppSession implements AutoCloseable {
      * Each time the {@linkplain Status session status} changes, all listeners will be notified.
      *
      * @param sessionStatusListener The session listener.
-     * @see #removeSessionStatusListener(SessionStatusListener)
+     * @see #removeSessionStatusListener(Consumer)
      */
-    public final void addSessionStatusListener(SessionStatusListener sessionStatusListener) {
+    public final void addSessionStatusListener(Consumer<SessionStatusEvent> sessionStatusListener) {
         sessionStatusListeners.add(sessionStatusListener);
     }
 
@@ -516,9 +504,9 @@ public class XmppSession implements AutoCloseable {
      * Removes a previously added session listener.
      *
      * @param sessionStatusListener The session listener.
-     * @see #addSessionStatusListener(SessionStatusListener)
+     * @see #addSessionStatusListener(Consumer)
      */
-    public final void removeSessionStatusListener(SessionStatusListener sessionStatusListener) {
+    public final void removeSessionStatusListener(Consumer<SessionStatusEvent> sessionStatusListener) {
         sessionStatusListeners.remove(sessionStatusListener);
     }
 
@@ -558,7 +546,7 @@ public class XmppSession implements AutoCloseable {
         final Lock queryLock = new ReentrantLock();
         final Condition resultReceived = queryLock.newCondition();
 
-        final IQListener listener = e -> {
+        final Consumer<IQEvent> listener = e -> {
             IQ responseIQ = e.getIQ();
             if (responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
                 queryLock.lock();
@@ -607,7 +595,7 @@ public class XmppSession implements AutoCloseable {
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
 
-        final PresenceListener listener = e -> {
+        final Consumer<PresenceEvent> listener = e -> {
             Presence presence = e.getPresence();
             if (filter.test(presence)) {
                 presenceLock.lock();
@@ -657,7 +645,7 @@ public class XmppSession implements AutoCloseable {
         final Lock messageLock = new ReentrantLock();
         final Condition resultReceived = messageLock.newCondition();
 
-        final MessageListener listener = e -> {
+        final Consumer<MessageEvent> listener = e -> {
             Message message = e.getMessage();
             if (filter.test(message)) {
                 messageLock.lock();
@@ -842,11 +830,11 @@ public class XmppSession implements AutoCloseable {
                 throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
             }
             if (stanza instanceof Message) {
-                notifyMessageListeners((Message) stanza, false);
+                XmppUtils.notifyEventListeners(outboundMessageListeners, new MessageEvent(this, (Message) stanza, false));
             } else if (stanza instanceof Presence) {
-                notifyPresenceListeners((Presence) stanza, false);
+                XmppUtils.notifyEventListeners(outboundPresenceListeners, new PresenceEvent(this, (Presence) stanza, false));
             } else if (stanza instanceof IQ) {
-                notifyIQListeners((IQ) stanza, false);
+                XmppUtils.notifyEventListeners(outboundIQListeners, new IQEvent(this, (IQ) stanza, false));
             }
         }
         if (activeConnection != null) {
@@ -909,16 +897,16 @@ public class XmppSession implements AutoCloseable {
 
         // A default callback handler for username/password retrieval:
         login(authorizationId, callbacks -> Arrays.stream(callbacks).forEach(callback -> {
-                if (callback instanceof NameCallback) {
-                    ((NameCallback) callback).setName(user);
-                }
-                if (callback instanceof PasswordCallback) {
-                    ((PasswordCallback) callback).setPassword(password.toCharArray());
-                }
-                if (callback instanceof RealmCallback) {
-                    ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
-                }
-            }), resource);
+            if (callback instanceof NameCallback) {
+                ((NameCallback) callback).setName(user);
+            }
+            if (callback instanceof PasswordCallback) {
+                ((PasswordCallback) callback).setPassword(password.toCharArray());
+            }
+            if (callback instanceof RealmCallback) {
+                ((RealmCallback) callback).setText(((RealmCallback) callback).getDefaultText());
+            }
+        }), resource);
     }
 
     /**
@@ -1004,12 +992,20 @@ public class XmppSession implements AutoCloseable {
                 logger.fine("Retrieving roster on login (as per configuration).");
                 rosterManager.requestRoster();
             }
-
-            // After retrieving the roster, resend the last presence, if any (in reconnection case).
-            getManager(PresenceManager.class).getLastSentPresences().forEach(presence -> {
-                presence.getExtensions().clear();
-                send(presence);
-            });
+            PresenceManager presenceManager = getManager(PresenceManager.class);
+            if (presenceManager.getLastSentPresence() != null) {
+                // After retrieving the roster, resend the last presence, if any (in reconnection case).
+                presenceManager.getLastSentPresences().forEach(presence -> {
+                    presence.getExtensions().clear();
+                    send(presence);
+                });
+            } else if (configuration.getInitialPresence() != null) {
+                // Or send initial presence
+                Presence initialPresence = configuration.getInitialPresence().get();
+                if (initialPresence != null) {
+                    send(initialPresence);
+                }
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // Revert status
@@ -1090,7 +1086,7 @@ public class XmppSession implements AutoCloseable {
                     synchronized (iqHandlerMap) {
                         iqHandler = iqHandlerMap.get(payload.getClass());
                         // If the handler is to be invoked asynchronously, get the iqHandlerExecutor, otherwise use stanzaListenerExecutor (which is a single thread executor).
-                        executor = iqHandlerInvocationModes.get(payload.getClass()) ? iqHandlerExecutor : stanzaListenerExecutor;
+                        executor = iqHandler != null ? (iqHandlerInvocationModes.get(payload.getClass()) ? iqHandlerExecutor : stanzaListenerExecutor) : null;
                     }
 
                     if (iqHandler != null) {
@@ -1112,11 +1108,11 @@ public class XmppSession implements AutoCloseable {
                     }
                 }
             }
-            stanzaListenerExecutor.execute(() -> notifyIQListeners(iq, true));
+            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true)));
         } else if (element instanceof Message) {
-            stanzaListenerExecutor.execute(() -> notifyMessageListeners((Message) element, true));
+            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true)));
         } else if (element instanceof Presence) {
-            stanzaListenerExecutor.execute(() -> notifyPresenceListeners((Presence) element, true));
+            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true)));
         } else if (element instanceof StreamFeatures) {
             getManager(StreamFeaturesManager.class).processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {
@@ -1126,42 +1122,6 @@ public class XmppSession implements AutoCloseable {
             return getManager(StreamFeaturesManager.class).processElement(element);
         }
         return false;
-    }
-
-    private void notifyIQListeners(IQ iq, boolean inbound) {
-        IQEvent iqEvent = new IQEvent(this, iq, inbound);
-        Iterable<IQListener> listeners = inbound ? inboundIQListeners : outboundIQListeners;
-        listeners.forEach(iqListener -> {
-            try {
-                iqListener.handleIQ(iqEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
-    }
-
-    private void notifyMessageListeners(Message message, boolean inbound) {
-        MessageEvent messageEvent = new MessageEvent(this, message, inbound);
-        Iterable<MessageListener> listeners = inbound ? inboundMessageListeners : outboundMessageListeners;
-        listeners.forEach(messageListener -> {
-            try {
-                messageListener.handleMessage(messageEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
-    }
-
-    private void notifyPresenceListeners(Presence presence, boolean inbound) {
-        PresenceEvent presenceEvent = new PresenceEvent(this, presence, inbound);
-        Iterable<PresenceListener> listeners = inbound ? inboundPresenceListeners : outboundPresenceListeners;
-        listeners.forEach(presenceListener -> {
-            try {
-                presenceListener.handlePresence(presenceEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
     }
 
     /**
@@ -1212,7 +1172,7 @@ public class XmppSession implements AutoCloseable {
                         instance.initialize();
                         instances.put(clazz, instance);
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                        throw new IllegalArgumentException("Can't instantiate the provided class.", e);
+                        throw new IllegalArgumentException("Can't instantiate the provided class:" + clazz, e);
                     }
                 }
             }
@@ -1276,20 +1236,9 @@ public class XmppSession implements AutoCloseable {
         }
         if (status != oldStatus) {
             // Make sure to not call listeners from within synchronized region.
-            notifySessionStatusListeners(status, oldStatus, e);
+            XmppUtils.notifyEventListeners(sessionStatusListeners, new SessionStatusEvent(this, status, oldStatus, e));
         }
         return status != oldStatus;
-    }
-
-    private void notifySessionStatusListeners(Status status, Status oldStatus, Throwable throwable) {
-        SessionStatusEvent sessionStatusEvent = new SessionStatusEvent(this, status, oldStatus, throwable);
-        sessionStatusListeners.forEach(sessionStatusListener -> {
-            try {
-                sessionStatusListener.sessionStatusChanged(sessionStatusEvent);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
     }
 
     /**
@@ -1377,10 +1326,70 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
+     * Enables a feature by its name, usually a protocol namespace.
+     *
+     * @param name The associated manager class.
+     */
+    public final void enableFeature(String name) {
+        serviceDiscoveryManager.addFeature(name);
+    }
+
+    /**
+     * Disables a feature by its name, usually a protocol namespace.
+     *
+     * @param name The associated manager class.
+     */
+    public final void disableFeature(String name) {
+        serviceDiscoveryManager.removeFeature(name);
+    }
+
+    /**
+     * Enables a feature by its manager class.
+     *
+     * @param managerClass The associated manager class.
+     */
+    public final void enableFeature(Class<? extends Manager> managerClass) {
+        serviceDiscoveryManager.addFeature(managerClass);
+    }
+
+    /**
+     * Disables a feature by its manager class.
+     *
+     * @param managerClass The associated manager class.
+     */
+    public final void disableFeature(Class<? extends Manager> managerClass) {
+        serviceDiscoveryManager.removeFeature(managerClass);
+    }
+
+    /**
+     * Gets the enabled features.
+     *
+     * @return The enabled features.
+     */
+    public final Set<String> getEnabledFeatures() {
+        return serviceDiscoveryManager.getFeatures();
+    }
+
+    /**
+     * Determines support of another XMPP entity for a given feature.
+     * <p>
+     * Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
+     * If you want to determine the server's capabilities provide only the domain JID of the server.
+     * <p>
+     * This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.
+     *
+     * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
+     * @param jid     The XMPP entity.
+     * @return True, if the XMPP entity supports the given feature; otherwise false.
+     */
+    public final boolean isSupported(String feature, Jid jid) throws XmppException {
+        return getManager(EntityCapabilitiesManager.class).isSupported(feature, jid);
+    }
+
+    /**
      * Represents the session status.
      * <p>
      * The following chart illustrates the valid status transitions:
-     * <p>
      * <pre>
      * &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; INITIAL
      * &#x2502;          &#x2502;

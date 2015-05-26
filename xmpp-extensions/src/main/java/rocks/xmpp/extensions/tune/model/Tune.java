@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.tune.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
@@ -37,7 +36,7 @@ import java.net.URI;
  * @see <a href="http://xmpp.org/extensions/xep-0118.html">XEP-0118: User Tune</a>
  * @see <a href="http://xmpp.org/extensions/xep-0118.html#schema">XML Schema</a>
  */
-@XmlRootElement(name = "tune")
+@XmlRootElement
 public final class Tune {
 
     /**
@@ -45,25 +44,18 @@ public final class Tune {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/tune";
 
-    @XmlElement(name = "artist")
     private final String artist;
 
-    @XmlElement(name = "length")
     private final Integer length;
 
-    @XmlElement(name = "rating")
     private final Integer rating;
 
-    @XmlElement(name = "source")
     private final String source;
 
-    @XmlElement(name = "title")
     private final String title;
 
-    @XmlElement(name = "track")
     private final String track;
 
-    @XmlElement(name = "uri")
     private final URI uri;
 
     private Tune() {

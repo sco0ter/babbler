@@ -164,7 +164,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <cleaning/>} activity.
      */
-    @XmlRootElement(name = "cleaning")
+    @XmlRootElement
     public static final class Cleaning extends SpecificActivity {
         public Cleaning() {
         }
@@ -177,7 +177,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <coding/>} activity.
      */
-    @XmlRootElement(name = "coding")
+    @XmlRootElement
     public static final class Coding extends SpecificActivity {
         public Coding() {
         }
@@ -190,7 +190,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <commuting/>} activity.
      */
-    @XmlRootElement(name = "commuting")
+    @XmlRootElement
     public static final class Commuting extends SpecificActivity {
         public Commuting() {
         }
@@ -203,7 +203,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <cooking/>} activity.
      */
-    @XmlRootElement(name = "cooking")
+    @XmlRootElement
     public static final class Cooking extends SpecificActivity {
         public Cooking() {
         }
@@ -216,7 +216,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <cycling/>} activity.
      */
-    @XmlRootElement(name = "cycling")
+    @XmlRootElement
     public static final class Cycling extends SpecificActivity {
         public Cycling() {
         }
@@ -229,7 +229,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <dancing/>} activity.
      */
-    @XmlRootElement(name = "dancing")
+    @XmlRootElement
     public static final class Dancing extends SpecificActivity {
         public Dancing() {
         }
@@ -294,7 +294,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <driving/>} activity.
      */
-    @XmlRootElement(name = "driving")
+    @XmlRootElement
     public static final class Driving extends SpecificActivity {
         public Driving() {
         }
@@ -307,7 +307,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <fishing/>} activity.
      */
-    @XmlRootElement(name = "fishing")
+    @XmlRootElement
     public static final class Fishing extends SpecificActivity {
         public Fishing() {
         }
@@ -320,7 +320,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <gaming/>} activity.
      */
-    @XmlRootElement(name = "gaming")
+    @XmlRootElement
     public static final class Gaming extends SpecificActivity {
         public Gaming() {
         }
@@ -333,7 +333,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <gardening/>} activity.
      */
-    @XmlRootElement(name = "gardening")
+    @XmlRootElement
     public static final class Gardening extends SpecificActivity {
         public Gardening() {
         }
@@ -478,7 +478,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <hiding/>} activity.
      */
-    @XmlRootElement(name = "hiding")
+    @XmlRootElement
     public static final class Hiding extends SpecificActivity {
         public Hiding() {
         }
@@ -491,7 +491,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <hiking/>} activity.
      */
-    @XmlRootElement(name = "hiking")
+    @XmlRootElement
     public static final class Hiking extends SpecificActivity {
         public Hiking() {
         }
@@ -543,7 +543,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <jogging/>} activity.
      */
-    @XmlRootElement(name = "jogging")
+    @XmlRootElement
     public static final class Jogging extends SpecificActivity {
         public Jogging() {
         }
@@ -662,7 +662,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <partying/>} activity.
      */
-    @XmlRootElement(name = "partying")
+    @XmlRootElement
     public static final class Partying extends SpecificActivity {
         public Partying() {
         }
@@ -688,7 +688,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <praying/>} activity.
      */
-    @XmlRootElement(name = "praying")
+    @XmlRootElement
     public static final class Praying extends SpecificActivity {
         public Praying() {
         }
@@ -701,7 +701,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <reading/>} activity.
      */
-    @XmlRootElement(name = "reading")
+    @XmlRootElement
     public static final class Reading extends SpecificActivity {
         public Reading() {
         }
@@ -714,7 +714,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <rehearsing/>} activity.
      */
-    @XmlRootElement(name = "rehearsing")
+    @XmlRootElement
     public static final class Rehearsing extends SpecificActivity {
         public Rehearsing() {
         }
@@ -727,7 +727,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <running/>} activity.
      */
-    @XmlRootElement(name = "running")
+    @XmlRootElement
     public static final class Running extends SpecificActivity {
         public Running() {
         }
@@ -766,7 +766,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <shaving/>} activity.
      */
-    @XmlRootElement(name = "shaving")
+    @XmlRootElement
     public static final class Shaving extends SpecificActivity {
         public Shaving() {
         }
@@ -779,7 +779,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <shopping/>} activity.
      */
-    @XmlRootElement(name = "shopping")
+    @XmlRootElement
     public static final class Shopping extends SpecificActivity {
         public Shopping() {
         }
@@ -792,7 +792,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <skiing/>} activity.
      */
-    @XmlRootElement(name = "skiing")
+    @XmlRootElement
     public static final class Skiing extends SpecificActivity {
         public Skiing() {
         }
@@ -818,7 +818,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <smoking/>} activity.
      */
-    @XmlRootElement(name = "smoking")
+    @XmlRootElement
     public static final class Smoking extends SpecificActivity {
         public Smoking() {
         }
@@ -831,7 +831,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <socializing/>} activity.
      */
-    @XmlRootElement(name = "socializing")
+    @XmlRootElement
     public static final class Socializing extends SpecificActivity {
         public Socializing() {
         }
@@ -844,7 +844,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <studying/>} activity.
      */
-    @XmlRootElement(name = "studying")
+    @XmlRootElement
     public static final class Studying extends SpecificActivity {
         public Studying() {
         }
@@ -857,7 +857,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <sunbathing/>} activity.
      */
-    @XmlRootElement(name = "sunbathing")
+    @XmlRootElement
     public static final class Sunbathing extends SpecificActivity {
         public Sunbathing() {
         }
@@ -870,7 +870,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <swimming/>} activity.
      */
-    @XmlRootElement(name = "swimming")
+    @XmlRootElement
     public static final class Swimming extends SpecificActivity {
         public Swimming() {
         }
@@ -909,7 +909,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <thinking/>} activity.
      */
-    @XmlRootElement(name = "thinking")
+    @XmlRootElement
     public static final class Thinking extends SpecificActivity {
         public Thinking() {
         }
@@ -922,7 +922,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <walking/>} activity.
      */
-    @XmlRootElement(name = "walking")
+    @XmlRootElement
     public static final class Walking extends SpecificActivity {
         public Walking() {
         }
@@ -987,7 +987,7 @@ public abstract class SpecificActivity {
     /**
      * The specific {@code <writing/>} activity.
      */
-    @XmlRootElement(name = "writing")
+    @XmlRootElement
     public static final class Writing extends SpecificActivity {
         public Writing() {
         }

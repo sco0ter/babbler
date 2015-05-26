@@ -30,12 +30,13 @@ import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import java.time.Instant;
 import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This event notifies listeners, when an entity suggests to add, delete or modify a contact.
  *
  * @author Christian Schudt
- * @see ContactExchangeListener
+ * @see ContactExchangeManager#addContactExchangeListener(Consumer)
  */
 public final class ContactExchangeEvent extends EventObject {
 

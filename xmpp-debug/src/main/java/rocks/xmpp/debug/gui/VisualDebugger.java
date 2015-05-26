@@ -40,13 +40,14 @@ import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.stanza.PresenceListener;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import javax.swing.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,6 +56,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.function.Consumer;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -70,7 +72,7 @@ public final class VisualDebugger implements XmppDebugger {
         initializeLogging();
     }
 
-    private static final Map<Tab, SessionStatusListener> CONNECTION_LISTENER_MAP = new HashMap<>();
+    private static final Map<Tab, Consumer<SessionStatusEvent>> CONNECTION_LISTENER_MAP = new HashMap<>();
 
     private static final Queue<LogRecord> LOG_RECORDS = new ArrayDeque<>();
 
@@ -150,7 +152,7 @@ public final class VisualDebugger implements XmppDebugger {
     @Override
     public void initialize(final XmppSession xmppSession) {
 
-        final SessionStatusListener connectionListener = e -> {
+        final Consumer<SessionStatusEvent> connectionListener = e -> {
             waitForPlatform();
             Platform.runLater(() -> {
                 if (e.getStatus() == XmppSession.Status.CONNECTED && xmppSession.getActiveConnection() != null) {
@@ -168,7 +170,7 @@ public final class VisualDebugger implements XmppDebugger {
         };
         xmppSession.addSessionStatusListener(connectionListener);
 
-        final PresenceListener presenceListener = e -> {
+        final Consumer<PresenceEvent> presenceListener = e -> {
             final Presence presence = e.getPresence();
             if (presence.getTo() == null) {
                 waitForPlatform();

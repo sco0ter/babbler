@@ -28,7 +28,10 @@
  * It defines an XMPP protocol extension for communicating information about how an entity can be reached temporarily using methods other than the entity's normal JID.
  * </p>
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Reachability.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.reach.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

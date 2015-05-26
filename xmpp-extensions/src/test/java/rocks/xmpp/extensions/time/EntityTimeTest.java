@@ -28,9 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.time.model.EntityTime;
-import rocks.xmpp.extensions.time.model.TimeZoneAdapter;
 import rocks.xmpp.core.util.adapters.ZoneOffsetAdapter;
+import rocks.xmpp.extensions.time.model.EntityTime;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -38,9 +37,6 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 /**
  * @author Christian Schudt
@@ -74,40 +70,7 @@ public class EntityTimeTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         EntityTime entityTime = iq.getExtension(EntityTime.class);
         Assert.assertNotNull(entityTime);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(entityTime.getTimezone());
-        calendar.setTime(entityTime.getDate());
-        Assert.assertEquals(calendar.get(Calendar.HOUR_OF_DAY), 11);
-    }
-
-    @Deprecated
-    @Test
-    public void marshalEntityTimeResponse() throws Exception {
-        TimeZone timeZone = TimeZone.getTimeZone("GMT-2:00");
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        calendar.set(Calendar.YEAR, 2014);
-        calendar.set(Calendar.MONTH, Calendar.JANUARY);
-        calendar.set(Calendar.DATE, 7);
-        calendar.set(Calendar.HOUR_OF_DAY, 3);
-        calendar.set(Calendar.MINUTE, 34);
-        calendar.set(Calendar.SECOND, 3);
-        calendar.set(Calendar.MILLISECOND, 1);
-
-        String xml = marshal(new EntityTime(timeZone, calendar.getTime()));
-        Assert.assertEquals(xml, "<time xmlns=\"urn:xmpp:time\"><tzo>-02:00</tzo><utc>2014-01-07T03:34:03.001Z</utc></time>");
-    }
-
-    @Deprecated
-    @Test
-    public void testTimezoneAdapter() throws Exception {
-        TimeZoneAdapter adapter = new TimeZoneAdapter();
-        TimeZone timeZone = TimeZone.getTimeZone("GMT-08:00");
-        String str = adapter.marshal(timeZone);
-        Assert.assertEquals(str, "-08:00");
-
-        TimeZone timeZoneUtc = adapter.unmarshal("Z");
-        Assert.assertEquals(timeZoneUtc, TimeZone.getTimeZone("GMT"));
+        Assert.assertEquals(entityTime.getDateTime().getHour(), 11);
     }
 
     @Test
@@ -122,7 +85,7 @@ public class EntityTimeTest extends XmlTest {
     }
 
     @Test
-    public void marshalEntityTimeResponse2() throws Exception {
+    public void marshalEntityTimeResponse() throws Exception {
         OffsetDateTime offsetDateTime = OffsetDateTime.of(LocalDateTime.of(2015, 3, 22, 20, 48, 11), ZoneOffset.ofHours(-2));
         String xml = marshal(new EntityTime(offsetDateTime));
         Assert.assertEquals(xml, "<time xmlns=\"urn:xmpp:time\"><tzo>-02:00</tzo><utc>2015-03-22T22:48:11Z</utc></time>");

@@ -62,7 +62,6 @@ public final class Failure implements ServerStreamElement {
     })
     private final Condition condition;
 
-    @XmlElement(name = "text")
     private final Text text;
 
     /**
@@ -101,7 +100,7 @@ public final class Failure implements ServerStreamElement {
      */
     public final String getLanguage() {
         if (text != null) {
-            return text.language;
+            return text.lang;
         }
         return null;
     }
@@ -419,12 +418,12 @@ public final class Failure implements ServerStreamElement {
         @XmlValue
         private final String text;
 
-        @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private final String language;
+        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+        private final String lang;
 
         private Text() {
             this.text = null;
-            this.language = null;
+            this.lang = null;
         }
     }
 }

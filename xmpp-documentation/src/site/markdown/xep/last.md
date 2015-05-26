@@ -12,7 +12,7 @@ This XEP defines three use cases:
 
 ## <a name="lastlogout"></a>Getting the Last Logout Date
 
-If you want to find out how long ago a user logged out, you query for the user\'s bare JID. The server should then answer on behalf of the user with the last logout date.
+If you want to find out how long ago a user logged out, you query for the user's bare JID. The server should then answer on behalf of the user with the last logout date.
 
 ```java
 LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
@@ -36,16 +36,13 @@ You can also set the strategy for determining idle time of your session/client. 
 You can set a different strategy for determining idle time:
 
 ```java
-lastActivityManager.setLastActivityStrategy(new LastActivityStrategy() {
-    @Override
-    public Date getLastActivity() {
-        // Return whatever you think is your client's last activity.
-        return new Date();
-    }
+lastActivityManager.setLastActivityStrategy(() -> {
+    // Return whatever you think is your client's last activity.
+    return Instant.now();
 });
 ```
 
-If you don\'t want your XMPP session to respond to last activiy queries, you have to disable `LastActivityManager`, otherwise keep it enabled.
+If you don't want your XMPP session to respond to last activiy queries, you have to disable `LastActivityManager`, otherwise keep it enabled.
 
 ```java
 LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
@@ -69,12 +66,12 @@ LastActivity lastActivity = lastActivityManager.getLastActivity(null);
 
 ## Sending Last Activity in Presence
 
-There\'s also a related specification: [XEP-0256: Last Activity in Presence][Last Activity in Presence], which basically says:
-\"Let\'s just inform my contacts about my last activity automatically, so that they don\'t need to ask me\".
+There's also a related specification: [XEP-0256: Last Activity in Presence][Last Activity in Presence], which basically says:
+"Let's just inform my contacts about my last activity automatically, so that they don't need to ask me".
 
 By default this information is automatically attached to your outbound presence stanzas of type "away" and "dnd".
 
-If you don\'t want it, disable the manager:
+If you don't want it, disable the manager:
 
 ```java
 LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);

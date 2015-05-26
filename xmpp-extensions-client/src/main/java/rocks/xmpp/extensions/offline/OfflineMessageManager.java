@@ -31,7 +31,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.offline.model.OfflineMessage;
@@ -67,7 +66,7 @@ public final class OfflineMessageManager extends ExtensionManager {
     public boolean isSupported() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
-        return infoNode.getFeatures().contains(new Feature(OfflineMessage.NAMESPACE));
+        return infoNode.getFeatures().contains(OfflineMessage.NAMESPACE);
     }
 
     /**

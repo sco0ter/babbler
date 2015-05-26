@@ -55,7 +55,7 @@ XmppSession xmppSession = new XmppSession("domain", tcpConfiguration, boshConfig
 
 During connecting, the session will try all configured connections in order, until a connection is established.
 
-Here\'s an overview over the relation between the session and connections:
+Here's an overview over the relation between the session and connections:
 
 ![Architecture](XmppSession.png)
 
@@ -92,25 +92,18 @@ Here are some examples:
 
 ```java
 // Listen for presence changes
-xmppSession.addInboundPresenceListener(new PresenceListener() {
-    @Override
-    public void handlePresence(PresenceEvent e) {
-        // Handle inbound presence.
-    }
+xmppSession.addInboundPresenceListener(e -> {
+    Presence presence = e.getPresence();
+    // Handle inbound presence.
 });
 // Listen for messages
-xmppSession.addInboundMessageListener(new MessageListener() {
-    @Override
-    public void handleMessage(MessageEvent e) {
-        // Handle inbound message
-    }
+xmppSession.addInboundMessageListener(e -> {
+    Message message = e.getMessage();
+    // Handle inbound message.
 });
 // Listen for roster pushes
-xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
-    @Override
-    public void rosterChanged(RosterEvent e) {
-
-    }
+xmppSession.getManager(RosterManager.class).addRosterListener(e -> {
+    // Roster has changed
 });
 ```
 
@@ -133,7 +126,7 @@ Connecting involves opening the initial XMPP stream header and negotiate any fea
 
 ## Authenticating and Binding a Resource
 
-After connecting, you have to authenticate and bind a resource, in order to become a \"connected resource\". Both steps are understood as \"login\":
+After connecting, you have to authenticate and bind a resource, in order to become a "connected resource". Both steps are understood as "login":
 
 ```java
 try {
@@ -145,15 +138,7 @@ try {
 }
 ```
 
-## Establishing a Presence Session
-
-After you are connected, authenticated and have bound a resource, you should now establish a [presence session](http://xmpp.org/rfcs/rfc6121.html#presence-fundamentals), by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
-
-```java
-xmppSession.send(new Presence());
-```
-
-You are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
+Initial presence is sent automatically, so that you are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
 
 ## Sending a Message
 
@@ -165,7 +150,7 @@ xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHA
 
 ## Changing Availability
 
-If you want to change your presence availability, just send a new presence with a \"show\" value.
+If you want to change your presence availability, just send a new presence with a "show" value.
 
 ```java
 xmppSession.send(new Presence(Presence.Show.AWAY));

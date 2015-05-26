@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.vcard.avatar.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -42,8 +41,7 @@ public final class AvatarUpdate {
      */
     public static final String NAMESPACE = "vcard-temp:x:update";
 
-    @XmlElement(name = "photo")
-    private String hash;
+    private String photo;
 
     /**
      * Creates an empty avatar update element to indicate, we are not yet ready to advertise an image.
@@ -57,7 +55,7 @@ public final class AvatarUpdate {
      * @param hash The hash.
      */
     public AvatarUpdate(String hash) {
-        this.hash = hash;
+        this.photo = hash;
     }
 
     /**
@@ -66,6 +64,6 @@ public final class AvatarUpdate {
      * @return The hash.
      */
     public String getHash() {
-        return hash;
+        return photo;
     }
 }

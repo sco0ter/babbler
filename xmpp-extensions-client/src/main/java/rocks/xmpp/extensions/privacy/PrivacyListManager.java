@@ -25,9 +25,11 @@
 package rocks.xmpp.extensions.privacy;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -39,6 +41,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 
 /**
  * This class manages privacy lists, which allow users to block communications from other users as described in <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
@@ -61,20 +64,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author Christian Schudt
  */
 public final class PrivacyListManager extends ExtensionManager {
-    private final Set<PrivacyListListener> privacyListListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<PrivacyListEvent>> privacyListListeners = new CopyOnWriteArraySet<>();
+
+    private final IQHandler iqHandler;
 
     private PrivacyListManager(final XmppSession xmppSession) {
-        super(xmppSession);
-    }
-
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                privacyListListeners.clear();
-            }
-        });
-        xmppSession.addIQHandler(Privacy.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        super(xmppSession, true);
+        iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
@@ -82,10 +78,7 @@ public final class PrivacyListManager extends ExtensionManager {
                     if (privacy != null) {
                         List<PrivacyList> privacyLists = privacy.getPrivacyLists();
                         if (privacyLists.size() == 1) {
-                            // Notify the listeners about the reception.
-                            for (PrivacyListListener privacyListListener : privacyListListeners) {
-                                privacyListListener.privacyListUpdated(new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
-                            }
+                            XmppUtils.notifyEventListeners(privacyListListeners, new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
                         }
                     }
                     // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
@@ -93,16 +86,29 @@ public final class PrivacyListManager extends ExtensionManager {
                 }
                 return iq.createError(Condition.NOT_ACCEPTABLE);
             }
-        }, false);
+        };
+    }
+
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(Privacy.class, iqHandler, false);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(Privacy.class);
     }
 
     /**
      * Adds a privacy list listener.
      *
      * @param privacyListListener The listener.
-     * @see #removePrivacyListListener(PrivacyListListener)
+     * @see #removePrivacyListListener(Consumer)
      */
-    public void addPrivacyListListener(PrivacyListListener privacyListListener) {
+    public void addPrivacyListListener(Consumer<PrivacyListEvent> privacyListListener) {
         privacyListListeners.add(privacyListListener);
     }
 
@@ -110,9 +116,9 @@ public final class PrivacyListManager extends ExtensionManager {
      * Removes a previously added privacy list listener.
      *
      * @param privacyListListener The listener.
-     * @see #addPrivacyListListener(PrivacyListListener)
+     * @see #addPrivacyListListener(Consumer)
      */
-    public void removePrivacyListListener(PrivacyListListener privacyListListener) {
+    public void removePrivacyListListener(Consumer<PrivacyListEvent> privacyListListener) {
         privacyListListeners.remove(privacyListListener);
     }
 
@@ -233,5 +239,10 @@ public final class PrivacyListManager extends ExtensionManager {
 
     private void setPrivacy(Privacy privacy) throws XmppException {
         xmppSession.query(new IQ(IQ.Type.SET, privacy));
+    }
+
+    @Override
+    protected void dispose() {
+        privacyListListeners.clear();
     }
 }

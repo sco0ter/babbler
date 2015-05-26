@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.commands.model;
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -47,7 +46,7 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0050.html">XEP-0050: Ad-Hoc Commands</a>
  * @see <a href="http://xmpp.org/extensions/xep-0050.html#schema">XML Schema</a>
  */
-@XmlRootElement(name = "command")
+@XmlRootElement
 @XmlSeeAlso({Command.MalformedAction.class, Command.BadAction.class, Command.BadLocale.class, Command.BadPayload.class, Command.BadSessionId.class, Command.SessionExpired.class})
 public final class Command {
 
@@ -56,26 +55,24 @@ public final class Command {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/commands";
 
-    @XmlAttribute(name = "action")
+    @XmlAttribute
     private final Action action;
 
-    @XmlAttribute(name = "node")
+    @XmlAttribute
     private final String node;
 
-    @XmlAttribute(name = "sessionid")
-    private final String sessionId;
+    @XmlAttribute
+    private final String sessionid;
 
-    @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private final String language;
+    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+    private final String lang;
 
-    @XmlAttribute(name = "status")
+    @XmlAttribute
     private final Status status;
 
-    @XmlElement(name = "actions")
     private final Actions actions;
 
-    @XmlElement(name = "note")
-    private final List<Note> notes = new ArrayList<>();
+    private final List<Note> note = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
     private final List<Object> payloads = new ArrayList<>();
@@ -83,10 +80,10 @@ public final class Command {
     private Command() {
         this.action = null;
         this.node = null;
-        this.sessionId = null;
+        this.sessionid = null;
         this.status = null;
         this.actions = null;
-        this.language = null;
+        this.lang = null;
     }
 
     /**
@@ -165,21 +162,21 @@ public final class Command {
      */
     private Command(String node, String sessionId, Action action, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, String language, List<Note> notes) {
         this.node = Objects.requireNonNull(node);
-        this.sessionId = sessionId;
+        this.sessionid = sessionId;
         this.action = action;
         this.status = status;
         if (payloads != null) {
             this.payloads.addAll(payloads);
         }
         if (notes != null) {
-            this.notes.addAll(notes);
+            this.note.addAll(notes);
         }
         if (actions != null) {
             this.actions = new Actions(actions.contains(Action.PREV) ? "" : null, actions.contains(Action.NEXT) ? "" : null, actions.contains(Action.COMPLETE) ? "" : null, defaultAction);
         } else {
             this.actions = null;
         }
-        this.language = language;
+        this.lang = language;
     }
 
     /**
@@ -226,7 +223,7 @@ public final class Command {
      * @return The session id.
      */
     public final String getSessionId() {
-        return sessionId;
+        return sessionid;
     }
 
     /**
@@ -283,7 +280,7 @@ public final class Command {
      * @return The notes.
      */
     public final List<Note> getNotes() {
-        return notes;
+        return note;
     }
 
     /**
@@ -296,7 +293,7 @@ public final class Command {
      * @return The language.
      */
     public final String getLanguage() {
-        return language;
+        return lang;
     }
 
     /**
@@ -357,13 +354,10 @@ public final class Command {
      */
     private static final class Actions {
 
-        @XmlElement(name = "prev")
         private final String prev;
 
-        @XmlElement(name = "next")
         private final String next;
 
-        @XmlElement(name = "complete")
         private final String complete;
 
         @XmlAttribute(name = "execute")
@@ -433,7 +427,7 @@ public final class Command {
         @XmlValue
         private final String value;
 
-        @XmlAttribute(name = "type")
+        @XmlAttribute
         private final Type type;
 
         private Note() {

@@ -150,9 +150,8 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     public void writeAttribute(String prefix, String namespaceURI, String localName, String value) throws XMLStreamException {
         // If an attribute has an extra namespace, we need to write that namespace to the element.
         // Do it only once for each element.
-        if (!nc.currentNamespaceUris.contains(namespaceURI)) {
+        if (nc.currentNamespaceUris.add(namespaceURI)) {
             xsw.writeNamespace(prefix, namespaceURI);
-            nc.currentNamespaceUris.add(namespaceURI);
         }
         xsw.writeAttribute(prefix, namespaceURI, localName, value);
     }

@@ -38,7 +38,7 @@ public final class MoodManager extends ExtensionManager {
     private final PubSubManager pubSubManager;
 
     private MoodManager(XmppSession xmppSession) {
-        super(xmppSession, Mood.NAMESPACE, Mood.NAMESPACE + "notify");
+        super(xmppSession);
         pubSubManager = xmppSession.getManager(PubSubManager.class);
     }
 

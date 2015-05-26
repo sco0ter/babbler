@@ -1,6 +1,23 @@
 # Changelog
 ---
 
+## Version 0.6.0-SNAPSHOT
+
+* Add support for [XEP-0205: Best Practices to Discourage Denial of Service Attacks](http://www.xmpp.org/extensions/xep-0205.html) (error conditions)
+* Add support for [XEP-0301: In-Band Real Time Text](http://www.xmpp.org/extensions/xep-0301.html)
+* Add support for [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
+* Send initial presence automatically during login (no need to do it manually anymore).
+* XEP-0092 Software Version now responds with Babbler's version automatically.
+* Use [Java 8's Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html):
+    * All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda expressions, nothing has changed for you)
+* Use [Java 8's Date-Time API](https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html):
+    * `java.util.TimeZone` has been replaced with `java.time.ZoneOffset`
+    * `java.util.Date` has been replaced with `java.time.OffsetDateTime` or `java.time.Instant`
+* Reduce logging overhead by deferred string building.
+* `Message.Body`, `Message.Subject`, `Presence.Status` classes have been replaced by a common `Text` class, since they are all the same.
+* Add support for [Woodstox JAXB implementation](http://woodstox.codehaus.org/).
+
+
 ## Version 0.5.0 (2015-03-21)
 
 * Add support for [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
@@ -33,7 +50,6 @@
 
 
 ## Version 0.4.0 (2014-11-01)
-
 
 * Add support for [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * Add support for [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
@@ -97,7 +113,7 @@
     * xmpp-client, which contains business logic, used by XMPP clients (e.g. connection logic, roster management, ...)
 * The base `Connection` class is now called `XmppSession`, which can have multiple connection methods. Each connection method is tried while connecting. That way a XMPP session can have a normal `TcpConnection` and an alternative `BoshConnection`, which is tried as fallback.
 * Move Message, Presence and IQ classes from `org.xmpp.stanza` to `org.xmpp.stanza.client package (API change).
-* The \'from\' attribute of roster/privacy lists/blocking command pushes are now checked to prevent IQ spoofing.
+* The 'from' attribute of roster/privacy lists/blocking command pushes are now checked to prevent IQ spoofing.
 * Update [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html) implementation from version 1.7 to 1.8.
 * Provide convenience methods for creating [XEP-0126: Invisibility](http://xmpp.org/extensions/xep-0126.html) privacy lists.
 * Implement `Comparable` interface for `PrivacyList` and `PrivacyRule`.

@@ -69,12 +69,10 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     private boolean localHostEnabled;
 
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
-        super(xmppSession, Socks5ByteStream.NAMESPACE);
+        super(xmppSession);
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
         this.localSocks5Server = new LocalSocks5Server();
-
-        setEnabled(true);
     }
 
     static S5bSession createS5bSession(Jid requester, Jid target, String sessionId, List<StreamHost> streamHosts) throws IOException {
@@ -105,7 +103,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     @Override
     protected void initialize() {
         super.initialize();
-        xmppSession.addIQHandler(Socks5ByteStream.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Socks5ByteStream.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
@@ -114,15 +112,9 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                     // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
                     return iq.createError(Condition.BAD_REQUEST);
                 } else {
-                    notifyByteStreamEvent(new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
+                    XmppUtils.notifyEventListeners(byteStreamListeners, new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
                     return null;
                 }
-            }
-        });
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                // Stop the server, when the session is closed.
-                localSocks5Server.stop();
             }
         });
     }
@@ -167,9 +159,19 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        if (!enabled || !isLocalHostEnabled()) {
+    public void onEnable() {
+        super.onEnable();
+        if (isLocalHostEnabled()) {
+            // Only stop the server here, if we disable support.
+            // It will be enabled, when needed.
+            localSocks5Server.start();
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        if (!isLocalHostEnabled()) {
             // Only stop the server here, if we disable support.
             // It will be enabled, when needed.
             localSocks5Server.stop();
@@ -287,5 +289,11 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         } finally {
             localSocks5Server.removeConnection(hash);
         }
+    }
+
+    @Override
+    protected void dispose() {
+        super.dispose();
+        localSocks5Server.stop();
     }
 }

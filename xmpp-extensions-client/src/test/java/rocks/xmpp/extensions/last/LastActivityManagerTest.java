@@ -30,31 +30,21 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.PresenceListener;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Instant;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
  */
 public class LastActivityManagerTest extends ExtensionTest {
-
-    @Test
-    public void testLastActivityManagerIsCleared() throws Exception {
-        TestXmppSession xmppSession1 = new TestXmppSession();
-        LastActivityManager lastActivityManager = xmppSession1.getManager(LastActivityManager.class);
-        lastActivityManager.setLastActivityStrategy(Instant::now);
-        xmppSession1.close();
-        Assert.assertNull(lastActivityManager.getLastActivityStrategy());
-    }
 
     @Test
     public void testGetLastActivity() throws XmppException {
@@ -85,9 +75,9 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInAwayPresence() {
         final TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addInboundPresenceListener(new PresenceListener() {
+        xmppSession1.addOutboundPresenceListener(new Consumer<PresenceEvent>() {
             @Override
-            public void handlePresence(PresenceEvent e) {
+            public void accept(PresenceEvent e) {
                 xmppSession1.removeInboundPresenceListener(this);
                 Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
             }
@@ -100,7 +90,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInXAPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addInboundPresenceListener(e -> Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null));
+        xmppSession1.addOutboundPresenceListener(e -> Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null));
         xmppSession1.send(new Message(JULIET));
         xmppSession1.send(new Presence(Presence.Show.AWAY));
     }
@@ -109,7 +99,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInChatPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addInboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
+        xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
         xmppSession1.send(new Presence(Presence.Show.CHAT));
     }
 
@@ -117,16 +107,8 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInDndPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addInboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
+        xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
         xmppSession1.send(new Presence(Presence.Show.DND));
-    }
-
-    @Test
-    public void testLastActivityInInitialPresence() {
-        TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addInboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
-        xmppSession1.send(new Presence(Presence.Show.AWAY));
     }
 
     @Test
@@ -136,7 +118,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         // By default, the manager should be enabled.
         Assert.assertTrue(lastActivityManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("jabber:iq:last");
+        String feature = "jabber:iq:last";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         lastActivityManager.setEnabled(false);
         Assert.assertFalse(lastActivityManager.isEnabled());

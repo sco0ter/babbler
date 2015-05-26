@@ -47,8 +47,7 @@ import java.util.Objects;
 public final class VCardManager extends ExtensionManager {
 
     private VCardManager(final XmppSession xmppSession) {
-        super(xmppSession, VCard.NAMESPACE);
-        setEnabled(true);
+        super(xmppSession);
     }
 
     /**

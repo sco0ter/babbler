@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.oob.model.x;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 
@@ -44,11 +43,9 @@ public final class OobX {
      */
     public static final String NAMESPACE = "jabber:x:oob";
 
-    @XmlElement(name = "url")
     private final URL url;
 
-    @XmlElement(name = "desc")
-    private final String description;
+    private final String desc;
 
     private OobX() {
         this(null);
@@ -60,7 +57,7 @@ public final class OobX {
 
     public OobX(URL url, String description) {
         this.url = url;
-        this.description = description;
+        this.desc = description;
     }
 
     /**
@@ -78,7 +75,7 @@ public final class OobX {
      * @return The description.
      */
     public final String getDescription() {
-        return description;
+        return desc;
     }
 
     @Override

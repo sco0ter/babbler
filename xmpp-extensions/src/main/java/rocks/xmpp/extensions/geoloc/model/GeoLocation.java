@@ -28,13 +28,11 @@ import rocks.xmpp.core.util.adapters.ZoneOffsetAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.TimeZone;
 
 /**
  * The implementation of the {@code <geoloc/>} element in the {@code http://jabber.org/protocol/geoloc} namespace.
@@ -54,7 +52,7 @@ import java.util.TimeZone;
  *     .countryCode("de")
  *     .latitude(50.2)
  *     .longitude(7.5)
- *     .timeZone(TimeZone.getTimeZone("GMT+1"))
+ *     .timeZoneOffset(ZoneOffset.of("+01:00"))
  *     .build();
  * }
  * </pre>
@@ -71,74 +69,52 @@ public final class GeoLocation {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/geoloc";
 
-    @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private final String language;
+    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+    private final String lang;
 
-    @XmlElement(name = "accuracy")
     private final Double accuracy;
 
-    @XmlElement(name = "altitude")
     private final Double altitude;
 
-    @XmlElement(name = "area")
     private final String area;
 
-    @XmlElement(name = "bearing")
     private final Double bearing;
 
-    @XmlElement(name = "building")
     private final String building;
 
-    @XmlElement(name = "country")
     private final String country;
 
-    @XmlElement(name = "countrycode")
-    private final String countryCode;
+    private final String countrycode;
 
-    @XmlElement(name = "datum")
     private final String datum;
 
-    @XmlElement(name = "description")
     private final String description;
 
-    @XmlElement(name = "floor")
     private final String floor;
 
-    @XmlElement(name = "lat")
-    private final Double latitude;
+    private final Double lat;
 
-    @XmlElement(name = "locality")
     private final String locality;
 
-    @XmlElement(name = "lon")
-    private final Double longitude;
+    private final Double lon;
 
-    @XmlElement(name = "postalcode")
-    private final String postalCode;
+    private final String postalcode;
 
-    @XmlElement(name = "region")
     private final String region;
 
-    @XmlElement(name = "room")
     private final String room;
 
-    @XmlElement(name = "speed")
     private final Double speed;
 
-    @XmlElement(name = "street")
     private final String street;
 
-    @XmlElement(name = "text")
     private final String text;
 
-    @XmlElement(name = "timestamp")
     private final Instant timestamp;
 
     @XmlJavaTypeAdapter(ZoneOffsetAdapter.class)
-    @XmlElement(name = "tzo")
-    private final ZoneOffset zoneOffset;
+    private final ZoneOffset tzo;
 
-    @XmlElement(name = "uri")
     private final URI uri;
 
     /**
@@ -151,22 +127,22 @@ public final class GeoLocation {
         this.bearing = null;
         this.building = null;
         this.country = null;
-        this.countryCode = null;
+        this.countrycode = null;
         this.datum = null;
         this.description = null;
         this.floor = null;
-        this.language = null;
-        this.latitude = null;
+        this.lang = null;
+        this.lat = null;
         this.locality = null;
-        this.longitude = null;
-        this.postalCode = null;
+        this.lon = null;
+        this.postalcode = null;
         this.region = null;
         this.room = null;
         this.speed = null;
         this.street = null;
         this.text = null;
         this.timestamp = null;
-        this.zoneOffset = null;
+        this.tzo = null;
         this.uri = null;
     }
 
@@ -177,22 +153,22 @@ public final class GeoLocation {
         this.bearing = builder.bearing;
         this.building = builder.building;
         this.country = builder.country;
-        this.countryCode = builder.countryCode;
+        this.countrycode = builder.countryCode;
         this.datum = builder.datum;
         this.description = builder.description;
         this.floor = builder.floor;
-        this.language = builder.language;
-        this.latitude = builder.latitude;
+        this.lang = builder.language;
+        this.lat = builder.latitude;
         this.locality = builder.locality;
-        this.longitude = builder.longitude;
-        this.postalCode = builder.postalCode;
+        this.lon = builder.longitude;
+        this.postalcode = builder.postalCode;
         this.region = builder.region;
         this.room = builder.room;
         this.speed = builder.speed;
         this.street = builder.street;
         this.text = builder.text;
         this.timestamp = builder.timestamp;
-        this.zoneOffset = builder.zoneOffset;
+        this.tzo = builder.zoneOffset;
         this.uri = builder.uri;
     }
 
@@ -265,7 +241,7 @@ public final class GeoLocation {
      * @return The country code.
      */
     public final String getCountryCode() {
-        return countryCode;
+        return countrycode;
     }
 
     /**
@@ -301,7 +277,7 @@ public final class GeoLocation {
      * @return The latitude.
      */
     public final Double getLatitude() {
-        return latitude;
+        return lat;
     }
 
     /**
@@ -319,7 +295,7 @@ public final class GeoLocation {
      * @return The longitude.
      */
     public final Double getLongitude() {
-        return longitude;
+        return lon;
     }
 
     /**
@@ -328,7 +304,7 @@ public final class GeoLocation {
      * @return The postal code.
      */
     public final String getPostalCode() {
-        return postalCode;
+        return postalcode;
     }
 
     /**
@@ -400,18 +376,7 @@ public final class GeoLocation {
      * @return The language.
      */
     public final String getLanguage() {
-        return language;
-    }
-
-    /**
-     * Gets the time zone offset from UTC for the current location.
-     *
-     * @return The time zone offset.
-     * @deprecated Use {@link #getTimeZoneOffset()}
-     */
-    @Deprecated
-    public final TimeZone getTimeZone() {
-        return TimeZone.getTimeZone(zoneOffset);
+        return lang;
     }
 
     /**
@@ -420,7 +385,7 @@ public final class GeoLocation {
      * @return The time zone offset.
      */
     public final ZoneOffset getTimeZoneOffset() {
-        return zoneOffset;
+        return tzo;
     }
 
     @Override
@@ -456,9 +421,9 @@ public final class GeoLocation {
             sb.append(country);
             sb.append("; ");
         }
-        if (countryCode != null) {
+        if (countrycode != null) {
             sb.append("Country Code: ");
-            sb.append(countryCode);
+            sb.append(countrycode);
             sb.append("; ");
         }
         if (datum != null) {
@@ -476,9 +441,9 @@ public final class GeoLocation {
             sb.append(floor);
             sb.append("; ");
         }
-        if (latitude != null) {
+        if (lat != null) {
             sb.append("Latitude: ");
-            sb.append(latitude);
+            sb.append(lat);
             sb.append("; ");
         }
         if (locality != null) {
@@ -486,14 +451,14 @@ public final class GeoLocation {
             sb.append(locality);
             sb.append("; ");
         }
-        if (longitude != null) {
+        if (lon != null) {
             sb.append("Longitude: ");
-            sb.append(longitude);
+            sb.append(lon);
             sb.append("; ");
         }
-        if (postalCode != null) {
+        if (postalcode != null) {
             sb.append("Postal Code: ");
-            sb.append(postalCode);
+            sb.append(postalcode);
             sb.append("; ");
         }
         if (region != null) {
@@ -526,9 +491,9 @@ public final class GeoLocation {
             sb.append(timestamp);
             sb.append("; ");
         }
-        if (zoneOffset != null) {
+        if (tzo != null) {
             sb.append("Time Zone: ");
-            sb.append(zoneOffset);
+            sb.append(tzo);
             sb.append("; ");
         }
         if (uri != null) {
@@ -821,22 +786,6 @@ public final class GeoLocation {
          */
         public Builder timestamp(Instant timestamp) {
             this.timestamp = timestamp;
-            return this;
-        }
-
-        /**
-         * Sets the time zone offset from UTC for the current location.
-         *
-         * @param timeZone The time zone offset.
-         * @return The builder.
-         * @deprecated Use {@link #timeZoneOffset(java.time.ZoneOffset)}
-         */
-        @Deprecated
-        public Builder timeZone(TimeZone timeZone) {
-            int seconds = Math.abs(timeZone.getRawOffset()) / 1000;
-            int hours = seconds / 3600;
-            int minutes = (seconds % 3600) / 60;
-            this.zoneOffset = ZoneOffset.of((timeZone.getRawOffset() < 0 ? "-" : "+") + String.format("%02d:%02d", hours, minutes));
             return this;
         }
 

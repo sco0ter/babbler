@@ -38,7 +38,7 @@ import java.util.Objects;
  */
 final class Item {
 
-    @XmlAttribute(name = "jid")
+    @XmlAttribute
     private Jid jid;
 
     private Item() {

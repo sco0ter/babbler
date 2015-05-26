@@ -29,7 +29,6 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.amp.model.errors.FailedRules;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
@@ -55,19 +54,18 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/amp";
 
-    @XmlElement(name = "rule")
-    private final List<Rule> rules = new ArrayList<>();
+    private final List<Rule> rule = new ArrayList<>();
 
-    @XmlAttribute(name = "from")
+    @XmlAttribute
     private final Jid from;
 
     @XmlAttribute(name = "per-hop")
     private final Boolean perHop;
 
-    @XmlAttribute(name = "status")
+    @XmlAttribute
     private final Rule.Action status;
 
-    @XmlAttribute(name = "to")
+    @XmlAttribute
     private final Jid to;
 
     private AdvancedMessageProcessing() {
@@ -102,7 +100,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      * @param perHop The per-hop attribute.
      */
     public AdvancedMessageProcessing(List<Rule> rules, Boolean perHop) {
-        this.rules.addAll(rules);
+        this.rule.addAll(rules);
         this.perHop = perHop;
         this.status = null;
         this.from = null;
@@ -118,7 +116,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      * @param to     The to attribute.
      */
     public AdvancedMessageProcessing(List<Rule> rules, Rule.Action status, Jid from, Jid to) {
-        this.rules.addAll(rules);
+        this.rule.addAll(rules);
         this.perHop = null;
         this.status = status;
         this.from = from;
@@ -131,7 +129,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      * @return The rules.
      */
     public final List<Rule> getRules() {
-        return Collections.unmodifiableList(rules);
+        return Collections.unmodifiableList(rule);
     }
 
     /**

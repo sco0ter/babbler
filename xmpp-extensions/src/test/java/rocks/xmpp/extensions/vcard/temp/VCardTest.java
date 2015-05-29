@@ -110,7 +110,7 @@ public class VCardTest extends XmlTest {
         Assert.assertEquals(vCard.getName().getFamilyName(), "Saint-Andre");
         Assert.assertEquals(vCard.getName().getGivenName(), "Peter");
         Assert.assertEquals(vCard.getName().getMiddleName(), "");
-        Assert.assertEquals(vCard.getNickName(), "stpeter");
+        Assert.assertEquals(vCard.getNickname(), "stpeter");
         Assert.assertEquals(vCard.getUrl().toString(), new URL("http://www.xmpp.org/xsf/people/stpeter.shtml").toString());
         Assert.assertEquals(vCard.getBirthday().getYear(), 1966);
         Assert.assertEquals(vCard.getBirthday().getMonth(), Month.AUGUST);

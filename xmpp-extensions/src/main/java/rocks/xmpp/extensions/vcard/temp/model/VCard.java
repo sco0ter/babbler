@@ -80,7 +80,7 @@ public final class VCard {
      * To specify the text corresponding to the nickname of the object the vCard represents.
      */
     @XmlElement(name = "NICKNAME")
-    private String nickName;
+    private String nickname;
 
     /**
      * To specify an image or photograph information that annotates some aspect of the object the vCard represents.
@@ -279,23 +279,23 @@ public final class VCard {
     }
 
     /**
-     * Gets the nick name.
+     * Gets the nickname.
      *
-     * @return The nick name.
-     * @see #setNickName(String)
+     * @return The nickname.
+     * @see #setNickname(String)
      */
-    public String getNickName() {
-        return nickName;
+    public String getNickname() {
+        return nickname;
     }
 
     /**
-     * Sets the nick name.
+     * Sets the nickname.
      *
-     * @param nickName The nick name.
-     * @see #getNickName()
+     * @param nickname The nickname.
+     * @see #getNickname()
      */
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**

@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import rocks.xmpp.extensions.vcard.temp.model.VCardTemp;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -41,9 +41,9 @@ import java.time.Month;
 /**
  * @author Christian Schudt
  */
-public class VCardTest extends XmlTest {
-    protected VCardTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, VCard.class);
+public class VCardTempTest extends XmlTest {
+    protected VCardTempTest() throws JAXBException, XMLStreamException {
+        super(IQ.class, VCardTemp.class);
     }
 
     @Test
@@ -103,21 +103,21 @@ public class VCardTest extends XmlTest {
                 "</iq>\n";
 
         IQ iq = unmarshal(xml, IQ.class);
-        VCard vCard = iq.getExtension(VCard.class);
+        VCardTemp vCard = iq.getExtension(VCardTemp.class);
         Assert.assertNotNull(vCard);
         Assert.assertEquals(vCard.getFormattedName(), "Peter Saint-Andre");
         Assert.assertNotNull(vCard.getName());
         Assert.assertEquals(vCard.getName().getFamilyName(), "Saint-Andre");
         Assert.assertEquals(vCard.getName().getGivenName(), "Peter");
         Assert.assertEquals(vCard.getName().getMiddleName(), "");
-        Assert.assertEquals(vCard.getNickName(), "stpeter");
+        Assert.assertEquals(vCard.getNickname(), "stpeter");
         Assert.assertEquals(vCard.getUrl().toString(), new URL("http://www.xmpp.org/xsf/people/stpeter.shtml").toString());
         Assert.assertEquals(vCard.getBirthday().getYear(), 1966);
         Assert.assertEquals(vCard.getBirthday().getMonth(), Month.AUGUST);
         Assert.assertEquals(vCard.getBirthday().getDayOfMonth(), 6);
         Assert.assertNotNull(vCard.getOrganization());
-        Assert.assertEquals(vCard.getOrganization().getOrganizationName(), "XMPP Standards Foundation");
-        Assert.assertEquals(vCard.getOrganization().getOrgUnits().size(), 1);
+        Assert.assertEquals(vCard.getOrganization().getName(), "XMPP Standards Foundation");
+        Assert.assertEquals(vCard.getOrganization().getUnits().size(), 1);
         Assert.assertEquals(vCard.getTitle(), "Executive Director");
         Assert.assertEquals(vCard.getRole(), "Patron Saint");
 
@@ -153,14 +153,14 @@ public class VCardTest extends XmlTest {
 
     @Test
     public void marshalVCard() throws JAXBException, XMLStreamException {
-        VCard vCard = new VCard();
+        VCardTemp vCard = new VCardTemp();
         String xml = marshal(vCard);
         Assert.assertEquals("<vCard xmlns=\"vcard-temp\" version=\"3.0\"></vCard>", xml);
     }
 
     @Test
     public void marshalBirthDayVCard() throws JAXBException, XMLStreamException {
-        VCard vCard = new VCard();
+        VCardTemp vCard = new VCardTemp();
         LocalDate localDate = LocalDate.of(2004, Month.MARCH, 19);
         vCard.setBirthday(localDate);
         String xml = marshal(vCard);

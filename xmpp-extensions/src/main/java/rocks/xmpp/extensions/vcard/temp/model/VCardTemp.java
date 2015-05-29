@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.vcard.temp.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.extensions.vcard.VCard;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -36,8 +37,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.net.URL;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +51,7 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0054.html#dtd">DTD</a>
  */
 @XmlRootElement(name = "vCard")
-public final class VCard {
+public final class VCardTemp implements VCard {
 
     /**
      * vcard-temp
@@ -80,7 +81,7 @@ public final class VCard {
      * To specify the text corresponding to the nickname of the object the vCard represents.
      */
     @XmlElement(name = "NICKNAME")
-    private String nickName;
+    private String nickname;
 
     /**
      * To specify an image or photograph information that annotates some aspect of the object the vCard represents.
@@ -147,7 +148,7 @@ public final class VCard {
      * To specify information related to the time zone of the object the vCard represents.
      */
     @XmlElement(name = "TZ")
-    private String timezone;
+    private ZoneId timezone;
 
     /**
      * To specify information related to the global positioning of the object the vCard represents.
@@ -202,7 +203,7 @@ public final class VCard {
      * To specify revision information about the current vCard.
      */
     @XmlElement(name = "REV")
-    private Instant revision;
+    private String revision;
 
     /**
      * To specify the family name or given name text to be used for national-language-specific sorting of the FN and N types.
@@ -262,7 +263,7 @@ public final class VCard {
      * Gets the name.
      *
      * @return The name.
-     * @see #setName(VCard.Name)
+     * @see #setName(VCardTemp.Name)
      */
     public Name getName() {
         return name;
@@ -282,27 +283,28 @@ public final class VCard {
      * Gets the nick name.
      *
      * @return The nick name.
-     * @see #setNickName(String)
+     * @see #setNickname(String)
      */
-    public String getNickName() {
-        return nickName;
+    @Override
+    public String getNickname() {
+        return nickname;
     }
 
     /**
      * Sets the nick name.
      *
-     * @param nickName The nick name.
-     * @see #getNickName()
+     * @param nickname The nick name.
+     * @see #getNickname()
      */
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**
      * Gets the photo.
      *
      * @return Either a URL to a photo or a base64 encoded photo.
-     * @see #setPhoto(VCard.Image)
+     * @see #setPhoto(VCardTemp.Image)
      */
     public Image getPhoto() {
         return photo;
@@ -324,6 +326,7 @@ public final class VCard {
      * @return The birth day.
      * @see #setBirthday(LocalDate)
      */
+    @Override
     public LocalDate getBirthday() {
         return birthday;
     }
@@ -344,8 +347,14 @@ public final class VCard {
      * @return The URL.
      * @see #setUrl(java.net.URL)
      */
+    @Override
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public String getVersion() {
+        return version;
     }
 
     /**
@@ -362,8 +371,9 @@ public final class VCard {
      * Gets the organization.
      *
      * @return The organization.
-     * @see #setOrganization(VCard.Organization)
+     * @see #setOrganization(VCardTemp.Organization)
      */
+    @Override
     public Organization getOrganization() {
         return organization;
     }
@@ -383,6 +393,7 @@ public final class VCard {
      *
      * @return The addresses.
      */
+    @Override
     public List<Address> getAddresses() {
         if (addresses == null) {
             addresses = new ArrayList<>();
@@ -400,6 +411,11 @@ public final class VCard {
             telephoneNumbers = new ArrayList<>();
         }
         return telephoneNumbers;
+    }
+
+    @Override
+    public List<? extends VCard.Email> getEmailAddresses() {
+        return emails;
     }
 
     /**
@@ -470,9 +486,10 @@ public final class VCard {
      * Gets the time zone.
      *
      * @return The time zone.
-     * @see #setTimeZone(String)
+     * @see #setTimeZone(ZoneId)
      */
-    public String getTimeZone() {
+    @Override
+    public ZoneId getTimeZone() {
         return timezone;
     }
 
@@ -482,7 +499,7 @@ public final class VCard {
      * @param timezone The time zone.
      * @see #getTimeZone()
      */
-    public void setTimeZone(String timezone) {
+    public void setTimeZone(ZoneId timezone) {
         this.timezone = timezone;
     }
 
@@ -490,10 +507,12 @@ public final class VCard {
      * Gets information related to the global positioning of the object the vCard represents.
      *
      * @return The geo location.
-     * @see #setGeo(VCard.Geo)
+     * @see #setGeo(VCardTemp.Geo)
      */
-    public Geo getGeo() {
-        return geo;
+    @Override
+    public URI getGeo() {
+        // TODO: The "geo" URI scheme [RFC5870]
+        return null;
     }
 
     /**
@@ -512,6 +531,7 @@ public final class VCard {
      * @return The title.
      * @see #setTitle(String)
      */
+    @Override
     public String getTitle() {
         return title;
     }
@@ -532,6 +552,7 @@ public final class VCard {
      * @return The role.
      * @see #setRole(String)
      */
+    @Override
     public String getRole() {
         return role;
     }
@@ -570,7 +591,7 @@ public final class VCard {
      * Gets the logo.
      *
      * @return Either an URL to an image or a base64 encoded image.
-     * @see #setLogo(VCard.Image)
+     * @see #setLogo(VCardTemp.Image)
      */
     public Image getLogo() {
         return logo;
@@ -591,6 +612,7 @@ public final class VCard {
      *
      * @return The categories.
      */
+    @Override
     public List<String> getCategories() {
         if (categories == null) {
             categories = new ArrayList<>();
@@ -604,6 +626,7 @@ public final class VCard {
      * @return The note.
      * @see #setNote(String)
      */
+    @Override
     public String getNote() {
         return note;
     }
@@ -642,9 +665,9 @@ public final class VCard {
      * Gets revision information about the current vCard.
      *
      * @return The revision.
-     * @see #setRevision(Instant)
+     * @see #setRevision(String)
      */
-    public Instant getRevision() {
+    public String getRevision() {
         return revision;
     }
 
@@ -654,7 +677,7 @@ public final class VCard {
      * @param revision The revision information.
      * @see #getRevision()
      */
-    public void setRevision(Instant revision) {
+    public void setRevision(String revision) {
         this.revision = revision;
     }
 
@@ -724,7 +747,7 @@ public final class VCard {
      * Gets the authentication credential or encryption key.
      *
      * @return The key.
-     * @see #setKey(VCard.Key)
+     * @see #setKey(VCardTemp.Key)
      */
     public Key getKey() {
         return key;
@@ -841,7 +864,7 @@ public final class VCard {
     /**
      * Represents structured address data.
      */
-    public static final class Address extends AbstractAddress {
+    public static final class Address extends AbstractAddress implements VCard.Address {
         // The default is "TYPE=intl,postal,parcel,work".
 
         @XmlElement(name = "POBOX")
@@ -919,6 +942,7 @@ public final class VCard {
          * @return The post office box.
          * @see #setPostOfficeBox(String)
          */
+        @Override
         public String getPostOfficeBox() {
             return postOfficeBox;
         }
@@ -939,6 +963,7 @@ public final class VCard {
          * @return The extended address.
          * @see #setExtendedAddress(String)
          */
+        @Override
         public String getExtendedAddress() {
             return extendedAddress;
         }
@@ -959,6 +984,7 @@ public final class VCard {
          * @return The street.
          * @see #setStreet(String)
          */
+        @Override
         public String getStreet() {
             return street;
         }
@@ -979,6 +1005,7 @@ public final class VCard {
          * @return The city.
          * @see #setCity(String)
          */
+        @Override
         public String getCity() {
             return city;
         }
@@ -999,6 +1026,7 @@ public final class VCard {
          * @return The region.
          * @see #setRegion(String)
          */
+        @Override
         public String getRegion() {
             return region;
         }
@@ -1019,6 +1047,7 @@ public final class VCard {
          * @return The postal code.
          * @see #setPostalCode(String)
          */
+        @Override
         public String getPostalCode() {
             return postalCode;
         }
@@ -1039,6 +1068,7 @@ public final class VCard {
          * @return The country.
          * @see #setCountry(String)
          */
+        @Override
         public String getCountry() {
             return country;
         }
@@ -1289,7 +1319,7 @@ public final class VCard {
     /**
      * Represents a telephone number.
      */
-    public static class TelephoneNumber extends ContactData {
+    public static class TelephoneNumber extends ContactData implements VCard.TelephoneNumber {
 
         /**
          * to indicate the telephone number has voice messaging support
@@ -1609,6 +1639,7 @@ public final class VCard {
          * @return The telephone number.
          * @see #setNumber(String)
          */
+        @Override
         public String getNumber() {
             return number;
         }
@@ -1627,7 +1658,7 @@ public final class VCard {
     /**
      * Represents an email address.
      */
-    public static final class Email extends Preferable {
+    public static final class Email extends Preferable implements VCard.Email {
 
         /**
          * to indicate an Internet addressing type
@@ -1737,7 +1768,7 @@ public final class VCard {
     /**
      * Represents an organization.
      */
-    public static final class Organization {
+    public static final class Organization implements VCard.Organization {
 
         @XmlElement(name = "ORGNAME")
         private String organizationName;
@@ -1763,9 +1794,10 @@ public final class VCard {
          * Gets the organization name.
          *
          * @return The organization name.
-         * @see #setOrganizationName(String)
+         * @see #setName(String)
          */
-        public String getOrganizationName() {
+        @Override
+        public String getName() {
             return organizationName;
         }
 
@@ -1773,9 +1805,9 @@ public final class VCard {
          * Sets the organization name.
          *
          * @param organizationName organization name.
-         * @see #getOrganizationName()
+         * @see #getName()
          */
-        public void setOrganizationName(String organizationName) {
+        public void setName(String organizationName) {
             this.organizationName = organizationName;
         }
 
@@ -1784,7 +1816,8 @@ public final class VCard {
          *
          * @return The units.
          */
-        public List<String> getOrgUnits() {
+        @Override
+        public List<String> getUnits() {
             return orgUnits;
         }
     }
@@ -1792,7 +1825,7 @@ public final class VCard {
     /**
      * Represents a name.
      */
-    public static final class Name {
+    public static final class Name implements VCard.Name {
         @XmlElement(name = "FAMILY")
         private String familyName;
 
@@ -1845,6 +1878,7 @@ public final class VCard {
          * @return The family name.
          * @see #setFamilyName(String)
          */
+        @Override
         public String getFamilyName() {
             return familyName;
         }
@@ -1865,6 +1899,7 @@ public final class VCard {
          * @return The given name.
          * @see #setGivenName(String)
          */
+        @Override
         public String getGivenName() {
             return givenName;
         }
@@ -1885,6 +1920,7 @@ public final class VCard {
          * @return The middle name.
          * @see #setMiddleName(String)
          */
+        @Override
         public String getMiddleName() {
             return middleName;
         }
@@ -1905,6 +1941,7 @@ public final class VCard {
          * @return The prefix.
          * @see #setPrefix(String)
          */
+        @Override
         public String getPrefix() {
             return prefix;
         }
@@ -1925,6 +1962,7 @@ public final class VCard {
          * @return The suffix.
          * @see #setSuffix(String)
          */
+        @Override
         public String getSuffix() {
             return suffix;
         }

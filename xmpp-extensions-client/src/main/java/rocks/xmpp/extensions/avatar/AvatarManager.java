@@ -47,7 +47,7 @@ import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
-import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import rocks.xmpp.extensions.vcard.temp.model.VCardTemp;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -383,7 +383,7 @@ public final class AvatarManager extends ExtensionManager {
                     VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
 
                     // Load the vCard for that user
-                    VCard vCard;
+                    VCardTemp vCard;
                     try {
                         if (contact.equals(xmppSession.getConnectedResource().asBareJid())) {
                             vCard = vCardManager.getVCard();
@@ -399,7 +399,7 @@ public final class AvatarManager extends ExtensionManager {
                     }
                     if (vCard != null) {
                         // And check if it has a photo.
-                        VCard.Image image = vCard.getPhoto();
+                        VCardTemp.Image image = vCard.getPhoto();
                         if (image != null && image.getValue() != null) {
                             hash = XmppUtils.hash(image.getValue());
                             if (hash != null) {
@@ -533,12 +533,12 @@ public final class AvatarManager extends ExtensionManager {
      */
     private void publishToVCard(byte[] avatar, String type, String hash) throws XmppException {
 
-        VCard vCard;
+        VCardTemp vCard;
         try {
             vCard = vCardManager.getVCard();
         } catch (StanzaException e) {
             // If there's no vCard yet (e.g. <item-not-found/>), create a new one.
-            vCard = new VCard();
+            vCard = new VCardTemp();
         }
 
         if (avatar != null) {
@@ -548,7 +548,7 @@ public final class AvatarManager extends ExtensionManager {
             if (vCard.getPhoto() == null || !Arrays.equals(vCard.getPhoto().getValue(), avatar)) {
                 userHashes.put(xmppSession.getConnectedResource().asBareJid(), hash);
                 // If either there is avatar yet, or the old avatar is different from the new one: update
-                vCard.setPhoto(new VCard.Image(type, avatar));
+                vCard.setPhoto(new VCardTemp.Image(type, avatar));
                 vCardManager.setVCard(vCard);
             }
         } else {

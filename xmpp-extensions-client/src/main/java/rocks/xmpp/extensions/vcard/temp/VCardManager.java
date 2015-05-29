@@ -32,7 +32,7 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.avatar.AvatarManager;
-import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import rocks.xmpp.extensions.vcard.temp.model.VCardTemp;
 
 import java.util.Objects;
 
@@ -57,9 +57,9 @@ public final class VCardManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public VCard getVCard() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
-        return result.getExtension(VCard.class);
+    public VCardTemp getVCard() throws XmppException {
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCardTemp()));
+        return result.getExtension(VCardTemp.class);
     }
 
     /**
@@ -69,7 +69,7 @@ public final class VCardManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void setVCard(VCard vCard) throws XmppException {
+    public void setVCard(VCardTemp vCard) throws XmppException {
         // Update the vCard
         xmppSession.query(new IQ(IQ.Type.SET, vCard));
 
@@ -93,9 +93,9 @@ public final class VCardManager extends ExtensionManager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public VCard getVCard(Jid jid) throws XmppException {
+    public VCardTemp getVCard(Jid jid) throws XmppException {
         Objects.requireNonNull(jid, "jid must not be null.");
-        IQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
-        return result.getExtension(VCard.class);
+        IQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCardTemp()));
+        return result.getExtension(VCardTemp.class);
     }
 }

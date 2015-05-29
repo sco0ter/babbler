@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 Christian Schudt
+ * Copyright (c) 2014-2015 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,23 @@
  * THE SOFTWARE.
  */
 
-/**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>.
- * <p>
- * It provides canonical documentation of the vCard-XML format currently in use within the Jabber community.
- * </p>
- */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = VCard4.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.vcard.v4;
+package rocks.xmpp.core.util.adapters;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.time.LocalDate;
+
+/**
+ * @author Christian Schudt
+ */
+public final class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
+
+    @Override
+    public final LocalDate unmarshal(String value) throws Exception {
+        return value != null ? LocalDate.parse(value) : null;
+    }
+
+    @Override
+    public final String marshal(LocalDate value) throws Exception {
+        return value != null ? value.toString() : null;
+    }
+}

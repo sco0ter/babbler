@@ -22,7 +22,10 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.vcard.v4;
+package rocks.xmpp.extensions.vcard.v4.model;
+
+import rocks.xmpp.core.util.adapters.LocalDateAdapter;
+import rocks.xmpp.extensions.vcard.VCard;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -34,27 +37,40 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * @author Christian Schudt
  */
 @XmlRootElement(name = "vcard")
-public final class VCard4 {
+public final class VCard4 implements VCard {
 
     /**
      * urn:ietf:params:xml:ns:vcard-4.0
      */
     public static final String NAMESPACE = "urn:ietf:params:xml:ns:vcard-4.0";
 
+    /*
+     +-------------+--------------------------------------------------+
+     | Cardinality | Meaning                                          |
+     +-------------+--------------------------------------------------+
+     |      1      | Exactly one instance per vCard MUST be present.  |
+     |      *1     | Exactly one instance per vCard MAY be present.   |
+     |      1*     | One or more instances per vCard MUST be present. |
+     |      *      | One or more instances per vCard MAY be present.  |
+     +-------------+--------------------------------------------------+
+     */
+
     /**
      * Cardinality:  1*
      */
     @XmlElement(name = "fn")
     @XmlJavaTypeAdapter(TextAdapter.class)
-    private List<String> formattedNames;
+    private String formattedName;
 
     /**
      * Cardinality:  *1
@@ -67,7 +83,7 @@ public final class VCard4 {
      */
     @XmlElement(name = "nickname")
     @XmlJavaTypeAdapter(TextAdapter.class)
-    private List<String> nicknames;
+    private String nickname;
 
     /**
      * Cardinality:  *
@@ -80,7 +96,7 @@ public final class VCard4 {
      */
     @XmlElement(name = "bday")
     @XmlJavaTypeAdapter(DateAdapter.class)
-    private Date birthday;
+    private LocalDate birthday;
 
     /**
      * Cardinality:  *1
@@ -90,12 +106,13 @@ public final class VCard4 {
     /**
      * Cardinality:  *1
      */
-    private String gender;
+    private Gender gender;
 
     /**
      * Cardinality:  *
      */
-    private List<Address> addresses;
+    @XmlElement(name = "adr")
+    private final List<Address> addresses = new ArrayList<>();
 
     /**
      * Cardinality:  *
@@ -105,7 +122,6 @@ public final class VCard4 {
     /**
      * Cardinality:  *
      */
-
     @XmlElement(name = "email")
     private List<EmailAddress> email;
 
@@ -123,23 +139,24 @@ public final class VCard4 {
      * Cardinality:  *
      */
     @XmlElement(name = "tz")
-    private List<TimeZone> timeZone;
+    @XmlJavaTypeAdapter(ZoneIdAdapter.class)
+    private ZoneId timeZone;
 
     /**
      * Cardinality:  *
      */
     @XmlElement(name = "geo")
-    private List<URI> geo;
+    private URI geo;
 
     /**
      * Cardinality:  *
      */
-    private List<String> title;
+    private String title;
 
     /**
      * Cardinality:  *
      */
-    private List<String> role;
+    private String role;
 
     /**
      * Cardinality:  *
@@ -149,7 +166,7 @@ public final class VCard4 {
     /**
      * Cardinality:  *
      */
-    private List<String> org;
+    private Organization org;
 
     /**
      * Cardinality:  *
@@ -164,14 +181,14 @@ public final class VCard4 {
     /**
      * Cardinality:  *
      */
-    private List<Object> categories;
+    private List<String> categories;
 
     /**
      * Cardinality:  *
      */
     @XmlElement(name = "note")
     @XmlJavaTypeAdapter(TextAdapter.class)
-    private List<String> notes;
+    private String note;
 
     /**
      * Cardinality:  *1
@@ -201,7 +218,8 @@ public final class VCard4 {
     /**
      * Cardinality:  *
      */
-    private List<URL> url;
+    @XmlJavaTypeAdapter(UriAdapter.class)
+    private URL url;
 
     /**
      * Cardinality:  1
@@ -211,7 +229,7 @@ public final class VCard4 {
     /**
      * Cardinality:  *
      */
-    private List<URI> key;
+    private URI key;
 
     /**
      * Cardinality:  *
@@ -228,32 +246,102 @@ public final class VCard4 {
      */
     private List<URI> calUri;
 
-    public List<String> getNotes() {
-        return notes;
-    }
-
+    @Override
     public List<EmailAddress> getEmailAddresses() {
         return email;
     }
 
-    public List<String> getFormattedNames() {
-        return formattedNames;
+    @Override
+    public String getFormattedName() {
+        return formattedName;
     }
 
-    public List<String> getNicknames() {
-        return nicknames;
-    }
-
+    @Override
     public Name getName() {
         return name;
+    }
+
+    @Override
+    public String getNickname() {
+        return nickname;
     }
 
     public List<Photo> getPhotos() {
         return photos;
     }
 
-    public Date getBirthday() {
+    @Override
+    public LocalDate getBirthday() {
         return birthday;
+    }
+
+    @Override
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    @Override
+    public List<TelephoneNumber> getTelephoneNumbers() {
+        return null;
+    }
+
+    @Override
+    public ZoneId getTimeZone() {
+        return timeZone;
+    }
+
+    @Override
+    public URI getGeo() {
+        return geo;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String getRole() {
+        return role;
+    }
+
+    @Override
+    public Organization getOrganization() {
+        return org;
+    }
+
+    @Override
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    @Override
+    public String getNote() {
+        return note;
+    }
+
+    @Override
+    public String getProductId() {
+        return prodId;
+    }
+
+    @Override
+    public String getRevision() {
+        return revision;
+    }
+
+    @Override
+    public URL getUrl() {
+        return url;
+    }
+
+    @Override
+    public String getVersion() {
+        return version;
+    }
+
+    public Gender getGender() {
+        return gender;
     }
 
     public enum Type {
@@ -261,6 +349,17 @@ public final class VCard4 {
         WORK,
         @XmlEnumValue("home")
         HOME
+    }
+
+    public static final class Gender {
+
+        private Sex sex;
+
+        private String identity;
+
+        public Sex getSex() {
+            return sex;
+        }
     }
 
     public enum Sex {
@@ -297,7 +396,7 @@ public final class VCard4 {
         TEXTPHONE
     }
 
-    public static final class Name {
+    public static final class Name implements VCard.Name {
         @XmlElement(name = "surname")
         private String surname;
 
@@ -313,22 +412,27 @@ public final class VCard4 {
         @XmlElement(name = "suffix")
         private String suffix;
 
-        public String getSurname() {
+        @Override
+        public String getFamilyName() {
             return surname;
         }
 
+        @Override
         public String getGivenName() {
             return givenName;
         }
 
-        public String getAdditionalName() {
+        @Override
+        public String getMiddleName() {
             return additionalName;
         }
 
+        @Override
         public String getPrefix() {
             return prefix;
         }
 
+        @Override
         public String getSuffix() {
             return suffix;
         }
@@ -343,7 +447,7 @@ public final class VCard4 {
         }
     }
 
-    private static final class Address {
+    private static final class Address implements VCard.Address {
 
         @XmlElement(name = "pobox")
         private String postBox;
@@ -365,6 +469,41 @@ public final class VCard4 {
 
         @XmlElement(name = "country")
         private String country;
+
+        @Override
+        public String getPostOfficeBox() {
+            return postBox;
+        }
+
+        @Override
+        public String getExtendedAddress() {
+            return ext;
+        }
+
+        @Override
+        public String getStreet() {
+            return street;
+        }
+
+        @Override
+        public String getCity() {
+            return locality;
+        }
+
+        @Override
+        public String getRegion() {
+            return region;
+        }
+
+        @Override
+        public String getPostalCode() {
+            return postalCode;
+        }
+
+        @Override
+        public String getCountry() {
+            return country;
+        }
     }
 
     @XmlTransient
@@ -381,14 +520,28 @@ public final class VCard4 {
         }
     }
 
-    public static final class EmailAddress extends Parameterizable {
+    public static final class EmailAddress extends Parameterizable implements VCard.Email {
         @XmlElement(name = "text")
         private String text;
 
-        public String getEmailAddress() {
+        @Override
+        public String getEmail() {
             return text;
         }
 
+    }
+
+    public static final class Organization implements VCard.Organization {
+
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public List<String> getUnits() {
+            return null;
+        }
     }
 
     @XmlTransient
@@ -460,13 +613,26 @@ public final class VCard4 {
 
     private static class DateValue {
         @XmlElement(name = "date")
-        private Date date;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        private LocalDate date;
 
         private DateValue() {
         }
 
-        private DateValue(Date date) {
+        private DateValue(LocalDate date) {
             this.date = date;
+        }
+    }
+
+    private static class UriValue {
+        @XmlElement(name = "uri")
+        private URL uri;
+
+        private UriValue() {
+        }
+
+        private UriValue(URL uri) {
+            this.uri = uri;
         }
     }
 
@@ -483,16 +649,42 @@ public final class VCard4 {
         }
     }
 
-    private static final class DateAdapter extends XmlAdapter<DateValue, Date> {
+    private static final class DateAdapter extends XmlAdapter<DateValue, LocalDate> {
 
         @Override
-        public Date unmarshal(DateValue v) throws Exception {
+        public LocalDate unmarshal(DateValue v) throws Exception {
             return v != null ? v.date : null;
         }
 
         @Override
-        public DateValue marshal(Date v) throws Exception {
+        public DateValue marshal(LocalDate v) throws Exception {
             return new DateValue(v);
+        }
+    }
+
+    private static final class ZoneIdAdapter extends XmlAdapter<TextValue, ZoneId> {
+
+        @Override
+        public ZoneId unmarshal(TextValue v) throws Exception {
+            return v != null ? ZoneId.of(v.text) : null;
+        }
+
+        @Override
+        public TextValue marshal(ZoneId v) throws Exception {
+            return new TextValue(v.toString());
+        }
+    }
+
+    private static final class UriAdapter extends XmlAdapter<UriValue, URL> {
+
+        @Override
+        public URL unmarshal(UriValue v) throws Exception {
+            return v != null ? v.uri : null;
+        }
+
+        @Override
+        public UriValue marshal(URL v) throws Exception {
+            return new UriValue(v);
         }
     }
 }

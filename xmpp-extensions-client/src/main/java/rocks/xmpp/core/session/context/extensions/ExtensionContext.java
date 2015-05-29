@@ -115,7 +115,7 @@ import rocks.xmpp.extensions.time.model.EntityTime;
 import rocks.xmpp.extensions.tune.model.Tune;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
-import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import rocks.xmpp.extensions.vcard.temp.model.VCardTemp;
 import rocks.xmpp.extensions.version.SoftwareVersionManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
@@ -192,7 +192,7 @@ public class ExtensionContext extends CoreContext {
                 Extension.of(Command.NAMESPACE, false, Command.class),
 
                 // XEP-0054: vcard-temp
-                Extension.of(VCard.NAMESPACE, VCardManager.class, true, VCard.class),
+                Extension.of(VCardTemp.NAMESPACE, VCardManager.class, true, VCardTemp.class),
 
                 // XEP-0055: Jabber Search
                 Extension.of(Search.class),

@@ -63,13 +63,12 @@ public final class BlockingManager extends ExtensionManager {
 
     private final Set<Consumer<BlockingEvent>> blockingListeners = new CopyOnWriteArraySet<>();
 
+    private final IQHandler iqHandler;
+
     private BlockingManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-    }
 
-    @Override
-    protected final void initialize() {
-        IQHandler iqHandler = new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
@@ -108,9 +107,21 @@ public final class BlockingManager extends ExtensionManager {
                 return iq.createError(Condition.NOT_ACCEPTABLE);
             }
         };
+    }
+
+    @Override
+    protected final void onEnable() {
+        super.onEnable();
         // Listen for "un/block pushes"
         xmppSession.addIQHandler(Block.class, iqHandler, false);
         xmppSession.addIQHandler(Unblock.class, iqHandler, false);
+    }
+
+    @Override
+    public final void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(Block.class);
+        xmppSession.removeIQHandler(Unblock.class);
     }
 
     /**

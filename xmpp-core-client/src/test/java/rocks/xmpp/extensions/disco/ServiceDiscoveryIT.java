@@ -22,33 +22,41 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.hashes;
+package rocks.xmpp.extensions.disco;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.extensions.ExtensionTest;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
+import rocks.xmpp.core.IntegrationTest;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.extensions.disco.model.items.Item;
+
+import java.util.Collection;
 
 /**
  * @author Christian Schudt
  */
-public class HashManagerTest extends ExtensionTest {
+public class ServiceDiscoveryIT extends IntegrationTest {
+
+    private XmppSession xmppSession;
+
+    @BeforeClass
+    public void before() throws XmppException {
+        XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                //.debugger(ConsoleDebugger.class)
+                .build();
+        xmppSession = new XmppSession(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
+        xmppSession.connect();
+        xmppSession.login(USER_1, PASSWORD_1);
+    }
 
     @Test
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession xmppSession = new TestXmppSession();
-        HashManager hashManager = xmppSession.getManager(HashManager.class);
-        Assert.assertTrue(hashManager.isEnabled());
+    public void testDiscoverService() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:hashes:1");
-        Feature featureSha256 = new Feature("urn:xmpp:hash-function-text-names:sha-256");
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(featureSha256));
-        hashManager.setEnabled(false);
-        Assert.assertFalse(hashManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
-        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(featureSha256));
+        Collection<Item> items = serviceDiscoveryManager.discoverServices("http://jabber.org/protocol/pubsub");
+        Assert.assertEquals(items.size(), 1);
     }
 }

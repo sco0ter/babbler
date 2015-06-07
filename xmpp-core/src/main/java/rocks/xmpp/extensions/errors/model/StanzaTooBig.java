@@ -22,11 +22,35 @@
  * THE SOFTWARE.
  */
 
-/**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>.
- * <p>
- * It provides recommendations for the use of cryptographic hash functions in XMPP protocol extensions.
- * </p>
- */
-package rocks.xmpp.extensions.hashes;
+package rocks.xmpp.extensions.errors.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+/**
+ * The implementation of the {@code <stanza-too-big/>} element in the {@code urn:xmpp:errors} namespace.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://www.xmpp.org/extensions/xep-0205.html#rec-stanzasize">4.5 Stanza Size</a>
+ */
+@XmlRootElement(name = "stanza-too-big")
+@XmlType(factoryMethod = "create")
+public final class StanzaTooBig {
+
+    /**
+     * The element.
+     */
+    public static final StanzaTooBig INSTANCE = new StanzaTooBig();
+
+    private StanzaTooBig() {
+    }
+
+    private static StanzaTooBig create() {
+        return INSTANCE;
+    }
+
+    @Override
+    public final String toString() {
+        return "Stanza too big";
+    }
+}

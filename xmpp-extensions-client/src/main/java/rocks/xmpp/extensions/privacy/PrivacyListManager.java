@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -65,14 +66,11 @@ import java.util.function.Consumer;
 public final class PrivacyListManager extends ExtensionManager {
     private final Set<Consumer<PrivacyListEvent>> privacyListListeners = new CopyOnWriteArraySet<>();
 
+    private final IQHandler iqHandler;
+
     private PrivacyListManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-    }
-
-    @Override
-    protected void initialize() {
-
-        xmppSession.addIQHandler(Privacy.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
@@ -88,7 +86,20 @@ public final class PrivacyListManager extends ExtensionManager {
                 }
                 return iq.createError(Condition.NOT_ACCEPTABLE);
             }
-        }, false);
+        };
+    }
+
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(Privacy.class, iqHandler, false);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(Privacy.class);
     }
 
     /**

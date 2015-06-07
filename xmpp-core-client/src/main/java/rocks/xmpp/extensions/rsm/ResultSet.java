@@ -24,25 +24,50 @@
 
 package rocks.xmpp.extensions.rsm;
 
-import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.extensions.rsm.model.ResultSet;
 import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * This manager is used to deal with result set management. If enabled (which it is by default), the result set management feature
- * is included in Service Discovery responses to indicate, that result set management is supported.
+ * A result set usually consists of a list of items and additional result set information (e.g. to mark first and last items).
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
  */
-public final class ResultSetManager extends ExtensionManager {
-    private ResultSetManager(XmppSession xmppSession) {
-        super(xmppSession, ResultSetManagement.NAMESPACE);
-        setEnabled(true);
+public final class ResultSet<T extends ResultSetItem> {
+
+    private final List<T> items = new ArrayList<>();
+
+    private final ResultSetManagement resultSetManagement;
+
+    private ResultSet(Collection<T> items, ResultSetManagement resultSetManagement) {
+        if (items != null) {
+            this.items.addAll(items);
+        }
+        this.resultSetManagement = resultSetManagement;
+    }
+
+    /**
+     * Gets the items.
+     *
+     * @return The items.
+     */
+    public final List<T> getItems() {
+        return Collections.unmodifiableList(items);
+    }
+
+    /**
+     * Gets the result set info.
+     *
+     * @return The result set info.
+     */
+    public final ResultSetManagement getResultSetManagement() {
+        return resultSetManagement;
     }
 
     /**
@@ -59,7 +84,7 @@ public final class ResultSetManager extends ExtensionManager {
      * @param <T>                 The type of the result set.
      * @return The result set.
      */
-    public static <T extends ResultSetItem> ResultSet<T> createResultSet(ResultSetProvider<T> resultSetProvider, ResultSetManagement resultSetManagement) {
+    public static <T extends ResultSetItem> ResultSet<T> create(ResultSetProvider<T> resultSetProvider, ResultSetManagement resultSetManagement) {
 
         // If the query has a RSM extension, use it and return a limited result set.
         if (resultSetManagement != null && resultSetManagement.getMaxSize() != null) {

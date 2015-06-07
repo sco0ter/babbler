@@ -24,7 +24,6 @@
 
 package rocks.xmpp.core.stanza;
 
-import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -43,30 +42,23 @@ public abstract class AbstractIQHandler implements IQHandler {
 
     private final AbstractIQ.Type type;
 
-    private final Manager manager;
-
     /**
-     * @param manager The manager.
-     * @param type    The IQ type which is handled by this handler (get or set).
+     * @param type The IQ type which is handled by this handler (get or set).
      */
-    protected AbstractIQHandler(Manager manager, AbstractIQ.Type type) {
+    protected AbstractIQHandler(AbstractIQ.Type type) {
         if (type != AbstractIQ.Type.GET && type != AbstractIQ.Type.SET) {
             throw new IllegalArgumentException("type must be 'get' or 'set'");
         }
         this.type = type;
-        this.manager = manager;
     }
 
     @Override
     public final IQ handleRequest(IQ iq) {
-        if (manager.isEnabled()) {
-            if (iq.getType() == type) {
-                return processRequest(iq);
-            } else {
-                return iq.createError(new StanzaError(Condition.BAD_REQUEST, String.format("Type was '%s', but expected '%s'.", iq.getType().toString().toLowerCase(), type.toString().toLowerCase())));
-            }
+        if (iq.getType() == type) {
+            return processRequest(iq);
+        } else {
+            return iq.createError(new StanzaError(Condition.BAD_REQUEST, String.format("Type was '%s', but expected '%s'.", iq.getType().toString().toLowerCase(), type.toString().toLowerCase())));
         }
-        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 
     /**

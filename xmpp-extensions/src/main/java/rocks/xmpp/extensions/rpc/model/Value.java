@@ -26,8 +26,11 @@ package rocks.xmpp.extensions.rpc.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
-import java.time.Instant;
-import java.util.Date;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +50,7 @@ public final class Value {
             @XmlElement(name = "double", type = Double.class),
             @XmlElement(name = "base64", type = byte[].class),
             @XmlElement(name = "boolean", type = NumericBoolean.class),
-            @XmlElement(name = "dateTime.iso8601", type = Date.class),
+            @XmlElement(name = "dateTime.iso8601", type = XMLGregorianCalendar.class), // Using OffsetDateTime here does not work, not even with the Adapter
             @XmlElement(name = "array", type = ArrayType.class),
             @XmlElement(name = "struct", type = StructType.class)
     })
@@ -107,8 +110,19 @@ public final class Value {
      *
      * @param date The date value.
      */
-    public Value(Instant date) {
-        this.value = date != null ? Date.from(date) : null;
+    public Value(OffsetDateTime date) {
+        XMLGregorianCalendar xmlGregorianCalendar;
+        try {
+            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+            xmlGregorianCalendar.setYear(date.getYear());
+            xmlGregorianCalendar.setMonth(date.getMonth().getValue());
+            xmlGregorianCalendar.setDay(date.getDayOfMonth());
+            xmlGregorianCalendar.setTime(date.getHour(), date.getMinute(), date.getSecond()); // date.get(ChronoField.MILLI_OF_SECOND)
+            xmlGregorianCalendar.setTimezone(date.getOffset().getTotalSeconds() / 60);
+        } catch (DatatypeConfigurationException e) {
+            xmlGregorianCalendar = null;
+        }
+        this.value = xmlGregorianCalendar;
     }
 
     /**
@@ -191,8 +205,12 @@ public final class Value {
      *
      * @return The date or null.
      */
-    public final Instant getAsInstant() {
-        return value instanceof Date ? ((Date) value).toInstant() : null;
+    public final OffsetDateTime getAsInstant() {
+        if (value instanceof XMLGregorianCalendar) {
+            XMLGregorianCalendar calendar = (XMLGregorianCalendar) value;
+            return OffsetDateTime.of(calendar.getYear(), calendar.getMonth(), calendar.getDay(), calendar.getHour(), calendar.getMinute(), calendar.getSecond(), 0, ZoneOffset.ofTotalSeconds(calendar.getTimezone() * 60));
+        }
+        return null;
     }
 
     /**

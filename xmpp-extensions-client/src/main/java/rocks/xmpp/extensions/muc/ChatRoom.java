@@ -38,7 +38,6 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -740,9 +739,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             if (iterator.hasNext()) {
                 identity = iterator.next();
             }
-            for (Feature feature : infoNode.getFeatures()) {
+            for (String feature : infoNode.getFeatures()) {
                 for (MucFeature mucFeature : MucFeature.values()) {
-                    if (mucFeature.getServiceDiscoveryFeature().equals(feature.getVar())) {
+                    if (mucFeature.getServiceDiscoveryFeature().equals(feature)) {
                         mucFeatures.add(mucFeature);
                     }
                 }
@@ -877,7 +876,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://www.xmpp.org/extensions/xep-0045.html#impl-service-traffic">17.1.1 Allowable Traffic</a>
      */
-    public Set<Feature> discoverAllowableTraffic() throws XmppException {
+    public Set<String> discoverAllowableTraffic() throws XmppException {
         return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").getFeatures();
     }
 

@@ -59,8 +59,7 @@ public final class StanzaForwardingManager extends ExtensionManager {
      * @param xmppSession The underlying connection.
      */
     private StanzaForwardingManager(final XmppSession xmppSession) {
-        super(xmppSession, Forwarded.NAMESPACE);
-        setEnabled(false);
+        super(xmppSession);
     }
 
     /**

@@ -52,20 +52,15 @@ import java.util.function.Consumer;
  * The listener will be called either if you created the session programmatically as shown above, or if it is created by a contact, i.e. because he or she sent you a chat message.
  * </p>
  * <p>You should add a {@link ChatSession#addInboundMessageListener(Consumer)} to the chat session in order to listen for messages.</p>
- * <pre><code>
- * xmppSession.getManager(ChatManager.class).addChatSessionListener(new ChatSessionListener() {
- *     {@literal @}Override
- *     public void chatSessionCreated(ChatSessionEvent chatSessionEvent) {
- *         ChatSession chatSession = chatSessionEvent.getChatSession();
- *         chatSession.addInboundMessageListener(new MessageListener() {
- *             {@literal @}Override
- *             public void handleMessage(MessageEvent e) {
- *                 Message message = e.getMessage();
- *             }
- *         });
- *     }
+ * <pre>
+ * {@code
+ * xmppSession.getManager(ChatManager.class).addChatSessionListener(chatSessionEvent -> {
+ *     ChatSession chatSession = chatSessionEvent.getChatSession();
+ *     chatSession.addInboundMessageListener(e -> {
+ *         Message message = e.getMessage();
+ *     });
  * });
- * </code>
+ * }
  * </pre>
  */
 public final class ChatManager extends Manager {

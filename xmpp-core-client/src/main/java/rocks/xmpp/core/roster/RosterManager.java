@@ -97,12 +97,12 @@ public final class RosterManager extends Manager {
     /**
      * guarded by "this"
      */
-    private final Set<ContactGroup> groups = new TreeSet<>();
+    private final TreeSet<ContactGroup> groups = new TreeSet<>();
 
     /**
      * guarded by "this"
      */
-    private final Set<Contact> unaffiliatedContacts = new TreeSet<>();
+    private final TreeSet<Contact> unaffiliatedContacts = new TreeSet<>();
 
     /**
      * guarded by "this"
@@ -177,7 +177,7 @@ public final class RosterManager extends Manager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             public IQ processRequest(IQ iq) {
                 Roster roster = iq.getExtension(Roster.class);
@@ -347,7 +347,7 @@ public final class RosterManager extends Manager {
     private void removeContactsFromGroups(Contact contact, Collection<ContactGroup> contactGroups) {
         List<ContactGroup> emptyGroups = new ArrayList<>();
         // Recursively remove the contact from the nested subgroups.
-// If the nested group is empty, it can be removed.
+        // If the nested group is empty, it can be removed.
         contactGroups.stream().filter(group -> removeRecursively(contact, group)).forEach(group -> {
             emptyGroups.add(group);
             rosterGroupMap.remove(group.getFullName());
@@ -387,9 +387,10 @@ public final class RosterManager extends Manager {
      *
      * @return The contact groups.
      */
+    @SuppressWarnings("unchecked")
     public final synchronized Collection<ContactGroup> getContactGroups() {
         // return defensive copies of mutable internal fields
-        return Collections.unmodifiableCollection(new ArrayList<>(groups));
+        return Collections.unmodifiableCollection((TreeSet<ContactGroup>) groups.clone());
     }
 
     /**
@@ -397,9 +398,10 @@ public final class RosterManager extends Manager {
      *
      * @return The contacts, which are not affiliated to any group.
      */
+    @SuppressWarnings("unchecked")
     public final synchronized Collection<Contact> getUnaffiliatedContacts() {
         // return defensive copies of mutable internal fields
-        return Collections.unmodifiableCollection(new ArrayList<>(unaffiliatedContacts));
+        return Collections.unmodifiableCollection((TreeSet<Contact>) unaffiliatedContacts.clone());
     }
 
     /**

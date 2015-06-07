@@ -32,7 +32,6 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -51,12 +50,14 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     @Test
     public void testFeatureEquals() {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.addFeature(new Feature("http://jabber.org/protocol/muc"));
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(new Feature("http://jabber.org/protocol/muc")));
+        serviceDiscoveryManager.addFeature("http://jabber.org/protocol/muc");
+        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains("http://jabber.org/protocol/muc"));
     }
 
     @Test
     public void testItemsEquals() {
+        // Tests if two Identities are equal although their name is different. That is because there must not be multiple identities with the same category+type+xml:lang but different names.
+        // From XEP-0030: the <query/> element MAY include multiple <identity/> elements with the same category+type but with different 'xml:lang' values, however the <query/> element MUST NOT include multiple <identity/> elements with the same category+type+xml:lang but with different 'name' values
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));
         Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(new Identity("conference", "text", "name2", "en")));
@@ -81,8 +82,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(serviceDiscoveryManager.isEnabled());
-        Feature featureInfo = new Feature("http://jabber.org/protocol/disco#info");
-        Feature featureItems = new Feature("http://jabber.org/protocol/disco#items");
+        String featureInfo = "http://jabber.org/protocol/disco#info";
+        String featureItems = "http://jabber.org/protocol/disco#items";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(featureInfo));
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(featureItems));
         serviceDiscoveryManager.setEnabled(false);
@@ -230,9 +231,9 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testPropertyChangeHandler() {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         final int[] listenerCalled = {0};
-        serviceDiscoveryManager.addPropertyChangeListener(evt -> listenerCalled[0]++);
-        serviceDiscoveryManager.addFeature(new Feature("dummy"));
-        serviceDiscoveryManager.removeFeature(new Feature("dummy"));
+        serviceDiscoveryManager.addCapabilitiesChangeListener(evt -> listenerCalled[0]++);
+        serviceDiscoveryManager.addFeature("dummy");
+        serviceDiscoveryManager.removeFeature("dummy");
         serviceDiscoveryManager.addIdentity(new Identity("cat", "type"));
         serviceDiscoveryManager.removeIdentity(new Identity("cat", "type"));
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);

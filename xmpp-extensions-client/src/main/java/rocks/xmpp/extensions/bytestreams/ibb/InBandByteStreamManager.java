@@ -29,6 +29,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -40,6 +42,7 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,16 +62,17 @@ public final class InBandByteStreamManager extends ByteStreamManager {
 
     final Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
+    private final IQHandler openIQHandler;
+
+    private final IQHandler dataIQHandler;
+
+    private final IQHandler closeIQHandler;
+
+    private final Consumer<MessageEvent> messageListener;
+
     private InBandByteStreamManager(final XmppSession xmppSession) {
-        super(xmppSession, InBandByteStream.NAMESPACE);
-        setEnabled(true);
-    }
-
-    @Override
-    protected final void initialize() {
-        super.initialize();
-
-        xmppSession.addIQHandler(InBandByteStream.Open.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        super(xmppSession);
+        openIQHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
@@ -81,8 +85,8 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return null;
                 }
             }
-        }, false);
-        xmppSession.addIQHandler(InBandByteStream.Data.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        };
+        dataIQHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 InBandByteStream.Data data = iq.getExtension(InBandByteStream.Data.class);
@@ -99,8 +103,8 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return iq.createError(Condition.ITEM_NOT_FOUND);
                 }
             }
-        }, false);
-        xmppSession.addIQHandler(InBandByteStream.Close.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        };
+        closeIQHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 // Must be a close element.
@@ -119,11 +123,8 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     return iq.createError(Condition.ITEM_NOT_FOUND);
                 }
             }
-        }, false);
-
-        // 4. Use of Message Stanzas
-        // an application MAY use message stanzas instead.
-        xmppSession.addInboundMessageListener(e -> {
+        };
+        messageListener = e -> {
             if (isEnabled()) {
                 InBandByteStream.Data data = e.getMessage().getExtension(InBandByteStream.Data.class);
                 if (data != null) {
@@ -138,7 +139,29 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                     }
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected final void onEnable() {
+        super.onEnable();
+
+        xmppSession.addIQHandler(InBandByteStream.Open.class, openIQHandler, false);
+        xmppSession.addIQHandler(InBandByteStream.Data.class, dataIQHandler, false);
+        xmppSession.addIQHandler(InBandByteStream.Close.class, closeIQHandler, false);
+
+        // 4. Use of Message Stanzas
+        // an application MAY use message stanzas instead.
+        xmppSession.addInboundMessageListener(messageListener);
+    }
+
+    @Override
+    protected final void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(InBandByteStream.Open.class);
+        xmppSession.removeIQHandler(InBandByteStream.Data.class);
+        xmppSession.removeIQHandler(InBandByteStream.Close.class);
+        xmppSession.removeInboundMessageListener(messageListener);
     }
 
     /**

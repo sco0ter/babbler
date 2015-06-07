@@ -28,6 +28,8 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -51,23 +53,24 @@ public final class HttpAuthenticationManager extends ExtensionManager {
 
     private final Set<Consumer<HttpAuthenticationEvent>> httpAuthenticationListeners = new CopyOnWriteArraySet<>();
 
+    private final IQHandler iqHandler;
+
+    private final Consumer<MessageEvent> inboundMessageListener;
+
     private HttpAuthenticationManager(XmppSession xmppSession) {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
         super(xmppSession, true);
-    }
 
-    @Override
-    protected void initialize() {
-        xmppSession.addIQHandler(ConfirmationRequest.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
                 XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq, confirmationRequest));
                 return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;
             }
-        });
+        };
 
-        xmppSession.addInboundMessageListener(e -> {
+        inboundMessageListener = e -> {
             Message message = e.getMessage();
             if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
                 ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
@@ -75,7 +78,21 @@ public final class HttpAuthenticationManager extends ExtensionManager {
                     XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, message, confirmationRequest));
                 }
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(ConfirmationRequest.class, iqHandler);
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(ConfirmationRequest.class);
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
     }
 
     /**

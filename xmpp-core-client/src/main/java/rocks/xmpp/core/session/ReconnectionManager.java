@@ -165,10 +165,8 @@ public final class ReconnectionManager extends Manager {
     }
 
     @Override
-    public final void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        if (!enabled) {
-            cancel();
-        }
+    public final void onDisable() {
+        super.onDisable();
+        cancel();
     }
 }

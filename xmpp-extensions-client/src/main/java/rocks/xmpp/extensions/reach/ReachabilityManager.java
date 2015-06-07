@@ -30,6 +30,9 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.Stanza;
@@ -64,13 +67,18 @@ public final class ReachabilityManager extends ExtensionManager {
 
     private final List<Address> addresses = new CopyOnWriteArrayList<>();
 
-    private ReachabilityManager(final XmppSession xmppSession) {
-        super(xmppSession, true, Reachability.NAMESPACE);
-    }
+    private final Consumer<PresenceEvent> inboundPresenceListener;
 
-    @Override
-    protected void initialize() {
-        xmppSession.addInboundPresenceListener(e -> {
+    private final Consumer<PresenceEvent> outboundPresenceListener;
+
+    private final Consumer<MessageEvent> inboundMessageEvent;
+
+    private final IQHandler iqHandler;
+
+    private ReachabilityManager(final XmppSession xmppSession) {
+        super(xmppSession, true);
+
+        this.inboundPresenceListener = e -> {
             AbstractPresence presence = e.getPresence();
             boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
             Jid contact = presence.getFrom().asBareJid();
@@ -78,9 +86,9 @@ public final class ReachabilityManager extends ExtensionManager {
                 // If no reachability was found in presence, check, if the contact has previously sent any reachability via presence.
                 XmppUtils.notifyEventListeners(reachabilityListeners, new ReachabilityEvent(ReachabilityManager.this, contact, Collections.emptyList()));
             }
-        });
+        };
 
-        xmppSession.addOutboundPresenceListener(e -> {
+        this.outboundPresenceListener = e -> {
             AbstractPresence presence = e.getPresence();
             if (presence.isAvailable() && presence.getTo() == null) {
                 synchronized (addresses) {
@@ -89,21 +97,42 @@ public final class ReachabilityManager extends ExtensionManager {
                     }
                 }
             }
-        });
+        };
 
-        // A user MAY send reachability addresses in an XMPP <message/> stanza.
-        xmppSession.addInboundMessageListener(e -> checkStanzaForReachabilityAndNotify(e.getMessage()));
+        this.inboundMessageEvent = e -> checkStanzaForReachabilityAndNotify(e.getMessage());
 
-        // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
-        xmppSession.addIQHandler(Reachability.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
                 return iq.createResult(new Reachability(addresses));
             }
-        });
+        };
+    }
+
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundPresenceListener(inboundPresenceListener);
+        xmppSession.addOutboundPresenceListener(outboundPresenceListener);
+
+        // A user MAY send reachability addresses in an XMPP <message/> stanza.
+        xmppSession.addInboundMessageListener(inboundMessageEvent);
+
+        // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
+        xmppSession.addIQHandler(Reachability.class, iqHandler);
 
         // TODO: implement similar logic for PEP
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
+        xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.removeInboundMessageListener(inboundMessageEvent);
+        xmppSession.removeIQHandler(Reachability.class);
     }
 
     public List<Address> getReachabilityAddresses() {

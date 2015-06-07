@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.caps.model;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
@@ -99,7 +98,7 @@ public final class EntityCapabilities extends StreamFeature {
     public static String getVerificationString(InfoNode infoNode, MessageDigest messageDigest) {
 
         Set<Identity> identities = new TreeSet<>(infoNode.getIdentities());
-        Set<Feature> features = new TreeSet<>(infoNode.getFeatures());
+        Set<String> features = new TreeSet<>(infoNode.getFeatures());
         List<DataForm> dataForms = new ArrayList<>(infoNode.getExtensions());
 
         // 1. Initialize an empty string S.
@@ -132,9 +131,9 @@ public final class EntityCapabilities extends StreamFeature {
         // This is done by TreeSet.
 
         // 5. For each feature, append the feature to S, followed by the '<' character.
-        for (rocks.xmpp.extensions.disco.model.info.Feature feature : features) {
-            if (feature.getVar() != null) {
-                sb.append(feature.getVar());
+        for (String feature : features) {
+            if (feature != null) {
+                sb.append(feature);
             }
             sb.append("<");
         }

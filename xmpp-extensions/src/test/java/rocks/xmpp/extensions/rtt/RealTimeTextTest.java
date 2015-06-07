@@ -60,7 +60,7 @@ public class RealTimeTextTest extends XmlTest {
 
         Assert.assertNotNull(realTimeText);
         Assert.assertEquals(realTimeText.getEvent(), RealTimeText.Event.NEW);
-        Assert.assertEquals(realTimeText.getSequence(), (Long) 123001L);
+        Assert.assertEquals(realTimeText.getSequence(), (Integer) 123001);
         Assert.assertEquals(realTimeText.getActions().size(), 7);
         Assert.assertTrue(realTimeText.getActions().get(0) instanceof RealTimeText.InsertText);
         Assert.assertTrue(realTimeText.getActions().get(1) instanceof RealTimeText.EraseText);
@@ -70,9 +70,9 @@ public class RealTimeTextTest extends XmlTest {
         Assert.assertTrue(realTimeText.getActions().get(5) instanceof RealTimeText.EraseText);
         Assert.assertTrue(realTimeText.getActions().get(6) instanceof RealTimeText.InsertText);
 
-        Assert.assertEquals(((RealTimeText.InsertText) realTimeText.getActions().get(0)).getValue(), "Helo");
-        Assert.assertEquals(((RealTimeText.InsertText) realTimeText.getActions().get(2)).getValue(), "lo...planet");
-        Assert.assertEquals(((RealTimeText.InsertText) realTimeText.getActions().get(4)).getValue(), " World");
-        Assert.assertEquals(((RealTimeText.InsertText) realTimeText.getActions().get(6)).getValue(), " there,");
+        Assert.assertEquals(((RealTimeText.InsertText) realTimeText.getActions().get(0)).getText(), "Helo");
+        Assert.assertEquals(((RealTimeText.InsertText) realTimeText.getActions().get(2)).getText(), "lo...planet");
+        Assert.assertEquals(((RealTimeText.InsertText) realTimeText.getActions().get(4)).getText(), " World");
+        Assert.assertEquals(((RealTimeText.InsertText) realTimeText.getActions().get(6)).getText(), " there,");
     }
 }

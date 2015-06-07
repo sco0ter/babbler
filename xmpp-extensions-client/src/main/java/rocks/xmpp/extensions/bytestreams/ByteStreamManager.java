@@ -42,8 +42,8 @@ public abstract class ByteStreamManager extends ExtensionManager {
 
     protected final Set<Consumer<ByteStreamEvent>> byteStreamListeners = new CopyOnWriteArraySet<>();
 
-    protected ByteStreamManager(XmppSession xmppSession, String... features) {
-        super(xmppSession, true, features);
+    protected ByteStreamManager(XmppSession xmppSession) {
+        super(xmppSession, true);
     }
 
     /**

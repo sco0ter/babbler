@@ -29,6 +29,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -38,6 +40,7 @@ import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.Consumer;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
@@ -71,33 +74,25 @@ public final class LastActivityManager extends ExtensionManager {
 
     private final IdleManager idleManager;
 
+    private final Consumer<PresenceEvent> outboundPresenceListener;
+
+    private final IQHandler iqHandler;
+
     private LastActivityManager(final XmppSession xmppSession) {
-        super(xmppSession, LastActivity.NAMESPACE);
+        super(xmppSession);
         this.idleManager = xmppSession.getManager(IdleManager.class);
-        setEnabled(true);
-    }
-
-    static long getSecondsSince(Instant date) {
-        return Math.max(0, Duration.between(date, Instant.now()).getSeconds());
-    }
-
-    @Override
-    protected void initialize() {
-
-        xmppSession.addOutboundPresenceListener(e -> {
-            if (isEnabled()) {
-                AbstractPresence presence = e.getPresence();
-                if (presence.getTo() == null) {
-                    synchronized (LastActivityManager.this) {
-                        // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                        if (idleManager.getIdleStrategy() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
-                            presence.getExtensions().add(new LastActivity(getSecondsSince(idleManager.getIdleStrategy().get()), presence.getStatus()));
-                        }
+        this.outboundPresenceListener = e -> {
+            AbstractPresence presence = e.getPresence();
+            if (presence.getTo() == null) {
+                synchronized (LastActivityManager.this) {
+                    // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
+                    if (idleManager.getIdleStrategy() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                        presence.getExtensions().add(new LastActivity(getSecondsSince(idleManager.getIdleStrategy().get()), presence.getStatus()));
                     }
                 }
             }
-        });
-        xmppSession.addIQHandler(LastActivity.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        };
+        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 // If someone asks me to get my last activity, reply.
@@ -111,7 +106,25 @@ public final class LastActivityManager extends ExtensionManager {
                     }
                 }
             }
-        });
+        };
+    }
+
+    static long getSecondsSince(Instant date) {
+        return Math.max(0, Duration.between(date, Instant.now()).getSeconds());
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.addIQHandler(LastActivity.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.removeIQHandler(LastActivity.class);
     }
 
     /**

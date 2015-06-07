@@ -48,7 +48,7 @@ import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 public final class MessageCarbonsManager extends ExtensionManager {
 
     private MessageCarbonsManager(XmppSession xmppSession) {
-        super(xmppSession, MessageCarbons.NAMESPACE);
+        super(xmppSession);
     }
 
     /**

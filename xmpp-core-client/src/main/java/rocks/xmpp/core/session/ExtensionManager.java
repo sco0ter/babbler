@@ -24,63 +24,26 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 /**
  * @author Christian Schudt
  */
 public abstract class ExtensionManager extends Manager {
 
-    private final Collection<String> features;
-
-    private final ServiceDiscoveryManager serviceDiscoveryManager;
-
-    protected ExtensionManager(XmppSession xmppSession, String... features) {
-        this(xmppSession, false, features);
+    protected ExtensionManager(XmppSession xmppSession) {
+        this(xmppSession, false);
     }
 
-    protected ExtensionManager(XmppSession xmppSession, boolean disposable, String... features) {
-        this(xmppSession, disposable, Arrays.asList(features));
-    }
-
-    protected ExtensionManager(XmppSession xmppSession, boolean disposable, Collection<String> features) {
+    protected ExtensionManager(XmppSession xmppSession, boolean disposable) {
         super(xmppSession, disposable);
-        this.features = features;
-
-        if (this instanceof ServiceDiscoveryManager) {
-            serviceDiscoveryManager = (ServiceDiscoveryManager) this;
-        } else {
-            serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        }
     }
 
     @Override
-    public final boolean isEnabled() {
-        return serviceDiscoveryManager.getFeatures().containsAll(features.stream().map(Feature::new).collect(Collectors.toList()));
+    protected void onEnable() {
+        xmppSession.enableFeature(getClass());
     }
 
-    /**
-     * Enables or disables support for the extension.
-     *
-     * @param enabled True, if support for the managed extension should be enabled; otherwise false.
-     * @see #isEnabled()
-     */
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        if (serviceDiscoveryManager != null) {
-            for (String namespace : features) {
-                if (enabled) {
-                    serviceDiscoveryManager.addFeature(new Feature(namespace));
-                } else {
-                    serviceDiscoveryManager.removeFeature(new Feature(namespace));
-                }
-            }
-        }
+    protected void onDisable() {
+        xmppSession.disableFeature(getClass());
     }
 }

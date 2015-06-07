@@ -30,6 +30,10 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -40,6 +44,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * This class implements the application-level ping mechanism as specified in <a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
@@ -66,32 +71,57 @@ public final class PingManager extends ExtensionManager {
      */
     private long pingInterval = 900; // 15 minutes
 
+    private final IQHandler iqHandler;
+
+    private final Consumer<MessageEvent> inboundMessageListener;
+
+    private final Consumer<PresenceEvent> inboundPresenceListener;
+
+    private final Consumer<IQEvent> inboundIQListener;
+
     /**
      * Creates the ping manager.
      *
      * @param xmppSession The underlying XMPP session.
      */
     private PingManager(final XmppSession xmppSession) {
-        super(xmppSession, true, Ping.NAMESPACE);
+        super(xmppSession, true);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
-        setEnabled(true);
-    }
 
-    @Override
-    protected final void initialize() {
-        xmppSession.addIQHandler(Ping.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 return iq.createResult();
             }
-        });
+        };
+        inboundMessageListener = e -> rescheduleNextPing();
+        inboundPresenceListener = e -> rescheduleNextPing();
+        inboundIQListener = e -> rescheduleNextPing();
+
+    }
+
+    @Override
+    protected final void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(Ping.class, iqHandler);
 
         // Reschedule server pings whenever we receive a stanza from the server.
         // When we receive a stanza, we are obviously connected.
         // Pinging should be deferred in this case.
-        xmppSession.addInboundMessageListener(e -> rescheduleNextPing());
-        xmppSession.addInboundPresenceListener(e -> rescheduleNextPing());
-        xmppSession.addInboundIQListener(e -> rescheduleNextPing());
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+        xmppSession.addInboundPresenceListener(inboundPresenceListener);
+        xmppSession.addInboundIQListener(inboundIQListener);
+        rescheduleNextPing();
+    }
+
+    @Override
+    protected final void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(Ping.class);
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
+        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
+        xmppSession.removeInboundIQListener(inboundIQListener);
+        cancelNextPing();
     }
 
     /**
@@ -155,18 +185,6 @@ public final class PingManager extends ExtensionManager {
     public final synchronized void setPingInterval(long pingInterval) {
         this.pingInterval = pingInterval;
         rescheduleNextPing();
-    }
-
-    @Override
-    public final void setEnabled(boolean enabled) {
-        boolean wasEnabled = isEnabled();
-        super.setEnabled(enabled);
-
-        if (enabled && !wasEnabled) {
-            rescheduleNextPing();
-        } else if (!enabled && wasEnabled) {
-            cancelNextPing();
-        }
     }
 
     private void rescheduleNextPing() {

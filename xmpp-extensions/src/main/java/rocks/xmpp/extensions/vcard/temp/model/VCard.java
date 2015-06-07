@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.vcard.temp.model;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.JidAdapter;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -37,13 +36,11 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * The implementation of the {@code <vCard/>} element in the {@code vcard-temp} namespace.
@@ -83,7 +80,7 @@ public final class VCard {
      * To specify the text corresponding to the nickname of the object the vCard represents.
      */
     @XmlElement(name = "NICKNAME")
-    private String nickName;
+    private String nickname;
 
     /**
      * To specify an image or photograph information that annotates some aspect of the object the vCard represents.
@@ -96,7 +93,7 @@ public final class VCard {
      */
     @XmlJavaTypeAdapter(DateFormatterAdapter.class)
     @XmlElement(name = "BDAY")
-    private Date birthday;
+    private LocalDate birthday;
 
     /**
      * To specify a uniform resource locator associated with the object that the vCard refers to.
@@ -205,7 +202,7 @@ public final class VCard {
      * To specify revision information about the current vCard.
      */
     @XmlElement(name = "REV")
-    private Date revision;
+    private Instant revision;
 
     /**
      * To specify the family name or given name text to be used for national-language-specific sorting of the FN and N types.
@@ -282,23 +279,23 @@ public final class VCard {
     }
 
     /**
-     * Gets the nick name.
+     * Gets the nickname.
      *
-     * @return The nick name.
-     * @see #setNickName(String)
+     * @return The nickname.
+     * @see #setNickname(String)
      */
-    public String getNickName() {
-        return nickName;
+    public String getNickname() {
+        return nickname;
     }
 
     /**
-     * Sets the nick name.
+     * Sets the nickname.
      *
-     * @param nickName The nick name.
-     * @see #getNickName()
+     * @param nickname The nickname.
+     * @see #getNickname()
      */
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**
@@ -323,40 +320,21 @@ public final class VCard {
 
     /**
      * Gets the birthday.
-     * <p><b>Code sample:</b></p>
-     * <pre>
-     * <code>
-     * Calendar calendar = new GregorianCalendar();
-     * calendar.setTime(vCard.getBirthday());
-     * int year = calendar.get(Calendar.YEAR);
-     * int month = calendar.get(Calendar.MONTH);
-     * int day = calendar.get(Calendar.DATE);
-     * </code>
-     * </pre>
      *
      * @return The birth day.
-     * @see #setBirthday(java.util.Date)
+     * @see #setBirthday(LocalDate)
      */
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
     /**
      * Sets the birthday.
-     * <pre>
-     * <code>
-     * Calendar calendar = new GregorianCalendar();
-     * calendar.set(Calendar.YEAR, 2004);
-     * calendar.set(Calendar.MONTH, Calendar.MARCH);
-     * calendar.set(Calendar.DATE, 19);
-     * vCard.setBirthday(calendar.getTime());
-     * </code>
-     * </pre>
      *
      * @param birthday The birthday.
      * @see #getBirthday()
      */
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 
@@ -664,9 +642,9 @@ public final class VCard {
      * Gets revision information about the current vCard.
      *
      * @return The revision.
-     * @see #setRevision(java.util.Date)
+     * @see #setRevision(Instant)
      */
-    public Date getRevision() {
+    public Instant getRevision() {
         return revision;
     }
 
@@ -676,7 +654,7 @@ public final class VCard {
      * @param revision The revision information.
      * @see #getRevision()
      */
-    public void setRevision(Date revision) {
+    public void setRevision(Instant revision) {
         this.revision = revision;
     }
 
@@ -2183,24 +2161,20 @@ public final class VCard {
         }
     }
 
-    private static final class DateFormatterAdapter extends XmlAdapter<String, Date> {
+    private static final class DateFormatterAdapter extends XmlAdapter<String, LocalDate> {
 
         @Override
-        public Date unmarshal(final String v) throws Exception {
+        public LocalDate unmarshal(final String v) throws Exception {
             if (v != null) {
-                Calendar calendar = DatatypeConverter.parseDate(v);
-                return calendar.getTime();
+                return LocalDate.parse(v);
             }
             return null;
         }
 
         @Override
-        public String marshal(final Date v) throws Exception {
+        public String marshal(final LocalDate v) throws Exception {
             if (v != null) {
-                Calendar calendar = new GregorianCalendar();
-                calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-                calendar.setTime(v);
-                return DatatypeConverter.printDate(calendar);
+                return v.toString();
             }
             return null;
         }

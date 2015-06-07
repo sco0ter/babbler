@@ -22,27 +22,35 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.time.model;
+package rocks.xmpp.extensions.errors.model;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.util.TimeZone;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
- * Converts a {@link java.util.TimeZone} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
+ * The implementation of the {@code <too-many-stanzas/>} element in the {@code urn:xmpp:errors} namespace.
+ *
+ * @author Christian Schudt
+ * @see <a href="http://www.xmpp.org/extensions/xep-0205.html#rec-recipients">4.6 Multiple Recipients</a>
  */
-@Deprecated
-public final class TimeZoneAdapter extends XmlAdapter<String, TimeZone> {
+@XmlRootElement(name = "too-many-stanzas")
+@XmlType(factoryMethod = "create")
+public final class TooManyStanzas {
 
-    @Override
-    public final TimeZone unmarshal(String v) throws Exception {
-        return TimeZone.getTimeZone("GMT" + v);
+    /**
+     * The element.
+     */
+    public static final TooManyStanzas INSTANCE = new TooManyStanzas();
+
+    private TooManyStanzas() {
+    }
+
+    private static TooManyStanzas create() {
+        return INSTANCE;
     }
 
     @Override
-    public final String marshal(TimeZone v) throws Exception {
-        int seconds = Math.abs(v.getRawOffset()) / 1000;
-        int hours = seconds / 3600;
-        int minutes = (seconds % 3600) / 60;
-        return (v.getRawOffset() < 0 ? "-" : "+") + String.format("%02d:%02d", hours, minutes);
+    public final String toString() {
+        return "Too many stanzas";
     }
 }

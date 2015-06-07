@@ -22,48 +22,19 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.rsm.model;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * A result set usually consists of a list of items and additional result set information (e.g. to mark first and last items).
+ * Provides classes for <a href="http://www.xmpp.org/extensions/xep-0182.html">XEP-0182: Application-Specific Error Conditions</a>.
  * <p>
- * This class is immutable.
+ * It defines a registry of application-specific error conditions.
+ * </p>
  *
- * @author Christian Schudt
+ * @see <a href="http://xmpp.org/registrar/errors.html">Application-Specific Error Conditions</a>
  */
-public final class ResultSet<T extends ResultSetItem> {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "urn:xmpp:errors", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.errors.model;
 
-    private final List<T> items = new ArrayList<>();
 
-    private final ResultSetManagement resultSetManagement;
-
-    public ResultSet(Collection<T> items, ResultSetManagement resultSetManagement) {
-        if (items != null) {
-            this.items.addAll(items);
-        }
-        this.resultSetManagement = resultSetManagement;
-    }
-
-    /**
-     * Gets the items.
-     *
-     * @return The items.
-     */
-    public final List<T> getItems() {
-        return Collections.unmodifiableList(items);
-    }
-
-    /**
-     * Gets the result set info.
-     *
-     * @return The result set info.
-     */
-    public final ResultSetManagement getResultSetManagement() {
-        return resultSetManagement;
-    }
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

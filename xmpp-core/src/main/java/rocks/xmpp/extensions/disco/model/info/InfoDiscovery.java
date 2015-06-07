@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#info} namespace.
@@ -86,7 +87,7 @@ public final class InfoDiscovery implements InfoNode {
      * @param identities The identities
      * @param features   The features.
      */
-    public InfoDiscovery(Collection<Identity> identities, Collection<Feature> features) {
+    public InfoDiscovery(Collection<Identity> identities, Collection<String> features) {
         this(null, identities, features, null);
     }
 
@@ -97,7 +98,7 @@ public final class InfoDiscovery implements InfoNode {
      * @param features   The features.
      * @param extensions The extensions.
      */
-    public InfoDiscovery(Collection<Identity> identities, Collection<Feature> features, Collection<DataForm> extensions) {
+    public InfoDiscovery(Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions) {
         this(null, identities, features, extensions);
     }
 
@@ -109,13 +110,13 @@ public final class InfoDiscovery implements InfoNode {
      * @param features   The features.
      * @param extensions The extensions.
      */
-    public InfoDiscovery(String node, Collection<Identity> identities, Collection<Feature> features, Collection<DataForm> extensions) {
+    public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions) {
         this.node = node;
         if (identities != null) {
             this.identity.addAll(identities);
         }
         if (features != null) {
-            this.feature.addAll(features);
+            this.feature.addAll(features.stream().map(Feature::new).collect(Collectors.toList()));
         }
         if (extensions != null) {
             this.extensions.addAll(extensions);
@@ -128,8 +129,8 @@ public final class InfoDiscovery implements InfoNode {
     }
 
     @Override
-    public final Set<Feature> getFeatures() {
-        return Collections.unmodifiableSet(feature);
+    public final Set<String> getFeatures() {
+        return Collections.unmodifiableSet(feature.stream().map(Feature::getVar).collect(Collectors.toSet()));
     }
 
     @Override

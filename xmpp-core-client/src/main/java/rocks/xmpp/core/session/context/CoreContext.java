@@ -24,12 +24,13 @@
 
 package rocks.xmpp.core.session.context;
 
+import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.core.sasl.model.Mechanisms;
-import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.ReconnectionManager;
 import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -48,18 +49,18 @@ import rocks.xmpp.extensions.data.validate.model.Validation;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
+import rocks.xmpp.extensions.errors.model.ResourceLimitExceeded;
+import rocks.xmpp.extensions.errors.model.StanzaTooBig;
+import rocks.xmpp.extensions.errors.model.TooManyStanzas;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
-import rocks.xmpp.extensions.rsm.ResultSetManager;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * The context provides XMPP classes as well as manager classes which are associated with an XMPP session.
@@ -70,61 +71,65 @@ import java.util.HashSet;
  */
 public class CoreContext {
 
-    private final Collection<Class<?>> extensions = new HashSet<>();
-
-    private final Collection<Class<? extends Manager>> managers = new ArrayList<>();
+    private final Collection<Extension> extensions = new ArrayList<>();
 
     public CoreContext(Class<?>... extensions) {
-        this(Collections.emptyList(), extensions);
+        this(Arrays.asList(extensions).stream().map(Extension::of).toArray(Extension[]::new));
     }
 
-    public CoreContext(Collection<Class<? extends Manager>> managers, Class<?>... extensions) {
-        this.extensions.addAll(Arrays.asList(
-                // Core
-                StreamFeatures.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class,
+    public CoreContext(Extension... extensions) {
 
-                // Extensions
+        this.extensions.addAll(Arrays.asList(
+
+                // Core
+                Extension.of(StreamFeatures.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class),
 
                 // XEP-0004: Data Forms
-                DataForm.class,
+                Extension.of(DataForm.class),
 
                 // XEP-0030: Service Discovery
-                InfoDiscovery.class, ItemDiscovery.class,
+                Extension.of(InfoDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true, InfoDiscovery.class),
+
+                Extension.of(ItemDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true, ItemDiscovery.class),
 
                 // XEP-0059: Result Set Management
-                ResultSetManagement.class,
+                Extension.of(ResultSetManagement.NAMESPACE, true, ResultSetManagement.class),
 
                 // XEP-0049: Private XML Storage
-                PrivateData.class,
+                Extension.of(PrivateData.class),
 
                 // XEP-0083: Nested Roster Groups
-                RosterDelimiter.class,
+                Extension.of(RosterDelimiter.class),
+
+                // XEP-0106: JID Escaping
+                Extension.of(Jid.ESCAPING_FEATURE),
 
                 // XEP-0122: Data Forms Validation
-                Validation.class,
+                Extension.of(Validation.NAMESPACE, false, Validation.class),
 
                 // XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)
-                Body.class,
+                Extension.of(Body.class),
 
                 // XEP-0138: Stream Compression
-                StreamCompression.class,
+                Extension.of(StreamCompression.class),
 
                 // XEP-0141: Data Forms Layout
-                Page.class,
+                Extension.of(Page.NAMESPACE, false, Page.class),
 
                 // XEP-0145: Annotations
-                Annotation.class,
+                Extension.of(Annotation.class),
+
+                // XEP-0205: Best Practices to Discourage Denial of Service Attacks
+                Extension.of(ResourceLimitExceeded.class, StanzaTooBig.class, TooManyStanzas.class),
 
                 // XEP-0221: Data Forms Media Element
-                Media.class
+                Extension.of(Media.class)
         ));
+
         this.extensions.addAll(Arrays.asList(extensions));
-        this.managers.add(ServiceDiscoveryManager.class);
-        this.managers.add(ResultSetManager.class);
-        this.managers.add(PresenceManager.class);
-        this.managers.add(RosterManager.class);
-        this.managers.add(ReconnectionManager.class);
-        this.managers.addAll(managers);
+        this.extensions.add(Extension.of(PresenceManager.class));
+        this.extensions.add(Extension.of(ReconnectionManager.class));
+        this.extensions.add(Extension.of(RosterManager.class));
     }
 
     /**
@@ -132,16 +137,7 @@ public class CoreContext {
      *
      * @return The context.
      */
-    public final Collection<Class<?>> getExtensions() {
-        return Collections.unmodifiableCollection(extensions);
-    }
-
-    /**
-     * Gets the initial managers.
-     *
-     * @return The initial managers.
-     */
-    public final Collection<Class<? extends Manager>> getManagers() {
-        return Collections.unmodifiableCollection(managers);
+    public final Collection<Extension> getExtensions() {
+        return extensions;
     }
 }

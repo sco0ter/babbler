@@ -50,8 +50,8 @@ import rocks.xmpp.core.stream.model.ClientStreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.PresenceManager;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -93,7 +93,6 @@ import java.util.stream.Stream;
 
 /**
  * The base class for establishing an XMPP session with a server.
- * <p>
  * <h3>Establishing an XMPP Session</h3>
  * The following example shows the most simple way to establish a session:
  * <pre>
@@ -105,7 +104,6 @@ import java.util.stream.Stream;
  * </pre>
  * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback.
  * You can configure a session and its connection methods by passing appropriate configurations in its constructor.
- * <p>
  * <h3>Sending Messages</h3>
  * Once connected, you can send messages:
  * <pre>
@@ -122,18 +120,17 @@ import java.util.stream.Stream;
  * <h3>Listening for Messages and Presence</h3>
  * <b>Note:</b> Adding the following listeners should be added before logging in, otherwise they might not trigger.
  * <pre>
- * <code>
+ * {@code
  * // Listen for messages
- * xmppSession.addInboundMessageListener(new MessageListener() {
- *     {@literal @}Override
- *     public void handleMessage(MessageEvent e) {
- *         // Handle inbound message
- *     }
- * });
+ * xmppSession.addInboundMessageListener(e ->
+ *     // Handle inbound message.
+ * );
  *
  * // Listen for presence changes
- * xmppSession.addInboundPresenceListener(e -> /* Handle inbound presence. / );
- * </code>
+ * xmppSession.addInboundPresenceListener(e ->
+ *     // Handle inbound presence.
+ * );
+ * }
  * </pre>
  * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
  *
@@ -171,6 +168,8 @@ public class XmppSession implements AutoCloseable {
     private final List<Connection> connections = new ArrayList<>();
 
     private final XmppSessionConfiguration configuration;
+
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     ExecutorService iqHandlerExecutor;
 
@@ -277,9 +276,7 @@ public class XmppSession implements AutoCloseable {
                 return false;
             }
         });
-
-        // Every connection supports XEP-106 JID Escaping.
-        getManager(ServiceDiscoveryManager.class).addFeature(new Feature("jid\\20escaping"));
+        this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
 
         if (configuration.getDebugger() != null) {
             try {
@@ -298,8 +295,7 @@ public class XmppSession implements AutoCloseable {
             Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
         }
 
-        // Initialize the managers.
-        configuration.getInitialManagers().forEach(this::getManager);
+        configuration.getExtensions().forEach(serviceDiscoveryManager::registerFeature);
     }
 
     private static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
@@ -1095,7 +1091,7 @@ public class XmppSession implements AutoCloseable {
                     synchronized (iqHandlerMap) {
                         iqHandler = iqHandlerMap.get(payload.getClass());
                         // If the handler is to be invoked asynchronously, get the iqHandlerExecutor, otherwise use stanzaListenerExecutor (which is a single thread executor).
-                        executor = iqHandlerInvocationModes.get(payload.getClass()) ? iqHandlerExecutor : stanzaListenerExecutor;
+                        executor = iqHandler != null ? (iqHandlerInvocationModes.get(payload.getClass()) ? iqHandlerExecutor : stanzaListenerExecutor) : null;
                     }
 
                     if (iqHandler != null) {
@@ -1184,7 +1180,7 @@ public class XmppSession implements AutoCloseable {
                         instance.initialize();
                         instances.put(clazz, instance);
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                        throw new IllegalArgumentException("Can't instantiate the provided class.", e);
+                        throw new IllegalArgumentException("Can't instantiate the provided class:" + clazz, e);
                     }
                 }
             }
@@ -1357,10 +1353,70 @@ public class XmppSession implements AutoCloseable {
     }
 
     /**
+     * Enables a feature by its name, usually a protocol namespace.
+     *
+     * @param name The associated manager class.
+     */
+    public final void enableFeature(String name) {
+        serviceDiscoveryManager.addFeature(name);
+    }
+
+    /**
+     * Disables a feature by its name, usually a protocol namespace.
+     *
+     * @param name The associated manager class.
+     */
+    public final void disableFeature(String name) {
+        serviceDiscoveryManager.removeFeature(name);
+    }
+
+    /**
+     * Enables a feature by its manager class.
+     *
+     * @param managerClass The associated manager class.
+     */
+    public final void enableFeature(Class<? extends Manager> managerClass) {
+        serviceDiscoveryManager.addFeature(managerClass);
+    }
+
+    /**
+     * Disables a feature by its manager class.
+     *
+     * @param managerClass The associated manager class.
+     */
+    public final void disableFeature(Class<? extends Manager> managerClass) {
+        serviceDiscoveryManager.removeFeature(managerClass);
+    }
+
+    /**
+     * Gets the enabled features.
+     *
+     * @return The enabled features.
+     */
+    public final Set<String> getEnabledFeatures() {
+        return serviceDiscoveryManager.getFeatures();
+    }
+
+    /**
+     * Determines support of another XMPP entity for a given feature.
+     * <p>
+     * Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
+     * If you want to determine the server's capabilities provide only the domain JID of the server.
+     * <p>
+     * This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.
+     *
+     * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
+     * @param jid     The XMPP entity.
+     * @return True, if the XMPP entity supports the given feature; otherwise false.
+     */
+    public final boolean isSupported(String feature, Jid jid) throws XmppException {
+        return getManager(EntityCapabilitiesManager.class).isSupported(feature, jid);
+    }
+
+    /**
      * Represents the session status.
      * <p>
      * The following chart illustrates the valid status transitions:
-     * <p>
      * <pre>
      * &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; INITIAL
      * &#x2502;          &#x2502;

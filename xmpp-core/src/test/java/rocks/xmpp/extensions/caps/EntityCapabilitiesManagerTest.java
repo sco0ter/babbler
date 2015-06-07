@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -153,11 +152,11 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         List<Identity> identities = new ArrayList<>();
         identities.add(new Identity("client", "pc", "Exodus 0.9.1"));
 
-        List<Feature> features = new ArrayList<>();
-        features.add(new Feature("http://jabber.org/protocol/disco#info"));
-        features.add(new Feature("http://jabber.org/protocol/disco#items"));
-        features.add(new Feature("http://jabber.org/protocol/muc"));
-        features.add(new Feature("http://jabber.org/protocol/caps"));
+        List<String> features = new ArrayList<>();
+        features.add("http://jabber.org/protocol/disco#info");
+        features.add("http://jabber.org/protocol/disco#items");
+        features.add("http://jabber.org/protocol/muc");
+        features.add("http://jabber.org/protocol/caps");
 
         InfoNode infoNode = new InfoDiscovery(identities, features);
         String verificationString = EntityCapabilities.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
@@ -175,11 +174,11 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         identities.add(new Identity("client", "pc", "Psi 0.11", "en"));
         identities.add(new Identity("client", "pc", "P 0.11", "el"));
 
-        List<Feature> features = new ArrayList<>();
-        features.add(new Feature("http://jabber.org/protocol/caps"));
-        features.add(new Feature("http://jabber.org/protocol/disco#info"));
-        features.add(new Feature("http://jabber.org/protocol/disco#items"));
-        features.add(new Feature("http://jabber.org/protocol/muc"));
+        List<String> features = new ArrayList<>();
+        features.add("http://jabber.org/protocol/caps");
+        features.add("http://jabber.org/protocol/disco#info");
+        features.add("http://jabber.org/protocol/disco#items");
+        features.add("http://jabber.org/protocol/muc");
 
         DataForm dataForm = new DataForm(DataForm.Type.RESULT, Arrays.asList(
                 DataForm.Field.builder().var("FORM_TYPE").value("urn:xmpp:dataforms:softwareinfo").type(DataForm.Field.Type.HIDDEN).build(),
@@ -200,11 +199,11 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         List<Identity> identities = new ArrayList<>();
         identities.add(new Identity("client", "pc", "Exodus 0.9.1"));
 
-        List<Feature> features = new ArrayList<>();
-        features.add(new Feature("http://jabber.org/protocol/disco#info"));
-        features.add(new Feature("http://jabber.org/protocol/disco#items"));
-        features.add(new Feature("http://jabber.org/protocol/muc"));
-        features.add(new Feature("http://jabber.org/protocol/caps"));
+        List<String> features = new ArrayList<>();
+        features.add("http://jabber.org/protocol/disco#info");
+        features.add("http://jabber.org/protocol/disco#items");
+        features.add("http://jabber.org/protocol/muc");
+        features.add("http://jabber.org/protocol/caps");
 
         DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().var("ccc").build(),
                 DataForm.Field.builder().var("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build()));
@@ -228,17 +227,17 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         List<Identity> identities = new ArrayList<>();
         identities.add(new Identity("client", "pc"));
 
-        List<Feature> features = new ArrayList<>();
-        features.add(new Feature("http://jabber.org/protocol/disco#info"));
-        features.add(new Feature("http://jabber.org/protocol/disco#items"));
-        features.add(new Feature("urn:xmpp:ping"));
-        features.add(new Feature("jabber:iq:last"));
-        features.add(new Feature("jabber:iq:version"));
-        features.add(new Feature("http://jabber.org/protocol/ibb"));
-        features.add(new Feature("vcard-temp"));
-        features.add(new Feature("urn:xmpp:time"));
-        features.add(new Feature("http://jabber.org/protocol/shim"));
-        features.add(new Feature("http://jabber.org/protocol/caps"));
+        List<String> features = new ArrayList<>();
+        features.add("http://jabber.org/protocol/disco#info");
+        features.add("http://jabber.org/protocol/disco#items");
+        features.add("urn:xmpp:ping");
+        features.add("jabber:iq:last");
+        features.add("jabber:iq:version");
+        features.add("http://jabber.org/protocol/ibb");
+        features.add("vcard-temp");
+        features.add("urn:xmpp:time");
+        features.add("http://jabber.org/protocol/shim");
+        features.add("http://jabber.org/protocol/caps");
 
         InfoNode infoNode = new InfoDiscovery(identities, features);
         String verificationString = EntityCapabilities.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));

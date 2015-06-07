@@ -36,7 +36,6 @@ import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Instant;
@@ -119,7 +118,7 @@ public class LastActivityManagerTest extends ExtensionTest {
         // By default, the manager should be enabled.
         Assert.assertTrue(lastActivityManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("jabber:iq:last");
+        String feature = "jabber:iq:last";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         lastActivityManager.setEnabled(false);
         Assert.assertFalse(lastActivityManager.isEnabled());

@@ -34,7 +34,6 @@ import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 import java.util.UUID;
 
@@ -50,7 +49,7 @@ public class IbbTest extends ExtensionTest {
         // By default, the manager should be enabled.
         Assert.assertTrue(inBandBytestreamManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("http://jabber.org/protocol/ibb");
+        String feature = "http://jabber.org/protocol/ibb";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         inBandBytestreamManager.setEnabled(false);
         Assert.assertFalse(inBandBytestreamManager.isEnabled());

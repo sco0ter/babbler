@@ -49,6 +49,7 @@ public abstract class StreamFeatureNegotiator extends Manager {
     /**
      * Constructs a feature negotiator.
      *
+     * @param xmppSession  The XMPP session.
      * @param featureClass The feature class, which represents the feature, which will be negotiated.
      */
     public StreamFeatureNegotiator(XmppSession xmppSession, Class<? extends StreamFeature> featureClass) {

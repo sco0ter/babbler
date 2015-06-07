@@ -40,7 +40,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -101,7 +101,8 @@ public final class VCard4 implements VCard {
     /**
      * Cardinality:  *1
      */
-    private Date anniversary;
+    @XmlJavaTypeAdapter(DateAdapter.class)
+    private LocalDate anniversary;
 
     /**
      * Cardinality:  *1
@@ -111,19 +112,17 @@ public final class VCard4 implements VCard {
     /**
      * Cardinality:  *
      */
-    @XmlElement(name = "adr")
-    private final List<Address> addresses = new ArrayList<>();
+    private final List<Address> adr = new ArrayList<>();
 
     /**
      * Cardinality:  *
      */
-    private List<String> telephone;
+    private final List<TelephoneNumber> tel = new ArrayList<>();
 
     /**
      * Cardinality:  *
      */
-    @XmlElement(name = "email")
-    private List<EmailAddress> email;
+    private final List<EmailAddress> email = new ArrayList<>();
 
     /**
      * Cardinality:  *
@@ -133,19 +132,17 @@ public final class VCard4 implements VCard {
     /**
      * Cardinality:  *
      */
-    private List<String> language;
+    private List<Language> lang;
 
     /**
      * Cardinality:  *
      */
-    @XmlElement(name = "tz")
     @XmlJavaTypeAdapter(ZoneIdAdapter.class)
-    private ZoneId timeZone;
+    private ZoneId tz;
 
     /**
      * Cardinality:  *
      */
-    @XmlElement(name = "geo")
     private URI geo;
 
     /**
@@ -277,17 +274,17 @@ public final class VCard4 implements VCard {
 
     @Override
     public List<Address> getAddresses() {
-        return addresses;
+        return adr;
     }
 
     @Override
     public List<TelephoneNumber> getTelephoneNumbers() {
-        return null;
+        return tel;
     }
 
     @Override
     public ZoneId getTimeZone() {
-        return timeZone;
+        return tz;
     }
 
     @Override
@@ -342,6 +339,10 @@ public final class VCard4 implements VCard {
 
     public Gender getGender() {
         return gender;
+    }
+
+    public List<Language> getLanguages() {
+        return lang;
     }
 
     public enum Type {
@@ -438,7 +439,7 @@ public final class VCard4 implements VCard {
         }
     }
 
-    public static final class Photo extends Parameterizable {
+    public static final class Photo extends VCard4Parameterizable {
 
         private URI uri;
 
@@ -507,7 +508,7 @@ public final class VCard4 implements VCard {
     }
 
     @XmlTransient
-    private static abstract class Parameterizable {
+    private static abstract class VCard4Parameterizable implements VCard.Parameterizable {
         @XmlElementWrapper(name = "parameters")
         @XmlElements({
                 @XmlElement(name = "language", type = Parameter.LanguageParameter.class),
@@ -520,7 +521,7 @@ public final class VCard4 implements VCard {
         }
     }
 
-    public static final class EmailAddress extends Parameterizable implements VCard.Email {
+    public static final class EmailAddress extends VCard4Parameterizable implements VCard.Email {
         @XmlElement(name = "text")
         private String text;
 
@@ -544,8 +545,33 @@ public final class VCard4 implements VCard {
         }
     }
 
+    public static final class Language {
+        @XmlElement(name = "language-tag")
+        private String languageTag;
+
+        public String getLanguage() {
+            return languageTag;
+        }
+    }
+
+    public static final class TelephoneNumber implements VCard.TelephoneNumber {
+
+        @XmlElement
+        private String uri;
+
+        @Override
+        public Collection<? extends VCard.Parameter> getParameters() {
+            return null;
+        }
+
+        @Override
+        public String getNumber() {
+            return uri;
+        }
+    }
+
     @XmlTransient
-    public static abstract class Parameter {
+    public static abstract class Parameter implements VCard.Parameter {
 
         public static final class LanguageParameter extends Parameter {
 

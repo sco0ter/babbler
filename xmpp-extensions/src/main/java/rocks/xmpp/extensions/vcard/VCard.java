@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -132,11 +133,27 @@ public interface VCard {
         String getCountry();
     }
 
-    interface TelephoneNumber {
+    interface Parameterizable {
+
+        Collection<? extends Parameter> getParameters();
+    }
+
+    interface Parameter {
+
+    }
+
+    enum Type implements Parameter {
+        HOME,
+        WORK
+    }
+
+    interface TelephoneNumber extends Parameterizable {
+
+        Collection<? extends Parameter> getParameters();
 
         String getNumber();
 
-        enum Type {
+        enum Type implements Parameter {
             /**
              * Indicates that the telephone number supports text messages (SMS).
              */

@@ -272,13 +272,27 @@ public class VCard4Test extends XmlTest {
 
         Assert.assertNotNull(vCard);
 
+        // Names
         Assert.assertEquals(vCard.getFormattedName(), "Simon Perreault");
         Assert.assertEquals(vCard.getName().getFamilyName(), "Perreault");
         Assert.assertEquals(vCard.getName().getGivenName(), "Simon");
-        Assert.assertEquals(vCard.getName().getFamilyName(), "Perreault");
         Assert.assertEquals(vCard.getName().getSuffix(), "M.Sc.");
+
+        // Birthday
+        // TODO
+
+        // Anniversary
+        // TODO
+
+        // Gender
         Assert.assertEquals(vCard.getGender().getSex(), VCard4.Sex.MALE);
 
+        // Languages
+        Assert.assertEquals(vCard.getLanguages().size(), 2);
+        Assert.assertEquals(vCard.getLanguages().get(0).getLanguage(), "fr");
+        Assert.assertEquals(vCard.getLanguages().get(1).getLanguage(), "en");
+
+        // Addresses
         Assert.assertEquals(vCard.getAddresses().size(), 1);
         VCard.Address address = vCard.getAddresses().get(0);
         Assert.assertEquals(address.getCity(), "Quebec");
@@ -286,6 +300,12 @@ public class VCard4Test extends XmlTest {
         Assert.assertEquals(address.getPostalCode(), "G1V 2M2");
         Assert.assertEquals(address.getCountry(), "Canada");
         Assert.assertEquals(address.getStreet(), "2875 boul. Laurier, suite D2-630");
+
+        // Telephone
+        Assert.assertEquals(vCard.getTelephoneNumbers().size(), 2);
+        Assert.assertEquals(vCard.getTelephoneNumbers().get(0).getNumber(), "tel:+1-418-656-9254;ext=102");
+        Assert.assertEquals(vCard.getTelephoneNumbers().get(1).getNumber(), "tel:+1-418-262-6501");
+
 
         Assert.assertEquals(vCard.getEmailAddresses().get(0).getEmail(), "simon.perreault@viagenie.ca");
         Assert.assertEquals(vCard.getUrl(), new URL("http://nomis80.org"));

@@ -798,7 +798,7 @@ public class XmppSession implements AutoCloseable {
         } catch (Exception e) {
             throwAsXmppExceptionIfNotNull(e);
         } finally {
-            inboundStanzaStreams.forEach(stream -> stream.stream().close());
+            inboundStanzaStreams.forEach(StanzaStream::close);
             // Clear everything.
             inboundMessageListeners.clear();
             outboundMessageListeners.clear();
@@ -1345,7 +1345,7 @@ public class XmppSession implements AutoCloseable {
     public final Stream<Stanza> newInboundStream() {
         StanzaStream stream = new StanzaStream(this);
         inboundStanzaStreams.add(stream);
-        return stream.stream();
+        return stream;
     }
 
     private void addStanzaToInboundStreams(Stanza stanza) {

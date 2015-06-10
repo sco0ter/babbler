@@ -219,11 +219,13 @@ public final class Rpc {
             public final int getFaultCode() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();
-                    Value faultCode = map.get("faultCode");
-                    if (faultCode != null) {
-                        Integer value = faultCode.getAsInteger();
-                        if (value != null) {
-                            return value;
+                    if (map != null) {
+                        Value faultCode = map.get("faultCode");
+                        if (faultCode != null) {
+                            Integer value = faultCode.getAsInteger();
+                            if (value != null) {
+                                return value;
+                            }
                         }
                     }
                 }
@@ -238,9 +240,11 @@ public final class Rpc {
             public final String getFaultString() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();
-                    Value faultCode = map.get("faultString");
-                    if (faultCode != null) {
-                        return faultCode.getAsString();
+                    if (map != null) {
+                        Value faultCode = map.get("faultString");
+                        if (faultCode != null) {
+                            return faultCode.getAsString();
+                        }
                     }
                 }
                 return null;

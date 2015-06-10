@@ -89,18 +89,16 @@ public final class ChatManager extends Manager {
         xmppSession.addInboundMessageListener(e -> {
             AbstractMessage message = e.getMessage();
             if (message.getType() == Message.Type.CHAT) {
-                Jid chatPartner = e.isInbound() ? message.getFrom() : message.getTo();
+                Jid chatPartner = message.getFrom();
                 // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
                 // If an entity receives a message of type "chat" without a thread ID, then it SHOULD create a new session with a new thread ID (and include that thread ID in all the messages it sends within the new session).
                 String threadId = message.getThread() != null ? message.getThread() : UUID.randomUUID().toString();
                 if (chatPartner != null) {
                     synchronized (chatSessions) {
-                        ChatSession chatSession = buildChatSession(chatPartner, threadId, xmppSession, e.isInbound());
-                        if (e.isInbound()) {
-                            // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
-                            chatSession.setChatPartner(message.getFrom());
-                        }
-                        XmppUtils.notifyEventListeners(chatSession.inboundMessageListeners, new MessageEvent(chatSession, message, e.isInbound()));
+                        ChatSession chatSession = buildChatSession(chatPartner, threadId, xmppSession, true);
+                        // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
+                        chatSession.setChatPartner(message.getFrom());
+                        XmppUtils.notifyEventListeners(chatSession.inboundMessageListeners, new MessageEvent(chatSession, message, true));
                     }
                 }
             }

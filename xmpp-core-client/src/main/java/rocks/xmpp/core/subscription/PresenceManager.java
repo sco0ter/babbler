@@ -71,8 +71,7 @@ public final class PresenceManager extends Manager {
             Presence presence = e.getPresence();
             if (presence.getFrom() != null) {
                 // Store the user (bare JID) in the map, associated with different resources.
-                presenceMap.putIfAbsent(presence.getFrom().asBareJid(), new ConcurrentHashMap<>());
-                Map<String, Presence> presencesPerResource = presenceMap.get(presence.getFrom().asBareJid());
+                Map<String, Presence> presencesPerResource = presenceMap.computeIfAbsent(presence.getFrom().asBareJid(), key -> new ConcurrentHashMap<>());
                 // Update the contact's resource with the presence.
                 presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
             }

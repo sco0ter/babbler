@@ -100,7 +100,6 @@ public final class ScramClient extends ScramBase implements SaslClient {
                     new NameCallback("SCRAM username: ", authorizationId);
             PasswordCallback pcb = new PasswordCallback("SCRAM-SHA-1 password: ", false);
 
-
             try {
                 callbackHandler.handle(new Callback[]{ncb, pcb});
                 passwd = pcb.getPassword();
@@ -183,30 +182,5 @@ public final class ScramClient extends ScramBase implements SaslClient {
                 throw new SaslException(e.getMessage(), e);
             }
         }
-    }
-
-    @Override
-    public final boolean isComplete() {
-        return isComplete;
-    }
-
-    @Override
-    public final byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
-        return new byte[0];
-    }
-
-    @Override
-    public final byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
-        return new byte[0];
-    }
-
-    @Override
-    public final Object getNegotiatedProperty(String propName) {
-        return null;
-    }
-
-    @Override
-    public final void dispose() throws SaslException {
-
     }
 }

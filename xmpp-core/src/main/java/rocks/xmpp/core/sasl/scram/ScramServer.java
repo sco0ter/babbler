@@ -208,31 +208,7 @@ final class ScramServer extends ScramBase implements SaslServer {
     }
 
     @Override
-    public final boolean isComplete() {
-        return isComplete;
-    }
-
-    @Override
     public final String getAuthorizationID() {
         return authorizationId;
-    }
-
-    @Override
-    public final byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
-        return new byte[0];
-    }
-
-    @Override
-    public final byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
-        return new byte[0];
-    }
-
-    @Override
-    public final Object getNegotiatedProperty(String propName) {
-        return null;
-    }
-
-    @Override
-    public final void dispose() throws SaslException {
     }
 }

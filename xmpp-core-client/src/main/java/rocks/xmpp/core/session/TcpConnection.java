@@ -364,7 +364,7 @@ public final class TcpConnection extends Connection {
                     }
                     return result;
                 });
-
+                IOException ex = null;
                 for (DnsResourceRecord dnsResourceRecord : dnsSrvRecords) {
                     try {
                         // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
@@ -375,11 +375,12 @@ public final class TcpConnection extends Connection {
                         return true;
                     } catch (IOException e) {
                         // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
+                        ex = e;
                     }
                 }
                 // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP connection using the data received in the response, it SHOULD NOT attempt the fallback process described in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
                 if (dnsSrvRecords.size() > 0) {
-                    throw new IOException("Could not connect to any host.");
+                    throw new IOException("Could not connect to any host.", ex);
                 }
             }
         } catch (NamingException e) {

@@ -24,8 +24,14 @@
 
 package rocks.xmpp.core.session;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * A strategy for reconnection logic, i.e. when and in which interval reconnection attempts will happen. You can provide your own strategy by implementing this interface.
+ * <p>
+ * Alternatively you can use some of the predefined strategies which you can retrieve by one of the static methods.
+ * <p>
+ * E.g. {@link #after(long, TimeUnit)} always tries to reconnect after a fix amount of time.
  *
  * @author Christian Schudt
  * @see ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
@@ -38,7 +44,7 @@ public interface ReconnectionStrategy {
      * @param attempt The current reconnection attempt. The first attempt is 0, the second attempt is 1, etc...
      * @return The number of seconds before the next reconnection is attempted.
      */
-    int getNextReconnectionAttempt(int attempt);
+    long getNextReconnectionAttempt(int attempt);
 
     /**
      * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
@@ -63,5 +69,16 @@ public interface ReconnectionStrategy {
      */
     static ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy(int slotTime, int ceiling) {
         return new TruncatedBinaryExponentialBackoffStrategy(slotTime, ceiling);
+    }
+
+    /**
+     * Reconnects always after a fix amount of time, e.g. after 10 seconds.
+     *
+     * @param duration The fix duration after which a reconnection is attempted.
+     * @param timeUnit The time unit.
+     * @return The reconnection strategy.
+     */
+    static ReconnectionStrategy after(long duration, TimeUnit timeUnit) {
+        return attempt -> timeUnit.toSeconds(duration);
     }
 }

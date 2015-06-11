@@ -74,7 +74,7 @@ public final class ReconnectionManager extends Manager {
 
     private ReconnectionManager(final XmppSession xmppSession) {
         super(xmppSession, false);
-        this.reconnectionStrategy = new TruncatedBinaryExponentialBackoffStrategy(60, 5);
+        this.reconnectionStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 5);
 
         // Enable by default.
         setEnabled(true);
@@ -117,7 +117,7 @@ public final class ReconnectionManager extends Manager {
 
     private synchronized void scheduleReconnection(final int attempt) {
         if (isEnabled()) {
-            int seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
+            long seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
             if (attempt == 0) {
                 logger.log(Level.FINE, "Disconnect detected. Next reconnection attempt in {0} seconds.", seconds);
             } else {

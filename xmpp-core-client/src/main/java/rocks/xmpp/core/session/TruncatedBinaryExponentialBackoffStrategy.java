@@ -48,7 +48,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
  */
-public final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
+final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
 
     private final int slotTime;
 
@@ -58,7 +58,7 @@ public final class TruncatedBinaryExponentialBackoffStrategy implements Reconnec
      * @param slotTime The slot time (in seconds), usually 60.
      * @param ceiling  The ceiling, i.e. when the time is truncated. E.g. if the ceiling is 4, the back off is truncated at the 5th reconnection attempt (it starts at zero).
      */
-    public TruncatedBinaryExponentialBackoffStrategy(int slotTime, int ceiling) {
+    TruncatedBinaryExponentialBackoffStrategy(int slotTime, int ceiling) {
         this.slotTime = slotTime;
         this.ceiling = ceiling;
     }

@@ -42,9 +42,10 @@ public interface ReconnectionStrategy {
      * Gets the time (in seconds) until the next reconnection is attempted.
      *
      * @param attempt The current reconnection attempt. The first attempt is 0, the second attempt is 1, etc...
+     * @param cause   The cause for the disconnection.
      * @return The number of seconds before the next reconnection is attempted.
      */
-    long getNextReconnectionAttempt(int attempt);
+    long getNextReconnectionAttempt(int attempt, Throwable cause);
 
     /**
      * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
@@ -79,6 +80,6 @@ public interface ReconnectionStrategy {
      * @return The reconnection strategy.
      */
     static ReconnectionStrategy after(long duration, TimeUnit timeUnit) {
-        return attempt -> timeUnit.toSeconds(duration);
+        return (attempt, cause) -> timeUnit.toSeconds(duration);
     }
 }

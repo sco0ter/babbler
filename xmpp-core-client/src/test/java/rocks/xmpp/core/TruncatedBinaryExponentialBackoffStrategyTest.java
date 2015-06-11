@@ -36,20 +36,20 @@ public class TruncatedBinaryExponentialBackoffStrategyTest {
     @Test
     public void test() {
         ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 4);
-        long first = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(0);
+        long first = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(0, null);
 
         Assert.assertTrue(first >= 0 && first < 60);
-        long second = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(1);
+        long second = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(1, null);
         Assert.assertTrue(second >= 0 && second < 180);
-        long third = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(2);
+        long third = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(2, null);
         Assert.assertTrue(third >= 0 && third < 420);
-        long fourth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(3);
+        long fourth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(3, null);
         Assert.assertTrue(fourth >= 0 && fourth < 900);
-        long fifth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4);
+        long fifth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4, null);
         Assert.assertTrue(fifth >= 0 && fifth < 1860);
-        long sixth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(5);
+        long sixth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(5, null);
         Assert.assertTrue(sixth >= 0 && sixth < 1860);
-        long seventh = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(6);
+        long seventh = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(6, null);
         Assert.assertTrue(seventh >= 0 && seventh < 1860);
     }
 }

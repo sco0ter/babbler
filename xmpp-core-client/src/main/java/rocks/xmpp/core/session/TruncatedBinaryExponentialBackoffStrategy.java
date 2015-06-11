@@ -64,7 +64,7 @@ final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStr
     }
 
     @Override
-    public long getNextReconnectionAttempt(int attempt) {
+    public long getNextReconnectionAttempt(int attempt, Throwable throwable) {
         // For the first attempt choose a random number between 0 and 60.
         // For the second attempt choose a random number between 0 and 180.
         // For the third attempt choose a random number between 0 and 420.

@@ -90,7 +90,7 @@ public final class ReconnectionManager extends Manager {
                 case DISCONNECTED:
                     // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
                     if ((!(e.getThrowable() instanceof StreamErrorException) || !(((StreamErrorException) e.getThrowable()).getStreamError().getCondition() == Condition.CONFLICT)) && e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
-                        scheduleReconnection(0);
+                        scheduleReconnection(0, e.getThrowable());
                     }
                     break;
                 case CONNECTED:
@@ -115,9 +115,9 @@ public final class ReconnectionManager extends Manager {
         }
     }
 
-    private synchronized void scheduleReconnection(final int attempt) {
+    private synchronized void scheduleReconnection(final int attempt, Throwable throwable) {
         if (isEnabled()) {
-            long seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
+            long seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt, throwable);
             if (attempt == 0) {
                 logger.log(Level.FINE, "Disconnect detected. Next reconnection attempt in {0} seconds.", seconds);
             } else {
@@ -131,7 +131,7 @@ public final class ReconnectionManager extends Manager {
                     logger.log(Level.FINE, "Reconnection successful.");
                 } catch (XmppException e) {
                     logger.log(Level.FINE, "Reconnection failed.", e);
-                    scheduleReconnection(attempt + 1);
+                    scheduleReconnection(attempt + 1, e);
                 }
             }, seconds, TimeUnit.SECONDS);
         }

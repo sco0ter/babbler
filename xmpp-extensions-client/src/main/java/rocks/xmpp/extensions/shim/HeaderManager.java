@@ -91,13 +91,13 @@ public final class HeaderManager extends ExtensionManager implements InfoNode {
     }
 
     @Override
-    public void onEnable() {
+    protected void onEnable() {
         super.onEnable();
         serviceDiscoveryManager.addInfoNode(this);
     }
 
     @Override
-    public void onDisable() {
+    protected void onDisable() {
         super.onDisable();
         serviceDiscoveryManager.removeInfoNode(getNode());
     }

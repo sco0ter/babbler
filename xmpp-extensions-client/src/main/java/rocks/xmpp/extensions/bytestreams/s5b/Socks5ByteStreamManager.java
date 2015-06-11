@@ -159,7 +159,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     }
 
     @Override
-    public void onEnable() {
+    protected void onEnable() {
         super.onEnable();
         if (isLocalHostEnabled()) {
             // Only stop the server here, if we disable support.
@@ -169,7 +169,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     }
 
     @Override
-    public void onDisable() {
+    protected void onDisable() {
         super.onDisable();
         if (!isLocalHostEnabled()) {
             // Only stop the server here, if we disable support.

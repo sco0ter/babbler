@@ -165,7 +165,7 @@ public final class ReconnectionManager extends Manager {
     }
 
     @Override
-    public final void onDisable() {
+    protected final void onDisable() {
         super.onDisable();
         cancel();
     }

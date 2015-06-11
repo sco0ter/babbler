@@ -118,7 +118,7 @@ public final class BlockingManager extends ExtensionManager {
     }
 
     @Override
-    public final void onDisable() {
+    protected final void onDisable() {
         super.onDisable();
         xmppSession.removeIQHandler(Block.class);
         xmppSession.removeIQHandler(Unblock.class);

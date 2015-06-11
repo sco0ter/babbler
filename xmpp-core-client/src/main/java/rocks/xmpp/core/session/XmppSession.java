@@ -759,7 +759,7 @@ public class XmppSession implements AutoCloseable {
             // This is for reconnection.
             if (wasLoggedIn) {
                 logger.fine("Was already logged in. Re-login automatically with known credentials.");
-                loginInternal(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
+                login(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
             }
         } catch (Throwable e) {
             try {
@@ -849,6 +849,7 @@ public class XmppSession implements AutoCloseable {
      *
      * @param user     The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password The password. Must not be null.
+     * @return The additional data with success, i.e. the data returned upon successful authentication.
      * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
@@ -856,8 +857,8 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
-    public final void login(String user, String password) throws XmppException {
-        login(user, password, null);
+    public final byte[] login(String user, String password) throws XmppException {
+        return login(user, password, null);
     }
 
     /**
@@ -866,6 +867,7 @@ public class XmppSession implements AutoCloseable {
      * @param user     The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password The password. Must not be null.
      * @param resource The resource. If null or empty, the resource is randomly assigned by the server.
+     * @return The additional data with success, i.e. the data returned upon successful authentication.
      * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
@@ -873,8 +875,8 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
-    public final void login(String user, String password, String resource) throws XmppException {
-        login(null, user, password, resource);
+    public final byte[] login(String user, String password, String resource) throws XmppException {
+        return login(null, user, password, resource);
     }
 
     /**
@@ -884,6 +886,7 @@ public class XmppSession implements AutoCloseable {
      * @param user            The user name. Usually this is the local part of the user's JID. Must not be null.
      * @param password        The password. Must not be null.
      * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
+     * @return The additional data with success, i.e. the data returned upon successful authentication.
      * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
@@ -891,12 +894,12 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
-    public final void login(String authorizationId, final String user, final String password, String resource) throws XmppException {
+    public final byte[] login(String authorizationId, final String user, final String password, String resource) throws XmppException {
         Objects.requireNonNull(user, "user must not be null.");
         Objects.requireNonNull(password, "password must not be null.");
 
         // A default callback handler for username/password retrieval:
-        login(authorizationId, callbacks -> Arrays.stream(callbacks).forEach(callback -> {
+        return login(authorizationId, callbacks -> Arrays.stream(callbacks).forEach(callback -> {
             if (callback instanceof NameCallback) {
                 ((NameCallback) callback).setName(user);
             }
@@ -915,6 +918,7 @@ public class XmppSession implements AutoCloseable {
      * @param authorizationId The authorization id.
      * @param callbackHandler The callback handler.
      * @param resource        The resource. If null or empty, the resource is randomly assigned by the server.
+     * @return The additional data with success, i.e. the data returned upon successful authentication.
      * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
@@ -922,13 +926,14 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
-    public final void login(String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
-        loginInternal(configuration.getAuthenticationMechanisms(), authorizationId, callbackHandler, resource);
+    public final byte[] login(String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
+        return login(configuration.getAuthenticationMechanisms(), authorizationId, callbackHandler, resource);
     }
 
     /**
      * Logs in anonymously and binds a resource.
      *
+     * @return The additional data with success, i.e. the data returned upon successful authentication.
      * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
@@ -936,12 +941,13 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException            If the server returned a stanza error during resource binding.
      * @throws XmppException              If the login failed, due to another error.
      */
-    public final void loginAnonymously() throws XmppException {
-        loginInternal(Collections.singleton("ANONYMOUS"), null, null, null);
+    public final byte[] loginAnonymously() throws XmppException {
+        byte[] successData = login(Collections.singleton("ANONYMOUS"), null, null, null);
         anonymous = true;
+        return successData;
     }
 
-    private void loginInternal(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
+    private byte[] login(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
 
         Status previousStatus = getStatus();
 
@@ -1017,6 +1023,7 @@ public class XmppSession implements AutoCloseable {
             throwAsXmppExceptionIfNotNull(e);
         }
         logger.fine("Login successful.");
+        return authenticationManager.getSuccessData();
     }
 
     /**

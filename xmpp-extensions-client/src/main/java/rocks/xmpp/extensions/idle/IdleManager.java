@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.idle;
 
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
@@ -49,7 +49,7 @@ import java.util.function.Supplier;
  *
  * @author Christian Schudt
  */
-public final class IdleManager extends ExtensionManager {
+public final class IdleManager extends Manager {
 
     private Supplier<Instant> idleStrategy;
 

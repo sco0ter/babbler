@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.rtt;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.chat.Chat;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -49,7 +49,7 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  * @see <a href="http://www.xmpp.org/extensions/xep-0301.html">XEP-0301: In-Band Real Time Text</a>
  */
-public final class RealTimeTextManager extends ExtensionManager {
+public final class RealTimeTextManager extends Manager {
 
     private final Map<TrackingKey, InboundRealTimeMessage> realTimeMessageMap = new ConcurrentHashMap<>();
 

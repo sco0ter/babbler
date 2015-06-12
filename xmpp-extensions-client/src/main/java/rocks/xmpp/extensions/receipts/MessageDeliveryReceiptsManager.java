@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.receipts;
 
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -57,7 +57,7 @@ import java.util.function.Predicate;
  * }
  * </pre>
  */
-public final class MessageDeliveryReceiptsManager extends ExtensionManager {
+public final class MessageDeliveryReceiptsManager extends Manager {
 
     /**
      * A default filter for automatic receipt request on outbound messages.

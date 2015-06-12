@@ -240,6 +240,7 @@ public class XmppSession implements AutoCloseable {
         this.configuration = configuration;
         this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
         this.iqHandlerExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("IQ Handler Thread"));
+        this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
 
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
         shutdownHook = new Thread() {
@@ -272,7 +273,7 @@ public class XmppSession implements AutoCloseable {
                 return false;
             }
         });
-        this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
+
 
         if (configuration.getDebugger() != null) {
             try {

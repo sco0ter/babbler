@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.ping;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQEvent;
@@ -57,7 +57,7 @@ import java.util.function.Consumer;
  *
  * @author Christian Schudt
  */
-public final class PingManager extends ExtensionManager {
+public final class PingManager extends Manager {
 
     private final ScheduledExecutorService scheduledExecutorService;
 

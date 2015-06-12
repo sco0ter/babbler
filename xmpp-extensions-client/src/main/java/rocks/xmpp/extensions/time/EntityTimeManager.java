@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.time;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -44,7 +44,7 @@ import java.time.OffsetDateTime;
  *
  * @author Christian Schudt
  */
-public final class EntityTimeManager extends ExtensionManager {
+public final class EntityTimeManager extends Manager {
 
     private final IQHandler iqHandler;
 

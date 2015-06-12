@@ -127,11 +127,10 @@ public final class RosterManager extends Manager {
     private String groupDelimiter;
 
     private RosterManager(final XmppSession xmppSession) {
-        super(xmppSession, true);
+        super(xmppSession, true, true);
         privateDataManager = xmppSession.getManager(PrivateDataManager.class);
 
         this.rosterCacheDirectory = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("rosterver")) : null;
-        setEnabled(true);
     }
 
     /**

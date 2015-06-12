@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.rpc;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
-public final class RpcManager extends ExtensionManager {
+public final class RpcManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(RpcManager.class.getName());
 

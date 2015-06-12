@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.pubsub;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * @see <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
  * @see <a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
  */
-public final class PubSubManager extends ExtensionManager {
+public final class PubSubManager extends Manager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 

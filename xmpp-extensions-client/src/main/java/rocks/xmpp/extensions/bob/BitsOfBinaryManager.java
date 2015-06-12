@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.bob;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Christian Schudt
  */
-class BitsOfBinaryManager extends ExtensionManager {
+class BitsOfBinaryManager extends Manager {
 
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 

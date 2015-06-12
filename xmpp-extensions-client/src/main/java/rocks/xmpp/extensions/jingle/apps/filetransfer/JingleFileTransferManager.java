@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.jingle.apps.filetransfer;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
@@ -49,7 +49,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * @author Christian Schudt
  */
-public final class JingleFileTransferManager extends ExtensionManager {
+public final class JingleFileTransferManager extends Manager {
 
     private final JingleManager jingleManager;
 

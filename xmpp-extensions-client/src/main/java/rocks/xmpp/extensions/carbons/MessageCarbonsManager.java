@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.carbons;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
@@ -45,7 +45,7 @@ import rocks.xmpp.extensions.carbons.model.MessageCarbons;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
  */
-public final class MessageCarbonsManager extends ExtensionManager {
+public final class MessageCarbonsManager extends Manager {
 
     private MessageCarbonsManager(XmppSession xmppSession) {
         super(xmppSession);

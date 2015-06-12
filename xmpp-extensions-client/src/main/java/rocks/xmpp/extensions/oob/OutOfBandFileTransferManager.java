@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.oob;
 
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -38,7 +38,6 @@ import rocks.xmpp.extensions.filetransfer.FileTransferStatusEvent;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
-import rocks.xmpp.extensions.oob.model.x.OobX;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,7 +53,7 @@ import java.util.function.Consumer;
 /**
  * @author Christian Schudt
  */
-public final class OutOfBandFileTransferManager extends ExtensionManager implements FileTransferNegotiator {
+public final class OutOfBandFileTransferManager extends Manager implements FileTransferNegotiator {
     private final FileTransferManager fileTransferManager;
 
     private OutOfBandFileTransferManager(final XmppSession xmppSession) {

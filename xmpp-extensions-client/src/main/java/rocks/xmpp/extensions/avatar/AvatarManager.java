@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.avatar;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -88,7 +88,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Christian Schudt
  */
-public final class AvatarManager extends ExtensionManager {
+public final class AvatarManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(VCardManager.class.getName());
 

@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.soap;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 
@@ -36,7 +36,7 @@ import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0072.html">XEP-0072: SOAP Over XMPP</a>
  */
-public class SoapManager extends ExtensionManager {
+public class SoapManager extends Manager {
 
     private static final String NAMESPACE = "http://jabber.org/protocol/soap";
 

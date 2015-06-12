@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.vcard.temp;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Presence;
@@ -44,7 +44,7 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-public final class VCardManager extends ExtensionManager {
+public final class VCardManager extends Manager {
 
     private VCardManager(final XmppSession xmppSession) {
         super(xmppSession);

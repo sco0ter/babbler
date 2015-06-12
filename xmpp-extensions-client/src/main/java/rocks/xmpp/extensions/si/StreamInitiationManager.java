@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.si;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 /**
  * @author Christian Schudt
  */
-public final class StreamInitiationManager extends ExtensionManager implements FileTransferNegotiator {
+public final class StreamInitiationManager extends Manager implements FileTransferNegotiator {
 
     private static final String STREAM_METHOD = "stream-method";
 

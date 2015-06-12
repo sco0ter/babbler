@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Extension;
-import rocks.xmpp.core.session.ExtensionManager;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -43,8 +42,8 @@ import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
-import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.ResultSet;
+import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.util.ArrayList;
@@ -75,7 +74,7 @@ import java.util.function.Consumer;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends ExtensionManager {
+public final class ServiceDiscoveryManager extends Manager {
 
     private static final Set<Identity> DEFAULT_IDENTITY = Collections.singleton(new Identity("client", "pc"));
 

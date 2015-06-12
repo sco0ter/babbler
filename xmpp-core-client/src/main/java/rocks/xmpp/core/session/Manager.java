@@ -32,8 +32,17 @@ package rocks.xmpp.core.session;
 public abstract class Manager {
     protected final XmppSession xmppSession;
 
+    protected Manager(XmppSession xmppSession) {
+        this(xmppSession, false);
+    }
+
     protected Manager(XmppSession xmppSession, boolean disposable) {
+        this(xmppSession, disposable, false);
+    }
+
+    protected Manager(XmppSession xmppSession, boolean disposable, boolean enabled) {
         this.xmppSession = xmppSession;
+        this.enabled = enabled;
         if (disposable) {
             xmppSession.addSessionStatusListener(e -> {
                 if (e.getStatus() == XmppSession.Status.CLOSED) {
@@ -75,12 +84,14 @@ public abstract class Manager {
      * Called when the manager is enabled.
      */
     protected void onEnable() {
+        xmppSession.enableFeature(getClass());
     }
 
     /**
      * Called when the manager is disabled.
      */
     protected void onDisable() {
+        xmppSession.disableFeature(getClass());
     }
 
     /**

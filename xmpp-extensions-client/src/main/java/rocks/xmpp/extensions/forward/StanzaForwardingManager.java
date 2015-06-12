@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.forward;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
@@ -51,7 +51,7 @@ import java.time.Instant;
  *
  * @author Christian Schudt
  */
-public final class StanzaForwardingManager extends ExtensionManager {
+public final class StanzaForwardingManager extends Manager {
 
     /**
      * Creates the stanza forwarding manager.

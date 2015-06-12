@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.shim;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  *
  * @author Christian Schudt
  */
-public final class HeaderManager extends ExtensionManager implements InfoNode {
+public final class HeaderManager extends Manager implements InfoNode {
 
     private final Set<String> supportedHeaders;
 

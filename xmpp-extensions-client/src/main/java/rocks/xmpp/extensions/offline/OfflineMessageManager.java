@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.offline;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  *
  * @author Christian Schudt
  */
-public final class OfflineMessageManager extends ExtensionManager {
+public final class OfflineMessageManager extends Manager {
 
 
     private OfflineMessageManager(XmppSession xmppSession) {

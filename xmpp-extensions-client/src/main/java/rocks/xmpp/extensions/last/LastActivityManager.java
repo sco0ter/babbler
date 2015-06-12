@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.last;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -70,7 +70,7 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  * @see IdleManager
  */
-public final class LastActivityManager extends ExtensionManager {
+public final class LastActivityManager extends Manager {
 
     private final IdleManager idleManager;
 

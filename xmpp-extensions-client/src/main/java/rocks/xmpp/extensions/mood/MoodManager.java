@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.mood;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.mood.model.Mood;
 import rocks.xmpp.extensions.pubsub.PubSubManager;
@@ -33,7 +33,7 @@ import rocks.xmpp.extensions.pubsub.PubSubManager;
 /**
  * @author Christian Schudt
  */
-public final class MoodManager extends ExtensionManager {
+public final class MoodManager extends Manager {
 
     private final PubSubManager pubSubManager;
 

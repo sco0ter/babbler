@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 
 import java.io.ByteArrayOutputStream;

@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import static rocks.xmpp.extensions.avatar.AvatarManager.asBufferedImage;
+import rocks.xmpp.core.Jid;
+import rocks.xmpp.extensions.avatar.AvatarManager.ConversionException;
 
 import java.awt.image.BufferedImage;
 import java.util.EventObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.extensions.avatar.AvatarManager.ConversionException;
+import static rocks.xmpp.extensions.avatar.AvatarManager.asBufferedImage;
 
 /**
  * The avatar change event to notify about avatar updates.

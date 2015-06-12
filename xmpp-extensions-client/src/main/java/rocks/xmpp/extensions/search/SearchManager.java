@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.search;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.search.model.Search;
@@ -40,7 +40,7 @@ import rocks.xmpp.extensions.search.model.Search;
  *
  * @author Christian Schudt
  */
-public final class SearchManager extends ExtensionManager {
+public final class SearchManager extends Manager {
 
     /**
      * Creates the search manager.

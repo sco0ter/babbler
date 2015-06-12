@@ -29,7 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Contact;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -58,7 +58,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class ContactExchangeManager extends ExtensionManager {
+public final class ContactExchangeManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(ContactExchangeManager.class.getName());
 

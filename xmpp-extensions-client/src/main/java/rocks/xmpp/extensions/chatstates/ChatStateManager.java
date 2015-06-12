@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.chatstates;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.chat.Chat;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
@@ -72,7 +72,7 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
  */
-public final class ChatStateManager extends ExtensionManager {
+public final class ChatStateManager extends Manager {
 
     private final Map<Chat, ChatState> chatMap = new ConcurrentHashMap<>();
 

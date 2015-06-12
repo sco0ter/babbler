@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.muc;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
-public final class MultiUserChatManager extends ExtensionManager {
+public final class MultiUserChatManager extends Manager {
 
     private static final String ROOMS_NODE = "http://jabber.org/protocol/muc#rooms";
 

@@ -25,6 +25,7 @@
 package rocks.xmpp.sample;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;

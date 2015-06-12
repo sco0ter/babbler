@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.attention;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.attention.model.Attention;
@@ -58,7 +58,7 @@ import rocks.xmpp.extensions.attention.model.Attention;
  *
  * @author Christian Schudt
  */
-public final class AttentionManager extends ExtensionManager {
+public final class AttentionManager extends Manager {
 
     private AttentionManager(XmppSession xmppSession) {
         super(xmppSession);

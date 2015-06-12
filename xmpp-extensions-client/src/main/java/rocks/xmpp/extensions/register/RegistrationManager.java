@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.register;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
@@ -40,7 +40,7 @@ import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
  *
  * @author Christian Schudt
  */
-public final class RegistrationManager extends ExtensionManager {
+public final class RegistrationManager extends Manager {
 
     private RegistrationManager(XmppSession xmppSession) {
         super(xmppSession);

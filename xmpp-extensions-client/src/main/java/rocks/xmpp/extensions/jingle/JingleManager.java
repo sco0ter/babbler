@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.jingle;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
@@ -51,7 +51,7 @@ import java.util.function.Consumer;
 /**
  * @author Christian Schudt
  */
-public final class JingleManager extends ExtensionManager {
+public final class JingleManager extends Manager {
 
     private final Set<Class<? extends ApplicationFormat>> supportedApplicationFormats = new HashSet<>();
 

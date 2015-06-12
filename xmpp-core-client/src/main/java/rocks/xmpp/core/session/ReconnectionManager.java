@@ -73,15 +73,10 @@ public final class ReconnectionManager extends Manager {
     private Instant nextReconnectionAttempt;
 
     private ReconnectionManager(final XmppSession xmppSession) {
-        super(xmppSession, false);
+        super(xmppSession, false, true);
         this.reconnectionStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 5);
-
-        // Enable by default.
-        setEnabled(true);
-
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
     }
-
 
     @Override
     protected final void initialize() {

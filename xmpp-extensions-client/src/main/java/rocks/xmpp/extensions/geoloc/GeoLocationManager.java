@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.geoloc;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -46,7 +46,7 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
  */
-public final class GeoLocationManager extends ExtensionManager {
+public final class GeoLocationManager extends Manager {
 
     private final Set<Consumer<GeoLocationEvent>> geoLocationListeners = new CopyOnWriteArraySet<>();
 

@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.version;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class SoftwareVersionManager extends ExtensionManager {
+public final class SoftwareVersionManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(VCardManager.class.getName());
 

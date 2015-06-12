@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.privacy;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -63,7 +63,7 @@ import java.util.function.Consumer;
  *
  * @author Christian Schudt
  */
-public final class PrivacyListManager extends ExtensionManager {
+public final class PrivacyListManager extends Manager {
     private final Set<Consumer<PrivacyListEvent>> privacyListListeners = new CopyOnWriteArraySet<>();
 
     private final IQHandler iqHandler;

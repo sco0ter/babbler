@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.caps;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
@@ -79,7 +79,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
  */
-public final class EntityCapabilitiesManager extends ExtensionManager {
+public final class EntityCapabilitiesManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(EntityCapabilitiesManager.class.getName());
 

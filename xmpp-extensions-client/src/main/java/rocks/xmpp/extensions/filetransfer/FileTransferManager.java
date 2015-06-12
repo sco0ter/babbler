@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.filetransfer;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.IQ;
@@ -59,7 +59,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author Christian Schudt
  */
-public final class FileTransferManager extends ExtensionManager {
+public final class FileTransferManager extends Manager {
 
     private final StreamInitiationManager streamInitiationManager;
 

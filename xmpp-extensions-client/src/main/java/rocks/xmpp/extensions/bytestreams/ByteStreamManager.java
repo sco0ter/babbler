@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.bytestreams;
 
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 
 import java.util.Set;
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
  *
  * @author Christian Schudt
  */
-public abstract class ByteStreamManager extends ExtensionManager {
+public abstract class ByteStreamManager extends Manager {
 
     protected final Set<Consumer<ByteStreamEvent>> byteStreamListeners = new CopyOnWriteArraySet<>();
 

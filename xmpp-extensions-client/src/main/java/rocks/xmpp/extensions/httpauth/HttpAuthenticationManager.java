@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.httpauth;
 
 import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -49,7 +49,7 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
  */
-public final class HttpAuthenticationManager extends ExtensionManager {
+public final class HttpAuthenticationManager extends Manager {
 
     private final Set<Consumer<HttpAuthenticationEvent>> httpAuthenticationListeners = new CopyOnWriteArraySet<>();
 

@@ -1171,17 +1171,23 @@ public class XmppSession implements AutoCloseable {
      */
     @SuppressWarnings("unchecked")
     public final <T extends Manager> T getManager(Class<T> clazz) {
-        return (T) instances.computeIfAbsent(clazz, key -> {
-            try {
-                Constructor<T> constructor = clazz.getDeclaredConstructor(XmppSession.class);
-                constructor.setAccessible(true);
-                T instance = constructor.newInstance(this);
-                instance.initialize();
-                return instance;
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                throw new IllegalArgumentException("Can't instantiate the provided class:" + clazz, e);
+        T instance;
+        if ((instance = (T) instances.get(clazz)) == null) {
+            synchronized (instances) {
+                if ((instance = (T) instances.get(clazz)) == null) {
+                    try {
+                        Constructor<T> constructor = clazz.getDeclaredConstructor(XmppSession.class);
+                        constructor.setAccessible(true);
+                        instance = constructor.newInstance(this);
+                        instance.initialize();
+                        instances.put(clazz, instance);
+                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                        throw new IllegalArgumentException("Can't instantiate the provided class:" + clazz, e);
+                    }
+                }
             }
-        });
+        }
+        return instance;
     }
 
     /**
@@ -1193,6 +1199,7 @@ public class XmppSession implements AutoCloseable {
      *
      * @return The connected resource.
      */
+
     public final Jid getConnectedResource() {
         return connectedResource;
     }

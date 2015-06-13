@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -192,6 +193,12 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
         }
         return null;
     }
+
+    @Override
+    public abstract AbstractPresence createError(StanzaError error);
+
+    @Override
+    public abstract AbstractPresence createError(Condition condition);
 
     @Override
     public final int compareTo(AbstractPresence o) {

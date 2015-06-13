@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -137,6 +138,27 @@ public abstract class AbstractIQ extends Stanza {
     public final boolean isResponse() {
         return EnumSet.of(Type.RESULT, Type.ERROR).contains(type);
     }
+
+    /**
+     * Creates a result IQ stanza, i.e. it uses the same id as this IQ, sets the type to 'result' and switches the 'to' and 'from' attribute.
+     *
+     * @return The result IQ stanza.
+     */
+    public abstract AbstractIQ createResult();
+
+    /**
+     * Creates a result IQ stanza with a payload, i.e. it uses the same id as this IQ, sets the type to 'result' and switches the 'to' and 'from' attribute.
+     *
+     * @param extension The extension.
+     * @return The result IQ stanza.
+     */
+    public abstract AbstractIQ createResult(Object extension);
+
+    @Override
+    public abstract AbstractIQ createError(StanzaError error);
+
+    @Override
+    public abstract AbstractIQ createError(Condition condition);
 
     /**
      * Represents a {@code <iq/>} 'type' attribute.

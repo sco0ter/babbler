@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -230,6 +231,12 @@ public abstract class AbstractMessage extends Stanza {
         }
         return null;
     }
+
+    @Override
+    public abstract AbstractMessage createError(StanzaError error);
+
+    @Override
+    public abstract AbstractMessage createError(Condition condition);
 
     @Override
     public final String toString() {

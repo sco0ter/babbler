@@ -112,6 +112,7 @@ public final class IQ extends AbstractIQ implements ClientStreamElement {
      *
      * @return The result IQ stanza.
      */
+    @Override
     public final IQ createResult() {
         return createResult(null);
     }
@@ -122,6 +123,7 @@ public final class IQ extends AbstractIQ implements ClientStreamElement {
      * @param extension The extension.
      * @return The result IQ stanza.
      */
+    @Override
     public final IQ createResult(Object extension) {
         return new IQ(getFrom(), Type.RESULT, extension, getId(), getTo(), getLanguage(), null);
     }

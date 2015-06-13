@@ -38,6 +38,7 @@ import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -522,7 +523,7 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public IQ query(IQ iq) throws XmppException {
+    public AbstractIQ query(AbstractIQ iq) throws XmppException {
         return query(iq, configuration.getDefaultResponseTimeout());
     }
 
@@ -538,17 +539,17 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public IQ query(final IQ iq, long timeout) throws XmppException {
+    public AbstractIQ query(final AbstractIQ iq, long timeout) throws XmppException {
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
 
-        final IQ[] result = new IQ[1];
+        final AbstractIQ[] result = new AbstractIQ[1];
         final Lock queryLock = new ReentrantLock();
         final Condition resultReceived = queryLock.newCondition();
 
         final Consumer<IQEvent> listener = e -> {
-            IQ responseIQ = e.getIQ();
+            AbstractIQ responseIQ = e.getIQ();
             if (responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
                 queryLock.lock();
                 try {
@@ -575,7 +576,7 @@ public class XmppSession implements AutoCloseable {
             queryLock.unlock();
             removeInboundIQListener(listener);
         }
-        IQ response = result[0];
+        AbstractIQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
             throw new StanzaException(response);
         }
@@ -1039,7 +1040,7 @@ public class XmppSession implements AutoCloseable {
 
         // Bind the resource
         IQ iq = new IQ(IQ.Type.SET, new Bind(this.resource));
-        IQ result = query(iq);
+        AbstractIQ result = query(iq);
 
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
@@ -1077,8 +1078,8 @@ public class XmppSession implements AutoCloseable {
      */
     public final boolean handleElement(final Object element) throws XmppException {
 
-        if (element instanceof IQ) {
-            final IQ iq = (IQ) element;
+        if (element instanceof AbstractIQ) {
+            final AbstractIQ iq = (AbstractIQ) element;
 
             if (iq.getType() == null) {
                 // return <bad-request/> if the <iq/> has no type.
@@ -1100,7 +1101,7 @@ public class XmppSession implements AutoCloseable {
                     if (iqHandler != null) {
                         executor.execute(() -> {
                             try {
-                                IQ response = iqHandler.handleRequest(iq);
+                                AbstractIQ response = iqHandler.handleRequest(iq);
                                 if (response != null) {
                                     send(response);
                                 }

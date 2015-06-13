@@ -103,7 +103,7 @@ public final class ServiceDiscoveryManager extends Manager {
 
         this.discoInfoHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
                 if (infoDiscovery.getNode() == null) {
                     return iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
@@ -121,7 +121,7 @@ public final class ServiceDiscoveryManager extends Manager {
         };
         this.discoItemHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
                 ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
                 if (itemProvider != null) {
@@ -367,7 +367,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #discoverInformation(rocks.xmpp.core.Jid)
      */
     public final InfoNode discoverInformation(Jid jid, String node) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new InfoDiscovery(node)));
+        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new InfoDiscovery(node)));
         return result.getExtension(InfoDiscovery.class);
     }
 
@@ -420,7 +420,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
+        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
         return result.getExtension(ItemDiscovery.class);
     }
 

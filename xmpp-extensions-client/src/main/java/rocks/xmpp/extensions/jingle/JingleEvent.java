@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.jingle;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 
@@ -40,7 +41,7 @@ public final class JingleEvent extends EventObject {
 
     private final String sessionId;
 
-    private final IQ iq;
+    private final AbstractIQ iq;
 
     private final XmppSession xmppSession;
 
@@ -52,7 +53,7 @@ public final class JingleEvent extends EventObject {
      * @param source The object on which the event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    JingleEvent(Object source, XmppSession xmppSession, IQ iq, Jingle jingle) {
+    JingleEvent(Object source, XmppSession xmppSession, AbstractIQ iq, Jingle jingle) {
         super(source);
         this.xmppSession = xmppSession;
         this.iq = iq;

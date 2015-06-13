@@ -30,6 +30,7 @@ import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -121,8 +122,8 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public IQ query(final IQ iq) throws StanzaException, NoResponseException {
-        final IQ[] result = new IQ[1];
+    public AbstractIQ query(final AbstractIQ iq) throws StanzaException, NoResponseException {
+        final AbstractIQ[] result = new AbstractIQ[1];
 
         final Consumer<IQEvent> iqListener = e -> {
             if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
@@ -134,7 +135,7 @@ public class TestXmppSession extends XmppSession {
         send(iq);
 
         removeInboundIQListener(iqListener);
-        IQ response = result[0];
+        AbstractIQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
             throw new StanzaException(response);
         }
@@ -142,7 +143,7 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
+    public AbstractIQ query(final AbstractIQ iq, long timeout) throws StanzaException, NoResponseException {
         // Ignore timeout for tests.
         return query(iq);
     }

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.filetransfer;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.hashes.model.Hash;
 
@@ -44,7 +45,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
 
     private final FileTransferOffer fileTransferOffer;
 
-    private final IQ iq;
+    private final AbstractIQ iq;
 
     private final String mimeType;
 
@@ -60,7 +61,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    FileTransferOfferEvent(Object source, IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, Object protocol, FileTransferNegotiator fileTransferNegotiator) {
+    FileTransferOfferEvent(Object source, AbstractIQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, Object protocol, FileTransferNegotiator fileTransferNegotiator) {
         super(source);
         this.sessionId = sessionId;
         this.iq = iq;

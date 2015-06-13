@@ -52,7 +52,7 @@ class BitsOfBinaryManager extends Manager {
     protected void initialize() {
         xmppSession.addIQHandler(Data.class, new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 Data data = iq.getExtension(Data.class);
                 // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
                 Data cachedData = dataCache.get(data.getContentId());
@@ -75,7 +75,7 @@ class BitsOfBinaryManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public Data getData(String contentId, Jid to) throws XmppException {
-        IQ result = xmppSession.query(new IQ(to, IQ.Type.GET, new Data(contentId)));
+        AbstractIQ result = xmppSession.query(new IQ(to, IQ.Type.GET, new Data(contentId)));
         Data data = result.getExtension(Data.class);
 //        // Only cache the data, if the max-age attribute absent or not zero.
 //        if (data != null && (data.getMaxAge() != null && data.getMaxAge() != 0 || data.getMaxAge() == null)) {

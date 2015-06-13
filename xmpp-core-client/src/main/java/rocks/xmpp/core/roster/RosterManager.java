@@ -178,7 +178,7 @@ public final class RosterManager extends Manager {
     protected final void initialize() {
         xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            public IQ processRequest(IQ iq) {
+            public AbstractIQ processRequest(AbstractIQ iq) {
                 Roster roster = iq.getExtension(Roster.class);
                 // 2.1.6.  Roster Push
                 // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
@@ -484,7 +484,7 @@ public final class RosterManager extends Manager {
             rosterRequest = new Roster();
         }
 
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, rosterRequest));
+        AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, rosterRequest));
         Roster rosterResult = result.getExtension(Roster.class);
         // null result means, the requested roster version (from cache) is taken and any updates (if any) are done via roster pushes.
         if (rosterResult != null) {

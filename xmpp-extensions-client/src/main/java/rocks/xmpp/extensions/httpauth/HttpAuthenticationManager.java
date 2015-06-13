@@ -63,7 +63,7 @@ public final class HttpAuthenticationManager extends Manager {
 
         iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
                 XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq, confirmationRequest));
                 return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;

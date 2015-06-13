@@ -105,7 +105,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         super.initialize();
         xmppSession.addIQHandler(Socks5ByteStream.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
 
                 if (socks5ByteStream.getSessionId() == null) {
@@ -189,7 +189,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     public List<StreamHost> discoverProxies() throws XmppException {
         Collection<Item> services = serviceDiscoveryManager.discoverServices(Socks5ByteStream.NAMESPACE);
         for (Item service : services) {
-            IQ result = xmppSession.query(new IQ(service.getJid(), IQ.Type.GET, new Socks5ByteStream()));
+            AbstractIQ result = xmppSession.query(new IQ(service.getJid(), IQ.Type.GET, new Socks5ByteStream()));
             Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);
             if (socks5ByteStream != null) {
                 return socks5ByteStream.getStreamHosts();
@@ -253,7 +253,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         try {
             // 5.3.1 Requester Initiates S5B Negotiation
             // 6.3.1 Requester Initiates S5B Negotiation
-            IQ result = xmppSession.query(new IQ(target, IQ.Type.SET, new Socks5ByteStream(sessionId, streamHosts, hash)));
+            AbstractIQ result = xmppSession.query(new IQ(target, IQ.Type.SET, new Socks5ByteStream(sessionId, streamHosts, hash)));
 
             // 5.3.3 Target Acknowledges Bytestream
             // 6.3.3 Target Acknowledges Bytestream

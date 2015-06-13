@@ -85,7 +85,7 @@ public final class ContactExchangeManager extends Manager {
         };
         this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
                 if (xmppSession.getManager(RosterManager.class).getContact(iq.getFrom().asBareJid()) == null) {
                     // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.

@@ -28,6 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
@@ -58,7 +59,7 @@ public final class VCardManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public VCard getVCard() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
+        AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
         return result.getExtension(VCard.class);
     }
 
@@ -95,7 +96,7 @@ public final class VCardManager extends Manager {
      */
     public VCard getVCard(Jid jid) throws XmppException {
         Objects.requireNonNull(jid, "jid must not be null.");
-        IQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
+        AbstractIQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
         return result.getExtension(VCard.class);
     }
 }

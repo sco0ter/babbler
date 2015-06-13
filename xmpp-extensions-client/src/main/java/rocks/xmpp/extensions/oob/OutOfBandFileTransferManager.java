@@ -65,7 +65,7 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
     protected void initialize() {
         xmppSession.addIQHandler(OobIQ.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 OobIQ oobIQ = iq.getExtension(OobIQ.class);
                 final URL url = oobIQ.getUrl();
                 final String description = oobIQ.getDescription();
@@ -140,7 +140,7 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
     }
 
     @Override
-    public FileTransfer accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
+    public FileTransfer accept(final AbstractIQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
         try {
             URL url = new URL(fileTransferOffer.getName());
             URLConnection urlConnection = url.openConnection();
@@ -165,7 +165,7 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
     }
 
     @Override
-    public void reject(IQ iq) {
+    public void reject(AbstractIQ iq) {
         // If the recipient rejects the request outright, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Acceptable condition:
         xmppSession.send(iq.createError(Condition.NOT_ACCEPTABLE));
     }

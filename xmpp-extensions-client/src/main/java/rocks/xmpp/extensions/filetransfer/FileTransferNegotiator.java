@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ import java.io.OutputStream;
  */
 public interface FileTransferNegotiator {
 
-    FileTransfer accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException;
+    FileTransfer accept(AbstractIQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException;
 
-    void reject(IQ iq);
+    void reject(AbstractIQ iq);
 }

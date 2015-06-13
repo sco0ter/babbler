@@ -70,7 +70,7 @@ public final class BlockingManager extends Manager {
 
         this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
                     Block block = iq.getExtension(Block.class);
                     if (block != null) {
@@ -154,7 +154,7 @@ public final class BlockingManager extends Manager {
      */
     public final Collection<Jid> getBlockedContacts() throws XmppException {
         synchronized (blockedContacts) {
-            IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
+            AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
             BlockList blockList = result.getExtension(BlockList.class);
             if (blockList != null) {
                 blockedContacts.addAll(blockList.getItems().stream().collect(Collectors.toList()));

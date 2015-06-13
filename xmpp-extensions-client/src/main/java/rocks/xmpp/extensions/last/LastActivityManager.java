@@ -94,7 +94,7 @@ public final class LastActivityManager extends Manager {
         };
         this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 // If someone asks me to get my last activity, reply.
                 synchronized (idleManager) {
                     Instant idleSince = idleManager.getIdleStrategy() != null ? idleManager.getIdleStrategy().get() : null;
@@ -140,7 +140,7 @@ public final class LastActivityManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public LastActivity getLastActivity(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
+        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
         return result.getExtension(LastActivity.class);
     }
 }

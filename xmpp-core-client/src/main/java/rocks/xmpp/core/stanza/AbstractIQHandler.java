@@ -53,7 +53,7 @@ public abstract class AbstractIQHandler implements IQHandler {
     }
 
     @Override
-    public final IQ handleRequest(IQ iq) {
+    public final AbstractIQ handleRequest(AbstractIQ iq) {
         if (iq.getType() == type) {
             return processRequest(iq);
         } else {
@@ -67,5 +67,5 @@ public abstract class AbstractIQHandler implements IQHandler {
      * @param iq The IQ request.
      * @return The IQ response.
      */
-    protected abstract IQ processRequest(IQ iq);
+    protected abstract AbstractIQ processRequest(AbstractIQ iq);
 }

@@ -90,7 +90,7 @@ public final class PingManager extends Manager {
 
         this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 return iq.createResult();
             }
         };

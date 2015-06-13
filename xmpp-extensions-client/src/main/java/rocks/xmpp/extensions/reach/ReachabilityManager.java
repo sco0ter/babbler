@@ -103,7 +103,7 @@ public final class ReachabilityManager extends Manager {
 
         this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
                 return iq.createResult(new Reachability(addresses));
             }
@@ -186,7 +186,7 @@ public final class ReachabilityManager extends Manager {
      */
     public List<Address> requestReachabilityAddresses(Jid contact) throws XmppException {
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get".
-        IQ result = xmppSession.query(new IQ(contact, IQ.Type.GET, new Reachability()));
+        AbstractIQ result = xmppSession.query(new IQ(contact, IQ.Type.GET, new Reachability()));
         Reachability reachability = result.getExtension(Reachability.class);
         if (reachability != null) {
             return reachability.getAddresses();

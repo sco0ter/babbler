@@ -94,7 +94,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
 
         iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
 
                 FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
@@ -163,7 +163,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         DataForm.Field field = DataForm.Field.builder().var(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
         DataForm dataForm = new DataForm(DataForm.Type.FORM, Collections.singletonList(field));
         // Offer the file to the recipient and wait until it's accepted.
-        IQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
+        AbstractIQ result = xmppSession.query(new IQ(receiver, IQ.Type.SET, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
 
         // The recipient must response with a stream initiation.
         StreamInitiation streamInitiation = result.getExtension(StreamInitiation.class);
@@ -193,7 +193,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
     }
 
     @Override
-    public FileTransfer accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
+    public FileTransfer accept(AbstractIQ iq, final String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
         StreamInitiation streamInitiation = (StreamInitiation) protocol;
         DataForm.Field field = streamInitiation.getFeatureNegotiation().getDataForm().findField(STREAM_METHOD);
         final List<String> offeredStreamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
@@ -252,7 +252,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
     }
 
     @Override
-    public void reject(IQ iq) {
+    public void reject(AbstractIQ iq) {
         xmppSession.send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.FORBIDDEN));
     }
 
@@ -263,6 +263,6 @@ public final class StreamInitiationManager extends Manager implements FileTransf
     }
 
     private interface ProfileManager {
-        void handle(IQ iq, StreamInitiation streamInitiation);
+        void handle(AbstractIQ iq, StreamInitiation streamInitiation);
     }
 }

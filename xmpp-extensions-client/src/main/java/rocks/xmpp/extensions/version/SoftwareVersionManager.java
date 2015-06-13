@@ -76,7 +76,7 @@ public final class SoftwareVersionManager extends Manager {
         super(xmppSession);
         iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 synchronized (SoftwareVersionManager.this) {
                     if (softwareVersion != null) {
                         return iq.createResult(softwareVersion);
@@ -111,7 +111,7 @@ public final class SoftwareVersionManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new SoftwareVersion()));
+        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new SoftwareVersion()));
         return result.getExtension(SoftwareVersion.class);
     }
 

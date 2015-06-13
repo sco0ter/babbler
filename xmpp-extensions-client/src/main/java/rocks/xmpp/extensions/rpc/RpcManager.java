@@ -63,7 +63,7 @@ public final class RpcManager extends Manager {
 
         this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 Rpc rpc = iq.getExtension(Rpc.class);
                 // If there's an inbound RPC
                 RpcHandler rpcHandler1;
@@ -113,7 +113,7 @@ public final class RpcManager extends Manager {
      * @throws RpcException                                If the RPC returned with an application-level error ({@code <fault/>} element).
      */
     public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
+        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
         if (result != null) {
             Rpc rpc = result.getExtension(Rpc.class);
             if (rpc != null) {

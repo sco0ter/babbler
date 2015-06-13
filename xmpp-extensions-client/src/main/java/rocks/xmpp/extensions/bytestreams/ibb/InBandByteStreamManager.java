@@ -74,7 +74,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
         super(xmppSession);
         openIQHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
                 if (open.getBlockSize() > 65535) {
                     return iq.createError(new StanzaError(StanzaError.Type.MODIFY, rocks.xmpp.core.stanza.model.errors.Condition.RESOURCE_CONSTRAINT));
@@ -88,7 +88,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
         };
         dataIQHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 InBandByteStream.Data data = iq.getExtension(InBandByteStream.Data.class);
                 IbbSession ibbSession = ibbSessionMap.get(data.getSessionId());
                 // Data has been received for a session, so notify the IBB session about it.
@@ -106,7 +106,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
         };
         closeIQHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 // Must be a close element.
                 InBandByteStream.Close close = iq.getExtension(InBandByteStream.Close.class);
                 IbbSession ibbSession = ibbSessionMap.get(close.getSessionId());

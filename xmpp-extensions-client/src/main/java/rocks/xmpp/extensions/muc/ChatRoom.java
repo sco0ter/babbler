@@ -31,6 +31,7 @@ import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -469,7 +470,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public DataForm getRegistrationForm() throws XmppException {
         IQ iq = new IQ(roomJid, IQ.Type.GET, new Registration());
-        IQ result = xmppSession.query(iq);
+        AbstractIQ result = xmppSession.query(iq);
         Registration registration = result.getExtension(Registration.class);
         if (registration != null) {
             return registration.getRegistrationForm();
@@ -577,7 +578,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getVoiceList() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
+        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -607,7 +608,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getBanList() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
+        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -687,7 +688,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getMembers() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
+        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -701,7 +702,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getModerators() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
+        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -815,7 +816,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
      */
     public DataForm getConfigurationForm() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
+        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
         MucOwner mucOwner = result.getExtension(MucOwner.class);
         return mucOwner.getConfigurationForm();
     }

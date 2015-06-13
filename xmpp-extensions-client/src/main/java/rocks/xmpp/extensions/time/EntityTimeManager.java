@@ -52,7 +52,7 @@ public final class EntityTimeManager extends Manager {
         super(xmppSession);
         iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
             @Override
-            protected IQ processRequest(IQ iq) {
+            protected AbstractIQ processRequest(AbstractIQ iq) {
                 return iq.createResult(new EntityTime(OffsetDateTime.now()));
             }
         };
@@ -79,7 +79,7 @@ public final class EntityTimeManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public OffsetDateTime getEntityTime(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
+        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
         EntityTime entityTime = result.getExtension(EntityTime.class);
         return entityTime != null ? entityTime.getDateTime() : null;
     }

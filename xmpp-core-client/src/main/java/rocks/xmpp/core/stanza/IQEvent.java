@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.stanza;
 
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 
 import java.util.function.Consumer;
@@ -37,7 +38,7 @@ import java.util.function.Consumer;
  * @see rocks.xmpp.core.session.XmppSession#addInboundIQListener(Consumer)
  * @see rocks.xmpp.core.session.XmppSession#addOutboundIQListener(Consumer)
  */
-public final class IQEvent extends StanzaEvent<IQ> {
+public final class IQEvent extends StanzaEvent<AbstractIQ> {
 
     /**
      * Constructs an IQ event.
@@ -47,7 +48,7 @@ public final class IQEvent extends StanzaEvent<IQ> {
      * @param inbound True, if the stanza is inbound.
      * @throws IllegalArgumentException if source is null.
      */
-    public IQEvent(Object source, IQ iq, boolean inbound) {
+    public IQEvent(Object source, AbstractIQ iq, boolean inbound) {
         super(source, iq, inbound);
     }
 
@@ -56,7 +57,7 @@ public final class IQEvent extends StanzaEvent<IQ> {
      *
      * @return The IQ stanza.
      */
-    public final IQ getIQ() {
+    public final AbstractIQ getIQ() {
         return stanza;
     }
 }

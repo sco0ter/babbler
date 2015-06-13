@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.stanza;
 
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 
 import java.util.function.Consumer;
@@ -56,5 +57,5 @@ public interface IQHandler {
      * @param iq The inbound IQ stanza.
      * @return The result or error IQ, which is the response to sending entity.
      */
-    IQ handleRequest(IQ iq);
+    AbstractIQ handleRequest(AbstractIQ iq);
 }

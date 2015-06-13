@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.bytestreams.s5b;
 
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
@@ -42,11 +43,11 @@ final class S5bEvent extends ByteStreamEvent {
 
     private final XmppSession xmppSession;
 
-    private final IQ iq;
+    private final AbstractIQ iq;
 
     private final List<StreamHost> streamHosts;
 
-    public S5bEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, List<StreamHost> streamHosts) {
+    public S5bEvent(Object source, String sessionId, XmppSession xmppSession, AbstractIQ iq, List<StreamHost> streamHosts) {
         super(source, sessionId);
         this.xmppSession = xmppSession;
         this.iq = iq;

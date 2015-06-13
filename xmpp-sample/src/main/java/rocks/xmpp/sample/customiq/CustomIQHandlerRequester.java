@@ -67,7 +67,7 @@ public class CustomIQHandlerRequester {
                 Addition addition = new Addition(52, 22);
                 System.out.println("Requesting: " + addition);
                 // Request the sum of two values (52 + 22). 111 will calculate it for you and return a result.
-                IQ resultIQ = xmppSession.query(new IQ(new Jid("111", xmppSession.getDomain(), "iq"), AbstractIQ.Type.GET, addition));
+                AbstractIQ resultIQ = xmppSession.query(new IQ(new Jid("111", xmppSession.getDomain(), "iq"), AbstractIQ.Type.GET, addition));
 
                 // Print the result.
                 System.out.println(resultIQ.getExtension(Addition.class));

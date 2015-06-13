@@ -34,6 +34,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -41,7 +42,6 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
@@ -93,19 +93,22 @@ final class XmppStreamReader {
                 try {
 
                     InputStream xmppInputStream;
-                    ByteArrayOutputStream byteArrayOutputStream = null;
                     if (debugger != null) {
-                        byteArrayOutputStream = new ByteArrayOutputStream();
-                        xmppInputStream = debugger.createInputStream(XmppUtils.createBranchedInputStream(inputStream, byteArrayOutputStream));
+                        xmppInputStream = debugger.createInputStream(inputStream);
                     } else {
                         xmppInputStream = inputStream;
                     }
-
+                    XMLEvent startDocument = null;
                     xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream, "UTF-8");
-                    boolean isFirstPass = true;
                     while (!doRestart && xmlEventReader.hasNext()) {
                         XMLEvent xmlEvent = xmlEventReader.peek();
-
+                        StringWriter stringWriter = null;
+                        if (debugger != null) {
+                            stringWriter = new StringWriter();
+                            if (xmlEvent.isStartDocument()) {
+                                startDocument = xmlEvent;
+                            }
+                        }
                         if (xmlEvent.isStartElement()) {
                             StartElement startElement = xmlEvent.asStartElement();
                             if (startElement.getName().getLocalPart().equals("stream") && startElement.getName().getNamespaceURI().equals("http://etherx.jabber.org/streams")) {
@@ -119,33 +122,29 @@ final class XmppStreamReader {
                                 if (fromAttribute != null) {
                                     xmppSession.setXmppServiceDomain(fromAttribute.getValue());
                                 }
-
+                                if (debugger != null) {
+                                    XMLEventWriter writer = xmlOutputFactory.createXMLEventWriter(stringWriter);
+                                    writer.add(startDocument);
+                                    writer.add(xmlEvent);
+                                    writer.flush();
+                                    writer.close();
+                                    debugger.readStanza(stringWriter.toString(), null);
+                                }
                                 xmlEventReader.next();
                             } else {
                                 Object object = unmarshaller.unmarshal(xmlEventReader);
 
                                 if (debugger != null) {
-                                    if (isFirstPass && byteArrayOutputStream != null) {
-                                        // If it's the first pass, include the stream header with the <features/>, which are both in the byteArrayOutputStream at this point.
-                                        debugger.readStanza(byteArrayOutputStream.toString(), object);
-                                    } else {
-                                        // Otherwise marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
-                                        StringWriter stringWriter = new StringWriter();
-                                        XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
-                                        marshaller.marshal(object, xmlStreamWriter);
-                                        xmlStreamWriter.flush();
-                                        debugger.readStanza(stringWriter.toString(), object);
-                                    }
+                                    // Marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
+                                    XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
+                                    marshaller.marshal(object, xmlStreamWriter);
+                                    xmlStreamWriter.flush();
+                                    debugger.readStanza(stringWriter.toString(), object);
                                 }
-                                isFirstPass = false;
                                 doRestart = xmppSession.handleElement(object);
                             }
                         } else {
                             xmlEventReader.next();
-                        }
-                        if (!isFirstPass && byteArrayOutputStream != null) {
-                            // Avoid that the stream grows to the size of the whole XMPP stream.
-                            byteArrayOutputStream.reset();
                         }
                         if (xmlEvent.getEventType() == XMLEvent.END_ELEMENT) {
                             // The stream gets closed with </stream:stream>

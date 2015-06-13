@@ -30,7 +30,7 @@ import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
@@ -539,7 +539,7 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public final void send(ClientStreamElement element) {
+    public final void send(StreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
         Body.Builder bodyBuilder = Body.builder()
                 .wrappedObjects(Collections.singletonList(element))

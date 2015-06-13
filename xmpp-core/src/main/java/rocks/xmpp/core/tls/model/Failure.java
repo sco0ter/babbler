@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.tls.model;
 
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement
 @XmlType(factoryMethod = "create")
-public final class Failure implements ServerStreamElement {
+public final class Failure implements StreamElement {
 
     /**
      * The {@code <failure xmlns="urn:ietf:params:xml:ns:xmpp-tls"/>} element.

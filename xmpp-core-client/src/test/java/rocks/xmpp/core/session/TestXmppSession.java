@@ -32,7 +32,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.stream.XMLOutputFactory;
 import java.io.IOException;
@@ -76,7 +76,7 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void send(ClientStreamElement clientStreamElement) {
+            public void send(StreamElement clientStreamElement) {
 //                try {
 //                    TestXmppSession.this.getMarshaller().marshal(clientStreamElement, finalXmlStreamWriter);
 //                } catch (JAXBException e) {
@@ -113,7 +113,7 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public void send(ClientStreamElement element) {
+    public void send(StreamElement element) {
         super.send(element);
         if (mockServer != null && element instanceof Stanza) {
             mockServer.receive(((Stanza) element).withFrom(connectedResource));

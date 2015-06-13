@@ -25,12 +25,12 @@
 package rocks.xmpp.core.stream.model;
 
 /**
- * This is a marker interface to mark top-level elements, which can be sent over the client stream.
+ * This is a marker interface to mark top-level elements, which can be sent over the stream.
  * <p>
  * Usually this is a stanza like {@code <iq/>}, {@code <message/>} and {@code <presence/>}, but can also be XML elements used for SASL, TLS or by <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
  * </p>
  *
  * @author Christian Schudt
  */
-public interface ClientStreamElement {
+public interface StreamElement {
 }

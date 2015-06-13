@@ -29,7 +29,6 @@ import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -43,7 +42,7 @@ import java.util.Collections;
  */
 @XmlRootElement
 @XmlType(propOrder = {"from", "id", "to", "type", "lang", "show", "status", "priority", "extensions", "error"})
-public final class Presence extends AbstractPresence implements ServerStreamElement {
+public final class Presence extends AbstractPresence {
     /**
      * Constructs an empty presence to indicate availability.
      */

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.sm.model;
 
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "enable")
-public final class Enable implements ClientStreamElement {
+public final class Enable implements StreamElement {
 
     @XmlAttribute(name = "resume")
     private Boolean resume;

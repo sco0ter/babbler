@@ -24,8 +24,7 @@
 
 package rocks.xmpp.extensions.sm.model;
 
-import rocks.xmpp.core.stream.model.ClientStreamElement;
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "a")
-public final class Answer implements ClientStreamElement, ServerStreamElement {
+public final class Answer implements StreamElement {
 
     @XmlAttribute(name = "h")
     private Integer h;

@@ -42,7 +42,7 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 @XmlRootElement(name = "error")
-public final class StreamError implements ServerStreamElement {
+public final class StreamError implements StreamElement {
 
     @XmlElementRef
     private final Condition condition;

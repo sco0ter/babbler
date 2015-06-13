@@ -28,7 +28,7 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.Marshaller;
@@ -118,7 +118,7 @@ final class XmppStreamWriter {
         }
     }
 
-    synchronized void send(final ClientStreamElement clientStreamElement) {
+    synchronized void send(final StreamElement clientStreamElement) {
         if (!executor.isShutdown() && clientStreamElement != null) {
             executor.execute(() -> {
                 try {

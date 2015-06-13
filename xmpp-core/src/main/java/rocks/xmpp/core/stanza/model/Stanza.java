@@ -26,6 +26,7 @@ package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Christian Schudt
  */
 @XmlTransient
-public abstract class Stanza {
+public abstract class Stanza implements StreamElement {
 
     @XmlAttribute
     private final Jid from;

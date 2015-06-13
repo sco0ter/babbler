@@ -46,7 +46,7 @@ import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.PresenceManager;
@@ -591,7 +591,7 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final Presence sendAndAwaitPresence(ClientStreamElement stanza, final Predicate<Presence> filter) throws XmppException {
+    public final Presence sendAndAwaitPresence(StreamElement stanza, final Predicate<Presence> filter) throws XmppException {
         final Presence[] result = new Presence[1];
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
@@ -640,7 +640,7 @@ public class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final Message sendAndAwaitMessage(ClientStreamElement stanza, final Predicate<Message> filter) throws XmppException {
+    public final Message sendAndAwaitMessage(StreamElement stanza, final Predicate<Message> filter) throws XmppException {
 
         final Message[] result = new Message[1];
         final Lock messageLock = new ReentrantLock();
@@ -817,7 +817,7 @@ public class XmppSession implements AutoCloseable {
      *
      * @param element The XML element.
      */
-    public void send(ClientStreamElement element) {
+    public void send(StreamElement element) {
 
         if (!isConnected() && getStatus() != Status.CONNECTING) {
             throw new IllegalStateException("Session is not connected to server");

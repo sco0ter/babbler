@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Christian Schudt
  */
 @XmlRootElement
-public final class Failure implements ServerStreamElement {
+public final class Failure implements StreamElement {
 
     @XmlElements({@XmlElement(name = "aborted", type = Aborted.class),
             @XmlElement(name = "account-disabled", type = AccountDisabled.class),

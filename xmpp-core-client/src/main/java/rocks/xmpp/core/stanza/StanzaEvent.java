@@ -25,7 +25,6 @@
 package rocks.xmpp.core.stanza;
 
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import java.util.EventObject;
 
@@ -34,7 +33,7 @@ import java.util.EventObject;
  *
  * @author Christian Schudt
  */
-public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extends EventObject {
+public abstract class StanzaEvent<S extends Stanza> extends EventObject {
 
     protected final S stanza;
 

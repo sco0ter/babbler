@@ -28,7 +28,6 @@ import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.model.ServerStreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -40,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "iq")
 @XmlType(propOrder = {"from", "id", "to", "type", "lang", "extension", "error"})
-public final class IQ extends AbstractIQ implements ServerStreamElement {
+public final class IQ extends AbstractIQ {
     /**
      * Default constructor for unmarshalling.
      */

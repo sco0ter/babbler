@@ -38,7 +38,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "features")
-public final class StreamFeatures implements ServerStreamElement {
+public final class StreamFeatures implements StreamElement {
 
     @XmlAnyElement(lax = true)
     @SuppressWarnings("unused")

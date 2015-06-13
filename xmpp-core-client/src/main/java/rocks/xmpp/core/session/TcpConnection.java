@@ -27,7 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
@@ -259,7 +259,7 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public final synchronized void send(ClientStreamElement element) {
+    public final synchronized void send(StreamElement element) {
         if (xmppStreamWriter != null) {
             xmppStreamWriter.send(element);
         }

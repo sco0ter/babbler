@@ -29,7 +29,7 @@ import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -43,7 +43,7 @@ import java.util.Collections;
  */
 @XmlRootElement
 @XmlType(propOrder = {"from", "id", "to", "type", "lang", "subject", "body", "thread", "extensions", "error"})
-public final class Message extends AbstractMessage implements ClientStreamElement {
+public final class Message extends AbstractMessage implements StreamElement {
 
     public Message() {
         this(null);

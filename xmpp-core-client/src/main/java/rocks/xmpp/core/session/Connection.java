@@ -25,7 +25,7 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -119,9 +119,9 @@ public abstract class Connection implements AutoCloseable {
     /**
      * Sends an element.
      *
-     * @param clientStreamElement The element.
+     * @param streamElement The element.
      */
-    public abstract void send(ClientStreamElement clientStreamElement);
+    public abstract void send(StreamElement streamElement);
 
     /**
      * Connects to the server and provides an optional 'from' attribute.

@@ -48,6 +48,7 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -305,7 +306,7 @@ public final class RosterManager extends Manager {
                         xmppStreamWriter.close();
                     }
                 }
-                rosterCacheDirectory.put(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes()) + ".xml", outputStream.toByteArray());
+                rosterCacheDirectory.put(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes(StandardCharsets.UTF_8)) + ".xml", outputStream.toByteArray());
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Could not write roster to cache.", e);
             }
@@ -315,7 +316,7 @@ public final class RosterManager extends Manager {
     private Roster readRosterFromCache() {
         if (rosterCacheDirectory != null) {
             try {
-                byte[] rosterData = rosterCacheDirectory.get(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes()) + ".xml");
+                byte[] rosterData = rosterCacheDirectory.get(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes(StandardCharsets.UTF_8)) + ".xml");
                 if (rosterData != null) {
                     try (InputStream inputStream = new ByteArrayInputStream(rosterData)) {
                         return (Roster) xmppSession.createUnmarshaller().unmarshal(inputStream);

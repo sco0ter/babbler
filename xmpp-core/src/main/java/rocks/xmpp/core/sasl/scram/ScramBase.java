@@ -29,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.SaslException;
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -46,7 +47,7 @@ abstract class ScramBase {
 
     private static final byte[] INT1 = new byte[]{0, 0, 0, 1};
 
-    private static final byte[] CLIENT_KEY = "Client Key".getBytes();
+    private static final byte[] CLIENT_KEY = "Client Key".getBytes(StandardCharsets.UTF_8);
 
     final CallbackHandler callbackHandler;
 
@@ -150,7 +151,7 @@ abstract class ScramBase {
     final byte[] computeClientSignature(byte[] clientKey, String authMessage) throws InvalidKeyException, NoSuchAlgorithmException {
         byte[] storedKey = computeStoredKey(clientKey);
         // ClientSignature := HMAC(StoredKey, AuthMessage)
-        return hmac(storedKey, authMessage.getBytes());
+        return hmac(storedKey, authMessage.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -178,7 +179,7 @@ abstract class ScramBase {
      */
     final byte[] computeSaltedPassword(char[] password, byte[] salt, int iterationCount) throws InvalidKeyException, NoSuchAlgorithmException {
         // SaltedPassword  := Hi(Normalize(password), salt, i)
-        return hi(SaslPrep.prepare(new String(password)).getBytes(), salt, iterationCount);
+        return hi(SaslPrep.prepare(new String(password)).getBytes(StandardCharsets.UTF_8), salt, iterationCount);
     }
 
     /**

@@ -48,6 +48,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -355,7 +356,7 @@ public final class EntityCapabilitiesManager extends Manager {
                         xmppStreamWriter.close();
                     }
                 }
-                directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes()) + ".caps", byteArrayOutputStream.toByteArray());
+                directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes(StandardCharsets.UTF_8)) + ".caps", byteArrayOutputStream.toByteArray());
             } catch (Exception e) {
                 logger.log(Level.WARNING, e, () -> "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage());
             }
@@ -370,7 +371,7 @@ public final class EntityCapabilitiesManager extends Manager {
                 return infoNode;
             }
             // If it's not present, check the persistent cache.
-            String fileName = XmppUtils.hash(verification.toString().getBytes()) + ".caps";
+            String fileName = XmppUtils.hash(verification.toString().getBytes(StandardCharsets.UTF_8)) + ".caps";
             try {
                 byte[] bytes = directoryCapsCache.get(fileName);
                 if (bytes != null) {

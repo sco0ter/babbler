@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
@@ -183,7 +184,7 @@ public final class EntityCapabilities extends StreamFeature {
 
         // 9. Compute the verification string by hashing S using the algorithm specified in the 'hash' attribute.
         messageDigest.reset();
-        return DatatypeConverter.printBase64Binary(messageDigest.digest(plainString.getBytes()));
+        return DatatypeConverter.printBase64Binary(messageDigest.digest(plainString.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**

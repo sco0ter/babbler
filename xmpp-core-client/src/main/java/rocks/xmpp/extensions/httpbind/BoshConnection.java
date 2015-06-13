@@ -56,6 +56,7 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -271,7 +272,7 @@ public final class BoshConnection extends Connection {
             // Generate a random seed value.
             String kn = UUID.randomUUID().toString();
             for (int i = 0; i < n; i++) {
-                kn = String.format("%040x", new BigInteger(1, digest.digest(kn.getBytes())));
+                kn = String.format("%040x", new BigInteger(1, digest.digest(kn.getBytes(StandardCharsets.UTF_8))));
                 keySequence.add(kn);
             }
         } catch (NoSuchAlgorithmException e) {

@@ -37,6 +37,7 @@ import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -60,7 +61,7 @@ public class ScramClientTest {
         });
 
         scramSaslClient.evaluateChallenge(new byte[0]);
-        Assert.assertEquals(DatatypeConverter.printBase64Binary(scramSaslClient.hi("test".getBytes(), "salt".getBytes(), 4096)), "suIjHg0e14CDoom6wmHKz3naWOc=");
+        Assert.assertEquals(DatatypeConverter.printBase64Binary(scramSaslClient.hi("test".getBytes(StandardCharsets.UTF_8), "salt".getBytes(StandardCharsets.UTF_8), 4096)), "suIjHg0e14CDoom6wmHKz3naWOc=");
     }
 
     @Test
@@ -100,7 +101,7 @@ public class ScramClientTest {
         String serverResponse = "r=fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j,s=QSXCR+Q6sek8bf92,i=4096";
 
         scramSha1SaslClient.evaluateChallenge(new byte[0]);
-        byte[] result = scramSha1SaslClient.evaluateChallenge(serverResponse.getBytes());
+        byte[] result = scramSha1SaslClient.evaluateChallenge(serverResponse.getBytes(StandardCharsets.UTF_8));
         Assert.assertTrue(new String(result).startsWith("c=biws,r=fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j,p="));
     }
 

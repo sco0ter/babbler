@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.bob.model.Data;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author Christian Schudt
@@ -81,7 +82,7 @@ public class BitOfBinaryTest extends XmlTest {
                 "vr4MkhoXe0rZigAAAABJRU5ErkJggg==";
         // Here we use the bytes from the base64 encoded string, because it's also used in the examples of XEP-0231.
         // However, the example are wrong here. The sha1 string should actually be generated from the binary data.
-        String cid = Data.createContendId(base64.getBytes());
+        String cid = Data.createContendId(base64.getBytes(StandardCharsets.UTF_8));
         Assert.assertEquals(cid, "sha1+8f35fef110ffc5df08d579a50083ff9308fb6242@bob.xmpp.org");
     }
 }

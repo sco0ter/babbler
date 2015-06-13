@@ -138,7 +138,7 @@ public final class ScramClient extends ScramBase implements SaslClient {
 
             // First, the client sends the "client-first-message"
             String clientFirstMessage = gs2Header + clientFirstMessageBare;
-            return clientFirstMessage.getBytes();
+            return clientFirstMessage.getBytes(StandardCharsets.UTF_8);
         } else {
 
             // The server sends the salt and the iteration count to the client, which then computes
@@ -166,7 +166,7 @@ public final class ScramClient extends ScramBase implements SaslClient {
             byte[] salt = DatatypeConverter.parseBase64Binary(saltBase64);
 
             try {
-                channelBinding = DatatypeConverter.printBase64Binary(gs2Header.getBytes());
+                channelBinding = DatatypeConverter.printBase64Binary(gs2Header.getBytes(StandardCharsets.UTF_8));
                 byte[] clientKey = computeClientKey(computeSaltedPassword(passwd, salt, iterationCount));
                 byte[] clientSignature = computeClientSignature(clientKey, computeAuthMessage());
                 // ClientProof     := ClientKey XOR ClientSignature
@@ -176,7 +176,7 @@ public final class ScramClient extends ScramBase implements SaslClient {
                 // same nonce and a ClientProof computed using the selected hash
                 // function as explained earlier.
                 String clientFinalMessage = clientFinalMessageWithoutProof + ",p=" + DatatypeConverter.printBase64Binary(clientProof);
-                return clientFinalMessage.getBytes();
+                return clientFinalMessage.getBytes(StandardCharsets.UTF_8);
 
             } catch (NoSuchAlgorithmException | InvalidKeyException e) {
                 throw new SaslException(e.getMessage(), e);

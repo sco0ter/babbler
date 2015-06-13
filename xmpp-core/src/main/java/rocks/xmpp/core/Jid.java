@@ -25,6 +25,7 @@
 package rocks.xmpp.core;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.Locale;
@@ -232,7 +233,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             StringBuffer sb = new StringBuffer();
             while (matcher.find()) {
                 String match = matcher.group();
-                matcher.appendReplacement(sb, String.format("\\\\%x", match.getBytes()[0]));
+                matcher.appendReplacement(sb, String.format("\\\\%x", match.getBytes(StandardCharsets.UTF_8)[0]));
             }
             matcher.appendTail(sb);
             return sb.toString();

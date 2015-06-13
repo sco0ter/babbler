@@ -180,7 +180,7 @@ public final class StreamFeaturesManager extends Manager {
     public final synchronized boolean processElement(Object element) throws StreamNegotiationException {
         // Check if the element is known to any feature negotiator.
         for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
-            if (streamFeatureNegotiator.getFeatureClass() == element || streamFeatureNegotiator.canProcess(element)) {
+            if (streamFeatureNegotiator.getFeatureClass() == element.getClass() || streamFeatureNegotiator.canProcess(element)) {
                 StreamFeatureNegotiator.Status status = streamFeatureNegotiator.processNegotiation(element);
                 // Mark the feature negotiation as started.
                 negotiatingFeatures.add(streamFeatureNegotiator.getFeatureClass());

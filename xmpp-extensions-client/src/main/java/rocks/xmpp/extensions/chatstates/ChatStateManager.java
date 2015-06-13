@@ -83,7 +83,7 @@ public final class ChatStateManager extends Manager {
     private ChatStateManager(final XmppSession xmppSession) {
         super(xmppSession, true);
         this.messageListener = e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".
             if (message.getType() == AbstractMessage.Type.CHAT || message.getType() == AbstractMessage.Type.GROUPCHAT) {
                 // For outbound messages append <active/>.

@@ -33,6 +33,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 /**
@@ -50,6 +51,6 @@ final class DebugViewModel {
 
     final ObjectProperty<XmppSession.Status> status = new SimpleObjectProperty<>();
 
-    final ObjectProperty<Presence> presence = new SimpleObjectProperty<>();
+    final ObjectProperty<AbstractPresence> presence = new SimpleObjectProperty<>();
 
 }

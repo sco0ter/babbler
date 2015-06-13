@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
@@ -48,9 +49,9 @@ public final class Occupant implements Comparable<Occupant> {
 
     private final boolean isSelf;
 
-    private final Presence presence;
+    private final AbstractPresence presence;
 
-    Occupant(Presence presence, boolean isSelf) {
+    Occupant(AbstractPresence presence, boolean isSelf) {
         this.presence = presence;
         this.nick = presence.getFrom().getResource();
         MucUser mucUser = presence.getExtension(MucUser.class);
@@ -108,7 +109,7 @@ public final class Occupant implements Comparable<Occupant> {
      *
      * @return The presence.
      */
-    public Presence getPresence() {
+    public AbstractPresence getPresence() {
         return presence;
     }
 

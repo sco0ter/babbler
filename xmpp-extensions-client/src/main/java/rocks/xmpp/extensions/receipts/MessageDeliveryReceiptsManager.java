@@ -28,6 +28,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
@@ -62,7 +63,7 @@ public final class MessageDeliveryReceiptsManager extends Manager {
     /**
      * A default filter for automatic receipt request on outbound messages.
      */
-    private static final Predicate<Message> DEFAULT_FILTER = message ->
+    private static final Predicate<AbstractMessage> DEFAULT_FILTER = message ->
             // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
             message.getType() != Message.Type.ERROR
                     // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
@@ -78,7 +79,7 @@ public final class MessageDeliveryReceiptsManager extends Manager {
 
     private final Consumer<MessageEvent> outboundMessageListener;
 
-    private Predicate<Message> messageFilter;
+    private Predicate<AbstractMessage> messageFilter;
 
     /**
      * Creates the manager.
@@ -89,7 +90,7 @@ public final class MessageDeliveryReceiptsManager extends Manager {
         super(xmppSession, true);
 
         this.inboundMessageListener = e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             // If a client requests a receipt, send an ack message.
             if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {
                 // Add an empty body. Otherwise some servers, won't store it in offline storage.
@@ -106,9 +107,9 @@ public final class MessageDeliveryReceiptsManager extends Manager {
         };
 
         this.outboundMessageListener = e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             // If we are sending a message, append a receipt request, if it passes all filters.
-            Predicate<Message> predicate;
+            Predicate<AbstractMessage> predicate;
             synchronized (this) {
                 if (messageFilter != null) {
                     predicate = DEFAULT_FILTER.and(messageFilter);
@@ -162,7 +163,7 @@ public final class MessageDeliveryReceiptsManager extends Manager {
      *
      * @param messageFilter The message filter.
      */
-    public synchronized void setMessageFilter(Predicate<Message> messageFilter) {
+    public synchronized void setMessageFilter(Predicate<AbstractMessage> messageFilter) {
         this.messageFilter = messageFilter;
     }
 

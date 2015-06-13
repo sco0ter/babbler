@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.stanza;
 
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.function.Consumer;
@@ -37,7 +38,7 @@ import java.util.function.Consumer;
  * @see rocks.xmpp.core.session.XmppSession#addInboundPresenceListener(Consumer)
  * @see rocks.xmpp.core.session.XmppSession#addOutboundPresenceListener(Consumer)
  */
-public final class PresenceEvent extends StanzaEvent<Presence> {
+public final class PresenceEvent extends StanzaEvent<AbstractPresence> {
     /**
      * Constructs a presence event.
      *
@@ -46,7 +47,7 @@ public final class PresenceEvent extends StanzaEvent<Presence> {
      * @param inbound  True, if the stanza is inbound.
      * @throws IllegalArgumentException if source is null.
      */
-    public PresenceEvent(Object source, Presence presence, boolean inbound) {
+    public PresenceEvent(Object source, AbstractPresence presence, boolean inbound) {
         super(source, presence, inbound);
     }
 
@@ -55,7 +56,7 @@ public final class PresenceEvent extends StanzaEvent<Presence> {
      *
      * @return The presence.
      */
-    public final Presence getPresence() {
+    public final AbstractPresence getPresence() {
         return stanza;
     }
 }

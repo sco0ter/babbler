@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.pubsub.PubSubManager;
@@ -56,7 +57,7 @@ public final class GeoLocationManager extends Manager {
         super(xmppSession, true);
 
         messageListener = e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             Event event = message.getExtension(Event.class);
             if (event != null) {
                 for (Item item : event.getItems()) {

@@ -33,6 +33,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
@@ -113,7 +114,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         this.serviceDiscoveryManager = serviceDiscoveryManager;
         this.multiUserChatManager = multiUserChatManager;
         this.messageListener = e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             if (message.getFrom().asBareJid().equals(roomJid)) {
                 if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
                     // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
@@ -135,7 +136,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         };
 
         this.presenceListener = e -> {
-            Presence presence = e.getPresence();
+            AbstractPresence presence = e.getPresence();
             // If the presence came from the room.
             if (presence.getFrom() != null && presence.getFrom().asBareJid().equals(roomJid)) {
                 MucUser mucUser = presence.getExtension(MucUser.class);
@@ -215,7 +216,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         xmppSession.removeInboundPresenceListener(presenceListener);
     }
 
-    private boolean isSelfPresence(Presence presence) {
+    private boolean isSelfPresence(AbstractPresence presence) {
         boolean isSelfPresence = false;
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null) {

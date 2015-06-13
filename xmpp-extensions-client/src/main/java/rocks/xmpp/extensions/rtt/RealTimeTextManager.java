@@ -31,6 +31,7 @@ import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
@@ -63,7 +64,7 @@ public final class RealTimeTextManager extends Manager {
         super(xmppSession);
 
         messageListener = e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             if (message.getType() == Message.Type.CHAT || message.getType() == Message.Type.GROUPCHAT) {
                 // Recipient clients MUST keep track of separate real-time messages on a per-contact basis
                 // Participants that enable real-time text during group chat need to keep track of multiple concurrent real-time messages on a per-participant basis.

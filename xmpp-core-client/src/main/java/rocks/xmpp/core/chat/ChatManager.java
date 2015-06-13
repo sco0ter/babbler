@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Message;
 
@@ -86,7 +87,7 @@ public final class ChatManager extends Manager {
     @Override
     protected final void initialize() {
         xmppSession.addInboundMessageListener(e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             if (message.getType() == Message.Type.CHAT) {
                 Jid chatPartner = e.isInbound() ? message.getFrom() : message.getTo();
                 // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.

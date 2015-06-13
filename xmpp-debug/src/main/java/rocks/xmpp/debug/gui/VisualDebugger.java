@@ -44,6 +44,7 @@ import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import javax.swing.*;
@@ -171,7 +172,7 @@ public final class VisualDebugger implements XmppDebugger {
         xmppSession.addSessionStatusListener(connectionListener);
 
         final Consumer<PresenceEvent> presenceListener = e -> {
-            final Presence presence = e.getPresence();
+            final AbstractPresence presence = e.getPresence();
             if (presence.getTo() == null) {
                 waitForPlatform();
                 Platform.runLater(() -> debugController.viewModel.presence.set(presence));

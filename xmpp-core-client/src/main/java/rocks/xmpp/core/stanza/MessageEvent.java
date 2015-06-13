@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.stanza;
 
+import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
 
 import java.util.function.Consumer;
@@ -37,7 +38,7 @@ import java.util.function.Consumer;
  * @see rocks.xmpp.core.session.XmppSession#addInboundMessageListener(Consumer)
  * @see rocks.xmpp.core.session.XmppSession#addOutboundMessageListener(Consumer)
  */
-public final class MessageEvent extends StanzaEvent<Message> {
+public final class MessageEvent extends StanzaEvent<AbstractMessage> {
     /**
      * Constructs a message event.
      *
@@ -46,7 +47,7 @@ public final class MessageEvent extends StanzaEvent<Message> {
      * @param inbound True, if the stanza is inbound.
      * @throws IllegalArgumentException if source is null.
      */
-    public MessageEvent(Object source, Message message, boolean inbound) {
+    public MessageEvent(Object source, AbstractMessage message, boolean inbound) {
         super(source, message, inbound);
     }
 
@@ -55,7 +56,7 @@ public final class MessageEvent extends StanzaEvent<Message> {
      *
      * @return The message.
      */
-    public final Message getMessage() {
+    public final AbstractMessage getMessage() {
         return stanza;
     }
 }

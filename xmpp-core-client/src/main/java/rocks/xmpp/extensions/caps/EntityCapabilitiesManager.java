@@ -31,6 +31,7 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.subscription.PresenceManager;
@@ -138,7 +139,7 @@ public final class EntityCapabilitiesManager extends Manager {
         };
 
         this.inboundPresenceListener = e -> {
-            final Presence presence = e.getPresence();
+            final AbstractPresence presence = e.getPresence();
             if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
                 final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
                 if (entityCapabilities != null) {
@@ -148,7 +149,7 @@ public final class EntityCapabilitiesManager extends Manager {
         };
 
         this.outboundPresenceListener = e -> {
-            final Presence presence = e.getPresence();
+            final AbstractPresence presence = e.getPresence();
             if (presence.isAvailable() && presence.getTo() == null) {
                 // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
                 synchronized (publishedNodes) {
@@ -195,7 +196,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
                     // Resend presence. This manager will add the caps extension later.
                     PresenceManager presenceManager = xmppSession.getManager(PresenceManager.class);
-                    Presence lastPresence = presenceManager.getLastSentPresence();
+                    AbstractPresence lastPresence = presenceManager.getLastSentPresence();
                     xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
                 }
             }

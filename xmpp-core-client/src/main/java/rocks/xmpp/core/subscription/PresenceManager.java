@@ -27,6 +27,7 @@ package rocks.xmpp.core.subscription;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 
 import java.util.ArrayList;
@@ -57,9 +58,9 @@ public final class PresenceManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(PresenceManager.class.getName());
 
-    private final Map<Jid, Map<String, Presence>> presenceMap = new ConcurrentHashMap<>();
+    private final Map<Jid, Map<String, AbstractPresence>> presenceMap = new ConcurrentHashMap<>();
 
-    private final Map<String, Presence> lastSentPresences = new ConcurrentHashMap<>();
+    private final Map<String, AbstractPresence> lastSentPresences = new ConcurrentHashMap<>();
 
     private PresenceManager(final XmppSession xmppSession) {
         super(xmppSession, false);
@@ -68,16 +69,16 @@ public final class PresenceManager extends Manager {
     @Override
     protected final void initialize() {
         xmppSession.addInboundPresenceListener(e -> {
-            Presence presence = e.getPresence();
+            AbstractPresence presence = e.getPresence();
             if (presence.getFrom() != null) {
                 // Store the user (bare JID) in the map, associated with different resources.
-                Map<String, Presence> presencesPerResource = presenceMap.computeIfAbsent(presence.getFrom().asBareJid(), key -> new ConcurrentHashMap<>());
+                Map<String, AbstractPresence> presencesPerResource = presenceMap.computeIfAbsent(presence.getFrom().asBareJid(), key -> new ConcurrentHashMap<>());
                 // Update the contact's resource with the presence.
                 presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
             }
         });
         xmppSession.addOutboundPresenceListener(e -> {
-            Presence presence = e.getPresence();
+            AbstractPresence presence = e.getPresence();
             // Store the last sent presences, in order to automatically resend them, after a disconnect.
             if (presence.getType() == null || presence.getType() == Presence.Type.UNAVAILABLE) {
                 if (presence.getTo() == null) {
@@ -116,21 +117,21 @@ public final class PresenceManager extends Manager {
      * @param jid The JID.
      * @return The presence.
      */
-    public final Presence getPresence(Jid jid) {
+    public final AbstractPresence getPresence(Jid jid) {
 
         if (Objects.requireNonNull(jid, "jid must not be null.").isBareJid()) {
-            Map<String, Presence> presencesPerResource = presenceMap.get(jid);
+            Map<String, AbstractPresence> presencesPerResource = presenceMap.get(jid);
             if (presencesPerResource != null) {
-                List<Presence> presences = new ArrayList<>(presencesPerResource.values());
+                List<AbstractPresence> presences = new ArrayList<>(presencesPerResource.values());
                 if (!presences.isEmpty()) {
                     presences.sort(null);
                     return presences.get(0);
                 }
             }
         } else {
-            Map<String, Presence> presencesPerResource = presenceMap.get(jid.asBareJid());
+            Map<String, AbstractPresence> presencesPerResource = presenceMap.get(jid.asBareJid());
             if (presencesPerResource != null) {
-                Presence presence = presencesPerResource.get(jid.getResource());
+                AbstractPresence presence = presencesPerResource.get(jid.getResource());
                 if (presence != null) {
                     return presence;
                 }
@@ -212,7 +213,7 @@ public final class PresenceManager extends Manager {
      *
      * @return The presence.
      */
-    public final Presence getLastSentPresence() {
+    public final AbstractPresence getLastSentPresence() {
         return lastSentPresences.get("");
     }
 
@@ -221,7 +222,7 @@ public final class PresenceManager extends Manager {
      *
      * @return The presence.
      */
-    public final Collection<Presence> getLastSentPresences() {
+    public final Collection<AbstractPresence> getLastSentPresences() {
         return lastSentPresences.values();
     }
 }

@@ -35,6 +35,8 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
+import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
@@ -73,7 +75,7 @@ public final class ContactExchangeManager extends Manager {
     private ContactExchangeManager(final XmppSession xmppSession) {
         super(xmppSession);
         this.inboundMessageListener = e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             ContactExchange contactExchange = message.getExtension(ContactExchange.class);
             if (contactExchange != null) {
                 List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
@@ -213,7 +215,7 @@ public final class ContactExchangeManager extends Manager {
                 contactExchange.getItems().add(rosterItem);
             }
             // http://xmpp.org/extensions/xep-0144.html#stanza
-            Presence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
+            AbstractPresence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
             if (presence.isAvailable()) {
                 xmppSession.query(new IQ(presence.getFrom(), IQ.Type.SET, contactExchange));
             } else {

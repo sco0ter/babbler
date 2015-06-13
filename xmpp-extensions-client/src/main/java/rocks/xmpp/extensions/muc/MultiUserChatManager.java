@@ -30,6 +30,7 @@ import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -72,7 +73,7 @@ public final class MultiUserChatManager extends Manager {
         super(xmppSession, true);
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         this.messageListener = e -> {
-            Message message = e.getMessage();
+            AbstractMessage message = e.getMessage();
             // Check, if the message contains a mediated invitation.
             MucUser mucUser = message.getExtension(MucUser.class);
             if (mucUser != null) {

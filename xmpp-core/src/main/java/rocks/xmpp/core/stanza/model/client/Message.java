@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * The implementation of the {@code <message/>} element for the client namespace ('jabber:client').
+ * The implementation of the {@code <message/>} element in the {@code jabber:client} namespace.
  *
  * @author Christian Schudt
  */

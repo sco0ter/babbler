@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <iq/>} element for the server namespace ('jabber:server').
+ * The implementation of the {@code <iq/>} element in the {@code jabber:client} namespace.
  *
  * @author Christian Schudt
  */

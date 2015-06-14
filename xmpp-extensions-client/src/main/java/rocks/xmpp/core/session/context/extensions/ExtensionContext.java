@@ -223,7 +223,8 @@ public class ExtensionContext extends CoreContext {
                 Extension.of(GeoLocation.NAMESPACE, GeoLocationManager.class, true, false, GeoLocation.class),
 
                 // XEP-0084: User Avatar
-                Extension.of(AvatarData.NAMESPACE, AvatarManager.class, true, false, AvatarData.class, AvatarMetadata.class),
+                Extension.of(AvatarMetadata.NAMESPACE, AvatarManager.class, true, false, AvatarMetadata.class),
+                Extension.of(AvatarData.NAMESPACE, AvatarManager.class, false, AvatarData.class),
 
                 // XEP-0085: Chat State Notifications
                 Extension.of(ChatState.NAMESPACE, ChatStateManager.class, false, ChatState.class),

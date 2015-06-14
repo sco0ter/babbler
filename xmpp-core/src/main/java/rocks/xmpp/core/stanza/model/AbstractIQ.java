@@ -70,7 +70,7 @@ public abstract class AbstractIQ extends Stanza {
     private final Type type;
 
     @XmlAnyElement(lax = true)
-    private Object extension;
+    private final Object extension;
 
     /**
      * Default constructor for unmarshalling.
@@ -78,6 +78,7 @@ public abstract class AbstractIQ extends Stanza {
     @SuppressWarnings("unused")
     protected AbstractIQ() {
         this.type = null;
+        this.extension = null;
     }
 
     /**

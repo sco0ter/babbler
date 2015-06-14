@@ -84,7 +84,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-jid</artifactId>
+            <artifactId>xmpp-addr</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

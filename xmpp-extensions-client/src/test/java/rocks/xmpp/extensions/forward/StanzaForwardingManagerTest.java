@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.forward;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.TestXmppXmpp;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
@@ -37,7 +37,7 @@ public class StanzaForwardingManagerTest extends ExtensionTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
+        TestXmppXmpp connection1 = new TestXmppXmpp();
         StanzaForwardingManager stanzaForwardingManager = connection1.getManager(StanzaForwardingManager.class);
         // By default, the manager should be NOT enabled.
         Assert.assertFalse(stanzaForwardingManager.isEnabled());

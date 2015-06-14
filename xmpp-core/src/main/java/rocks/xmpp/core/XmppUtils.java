@@ -88,13 +88,26 @@ public final class XmppUtils {
      * }
      * </pre>
      *
-     * @param xmlStreamWriter   The underlying XML stream writer.
-     * @param isClientNamespace True, if the content namespace is "jabber:client"; false, if it is "jabber:server".
+     * @param xmlStreamWriter  The underlying XML stream writer.
+     * @param contentNamespace The content namspace, e.g. "jabber:client".
      * @return The prefix-free canonicalization writer.
      * @throws XMLStreamException Thrown by {@link javax.xml.stream.XMLStreamWriter}.
      */
-    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter, boolean isClientNamespace) throws XMLStreamException {
-        return new PrefixFreeCanonicalizationWriter(xmlStreamWriter, isClientNamespace ? "jabber:client" : "jabber:server");
+    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter, String contentNamespace) throws XMLStreamException {
+        return new PrefixFreeCanonicalizationWriter(xmlStreamWriter, contentNamespace);
+    }
+
+    /**
+     * Creates a {@link javax.xml.stream.XMLStreamWriter} instance, which writes XML without namespace prefixes.
+     * <p>
+     * The content namespace is "jabber:client".
+     *
+     * @param xmlStreamWriter The underlying XML stream writer.
+     * @return The prefix-free canonicalization writer.
+     * @throws XMLStreamException
+     */
+    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
+        return createXmppStreamWriter(xmlStreamWriter, "jabber:client");
     }
 
     /**

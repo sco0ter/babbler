@@ -37,6 +37,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -69,7 +70,7 @@ public class FileTransferSender extends Application {
                         .defaultResponseTimeout(10000)
                         .build();
 
-                XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
                 // Connect
                 xmppSession.connect();

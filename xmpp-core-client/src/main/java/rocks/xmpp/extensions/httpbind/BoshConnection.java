@@ -75,6 +75,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a> and <a href="http://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>.
@@ -162,6 +163,8 @@ public final class BoshConnection extends Connection {
      * Guarded by "this".
      */
     private URL url;
+
+    private Consumer<String> onStreamOpened;
 
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
@@ -287,7 +290,7 @@ public final class BoshConnection extends Connection {
      * @throws IOException If a connection could not be established.
      */
     @Override
-    public final synchronized void connect(Jid from) throws IOException {
+    public final synchronized void connect(Jid from, String namespace, Consumer<String> onStreamOpened) throws IOException {
 
         if (sessionId != null) {
             // Already connected.
@@ -323,9 +326,10 @@ public final class BoshConnection extends Connection {
         }
 
         this.from = from;
-        sessionId = null;
-        authId = null;
-        requestCount.set(0);
+        this.sessionId = null;
+        this.authId = null;
+        this.requestCount.set(0);
+        this.onStreamOpened = onStreamOpened;
 
         // Set the initial request id with a large random number.
         // The largest possible number for a RID is (2^53)-1
@@ -416,7 +420,7 @@ public final class BoshConnection extends Connection {
                     }
                 }
                 if (responseBody.getFrom() != null) {
-                    getXmppSession().setXmppServiceDomain(responseBody.getFrom().getDomain());
+                    onStreamOpened.accept(responseBody.getFrom().getDomain());
                 }
             }
         }
@@ -649,7 +653,7 @@ public final class BoshConnection extends Connection {
                                     XMLStreamWriter xmlStreamWriter = null;
                                     try (OutputStream xmppOutputStream = debugger != null ? debugger.createOutputStream(branchedOutputStream) : branchedOutputStream) {
                                         // Create the writer for this connection.
-                                        xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8"), true);
+                                        xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8"));
 
                                         // Then write the XML to the output stream by marshalling the object to the writer.
                                         // Marshaller needs to be recreated here, because it's not thread-safe.

@@ -47,6 +47,7 @@ import java.io.StringWriter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.
@@ -73,15 +74,21 @@ final class XmppStreamReader {
 
     private final Unmarshaller unmarshaller;
 
-    public XmppStreamReader(final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
+    private final Consumer<String> onStreamOpened;
+
+    private final String namespace;
+
+    public XmppStreamReader(String namespace, final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory, Consumer<String> onStreamOpened) {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();
         this.marshaller = xmppSession.createMarshaller();
         this.unmarshaller = xmppSession.createUnmarshaller();
-        executorService = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Reader Thread"));
+        this.executorService = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Reader Thread"));
         this.xmlInputFactory = XMLInputFactory.newFactory();
         this.xmlOutputFactory = xmlOutputFactory;
+        this.onStreamOpened = onStreamOpened;
+        this.namespace = namespace;
     }
 
     synchronized void startReading(final InputStream inputStream) {
@@ -119,8 +126,9 @@ final class XmppStreamReader {
                                     }
                                 }
                                 Attribute fromAttribute = startElement.getAttributeByName(new QName("from"));
-                                if (fromAttribute != null) {
-                                    xmppSession.setXmppServiceDomain(fromAttribute.getValue());
+
+                                if (onStreamOpened != null) {
+                                    onStreamOpened.accept(fromAttribute != null ? fromAttribute.getValue() : null);
                                 }
                                 if (debugger != null) {
                                     XMLEventWriter writer = xmlOutputFactory.createXMLEventWriter(stringWriter);
@@ -136,7 +144,7 @@ final class XmppStreamReader {
 
                                 if (debugger != null) {
                                     // Marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
-                                    XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), true);
+                                    XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), namespace);
                                     marshaller.marshal(object, xmlStreamWriter);
                                     xmlStreamWriter.flush();
                                     debugger.readStanza(stringWriter.toString(), object);

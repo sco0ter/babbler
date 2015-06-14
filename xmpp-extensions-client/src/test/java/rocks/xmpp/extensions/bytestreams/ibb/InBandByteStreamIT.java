@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 
 import java.io.ByteArrayOutputStream;
@@ -48,8 +48,8 @@ public class InBandByteStreamIT extends IntegrationTest {
     @Test
     public void test() throws XmppException, IOException {
 
-        final XmppSession xmppSession1 = new XmppSession(DOMAIN);
-        final XmppSession xmppSession2 = new XmppSession(DOMAIN);
+        final XmppClient xmppSession1 = new XmppClient(DOMAIN);
+        final XmppClient xmppSession2 = new XmppClient(DOMAIN);
 
         xmppSession1.connect();
         xmppSession1.login(USER_1, PASSWORD_1);

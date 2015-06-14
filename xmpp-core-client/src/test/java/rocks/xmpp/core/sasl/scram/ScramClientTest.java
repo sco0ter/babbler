@@ -26,7 +26,7 @@ package rocks.xmpp.core.sasl.scram;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 
 import javax.security.auth.callback.Callback;
@@ -114,7 +114,7 @@ public class ScramClientTest {
 
     @Test
     public void testClientServer() throws SaslException, ClassNotFoundException {
-        new XmppSession(null);
+        new XmppClient(null);
 
         SaslClient saslClient = Sasl.createSaslClient(new String[]{"SCRAM-SHA-1"}, "authzid", "xmpp", "servername", null, callbacks -> {
             for (Callback callback : callbacks) {

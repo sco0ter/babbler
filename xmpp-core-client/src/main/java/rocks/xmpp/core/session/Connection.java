@@ -29,6 +29,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.function.Consumer;
 
 /**
  * The base connection class which provides hostname, port and proxy information.
@@ -129,7 +130,7 @@ public abstract class Connection implements AutoCloseable {
      * @param from The 'from' attribute.
      * @throws IOException If no connection could be established, e.g. due to unknown host.
      */
-    public abstract void connect(Jid from) throws IOException;
+    public abstract void connect(Jid from, String namespace, Consumer<String> onStreamOpened) throws IOException;
 
     /**
      * Indicates whether this connection is secured by TLS/SSL.

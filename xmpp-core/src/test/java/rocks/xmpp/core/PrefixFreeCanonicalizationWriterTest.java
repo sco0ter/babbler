@@ -53,7 +53,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
 
-        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, "jabber:client");
 
         JAXBContext jaxbContext = JAXBContext.newInstance(IQ.class, Roster.class);
         Marshaller marshaller = jaxbContext.createMarshaller();

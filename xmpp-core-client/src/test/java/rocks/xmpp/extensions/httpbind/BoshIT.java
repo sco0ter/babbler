@@ -28,8 +28,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.roster.RosterManager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.session.XmppClient;
 
 /**
  * @author Christian Schudt
@@ -42,7 +41,7 @@ public class BoshIT extends IntegrationTest {
         long start = System.currentTimeMillis();
 
         for (int i = 0; i < 10; i++) {
-            try (XmppSession xmppSession = new XmppSession(DOMAIN, BoshConnectionConfiguration.getDefault())) {
+            try (XmppClient xmppSession = new XmppClient(DOMAIN, BoshConnectionConfiguration.getDefault())) {
                 System.out.println(i);
                 xmppSession.connect();
                 xmppSession.login("admin", "admin", null);

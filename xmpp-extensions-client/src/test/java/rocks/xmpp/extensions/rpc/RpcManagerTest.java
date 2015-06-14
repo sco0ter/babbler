@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.TestXmppXmpp;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -41,7 +41,7 @@ public class RpcManagerTest extends ExtensionTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
+        TestXmppXmpp connection1 = new TestXmppXmpp();
         RpcManager rpcManager = connection1.getManager(RpcManager.class);
         Assert.assertFalse(rpcManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
@@ -56,8 +56,8 @@ public class RpcManagerTest extends ExtensionTest {
     public void testCall() throws XmppException, RpcException {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppXmpp(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppXmpp(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
         //rpcManager.executorService = new SameThreadExecutorService();
@@ -77,8 +77,8 @@ public class RpcManagerTest extends ExtensionTest {
     public void testRpcException() throws XmppException {
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppXmpp(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppXmpp(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
         rpcManager.setEnabled(true);

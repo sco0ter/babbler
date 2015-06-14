@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.TestXmppXmpp;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -52,8 +52,8 @@ public class StreamInitiationManagerTest extends ExtensionTest {
 
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppXmpp(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppXmpp(JULIET, mockServer);
 
         FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
         fileTransferManager.addFileTransferOfferListener(e -> {
@@ -78,8 +78,8 @@ public class StreamInitiationManagerTest extends ExtensionTest {
 
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+        XmppSession xmppSession1 = new TestXmppXmpp(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppXmpp(JULIET, mockServer);
 
         FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
         fileTransferManager.addFileTransferOfferListener(e -> {

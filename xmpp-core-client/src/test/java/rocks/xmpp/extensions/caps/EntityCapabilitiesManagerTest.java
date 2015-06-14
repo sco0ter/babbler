@@ -28,7 +28,7 @@ import org.testng.Assert;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.TestXmppXmpp;
 import rocks.xmpp.core.session.XmppSession;
 
 import java.util.concurrent.ExecutorService;
@@ -50,8 +50,8 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
 
             MockServer mockServer = new MockServer();
 
-            final XmppSession xmppSession1 = new TestXmppSession(BaseTest.ROMEO, mockServer);
-            XmppSession xmppSession2 = new TestXmppSession(BaseTest.JULIET, mockServer);
+            final XmppSession xmppSession1 = new TestXmppXmpp(BaseTest.ROMEO, mockServer);
+            XmppSession xmppSession2 = new TestXmppXmpp(BaseTest.JULIET, mockServer);
 
             final EntityCapabilitiesManager entityCapabilitiesManager = xmppSession1.getManager(EntityCapabilitiesManager.class);
 

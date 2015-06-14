@@ -30,8 +30,8 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.MessageEvent;
 
@@ -47,7 +47,7 @@ public class MultiUserChatIT extends IntegrationTest {
 
     private ChatRoom[] chatRoom = new ChatRoom[2];
 
-    private XmppSession[] xmppSession = new XmppSession[2];
+    private XmppClient[] xmppSession = new XmppClient[2];
 
     private MultiUserChatManager[] multiUserChatManager = new MultiUserChatManager[2];
 
@@ -56,11 +56,11 @@ public class MultiUserChatIT extends IntegrationTest {
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 //.debugger(ConsoleDebugger.class)
                 .build();
-        xmppSession[0] = new XmppSession(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
+        xmppSession[0] = new XmppClient(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
         xmppSession[0].connect();
         xmppSession[0].login(USER_1, PASSWORD_1);
 
-        xmppSession[1] = new XmppSession(DOMAIN, TcpConnectionConfiguration.getDefault());
+        xmppSession[1] = new XmppClient(DOMAIN, TcpConnectionConfiguration.getDefault());
         xmppSession[1].connect();
         xmppSession[1].login(USER_2, PASSWORD_2);
 

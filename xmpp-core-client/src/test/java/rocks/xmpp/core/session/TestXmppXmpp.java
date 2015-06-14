@@ -43,19 +43,19 @@ import java.util.function.Consumer;
 /**
  * @author Christian Schudt
  */
-public class TestXmppSession extends XmppSession {
+public class TestXmppXmpp extends XmppClient {
 
     private MockServer mockServer;
 
-    public TestXmppSession() {
+    public TestXmppXmpp() {
         this(Jid.valueOf("test@domain/resource"), new MockServer());
     }
 
-    public TestXmppSession(Jid jid, MockServer mockServer) {
+    public TestXmppXmpp(Jid jid, MockServer mockServer) {
         this(jid, mockServer, XmppSessionConfiguration.getDefault());
     }
 
-    public TestXmppSession(Jid jid, MockServer mockServer, XmppSessionConfiguration configuration) {
+    public TestXmppXmpp(Jid jid, MockServer mockServer, XmppSessionConfiguration configuration) {
         super(null, configuration);
         connectedResource = jid;
         //getExtensionManager(Socks5ByteStreamManager.class).setLocalHostEnabled(false);
@@ -86,7 +86,7 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void connect(Jid from) throws IOException {
+            public void connect(Jid from, String namespace, Consumer<String> onConnected) throws IOException {
 
             }
 

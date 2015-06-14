@@ -24,8 +24,8 @@
 
 package rocks.xmpp.sample.filetransfer.javafx;
 
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 
@@ -49,7 +49,7 @@ public class FileTransferReceiver {
                         .secure(false)
                         .build();
 
-                XmppSession xmppSession = new XmppSession("localhost", tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", tcpConfiguration);
 
                 // Connect
                 xmppSession.connect();

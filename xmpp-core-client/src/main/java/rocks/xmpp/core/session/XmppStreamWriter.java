@@ -89,7 +89,10 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
+    private final String namespace;
+
+    XmppStreamWriter(String namespace, final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
+        this.namespace = namespace;
         this.xmppSession = xmppSession;
         this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.createMarshaller();
@@ -156,7 +159,7 @@ final class XmppStreamWriter {
                     }
                     xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8");
 
-                    prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+                    prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
                     streamOpened = false;
 
                     xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
@@ -169,7 +172,7 @@ final class XmppStreamWriter {
                         xmlStreamWriter.writeAttribute("from", from.toString());
                     }
                     xmlStreamWriter.writeAttribute("version", "1.0");
-                    xmlStreamWriter.writeNamespace("", "jabber:client");
+                    xmlStreamWriter.writeNamespace("", namespace);
                     xmlStreamWriter.writeNamespace("stream", "http://etherx.jabber.org/streams");
                     xmlStreamWriter.writeCharacters("");
                     xmlStreamWriter.flush();

@@ -25,8 +25,8 @@
 package rocks.xmpp.sample.disco;
 
 import rocks.xmpp.core.Jid;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -56,7 +56,7 @@ public class DiscoSampleUser2 {
                         .defaultResponseTimeout(5000)
                         .build();
 
-                XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
                 // Connect
                 xmppSession.connect();

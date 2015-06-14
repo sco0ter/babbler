@@ -24,8 +24,8 @@
 
 package rocks.xmpp.sample.customiq;
 
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.context.extensions.ExtensionContext;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -56,7 +56,7 @@ public class CustomIQHandlerResponder {
                         .context(new ExtensionContext(Addition.class))
                         .build();
 
-                XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
                 // Reqister an IQ Handler, which will return the sum of two values.
                 xmppSession.addIQHandler(Addition.class, iq -> {

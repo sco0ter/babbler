@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.TestXmppXmpp;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
@@ -44,7 +44,7 @@ public class IbbTest extends ExtensionTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
+        TestXmppXmpp connection1 = new TestXmppXmpp();
         InBandByteStreamManager inBandBytestreamManager = connection1.getManager(InBandByteStreamManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(inBandBytestreamManager.isEnabled());
@@ -59,8 +59,8 @@ public class IbbTest extends ExtensionTest {
     @Test
     public void testIbbSessionRejection() {
         MockServer mockServer = new MockServer();
-        final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        final XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+        final XmppSession xmppSession1 = new TestXmppXmpp(ROMEO, mockServer);
+        final XmppSession xmppSession2 = new TestXmppXmpp(JULIET, mockServer);
         InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getManager(InBandByteStreamManager.class);
         inBandBytestreamManager2.addByteStreamListener(ByteStreamEvent::reject);
 

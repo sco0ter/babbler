@@ -42,7 +42,7 @@ import java.io.Writer;
  */
 public abstract class XmlTest {
 
-    private static final String START_STREAM = "<?xml version='1.0' encoding='UTF-8'?><stream:stream xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"jabber:client\" from=\"localhost\" id=\"55aa4529\" xml:lang=\"en\" version=\"1.0\">";
+    private static final String START_STREAM = "<?xml version='1.0' encoding='UTF-8'?><stream:stream xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"${namespace}\" from=\"localhost\" id=\"55aa4529\" xml:lang=\"en\" version=\"1.0\">";
 
     private static final String END_STREAM = "</stream:stream>";
 
@@ -54,15 +54,23 @@ public abstract class XmlTest {
 
     private Marshaller marshaller;
 
+    private final String namespace;
+
     protected XmlTest(Class<?>... context) throws JAXBException, XMLStreamException {
+        this("jabber:client", context);
+    }
+
+    protected XmlTest(String namespace, Class<?>... context) throws JAXBException, XMLStreamException {
         JAXBContext jaxbContext = JAXBContext.newInstance(context);
         unmarshaller = jaxbContext.createUnmarshaller();
         marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        this.namespace = namespace;
     }
 
-    private static XMLEventReader getStream(String stanza) throws XMLStreamException {
-        XMLEventReader xmlEventReader = INPUT_FACTORY.createXMLEventReader(new StringReader(START_STREAM + stanza + END_STREAM));
+
+    private XMLEventReader getStream(String stanza) throws XMLStreamException {
+        XMLEventReader xmlEventReader = INPUT_FACTORY.createXMLEventReader(new StringReader(START_STREAM.replace("${namespace}", namespace) + stanza + END_STREAM));
         xmlEventReader.nextEvent();
         xmlEventReader.nextEvent();
         return xmlEventReader;
@@ -83,7 +91,7 @@ public abstract class XmlTest {
 
         XMLStreamWriter xmlStreamWriter = OUTPUT_FACTORY.createXMLStreamWriter(writer);
 
-        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
         marshaller.marshal(object, prefixFreeWriter);
         return writer.toString();
     }

@@ -35,8 +35,8 @@ import javafx.stage.Stage;
 import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.chat.ChatManager;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.rtt.InboundRealTimeMessage;
@@ -67,7 +67,7 @@ public class RealTimeTextSample extends Application {
                 .build();
 
 
-        final XmppSession xmppSession = new XmppSession("localhost", xmppSessionConfiguration, tcpConnectionConfiguration);
+        final XmppClient xmppSession = new XmppClient("localhost", xmppSessionConfiguration, tcpConnectionConfiguration);
         xmppSession.connect();
         xmppSession.login("222", "222");
 

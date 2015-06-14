@@ -57,6 +57,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
@@ -143,7 +144,7 @@ public final class TcpConnection extends Connection {
 
     /**
      * Connects to the specified XMPP server using a socket connection.
-     * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppSession#login(String, String)} method.
+     * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppClient#login(String, String)} method.
      * <p>If only a XMPP service domain has been specified, it is tried to resolve the FQDN via SRV lookup.<br>
      * If that fails, it is tried to connect directly the XMPP service domain on port 5222.<br>
      * If a hostname and port have been specified, these are used to establish the connection.<br>
@@ -154,7 +155,7 @@ public final class TcpConnection extends Connection {
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public final synchronized void connect(Jid from) throws IOException {
+    public final synchronized void connect(Jid from, String namespace, Consumer<String> onStreamOpened) throws IOException {
 
         if (socket != null) {
             // Already connected.
@@ -181,12 +182,12 @@ public final class TcpConnection extends Connection {
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), xmlOutputFactory);
+        xmppStreamWriter = new XmppStreamWriter(namespace, this.getXmppSession(), xmlOutputFactory);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 
         // Start reading from the input stream.
-        xmppStreamReader = new XmppStreamReader(this, this.getXmppSession(), xmlOutputFactory);
+        xmppStreamReader = new XmppStreamReader(namespace, this, this.getXmppSession(), xmlOutputFactory, onStreamOpened);
         xmppStreamReader.startReading(inputStream);
     }
 

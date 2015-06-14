@@ -25,8 +25,8 @@
 package rocks.xmpp.sample.register;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
 
@@ -46,7 +46,7 @@ public class RegistrationSample {
                         .secure(false) // Disable TLS only for simpler example here.
                         .build();
 
-                XmppSession xmppSession = new XmppSession("localhost", tcpConnectionConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", tcpConnectionConfiguration);
 
                 // Connect
                 xmppSession.connect();

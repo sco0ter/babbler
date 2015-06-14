@@ -25,8 +25,8 @@
 package rocks.xmpp.sample.geolocation;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 
@@ -52,7 +52,7 @@ public class GeolocationPublisher {
                         .defaultResponseTimeout(5000)
                         .build();
 
-                XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
                 // Listen for inbound messages.
                 xmppSession.addInboundMessageListener(e -> System.out.println(e.getMessage()));

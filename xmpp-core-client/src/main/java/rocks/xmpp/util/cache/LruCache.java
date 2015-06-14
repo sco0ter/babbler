@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.util.cache;
+package rocks.xmpp.util.cache;
 
 import java.util.Collection;
 import java.util.Map;

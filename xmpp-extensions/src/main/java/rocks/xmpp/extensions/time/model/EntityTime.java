@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.time.model;
 
-import rocks.xmpp.core.util.adapters.InstantAdapter;
-import rocks.xmpp.core.util.adapters.ZoneOffsetAdapter;
+import rocks.xmpp.util.adapters.InstantAdapter;
+import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

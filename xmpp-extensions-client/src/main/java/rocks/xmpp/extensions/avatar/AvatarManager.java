@@ -36,7 +36,7 @@ import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
-import rocks.xmpp.core.util.cache.DirectoryCache;
+import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;

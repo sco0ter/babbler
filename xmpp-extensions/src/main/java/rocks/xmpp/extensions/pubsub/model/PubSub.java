@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.util.adapters.InstantAdapter;
+import rocks.xmpp.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.errors.ClosedNode;
 import rocks.xmpp.extensions.pubsub.model.errors.ConfigurationRequired;

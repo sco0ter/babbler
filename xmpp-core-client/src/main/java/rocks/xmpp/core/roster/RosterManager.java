@@ -39,7 +39,7 @@ import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.subscription.PresenceManager;
-import rocks.xmpp.core.util.cache.DirectoryCache;
+import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 

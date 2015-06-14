@@ -22,25 +22,23 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.util.adapters;
+package rocks.xmpp.util.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
- * Converts an {@link java.time.OffsetDateTime} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
- *
- * @author Christian Schudt
+ * Converts a {@link java.time.ZoneOffset} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
  */
-public final class OffsetDateTimeAdapter extends XmlAdapter<String, OffsetDateTime> {
+public final class ZoneOffsetAdapter extends XmlAdapter<String, ZoneOffset> {
 
     @Override
-    public final OffsetDateTime unmarshal(String value) throws Exception {
-        return value != null ? OffsetDateTime.parse(value) : null;
+    public final ZoneOffset unmarshal(String v) throws Exception {
+        return v != null ? ZoneOffset.of(v) : null;
     }
 
     @Override
-    public final String marshal(OffsetDateTime value) throws Exception {
-        return value != null ? value.toString() : null;
+    public final String marshal(ZoneOffset v) throws Exception {
+        return v != null ? v.toString() : null;
     }
 }

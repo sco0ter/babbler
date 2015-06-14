@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.delay.model;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.addr.JidAdapter;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.util.adapters.InstantAdapter;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;

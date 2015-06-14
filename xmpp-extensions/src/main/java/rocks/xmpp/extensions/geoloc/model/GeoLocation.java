@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.geoloc.model;
 
-import rocks.xmpp.core.util.adapters.ZoneOffsetAdapter;
+import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;

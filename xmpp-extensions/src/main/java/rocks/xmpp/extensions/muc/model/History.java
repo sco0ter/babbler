@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import rocks.xmpp.core.util.adapters.InstantAdapter;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

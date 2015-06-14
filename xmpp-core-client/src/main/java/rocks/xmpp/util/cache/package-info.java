@@ -25,4 +25,4 @@
 /**
  * Provides simple cache implementations.
  */
-package rocks.xmpp.core.util.cache;
+package rocks.xmpp.util.cache;

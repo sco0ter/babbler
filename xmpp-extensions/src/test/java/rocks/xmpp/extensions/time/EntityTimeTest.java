@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.util.adapters.ZoneOffsetAdapter;
+import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 import rocks.xmpp.extensions.time.model.EntityTime;
 
 import javax.xml.bind.JAXBException;

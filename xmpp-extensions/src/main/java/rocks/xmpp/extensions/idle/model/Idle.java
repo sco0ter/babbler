@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.idle.model;
 
 import rocks.xmpp.core.stanza.model.AbstractPresence;
 import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.core.util.adapters.OffsetDateTimeAdapter;
+import rocks.xmpp.util.adapters.OffsetDateTimeAdapter;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.last.model.LastActivity;
 

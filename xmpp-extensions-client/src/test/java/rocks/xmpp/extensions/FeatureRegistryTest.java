@@ -26,7 +26,7 @@ package rocks.xmpp.extensions;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.ping.PingManager;
@@ -39,7 +39,7 @@ public class FeatureRegistryTest {
 
     @Test
     public void test() {
-        XmppSession xmppSession = new TestXmppXmpp();
+        XmppSession xmppSession = new TestXmppSession();
         // By default ping is enabled.
         Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(Ping.NAMESPACE));
         Assert.assertTrue(xmppSession.getManager(PingManager.class).isEnabled());

@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -49,8 +49,8 @@ public class LastActivityManagerTest extends ExtensionTest {
     @Test
     public void testGetLastActivity() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestXmppXmpp xmppSession1 = new TestXmppXmpp(ROMEO, mockServer);
-        new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        new TestXmppSession(JULIET, mockServer);
         LastActivityManager lastActivityManager = xmppSession1.getManager(LastActivityManager.class);
         LastActivity lastActivity = lastActivityManager.getLastActivity(JULIET);
         Assert.assertNotNull(lastActivity);
@@ -59,8 +59,8 @@ public class LastActivityManagerTest extends ExtensionTest {
     @Test
     public void testGetLastActivityIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestXmppXmpp xmppSession1 = new TestXmppXmpp(ROMEO, mockServer);
-        TestXmppXmpp xmppSession2 = new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        TestXmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
         xmppSession2.getManager(LastActivityManager.class).setEnabled(false);
         LastActivityManager lastActivityManager = xmppSession1.getManager(LastActivityManager.class);
         try {
@@ -73,7 +73,7 @@ public class LastActivityManagerTest extends ExtensionTest {
 
     @Test
     public void testLastActivityInAwayPresence() {
-        final TestXmppXmpp xmppSession1 = new TestXmppXmpp(ROMEO, new MockServer());
+        final TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addOutboundPresenceListener(new Consumer<PresenceEvent>() {
             @Override
@@ -88,7 +88,7 @@ public class LastActivityManagerTest extends ExtensionTest {
 
     @Test
     public void testLastActivityInXAPresence() {
-        TestXmppXmpp xmppSession1 = new TestXmppXmpp(ROMEO, new MockServer());
+        TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addOutboundPresenceListener(e -> Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null));
         xmppSession1.send(new Message(JULIET));
@@ -97,7 +97,7 @@ public class LastActivityManagerTest extends ExtensionTest {
 
     @Test
     public void testLastActivityInChatPresence() {
-        TestXmppXmpp xmppSession1 = new TestXmppXmpp(ROMEO, new MockServer());
+        TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
         xmppSession1.send(new Presence(Presence.Show.CHAT));
@@ -105,7 +105,7 @@ public class LastActivityManagerTest extends ExtensionTest {
 
     @Test
     public void testLastActivityInDndPresence() {
-        TestXmppXmpp xmppSession1 = new TestXmppXmpp(ROMEO, new MockServer());
+        TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
         xmppSession1.send(new Presence(Presence.Show.DND));
@@ -113,7 +113,7 @@ public class LastActivityManagerTest extends ExtensionTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestXmppXmpp xmppSession1 = new TestXmppXmpp();
+        TestXmppSession xmppSession1 = new TestXmppSession();
         LastActivityManager lastActivityManager = xmppSession1.getManager(LastActivityManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(lastActivityManager.isEnabled());

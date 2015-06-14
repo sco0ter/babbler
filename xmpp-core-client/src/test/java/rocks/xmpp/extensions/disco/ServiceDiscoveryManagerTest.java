@@ -30,7 +30,7 @@ import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -66,8 +66,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     @Test
     public void testInfoDiscovery() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
-        new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         InfoNode result = serviceDiscoveryManager.discoverInformation(JULIET);
         Assert.assertNotNull(result);
@@ -78,7 +78,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestXmppXmpp connection1 = new TestXmppXmpp();
+        TestXmppSession connection1 = new TestXmppSession();
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(serviceDiscoveryManager.isEnabled());
@@ -101,10 +101,10 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testItemDiscovery() throws XmppException {
 
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(Collections.singletonList(new Item(Jid.valueOf("test"), "root", "name"))));
-        TestXmppXmpp connection2 = new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO);
         Assert.assertEquals(result.getItems().size(), 1);
@@ -117,12 +117,12 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testItemDiscoveryWithNode() throws XmppException {
 
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
 
         DefaultItemProvider defaultItemProvider = new DefaultItemProvider(Collections.singletonList(new Item(Jid.valueOf("test"), "node1")));
         serviceDiscoveryManager.setItemProvider("node1", defaultItemProvider);
-        TestXmppXmpp connection2 = new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO, "node1");
         Assert.assertEquals(result.getItems().size(), 1);
@@ -133,7 +133,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testItemDiscoveryWithRsm() throws XmppException {
 
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
 
         List<Item> items = new ArrayList<>();
@@ -142,7 +142,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         }
         serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
 
-        TestXmppXmpp connection2 = new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode resultItemCount = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forItemCount());
         Assert.assertTrue(resultItemCount.getItems().isEmpty());
@@ -178,14 +178,14 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testItemDiscoveryWithPaging() throws XmppException {
 
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
             items.add(new Item(Jid.valueOf("test"), "item" + i));
         }
         serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
-        TestXmppXmpp connection2 = new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode resultItemCount = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forItemCount());
         Assert.assertTrue(resultItemCount.getItems().isEmpty());

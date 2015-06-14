@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.httpbind;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
 /**
@@ -37,7 +37,7 @@ public class BoshConnectionTest {
     @Test
     public void testInsertionOrder() {
 
-        BoshConnection boshConnection = new BoshConnection(new TestXmppXmpp(), BoshConnectionConfiguration.getDefault());
+        BoshConnection boshConnection = new BoshConnection(new TestXmppSession(), BoshConnectionConfiguration.getDefault());
 
         Body body1 = Body.builder().build();
         boshConnection.unacknowledgedRequests.put(1L, body1);

@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.idle;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
@@ -43,7 +43,7 @@ public class IdleManagerTest extends ExtensionTest {
 
     @Test
     public void testIdleInAwayPresence() {
-        final TestXmppXmpp xmppSession1 = new TestXmppXmpp(ROMEO, new MockServer());
+        final TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.addOutboundPresenceListener(new Consumer<PresenceEvent>() {
             @Override
             public void accept(PresenceEvent e) {
@@ -57,7 +57,7 @@ public class IdleManagerTest extends ExtensionTest {
 
     @Test
     public void testIdleInXAPresence() {
-        TestXmppXmpp xmppSession1 = new TestXmppXmpp(ROMEO, new MockServer());
+        TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.addOutboundPresenceListener(e -> Assert.assertTrue(e.getPresence().getExtension(Idle.class) != null));
         xmppSession1.send(new Message(JULIET));
         xmppSession1.send(new Presence(Presence.Show.XA));

@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.chat.ChatManager;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
@@ -48,8 +48,8 @@ public class ChatStateManagerTest extends ExtensionTest {
 
         MockServer mockServer = new MockServer();
 
-        XmppSession xmppSession1 = new TestXmppXmpp(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestXmppXmpp(JULIET.asBareJid(), mockServer);
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET.asBareJid(), mockServer);
 
         final Collection<ChatState> chatStatesReceived = new ArrayList<>();
         xmppSession2.addInboundMessageListener(e -> {
@@ -78,7 +78,7 @@ public class ChatStateManagerTest extends ExtensionTest {
     @Test
     public void testServiceDiscoveryEntry() {
 
-        XmppSession xmppSession1 = new TestXmppXmpp();
+        XmppSession xmppSession1 = new TestXmppSession();
         ChatStateManager chatStateManager = xmppSession1.getManager(ChatStateManager.class);
         // By default, Chat States are disabled.
         Assert.assertFalse(chatStateManager.isEnabled());

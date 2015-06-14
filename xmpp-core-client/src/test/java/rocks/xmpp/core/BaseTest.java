@@ -25,7 +25,7 @@
 package rocks.xmpp.core;
 
 import org.testng.annotations.BeforeClass;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.JAXBException;
@@ -46,10 +46,10 @@ public class BaseTest {
 
     protected Unmarshaller unmarshaller;
 
-    protected TestXmppXmpp xmppSession;
+    protected TestXmppSession xmppSession;
 
     public BaseTest() {
-        xmppSession = new TestXmppXmpp();
+        xmppSession = new TestXmppSession();
     }
 
     @BeforeClass

@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -43,8 +43,8 @@ public class EntityTimeManagerTest extends ExtensionTest {
     @Test
     public void testEntityTimeManager() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
-        new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        new TestXmppSession(JULIET, mockServer);
         EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
         OffsetDateTime entityTime = entityTimeManager.getEntityTime(JULIET);
         Assert.assertNotNull(entityTime);
@@ -53,8 +53,8 @@ public class EntityTimeManagerTest extends ExtensionTest {
     @Test
     public void testEntityTimeIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
-        TestXmppXmpp connection2 = new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getManager(EntityTimeManager.class).setEnabled(false);
         EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
         try {
@@ -67,7 +67,7 @@ public class EntityTimeManagerTest extends ExtensionTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestXmppXmpp connection1 = new TestXmppXmpp();
+        TestXmppSession connection1 = new TestXmppSession();
         EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(entityTimeManager.isEnabled());

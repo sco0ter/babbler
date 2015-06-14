@@ -31,7 +31,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.ContactGroup;
 import rocks.xmpp.core.roster.model.Roster;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 
 import javax.xml.bind.JAXBException;
@@ -49,7 +49,7 @@ public class RosterManagerTest extends BaseTest {
     @Test
     public void testRosterListener() throws XMLStreamException, JAXBException {
         final int[] rosterPushCount = new int[1];
-        XmppSession xmppSession1 = new TestXmppXmpp();
+        XmppSession xmppSession1 = new TestXmppSession();
         RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
         rosterManager.addRosterListener(e -> {
             if (rosterPushCount[0] == 0) {
@@ -94,7 +94,7 @@ public class RosterManagerTest extends BaseTest {
 
     @Test
     public void testRosterGroups() {
-        XmppSession xmppSession1 = new TestXmppXmpp();
+        XmppSession xmppSession1 = new TestXmppSession();
         RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
 
         Roster roster1 = new Roster(new Contact(Jid.valueOf("contact1@domain"), "contact1", "Group1"),
@@ -120,7 +120,7 @@ public class RosterManagerTest extends BaseTest {
 
     @Test
     public void testNestedRosterGroups() {
-        XmppSession xmppSession1 = new TestXmppXmpp();
+        XmppSession xmppSession1 = new TestXmppSession();
         RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
         rosterManager.setGroupDelimiter("::");
         Roster roster1 = new Roster(new Contact(Jid.valueOf("contact3@domain"), "contact3", "Group3::SubGroup"),
@@ -148,7 +148,7 @@ public class RosterManagerTest extends BaseTest {
 
     @Test
     public void testRosterIntegrity() {
-        XmppSession xmppSession1 = new TestXmppXmpp();
+        XmppSession xmppSession1 = new TestXmppSession();
         RosterManager rosterManager = xmppSession1.getManager(RosterManager.class);
 
         // Initial roster

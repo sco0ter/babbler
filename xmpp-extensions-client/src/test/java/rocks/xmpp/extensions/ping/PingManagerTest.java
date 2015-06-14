@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
@@ -40,8 +40,8 @@ public class PingManagerTest extends ExtensionTest {
     @Test
     public void testPing() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
-        new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        new TestXmppSession(JULIET, mockServer);
         PingManager pingManager = connection1.getManager(PingManager.class);
         pingManager.ping(JULIET);
     }
@@ -49,8 +49,8 @@ public class PingManagerTest extends ExtensionTest {
     @Test
     public void testPingIfDisabled() throws XmppException {
         MockServer mockServer = new MockServer();
-        TestXmppXmpp connection1 = new TestXmppXmpp(ROMEO, mockServer);
-        TestXmppXmpp connection2 = new TestXmppXmpp(JULIET, mockServer);
+        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getManager(PingManager.class).setEnabled(false);
         PingManager pingManager = connection1.getManager(PingManager.class);
         Assert.assertFalse(pingManager.ping(JULIET));
@@ -58,7 +58,7 @@ public class PingManagerTest extends ExtensionTest {
 
     @Test
     public void testServiceDiscoveryEntry() {
-        TestXmppXmpp connection1 = new TestXmppXmpp();
+        TestXmppSession connection1 = new TestXmppSession();
         PingManager pingManager = connection1.getManager(PingManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(pingManager.isEnabled());

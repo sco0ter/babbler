@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core;
+package rocks.xmpp.util;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;

@@ -30,6 +30,7 @@ import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

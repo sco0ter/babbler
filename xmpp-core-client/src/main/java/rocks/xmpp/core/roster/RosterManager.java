@@ -26,7 +26,7 @@ package rocks.xmpp.core.roster;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.XmppUtils;
+import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.ContactGroup;
 import rocks.xmpp.core.roster.model.Roster;

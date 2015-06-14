@@ -22,46 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core;
-
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-final class BranchedInputStream extends FilterInputStream {
-
-    private final OutputStream branch;
-
-    public BranchedInputStream(InputStream input, OutputStream branch) {
-        super(input);
-        this.branch = branch;
-    }
-
-    @Override
-    public int read() throws IOException {
-        int b = super.read();
-        if (b != -1) {
-            branch.write(b);
-        }
-        return b;
-    }
-
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-        int n = super.read(b, off, len);
-        if (n != -1) {
-            branch.write(b, off, n);
-        }
-        return n;
-    }
-
-    @Override
-    public int read(byte[] b) throws IOException {
-        int n = super.read(b);
-        if (n != -1) {
-            branch.write(b, 0, n);
-        }
-        return n;
-    }
-}
+/**
+ * Utility classes.
+ */
+package rocks.xmpp.util;

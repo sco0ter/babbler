@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.rosterx;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.XmppUtils;
+import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.session.Manager;

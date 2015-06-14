@@ -22,28 +22,46 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core;
+package rocks.xmpp.util;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-/**
- * Converts a String representation of a JID to JID object and vice a versa.
- */
-public final class JidAdapter extends XmlAdapter<String, Jid> {
+final class BranchedInputStream extends FilterInputStream {
 
-    @Override
-    public Jid unmarshal(String v) throws Exception {
-        if (v != null) {
-            return Jid.valueOf(v, true);
-        }
-        return null;
+    private final OutputStream branch;
+
+    public BranchedInputStream(InputStream input, OutputStream branch) {
+        super(input);
+        this.branch = branch;
     }
 
     @Override
-    public String marshal(Jid v) throws Exception {
-        if (v != null) {
-            return v.toEscapedString();
+    public int read() throws IOException {
+        int b = super.read();
+        if (b != -1) {
+            branch.write(b);
         }
-        return null;
+        return b;
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int n = super.read(b, off, len);
+        if (n != -1) {
+            branch.write(b, off, n);
+        }
+        return n;
+    }
+
+    @Override
+    public int read(byte[] b) throws IOException {
+        int n = super.read(b);
+        if (n != -1) {
+            branch.write(b, 0, n);
+        }
+        return n;
     }
 }

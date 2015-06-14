@@ -24,6 +24,8 @@
 
 package rocks.xmpp.core;
 
+import rocks.xmpp.util.XmppUtils;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;

@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -86,17 +85,6 @@ public final class PresenceManager extends Manager {
                 } else {
                     lastSentPresences.put(presence.getTo().toString(), presence);
                 }
-            }
-        });
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.DISCONNECTED) {
-                presenceMap.keySet().forEach(contact -> {
-                    try {
-                        xmppSession.handleElement(new Presence(Presence.Type.UNAVAILABLE).withFrom(contact));
-                    } catch (Exception e1) {
-                        logger.log(Level.WARNING, e1.getMessage(), e1);
-                    }
-                });
             }
         });
     }

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.stanza.model.server;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.Text;

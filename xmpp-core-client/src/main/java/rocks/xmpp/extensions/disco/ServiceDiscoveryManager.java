@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.disco;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Extension;
@@ -364,7 +364,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @return The info discovery result or null, if info discovery is not supported.
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
-     * @see #discoverInformation(rocks.xmpp.core.Jid)
+     * @see #discoverInformation(Jid)
      */
     public final InfoNode discoverInformation(Jid jid, String node) throws XmppException {
         AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new InfoDiscovery(node)));

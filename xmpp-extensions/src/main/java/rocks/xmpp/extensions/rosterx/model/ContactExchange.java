@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.rosterx.model;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;

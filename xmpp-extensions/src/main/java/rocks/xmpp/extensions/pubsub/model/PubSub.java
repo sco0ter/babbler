@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.errors.ClosedNode;
@@ -625,7 +625,7 @@ public final class PubSub {
     /**
      * The (subscribe) {@code <options/>} element.
      *
-     * @see #withOptions(String, rocks.xmpp.core.Jid, String, rocks.xmpp.extensions.data.model.DataForm)
+     * @see #withOptions(String, Jid, String, rocks.xmpp.extensions.data.model.DataForm)
      */
     public static final class Options {
         @XmlAttribute

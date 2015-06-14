@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.chat;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;

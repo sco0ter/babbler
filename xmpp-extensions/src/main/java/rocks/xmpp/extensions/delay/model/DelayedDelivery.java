@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.delay.model;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.util.adapters.InstantAdapter;
 

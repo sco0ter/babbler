@@ -24,14 +24,13 @@
 
 package rocks.xmpp.extensions.muc;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;

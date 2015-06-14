@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;

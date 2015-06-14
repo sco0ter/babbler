@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.rtt;
 
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 

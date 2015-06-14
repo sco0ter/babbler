@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.amp.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.amp.model.errors.FailedRules;
 

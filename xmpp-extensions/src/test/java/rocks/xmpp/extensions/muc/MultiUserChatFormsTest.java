@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.muc;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.muc.model.RequestVoice;

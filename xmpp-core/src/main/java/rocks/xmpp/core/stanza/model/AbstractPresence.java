@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.annotation.XmlAnyElement;

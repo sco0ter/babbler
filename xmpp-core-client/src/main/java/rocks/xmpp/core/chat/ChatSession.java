@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.chat;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.client.Message;
@@ -46,7 +46,7 @@ import static java.util.Objects.requireNonNull;
  * <p>In practice, instant messaging activity between human users tends to occur in the form of a conversational burst that we call a "chat session": the exchange of multiple messages between two parties in relatively rapid succession within a relatively brief period of time.</p>
  * </blockquote>
  * <p>
- * In order to create a new chat session, use the {@linkplain ChatManager#createChatSession(rocks.xmpp.core.Jid) chat manager}.
+ * In order to create a new chat session, use the {@linkplain ChatManager#createChatSession(Jid) chat manager}.
  * </p>
  */
 public final class ChatSession extends Chat implements AutoCloseable {

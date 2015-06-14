@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.component.accept;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;

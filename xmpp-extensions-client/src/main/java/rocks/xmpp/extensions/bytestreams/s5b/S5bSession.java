@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 
 import java.io.IOException;

@@ -32,7 +32,7 @@
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Annotation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.privatedata.rosternotes.model;
 
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.JidAdapter;
 import rocks.xmpp.core.util.adapters.OffsetDateTimeAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;

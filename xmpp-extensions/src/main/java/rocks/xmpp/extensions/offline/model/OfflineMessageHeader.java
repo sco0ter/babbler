@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.offline.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 /**
  * The offline message header.

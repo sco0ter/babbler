@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.subscription;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.AbstractPresence;

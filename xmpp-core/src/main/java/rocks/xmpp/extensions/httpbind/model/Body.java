@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.httpbind.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;

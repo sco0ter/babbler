@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.avatar.AvatarManager.ConversionException;
 
 import java.awt.image.BufferedImage;

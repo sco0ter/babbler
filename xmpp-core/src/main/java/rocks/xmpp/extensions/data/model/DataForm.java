@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.data.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;

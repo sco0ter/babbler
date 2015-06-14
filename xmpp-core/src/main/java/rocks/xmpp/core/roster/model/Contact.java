@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.roster.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnum;

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.session.context;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Roster;

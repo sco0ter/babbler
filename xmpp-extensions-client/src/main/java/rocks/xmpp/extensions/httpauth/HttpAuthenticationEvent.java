@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.httpauth;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaError;

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.rosterx;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
 import java.time.Instant;

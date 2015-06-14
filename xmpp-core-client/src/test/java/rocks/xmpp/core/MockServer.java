@@ -49,6 +49,7 @@ package rocks.xmpp.core;/*
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.addr.Jid;
 
 import java.util.HashMap;
 import java.util.Map;

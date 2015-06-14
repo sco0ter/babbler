@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core.bind.model;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 import javax.xml.bind.annotation.XmlRootElement;

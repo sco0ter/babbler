@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 import javax.xml.bind.annotation.XmlAttribute;

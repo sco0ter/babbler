@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.blocking.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.blocking.model.errors.Blocked;
 
 import javax.xml.bind.annotation.XmlRootElement;

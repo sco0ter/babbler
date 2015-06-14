@@ -28,7 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;

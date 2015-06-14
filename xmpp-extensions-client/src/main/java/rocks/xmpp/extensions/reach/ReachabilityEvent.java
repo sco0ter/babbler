@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.reach;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.reach.model.Address;
 
 import java.util.EventObject;

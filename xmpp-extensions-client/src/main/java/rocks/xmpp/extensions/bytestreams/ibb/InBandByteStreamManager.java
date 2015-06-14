@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.bytestreams.ibb;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.XmppSession;
@@ -33,7 +33,6 @@ import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
@@ -49,7 +48,7 @@ import java.util.logging.Logger;
 /**
  * A manager for <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>. IBB streams use the same transport as XMPP, i.e. the same TCP or BOSH connection.
  * <p>
- * To initiate an IBB session with another entity, use {@link #initiateSession(rocks.xmpp.core.Jid, String, int)}.
+ * To initiate an IBB session with another entity, use {@link #initiateSession(Jid, String, int)}.
  * <p>
  * This class is thread-safe.
  *

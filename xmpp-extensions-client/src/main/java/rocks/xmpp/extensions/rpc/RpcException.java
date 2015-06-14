@@ -24,14 +24,16 @@
 
 package rocks.xmpp.extensions.rpc;
 
+import rocks.xmpp.addr.Jid;
+
 /**
  * This exception can be thrown by a {@link RpcHandler} to indicate application-level errors.
  * <p>
- * By throwing this exception in the  {@link RpcHandler#process(rocks.xmpp.core.Jid, String, java.util.List)} method a {@code <fault/>} will be returned.
+ * By throwing this exception in the  {@link RpcHandler#process(Jid, String, java.util.List)} method a {@code <fault/>} will be returned.
  * </p>
  *
  * @author Christian Schudt
- * @see RpcHandler#process(rocks.xmpp.core.Jid, String, java.util.List)
+ * @see RpcHandler#process(Jid, String, java.util.List)
  */
 public final class RpcException extends Exception {
 

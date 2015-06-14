@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 /**
  * Represents the {@code <affiliation/>} element, which is used in both 'pubsub' and 'pubsub#owner' namespace.

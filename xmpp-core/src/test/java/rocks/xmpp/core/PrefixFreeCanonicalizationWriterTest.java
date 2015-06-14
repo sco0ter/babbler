@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

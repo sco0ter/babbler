@@ -24,7 +24,7 @@
 
 package rocks.xmpp.sample.customiq;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSessionConfiguration;

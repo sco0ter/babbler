@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.rosterx;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.AbstractIQ;

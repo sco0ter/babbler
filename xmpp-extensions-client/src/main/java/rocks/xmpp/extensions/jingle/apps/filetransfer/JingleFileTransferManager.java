@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.NoResponseException;

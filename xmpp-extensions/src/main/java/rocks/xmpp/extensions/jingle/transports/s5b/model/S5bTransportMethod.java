@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.transports.s5b.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 import javax.xml.bind.annotation.XmlAttribute;

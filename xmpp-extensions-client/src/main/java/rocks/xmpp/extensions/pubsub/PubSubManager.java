@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.pubsub;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * This class is the entry point to work with pubsub.
  * <p>
- * You should first {@linkplain #createPubSubService(rocks.xmpp.core.Jid) create a pubsub service}, which allows you to work with that service.
+ * You should first {@linkplain #createPubSubService(Jid) create a pubsub service}, which allows you to work with that service.
  * If you don't know the service address, you can {@linkplain #discoverPubSubServices()} discover} the pubsub services hosted at your server.
  * <p>
  * It also allows you to {@linkplain #createPersonalEventingService() create a Personal Eventing Service}, which is a virtual pubsub service, bound to your account.

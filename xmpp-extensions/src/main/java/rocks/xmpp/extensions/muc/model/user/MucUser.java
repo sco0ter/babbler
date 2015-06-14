@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model.user;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.muc.model.Actor;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Destroy;

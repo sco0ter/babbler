@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.rpc;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.rpc.model.Value;
 
 import java.util.List;

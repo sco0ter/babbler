@@ -29,8 +29,8 @@
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = PubSub.NAMESPACE + "#owner", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.pubsub.model.owner;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 import javax.xml.bind.annotation.XmlAccessType;

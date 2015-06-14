@@ -29,8 +29,8 @@
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = "jabber:client", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.core.stanza.model.client;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

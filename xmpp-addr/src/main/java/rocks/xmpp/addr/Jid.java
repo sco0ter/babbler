@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core;
+package rocks.xmpp.addr;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;

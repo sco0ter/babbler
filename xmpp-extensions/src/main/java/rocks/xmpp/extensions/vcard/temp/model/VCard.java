@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.vcard.temp.model;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -430,7 +430,7 @@ public final class VCard {
      * Gets the JID.
      *
      * @return The JID.
-     * @see #setJid(rocks.xmpp.core.Jid)
+     * @see #setJid(Jid)
      */
     public Jid getJid() {
         return jid;

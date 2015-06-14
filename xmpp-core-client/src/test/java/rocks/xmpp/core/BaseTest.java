@@ -26,6 +26,7 @@ package rocks.xmpp.core;
 
 import org.testng.annotations.BeforeClass;
 import rocks.xmpp.core.session.TestXmppXmpp;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;

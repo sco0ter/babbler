@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.caps;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
@@ -72,9 +72,9 @@ import java.util.logging.Logger;
  * If this manager is enabled (default), entity capabilities are automatically included in every presence notification being sent.
  * </p>
  * <p>
- * You can check for an entity's capabilities by using {@link #discoverCapabilities(rocks.xmpp.core.Jid)}, which will either return cached capabilities or ask the entity.
+ * You can check for an entity's capabilities by using {@link #discoverCapabilities(Jid)}, which will either return cached capabilities or ask the entity.
  * </p>
- * Similarly you can ask if an entity supports a particular feature via {@link #isSupported(String, rocks.xmpp.core.Jid)}.
+ * Similarly you can ask if an entity supports a particular feature via {@link #isSupported(String, Jid)}.
  * <p>
  * This class is thread-safe.
  *

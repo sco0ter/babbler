@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.XmppSession;
@@ -54,7 +54,7 @@ import java.util.List;
  * This class starts a local SOCKS5 server to support direct connections between two entities.
  * You can {@linkplain #setPort(int) set a port} of this local server, if you don't set a port, the default port 1080 is used.
  * <p>
- * It also allows you to {@linkplain #initiateSession(rocks.xmpp.core.Jid, String) initiate a byte stream session} with another entity.
+ * It also allows you to {@linkplain #initiateSession(Jid, String) initiate a byte stream session} with another entity.
  *
  * @author Christian Schudt
  */

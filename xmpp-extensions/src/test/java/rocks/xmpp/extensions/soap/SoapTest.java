@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.soap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Element;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.client.Message;

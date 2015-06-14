@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core;
+package rocks.xmpp.addr;
 
 import gnu.inet.encoding.Stringprep;
 import gnu.inet.encoding.StringprepException;

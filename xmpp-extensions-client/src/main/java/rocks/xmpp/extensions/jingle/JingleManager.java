@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;

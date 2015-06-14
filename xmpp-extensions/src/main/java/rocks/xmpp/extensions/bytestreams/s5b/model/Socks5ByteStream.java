@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

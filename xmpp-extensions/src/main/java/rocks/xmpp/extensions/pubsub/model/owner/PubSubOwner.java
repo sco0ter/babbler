@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.pubsub.model.owner;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;

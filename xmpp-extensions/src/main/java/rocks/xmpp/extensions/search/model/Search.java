@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.search.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 

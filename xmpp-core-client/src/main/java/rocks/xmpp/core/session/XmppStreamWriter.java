@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;

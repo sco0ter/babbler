@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.session.Manager;
@@ -34,7 +34,6 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.AbstractMessage;
 import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.util.cache.DirectoryCache;

@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.jingle.transports.s5b;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;

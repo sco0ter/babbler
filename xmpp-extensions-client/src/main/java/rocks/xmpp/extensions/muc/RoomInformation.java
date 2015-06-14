@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.muc.model.MucFeature;
 import rocks.xmpp.extensions.muc.model.RoomInfo;

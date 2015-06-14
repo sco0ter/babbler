@@ -28,8 +28,8 @@
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class) package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.blocking;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import java.util.EventObject;
 import java.util.List;

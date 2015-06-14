@@ -101,6 +101,7 @@
     <inceptionYear>2014</inceptionYear>
 
     <modules>
+        <module>xmpp-addr</module>
         <module>xmpp-core</module>
         <module>xmpp-core-client</module>
         <module>xmpp-extensions</module>

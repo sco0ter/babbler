@@ -24,9 +24,8 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.hashes.model.Hash;
 
 import java.io.File;

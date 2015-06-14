@@ -54,14 +54,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The base class for establishing an XMPP session with a server.
+ * The base class for establishing an XMPP session with a server, i.e. client-to-server sessions.
  * <h3>Establishing an XMPP Session</h3>
  * The following example shows the most simple way to establish a session:
  * <pre>
  * {@code
- * XmppSession xmppSession = new XmppSession("domain");
- * xmppSession.connect();
- * xmppSession.login("username", "password");
+ * XmppClient xmppClient = new XmppClient("domain");
+ * xmppClient.connect();
+ * xmppClient.login("username", "password");
  * }
  * </pre>
  * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback.
@@ -70,13 +70,13 @@ import java.util.logging.Logger;
  * Once connected, you can send messages:
  * <pre>
  * {@code
- * xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
+ * xmppClient.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
  * }
  * </pre>
  * <h3>Closing the Session</h3>
  * <pre>
  * {@code
- * xmppSession.close();
+ * xmppClient.close();
  * }
  * </pre>
  * <h3>Listening for Messages and Presence</h3>
@@ -84,12 +84,12 @@ import java.util.logging.Logger;
  * <pre>
  * {@code
  * // Listen for messages
- * xmppSession.addInboundMessageListener(e ->
+ * xmppClient.addInboundMessageListener(e ->
  *     // Handle inbound message.
  * );
  *
  * // Listen for presence changes
- * xmppSession.addInboundPresenceListener(e ->
+ * xmppClient.addInboundPresenceListener(e ->
  *     // Handle inbound presence.
  * );
  * }
@@ -97,8 +97,8 @@ import java.util.logging.Logger;
  * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.session.XmppSessionConfiguration
- * @see rocks.xmpp.core.session.TcpConnectionConfiguration
+ * @see XmppSessionConfiguration
+ * @see TcpConnectionConfiguration
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  */
 public class XmppClient extends XmppSession {

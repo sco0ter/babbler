@@ -26,7 +26,6 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.IQEvent;
@@ -49,6 +48,7 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -81,7 +81,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * The base class for different kinds of XMPP sessions.
+ * <p>
+ * To date there are three kinds of sessions:
+ * <ul>
+ * <li>A normal client-to-server session. This is the default and most used XMPP session. It's concrete implementation is the {@link XmppClient}</li>
+ * <li>An external component session (<a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
+ * <li>A client-to-client session (<a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet)</li>
+ * </ul>
+ * This class provides the common functionality and abstract methods for connection establishment, sending and receiving XML stanzas, closing the session, etc.
+ * <p>
+ * Concrete implementations may have different concepts for authentication, e.g. normal c2s sessions use SASL, while the Jabber Component Protocol use a different kind of handshake for authenticating.
+ *
  * @author Christian Schudt
+ * @see XmppClient
+ * @see <a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>
  */
 public abstract class XmppSession implements AutoCloseable {
 

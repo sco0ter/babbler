@@ -3,20 +3,20 @@
 
 ## Establishing an XMPP Session
 
-The first thing you want to do in order to connect to an XMPP server is creating a `XmppSession` object:
+The first thing you want to do in order to connect to an XMPP server is creating a `XmppClient` object:
 
 ```java
-XmppSession xmppSession = new XmppSession("domain");
+XmppClient xmppClient = new XmppClient("domain");
 ```
 
-The `XmppSession` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+The `XmppClient` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
 
 A session to an XMPP server can be established in at least two ways:
 
 1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
 2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
 
-By default, the `XmppSession` will try to establish a connection via TCP first during the connection process.
+By default, the `XmppClient` will try to establish a connection via TCP first during the connection process.
 If the connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually BOSH).
 The hostname and port is determined by doing a DNS lookup.
 
@@ -50,7 +50,7 @@ BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.buil
 Now let's pass them to the session to tell it that it should use them:
 
 ```java
-XmppSession xmppSession = new XmppSession("domain", tcpConfiguration, boshConfiguration);
+XmppClient xmppClient = new XmppClient("domain", tcpConfiguration, boshConfiguration);
 ```
 
 During connecting, the session will try all configured connections in order, until a connection is established.
@@ -92,17 +92,17 @@ Here are some examples:
 
 ```java
 // Listen for presence changes
-xmppSession.addInboundPresenceListener(e -> {
+xmppClient.addInboundPresenceListener(e -> {
     Presence presence = e.getPresence();
     // Handle inbound presence.
 });
 // Listen for messages
-xmppSession.addInboundMessageListener(e -> {
+xmppClient.addInboundMessageListener(e -> {
     Message message = e.getMessage();
     // Handle inbound message.
 });
 // Listen for roster pushes
-xmppSession.getManager(RosterManager.class).addRosterListener(e -> {
+xmppClient.getManager(RosterManager.class).addRosterListener(e -> {
     // Roster has changed
 });
 ```
@@ -113,7 +113,7 @@ If you have prepared your session, you are now ready to connect to the server:
 
 ```java
 try {
-   xmppSession.connect();
+   xmppClient.connect();
 } catch (XmppException e) {
    // ...
 }
@@ -130,7 +130,7 @@ After connecting, you have to authenticate and bind a resource, in order to beco
 
 ```java
 try {
-   xmppSession.login("username", "password", "resource");
+   xmppClient.login("username", "password", "resource");
 } catch (AuthenticationException e) {
    // Login failed, because the server returned a SASL failure, most likely due to wrong credentials.
 } catch (XmppException e) {
@@ -145,7 +145,7 @@ Initial presence is sent automatically, so that you are now an \"available resou
 Sending a simple chat message works like this:
 
 ```java
-xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
+xmppClient.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
 ```
 
 ## Changing Availability
@@ -153,7 +153,7 @@ xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHA
 If you want to change your presence availability, just send a new presence with a "show" value.
 
 ```java
-xmppSession.send(new Presence(Presence.Show.AWAY));
+xmppClient.send(new Presence(Presence.Show.AWAY));
 ```
 
 ## Closing the Session
@@ -161,15 +161,15 @@ xmppSession.send(new Presence(Presence.Show.AWAY));
 Closing a session is simply done with:
 
 ```java
-xmppSession.close();
+xmppClient.close();
 ```
 
-Note, that `XmppSession` implements `java.lang.AutoCloseable`, which means you can also use the try-with-resources statement, which automatically closes the session:
+Note, that `XmppClient` implements `java.lang.AutoCloseable`, which means you can also use the try-with-resources statement, which automatically closes the session:
 
 ```java
-try (XmppSession xmppSession = new XmppSession("domain")) {
-    xmppSession.connect();
-} catch (Exception e) {
+try (XmppClient xmppClient = new XmppClient("domain")) {
+    xmppClient.connect();
+} catch (XmppException e) {
     // handle exception
 }
 ```

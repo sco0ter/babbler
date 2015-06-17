@@ -3,18 +3,27 @@
 
 ## Version 0.6.0-SNAPSHOT
 
+* Add support for [XEP-0114: Jabber Component Protocol](http://www.xmpp.org/extensions/xep-0114.html)
 * Add support for [XEP-0205: Best Practices to Discourage Denial of Service Attacks](http://www.xmpp.org/extensions/xep-0205.html) (error conditions)
 * Add support for [XEP-0301: In-Band Real Time Text](http://www.xmpp.org/extensions/xep-0301.html)
 * Add support for [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
 * Send initial presence automatically during login (no need to do it manually anymore).
-* XEP-0092 Software Version now responds with Babbler's version automatically.
+* Disabled extensions no longer process stanzas (for increased performance).
+* `XmppSession` is now `XmppClient` and derives the now abstract `XmppSession`. This is due to the added support for XEP-0114.
+* `XmppSession` has a new convenient method for determining support of a feature (since it's used by many XEPs).
+* `login` method now returns "additional data with success", i.e. the contents of the `<success/>` element.
+* Add a new `ReconnectionStrategy` implementation, which always tries to reconnect after fix time.
+* There's a new "xmpp-addr" project for [RFC 6122](http://xmpp.org/rfcs/rfc6122.html) which contains the `Jid` class, which has therefore also moved to a new package (`rocks.xmpp.addr`)
 * Use [Java 8's Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html):
     * All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda expressions, nothing has changed for you)
 * Use [Java 8's Date-Time API](https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html):
     * `java.util.TimeZone` has been replaced with `java.time.ZoneOffset`
     * `java.util.Date` has been replaced with `java.time.OffsetDateTime` or `java.time.Instant`
 * Reduce logging overhead by deferred string building.
-* `Message.Body`, `Message.Subject`, `Presence.Status` classes have been replaced by a common `Text` class, since they are all the same.
+* XEP-0092 Software Version now responds with Babbler's version automatically.
+* Stanza classes refactoring:
+    * Stanzas moved from `rocks.xmpp.core.stanza.model.client` to `rocks.xmpp.core.stanza.model`. This was a necessary change for XEP-0114.
+    * `Message.Body`, `Message.Subject`, `Presence.Status` classes have been replaced by a common `Text` class, since they are all the same.
 * Add support for [Woodstox JAXB implementation](http://woodstox.codehaus.org/).
 
 

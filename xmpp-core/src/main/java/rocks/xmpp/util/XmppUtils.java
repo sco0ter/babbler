@@ -104,7 +104,7 @@ public final class XmppUtils {
      *
      * @param xmlStreamWriter The underlying XML stream writer.
      * @return The prefix-free canonicalization writer.
-     * @throws XMLStreamException
+     * @throws XMLStreamException Thrown by {@link javax.xml.stream.XMLStreamWriter}.
      */
     public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
         return createXmppStreamWriter(xmlStreamWriter, "jabber:client");

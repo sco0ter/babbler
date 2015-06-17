@@ -480,6 +480,7 @@ public class XmppClient extends XmppSession {
      * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
      * @param jid     The XMPP entity.
      * @return True, if the XMPP entity supports the given feature; otherwise false.
+     * @throws XmppException If an error occurred while discovering support.
      */
     public final boolean isSupported(String feature, Jid jid) throws XmppException {
         return getManager(EntityCapabilitiesManager.class).isSupported(feature, jid);

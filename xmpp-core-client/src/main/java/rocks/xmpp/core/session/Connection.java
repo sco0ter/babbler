@@ -127,7 +127,9 @@ public abstract class Connection implements AutoCloseable {
     /**
      * Connects to the server and provides an optional 'from' attribute.
      *
-     * @param from The 'from' attribute.
+     * @param from           The 'from' attribute.
+     * @param namespace      The content namespace, e.g. "jabber:client".
+     * @param onStreamOpened The callback which gets notified when the stream gets opened, i.e. when the server has responded with a stream header. The parameter of the consumer is the stream id.
      * @throws IOException If no connection could be established, e.g. due to unknown host.
      */
     public abstract void connect(Jid from, String namespace, Consumer<String> onStreamOpened) throws IOException;

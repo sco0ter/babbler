@@ -638,6 +638,7 @@ public abstract class XmppSession implements AutoCloseable {
      * Sends an XML element to the server, usually a stanza, i.e. a message, presence or IQ.
      *
      * @param element The XML element.
+     * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
     public StreamElement send(StreamElement element) {
 
@@ -667,7 +668,6 @@ public abstract class XmppSession implements AutoCloseable {
         }
         return element;
     }
-
 
     /**
      * Gets the status of the session.
@@ -707,7 +707,6 @@ public abstract class XmppSession implements AutoCloseable {
         }
         return status != oldStatus;
     }
-
 
     /**
      * Gets an unmodifiable list of connections, which this session will try during connecting.
@@ -1012,6 +1011,11 @@ public abstract class XmppSession implements AutoCloseable {
         return serviceDiscoveryManager.getFeatures();
     }
 
+    /**
+     * The connected resource, which is assigned by the server.
+     *
+     * @return The connected resource.
+     */
     public abstract Jid getConnectedResource();
 
     /**

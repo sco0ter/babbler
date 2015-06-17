@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.jingle.transports.iceudp;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.iceudp.model.Candidate;
@@ -41,7 +42,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class IceUdpTransportMethodTest extends XmlTest {
     protected IceUdpTransportMethodTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Jingle.class, Rtp.class, IceUdpTransportMethod.class);
+        super(ClientIQ.class, Jingle.class, Rtp.class, IceUdpTransportMethod.class);
     }
 
     @Test

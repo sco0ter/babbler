@@ -24,8 +24,8 @@
 
 package rocks.xmpp.sample.customiq;
 
-import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.context.extensions.ExtensionContext;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;

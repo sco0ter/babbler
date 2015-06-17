@@ -24,6 +24,12 @@
 
 package rocks.xmpp.core;
 
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.JAXBContext;
@@ -79,8 +85,18 @@ public abstract class XmlTest {
     }
 
     protected <T> T unmarshal(String xml, Class<T> type) throws XMLStreamException, JAXBException {
+        Class<?> clazz = type;
+        if (type == Message.class) {
+            clazz = ClientMessage.class;
+        }
+        if (type == Presence.class) {
+            clazz = ClientPresence.class;
+        }
+        if (type == IQ.class) {
+            clazz = ClientIQ.class;
+        }
         XMLEventReader xmlEventReader = getStream(xml);
-        return unmarshaller.unmarshal(xmlEventReader, type).getValue();
+        return (T) unmarshaller.unmarshal(xmlEventReader, clazz).getValue();
     }
 
     protected Object unmarshal(String xml) throws XMLStreamException, JAXBException {
@@ -89,6 +105,15 @@ public abstract class XmlTest {
     }
 
     protected String marshal(Object object) throws XMLStreamException, JAXBException {
+        if (object instanceof Message) {
+            object = ClientMessage.from((Message) object);
+        }
+        if (object instanceof Presence) {
+            object = ClientPresence.from((Presence) object);
+        }
+        if (object instanceof IQ) {
+            object = ClientIQ.from((IQ) object);
+        }
         Writer writer = new StringWriter();
 
         XMLStreamWriter xmlStreamWriter = OUTPUT_FACTORY.createXMLStreamWriter(writer);

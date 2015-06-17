@@ -28,10 +28,8 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
@@ -60,7 +58,7 @@ public final class VCardManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public VCard getVCard() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
         return result.getExtension(VCard.class);
     }
 
@@ -78,7 +76,7 @@ public final class VCardManager extends Manager {
         // Then inform about the update by sending a presence. The avatar manager will add the update extension.
         AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
         if (isEnabled() && avatarManager.isEnabled()) {
-            AbstractPresence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
+            Presence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
             if (presence == null) {
                 presence = new Presence();
             }
@@ -97,7 +95,7 @@ public final class VCardManager extends Manager {
      */
     public VCard getVCard(Jid jid) throws XmppException {
         Objects.requireNonNull(jid, "jid must not be null.");
-        AbstractIQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
+        IQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
         return result.getExtension(VCard.class);
     }
 }

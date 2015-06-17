@@ -25,13 +25,12 @@
 package rocks.xmpp.sample.customiq;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.context.extensions.ExtensionContext;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -67,7 +66,7 @@ public class CustomIQHandlerRequester {
                 Addition addition = new Addition(52, 22);
                 System.out.println("Requesting: " + addition);
                 // Request the sum of two values (52 + 22). 111 will calculate it for you and return a result.
-                AbstractIQ resultIQ = xmppSession.query(new IQ(new Jid("111", xmppSession.getDomain(), "iq"), AbstractIQ.Type.GET, addition));
+                IQ resultIQ = xmppSession.query(new IQ(new Jid("111", xmppSession.getDomain(), "iq"), IQ.Type.GET, addition));
 
                 // Print the result.
                 System.out.println(resultIQ.getExtension(Addition.class));

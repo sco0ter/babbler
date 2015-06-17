@@ -25,11 +25,11 @@
 package rocks.xmpp.extensions.pubsub.model.event;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;

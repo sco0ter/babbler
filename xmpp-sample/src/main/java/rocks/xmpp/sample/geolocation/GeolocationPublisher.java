@@ -25,8 +25,8 @@
 package rocks.xmpp.sample.geolocation;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 

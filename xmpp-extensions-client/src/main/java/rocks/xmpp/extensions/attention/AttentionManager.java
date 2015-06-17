@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.attention;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.attention.model.Attention;
 
 /**

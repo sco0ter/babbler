@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.blocking;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.blocking.model.errors.Blocked;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
 public class BlockingErrorsTest extends XmlTest {
 
     protected BlockingErrorsTest() throws JAXBException, XMLStreamException {
-        super(Message.class, Blocked.class);
+        super(ClientMessage.class, Blocked.class);
     }
 
 

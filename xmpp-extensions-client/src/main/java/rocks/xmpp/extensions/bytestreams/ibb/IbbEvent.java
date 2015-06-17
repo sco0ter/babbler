@@ -25,9 +25,8 @@
 package rocks.xmpp.extensions.bytestreams.ibb;
 
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
@@ -39,11 +38,11 @@ final class IbbEvent extends ByteStreamEvent {
 
     private final XmppSession xmppSession;
 
-    private final AbstractIQ iq;
+    private final IQ iq;
 
     private final int blockSize;
 
-    public IbbEvent(Object source, String sessionId, XmppSession xmppSession, AbstractIQ iq, int blockSize) {
+    public IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, int blockSize) {
         super(source, sessionId);
         this.xmppSession = xmppSession;
         this.iq = iq;

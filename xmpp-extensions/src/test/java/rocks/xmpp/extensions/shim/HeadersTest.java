@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.shim;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.shim.model.Header;
 import rocks.xmpp.extensions.shim.model.Headers;
 
@@ -42,7 +43,7 @@ import java.time.ZoneOffset;
 public class HeadersTest extends XmlTest {
 
     protected HeadersTest() throws JAXBException, XMLStreamException {
-        super(Message.class, Headers.class);
+        super(ClientMessage.class, Headers.class);
     }
 
     @Test

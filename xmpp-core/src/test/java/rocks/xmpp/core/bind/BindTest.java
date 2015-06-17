@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.bind.model.Bind;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -39,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
 public class BindTest extends XmlTest {
 
     protected BindTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Bind.class);
+        super(ClientIQ.class, Bind.class);
     }
 
     @Test

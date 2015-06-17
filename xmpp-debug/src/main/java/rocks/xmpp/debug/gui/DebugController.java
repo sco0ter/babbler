@@ -51,8 +51,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -263,7 +264,7 @@ public final class DebugController implements Initializable {
         circlePresence.getStyleClass().addAll(CSS_PRESENCE, CSS_UNAVAILABLE);
         viewModel.presence.addListener((observable, oldValue, newValue) -> {
             circlePresence.getStyleClass().removeAll(CSS_UNAVAILABLE, CSS_AVAILABLE);
-            AbstractPresence presence = viewModel.presence.get();
+            Presence presence = viewModel.presence.get();
             if (presence != null) {
                 if (presence.isAvailable()) {
                     if (presence.getShow() != null) {

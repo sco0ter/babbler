@@ -28,8 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -81,7 +80,7 @@ public final class RegistrationManager extends Manager {
      * @see rocks.xmpp.extensions.register.model.Registration
      */
     public Registration getRegistration() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, new Registration()));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Registration()));
         return result.getExtension(Registration.class);
     }
 

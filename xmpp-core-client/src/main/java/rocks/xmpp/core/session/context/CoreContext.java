@@ -33,9 +33,9 @@ import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.ReconnectionManager;
 import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.PresenceManager;
@@ -82,7 +82,7 @@ public class CoreContext {
         this.extensions.addAll(Arrays.asList(
 
                 // Core
-                Extension.of(StreamFeatures.class, StreamError.class, Message.class, Presence.class, IQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class),
+                Extension.of(StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class),
 
                 // XEP-0004: Data Forms
                 Extension.of(DataForm.class),

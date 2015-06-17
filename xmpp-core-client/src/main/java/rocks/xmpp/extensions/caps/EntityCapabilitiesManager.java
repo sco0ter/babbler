@@ -26,23 +26,22 @@ package rocks.xmpp.extensions.caps;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.subscription.PresenceManager;
-import rocks.xmpp.util.cache.DirectoryCache;
-import rocks.xmpp.util.cache.LruCache;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.cache.DirectoryCache;
+import rocks.xmpp.util.cache.LruCache;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -140,7 +139,7 @@ public final class EntityCapabilitiesManager extends Manager {
         };
 
         this.inboundPresenceListener = e -> {
-            final AbstractPresence presence = e.getPresence();
+            final Presence presence = e.getPresence();
             if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
                 final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
                 if (entityCapabilities != null) {
@@ -150,7 +149,7 @@ public final class EntityCapabilitiesManager extends Manager {
         };
 
         this.outboundPresenceListener = e -> {
-            final AbstractPresence presence = e.getPresence();
+            final Presence presence = e.getPresence();
             if (presence.isAvailable() && presence.getTo() == null) {
                 // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
                 synchronized (publishedNodes) {
@@ -197,7 +196,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
                     // Resend presence. This manager will add the caps extension later.
                     PresenceManager presenceManager = xmppSession.getManager(PresenceManager.class);
-                    AbstractPresence lastPresence = presenceManager.getLastSentPresence();
+                    Presence lastPresence = presenceManager.getLastSentPresence();
                     xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
                 }
             }

@@ -29,6 +29,14 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
 
 import java.util.concurrent.TimeUnit;
@@ -184,5 +192,26 @@ public final class ExternalComponent extends XmppSession {
     @Override
     public final Jid getConnectedResource() {
         return connectedResource;
+    }
+
+    @Override
+    public StreamElement send(StreamElement element) {
+
+        StreamElement e;
+        if (element instanceof Message) {
+            e = ClientMessage.from((Message) element);
+        } else if (element instanceof Presence) {
+            e = ClientPresence.from((Presence) element);
+        } else if (element instanceof IQ) {
+            e = ClientIQ.from((IQ) element);
+        } else {
+            e = element;
+        }
+
+        if (e instanceof Stanza && ((Stanza) e).getFrom() == null) {
+            e = ((Stanza) element).withFrom(connectedResource);
+        }
+        super.send(e);
+        return e;
     }
 }

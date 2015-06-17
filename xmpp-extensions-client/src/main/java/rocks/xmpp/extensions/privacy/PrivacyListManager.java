@@ -25,16 +25,15 @@
 package rocks.xmpp.extensions.privacy;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,9 +69,9 @@ public final class PrivacyListManager extends Manager {
 
     private PrivacyListManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-        iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
+        iqHandler = new AbstractIQHandler(IQ.Type.SET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
                     Privacy privacy = iq.getExtension(Privacy.class);
                     if (privacy != null) {
@@ -131,7 +130,7 @@ public final class PrivacyListManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
     public Collection<PrivacyList> getPrivacyLists() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy()));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy()));
         Privacy privacy = result.getExtension(Privacy.class);
 
         List<PrivacyList> privacyLists = new ArrayList<>();
@@ -156,7 +155,7 @@ public final class PrivacyListManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
     public PrivacyList getPrivacyList(String name) throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy(new PrivacyList(name))));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy(new PrivacyList(name))));
         Privacy privacy = result.getExtension(Privacy.class);
         if (privacy != null) {
             return privacy.getPrivacyLists().get(0);

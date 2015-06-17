@@ -48,10 +48,10 @@ import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.extensions.chatstates.ChatStateManager;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.commands.model.Command;
+import rocks.xmpp.extensions.component.accept.model.ComponentIQ;
+import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
+import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
-import rocks.xmpp.extensions.component.accept.model.IQ;
-import rocks.xmpp.extensions.component.accept.model.Message;
-import rocks.xmpp.extensions.component.accept.model.Presence;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
@@ -245,7 +245,7 @@ public class ExtensionContext extends CoreContext {
                 Extension.of(Activity.NAMESPACE, null, true, false, Activity.class),
 
                 // XEP-0114: Jabber Component Protocol
-                Extension.of(Handshake.class, Message.class, Presence.class, IQ.class),
+                Extension.of(Handshake.class, ComponentMessage.class, ComponentPresence.class, ComponentIQ.class),
 
                 // XEP-0115: Entity Capabilities
                 Extension.of(EntityCapabilities.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities.class),

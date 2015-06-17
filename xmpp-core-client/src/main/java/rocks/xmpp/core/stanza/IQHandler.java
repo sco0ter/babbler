@@ -24,13 +24,13 @@
 
 package rocks.xmpp.core.stanza;
 
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 
 import java.util.function.Consumer;
 
 /**
- * Handles an inbound IQ request, (IQ stanzas of type {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#GET get} or {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#SET set}) by processing the request and returning an IQ response of type {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#RESULT result} or {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#ERROR error}.
+ * Handles an inbound IQ request, (IQ stanzas of type {@link IQ.Type#GET get} or {@link IQ.Type#SET set}) by processing the request and returning an IQ response of type {@link IQ.Type#RESULT result} or {@link IQ.Type#ERROR error}.
  * <p>
  * In contrast to {@link rocks.xmpp.core.session.XmppSession#addInboundIQListener(Consumer)} which merely listens to IQ stanzas, IQ handlers facilitate the proper handling of IQ requests by enforcing the semantics of IQs, especially:
  * <blockquote>
@@ -47,15 +47,15 @@ import java.util.function.Consumer;
 public interface IQHandler {
 
     /**
-     * Handles an inbound IQ stanza of type {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#GET get} or {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#SET set}.
+     * Handles an inbound IQ stanza of type {@link IQ.Type#GET get} or {@link IQ.Type#SET set}.
      * <p>
-     * The returned IQ must be of type {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#RESULT result} or {@link rocks.xmpp.core.stanza.model.AbstractIQ.Type#ERROR error}.
+     * The returned IQ must be of type {@link IQ.Type#RESULT result} or {@link IQ.Type#ERROR error}.
      * If <code>null</code> is returned, no response is returned to the requester and you must take responsibility of sending a response manually. However, this approach is not recommended.
      * <p>
-     * Use {@link rocks.xmpp.core.stanza.model.client.IQ#createResult()} or {@link IQ#createError(rocks.xmpp.core.stanza.model.StanzaError)} to generate the response IQ (i.e. an IQ with the same id).
+     * Use {@link IQ#createResult()} or {@link IQ#createError(rocks.xmpp.core.stanza.model.StanzaError)} to generate the response IQ (i.e. an IQ with the same id).
      *
      * @param iq The inbound IQ stanza.
      * @return The result or error IQ, which is the response to sending entity.
      */
-    AbstractIQ handleRequest(AbstractIQ iq);
+    IQ handleRequest(IQ iq);
 }

@@ -26,17 +26,14 @@ package rocks.xmpp.extensions.avatar;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
-import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
@@ -49,6 +46,8 @@ import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.cache.DirectoryCache;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -125,7 +124,7 @@ public final class AvatarManager extends Manager {
         avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
 
         inboundPresenceListener = e -> {
-            final AbstractPresence presence = e.getPresence();
+            final Presence presence = e.getPresence();
 
             // If the presence has an avatar update information.
             final AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
@@ -195,7 +194,7 @@ public final class AvatarManager extends Manager {
 
         this.outboundPresenceListener = e -> {
 
-            final AbstractPresence presence = e.getPresence();
+            final Presence presence = e.getPresence();
             if (presence.isAvailable() && nonConformingResources.isEmpty()) {
                 // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
 
@@ -211,7 +210,7 @@ public final class AvatarManager extends Manager {
                             getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
 
                             // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
-                            AbstractPresence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
+                            Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
                             Presence presence1;
                             if (lastPresence != null) {
                                 presence1 = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
@@ -232,7 +231,7 @@ public final class AvatarManager extends Manager {
         };
 
         this.inboundMessageListener = e -> {
-            final AbstractMessage message = e.getMessage();
+            final Message message = e.getMessage();
             Event event = message.getExtension(Event.class);
             if (event != null) {
                 Addresses addresses = message.getExtension(Addresses.class);
@@ -344,7 +343,7 @@ public final class AvatarManager extends Manager {
         // Remove our own hash and send an empty presence.
         // The lack of our own hash, will download the vCard and either broadcasts the image hash or an empty hash.
         userHashes.remove(xmppSession.getConnectedResource().asBareJid());
-        AbstractPresence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
+        Presence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
         if (presence == null) {
             presence = new Presence();
         }

@@ -26,19 +26,18 @@ package rocks.xmpp.extensions.reach;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.extensions.reach.model.Address;
 import rocks.xmpp.extensions.reach.model.Reachability;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +78,7 @@ public final class ReachabilityManager extends Manager {
         super(xmppSession, true);
 
         this.inboundPresenceListener = e -> {
-            AbstractPresence presence = e.getPresence();
+            Presence presence = e.getPresence();
             boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
             Jid contact = presence.getFrom().asBareJid();
             if (!hasReachability && reachabilities.remove(contact) != null) {
@@ -89,7 +88,7 @@ public final class ReachabilityManager extends Manager {
         };
 
         this.outboundPresenceListener = e -> {
-            AbstractPresence presence = e.getPresence();
+            Presence presence = e.getPresence();
             if (presence.isAvailable() && presence.getTo() == null) {
                 synchronized (addresses) {
                     if (!addresses.isEmpty()) {
@@ -101,9 +100,9 @@ public final class ReachabilityManager extends Manager {
 
         this.inboundMessageEvent = e -> checkStanzaForReachabilityAndNotify(e.getMessage());
 
-        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
+        this.iqHandler = new AbstractIQHandler(IQ.Type.GET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
                 return iq.createResult(new Reachability(addresses));
             }
@@ -186,7 +185,7 @@ public final class ReachabilityManager extends Manager {
      */
     public List<Address> requestReachabilityAddresses(Jid contact) throws XmppException {
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get".
-        AbstractIQ result = xmppSession.query(new IQ(contact, IQ.Type.GET, new Reachability()));
+        IQ result = xmppSession.query(new IQ(contact, IQ.Type.GET, new Reachability()));
         Reachability reachability = result.getExtension(Reachability.class);
         if (reachability != null) {
             return reachability.getAddresses();

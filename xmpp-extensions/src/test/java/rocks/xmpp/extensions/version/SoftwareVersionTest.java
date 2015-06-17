@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.version;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class SoftwareVersionTest extends XmlTest {
     protected SoftwareVersionTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, SoftwareVersion.class);
+        super(ClientIQ.class, SoftwareVersion.class);
     }
 
     @Test

@@ -26,8 +26,8 @@ package rocks.xmpp.extensions.rtt;
 
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.LinkedList;
 import java.util.List;

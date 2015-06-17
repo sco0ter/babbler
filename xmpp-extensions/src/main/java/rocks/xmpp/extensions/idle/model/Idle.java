@@ -24,11 +24,10 @@
 
 package rocks.xmpp.extensions.idle.model;
 
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.util.adapters.OffsetDateTimeAdapter;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.last.model.LastActivity;
+import rocks.xmpp.util.adapters.OffsetDateTimeAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -40,7 +39,7 @@ import java.util.EnumSet;
 /**
  * The implementation of the {@code <idle/>} element in the {@code urn:xmpp:idle:1} namespace.
  * <p>
- * It also provides a {@linkplain #idleSince(rocks.xmpp.core.stanza.model.client.Presence) convenient method}, which gets the idle time from a presence with respect to the superseded <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
+ * It also provides a {@linkplain #idleSince(Presence) convenient method}, which gets the idle time from a presence with respect to the superseded <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
  * <p>
  * This class is immutable.
  *
@@ -89,7 +88,7 @@ public final class Idle {
         LastActivity lastActivity = presence.getExtension(LastActivity.class);
         // Check XEP-0256: Last Activity in Presence
         // When a client automatically sets the user's <show/> value to "away" or "xa" (extended away), it can indicate when that particular was last active during the current presence session.
-        if (lastActivity != null && EnumSet.of(AbstractPresence.Show.AWAY, AbstractPresence.Show.XA).contains(presence.getShow())) {
+        if (lastActivity != null && EnumSet.of(Presence.Show.AWAY, Presence.Show.XA).contains(presence.getShow())) {
             return DelayedDelivery.sendDate(presence).minusSeconds(lastActivity.getSeconds());
         }
         return null;

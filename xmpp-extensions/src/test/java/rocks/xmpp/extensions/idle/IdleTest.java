@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.idle;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.last.model.LastActivity;
@@ -43,7 +44,7 @@ import java.time.OffsetDateTime;
 public class IdleTest extends XmlTest {
 
     protected IdleTest() throws JAXBException, XMLStreamException {
-        super(Presence.class, Idle.class, LastActivity.class, DelayedDelivery.class);
+        super(ClientPresence.class, Idle.class, LastActivity.class, DelayedDelivery.class);
     }
 
     @Test

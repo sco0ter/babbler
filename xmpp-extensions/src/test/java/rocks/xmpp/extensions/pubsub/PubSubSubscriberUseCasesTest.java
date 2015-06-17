@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
@@ -43,7 +44,7 @@ import javax.xml.stream.XMLStreamException;
 public class PubSubSubscriberUseCasesTest extends XmlTest {
 
     protected PubSubSubscriberUseCasesTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, PubSub.class, AvatarData.class);
+        super(ClientIQ.class, PubSub.class, AvatarData.class);
     }
 
     @Test

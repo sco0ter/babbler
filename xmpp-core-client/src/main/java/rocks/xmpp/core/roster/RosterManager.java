@@ -26,7 +26,6 @@ package rocks.xmpp.core.roster;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.ContactGroup;
 import rocks.xmpp.core.roster.model.Roster;
@@ -34,14 +33,14 @@ import rocks.xmpp.core.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.subscription.PresenceManager;
-import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.cache.DirectoryCache;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
@@ -177,9 +176,9 @@ public final class RosterManager extends Manager {
 
     @Override
     protected final void initialize() {
-        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Roster.class, new AbstractIQHandler(IQ.Type.SET) {
             @Override
-            public AbstractIQ processRequest(AbstractIQ iq) {
+            public IQ processRequest(IQ iq) {
                 Roster roster = iq.getExtension(Roster.class);
                 // 2.1.6.  Roster Push
                 // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
@@ -485,7 +484,7 @@ public final class RosterManager extends Manager {
             rosterRequest = new Roster();
         }
 
-        AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, rosterRequest));
+        IQ result = xmppSession.query(new IQ(IQ.Type.GET, rosterRequest));
         Roster rosterResult = result.getExtension(Roster.class);
         // null result means, the requested roster version (from cache) is taken and any updates (if any) are done via roster pushes.
         if (rosterResult != null) {

@@ -25,10 +25,10 @@
 package rocks.xmpp.debug.gui;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.model.StreamError;
 
 import java.time.LocalDateTime;

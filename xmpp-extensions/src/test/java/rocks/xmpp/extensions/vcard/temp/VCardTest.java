@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 import javax.xml.bind.JAXBException;
@@ -43,7 +44,7 @@ import java.time.Month;
  */
 public class VCardTest extends XmlTest {
     protected VCardTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, VCard.class);
+        super(ClientIQ.class, VCard.class);
     }
 
     @Test

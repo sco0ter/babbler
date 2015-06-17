@@ -24,17 +24,17 @@
 
 package rocks.xmpp.extensions.httpauth;
 
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -61,9 +61,9 @@ public final class HttpAuthenticationManager extends Manager {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
         super(xmppSession, true);
 
-        iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
+        iqHandler = new AbstractIQHandler(IQ.Type.GET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
                 XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq, confirmationRequest));
                 return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;
@@ -71,7 +71,7 @@ public final class HttpAuthenticationManager extends Manager {
         };
 
         inboundMessageListener = e -> {
-            AbstractMessage message = e.getMessage();
+            Message message = e.getMessage();
             if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
                 ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
                 if (confirmationRequest != null) {

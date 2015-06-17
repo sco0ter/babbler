@@ -26,18 +26,17 @@ package rocks.xmpp.extensions.jingle;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.model.errors.UnknownSession;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -67,9 +66,9 @@ public final class JingleManager extends Manager {
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(IQ.Type.SET) {
             @Override
-            public AbstractIQ processRequest(AbstractIQ iq) {
+            public IQ processRequest(IQ iq) {
                 Jingle jingle = iq.getExtension(Jingle.class);
 
                 // The value of the 'action' attribute MUST be one of the following.

@@ -24,12 +24,14 @@
 
 package rocks.xmpp.sample.component;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.component.accept.ExternalComponent;
+import rocks.xmpp.extensions.version.SoftwareVersionManager;
 import rocks.xmpp.sample.LogFormatter;
 
 import java.io.IOException;
@@ -76,6 +78,8 @@ public class ExternalComponentSample {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("test");
+
+                xmppSession.getManager(SoftwareVersionManager.class).getSoftwareVersion(Jid.valueOf("admin@christian-schudts-macbook-pro.local/xmpp"));
 
                 System.out.println(xmppSession.getActiveConnection());
             } catch (XmppException e) {

@@ -26,7 +26,8 @@ package rocks.xmpp.extensions.messagecorrect;
 
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 
 import java.util.Objects;

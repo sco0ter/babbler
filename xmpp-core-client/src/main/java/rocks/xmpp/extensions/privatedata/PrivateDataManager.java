@@ -27,8 +27,7 @@ package rocks.xmpp.extensions.privatedata;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 
 import java.lang.reflect.Constructor;
@@ -64,7 +63,7 @@ public final class PrivateDataManager extends Manager {
             Constructor<T> constructor = type.getDeclaredConstructor();
             constructor.setAccessible(true);
             T instance = constructor.newInstance();
-            AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, new PrivateData(instance)));
+            IQ result = xmppSession.query(new IQ(IQ.Type.GET, new PrivateData(instance)));
             PrivateData privateData = result.getExtension(PrivateData.class);
             return (T) privateData.getData();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

@@ -25,10 +25,10 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.Marshaller;

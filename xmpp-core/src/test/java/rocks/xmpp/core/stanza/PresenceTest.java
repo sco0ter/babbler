@@ -29,9 +29,9 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Roster;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Text;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.JAXBException;
@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class PresenceTest extends XmlTest {
     protected PresenceTest() throws JAXBException, XMLStreamException {
-        super(Presence.class);
+        super(ClientPresence.class);
     }
 
     @Test
@@ -322,7 +322,7 @@ public class PresenceTest extends XmlTest {
 
     @Test
     public void testWithFrom() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.SUBSCRIBE, AbstractPresence.Show.AWAY, Collections.singletonList(new Text("status")), null, "id", null, null, Collections.singletonList(new Roster()), null);
+        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.SUBSCRIBE, Presence.Show.AWAY, Collections.singletonList(new Text("status")), null, "id", null, null, Collections.singletonList(new Roster()), null);
         Presence withFrom = presence.withFrom(Jid.valueOf("from"));
         Assert.assertEquals(withFrom.getType(), Presence.Type.SUBSCRIBE);
         Assert.assertEquals(withFrom.getId(), "id");

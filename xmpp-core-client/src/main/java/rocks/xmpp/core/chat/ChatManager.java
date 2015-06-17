@@ -25,13 +25,13 @@
 package rocks.xmpp.core.chat;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,7 +87,7 @@ public final class ChatManager extends Manager {
     @Override
     protected final void initialize() {
         xmppSession.addInboundMessageListener(e -> {
-            AbstractMessage message = e.getMessage();
+            Message message = e.getMessage();
             if (message.getType() == Message.Type.CHAT) {
                 Jid chatPartner = message.getFrom();
                 // If an entity receives such a message with a new or unknown ThreadID, it SHOULD treat the message as part of a new chat session.
@@ -106,7 +106,7 @@ public final class ChatManager extends Manager {
 
         xmppSession.addInboundPresenceListener(e -> {
             // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
-            AbstractPresence presence = e.getPresence();
+            Presence presence = e.getPresence();
             synchronized (chatSessions) {
                 Jid contact = presence.getFrom().asBareJid();
                 if (chatSessions.containsKey(contact)) {

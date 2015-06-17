@@ -26,8 +26,8 @@ package rocks.xmpp.core.chat;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 
 import java.util.EventObject;
 import java.util.Objects;
@@ -117,7 +117,7 @@ public final class ChatSession extends Chat implements AutoCloseable {
      */
     @Override
     public Message sendMessage(String message) {
-        return sendMessage(new Message(chatPartner, AbstractMessage.Type.CHAT, message));
+        return sendMessage(new Message(chatPartner, Message.Type.CHAT, message));
     }
 
     /**

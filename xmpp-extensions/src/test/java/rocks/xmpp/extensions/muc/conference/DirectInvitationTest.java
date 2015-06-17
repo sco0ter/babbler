@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class DirectInvitationTest extends XmlTest {
     protected DirectInvitationTest() throws JAXBException, XMLStreamException {
-        super(Message.class, DirectInvitation.class);
+        super(ClientMessage.class, DirectInvitation.class);
     }
 
     @Test

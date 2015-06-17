@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.messagecorrect;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class MessageCorrectionTest extends XmlTest {
     protected MessageCorrectionTest() throws JAXBException, XMLStreamException {
-        super(Message.class, Replace.class);
+        super(ClientMessage.class, Replace.class);
     }
 
     @Test

@@ -30,8 +30,7 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
@@ -61,9 +60,9 @@ public final class RpcManager extends Manager {
     private RpcManager(final XmppSession xmppSession) {
         super(xmppSession);
 
-        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(IQ.Type.SET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 Rpc rpc = iq.getExtension(Rpc.class);
                 // If there's an inbound RPC
                 RpcHandler rpcHandler1;
@@ -113,7 +112,7 @@ public final class RpcManager extends Manager {
      * @throws RpcException                                If the RPC returned with an application-level error ({@code <fault/>} element).
      */
     public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {
-        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
         if (result != null) {
             Rpc rpc = result.getExtension(Rpc.class);
             if (rpc != null) {

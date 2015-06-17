@@ -29,9 +29,10 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Roster;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.Text;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.JAXBException;
@@ -45,7 +46,7 @@ import java.util.Collections;
 public class MessageTest extends XmlTest {
 
     protected MessageTest() throws JAXBException, XMLStreamException {
-        super(Message.class);
+        super(ClientMessage.class);
     }
 
     @Test

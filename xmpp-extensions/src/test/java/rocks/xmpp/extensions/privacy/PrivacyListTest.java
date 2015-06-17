@@ -29,7 +29,8 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Contact;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
 import rocks.xmpp.extensions.privacy.model.PrivacyRule;
@@ -46,7 +47,7 @@ import java.util.List;
 public class PrivacyListTest extends XmlTest {
 
     protected PrivacyListTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Privacy.class);
+        super(ClientIQ.class, Privacy.class);
     }
 
 

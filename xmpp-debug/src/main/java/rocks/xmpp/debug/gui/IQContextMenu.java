@@ -27,8 +27,8 @@ package rocks.xmpp.debug.gui;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableView;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 
 /**
  * @author Christian Schudt
@@ -40,7 +40,7 @@ final class IQContextMenu extends ContextMenu {
         MenuItem menuItem = new MenuItem("Go To Response");
         menuItem.setOnAction(event -> {
             for (StanzaEntry entry : stanzaTableView.getItems()) {
-                if (entry.getStanza() instanceof IQ && ((IQ) entry.getStanza()).getId().equals(((IQ) stanzaEntry.getStanza()).getId()) && (((IQ) entry.getStanza()).getType() == AbstractIQ.Type.RESULT || ((IQ) entry.getStanza()).getType() == AbstractIQ.Type.ERROR)) {
+                if (entry.getStanza() instanceof IQ && ((IQ) entry.getStanza()).getId().equals(((IQ) stanzaEntry.getStanza()).getId()) && (((IQ) entry.getStanza()).getType() == IQ.Type.RESULT || ((IQ) entry.getStanza()).getType() == IQ.Type.ERROR)) {
                     stanzaTableView.getSelectionModel().select(entry);
                     stanzaTableView.scrollTo(entry);
                     break;

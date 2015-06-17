@@ -26,17 +26,13 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -61,6 +57,7 @@ import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.muc.model.user.Status;
 import rocks.xmpp.extensions.register.model.Registration;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -114,9 +111,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         this.serviceDiscoveryManager = serviceDiscoveryManager;
         this.multiUserChatManager = multiUserChatManager;
         this.messageListener = e -> {
-            AbstractMessage message = e.getMessage();
+            Message message = e.getMessage();
             if (message.getFrom().asBareJid().equals(roomJid)) {
-                if (message.getType() == AbstractMessage.Type.GROUPCHAT) {
+                if (message.getType() == Message.Type.GROUPCHAT) {
                     // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
                     if (message.getSubject() != null && message.getBody() == null) {
                         XmppUtils.notifyEventListeners(subjectChangeListeners, new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), message.getExtension(DelayedDelivery.class) != null, DelayedDelivery.sendDate(message)));
@@ -136,7 +133,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         };
 
         this.presenceListener = e -> {
-            AbstractPresence presence = e.getPresence();
+            Presence presence = e.getPresence();
             // If the presence came from the room.
             if (presence.getFrom() != null && presence.getFrom().asBareJid().equals(roomJid)) {
                 MucUser mucUser = presence.getExtension(MucUser.class);
@@ -216,7 +213,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         xmppSession.removeInboundPresenceListener(presenceListener);
     }
 
-    private boolean isSelfPresence(AbstractPresence presence) {
+    private boolean isSelfPresence(Presence presence) {
         boolean isSelfPresence = false;
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null) {
@@ -471,7 +468,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public DataForm getRegistrationForm() throws XmppException {
         IQ iq = new IQ(roomJid, IQ.Type.GET, new Registration());
-        AbstractIQ result = xmppSession.query(iq);
+        IQ result = xmppSession.query(iq);
         Registration registration = result.getExtension(Registration.class);
         if (registration != null) {
             return registration.getRegistrationForm();
@@ -579,7 +576,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getVoiceList() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -609,7 +606,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getBanList() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -689,7 +686,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getMembers() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -703,7 +700,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getModerators() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -817,7 +814,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
      */
     public DataForm getConfigurationForm() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
         MucOwner mucOwner = result.getExtension(MucOwner.class);
         return mucOwner.getConfigurationForm();
     }

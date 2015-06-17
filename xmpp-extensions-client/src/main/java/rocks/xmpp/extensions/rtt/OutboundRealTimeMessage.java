@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.rtt;
 
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.chat.Chat;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
+import rocks.xmpp.util.XmppUtils;
 
 import java.security.SecureRandom;
 import java.text.Normalizer;

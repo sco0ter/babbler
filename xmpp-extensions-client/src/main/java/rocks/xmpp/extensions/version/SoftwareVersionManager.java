@@ -30,8 +30,7 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
@@ -74,9 +73,9 @@ public final class SoftwareVersionManager extends Manager {
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
         super(xmppSession);
-        iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
+        iqHandler = new AbstractIQHandler(IQ.Type.GET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 synchronized (SoftwareVersionManager.this) {
                     if (softwareVersion != null) {
                         return iq.createResult(softwareVersion);
@@ -111,7 +110,7 @@ public final class SoftwareVersionManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new SoftwareVersion()));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new SoftwareVersion()));
         return result.getExtension(SoftwareVersion.class);
     }
 

@@ -27,8 +27,7 @@ package rocks.xmpp.extensions.pubsub;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -137,7 +136,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
      */
     private List<Subscription> getSubscriptions() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withSubscriptions()));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withSubscriptions()));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getSubscriptions();
     }
@@ -151,7 +150,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
     private List<Affiliation> getAffiliations() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withAffiliations()));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withAffiliations()));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getAffiliations();
     }
@@ -165,7 +164,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      */
     private DataForm getDefaultSubscriptionOptions() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withDefault()));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSub.withDefault()));
         PubSub pubSub = result.getExtension(PubSub.class);
         return pubSub.getDefault().getDataForm();
     }
@@ -179,7 +178,7 @@ public final class PubSubService {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
      */
     private DataForm getDefaultNodeConfiguration() throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSubOwner.withDefault()));
+        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, PubSubOwner.withDefault()));
         PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
         return pubSubOwner.getConfigurationForm();
     }

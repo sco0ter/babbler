@@ -25,7 +25,7 @@
 package rocks.xmpp.core.chat;
 
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;

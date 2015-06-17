@@ -24,9 +24,8 @@
 
 package rocks.xmpp.core.stanza;
 
-import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
@@ -40,20 +39,20 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
  */
 public abstract class AbstractIQHandler implements IQHandler {
 
-    private final AbstractIQ.Type type;
+    private final IQ.Type type;
 
     /**
      * @param type The IQ type which is handled by this handler (get or set).
      */
-    protected AbstractIQHandler(AbstractIQ.Type type) {
-        if (type != AbstractIQ.Type.GET && type != AbstractIQ.Type.SET) {
+    protected AbstractIQHandler(IQ.Type type) {
+        if (type != IQ.Type.GET && type != IQ.Type.SET) {
             throw new IllegalArgumentException("type must be 'get' or 'set'");
         }
         this.type = type;
     }
 
     @Override
-    public final AbstractIQ handleRequest(AbstractIQ iq) {
+    public final IQ handleRequest(IQ iq) {
         if (iq.getType() == type) {
             return processRequest(iq);
         } else {
@@ -67,5 +66,5 @@ public abstract class AbstractIQHandler implements IQHandler {
      * @param iq The IQ request.
      * @return The IQ response.
      */
-    protected abstract AbstractIQ processRequest(AbstractIQ iq);
+    protected abstract IQ processRequest(IQ iq);
 }

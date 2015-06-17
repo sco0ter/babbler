@@ -32,9 +32,9 @@ import javax.xml.bind.annotation.XmlValue;
  * A common "text" element which is used for a message's body or subject, a presence's status or a stanza error's text element.
  *
  * @author Christian Schudt
- * @see AbstractMessage#getBodies()
- * @see AbstractMessage#getSubjects()
- * @see AbstractPresence#getStatuses()
+ * @see Message#getBodies()
+ * @see Message#getSubjects()
+ * @see Presence#getStatuses()
  */
 public final class Text {
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)

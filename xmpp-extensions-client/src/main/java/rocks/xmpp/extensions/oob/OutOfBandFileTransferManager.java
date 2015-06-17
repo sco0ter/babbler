@@ -27,8 +27,7 @@ package rocks.xmpp.extensions.oob;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
@@ -63,9 +62,9 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(OobIQ.class, new AbstractIQHandler(AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(OobIQ.class, new AbstractIQHandler(IQ.Type.SET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 OobIQ oobIQ = iq.getExtension(OobIQ.class);
                 final URL url = oobIQ.getUrl();
                 final String description = oobIQ.getDescription();
@@ -140,7 +139,7 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
     }
 
     @Override
-    public FileTransfer accept(final AbstractIQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
+    public FileTransfer accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
         try {
             URL url = new URL(fileTransferOffer.getName());
             URLConnection urlConnection = url.openConnection();
@@ -165,7 +164,7 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
     }
 
     @Override
-    public void reject(AbstractIQ iq) {
+    public void reject(IQ iq) {
         // If the recipient rejects the request outright, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Acceptable condition:
         xmppSession.send(iq.createError(Condition.NOT_ACCEPTABLE));
     }

@@ -28,11 +28,13 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Element;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stanza.model.errors.Gone;
 import rocks.xmpp.core.stanza.model.errors.Redirect;
@@ -46,7 +48,7 @@ import javax.xml.stream.XMLStreamException;
 public class StanzaErrorTest extends XmlTest {
 
     public StanzaErrorTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Message.class, Presence.class, StanzaError.class);
+        super(ClientIQ.class, ClientMessage.class, ClientPresence.class, StanzaError.class);
     }
 
     @Test
@@ -493,7 +495,7 @@ public class StanzaErrorTest extends XmlTest {
     public void marshalCondition() throws JAXBException, XMLStreamException {
         String xml = "<iq id=\"1\" type=\"error\"><error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error></iq>";
         StanzaError error = new StanzaError(Condition.UNEXPECTED_REQUEST);
-        IQ iq = new IQ(null, AbstractIQ.Type.ERROR, null, "1", null, null, error);
+        IQ iq = new IQ(null, IQ.Type.ERROR, null, "1", null, null, error);
         Assert.assertEquals(marshal(iq), xml);
     }
 }

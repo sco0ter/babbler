@@ -27,8 +27,8 @@ package rocks.xmpp.extensions.component.accept;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
-import rocks.xmpp.extensions.component.accept.model.Message;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ComponentTest extends XmlTest {
     protected ComponentTest() throws JAXBException, XMLStreamException {
-        super("jabber:component:accept", Message.class, Handshake.class);
+        super("jabber:component:accept", ComponentMessage.class, Handshake.class);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ComponentTest extends XmlTest {
                 "  </body>\n" +
                 "</message>\n";
 
-        Message message = unmarshal(xml, Message.class);
+        ComponentMessage message = unmarshal(xml, ComponentMessage.class);
         Assert.assertNotNull(message);
     }
 

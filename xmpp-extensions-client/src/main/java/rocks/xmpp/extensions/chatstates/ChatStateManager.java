@@ -29,8 +29,7 @@ import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.xhtmlim.model.Html;
 
@@ -83,9 +82,9 @@ public final class ChatStateManager extends Manager {
     private ChatStateManager(final XmppSession xmppSession) {
         super(xmppSession, true);
         this.messageListener = e -> {
-            AbstractMessage message = e.getMessage();
+            Message message = e.getMessage();
             // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".
-            if (message.getType() == AbstractMessage.Type.CHAT || message.getType() == AbstractMessage.Type.GROUPCHAT) {
+            if (message.getType() == Message.Type.CHAT || message.getType() == Message.Type.GROUPCHAT) {
                 // For outbound messages append <active/>.
                 boolean containsChatState = message.getExtension(ChatState.class) != null;
                 if (!e.isInbound()) {
@@ -99,7 +98,7 @@ public final class ChatStateManager extends Manager {
                             message.getExtensions().add(ChatState.ACTIVE);
                         }
                     }
-                } else if (message.getType() != AbstractMessage.Type.GROUPCHAT) {
+                } else if (message.getType() != Message.Type.GROUPCHAT) {
                     // Check if the contact supports chat states and update the map. If it does, it must include a chat state extension:
                     // 2. If the Contact replies but does not include a chat state notification extension, the User MUST NOT send subsequent chat state notifications to the Contact.
                     // 3. If the Contact replies and includes an <active/> notification (or sends a standalone notification to the User), the User and Contact SHOULD send subsequent notifications

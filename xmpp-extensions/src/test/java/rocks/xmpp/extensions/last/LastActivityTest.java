@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.last;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
 public class LastActivityTest extends XmlTest {
 
     protected LastActivityTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, LastActivity.class);
+        super(ClientIQ.class, LastActivity.class);
     }
 
     @Test

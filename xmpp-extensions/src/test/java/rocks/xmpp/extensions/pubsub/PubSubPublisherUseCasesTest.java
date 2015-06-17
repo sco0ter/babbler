@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.pubsub;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 
@@ -40,7 +41,7 @@ import javax.xml.stream.XMLStreamException;
 public class PubSubPublisherUseCasesTest extends XmlTest {
 
     protected PubSubPublisherUseCasesTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, PubSub.class);
+        super(ClientIQ.class, PubSub.class);
     }
 
     @Test

@@ -31,6 +31,8 @@ import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.chat.ChatManager;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -70,7 +72,7 @@ public class ChatStateManagerTest extends ExtensionTest {
         // A new chat state should be sent again.
         Assert.assertTrue(chatStateManager.setChatState(ChatState.PAUSED, chat));
         Assert.assertFalse(chatStatesReceived.contains(ChatState.ACTIVE));
-        chat.sendMessage("chat message");
+        chat.sendMessage(ClientMessage.from(new Message(null, Message.Type.CHAT, "chat message")));
         // A <active/> extension should have been added.
         Assert.assertTrue(chatStatesReceived.contains(ChatState.ACTIVE));
     }

@@ -39,15 +39,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.swing.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -171,7 +170,7 @@ public final class VisualDebugger implements XmppDebugger {
         xmppSession.addSessionStatusListener(connectionListener);
 
         final Consumer<PresenceEvent> presenceListener = e -> {
-            final AbstractPresence presence = e.getPresence();
+            final Presence presence = e.getPresence();
             if (presence.getTo() == null) {
                 waitForPlatform();
                 Platform.runLater(() -> debugController.viewModel.presence.set(presence));

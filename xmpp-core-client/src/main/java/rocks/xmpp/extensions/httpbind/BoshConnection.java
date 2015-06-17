@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.httpbind;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
@@ -33,6 +32,7 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;

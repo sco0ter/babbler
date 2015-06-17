@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.attention.model.Attention;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -49,9 +49,9 @@ public class AttentionManagerTest extends ExtensionTest {
 
         final boolean[] attentionReceived = {false};
         xmppSession2.addInboundMessageListener(e -> {
-            if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
+            if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == Message.Type.HEADLINE) {
                 attentionReceived[0] = true;
-                Assert.assertEquals(e.getMessage().getType(), AbstractMessage.Type.HEADLINE);
+                Assert.assertEquals(e.getMessage().getType(), Message.Type.HEADLINE);
             }
         });
 

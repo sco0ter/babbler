@@ -26,14 +26,12 @@ package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -45,6 +43,7 @@ import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.ResultSet;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -101,9 +100,9 @@ public final class ServiceDiscoveryManager extends Manager {
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, true);
 
-        this.discoInfoHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
+        this.discoInfoHandler = new AbstractIQHandler(IQ.Type.GET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
                 if (infoDiscovery.getNode() == null) {
                     return iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
@@ -119,9 +118,9 @@ public final class ServiceDiscoveryManager extends Manager {
                 }
             }
         };
-        this.discoItemHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
+        this.discoItemHandler = new AbstractIQHandler(IQ.Type.GET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
                 ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
                 if (itemProvider != null) {
@@ -367,7 +366,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #discoverInformation(Jid)
      */
     public final InfoNode discoverInformation(Jid jid, String node) throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new InfoDiscovery(node)));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new InfoDiscovery(node)));
         return result.getExtension(InfoDiscovery.class);
     }
 
@@ -420,7 +419,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
         return result.getExtension(ItemDiscovery.class);
     }
 

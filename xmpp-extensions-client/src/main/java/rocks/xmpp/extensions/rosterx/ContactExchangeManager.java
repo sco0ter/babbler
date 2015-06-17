@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.rosterx;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.roster.RosterManager;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.session.Manager;
@@ -34,15 +33,14 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
+import rocks.xmpp.util.XmppUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -74,7 +72,7 @@ public final class ContactExchangeManager extends Manager {
     private ContactExchangeManager(final XmppSession xmppSession) {
         super(xmppSession);
         this.inboundMessageListener = e -> {
-            AbstractMessage message = e.getMessage();
+            Message message = e.getMessage();
             ContactExchange contactExchange = message.getExtension(ContactExchange.class);
             if (contactExchange != null) {
                 List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
@@ -84,9 +82,9 @@ public final class ContactExchangeManager extends Manager {
                 }
             }
         };
-        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(IQ.Type.SET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
                 if (xmppSession.getManager(RosterManager.class).getContact(iq.getFrom().asBareJid()) == null) {
                     // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
@@ -214,7 +212,7 @@ public final class ContactExchangeManager extends Manager {
                 contactExchange.getItems().add(rosterItem);
             }
             // http://xmpp.org/extensions/xep-0144.html#stanza
-            AbstractPresence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
+            Presence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
             if (presence.isAvailable()) {
                 xmppSession.query(new IQ(presence.getFrom(), IQ.Type.SET, contactExchange));
             } else {

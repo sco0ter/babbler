@@ -29,8 +29,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Roster;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
 import javax.xml.bind.JAXBException;
@@ -43,7 +45,7 @@ import java.util.Arrays;
 public class BoshTest extends XmlTest {
 
     protected BoshTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Roster.class, Presence.class, Body.class);
+        super(ClientIQ.class, Roster.class, ClientPresence.class, Body.class);
     }
 
     @Test
@@ -181,9 +183,9 @@ public class BoshTest extends XmlTest {
 
     @Test
     public void marshalBodyWithMultipleStanzas() throws XMLStreamException, JAXBException {
-        IQ iq = new IQ(IQ.Type.GET, new Roster(), "1");
+        IQ iq = ClientIQ.from(new IQ(IQ.Type.GET, new Roster(), "1"));
         Body body = Body.builder()
-                .wrappedObjects(Arrays.asList(iq, new Presence())).build();
+                .wrappedObjects(Arrays.asList(iq, ClientPresence.from(new Presence()))).build();
 
         Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\"><iq xmlns=\"jabber:client\" id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"></query></iq><presence xmlns=\"jabber:client\"></presence></body>");
     }

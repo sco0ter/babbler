@@ -28,7 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
@@ -44,7 +45,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ServiceDiscoveryTest extends XmlTest {
     protected ServiceDiscoveryTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, ItemDiscovery.class, InfoDiscovery.class);
+        super(ClientIQ.class, ItemDiscovery.class, InfoDiscovery.class);
     }
 
     @Test

@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.privatedata.rosterdelimiter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 
@@ -40,7 +41,7 @@ import javax.xml.stream.XMLStreamException;
 public class RosterDelimiterTest extends XmlTest {
 
     protected RosterDelimiterTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, PrivateData.class, RosterDelimiter.class);
+        super(ClientIQ.class, PrivateData.class, RosterDelimiter.class);
     }
 
     @Test

@@ -31,9 +31,8 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.idle.IdleManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
@@ -82,19 +81,19 @@ public final class LastActivityManager extends Manager {
         super(xmppSession);
         this.idleManager = xmppSession.getManager(IdleManager.class);
         this.outboundPresenceListener = e -> {
-            AbstractPresence presence = e.getPresence();
+            Presence presence = e.getPresence();
             if (presence.getTo() == null) {
                 synchronized (LastActivityManager.this) {
                     // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                    if (idleManager.getIdleStrategy() != null && presence.isAvailable() && (presence.getShow() == AbstractPresence.Show.AWAY || presence.getShow() == AbstractPresence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                    if (idleManager.getIdleStrategy() != null && presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
                         presence.getExtensions().add(new LastActivity(getSecondsSince(idleManager.getIdleStrategy().get()), presence.getStatus()));
                     }
                 }
             }
         };
-        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.GET) {
+        this.iqHandler = new AbstractIQHandler(IQ.Type.GET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 // If someone asks me to get my last activity, reply.
                 synchronized (idleManager) {
                     Instant idleSince = idleManager.getIdleStrategy() != null ? idleManager.getIdleStrategy().get() : null;
@@ -140,7 +139,7 @@ public final class LastActivityManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public LastActivity getLastActivity(Jid jid) throws XmppException {
-        AbstractIQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
         return result.getExtension(LastActivity.class);
     }
 }

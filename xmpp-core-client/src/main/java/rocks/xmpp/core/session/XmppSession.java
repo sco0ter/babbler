@@ -33,13 +33,10 @@ import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
@@ -455,12 +452,12 @@ public abstract class XmppSession implements AutoCloseable {
      * This method blocks until a result was received or a timeout occurred.
      * </p>
      *
-     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain rocks.xmpp.core.stanza.model.AbstractIQ.Type#GET get} or {@linkplain rocks.xmpp.core.stanza.model.AbstractIQ.Type#SET set}.
+     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain IQ.Type#GET get} or {@linkplain IQ.Type#SET set}.
      * @return The result {@code <iq/>} stanza.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public AbstractIQ query(AbstractIQ iq) throws XmppException {
+    public IQ query(IQ iq) throws XmppException {
         return query(iq, configuration.getDefaultResponseTimeout());
     }
 
@@ -470,23 +467,23 @@ public abstract class XmppSession implements AutoCloseable {
      * This method blocks until a result was received or a timeout occurred.
      * </p>
      *
-     * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain rocks.xmpp.core.stanza.model.AbstractIQ.Type#GET get} or {@linkplain rocks.xmpp.core.stanza.model.AbstractIQ.Type#SET set}.
+     * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain IQ.Type#GET get} or {@linkplain IQ.Type#SET set}.
      * @param timeout The timeout.
      * @return The result {@code <iq/>} stanza.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public AbstractIQ query(final AbstractIQ iq, long timeout) throws XmppException {
+    public IQ query(final IQ iq, long timeout) throws XmppException {
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
 
-        final AbstractIQ[] result = new AbstractIQ[1];
+        final IQ[] result = new IQ[1];
         final Lock queryLock = new ReentrantLock();
         final Condition resultReceived = queryLock.newCondition();
 
         final Consumer<IQEvent> listener = e -> {
-            AbstractIQ responseIQ = e.getIQ();
+            IQ responseIQ = e.getIQ();
             if (responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
                 queryLock.lock();
                 try {
@@ -513,7 +510,7 @@ public abstract class XmppSession implements AutoCloseable {
             queryLock.unlock();
             removeInboundIQListener(listener);
         }
-        AbstractIQ response = result[0];
+        IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
             throw new StanzaException(response);
         }
@@ -529,13 +526,13 @@ public abstract class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final AbstractPresence sendAndAwaitPresence(StreamElement stanza, final Predicate<AbstractPresence> filter) throws XmppException {
-        final AbstractPresence[] result = new AbstractPresence[1];
+    public final Presence sendAndAwaitPresence(StreamElement stanza, final Predicate<Presence> filter) throws XmppException {
+        final Presence[] result = new Presence[1];
         final Lock presenceLock = new ReentrantLock();
         final Condition resultReceived = presenceLock.newCondition();
 
         final Consumer<PresenceEvent> listener = e -> {
-            AbstractPresence presence = e.getPresence();
+            Presence presence = e.getPresence();
             if (filter.test(presence)) {
                 presenceLock.lock();
                 try {
@@ -562,7 +559,7 @@ public abstract class XmppSession implements AutoCloseable {
             presenceLock.unlock();
             removeInboundPresenceListener(listener);
         }
-        AbstractPresence response = result[0];
+        Presence response = result[0];
         if (response.getType() == Presence.Type.ERROR) {
             throw new StanzaException(response);
         }
@@ -578,14 +575,14 @@ public abstract class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final AbstractMessage sendAndAwaitMessage(StreamElement stanza, final Predicate<AbstractMessage> filter) throws XmppException {
+    public final Message sendAndAwaitMessage(StreamElement stanza, final Predicate<Message> filter) throws XmppException {
 
-        final AbstractMessage[] result = new AbstractMessage[1];
+        final Message[] result = new Message[1];
         final Lock messageLock = new ReentrantLock();
         final Condition resultReceived = messageLock.newCondition();
 
         final Consumer<MessageEvent> listener = e -> {
-            AbstractMessage message = e.getMessage();
+            Message message = e.getMessage();
             if (filter.test(message)) {
                 messageLock.lock();
                 try {
@@ -612,7 +609,7 @@ public abstract class XmppSession implements AutoCloseable {
             messageLock.unlock();
             removeInboundMessageListener(listener);
         }
-        AbstractMessage response = result[0];
+        Message response = result[0];
         if (response.getType() == Message.Type.ERROR) {
             throw new StanzaException(response);
         }
@@ -642,7 +639,7 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @param element The XML element.
      */
-    public void send(StreamElement element) {
+    public StreamElement send(StreamElement element) {
 
         if (!isConnected() && getStatus() != Status.CONNECTING) {
             throw new IllegalStateException("Session is not connected to server");
@@ -668,6 +665,7 @@ public abstract class XmppSession implements AutoCloseable {
         } else {
             throw new IllegalStateException("No connection established.");
         }
+        return element;
     }
 
 
@@ -781,8 +779,8 @@ public abstract class XmppSession implements AutoCloseable {
      */
     public boolean handleElement(final Object element) throws XmppException {
 
-        if (element instanceof AbstractIQ) {
-            final AbstractIQ iq = (AbstractIQ) element;
+        if (element instanceof IQ) {
+            final IQ iq = (IQ) element;
 
             if (iq.getType() == null) {
                 // return <bad-request/> if the <iq/> has no type.
@@ -804,7 +802,7 @@ public abstract class XmppSession implements AutoCloseable {
                     if (iqHandler != null) {
                         executor.execute(() -> {
                             try {
-                                AbstractIQ response = iqHandler.handleRequest(iq);
+                                IQ response = iqHandler.handleRequest(iq);
                                 if (response != null) {
                                     send(response);
                                 }

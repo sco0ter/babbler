@@ -25,8 +25,8 @@
 package rocks.xmpp.sample.register;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
 

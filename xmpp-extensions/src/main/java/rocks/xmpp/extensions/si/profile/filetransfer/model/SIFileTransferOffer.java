@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.si.profile.filetransfer.model;
 
-import rocks.xmpp.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;

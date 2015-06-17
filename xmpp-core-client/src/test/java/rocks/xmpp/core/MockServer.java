@@ -46,10 +46,10 @@ package rocks.xmpp.core;/*
  * THE SOFTWARE.
  */
 
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Stanza;
 
 import java.util.HashMap;
 import java.util.Map;

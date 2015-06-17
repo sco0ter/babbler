@@ -28,8 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.AccessModel;
 import rocks.xmpp.extensions.pubsub.model.ChildrenAssociationPolicy;
@@ -148,7 +148,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .maxItems(4)
                 .maxPayloadSize(54)
                 .nodeType(NodeType.LEAF)
-                .notificationType(AbstractMessage.Type.NORMAL)
+                .notificationType(Message.Type.NORMAL)
                 .notifyConfig(true)
                 .notifyDelete(true)
                 .notifyRetract(true)
@@ -222,7 +222,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(nodeConfiguration1.getMaxItems(), Integer.valueOf(4));
         Assert.assertEquals(nodeConfiguration1.getMaxPayloadSize(), Integer.valueOf(54));
         Assert.assertEquals(nodeConfiguration1.getNodeType(), NodeType.LEAF);
-        Assert.assertEquals(nodeConfiguration1.getNotificationType(), AbstractMessage.Type.NORMAL);
+        Assert.assertEquals(nodeConfiguration1.getNotificationType(), Message.Type.NORMAL);
         Assert.assertTrue(nodeConfiguration1.isNotifyConfig());
         Assert.assertTrue(nodeConfiguration1.isNotifyDelete());
         Assert.assertTrue(nodeConfiguration1.isNotifyRetract());
@@ -248,7 +248,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .digestFrequency(3)
                 .includeBody(true)
                 .temporary(true)
-                .showValues(Arrays.asList(AbstractPresence.Show.AWAY, AbstractPresence.Show.CHAT, null))
+                .showValues(Arrays.asList(Presence.Show.AWAY, Presence.Show.CHAT, null))
                 .subscriptionType(SubscribeOptions.SubscriptionType.NODES)
                 .subscriptionDepth(-1)
                 .build();
@@ -274,7 +274,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertNull(subscribeOptions.getExpire());
         Assert.assertTrue(subscribeOptions.isTemporary());
         Assert.assertTrue(subscribeOptions.isIncludeBody());
-        Assert.assertEquals(subscribeOptions.getShowValues(), Arrays.asList(AbstractPresence.Show.AWAY, AbstractPresence.Show.CHAT, null));
+        Assert.assertEquals(subscribeOptions.getShowValues(), Arrays.asList(Presence.Show.AWAY, Presence.Show.CHAT, null));
         Assert.assertEquals(subscribeOptions.getSubscriptionType(), SubscribeOptions.SubscriptionType.NODES);
         Assert.assertEquals(subscribeOptions.getSubscriptionDepth(), Integer.valueOf(-1));
 

@@ -25,9 +25,12 @@
 package rocks.xmpp.extensions.forward.model;
 
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
+import rocks.xmpp.core.stanza.model.server.ServerIQ;
+import rocks.xmpp.core.stanza.model.server.ServerMessage;
+import rocks.xmpp.core.stanza.model.server.ServerPresence;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 
 import javax.xml.bind.annotation.XmlElementRef;
@@ -54,8 +57,8 @@ public final class Forwarded {
     @XmlElementRef
     private final DelayedDelivery delayedDelivery;
 
-    @XmlElementRefs({@XmlElementRef(type = Message.class), @XmlElementRef(type = Presence.class), @XmlElementRef(type = IQ.class),
-            @XmlElementRef(type = rocks.xmpp.core.stanza.model.server.Message.class), @XmlElementRef(type = rocks.xmpp.core.stanza.model.server.Presence.class), @XmlElementRef(type = rocks.xmpp.core.stanza.model.server.IQ.class),})
+    @XmlElementRefs({@XmlElementRef(type = ClientMessage.class), @XmlElementRef(type = ClientPresence.class), @XmlElementRef(type = ClientIQ.class),
+            @XmlElementRef(type = ServerMessage.class), @XmlElementRef(type = ServerPresence.class), @XmlElementRef(type = ServerIQ.class),})
     private final Stanza stanza;
 
     private Forwarded() {

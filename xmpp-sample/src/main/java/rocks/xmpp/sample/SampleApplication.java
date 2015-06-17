@@ -24,17 +24,13 @@
 
 package rocks.xmpp.sample;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.client.Message;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.compress.CompressionManager;
-import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.net.ssl.SSLContext;
@@ -121,9 +117,6 @@ public class SampleApplication {
                 // Login
                 xmppSession.login("admin", "admin", "xmpp");
 
-                xmppSession.disableFeature(ItemDiscovery.NAMESPACE);
-                Message message = new Message(Jid.valueOf(xmppSession.getDomain()), AbstractMessage.Type.CHAT, "hallo");
-                xmppSession.send(message);
                 System.out.println(xmppSession.getActiveConnection());
             } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {
                 e.printStackTrace();

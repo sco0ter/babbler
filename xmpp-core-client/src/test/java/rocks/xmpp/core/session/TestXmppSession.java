@@ -30,9 +30,8 @@ import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -114,16 +113,17 @@ public class TestXmppSession extends XmppClient {
     }
 
     @Override
-    public void send(StreamElement element) {
-        super.send(element);
-        if (mockServer != null && element instanceof Stanza) {
-            mockServer.receive(((Stanza) element).withFrom(connectedResource));
+    public StreamElement send(StreamElement element) {
+        StreamElement sent = super.send(element);
+        if (mockServer != null && sent instanceof Stanza) {
+            mockServer.receive(((Stanza) sent).withFrom(connectedResource));
         }
+        return element;
     }
 
     @Override
-    public AbstractIQ query(final AbstractIQ iq) throws StanzaException, NoResponseException {
-        final AbstractIQ[] result = new AbstractIQ[1];
+    public IQ query(final IQ iq) throws StanzaException, NoResponseException {
+        final IQ[] result = new IQ[1];
 
         final Consumer<IQEvent> iqListener = e -> {
             if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
@@ -135,7 +135,7 @@ public class TestXmppSession extends XmppClient {
         send(iq);
 
         removeInboundIQListener(iqListener);
-        AbstractIQ response = result[0];
+        IQ response = result[0];
         if (response.getType() == IQ.Type.ERROR) {
             throw new StanzaException(response);
         }
@@ -143,7 +143,7 @@ public class TestXmppSession extends XmppClient {
     }
 
     @Override
-    public AbstractIQ query(final AbstractIQ iq, long timeout) throws StanzaException, NoResponseException {
+    public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
         // Ignore timeout for tests.
         return query(iq);
     }

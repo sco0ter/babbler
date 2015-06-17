@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.idle;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.idle.model.Idle;
 
 import java.time.Instant;
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * This manager automatically adds an {@code <idle/>} extension to outbound presences, if the presence is of type {@linkplain rocks.xmpp.core.stanza.model.AbstractPresence.Show#AWAY away} or {@linkplain rocks.xmpp.core.stanza.model.AbstractPresence.Show#XA xa}.
+ * This manager automatically adds an {@code <idle/>} extension to outbound presences, if the presence is of type {@linkplain Presence.Show#AWAY away} or {@linkplain Presence.Show#XA xa}.
  * However, sending such presences is still the responsibility of the application developer, i.e. no presences are sent automatically.
  * <p>
  * By default, idle time is determined by outbound messages and non-away, non-xa presences. E.g. whenever a message is sent, the idle time is reset to the current time.
@@ -61,9 +61,9 @@ public final class IdleManager extends Manager {
         super(xmppSession);
         this.idleStrategy = this::getLastSentStanzaTime;
         this.presenceListener = e -> {
-            AbstractPresence presence = e.getPresence();
+            Presence presence = e.getPresence();
             synchronized (this) {
-                if (presence.isAvailable() && EnumSet.of(AbstractPresence.Show.AWAY, AbstractPresence.Show.XA).contains(presence.getShow())) {
+                if (presence.isAvailable() && EnumSet.of(Presence.Show.AWAY, Presence.Show.XA).contains(presence.getShow())) {
                     if (idleStrategy != null && presence.getExtension(Idle.class) == null) {
                         Instant idleSince = idleStrategy.get();
                         if (idleSince != null) {

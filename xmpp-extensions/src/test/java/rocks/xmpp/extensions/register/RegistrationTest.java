@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.register;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
@@ -42,7 +43,7 @@ import java.net.URL;
  */
 public class RegistrationTest extends XmlTest {
     protected RegistrationTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Registration.class, RegisterFeature.class);
+        super(ClientIQ.class, Registration.class, RegisterFeature.class);
     }
 
     @Test

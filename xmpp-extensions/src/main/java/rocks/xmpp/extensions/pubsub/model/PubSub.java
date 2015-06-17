@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.adapters.InstantAdapter;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.errors.ClosedNode;
 import rocks.xmpp.extensions.pubsub.model.errors.ConfigurationRequired;
@@ -50,6 +49,7 @@ import rocks.xmpp.extensions.pubsub.model.errors.TooManySubscriptions;
 import rocks.xmpp.extensions.pubsub.model.errors.Unsupported;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;

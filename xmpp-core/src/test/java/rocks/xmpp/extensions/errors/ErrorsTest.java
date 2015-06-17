@@ -27,9 +27,11 @@ package rocks.xmpp.extensions.errors;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.errors.model.ResourceLimitExceeded;
 import rocks.xmpp.extensions.errors.model.StanzaTooBig;
 import rocks.xmpp.extensions.errors.model.TooManyStanzas;
@@ -42,7 +44,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ErrorsTest extends XmlTest {
     protected ErrorsTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Message.class, StanzaTooBig.class, TooManyStanzas.class, ResourceLimitExceeded.class);
+        super(ClientIQ.class, ClientMessage.class, StanzaTooBig.class, TooManyStanzas.class, ResourceLimitExceeded.class);
     }
 
     @Test

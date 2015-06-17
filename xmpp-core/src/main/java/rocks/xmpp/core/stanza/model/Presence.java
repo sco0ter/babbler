@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -50,7 +51,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Christian Schudt
  */
 @XmlTransient
-public abstract class AbstractPresence extends Stanza implements Comparable<AbstractPresence> {
+public class Presence extends Stanza implements Comparable<Presence> {
 
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new CopyOnWriteArrayList<>();
@@ -65,18 +66,119 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     private final Type type;
 
     /**
-     * Constructs an empty presence.
+     * Constructs an empty presence to indicate availability.
      */
-    protected AbstractPresence() {
+    public Presence() {
+        this.priority = null;
         this.show = null;
         this.type = null;
-        this.priority = null;
     }
 
     /**
-     * Constructs an full presence with all possible values.
+     * Constructs a presence with a priority.
+     *
+     * @param priority The priority.
      */
-    protected AbstractPresence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    public Presence(Byte priority) {
+        this(null, null, null, null, priority, null, null, null, null, null);
+    }
+
+    /**
+     * Constructs a presence with a specific 'show' value.
+     *
+     * @param show The 'show' value.
+     */
+    public Presence(Show show) {
+        this(show, null);
+    }
+
+    /**
+     * Constructs a presence with a specific 'show' value and priority.
+     *
+     * @param show     The 'show' value.
+     * @param priority The priority.
+     */
+    public Presence(Show show, Byte priority) {
+        this(null, null, show, null, priority, null, null, null, null, null);
+    }
+
+    /**
+     * Constructs a presence of a specific type.
+     *
+     * @param type The type.
+     */
+    public Presence(Type type) {
+        this(type, null);
+    }
+
+    /**
+     * Constructs a presence of a specific type.
+     *
+     * @param type     The type.
+     * @param priority The priority.
+     */
+    public Presence(Type type, Byte priority) {
+        this(null, type, null, null, priority, null, null, null, null, null);
+    }
+
+    /**
+     * Constructs a directed presence.
+     *
+     * @param to The recipient.
+     */
+    public Presence(Jid to) {
+        this(to, null, null, null);
+    }
+
+    /**
+     * Constructs a directed presence with a specific 'show' attribute and status.
+     *
+     * @param to     The recipient.
+     * @param show   The 'show' value.
+     * @param status The status.
+     */
+    public Presence(Jid to, Show show, String status) {
+        this(to, null, show, status != null ? Collections.singleton(new Text(status)) : null, null, null, null, null, null, null);
+    }
+
+    /**
+     * Constructs a directed presence, which is useful for requesting subscription or for exiting a multi-user chat.
+     *
+     * @param to     The recipient.
+     * @param type   The type.
+     * @param status The status.
+     */
+    public Presence(Jid to, Type type, String status) {
+        this(to, type, status, null);
+    }
+
+    /**
+     * Constructs a directed presence, which is useful for requesting subscription or for exiting a multi-user chat.
+     *
+     * @param to     The recipient.
+     * @param type   The type.
+     * @param status The status.
+     * @param id     The id.
+     */
+    public Presence(Jid to, Type type, String status, String id) {
+        this(to, type, null, status != null ? Collections.singleton(new Text(status)) : null, null, id, null, null, null, null);
+    }
+
+    /**
+     * Constructs a presence with all possible values.
+     *
+     * @param to         The recipient.
+     * @param type       The type.
+     * @param show       The 'show' value.
+     * @param status     The status.
+     * @param priority   The priority.
+     * @param id         The id.
+     * @param from       The 'from' attribute.
+     * @param language   The language.
+     * @param extensions The extensions.
+     * @param error      The stanza error.
+     */
+    public Presence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, error);
         this.show = show;
         this.type = type;
@@ -195,13 +297,22 @@ public abstract class AbstractPresence extends Stanza implements Comparable<Abst
     }
 
     @Override
-    public abstract AbstractPresence createError(StanzaError error);
+    public final Presence createError(StanzaError error) {
+        return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(), getLanguage(), getExtensions(), error);
+    }
 
     @Override
-    public abstract AbstractPresence createError(Condition condition);
+    public final Presence createError(Condition condition) {
+        return createError(new StanzaError(condition));
+    }
 
     @Override
-    public final int compareTo(AbstractPresence o) {
+    public final Presence withFrom(Jid from) {
+        return new Presence(getTo(), getType(), getShow(), getStatuses(), getPriority(), getId(), from, getLanguage(), getExtensions(), getError());
+    }
+
+    @Override
+    public final int compareTo(Presence o) {
         if (o == null) {
             return -1;
         }

@@ -32,13 +32,17 @@ import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 
@@ -403,7 +407,7 @@ public class XmppClient extends XmppSession {
 
         // Bind the resource
         IQ iq = new IQ(IQ.Type.SET, new Bind(this.resource));
-        AbstractIQ result = query(iq);
+        IQ result = query(iq);
 
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
@@ -447,6 +451,22 @@ public class XmppClient extends XmppSession {
      */
     public final boolean isAnonymous() {
         return anonymous;
+    }
+
+    @Override
+    public StreamElement send(StreamElement element) {
+        StreamElement e;
+        if (element instanceof Message) {
+            e = ClientMessage.from((Message) element);
+        } else if (element instanceof Presence) {
+            e = ClientPresence.from((Presence) element);
+        } else if (element instanceof IQ) {
+            e = ClientIQ.from((IQ) element);
+        } else {
+            e = element;
+        }
+        super.send(e);
+        return e;
     }
 
     /**

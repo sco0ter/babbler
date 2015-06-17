@@ -26,7 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Presence;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

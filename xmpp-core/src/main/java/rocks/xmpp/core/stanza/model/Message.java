@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -47,7 +48,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Christian Schudt
  */
 @XmlTransient
-public abstract class AbstractMessage extends Stanza {
+public class Message extends Stanza {
 
     private final List<Text> subject = new CopyOnWriteArrayList<>();
 
@@ -61,14 +62,100 @@ public abstract class AbstractMessage extends Stanza {
 
     private final Thread thread;
 
+    public Message() {
+        this(null);
+    }
+
+    /**
+     * Constructs an empty message.
+     *
+     * @param to The recipient.
+     */
+    public Message(Jid to) {
+        this(to, null);
+    }
+
+    /**
+     * Constructs a message with a type.
+     *
+     * @param to   The recipient.
+     * @param type The message type.
+     */
+    public Message(Jid to, Type type) {
+        this(to, type, null);
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to   The recipient.
+     * @param body The message body.
+     * @param type The message type.
+     */
+    public Message(Jid to, Type type, String body) {
+        this(to, type, body, null);
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to      The recipient.
+     * @param body    The message body.
+     * @param type    The message type.
+     * @param subject The subject.
+     */
+    public Message(Jid to, Type type, String body, String subject) {
+        this(to, type, body, subject, null);
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to      The recipient.
+     * @param body    The message body.
+     * @param type    The message type.
+     * @param subject The subject.
+     * @param thread  The thread.
+     */
+    public Message(Jid to, Type type, String body, String subject, String thread) {
+        this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(), subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread, null, null, null, null, null, null);
+    }
+
+    /**
+     * Constructs a message with body and type.
+     *
+     * @param to           The recipient.
+     * @param body         The message body.
+     * @param type         The message type.
+     * @param subject      The subject.
+     * @param thread       The thread.
+     * @param parentThread The parent thread.
+     * @param from         The sender.
+     * @param id           The id.
+     * @param language     The language.
+     * @param extensions   The extensions.
+     * @param error        The error.
+     */
+    public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+        this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(), subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread, parentThread, id, from, language, extensions, error);
+    }
+
     /**
      * Constructs a message with all possible values.
      *
-     * @param to     The recipient.
-     * @param bodies The message bodies.
-     * @param type   The message type.
+     * @param to           The recipient.
+     * @param bodies       The message bodies.
+     * @param type         The message type.
+     * @param subjects     The subjects.
+     * @param thread       The thread.
+     * @param parentThread The parent thread.
+     * @param from         The sender.
+     * @param id           The id.
+     * @param language     The language.
+     * @param extensions   The extensions.
+     * @param error        The error.
      */
-    protected AbstractMessage(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, Jid from, String id, String language, Collection<?> extensions, StanzaError error) {
+    public Message(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, error);
         this.type = type;
         if (bodies != null) {
@@ -233,10 +320,19 @@ public abstract class AbstractMessage extends Stanza {
     }
 
     @Override
-    public abstract AbstractMessage createError(StanzaError error);
+    public final Message createError(StanzaError error) {
+        return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), getError());
+    }
 
     @Override
-    public abstract AbstractMessage createError(Condition condition);
+    public final Message createError(Condition condition) {
+        return createError(new StanzaError(condition));
+    }
+
+    @Override
+    public final Message withFrom(Jid from) {
+        return new Message(getTo(), getType(), getBodies(), getSubjects(), getThread(), getParentThread(), getId(), from, getLanguage(), getExtensions(), getError());
+    }
 
     @Override
     public final String toString() {

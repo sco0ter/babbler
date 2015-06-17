@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.muc.model.user.Decline;
 
 import java.util.EventObject;

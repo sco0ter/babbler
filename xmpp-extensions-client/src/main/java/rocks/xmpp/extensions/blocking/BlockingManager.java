@@ -26,17 +26,16 @@ package rocks.xmpp.extensions.blocking;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Unblock;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,9 +67,9 @@ public final class BlockingManager extends Manager {
     private BlockingManager(final XmppSession xmppSession) {
         super(xmppSession, true);
 
-        this.iqHandler = new AbstractIQHandler(AbstractIQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(IQ.Type.SET) {
             @Override
-            protected AbstractIQ processRequest(AbstractIQ iq) {
+            protected IQ processRequest(IQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
                     Block block = iq.getExtension(Block.class);
                     if (block != null) {
@@ -154,7 +153,7 @@ public final class BlockingManager extends Manager {
      */
     public final Collection<Jid> getBlockedContacts() throws XmppException {
         synchronized (blockedContacts) {
-            AbstractIQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
+            IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
             BlockList blockList = result.getExtension(BlockList.class);
             if (blockList != null) {
                 blockedContacts.addAll(blockList.getItems().stream().collect(Collectors.toList()));

@@ -64,7 +64,7 @@ import java.util.UUID;
  * @author Christian Schudt
  */
 @XmlTransient
-public abstract class AbstractIQ extends Stanza {
+public class IQ extends Stanza {
 
     @XmlAttribute
     private final Type type;
@@ -76,20 +76,67 @@ public abstract class AbstractIQ extends Stanza {
      * Default constructor for unmarshalling.
      */
     @SuppressWarnings("unused")
-    protected AbstractIQ() {
+    protected IQ() {
         this.type = null;
         this.extension = null;
+    }
+
+    /**
+     * Creates an IQ stanza with the given type and extension. The id attribute will be generated randomly.
+     *
+     * @param type      The type.
+     * @param extension The extension.
+     */
+    public IQ(Type type, Object extension) {
+        this(type, extension, null);
+    }
+
+    /**
+     * Creates an IQ stanza with the given id, type and extension.
+     *
+     * @param type      The type.
+     * @param extension The extension.
+     * @param id        The id.
+     */
+    public IQ(Type type, Object extension, String id) {
+        this(null, type, extension, id);
+    }
+
+    /**
+     * Creates an IQ stanza with the given receiver, type and extension. The id attribute will be generated randomly.
+     *
+     * @param to        The receiver.
+     * @param type      The type.
+     * @param extension The extension.
+     */
+    public IQ(Jid to, Type type, Object extension) {
+        this(to, type, extension, null);
     }
 
     /**
      * Creates an IQ stanza with the given receiver, id, type and extension.
      *
      * @param to        The receiver.
-     * @param id        The id.
      * @param type      The type.
      * @param extension The extension.
+     * @param id        The id.
      */
-    protected AbstractIQ(Jid to, Type type, Object extension, String id, Jid from, String language, StanzaError error) {
+    public IQ(Jid to, Type type, Object extension, String id) {
+        this(to, type, extension, id, null, null, null);
+    }
+
+    /**
+     * Creates an IQ stanza with the given receiver, id, type, extension and error.
+     *
+     * @param to        The receiver.
+     * @param type      The type.
+     * @param extension The extension.
+     * @param id        The id.
+     * @param from      The sender.
+     * @param language  The language.
+     * @param error     The error.
+     */
+    public IQ(Jid to, Type type, Object extension, String id, Jid from, String language, StanzaError error) {
         super(to, from, id == null ? UUID.randomUUID().toString() : id, language, error);
         this.type = Objects.requireNonNull(type, "type must not be null.");
         this.extension = extension;
@@ -145,7 +192,9 @@ public abstract class AbstractIQ extends Stanza {
      *
      * @return The result IQ stanza.
      */
-    public abstract AbstractIQ createResult();
+    public IQ createResult() {
+        return createResult(null);
+    }
 
     /**
      * Creates a result IQ stanza with a payload, i.e. it uses the same id as this IQ, sets the type to 'result' and switches the 'to' and 'from' attribute.
@@ -153,13 +202,24 @@ public abstract class AbstractIQ extends Stanza {
      * @param extension The extension.
      * @return The result IQ stanza.
      */
-    public abstract AbstractIQ createResult(Object extension);
+    public final IQ createResult(Object extension) {
+        return new IQ(getFrom(), Type.RESULT, extension, getId(), getTo(), getLanguage(), null);
+    }
 
     @Override
-    public abstract AbstractIQ createError(StanzaError error);
+    public final IQ createError(StanzaError error) {
+        return new IQ(getFrom(), Type.ERROR, null, getId(), getTo(), getLanguage(), error);
+    }
 
     @Override
-    public abstract AbstractIQ createError(Condition condition);
+    public final IQ createError(Condition condition) {
+        return createError(new StanzaError(condition));
+    }
+
+    @Override
+    public final IQ withFrom(Jid from) {
+        return new IQ(getTo(), getType(), getExtension(Object.class), getId(), from, getLanguage(), getError());
+    }
 
     /**
      * Represents a {@code <iq/>} 'type' attribute.

@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.forward;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class StanzaForwardingTest extends XmlTest {
     protected StanzaForwardingTest() throws JAXBException, XMLStreamException {
-        super(Message.class, Forwarded.class);
+        super(ClientMessage.class, Forwarded.class);
     }
 
     @Test

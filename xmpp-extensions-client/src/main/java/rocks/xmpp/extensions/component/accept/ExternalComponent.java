@@ -33,10 +33,10 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
-import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.extensions.component.accept.model.ComponentIQ;
+import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
+import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
 
 import java.util.concurrent.TimeUnit;
@@ -55,21 +55,21 @@ public final class ExternalComponent extends XmppSession {
 
     private static final Logger logger = Logger.getLogger(ExternalComponent.class.getName());
 
-    public ExternalComponent(String componentName, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
-        super(componentName, configuration, connectionConfigurations);
-    }
-
-    private volatile Jid connectedResource;
-
     private final Lock lock = new ReentrantLock();
 
     private final Condition streamOpened = lock.newCondition();
 
     private final Condition handshakeReceived = lock.newCondition();
 
+    private volatile Jid connectedResource;
+
     private volatile boolean streamHeaderReceived;
 
     private volatile String lastSharedSecret;
+
+    public ExternalComponent(String componentName, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
+        super(componentName, configuration, connectionConfigurations);
+    }
 
     @Override
     public final void connect(Jid from) throws XmppException {
@@ -195,23 +195,20 @@ public final class ExternalComponent extends XmppSession {
     }
 
     @Override
-    public StreamElement send(StreamElement element) {
+    public final StreamElement send(StreamElement element) {
 
-        StreamElement e;
+        if (element instanceof Stanza && ((Stanza) element).getFrom() == null) {
+            element = ((Stanza) element).withFrom(connectedResource);
+        }
         if (element instanceof Message) {
-            e = ClientMessage.from((Message) element);
+            element = ComponentMessage.from((Message) element);
         } else if (element instanceof Presence) {
-            e = ClientPresence.from((Presence) element);
+            element = ComponentPresence.from((Presence) element);
         } else if (element instanceof IQ) {
-            e = ClientIQ.from((IQ) element);
-        } else {
-            e = element;
+            element = ComponentIQ.from((IQ) element);
         }
 
-        if (e instanceof Stanza && ((Stanza) e).getFrom() == null) {
-            e = ((Stanza) element).withFrom(connectedResource);
-        }
-        super.send(e);
-        return e;
+        super.send(element);
+        return element;
     }
 }

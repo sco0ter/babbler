@@ -108,11 +108,10 @@ public final class TestXmppSession extends XmppSession {
 
     @Override
     public void connect(Jid from) throws XmppException {
-
     }
 
     @Override
-    public IQ query(final IQ iq) throws StanzaException, NoResponseException {
+    public IQ query(final IQ iq) throws XmppException {
         final IQ[] result = new IQ[1];
 
         final Consumer<IQEvent> iqListener = e -> {
@@ -133,15 +132,9 @@ public final class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
+    public IQ query(final IQ iq, long timeout) throws XmppException {
         // Ignore timeout for tests.
         return query(iq);
-    }
-
-    @Override
-    public void close() throws XmppException {
-        super.close();
-        updateStatus(Status.CLOSED, null);
     }
 
     @Override

@@ -867,7 +867,7 @@ public abstract class XmppSession implements AutoCloseable {
      * @throws XmppException If an exception occurs while closing the connection, e.g. the underlying socket connection.
      */
     @Override
-    public void close() throws XmppException {
+    public final void close() throws XmppException {
         if (getStatus() == Status.CLOSED || !updateStatus(Status.CLOSING)) {
             return;
         }

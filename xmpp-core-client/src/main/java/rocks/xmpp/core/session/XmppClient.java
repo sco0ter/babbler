@@ -105,7 +105,7 @@ import java.util.logging.Logger;
  * @see TcpConnectionConfiguration
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  */
-public class XmppClient extends XmppSession {
+public final class XmppClient extends XmppSession {
 
     private static final Logger logger = Logger.getLogger(XmppClient.class.getName());
 
@@ -114,7 +114,7 @@ public class XmppClient extends XmppSession {
     /**
      * The user, which is assigned by the server after resource binding.
      */
-    volatile Jid connectedResource;
+    private volatile Jid connectedResource;
 
     /**
      * The resource, which the user requested during resource binding. This value is stored, so that it can be reused during reconnection.
@@ -454,7 +454,7 @@ public class XmppClient extends XmppSession {
     }
 
     @Override
-    public StreamElement send(StreamElement element) {
+    public final StreamElement send(StreamElement element) {
         StreamElement e;
         if (element instanceof Message) {
             e = ClientMessage.from((Message) element);

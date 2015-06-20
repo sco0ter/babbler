@@ -34,7 +34,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
-import javax.xml.stream.XMLOutputFactory;
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.function.Consumer;
@@ -42,9 +41,11 @@ import java.util.function.Consumer;
 /**
  * @author Christian Schudt
  */
-public class TestXmppSession extends XmppClient {
+public final class TestXmppSession extends XmppSession {
 
-    private MockServer mockServer;
+    private final MockServer mockServer;
+
+    private final Jid connectedResource;
 
     public TestXmppSession() {
         this(Jid.valueOf("test@domain/resource"), new MockServer());
@@ -57,17 +58,7 @@ public class TestXmppSession extends XmppClient {
     public TestXmppSession(Jid jid, MockServer mockServer, XmppSessionConfiguration configuration) {
         super(null, configuration);
         connectedResource = jid;
-        //getExtensionManager(Socks5ByteStreamManager.class).setLocalHostEnabled(false);
 
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-
-//        XMLStreamWriter xmlStreamWriter = null;
-//        try {
-//            xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(System.out), true);
-//
-//        } catch (XMLStreamException e) {
-//        }
-//        final XMLStreamWriter finalXmlStreamWriter = xmlStreamWriter;
         activeConnection = new Connection("hostname", 5222, Proxy.NO_PROXY) {
 
             @Override
@@ -77,11 +68,6 @@ public class TestXmppSession extends XmppClient {
 
             @Override
             public void send(StreamElement clientStreamElement) {
-//                try {
-//                    TestXmppSession.this.getMarshaller().marshal(clientStreamElement, finalXmlStreamWriter);
-//                } catch (JAXBException e) {
-//                    e.printStackTrace();
-//                }
             }
 
             @Override
@@ -101,7 +87,6 @@ public class TestXmppSession extends XmppClient {
 
             @Override
             public void close() throws IOException {
-
             }
         };
         stanzaListenerExecutor = iqHandlerExecutor = new SameThreadExecutorService();
@@ -119,6 +104,11 @@ public class TestXmppSession extends XmppClient {
             mockServer.receive(((Stanza) sent).withFrom(connectedResource));
         }
         return element;
+    }
+
+    @Override
+    public void connect(Jid from) throws XmppException {
+
     }
 
     @Override
@@ -152,5 +142,10 @@ public class TestXmppSession extends XmppClient {
     public void close() throws XmppException {
         super.close();
         updateStatus(Status.CLOSED, null);
+    }
+
+    @Override
+    public Jid getConnectedResource() {
+        return connectedResource;
     }
 }

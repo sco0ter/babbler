@@ -47,10 +47,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.commands.AdHocCommand;
@@ -72,7 +72,7 @@ public class ServiceAdministration extends Application {
 
     private final ObservableList<AdHocCommand> commands = FXCollections.observableArrayList();
 
-    private XmppSession xmppSession;
+    private XmppClient xmppSession;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -89,7 +89,7 @@ public class ServiceAdministration extends Application {
                         .debugger(VisualDebugger.class)
                         .build();
 
-                xmppSession = new XmppSession("localhost", sessionConfiguration, connectionConfiguration);
+                xmppSession = new XmppClient("localhost", sessionConfiguration, connectionConfiguration);
                 xmppSession.connect();
                 xmppSession.login("admin", "admin");
                 AdHocCommandsManager adHocCommandsManager = xmppSession.getManager(AdHocCommandsManager.class);

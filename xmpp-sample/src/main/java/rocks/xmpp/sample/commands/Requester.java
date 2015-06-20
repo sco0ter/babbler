@@ -24,11 +24,11 @@
 
 package rocks.xmpp.sample.commands;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.commands.AdHocCommandsManager;
 
@@ -57,7 +57,7 @@ public class Requester {
                             .defaultResponseTimeout(5000)
                             .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                    XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
                     // Connect
                     xmppSession.connect();

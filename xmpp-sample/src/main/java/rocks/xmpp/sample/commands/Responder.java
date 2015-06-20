@@ -24,16 +24,12 @@
 
 package rocks.xmpp.sample.commands;
 
-import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.commands.AdHocCommandsManager;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -45,35 +41,32 @@ public class Responder {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .secure(false)
-                            .build();
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .secure(false)
+                        .build();
 
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(VisualDebugger.class)
-                            .defaultResponseTimeout(5000)
-                            .build();
+                XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                        .debugger(VisualDebugger.class)
+                        .defaultResponseTimeout(5000)
+                        .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("222", "222", "commands");
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("222", "222", "commands");
+                // Send initial presence
+                xmppSession.send(new Presence());
 
-                    AdHocCommandsManager adHocCommandsManager = xmppSession.getManager(AdHocCommandsManager.class);
+                AdHocCommandsManager adHocCommandsManager = xmppSession.getManager(AdHocCommandsManager.class);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

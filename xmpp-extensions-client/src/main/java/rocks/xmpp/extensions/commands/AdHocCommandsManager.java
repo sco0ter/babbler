@@ -25,23 +25,20 @@
 package rocks.xmpp.extensions.commands;
 
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
-import rocks.xmpp.extensions.rsm.ResultSetProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +50,7 @@ import java.util.Set;
 /**
  * @author Christian Schudt
  */
-public class AdHocCommandsManager extends ExtensionManager {
+public class AdHocCommandsManager extends Manager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -64,7 +61,7 @@ public class AdHocCommandsManager extends ExtensionManager {
     private final Map<String, CommandSession> commandSessionMap;
 
     private AdHocCommandsManager(final XmppSession xmppSession) {
-        super(xmppSession, Command.NAMESPACE);
+        super(xmppSession);
         serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         commandMap = new HashMap<>();
         commandSessionMap = new HashMap<>();
@@ -84,7 +81,7 @@ public class AdHocCommandsManager extends ExtensionManager {
             }
 
             @Override
-            public Set<Feature> getFeatures() {
+            public Set<String> getFeatures() {
                 return null;
             }
 
@@ -94,7 +91,7 @@ public class AdHocCommandsManager extends ExtensionManager {
             }
         };
 
-        xmppSession.addIQHandler(Command.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Command.class, new AbstractIQHandler(IQ.Type.SET) {
             @Override
             public IQ processRequest(IQ iq) {
 
@@ -123,8 +120,8 @@ public class AdHocCommandsManager extends ExtensionManager {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+    public void onEnable() {
+        super.onEnable();
 //        if (enabled) {
 //            serviceDiscoveryManager.addInfoNode(infoNode);
 //            serviceDiscoveryManager.setItemProvider(Command.NAMESPACE, new ResultSetProvider<Item>() {
@@ -195,12 +192,12 @@ public class AdHocCommandsManager extends ExtensionManager {
         serviceDiscoveryManager.addInfoNode(new InfoNode() {
             private final Set<Identity> identities = new HashSet<>();
 
-            private final Set<Feature> features = new HashSet<>();
+            private final Set<String> features = new HashSet<>();
 
             {
                 identities.add(new Identity("automation", "command-node", name));
-                features.add(new Feature(Command.NAMESPACE));
-                features.add(new Feature("jabber:x:data"));
+                features.add(Command.NAMESPACE);
+                features.add("jabber:x:data");
             }
 
             @Override
@@ -214,7 +211,7 @@ public class AdHocCommandsManager extends ExtensionManager {
             }
 
             @Override
-            public Set<Feature> getFeatures() {
+            public Set<String> getFeatures() {
                 return features;
             }
 

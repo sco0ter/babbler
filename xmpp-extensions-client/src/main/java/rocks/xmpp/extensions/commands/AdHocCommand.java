@@ -25,10 +25,10 @@
 package rocks.xmpp.extensions.commands;
 
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;

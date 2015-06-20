@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.component.accept;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ConnectionConfiguration;
+import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -61,14 +61,19 @@ public final class ExternalComponent extends XmppSession {
 
     private final Condition handshakeReceived = lock.newCondition();
 
+    private final String sharedSecret;
+
     private volatile Jid connectedResource;
 
     private volatile boolean streamHeaderReceived;
 
-    private volatile String lastSharedSecret;
+    public ExternalComponent(String componentName, String sharedSecret, String hostname, int port) {
+        this(componentName, sharedSecret, XmppSessionConfiguration.getDefault(), hostname, port);
+    }
 
-    public ExternalComponent(String componentName, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
-        super(componentName, configuration, connectionConfigurations);
+    public ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
+        super(componentName, configuration, TcpConnectionConfiguration.builder().hostname(hostname).port(port).build());
+        this.sharedSecret = sharedSecret;
     }
 
     @Override
@@ -107,11 +112,7 @@ public final class ExternalComponent extends XmppSession {
             connectedResource = Jid.valueOf(getDomain());
             updateStatus(Status.CONNECTED);
 
-            // This is for reconnection.
-            if (wasLoggedIn) {
-                logger.fine("Was already logged in. Re-login automatically with known credentials.");
-                login(lastSharedSecret);
-            }
+            login(sharedSecret);
         } catch (Throwable e) {
             onConnectionFailed(previousStatus, e);
         }
@@ -123,10 +124,9 @@ public final class ExternalComponent extends XmppSession {
      * @param sharedSecret The shared secret.
      * @throws XmppException If authentication failed.
      */
-    public final void login(String sharedSecret) throws XmppException {
+    private void login(String sharedSecret) throws XmppException {
         Status previousStatus = preLogin();
 
-        this.lastSharedSecret = sharedSecret;
         try {
             // Send the <handshake/> element.
             send(Handshake.create(activeConnection.getStreamId(), sharedSecret));

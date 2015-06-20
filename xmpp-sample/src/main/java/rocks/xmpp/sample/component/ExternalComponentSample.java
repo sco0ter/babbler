@@ -24,23 +24,13 @@
 
 package rocks.xmpp.sample.component;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.component.accept.ExternalComponent;
-import rocks.xmpp.extensions.version.SoftwareVersionManager;
-import rocks.xmpp.sample.LogFormatter;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
@@ -51,37 +41,18 @@ public class ExternalComponentSample {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                Handler consoleHandler = new ConsoleHandler();
-                consoleHandler.setLevel(Level.FINE);
-                consoleHandler.setFormatter(new LogFormatter());
-
-                final Logger logger = Logger.getLogger("rocks.xmpp");
-                logger.addHandler(consoleHandler);
-
-                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                        .hostname("localhost")
-                        .port(5275)
-                        .build();
-
-                Class<?>[] extensions = new Class<?>[0];
-                Arrays.asList(extensions, XmppSession.class);
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(VisualDebugger.class)
-                        .defaultResponseTimeout(5000)
                         .build();
 
-                ExternalComponent xmppSession = new ExternalComponent("test", configuration, tcpConfiguration);
+                ExternalComponent myComponent = new ExternalComponent("test", "test", configuration, "localhost", 5275);
 
                 // Listen for inbound messages.
-                xmppSession.addInboundMessageListener(e -> System.out.println(e.getMessage()));
+                myComponent.addInboundMessageListener(e -> System.out.println(e.getMessage()));
                 // Connect
-                xmppSession.connect();
-                // Login
-                xmppSession.login("test");
+                myComponent.connect();
 
-                xmppSession.getManager(SoftwareVersionManager.class).getSoftwareVersion(Jid.valueOf("admin@christian-schudts-macbook-pro.local/xmpp"));
 
-                System.out.println(xmppSession.getActiveConnection());
             } catch (XmppException e) {
                 e.printStackTrace();
             }

@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:rpc} namespace.
@@ -51,10 +52,8 @@ public final class Rpc {
      */
     public static final String NAMESPACE = "jabber:iq:rpc";
 
-    @XmlElement(name = "methodCall")
     private MethodCall methodCall;
 
-    @XmlElement(name = "methodResponse")
     private MethodResponse methodResponse;
 
     private Rpc() {
@@ -116,7 +115,6 @@ public final class Rpc {
         @XmlElement(name = "param")
         private final List<Parameter> parameters = new ArrayList<>();
 
-        @XmlElement(name = "methodName")
         private final String methodName;
 
         private MethodCall() {
@@ -145,10 +143,7 @@ public final class Rpc {
          * @return The parameters.
          */
         public final List<Value> getParameters() {
-            List<Value> values = new ArrayList<>();
-            for (Parameter parameter : parameters) {
-                values.add(parameter.getValue());
-            }
+            List<Value> values = parameters.stream().map(Parameter::getValue).collect(Collectors.toList());
             return Collections.unmodifiableList(values);
         }
     }
@@ -161,7 +156,6 @@ public final class Rpc {
         @XmlElement(name = "param")
         private final List<Parameter> parameters = new ArrayList<>();
 
-        @XmlElement(name = "fault")
         private Fault fault;
 
         private MethodResponse() {
@@ -200,7 +194,7 @@ public final class Rpc {
          * The implementation of a RPC fault.
          */
         public static final class Fault {
-            @XmlElement(name = "value")
+
             private Value value;
 
             private Fault() {
@@ -225,11 +219,13 @@ public final class Rpc {
             public final int getFaultCode() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();
-                    Value faultCode = map.get("faultCode");
-                    if (faultCode != null) {
-                        Integer value = faultCode.getAsInteger();
-                        if (value != null) {
-                            return value;
+                    if (map != null) {
+                        Value faultCode = map.get("faultCode");
+                        if (faultCode != null) {
+                            Integer value = faultCode.getAsInteger();
+                            if (value != null) {
+                                return value;
+                            }
                         }
                     }
                 }
@@ -244,9 +240,11 @@ public final class Rpc {
             public final String getFaultString() {
                 if (value != null) {
                     Map<String, Value> map = value.getAsMap();
-                    Value faultCode = map.get("faultString");
-                    if (faultCode != null) {
-                        return faultCode.getAsString();
+                    if (map != null) {
+                        Value faultCode = map.get("faultString");
+                        if (faultCode != null) {
+                            return faultCode.getAsString();
+                        }
                     }
                 }
                 return null;

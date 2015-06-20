@@ -24,12 +24,12 @@
 
 package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -42,31 +42,35 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Christian Schudt
  */
 @XmlTransient
-public abstract class Stanza {
+public abstract class Stanza implements StreamElement {
 
     @XmlAttribute
-    private Jid from;
+    private final Jid from;
 
     @XmlAttribute
-    private String id;
+    private final String id;
 
     @XmlAttribute
-    private Jid to;
+    private final Jid to;
 
-    @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-    private String language;
+    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+    private final String lang;
 
-    @XmlElement
-    private StanzaError error;
+    private final StanzaError error;
 
     protected Stanza() {
+        this.to = null;
+        this.from = null;
+        this.id = null;
+        this.lang = null;
+        this.error = null;
     }
 
     protected Stanza(Jid to, Jid from, String id, String language, StanzaError error) {
         this.to = to;
         this.from = from;
         this.id = id;
-        this.language = language;
+        this.lang = language;
         this.error = error;
     }
 
@@ -81,18 +85,6 @@ public abstract class Stanza {
      */
     public final Jid getTo() {
         return to;
-    }
-
-    /**
-     * Sets the stanza's 'to' attribute.
-     *
-     * @param to The JID.
-     * @see #getTo()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setTo(Jid to) {
-        this.to = to;
     }
 
     /**
@@ -112,18 +104,6 @@ public abstract class Stanza {
     }
 
     /**
-     * Sets the stanza's 'id' attribute.
-     *
-     * @param id The id.
-     * @see #getId()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setId(String id) {
-        this.id = id;
-    }
-
-    /**
      * Gets the stanza's 'from' attribute.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-from">8.1.2.  from</a></cite></p>
@@ -134,18 +114,6 @@ public abstract class Stanza {
      */
     public final Jid getFrom() {
         return from;
-    }
-
-    /**
-     * Sets the stanza's 'from' attribute.
-     *
-     * @param from The JID.
-     * @see #getFrom()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setFrom(Jid from) {
-        this.from = from;
     }
 
     /**
@@ -166,19 +134,7 @@ public abstract class Stanza {
      * @return The language.
      */
     public final String getLanguage() {
-        return language;
-    }
-
-    /**
-     * Sets the stanza's 'xml:lang' attribute.
-     *
-     * @param language The language.
-     * @see #getLanguage()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setLanguage(String language) {
-        this.language = language;
+        return lang;
     }
 
     /**
@@ -201,18 +157,6 @@ public abstract class Stanza {
      */
     public final StanzaError getError() {
         return error;
-    }
-
-    /**
-     * Sets the stanza's 'error' element.
-     *
-     * @param stanzaError The stanza error.
-     * @see #getError()
-     * @deprecated Use constructor.
-     */
-    @Deprecated
-    public final void setError(StanzaError stanzaError) {
-        this.error = stanzaError;
     }
 
     /**

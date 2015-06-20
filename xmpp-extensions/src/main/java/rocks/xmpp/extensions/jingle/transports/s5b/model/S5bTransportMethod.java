@@ -24,11 +24,10 @@
 
 package rocks.xmpp.extensions.jingle.transports.s5b.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
@@ -45,24 +44,23 @@ public class S5bTransportMethod extends TransportMethod {
      */
     public static final String NAMESPACE = "urn:xmpp:jingle:transports:s5b:1";
 
-    @XmlElement(name = "candidate")
-    private final List<Candidate> candidates = new ArrayList<>();
+    private final List<Candidate> candidate = new ArrayList<>();
 
-    @XmlAttribute(name = "dstaddr")
-    private String dstAddr;
+    @XmlAttribute
+    private String dstaddr;
 
-    @XmlAttribute(name = "mode")
+    @XmlAttribute
     private Mode mode = Mode.TCP;
 
-    @XmlAttribute(name = "sid")
-    private String sessionId;
+    @XmlAttribute
+    private String sid;
 
     public String getDstAddr() {
-        return dstAddr;
+        return dstaddr;
     }
 
     public String getSessionId() {
-        return sessionId;
+        return sid;
     }
 
     public Mode getMode() {
@@ -70,7 +68,7 @@ public class S5bTransportMethod extends TransportMethod {
     }
 
     public List<Candidate> getCandidates() {
-        return candidates;
+        return candidate;
     }
 
     public enum Mode {
@@ -82,22 +80,22 @@ public class S5bTransportMethod extends TransportMethod {
 
     public static final class Candidate implements Comparable<Candidate> {
 
-        @XmlAttribute(name = "cid")
+        @XmlAttribute
         private String cid;
 
-        @XmlAttribute(name = "host")
+        @XmlAttribute
         private String host;
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "port")
+        @XmlAttribute
         private int port;
 
-        @XmlAttribute(name = "priority")
+        @XmlAttribute
         private int priority;
 
-        @XmlAttribute(name = "type")
+        @XmlAttribute
         private Type type = Type.DIRECT;
 
         private Candidate() {
@@ -183,7 +181,7 @@ public class S5bTransportMethod extends TransportMethod {
 
             private final int preferenceValue;
 
-            private Type(int preferenceValue) {
+            Type(int preferenceValue) {
                 this.preferenceValue = preferenceValue;
             }
 
@@ -199,12 +197,12 @@ public class S5bTransportMethod extends TransportMethod {
     }
 
     private static final class CandidateUsed {
-        @XmlAttribute(name = "cid")
+        @XmlAttribute
         private String cid;
     }
 
     private static final class Activated {
-        @XmlAttribute(name = "cid")
+        @XmlAttribute
         private String cid;
     }
 }

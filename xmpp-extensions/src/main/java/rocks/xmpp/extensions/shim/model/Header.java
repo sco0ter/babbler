@@ -24,11 +24,9 @@
 
 package rocks.xmpp.extensions.shim.model;
 
-import rocks.xmpp.extensions.time.model.EntityTime;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -43,7 +41,7 @@ import java.util.Objects;
  */
 public final class Header {
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute
     private final String name;
 
     @XmlValue
@@ -68,23 +66,23 @@ public final class Header {
     /**
      * Creates a header with a start date.
      *
-     * @param date The start date.
+     * @param dateTime The start date.
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
-    public static Header start(Date date) {
-        return new Header("Start", EntityTime.toUtcString(date));
+    public static Header start(OffsetDateTime dateTime) {
+        return new Header("Start", dateTime.toString());
     }
 
     /**
      * Creates a header with a stop date.
      *
-     * @param date The stop date.
+     * @param dateTime The stop date.
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
-    public static Header stop(Date date) {
-        return new Header("Stop", EntityTime.toUtcString(date));
+    public static Header stop(OffsetDateTime dateTime) {
+        return new Header("Stop", dateTime.toString());
     }
 
     /**

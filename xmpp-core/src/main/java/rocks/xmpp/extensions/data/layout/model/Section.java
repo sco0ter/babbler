@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.data.layout.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,24 +43,21 @@ import java.util.List;
  * @see Page#getSections()
  */
 public final class Section {
-    @XmlElement(name = "section")
-    private final List<Section> sections = new ArrayList<>();
 
-    @XmlElement(name = "text")
+    private final List<Section> section = new ArrayList<>();
+
     private final List<String> text = new ArrayList<>();
 
-    @XmlElement(name = "fieldref")
-    private final List<FieldReference> fieldReferences = new ArrayList<>();
+    private final List<FieldReference> fieldref = new ArrayList<>();
 
-    @XmlAttribute(name = "label")
+    @XmlAttribute
     private final String label;
 
-    @XmlElement(name = "reportedref")
-    private final FieldReference reportedReference;
+    private final FieldReference reportedref;
 
     private Section() {
         this.label = null;
-        this.reportedReference = null;
+        this.reportedref = null;
     }
 
     /**
@@ -99,9 +95,9 @@ public final class Section {
             this.text.addAll(text);
         }
         if (fieldReferences != null) {
-            this.fieldReferences.addAll(fieldReferences);
+            this.fieldref.addAll(fieldReferences);
         }
-        this.reportedReference = reportedReference;
+        this.reportedref = reportedReference;
     }
 
     /**
@@ -128,7 +124,7 @@ public final class Section {
      * @return The field references.
      */
     public List<FieldReference> getFieldReferences() {
-        return Collections.unmodifiableList(fieldReferences);
+        return Collections.unmodifiableList(fieldref);
     }
 
     /**
@@ -137,7 +133,7 @@ public final class Section {
      * @return The nested sub-sections.
      */
     public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
+        return Collections.unmodifiableList(section);
     }
 
     /**
@@ -146,6 +142,6 @@ public final class Section {
      * @return The reported field reference.
      */
     public FieldReference getReportedReference() {
-        return reportedReference;
+        return reportedref;
     }
 }

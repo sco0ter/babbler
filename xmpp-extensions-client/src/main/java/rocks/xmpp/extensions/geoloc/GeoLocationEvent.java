@@ -24,16 +24,17 @@
 
 package rocks.xmpp.extensions.geoloc;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * This event notifies listeners, when a geo location has been updated.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.extensions.receipts.MessageDeliveredListener
+ * @see GeoLocationManager#addGeoLocationListener(Consumer)
  */
 public final class GeoLocationEvent extends EventObject {
     private final GeoLocation geoLocation;

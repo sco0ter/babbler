@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.bookmarks;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.bookmarks.model.Bookmark;
 import rocks.xmpp.extensions.bookmarks.model.BookmarkStorage;
@@ -37,8 +37,8 @@ import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This manager facilitates the access to the private storage by providing convenient method for adding, retrieving or removing bookmarks.
@@ -47,7 +47,7 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
-public final class BookmarkManager extends ExtensionManager {
+public final class BookmarkManager extends Manager {
 
     private final PrivateDataManager privateDataManager;
 
@@ -126,12 +126,8 @@ public final class BookmarkManager extends ExtensionManager {
         List<T> bookmarks = new ArrayList<>();
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
 
-        for (Bookmark bookmark : bookmarkStorage.getBookmarks()) {
-            if (bookmark.getClass() == clazz) {
-                bookmarks.add((T) bookmark);
-            }
-        }
-        Collections.sort(bookmarks);
+        bookmarks.addAll(bookmarkStorage.getBookmarks().stream().filter(bookmark -> bookmark.getClass() == clazz).map(bookmark -> (T) bookmark).collect(Collectors.toList()));
+        bookmarks.sort(null);
         return bookmarks;
     }
 }

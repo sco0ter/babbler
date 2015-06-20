@@ -32,6 +32,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0167.html#info-active">8.1 Active</a>
  */
-@XmlRootElement(name = "active")
+@XmlRootElement
 public final class Active {
 }

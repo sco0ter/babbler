@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @see Challenge
  */
 @XmlRootElement
-public final class Response implements ClientStreamElement {
+public final class Response implements StreamElement {
 
     @XmlValue
     private final byte[] value;

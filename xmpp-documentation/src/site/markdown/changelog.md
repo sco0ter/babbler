@@ -1,14 +1,45 @@
 # Changelog
 ---
 
-## Version 0.5.0-SNAPSHOT
+## Version 0.6.0-SNAPSHOT
+
+* Add support for [XEP-0114: Jabber Component Protocol](http://www.xmpp.org/extensions/xep-0114.html)
+* Add support for [XEP-0205: Best Practices to Discourage Denial of Service Attacks](http://www.xmpp.org/extensions/xep-0205.html) (error conditions)
+* Add support for [XEP-0301: In-Band Real Time Text](http://www.xmpp.org/extensions/xep-0301.html)
+* Add support for [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
+* Send initial presence automatically during login (no need to do it manually anymore).
+* Disabled extensions no longer process stanzas (for increased performance).
+* `XmppSession` is now `XmppClient` and derives the now abstract `XmppSession`. This is due to the added support for XEP-0114.
+* `XmppSession` has a new convenient method for determining support of a feature (since it's used by many XEPs).
+* `login` method now returns "additional data with success", i.e. the contents of the `<success/>` element.
+* Add a new `ReconnectionStrategy` implementation, which always tries to reconnect after fix time.
+* There's a new "xmpp-addr" project for [RFC 6122](http://xmpp.org/rfcs/rfc6122.html) which contains the `Jid` class, which has therefore also moved to a new package (`rocks.xmpp.addr`)
+* Use [Java 8's Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html):
+    * All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda expressions, nothing has changed for you)
+* Use [Java 8's Date-Time API](https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html):
+    * `java.util.TimeZone` has been replaced with `java.time.ZoneOffset`
+    * `java.util.Date` has been replaced with `java.time.OffsetDateTime` or `java.time.Instant`
+* Reduce logging overhead by deferred string building.
+* XEP-0092 Software Version now responds with Babbler's version automatically.
+* Stanza classes refactoring:
+    * Stanzas moved from `rocks.xmpp.core.stanza.model.client` to `rocks.xmpp.core.stanza.model`. This was a necessary change for XEP-0114.
+    * `Message.Body`, `Message.Subject`, `Presence.Status` classes have been replaced by a common `Text` class, since they are all the same.
+
+## Version 0.5.1 (2015-06-18)
+
+* Fix cross-compilation issue.
+* Fix IllegalStateException caused from AvatarManager.
+* Add support for [Woodstox JAXB implementation](http://woodstox.codehaus.org/).
+
+## Version 0.5.0 (2015-03-21)
 
 * Add support for [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
     * Specifically your hosted Service Discovery items (XEP-0030) can now return [limited result sets](http://xmpp.org/extensions/xep-0059.html#examples).
 * Add support for [XEP-0222: Persistent Storage of Public Data via PubSub](http://xmpp.org/extensions/xep-0222.html)
 * Add support for [XEP-0223: Persistent Storage of Private Data via PubSub](http://xmpp.org/extensions/xep-0223.html)
 * Add support for [Roster Versioning](http://xmpp.org/rfcs/rfc6121.html#roster-versioning)
-* Rename method signature of `[Message|Presence|IQ]Listener` from `handle` to `handle[Message|Presence|IQ]` for better readability if a class implements multiple of those interfaces. (API change!)
+* Rework the way inbound/outbound stanzas are handled: Instead of `add[Message|Presence|IQ]Listener` you now have to use `addInbound[Message|Presence|IQ]Listener`. (API change!)
+* Add `IQHandler` interface which allows to easily respond to IQ request.
 * PubSub: Add support for [Publish Options](http://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
 * PubSub: Add API to retrieve subscription options for a specific subscription id.
 * Harmonize Exception design: Most methods now only throw `XmppException` (or a subclass thereof)
@@ -16,7 +47,7 @@
 * Rename some methods to better resemble the terminology of the specifications (e.g. `discover*` instead of `get*`).
 * Refactor Chat State Notifications, Message Delivery Receipts, PingManager
 * Refactor [XEP-0107](http://xmpp.org/extensions/xep-0107.html): Mood values can now take specific (custom) moods.
-* Most classes are now (effectively) immutable.
+* Most extension classes are now immutable.
 * Couple RosterManager more tightly with [XEP-0083: Nested Roster Groups](http://xmpp.org/extensions/xep-0083.html).
 * Add new `connect(Jid from)` method to set the 'from' attribute in the stream header.
 * Add new `login()` method, which allows to pass an authorization id and a `CallbackHandler`.
@@ -32,7 +63,6 @@
 
 
 ## Version 0.4.0 (2014-11-01)
-
 
 * Add support for [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
 * Add support for [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
@@ -96,7 +126,7 @@
     * xmpp-client, which contains business logic, used by XMPP clients (e.g. connection logic, roster management, ...)
 * The base `Connection` class is now called `XmppSession`, which can have multiple connection methods. Each connection method is tried while connecting. That way a XMPP session can have a normal `TcpConnection` and an alternative `BoshConnection`, which is tried as fallback.
 * Move Message, Presence and IQ classes from `org.xmpp.stanza` to `org.xmpp.stanza.client package (API change).
-* The \'from\' attribute of roster/privacy lists/blocking command pushes are now checked to prevent IQ spoofing.
+* The 'from' attribute of roster/privacy lists/blocking command pushes are now checked to prevent IQ spoofing.
 * Update [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html) implementation from version 1.7 to 1.8.
 * Provide convenience methods for creating [XEP-0126: Invisibility](http://xmpp.org/extensions/xep-0126.html) privacy lists.
 * Implement `Comparable` interface for `PrivacyList` and `PrivacyRule`.

@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.address;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;

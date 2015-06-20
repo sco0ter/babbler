@@ -26,19 +26,21 @@ package rocks.xmpp.extensions.rpc.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Date;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The value type, which is used by XML-RPC.
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "value")
 public final class Value {
 
     @XmlElements(value = {
@@ -48,7 +50,7 @@ public final class Value {
             @XmlElement(name = "double", type = Double.class),
             @XmlElement(name = "base64", type = byte[].class),
             @XmlElement(name = "boolean", type = NumericBoolean.class),
-            @XmlElement(name = "dateTime.iso8601", type = Date.class),
+            @XmlElement(name = "dateTime.iso8601", type = XMLGregorianCalendar.class), // Using OffsetDateTime here does not work, not even with the Adapter
             @XmlElement(name = "array", type = ArrayType.class),
             @XmlElement(name = "struct", type = StructType.class)
     })
@@ -108,8 +110,19 @@ public final class Value {
      *
      * @param date The date value.
      */
-    public Value(Date date) {
-        this.value = date;
+    public Value(OffsetDateTime date) {
+        XMLGregorianCalendar xmlGregorianCalendar;
+        try {
+            xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
+            xmlGregorianCalendar.setYear(date.getYear());
+            xmlGregorianCalendar.setMonth(date.getMonth().getValue());
+            xmlGregorianCalendar.setDay(date.getDayOfMonth());
+            xmlGregorianCalendar.setTime(date.getHour(), date.getMinute(), date.getSecond()); // date.get(ChronoField.MILLI_OF_SECOND)
+            xmlGregorianCalendar.setTimezone(date.getOffset().getTotalSeconds() / 60);
+        } catch (DatatypeConfigurationException e) {
+            xmlGregorianCalendar = null;
+        }
+        this.value = xmlGregorianCalendar;
     }
 
     /**
@@ -120,9 +133,7 @@ public final class Value {
     public Value(List<Value> list) {
         if (list != null) {
             ArrayType arrayType = new ArrayType();
-            for (Value value : list) {
-                arrayType.values.add(value);
-            }
+            arrayType.values.addAll(list.stream().collect(Collectors.toList()));
             this.value = arrayType;
         } else {
             this.value = null;
@@ -137,9 +148,7 @@ public final class Value {
     public Value(Map<String, Value> map) {
         if (map != null) {
             StructType structType = new StructType();
-            for (Map.Entry<String, Value> entry : map.entrySet()) {
-                structType.values.add(new StructType.MemberType(entry.getKey(), entry.getValue()));
-            }
+            structType.member.addAll(map.entrySet().stream().map(entry -> new StructType.MemberType(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
             this.value = structType;
         } else {
             this.value = null;
@@ -196,8 +205,12 @@ public final class Value {
      *
      * @return The date or null.
      */
-    public final Date getAsDate() {
-        return value instanceof Date ? (Date) value : null;
+    public final OffsetDateTime getAsInstant() {
+        if (value instanceof XMLGregorianCalendar) {
+            XMLGregorianCalendar calendar = (XMLGregorianCalendar) value;
+            return OffsetDateTime.of(calendar.getYear(), calendar.getMonth(), calendar.getDay(), calendar.getHour(), calendar.getMinute(), calendar.getSecond(), 0, ZoneOffset.ofTotalSeconds(calendar.getTimezone() * 60));
+        }
+        return null;
     }
 
     /**
@@ -208,11 +221,7 @@ public final class Value {
     public final List<Value> getAsArray() {
         if (value instanceof ArrayType) {
             ArrayType arrayType = (ArrayType) value;
-            List<Value> result = new ArrayList<>();
-            for (Value value : arrayType.values) {
-                result.add(value);
-            }
-            return result;
+            return arrayType.values.stream().collect(Collectors.toList());
         }
         return null;
     }
@@ -226,7 +235,7 @@ public final class Value {
         if (value instanceof StructType) {
             StructType structType = (StructType) value;
             Map<String, Value> result = new HashMap<>();
-            for (StructType.MemberType member : structType.values) {
+            for (StructType.MemberType member : structType.member) {
                 result.put(member.name, member.value);
             }
             return result;

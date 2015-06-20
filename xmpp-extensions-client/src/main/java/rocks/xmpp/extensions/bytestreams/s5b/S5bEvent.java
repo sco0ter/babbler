@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.bytestreams.s5b;
 
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;

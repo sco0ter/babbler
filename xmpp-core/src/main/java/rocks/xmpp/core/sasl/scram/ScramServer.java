@@ -33,6 +33,7 @@ import javax.security.sasl.SaslException;
 import javax.security.sasl.SaslServer;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -151,7 +152,7 @@ final class ScramServer extends ScramBase implements SaslServer {
             // user's iteration count i and the user's salt, and appends its own
             // nonce to the client-specified one.
             serverFirstMessage = "r=" + nonce + ",s=" + DatatypeConverter.printBase64Binary(salt) + ",i=" + ITERATION_COUNT;
-            return serverFirstMessage.getBytes();
+            return serverFirstMessage.getBytes(StandardCharsets.UTF_8);
 
         } else {
 
@@ -185,10 +186,10 @@ final class ScramServer extends ScramBase implements SaslServer {
                 byte[] recoveredClientKey = xor(clientSignature, clientProof);
                 if (Arrays.equals(h(recoveredClientKey), computeStoredKey(clientKey))) {
                     isComplete = true;
-                    byte[] serverKey = hmac(saltedPassword, "Server Key".getBytes());
+                    byte[] serverKey = hmac(saltedPassword, "Server Key".getBytes(StandardCharsets.UTF_8));
                     // return ServerSignature
-                    String serverFinalMessage = "v=" + DatatypeConverter.printBase64Binary(hmac(serverKey, authMessage.getBytes()));
-                    return serverFinalMessage.getBytes();
+                    String serverFinalMessage = "v=" + DatatypeConverter.printBase64Binary(hmac(serverKey, authMessage.getBytes(StandardCharsets.UTF_8)));
+                    return serverFinalMessage.getBytes(StandardCharsets.UTF_8);
                 } else {
                     // On failed authentication, the entire server-
                     // final-message is OPTIONAL; specifically, a server implementation
@@ -208,31 +209,7 @@ final class ScramServer extends ScramBase implements SaslServer {
     }
 
     @Override
-    public final boolean isComplete() {
-        return isComplete;
-    }
-
-    @Override
     public final String getAuthorizationID() {
         return authorizationId;
-    }
-
-    @Override
-    public final byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
-        return new byte[0];
-    }
-
-    @Override
-    public final byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
-        return new byte[0];
-    }
-
-    @Override
-    public final Object getNegotiatedProperty(String propName) {
-        return null;
-    }
-
-    @Override
-    public final void dispose() throws SaslException {
     }
 }

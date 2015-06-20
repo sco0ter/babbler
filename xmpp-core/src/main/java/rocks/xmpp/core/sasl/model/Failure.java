@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Christian Schudt
  */
 @XmlRootElement
-public final class Failure implements ServerStreamElement {
+public final class Failure implements StreamElement {
 
     @XmlElements({@XmlElement(name = "aborted", type = Aborted.class),
             @XmlElement(name = "account-disabled", type = AccountDisabled.class),
@@ -62,7 +62,6 @@ public final class Failure implements ServerStreamElement {
     })
     private final Condition condition;
 
-    @XmlElement(name = "text")
     private final Text text;
 
     /**
@@ -101,7 +100,7 @@ public final class Failure implements ServerStreamElement {
      */
     public final String getLanguage() {
         if (text != null) {
-            return text.language;
+            return text.lang;
         }
         return null;
     }
@@ -417,14 +416,14 @@ public final class Failure implements ServerStreamElement {
      */
     private static final class Text {
         @XmlValue
-        private String text;
+        private final String text;
 
-        @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private String language;
+        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+        private final String lang;
 
         private Text() {
             this.text = null;
-            this.language = null;
+            this.lang = null;
         }
     }
 }

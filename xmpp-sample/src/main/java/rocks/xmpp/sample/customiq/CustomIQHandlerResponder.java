@@ -25,14 +25,11 @@
 package rocks.xmpp.sample.customiq;
 
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.context.extensions.ExtensionContext;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
-import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import java.io.IOException;
@@ -45,47 +42,39 @@ public class CustomIQHandlerResponder {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .secure(false)
-                            .build();
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .secure(false)
+                        .build();
 
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(ConsoleDebugger.class)
-                                    // This registers the custom IQ payload to the JAXB context.
-                            .context(new ExtensionContext(Addition.class))
-                            .build();
+                XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                        .debugger(ConsoleDebugger.class)
+                                // This registers the custom IQ payload to the JAXB context.
+                        .context(new ExtensionContext(Addition.class))
+                        .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
-                    // Reqister an IQ Handler, which will return the sum of two values.
-                    xmppSession.addIQHandler(Addition.class, new IQHandler() {
-                        @Override
-                        public IQ handleRequest(IQ iq) {
-                            Addition addition = iq.getExtension(Addition.class);
-                            if (addition.getSummand1() == null) {
-                                return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No summand provided."));
-                            }
-                            return iq.createResult(new Addition(addition.getSummand1() + addition.getSummand2()));
-                        }
-                    });
+                // Reqister an IQ Handler, which will return the sum of two values.
+                xmppSession.addIQHandler(Addition.class, iq -> {
+                    Addition addition = iq.getExtension(Addition.class);
+                    if (addition.getSummand1() == null) {
+                        return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No summand provided."));
+                    }
+                    return iq.createResult(new Addition(addition.getSummand1() + addition.getSummand2()));
+                });
 
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("111", "111", "iq");
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("111", "111", "iq");
 
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

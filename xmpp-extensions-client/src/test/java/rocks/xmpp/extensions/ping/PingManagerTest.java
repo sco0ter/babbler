@@ -29,10 +29,8 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 /**
  * @author Christian Schudt
@@ -65,7 +63,7 @@ public class PingManagerTest extends ExtensionTest {
         // By default, the manager should be enabled.
         Assert.assertTrue(pingManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:ping");
+        String feature = "urn:xmpp:ping";
         Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
         pingManager.setEnabled(false);
         Assert.assertFalse(pingManager.isEnabled());

@@ -32,6 +32,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0167.html#info-ringing">8.4 Ringing</a>
  */
-@XmlRootElement(name = "ringing")
+@XmlRootElement
 public final class Ringing {
 }

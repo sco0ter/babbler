@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.receipts;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class MessageDeliveryReceiptsTest extends XmlTest {
     protected MessageDeliveryReceiptsTest() throws JAXBException, XMLStreamException {
-        super(Message.class, MessageDeliveryReceipts.class);
+        super(ClientMessage.class, MessageDeliveryReceipts.class);
     }
 
     @Test

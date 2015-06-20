@@ -24,13 +24,14 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -51,22 +52,20 @@ public final class Socks5ByteStream {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/bytestreams";
 
-    @XmlElement(name = "streamhost")
-    private final List<StreamHost> streamHosts = new ArrayList<>();
+    private final List<StreamHost> streamhost = new ArrayList<>();
 
     @XmlElement(name = "streamhost-used")
     private StreamHostUsed streamHostUsed;
 
-    @XmlAttribute(name = "dstaddr")
+    @XmlAttribute
     private String dstaddr;
 
-    @XmlElement(name = "activate")
     private Jid activate;
 
-    @XmlAttribute(name = "mode")
+    @XmlAttribute
     private Mode mode;
 
-    @XmlAttribute(name = "sid")
+    @XmlAttribute
     private String sid;
 
     /**
@@ -84,7 +83,7 @@ public final class Socks5ByteStream {
      */
     public Socks5ByteStream(String sessionId, List<StreamHost> streamHosts, String dstaddr) {
         this.sid = Objects.requireNonNull(sessionId);
-        this.streamHosts.addAll(streamHosts);
+        this.streamhost.addAll(streamHosts);
         this.dstaddr = dstaddr;
     }
 
@@ -126,9 +125,9 @@ public final class Socks5ByteStream {
     public static String hash(String sessionId, Jid requesterJid, Jid targetJid) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-            messageDigest.update(sessionId.getBytes());
-            messageDigest.update(requesterJid.toEscapedString().getBytes());
-            messageDigest.update(targetJid.toEscapedString().getBytes());
+            messageDigest.update(sessionId.getBytes(StandardCharsets.UTF_8));
+            messageDigest.update(requesterJid.toEscapedString().getBytes(StandardCharsets.UTF_8));
+            messageDigest.update(targetJid.toEscapedString().getBytes(StandardCharsets.UTF_8));
             return new BigInteger(1, messageDigest.digest()).toString(16);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -141,7 +140,7 @@ public final class Socks5ByteStream {
      * @return The stream hosts.
      */
     public final List<StreamHost> getStreamHosts() {
-        return Collections.unmodifiableList(streamHosts);
+        return Collections.unmodifiableList(streamhost);
     }
 
     /**

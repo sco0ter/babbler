@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.rsm.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -42,25 +41,18 @@ public final class ResultSetManagement {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/rsm";
 
-    @XmlElement(name = "max")
     private Integer max;
 
-    @XmlElement(name = "after")
     private String after;
 
-    @XmlElement(name = "before")
     private String before;
 
-    @XmlElement(name = "count")
     private Integer count;
 
-    @XmlElement(name = "first")
     private First first;
 
-    @XmlElement(name = "index")
     private Integer index;
 
-    @XmlElement(name = "last")
     private String last;
 
     private ResultSetManagement() {

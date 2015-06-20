@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.vcard.temp;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
@@ -44,11 +44,10 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-public final class VCardManager extends ExtensionManager {
+public final class VCardManager extends Manager {
 
     private VCardManager(final XmppSession xmppSession) {
-        super(xmppSession, VCard.NAMESPACE);
-        setEnabled(true);
+        super(xmppSession);
     }
 
     /**

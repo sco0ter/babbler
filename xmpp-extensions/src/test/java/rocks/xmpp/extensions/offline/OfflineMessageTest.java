@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.offline;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.offline.model.OfflineMessage;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class OfflineMessageTest extends XmlTest {
     protected OfflineMessageTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, OfflineMessage.class);
+        super(ClientIQ.class, OfflineMessage.class);
     }
 
     @Test

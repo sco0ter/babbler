@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.messagecorrect;
 
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 
 import java.util.Objects;
@@ -51,10 +51,10 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-public final class MessageCorrectionManager extends ExtensionManager {
+public final class MessageCorrectionManager extends Manager {
 
     private MessageCorrectionManager(XmppSession xmppSession) {
-        super(xmppSession, Replace.NAMESPACE);
+        super(xmppSession);
     }
 
     /**

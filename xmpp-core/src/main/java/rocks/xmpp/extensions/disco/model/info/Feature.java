@@ -37,7 +37,7 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-public final class Feature implements Comparable<Feature> {
+final class Feature implements Comparable<Feature> {
 
     /**
      * Each {@code <feature/>} element MUST possess a 'var' attribute whose value is a protocol namespace or other feature offered by the entity.

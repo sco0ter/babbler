@@ -24,7 +24,9 @@
 
 package rocks.xmpp.core.stanza;
 
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Presence;
+
+import java.util.function.Consumer;
 
 /**
  * A presence event is fired whenever a presence stanza is received or sent.
@@ -32,7 +34,8 @@ import rocks.xmpp.core.stanza.model.client.Presence;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see PresenceListener
+ * @see rocks.xmpp.core.session.XmppSession#addInboundPresenceListener(Consumer)
+ * @see rocks.xmpp.core.session.XmppSession#addOutboundPresenceListener(Consumer)
  */
 public final class PresenceEvent extends StanzaEvent<Presence> {
     /**

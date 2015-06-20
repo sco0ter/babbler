@@ -24,11 +24,12 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.function.Consumer;
 
 /**
  * The base connection class which provides hostname, port and proxy information.
@@ -85,16 +86,6 @@ public abstract class Connection implements AutoCloseable {
     }
 
     /**
-     * Sets the XMPP session which is associated with this connection. This method should only be called from the session itself.
-     *
-     * @param xmppSession The XMPP session.
-     */
-    @Deprecated
-    public final void initialize(XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
-    }
-
-    /**
      * Gets the hostname, which is used for the connection.
      *
      * @return The hostname.
@@ -129,26 +120,19 @@ public abstract class Connection implements AutoCloseable {
     /**
      * Sends an element.
      *
-     * @param clientStreamElement The element.
+     * @param streamElement The element.
      */
-    public abstract void send(ClientStreamElement clientStreamElement);
-
-    /**
-     * Connects to the server.
-     *
-     * @throws IOException If no connection could be established, e.g. due to unknown host.
-     * @deprecated Use {@link #connect(rocks.xmpp.core.Jid)}
-     */
-    @Deprecated
-    public abstract void connect() throws IOException;
+    public abstract void send(StreamElement streamElement);
 
     /**
      * Connects to the server and provides an optional 'from' attribute.
      *
-     * @param from The 'from' attribute.
+     * @param from           The 'from' attribute.
+     * @param namespace      The content namespace, e.g. "jabber:client".
+     * @param onStreamOpened The callback which gets notified when the stream gets opened, i.e. when the server has responded with a stream header. The parameter of the consumer is the stream id.
      * @throws IOException If no connection could be established, e.g. due to unknown host.
      */
-    public abstract void connect(Jid from) throws IOException;
+    public abstract void connect(Jid from, String namespace, Consumer<String> onStreamOpened) throws IOException;
 
     /**
      * Indicates whether this connection is secured by TLS/SSL.

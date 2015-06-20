@@ -25,9 +25,9 @@
 package rocks.xmpp.extensions.privatedata;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 
 import java.lang.reflect.Constructor;
@@ -42,7 +42,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Christian Schudt
  */
-public final class PrivateDataManager extends ExtensionManager {
+public final class PrivateDataManager extends Manager {
 
     private PrivateDataManager(XmppSession xmppSession) {
         super(xmppSession);

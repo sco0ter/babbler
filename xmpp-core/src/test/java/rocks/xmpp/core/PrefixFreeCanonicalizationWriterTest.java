@@ -26,9 +26,12 @@ package rocks.xmpp.core;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.Roster;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -53,9 +56,9 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
 
-        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, "jabber:client");
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(IQ.class, Roster.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(ClientIQ.class, Roster.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 
@@ -63,7 +66,7 @@ public class PrefixFreeCanonicalizationWriterTest {
         List<Contact> contacts = new ArrayList<>();
         contacts.add(new Contact(new Jid("domain")));
         Roster roster = new Roster(contacts);
-        IQ iq = new IQ(IQ.Type.GET, roster, "1");
+        IQ iq = ClientIQ.from(new IQ(IQ.Type.GET, roster, "1"));
 
         marshaller.marshal(iq, prefixFreeWriter);
         Assert.assertEquals("<iq id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"><item jid=\"domain\"></item></query></iq>", writer.toString());

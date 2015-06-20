@@ -24,17 +24,18 @@
 
 package rocks.xmpp.extensions.reach;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.reach.model.Address;
 
 import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This event notifies listeners, when a contact's reachability has changed.
  *
  * @author Christian Schudt
- * @see ReachabilityListener
+ * @see ReachabilityManager#addReachabilityListener(Consumer)
  */
 public final class ReachabilityEvent extends EventObject {
     private final Jid contact;

@@ -24,22 +24,21 @@
 
 package rocks.xmpp.extensions.offline;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.offline.model.OfflineMessage;
 import rocks.xmpp.extensions.offline.model.OfflineMessageHeader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This manager covers the use cases of <a href="http://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.
@@ -50,7 +49,7 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
-public final class OfflineMessageManager extends ExtensionManager {
+public final class OfflineMessageManager extends Manager {
 
 
     private OfflineMessageManager(XmppSession xmppSession) {
@@ -67,7 +66,7 @@ public final class OfflineMessageManager extends ExtensionManager {
     public boolean isSupported() throws XmppException {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
-        return infoNode.getFeatures().contains(new Feature(OfflineMessage.NAMESPACE));
+        return infoNode.getFeatures().contains(OfflineMessage.NAMESPACE);
     }
 
     /**
@@ -107,9 +106,7 @@ public final class OfflineMessageManager extends ExtensionManager {
         List<OfflineMessageHeader> result = new ArrayList<>();
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, OfflineMessage.NAMESPACE);
-        for (Item item : itemNode.getItems()) {
-            result.add(new OfflineMessageHeader(Jid.valueOf(item.getName()), item.getNode()));
-        }
+        result.addAll(itemNode.getItems().stream().map(item -> new OfflineMessageHeader(Jid.valueOf(item.getName()), item.getNode())).collect(Collectors.toList()));
         return result;
     }
 

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.blocking.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
@@ -38,7 +38,7 @@ import java.util.Objects;
  */
 final class Item {
 
-    @XmlAttribute(name = "jid")
+    @XmlAttribute
     private Jid jid;
 
     private Item() {

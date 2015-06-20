@@ -28,14 +28,16 @@ import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,7 +52,6 @@ public final class JingleFileTransfer extends ApplicationFormat {
      */
     public static final String NAMESPACE = "urn:xmpp:jingle:apps:file-transfer:4";
 
-    @XmlElement(name = "file")
     private File file;
 
     private JingleFileTransfer() {
@@ -69,19 +70,16 @@ public final class JingleFileTransfer extends ApplicationFormat {
         @XmlElementRef
         private final List<Hash> hashes = new ArrayList<>();
 
-        @XmlElement(name = "date")
-        private Date date;
+        @XmlJavaTypeAdapter(InstantAdapter.class)
+        private Instant date;
 
-        @XmlElement(name = "desc")
-        private String description;
+        private String desc;
 
         @XmlElement(name = "media-type")
         private String mediaType;
 
-        @XmlElement(name = "name")
         private String name;
 
-        @XmlElement(name = "size")
         private long size;
 
         private File() {
@@ -92,11 +90,11 @@ public final class JingleFileTransfer extends ApplicationFormat {
             this.size = size;
         }
 
-        public File(String name, long size, Date lastModified, String hash, String description) {
+        public File(String name, long size, Instant lastModified, String hash, String description) {
             this.name = name;
             this.size = size;
             this.date = lastModified;
-            this.description = description;
+            this.desc = description;
         }
 
         @Override
@@ -110,7 +108,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
         }
 
         @Override
-        public Date getDate() {
+        public Instant getDate() {
             return date;
         }
 
@@ -121,7 +119,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
 
         @Override
         public String getDescription() {
-            return description;
+            return desc;
         }
 
         @Override
@@ -134,10 +132,9 @@ public final class JingleFileTransfer extends ApplicationFormat {
         }
     }
 
-    @XmlRootElement(name = "checksum")
+    @XmlRootElement
     public static final class Checksum {
 
-        @XmlElement(name = "file")
         private File file;
 
         private Checksum() {

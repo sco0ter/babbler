@@ -33,7 +33,7 @@ import rocks.xmpp.extensions.reach.model.Reachability;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Christian Schudt
@@ -69,8 +69,8 @@ public class ReachabilityTest extends XmlTest {
     @Test
     public void testReachabilityEquality() {
 
-        Reachability reachability1 = new Reachability(Arrays.asList(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
-        Reachability reachability2 = new Reachability(Arrays.asList(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
+        Reachability reachability1 = new Reachability(Collections.singletonList(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
+        Reachability reachability2 = new Reachability(Collections.singletonList(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
 
         Assert.assertEquals(reachability1, reachability2);
     }

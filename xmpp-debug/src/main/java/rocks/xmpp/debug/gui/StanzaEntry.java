@@ -24,14 +24,14 @@
 
 package rocks.xmpp.debug.gui;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.core.stream.model.StreamError;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author Christian Schudt
@@ -43,13 +43,13 @@ final class StanzaEntry {
 
     private final Object stanza;
 
-    private final Date date;
+    private final LocalDateTime date;
 
     public StanzaEntry(boolean inbound, String xml, Object stanza) {
         this.inbound = inbound;
         this.xml = xml;
         this.stanza = stanza;
-        this.date = new Date();
+        this.date = LocalDateTime.now();
     }
 
     public String getXml() {
@@ -64,7 +64,7 @@ final class StanzaEntry {
         return inbound;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 

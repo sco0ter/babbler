@@ -9,10 +9,10 @@ MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChat
 
 ## Chat Services
 
-If you don\'t have an idea, which chat services your XMPP domain hosts, you can easily discover them:
+If you don't have an idea, which chat services your XMPP domain hosts, you can easily discover them:
 
 ```java
-Collection<ChatService> chatServices = multiUserChatManager.getChatServices();
+Collection<ChatService> chatServices = multiUserChatManager.discoverChatServices();
 ```
 
 If you already know the address of your chat service, you can also create an instance of the `ChatService` directly:
@@ -50,7 +50,7 @@ Once you have a `ChatRoom` instance, you can now do multiple things with it:
 * Entering (aka joining) and exiting (aka leaving) the room.
 * Configuring a room.
 * Sending messages.
-* Listening to messages, subject changes, occupant events (\"leaves\" and \"joins\"), ...
+* Listening to messages, subject changes, occupant events ("leaves" and "joins"), ...
 
 ### Discovering Occupants and Room Info
 
@@ -63,7 +63,7 @@ List<String> occupants = chatRoom.discoverOccupants();
 And you get additional room info (e.g. the current subject, the max history messages, the description and room features) with:
 
 ```java
-RoomInfo roomInfo = chatRoom.getRoomInfo();
+RoomInformation roomInfo = chatRoom.getRoomInformation();
 ```
 
 ### Occupant Use Cases
@@ -72,41 +72,32 @@ These are the use cases, when you are *in* the room (or want to enter the room).
 
 #### Entering a Room
 
-Before entering a room, you should add listeners to it, if you want to listen for occupants \"joins\" and \"leaves\", subject changes or messages being sent by the room, then enter the room with your desired nickname:
+Before entering a room, you should add listeners to it, if you want to listen for occupants "joins" and "leaves", subject changes or messages being sent by the room, then enter the room with your desired nickname:
 
 ```java
-chatRoom.addOccupantListener(new OccupantListener() {
-    @Override
-    public void occupantChanged(OccupantEvent e) {
-        if (!e.getOccupant().isSelf()) {
-            switch (e.getType()) {
-                case ENTERED:
-                    System.out.println(e.getOccupant().getNick() + " has entered the room.");
-                    break;
-                case EXITED:
-                    System.out.println(e.getOccupant().getNick() + " has exited the room.");
-                    break;
-                case KICKED:
-                    System.out.println(e.getOccupant().getNick() + " has been kicked out of the room.");
-                    break;
-            }
+chatRoom.addOccupantListener(e -> {
+    if (!e.getOccupant().isSelf()) {
+        switch (e.getType()) {
+            case ENTERED:
+                System.out.println(e.getOccupant().getNick() + " has entered the room.");
+                break;
+            case EXITED:
+                System.out.println(e.getOccupant().getNick() + " has exited the room.");
+                break;
+            case KICKED:
+                System.out.println(e.getOccupant().getNick() + " has been kicked out of the room.");
+                break;
         }
     }
 });
 
-chatRoom.addInboundMessageListener(new MessageListener() {
-    @Override
-    public void handleMessage(MessageEvent e) {
-        Message message = e.getMessage();
-        System.out.println(String.format("%s: %s", message.getFrom().getResource(), message.getBody()));
-    }
+chatRoom.addInboundMessageListener(e -> {
+    Message message = e.getMessage();
+    System.out.println(String.format("%s: %s", message.getFrom().getResource(), message.getBody()));
 });
 
-chatRoom.addSubjectChangeListener(new SubjectChangeListener() {
-    @Override
-    public void subjectChanged(SubjectChangeEvent e) {
-        System.out.println(String.format("%s changed the subject to '%s'", e.getNickname(), e.getSubject()));
-    }
+chatRoom.addSubjectChangeListener(e -> {
+    System.out.println(String.format("%s changed the subject to '%s'", e.getNickname(), e.getSubject()));
 });
 
 chatRoom.enter("nickname");
@@ -212,11 +203,8 @@ chatRoom.destroy("Macbeth doth come.")
 You can listen for them in the following way:
 
 ```java
-multiUserChatManager.addInvitationListener(new InvitationListener() {
-    @Override
-    public void invitationReceived(InvitationEvent e) {
-        // e.getInviter() has invited you to the MUC room e.getRoomAddress()
-    }
+multiUserChatManager.addInvitationListener(e -> {
+    // e.getInviter() has invited you to the MUC room e.getRoomAddress()
 });
 ```
 
@@ -229,7 +217,7 @@ ChatService chatService = multiUserChatManager.createChatService(new Jid(e.getRo
 ChatRoom chatRoom = chatService.createRoom(e.getRoomAddress().getLocal());
 ```
 
-When you\'ve created the room, you should add listeners to it and then enter it.
+When you've created the room, you should add listeners to it and then enter it.
 
 ### Declining an Invitation
 
@@ -240,11 +228,8 @@ e.decline("I don't have time right now...");
 #### Listening for Invitation Declines
 
 ```java
-chatRoom.addInvitationDeclineListener(new InvitationDeclineListener() {
-    @Override
-    public void invitationDeclined(InvitationDeclineEvent e) {
-        // e.getInvitee() declined your invitation.
-    }
+chatRoom.addInvitationDeclineListener(e -> {
+    // e.getInvitee() declined your invitation.
 });
 ```
 

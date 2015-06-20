@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.muc;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.user.MucUser;

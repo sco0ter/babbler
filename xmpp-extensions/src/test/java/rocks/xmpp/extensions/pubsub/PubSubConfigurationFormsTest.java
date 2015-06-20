@@ -26,10 +26,10 @@ package rocks.xmpp.extensions.pubsub;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.AbstractPresence;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.AccessModel;
 import rocks.xmpp.extensions.pubsub.model.ChildrenAssociationPolicy;
@@ -42,14 +42,13 @@ import rocks.xmpp.extensions.pubsub.model.PublisherModel;
 import rocks.xmpp.extensions.pubsub.model.SendLastPublishedItem;
 import rocks.xmpp.extensions.pubsub.model.SubscribeOptions;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Collections;
 
 /**
  * @author Christian Schudt
@@ -62,18 +61,16 @@ public class PubSubConfigurationFormsTest extends XmlTest {
 
     @Test
     public void testMetaData() throws JAXBException, XMLStreamException {
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
+        Instant now = Instant.now();
         NodeMetaData pubSubMetaDataForm = NodeMetaData.builder()
-                .contacts(Arrays.asList(Jid.valueOf("contact")))
-                .creationDate(date)
+                .contacts(Collections.singletonList(Jid.valueOf("contact")))
+                .creationDate(now)
                 .creator(Jid.valueOf("creator"))
                 .description("desc")
                 .language("de")
                 .numberOfSubscribers(2)
-                .owners(Arrays.asList(Jid.valueOf("owner")))
-                .publishers(Arrays.asList(Jid.valueOf("publisher")))
+                .owners(Collections.singletonList(Jid.valueOf("owner")))
+                .publishers(Collections.singletonList(Jid.valueOf("publisher")))
                 .nodeTitle("title")
                 .payloadType("namespace")
                 .build();
@@ -82,7 +79,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"result\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#meta-data</value></field>" +
                 "<field type=\"jid-multi\" var=\"pubsub#contact\"><value>contact</value></field>" +
-                "<field type=\"text-single\" var=\"pubsub#creation_date\"><value>" + DatatypeConverter.printDateTime(calendar) + "</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#creation_date\"><value>" + now + "</value></field>" +
                 "<field type=\"jid-single\" var=\"pubsub#creator\"><value>creator</value></field>" +
                 "<field type=\"text-single\" var=\"pubsub#description\"><value>desc</value></field>" +
                 "<field type=\"list-single\" var=\"pubsub#language\"><value>de</value></field>" +
@@ -94,26 +91,23 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 "</x>");
         DataForm dataForm = unmarshal(xml, DataForm.class);
         NodeMetaData pubSubMetaDataForm1 = new NodeMetaData(dataForm);
-        Assert.assertEquals(pubSubMetaDataForm1.getCreationDate(), date);
+        Assert.assertEquals(pubSubMetaDataForm1.getCreationDate(), now);
         Assert.assertEquals(pubSubMetaDataForm1.getCreator(), Jid.valueOf("creator"));
         Assert.assertEquals(pubSubMetaDataForm1.getDescription(), "desc");
         Assert.assertEquals(pubSubMetaDataForm1.getLanguage(), "de");
         Assert.assertEquals(pubSubMetaDataForm1.getNumberOfSubscribers(), new Integer(2));
-        Assert.assertEquals(pubSubMetaDataForm1.getOwners(), Arrays.asList(Jid.valueOf("owner")));
-        Assert.assertEquals(pubSubMetaDataForm1.getPublishers(), Arrays.asList(Jid.valueOf("publisher")));
+        Assert.assertEquals(pubSubMetaDataForm1.getOwners(), Collections.singletonList(Jid.valueOf("owner")));
+        Assert.assertEquals(pubSubMetaDataForm1.getPublishers(), Collections.singletonList(Jid.valueOf("publisher")));
         Assert.assertEquals(pubSubMetaDataForm1.getNodeTitle(), "title");
         Assert.assertEquals(pubSubMetaDataForm1.getPayloadType(), "namespace");
     }
 
     @Test
     public void testPublishOptions() throws JAXBException, XMLStreamException {
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
         PublishOptions publishOptions = PublishOptions.builder()
                 .accessModel(AccessModel.AUTHORIZE)
                 .persistItems(true)
-                .rosterGroupsAllowed(Arrays.asList("Friends"))
+                .rosterGroupsAllowed(Collections.singletonList("Friends"))
                 .sendLastPublishedItem(SendLastPublishedItem.ON_SUB)
                 .build();
 
@@ -130,7 +124,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(publishOptionsForm.getAccessModel(), AccessModel.AUTHORIZE);
         Assert.assertTrue(publishOptionsForm.isPersistItems());
         Assert.assertEquals(publishOptionsForm.getSendLastPublishedItem(), SendLastPublishedItem.ON_SUB);
-        Assert.assertEquals(publishOptionsForm.getRosterGroupsAllowed(), Arrays.asList("Friends"));
+        Assert.assertEquals(publishOptionsForm.getRosterGroupsAllowed(), Collections.singletonList("Friends"));
     }
 
     @Test
@@ -139,11 +133,11 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .accessModel(AccessModel.AUTHORIZE)
                 .bodyXslt(new URL("http://xmpp.org"))
                 .childrenAssociationPolicy(ChildrenAssociationPolicy.OWNERS)
-                .childrenAssociationWhitelist(Arrays.asList(Jid.valueOf("domain")))
-                .children(Arrays.asList("collection1"))
+                .childrenAssociationWhitelist(Collections.singletonList(Jid.valueOf("domain")))
+                .children(Collections.singletonList("collection1"))
                 .childrenMax(23)
-                .collection(Arrays.asList("collections"))
-                .contacts(Arrays.asList(Jid.valueOf("contact")))
+                .collection(Collections.singletonList("collections"))
+                .contacts(Collections.singletonList(Jid.valueOf("contact")))
                 .dataformXslt(new URL("http://www.xmpp.org"))
                 .deliverNotifications(true)
                 .deliverPayloads(false)
@@ -154,7 +148,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .maxItems(4)
                 .maxPayloadSize(54)
                 .nodeType(NodeType.LEAF)
-                .notificationType(AbstractMessage.Type.NORMAL)
+                .notificationType(Message.Type.NORMAL)
                 .notifyConfig(true)
                 .notifyDelete(true)
                 .notifyRetract(true)
@@ -214,10 +208,10 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(nodeConfiguration1.getAccessModel(), AccessModel.AUTHORIZE);
         Assert.assertEquals(nodeConfiguration1.getBodyXslt(), new URL("http://xmpp.org"));
         Assert.assertEquals(nodeConfiguration1.getChildrenAssociationPolicy(), ChildrenAssociationPolicy.OWNERS);
-        Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Arrays.asList(Jid.valueOf("domain")));
-        Assert.assertEquals(nodeConfiguration1.getChildren(), Arrays.asList("collection1"));
+        Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Collections.singletonList(Jid.valueOf("domain")));
+        Assert.assertEquals(nodeConfiguration1.getChildren(), Collections.singletonList("collection1"));
         Assert.assertEquals(nodeConfiguration1.getChildrenMax(), Integer.valueOf(23));
-        Assert.assertEquals(nodeConfiguration1.getContacts(), Arrays.asList(Jid.valueOf("contact")));
+        Assert.assertEquals(nodeConfiguration1.getContacts(), Collections.singletonList(Jid.valueOf("contact")));
         Assert.assertEquals(nodeConfiguration1.getDataformXslt(), new URL("http://www.xmpp.org"));
         Assert.assertTrue(nodeConfiguration1.isDeliverNotifications());
         Assert.assertFalse(nodeConfiguration1.isDeliverPayloads());
@@ -228,7 +222,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(nodeConfiguration1.getMaxItems(), Integer.valueOf(4));
         Assert.assertEquals(nodeConfiguration1.getMaxPayloadSize(), Integer.valueOf(54));
         Assert.assertEquals(nodeConfiguration1.getNodeType(), NodeType.LEAF);
-        Assert.assertEquals(nodeConfiguration1.getNotificationType(), AbstractMessage.Type.NORMAL);
+        Assert.assertEquals(nodeConfiguration1.getNotificationType(), Message.Type.NORMAL);
         Assert.assertTrue(nodeConfiguration1.isNotifyConfig());
         Assert.assertTrue(nodeConfiguration1.isNotifyDelete());
         Assert.assertTrue(nodeConfiguration1.isNotifyRetract());
@@ -254,7 +248,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .digestFrequency(3)
                 .includeBody(true)
                 .temporary(true)
-                .showValues(Arrays.asList(AbstractPresence.Show.AWAY, AbstractPresence.Show.CHAT, null))
+                .showValues(Arrays.asList(Presence.Show.AWAY, Presence.Show.CHAT, null))
                 .subscriptionType(SubscribeOptions.SubscriptionType.NODES)
                 .subscriptionDepth(-1)
                 .build();
@@ -280,7 +274,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertNull(subscribeOptions.getExpire());
         Assert.assertTrue(subscribeOptions.isTemporary());
         Assert.assertTrue(subscribeOptions.isIncludeBody());
-        Assert.assertEquals(subscribeOptions.getShowValues(), Arrays.asList(AbstractPresence.Show.AWAY, AbstractPresence.Show.CHAT, null));
+        Assert.assertEquals(subscribeOptions.getShowValues(), Arrays.asList(Presence.Show.AWAY, Presence.Show.CHAT, null));
         Assert.assertEquals(subscribeOptions.getSubscriptionType(), SubscribeOptions.SubscriptionType.NODES);
         Assert.assertEquals(subscribeOptions.getSubscriptionDepth(), Integer.valueOf(-1));
 

@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @see #RESET
  */
-@XmlRootElement(name = "reset")
+@XmlRootElement
 @XmlType(factoryMethod = "create")
 final class Reset extends Condition {
 

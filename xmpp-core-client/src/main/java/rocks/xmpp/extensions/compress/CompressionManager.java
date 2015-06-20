@@ -97,7 +97,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
 
             @Override
             public InputStream decompress(InputStream inputStream) throws IOException {
-                return new GZIPInputStream(inputStream);
+                return new GZIPInputStream(inputStream, 65536);
             }
 
             @Override
@@ -125,15 +125,12 @@ public final class CompressionManager extends StreamFeatureNegotiator {
         };
     }
 
-    private final XmppSession xmppSession;
-
     private final List<CompressionMethod> compressionMethods = new CopyOnWriteArrayList<>();
 
     private CompressionMethod negotiatedCompressionMethod;
 
     private CompressionManager(XmppSession xmppSession) {
-        super(CompressionFeature.class);
-        this.xmppSession = xmppSession;
+        super(xmppSession, CompressionFeature.class);
     }
 
     @Override

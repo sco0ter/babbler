@@ -26,8 +26,6 @@ package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.NoResponseException;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
@@ -71,7 +69,7 @@ public final class StreamFeaturesManager extends Manager {
     /**
      * The features which have been advertised by the server.
      */
-    private final Map<Class<? extends StreamFeature>, StreamFeature> advertisedFeatures = new HashMap<>();
+    private final HashMap<Class<? extends StreamFeature>, StreamFeature> advertisedFeatures = new HashMap<>();
 
     /**
      * The list of features, which the server advertised and have not yet been negotiated.
@@ -81,7 +79,7 @@ public final class StreamFeaturesManager extends Manager {
     /**
      * The feature for which negotiation has started.
      */
-    private final Set<Class<? extends StreamFeature>> negotiatedFeatures = new HashSet<>();
+    private final Set<Class<? extends StreamFeature>> negotiatingFeatures = new HashSet<>();
 
     /**
      * The feature negotiators, which are responsible to negotiate each individual feature.
@@ -90,37 +88,32 @@ public final class StreamFeaturesManager extends Manager {
 
     private final Condition negotiationCompleted = lock.newCondition();
 
-    private final XmppSession xmppSession;
-
     private StreamFeaturesManager(XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
+        super(xmppSession, false);
     }
 
     @Override
     protected final void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                switch (e.getStatus()) {
-                    // If we're (re)connecting, make sure any previous features are forgotten.
-                    case CONNECTING:
-                        synchronized (this) {
-                            featureNegotiationStartedConditions.clear();
-                            advertisedFeatures.clear();
-                            negotiatedFeatures.clear();
-                        }
-                        break;
-                    // If the connection is closed, clear everything.
-                    case CLOSED:
-                        synchronized (this) {
-                            featureNegotiationStartedConditions.clear();
-                            advertisedFeatures.clear();
-                            featuresToNegotiate.clear();
-                            negotiatedFeatures.clear();
-                            streamFeatureNegotiators.clear();
-                        }
-                        break;
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            switch (e.getStatus()) {
+                // If we're (re)connecting, make sure any previous features are forgotten.
+                case CONNECTING:
+                    synchronized (this) {
+                        featureNegotiationStartedConditions.clear();
+                        advertisedFeatures.clear();
+                        negotiatingFeatures.clear();
+                    }
+                    break;
+                // If the connection is closed, clear everything.
+                case CLOSED:
+                    synchronized (this) {
+                        featureNegotiationStartedConditions.clear();
+                        advertisedFeatures.clear();
+                        featuresToNegotiate.clear();
+                        negotiatingFeatures.clear();
+                        streamFeatureNegotiators.clear();
+                    }
+                    break;
             }
         });
     }
@@ -130,9 +123,10 @@ public final class StreamFeaturesManager extends Manager {
      *
      * @return The features.
      */
+    @SuppressWarnings("unchecked")
     public final Map<Class<? extends StreamFeature>, StreamFeature> getFeatures() {
         // return defensive copies of mutable internal fields
-        return Collections.unmodifiableMap(new HashMap<>(advertisedFeatures));
+        return Collections.unmodifiableMap((HashMap<Class<? extends StreamFeature>, StreamFeature>) advertisedFeatures.clone());
     }
 
     /**
@@ -157,19 +151,17 @@ public final class StreamFeaturesManager extends Manager {
         featuresToNegotiate.clear();
 
         // Check if a feature is known, that means it must implement Feature and be added to the context.
-        for (Object feature : featureList) {
-            if (feature instanceof StreamFeature) {
-                StreamFeature f = (StreamFeature) feature;
-                advertisedFeatures.put(f.getClass(), f);
-                sortedFeatureList.add(f);
-            }
-        }
+        featureList.stream().filter(feature -> feature instanceof StreamFeature).forEach(feature -> {
+            StreamFeature f = (StreamFeature) feature;
+            advertisedFeatures.put(f.getClass(), f);
+            sortedFeatureList.add(f);
+        });
         // If the receiving entity advertises only the STARTTLS feature [...] the parties MUST consider TLS as mandatory-to-negotiate.
         if (featureList.size() == 1 && featureList.get(0) instanceof StartTls) {
             ((StartTls) featureList.get(0)).setMandatory(true);
         }
 
-        Collections.sort(sortedFeatureList);
+        sortedFeatureList.sort(null);
 
         // Store the list of features. Each feature will be negotiated sequentially, if there is a corresponding feature negotiator.
         featuresToNegotiate.addAll(sortedFeatureList);
@@ -188,12 +180,12 @@ public final class StreamFeaturesManager extends Manager {
     public final synchronized boolean processElement(Object element) throws StreamNegotiationException {
         // Check if the element is known to any feature negotiator.
         for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
-            if (streamFeatureNegotiator.getFeatureClass() == element || streamFeatureNegotiator.canProcess(element)) {
+            if (streamFeatureNegotiator.getFeatureClass() == element.getClass() || streamFeatureNegotiator.canProcess(element)) {
                 StreamFeatureNegotiator.Status status = streamFeatureNegotiator.processNegotiation(element);
+                // Mark the feature negotiation as started.
+                negotiatingFeatures.add(streamFeatureNegotiator.getFeatureClass());
                 // If the feature has been successfully negotiated.
                 if (EnumSet.of(StreamFeatureNegotiator.Status.SUCCESS, StreamFeatureNegotiator.Status.IGNORE).contains(status)) {
-                    // Mark the feature negotiation as completed.
-                    negotiatedFeatures.add(streamFeatureNegotiator.getFeatureClass());
                     // Check if the feature expects a restart now.
                     if (status == StreamFeatureNegotiator.Status.SUCCESS && streamFeatureNegotiator.needsRestart()) {
                         return true;
@@ -216,7 +208,7 @@ public final class StreamFeaturesManager extends Manager {
     private synchronized boolean negotiateNextFeature() throws StreamNegotiationException {
         if (!featuresToNegotiate.isEmpty()) {
             StreamFeature advertisedFeature = featuresToNegotiate.remove(0);
-            if (!negotiatedFeatures.contains(advertisedFeature.getClass())) {
+            if (!negotiatingFeatures.contains(advertisedFeature.getClass())) {
                 StreamFeatureNegotiator.Status negotiationStatus = StreamFeatureNegotiator.Status.IGNORE;
                 // See if there's a feature negotiator associated with the feature.
                 for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
@@ -226,9 +218,9 @@ public final class StreamFeaturesManager extends Manager {
                         break;
                     }
                 }
-                if (EnumSet.of(StreamFeatureNegotiator.Status.SUCCESS, StreamFeatureNegotiator.Status.IGNORE).contains(negotiationStatus)) {
-                    negotiatedFeatures.add(advertisedFeature.getClass());
-                }
+
+                negotiatingFeatures.add(advertisedFeature.getClass());
+
                 // Check if there's a condition waiting for that feature to be negotiated.
                 Condition condition = featureNegotiationStartedConditions.remove(advertisedFeature.getClass());
                 if (condition != null) {
@@ -269,7 +261,7 @@ public final class StreamFeaturesManager extends Manager {
 
         synchronized (this) {
             // Check if the feature is already negotiated and if there's no condition yet registered.
-            if (negotiatedFeatures.contains(streamFeature) || featureNegotiationStartedConditions.containsKey(streamFeature)) {
+            if (negotiatingFeatures.contains(streamFeature) || featureNegotiationStartedConditions.containsKey(streamFeature)) {
                 return;
             }
         }

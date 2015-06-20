@@ -29,15 +29,13 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 import java.util.Collections;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
@@ -62,15 +60,12 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         final boolean[] messageReceived = {false};
         final String[] receivedId = {null};
         messageDeliveryReceiptsManager1.setEnabled(true);
-        messageDeliveryReceiptsManager1.addMessageDeliveredListener(new MessageDeliveredListener() {
-            @Override
-            public void messageDelivered(MessageDeliveredEvent e) {
-                messageReceived[0] = true;
-                receivedId[0] = e.getMessageId();
-            }
+        messageDeliveryReceiptsManager1.addMessageDeliveredListener(e -> {
+            messageReceived[0] = true;
+            receivedId[0] = e.getMessageId();
         });
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
 
         Assert.assertTrue(messageReceived[0]);
@@ -91,14 +86,9 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         final boolean[] messageReceived = {false};
         messageDeliveryReceiptsManager1.setEnabled(true);
-        messageDeliveryReceiptsManager1.addMessageDeliveredListener(new MessageDeliveredListener() {
-            @Override
-            public void messageDelivered(MessageDeliveredEvent e) {
-                messageReceived[0] = true;
-            }
-        });
+        messageDeliveryReceiptsManager1.addMessageDeliveredListener(e -> messageReceived[0] = true);
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
 
         Assert.assertFalse(messageReceived[0]);
@@ -111,12 +101,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
-        xmppSession1.addOutboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));
-            }
-        });
+        xmppSession1.addOutboundMessageListener(e -> Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class)));
 
         Message message = new Message(JULIET);
         xmppSession1.send(message);
@@ -132,14 +117,9 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager1 = xmppSession1.getManager(MessageDeliveryReceiptsManager.class);
         messageDeliveryReceiptsManager1.setEnabled(true);
-        xmppSession1.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));
-            }
-        });
+        xmppSession1.addInboundMessageListener(e -> Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class)));
 
-        Message message = new Message(JULIET, Message.Type.ERROR, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, Message.Type.ERROR, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
     }
 
@@ -149,14 +129,9 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
 
-        xmppSession1.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class));
-            }
-        });
+        xmppSession1.addInboundMessageListener(e -> Assert.assertNull(e.getMessage().getExtension(MessageDeliveryReceipts.Request.class)));
 
-        Message message = new Message(JULIET, null, Collections.<Message.Body>emptyList(), null, null, null, "123", null, null, null, null);
+        Message message = new Message(JULIET, null, Collections.emptyList(), null, null, null, "123", null, null, null, null);
         xmppSession1.send(message);
     }
 
@@ -173,21 +148,15 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
 
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
 
-        MessageDeliveredListener messageDeliveredListener = new MessageDeliveredListener() {
-            @Override
-            public void messageDelivered(MessageDeliveredEvent e) {
+        Consumer<MessageDeliveredEvent> messageDeliveredListener = e -> {
 
-            }
         };
         messageDeliveryReceiptsManager.addMessageDeliveredListener(messageDeliveredListener);
         Assert.assertEquals(messageDeliveryReceiptsManager.messageDeliveredListeners.size(), 1);
         messageDeliveryReceiptsManager.removeMessageDeliveredListener(messageDeliveredListener);
         Assert.assertEquals(messageDeliveryReceiptsManager.messageDeliveredListeners.size(), 0);
-        messageDeliveryReceiptsManager.addMessageDeliveredListener(new MessageDeliveredListener() {
-            @Override
-            public void messageDelivered(MessageDeliveredEvent e) {
+        messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> {
 
-            }
         });
 
         connection1.close();
@@ -201,7 +170,7 @@ public class MessageDeliveryReceiptsManagerTest extends ExtensionTest {
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = connection1.getManager(MessageDeliveryReceiptsManager.class);
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:receipts");
+        String feature = "urn:xmpp:receipts";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         messageDeliveryReceiptsManager.setEnabled(true);
         Assert.assertTrue(messageDeliveryReceiptsManager.isEnabled());

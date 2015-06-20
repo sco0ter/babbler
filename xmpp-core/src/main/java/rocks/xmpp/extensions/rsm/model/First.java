@@ -33,7 +33,7 @@ import java.util.Objects;
  */
 final class First {
 
-    @XmlAttribute(name = "index")
+    @XmlAttribute
     final Integer index;
 
     @XmlValue

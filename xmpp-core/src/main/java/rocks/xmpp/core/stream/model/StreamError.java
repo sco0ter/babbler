@@ -24,10 +24,11 @@
 
 package rocks.xmpp.core.stream.model;
 
+import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.core.stream.model.errors.Text;
 
 import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
@@ -41,12 +42,12 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 @XmlRootElement(name = "error")
-public final class StreamError implements ServerStreamElement {
+public final class StreamError implements StreamElement {
 
     @XmlElementRef
     private final Condition condition;
 
-    @XmlElementRef
+    @XmlElement(namespace = "urn:ietf:params:xml:ns:xmpp-streams")
     private final Text text;
 
     @XmlAnyElement(lax = true)
@@ -63,12 +64,12 @@ public final class StreamError implements ServerStreamElement {
     }
 
     public StreamError(Condition condition) {
-        this(condition, null, null);
+        this(condition, null, null, null);
     }
 
-    public StreamError(Condition condition, Text text, Object extension) {
+    public StreamError(Condition condition, String text, String language, Object extension) {
         this.condition = Objects.requireNonNull(condition);
-        this.text = text;
+        this.text = text != null ? new Text(text, language) : null;
         this.extension = extension;
     }
 

@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Represents the {@code <subscription/>} element, which is used in both 'pubsub' and 'pubsub#owner' namespace.
@@ -53,7 +53,7 @@ public interface Subscription {
      */
     SubscriptionState getSubscriptionState();
 
-    Date getExpiry();
+    Instant getExpiry();
 
     boolean isConfigurationRequired();
 

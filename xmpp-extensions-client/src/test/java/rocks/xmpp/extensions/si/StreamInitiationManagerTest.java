@@ -33,9 +33,9 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ExtensionTest;
+import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
+import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
-import rocks.xmpp.extensions.filetransfer.FileTransferOfferEvent;
-import rocks.xmpp.extensions.filetransfer.FileTransferOfferListener;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
 import java.io.ByteArrayOutputStream;
@@ -56,17 +56,14 @@ public class StreamInitiationManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
-        fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
-            @Override
-            public void fileTransferOffered(FileTransferOfferEvent e) {
-                if (!e.getName().equals("Filename") || e.getSize() != 123) {
-                    Assert.fail();
-                }
-                try {
-                    e.accept(new ByteArrayOutputStream());
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+        fileTransferManager.addFileTransferOfferListener(e -> {
+            if (!e.getName().equals("Filename") || e.getSize() != 123) {
+                Assert.fail();
+            }
+            try {
+                e.accept(new ByteArrayOutputStream());
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         });
         StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
@@ -85,14 +82,11 @@ public class StreamInitiationManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
-        fileTransferManager.addFileTransferOfferListener(new FileTransferOfferListener() {
-            @Override
-            public void fileTransferOffered(FileTransferOfferEvent e) {
-                if (!e.getName().equals("Filename") || e.getSize() != 123) {
-                    Assert.fail();
-                }
-                e.reject();
+        fileTransferManager.addFileTransferOfferListener(e -> {
+            if (!e.getName().equals("Filename") || e.getSize() != 123) {
+                Assert.fail();
             }
+            e.reject();
         });
         StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
 
@@ -106,5 +100,24 @@ public class StreamInitiationManagerTest extends ExtensionTest {
             }
         }
         Assert.fail();
+    }
+
+    @Test
+    public void testSupportedStreamMethods() {
+        StreamInitiationManager streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
+        // By default Socks5 and IBB should be supported.
+        Assert.assertEquals(streamInitiationManager.getSupportedStreamMethods().size(), 2);
+        // If IBB gets disabled...
+        xmppSession.disableFeature(InBandByteStream.NAMESPACE);
+        // Only Socks5 should be advertises by Stream Initiation.
+        Assert.assertEquals(streamInitiationManager.getSupportedStreamMethods().size(), 1);
+        Assert.assertTrue(streamInitiationManager.getSupportedStreamMethods().contains(Socks5ByteStream.NAMESPACE));
+        // If IBB gets enabled again...
+        xmppSession.enableFeature(InBandByteStream.NAMESPACE);
+        // and Socks5 gets disabled...
+        xmppSession.disableFeature(Socks5ByteStream.NAMESPACE);
+        Assert.assertEquals(streamInitiationManager.getSupportedStreamMethods().size(), 1);
+        // Only IBB should be advertised by SI
+        Assert.assertTrue(streamInitiationManager.getSupportedStreamMethods().contains(InBandByteStream.NAMESPACE));
     }
 }

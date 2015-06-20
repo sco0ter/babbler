@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.avatar.model.metadata;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,8 +51,7 @@ public final class AvatarMetadata {
      */
     public static final String NAMESPACE = "urn:xmpp:avatar:metadata";
 
-    @XmlElement(name = "info")
-    private final List<Info> infoList = new ArrayList<>();
+    private final List<Info> info = new ArrayList<>();
 
     @XmlAnyElement(lax = true)
     private final Object pointer;
@@ -63,7 +61,7 @@ public final class AvatarMetadata {
     }
 
     public AvatarMetadata(Info... info) {
-        this.infoList.addAll(Arrays.asList(info));
+        this.info.addAll(Arrays.asList(info));
         this.pointer = null;
     }
 
@@ -73,7 +71,7 @@ public final class AvatarMetadata {
      * @return The info list.
      */
     public final List<Info> getInfoList() {
-        return Collections.unmodifiableList(infoList);
+        return Collections.unmodifiableList(info);
     }
 
     /**
@@ -83,22 +81,22 @@ public final class AvatarMetadata {
      */
     public static final class Info {
 
-        @XmlAttribute(name = "bytes")
+        @XmlAttribute
         private final Integer bytes;
 
-        @XmlAttribute(name = "id")
+        @XmlAttribute
         private final String id;
 
-        @XmlAttribute(name = "type")
+        @XmlAttribute
         private final String type;
 
-        @XmlAttribute(name = "url")
+        @XmlAttribute
         private final URL url;
 
-        @XmlAttribute(name = "width")
+        @XmlAttribute
         private final Integer width;
 
-        @XmlAttribute(name = "height")
+        @XmlAttribute
         private final Integer height;
 
         private Info() {

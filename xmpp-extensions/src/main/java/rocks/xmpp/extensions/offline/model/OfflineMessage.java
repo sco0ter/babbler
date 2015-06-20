@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.offline.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -53,13 +52,10 @@ public final class OfflineMessage {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/offline";
 
-    @XmlElement(name = "item")
-    private final List<Item> items = new ArrayList<>();
+    private final List<Item> item = new ArrayList<>();
 
-    @XmlElement(name = "fetch")
     private final String fetch;
 
-    @XmlElement(name = "purge")
     private final String purge;
 
     private OfflineMessage() {
@@ -75,7 +71,7 @@ public final class OfflineMessage {
         if (items.isEmpty()) {
             throw new IllegalArgumentException("items must not be empty");
         }
-        this.items.addAll(items);
+        this.item.addAll(items);
         this.fetch = null;
         this.purge = null;
     }
@@ -91,8 +87,8 @@ public final class OfflineMessage {
      * @return The offline message id.
      */
     public String getId() {
-        if (!items.isEmpty()) {
-            return items.get(0).getId();
+        if (!item.isEmpty()) {
+            return item.get(0).getId();
         }
         return null;
     }
@@ -103,23 +99,23 @@ public final class OfflineMessage {
      * @return The items.
      */
     public List<Item> getItems() {
-        return Collections.unmodifiableList(items);
+        return Collections.unmodifiableList(item);
     }
 
     public static final class Item {
-        @XmlAttribute(name = "node")
-        private final String id;
+        @XmlAttribute
+        private final String node;
 
-        @XmlAttribute(name = "action")
+        @XmlAttribute
         private final Action action;
 
         private Item() {
-            this.id = null;
+            this.node = null;
             this.action = null;
         }
 
         public Item(String id, Action action) {
-            this.id = Objects.requireNonNull(id);
+            this.node = Objects.requireNonNull(id);
             this.action = action;
         }
 
@@ -129,7 +125,7 @@ public final class OfflineMessage {
          * @return The id.
          */
         public final String getId() {
-            return id;
+            return node;
         }
 
         @XmlEnum

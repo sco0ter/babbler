@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.jingle.transports.s5b;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
@@ -124,7 +124,7 @@ public class S5bTransportMethodTest extends XmlTest {
         candidateList.add(candidate4);
         Collections.shuffle(candidateList);
 
-        Collections.sort(candidateList);
+        candidateList.sort(null);
 
         Assert.assertEquals(candidateList.get(0), candidate1);
         Assert.assertEquals(candidateList.get(1), candidate2);

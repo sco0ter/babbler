@@ -29,7 +29,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,6 +45,10 @@ import java.util.List;
  */
 @XmlRootElement(name = "rtt")
 public final class RealTimeText {
+
+    /**
+     * urn:xmpp:rtt:0
+     */
     public static final String NAMESPACE = "urn:xmpp:rtt:0";
 
     @XmlElements({
@@ -48,10 +56,10 @@ public final class RealTimeText {
             @XmlElement(name = "e", type = EraseText.class),
             @XmlElement(name = "w", type = WaitInterval.class),
     })
-    private List<Action> actions;
+    private final List<Action> actions = new ArrayList<>();
 
     @XmlAttribute(name = "seq")
-    private Long sequence;
+    private Integer sequence;
 
     @XmlAttribute(name = "event")
     private Event event;
@@ -59,26 +67,72 @@ public final class RealTimeText {
     @XmlAttribute(name = "id")
     private String id;
 
-    public RealTimeText() {
-
+    private RealTimeText() {
     }
 
-    public RealTimeText(Event event) {
+    /**
+     * Creates a {@code <rtt/>} element.
+     *
+     * @param event    The event.
+     * @param actions  The actions.
+     * @param sequence The sequence number.
+     * @param id       The id (optional).
+     */
+    public RealTimeText(Event event, Collection<Action> actions, int sequence, String id) {
         this.event = event;
+        this.actions.addAll(actions);
+        this.sequence = sequence;
+        this.id = id;
     }
 
+    /**
+     * Gets the event.
+     * <blockquote>
+     * <p>This attribute signals events for real-time text. If the 'event' attribute is omitted, event="edit" is assumed as the default.</p>
+     * </blockquote>
+     *
+     * @return The event.
+     * @see <a href="http://xmpp.org/extensions/xep-0301.html#event">4.2.2 event</a>
+     */
     public Event getEvent() {
         return event;
     }
 
-    public Long getSequence() {
+    /**
+     * Gets the sequence.
+     *
+     * @return The sequence.
+     * @see <a href="http://xmpp.org/extensions/xep-0301.html#seq">4.2.1 seq</a>
+     */
+    public Integer getSequence() {
         return sequence;
     }
 
+    /**
+     * Gets the actions.
+     *
+     * @return The actions.
+     * @see <a href="http://xmpp.org/extensions/xep-0301.html#realtime_text_actions">4.6 Real-Time Text Actions</a>
+     */
     public List<Action> getActions() {
-        return actions;
+        return Collections.unmodifiableList(actions);
     }
 
+    /**
+     * Gets the id.
+     *
+     * @return The id.
+     * @see <a href="http://xmpp.org/extensions/xep-0301.html#id">4.2.3 id</a>
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * The real-time text event.
+     *
+     * @see <a href="http://xmpp.org/extensions/xep-0301.html#event">4.2.2 event</a>
+     */
     public enum Event {
         /**
          * Begin a new real-time message.
@@ -107,28 +161,72 @@ public final class RealTimeText {
         CANCEL
     }
 
+
+    /**
+     * An abstract base class for all three RTT actions.
+     */
+    @XmlTransient
     public abstract static class Action {
-        @XmlValue
-        protected String value;
     }
 
     /**
-     * The implementation of the {@code <e/>} element.
+     * The implementation of the {@code <t/>} element.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_t_insert_text">4.6.3.1 Element {@code <t/>} - Insert Text</a></cite></p>
      * <p>Supports the transmission of text, including key presses, and text block inserts.</p>
      * </blockquote>
      */
     public static final class InsertText extends Action {
-        @XmlAttribute(name = "p")
-        private Long position;
 
-        public String getValue() {
-            return value;
+        @XmlValue
+        private String text;
+
+        @XmlAttribute(name = "p")
+        private Integer position;
+
+        private InsertText() {
         }
 
-        public Long getPosition() {
+        /**
+         * @param text The text.
+         */
+        public InsertText(String text) {
+            this.text = text;
+        }
+
+        /**
+         * @param text     The text.
+         * @param position The position, where the text is inserted.
+         */
+        public InsertText(String text, Integer position) {
+            if (position != null && position < 0) {
+                throw new IllegalArgumentException("position must not be < 0");
+            }
+            this.text = text;
+            this.position = position;
+        }
+
+        /**
+         * Gets the text.
+         *
+         * @return The text.
+         */
+        public String getText() {
+            return text;
+        }
+
+        /**
+         * Gets the character position.
+         *
+         * @return The position.
+         */
+        public Integer getPosition() {
             return position;
+        }
+
+        @Override
+        public String toString() {
+            return "Insert '" + (text != null ? text : "") + "'" + (position != null ? " at position " + position : "");
         }
     }
 
@@ -140,19 +238,46 @@ public final class RealTimeText {
      * </blockquote>
      */
     public static final class EraseText extends Action {
-
         @XmlAttribute(name = "p")
-        private Long position;
+        private Integer position;
 
         @XmlAttribute(name = "n")
-        private Long numberOfCharacters;
+        private Integer numberOfCharacters;
+
+        public EraseText() {
+        }
 
         /**
-         * Gets the position until text is erased.
+         * @param n The number of characters, which are erased from the end of the message.
+         */
+        public EraseText(Integer n) {
+            if (n != null && n < 0) {
+                throw new IllegalArgumentException("n must not be < 0");
+            }
+            this.numberOfCharacters = n;
+        }
+
+        /**
+         * @param n The number of characters, which are erased before the position.
+         * @param p The character position.
+         */
+        public EraseText(Integer n, Integer p) {
+            if (n != null && n < 0) {
+                throw new IllegalArgumentException("n must not be < 0");
+            }
+            if (p != null && p < 0) {
+                throw new IllegalArgumentException("p must not be < 0");
+            }
+            this.numberOfCharacters = n;
+            this.position = p;
+        }
+
+        /**
+         * Gets the character position.
          *
          * @return The position.
          */
-        public Long getPosition() {
+        public Integer getPosition() {
             return position;
         }
 
@@ -162,8 +287,13 @@ public final class RealTimeText {
          * @return The number of characters to be removed.
          * @see #getPosition()
          */
-        public Long getNumberOfCharacters() {
+        public Integer getNumberOfCharacters() {
             return numberOfCharacters;
+        }
+
+        @Override
+        public String toString() {
+            return "Erase " + (numberOfCharacters != null ? numberOfCharacters : 1) + " character(s) at " + (position != null ? "position " + position : "last position");
         }
     }
 
@@ -178,8 +308,25 @@ public final class RealTimeText {
         @XmlAttribute(name = "n")
         private Long milliSeconds;
 
+        private WaitInterval() {
+        }
+
+        public WaitInterval(long milliSeconds) {
+            this.milliSeconds = milliSeconds;
+        }
+
+        /**
+         * Gets the milliseconds to wait between other actions.
+         *
+         * @return The milliseconds.
+         */
         public Long getMilliSeconds() {
             return milliSeconds;
+        }
+
+        @Override
+        public String toString() {
+            return "Wait " + milliSeconds + " ms";
         }
     }
 }

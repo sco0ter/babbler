@@ -26,17 +26,13 @@ package rocks.xmpp.extensions.rpc;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 import rocks.xmpp.extensions.rpc.model.Value;
-
-import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -49,7 +45,7 @@ public class RpcManagerTest extends ExtensionTest {
         RpcManager rpcManager = connection1.getManager(RpcManager.class);
         Assert.assertFalse(rpcManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("jabber:iq:rpc");
+        String feature = "jabber:iq:rpc";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         rpcManager.setEnabled(true);
         Assert.assertTrue(rpcManager.isEnabled());
@@ -66,14 +62,11 @@ public class RpcManagerTest extends ExtensionTest {
         RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
         //rpcManager.executorService = new SameThreadExecutorService();
         rpcManager.setEnabled(true);
-        rpcManager.setRpcHandler(new RpcHandler() {
-            @Override
-            public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
-                if (methodName.equals("square")) {
-                    return new Value(parameters.get(0).getAsInteger() * parameters.get(0).getAsInteger());
-                }
-                return null;
+        rpcManager.setRpcHandler((requester, methodName, parameters) -> {
+            if (methodName.equals("square")) {
+                return new Value(parameters.get(0).getAsInteger() * parameters.get(0).getAsInteger());
             }
+            return null;
         });
 
         Value result = xmppSession2.getManager(RpcManager.class).call(ROMEO, "square", new Value(2));
@@ -92,14 +85,11 @@ public class RpcManagerTest extends ExtensionTest {
 
         //rpcManager.executorService = new SameThreadExecutorService();
 
-        rpcManager.setRpcHandler(new RpcHandler() {
-            @Override
-            public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
-                if (methodName.equals("fault")) {
-                    throw new RpcException(2, "faulty");
-                }
-                return null;
+        rpcManager.setRpcHandler((requester, methodName, parameters) -> {
+            if (methodName.equals("fault")) {
+                throw new RpcException(2, "faulty");
             }
+            return null;
         });
 
         try {

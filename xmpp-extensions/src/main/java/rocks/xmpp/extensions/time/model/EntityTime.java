@@ -24,15 +24,16 @@
 
 package rocks.xmpp.extensions.time.model;
 
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.XmlElement;
+import rocks.xmpp.util.adapters.InstantAdapter;
+import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
+
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Objects;
-import java.util.TimeZone;
 
 /**
  * The implementation of the {@code <time/>} element in the {@code urn:xmpp:time} namespace.
@@ -51,13 +52,11 @@ public final class EntityTime {
      */
     public static final String NAMESPACE = "urn:xmpp:time";
 
-    @XmlJavaTypeAdapter(TimeZoneAdapter.class)
-    @XmlElement(name = "tzo")
-    private final TimeZone tzo;
+    @XmlJavaTypeAdapter(ZoneOffsetAdapter.class)
+    private final ZoneOffset tzo;
 
-    @XmlJavaTypeAdapter(UTCDateAdapter.class)
-    @XmlElement(name = "utc")
-    private final Date utc;
+    @XmlJavaTypeAdapter(InstantAdapter.class)
+    private final Instant utc;
 
     /**
      * Creates a empty entity time element for requesting entity time.
@@ -67,46 +66,9 @@ public final class EntityTime {
         this.utc = null;
     }
 
-    public EntityTime(TimeZone timeZone, Date date) {
-        this.tzo = Objects.requireNonNull(timeZone);
-        this.utc = Objects.requireNonNull(date);
-    }
-
-    /**
-     * Converts a string representation of a date to {@link java.util.Date}.
-     *
-     * @param v The string value of the date.
-     * @return The date in UTC.
-     * @throws java.lang.IllegalArgumentException If the string value does not conform to XEP-0082.
-     * @see <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>
-     */
-    public static Date toUtcDate(String v) {
-        Calendar calendar = DatatypeConverter.parseDateTime(v);
-        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return calendar.getTime();
-    }
-
-    /**
-     * Converts a date to its UTC string representation.
-     *
-     * @param date The date.
-     * @return The date in UTC as string.
-     * @see <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a>
-     */
-    public static String toUtcString(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return DatatypeConverter.printDateTime(calendar);
-    }
-
-    /**
-     * Gets the entity's time zone.
-     *
-     * @return The time zone.
-     */
-    public final TimeZone getTimezone() {
-        return tzo;
+    public EntityTime(OffsetDateTime dateTime) {
+        this.tzo = Objects.requireNonNull(dateTime).getOffset();
+        this.utc = dateTime.toInstant();
     }
 
     /**
@@ -114,36 +76,16 @@ public final class EntityTime {
      *
      * @return The date.
      */
-    public final Date getDate() {
-        return utc;
+    public final OffsetDateTime getDateTime() {
+        return utc != null ? OffsetDateTime.ofInstant(utc, tzo != null ? tzo : ZoneId.of("Z")) : null;
     }
 
     @Override
     public final String toString() {
-        if (utc != null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(utc);
-            if (tzo != null) {
-                calendar.setTimeZone(tzo);
-            }
-            return calendar.getTime().toString();
+        OffsetDateTime dateTime = getDateTime();
+        if (dateTime != null) {
+            return dateTime.toString();
         }
         return super.toString();
-    }
-
-    /**
-     * Converts a date to its UTC representation.
-     */
-    private static final class UTCDateAdapter extends XmlAdapter<String, Date> {
-
-        @Override
-        public final Date unmarshal(String v) throws Exception {
-            return toUtcDate(v);
-        }
-
-        @Override
-        public final String marshal(Date v) throws Exception {
-            return toUtcString(v);
-        }
     }
 }

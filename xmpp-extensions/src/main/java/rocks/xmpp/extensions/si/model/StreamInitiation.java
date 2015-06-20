@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.Objects;
 
 /**
  * The implementation of the {@code <si/>} element in the {@code http://jabber.org/protocol/si} namespace.
@@ -67,13 +66,13 @@ public final class StreamInitiation {
      */
     public static final Object NO_VALID_STREAMS = new NoValidStreams();
 
-    @XmlAttribute(name = "id")
+    @XmlAttribute
     private final String id;
 
     @XmlAttribute(name = "mime-type")
     private final String mimeType;
 
-    @XmlAttribute(name = "profile")
+    @XmlAttribute
     private final String profile;
 
     @XmlAnyElement(lax = true)
@@ -98,7 +97,7 @@ public final class StreamInitiation {
         this.id = id;
         this.profile = profile;
         this.mimeType = mimeType;
-        this.profileElement = Objects.requireNonNull(profileElement);
+        this.profileElement = profileElement;
         this.featureNegotiation = featureNegotiation;
     }
 

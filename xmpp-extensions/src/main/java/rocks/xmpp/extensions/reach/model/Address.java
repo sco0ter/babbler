@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.reach.model;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlValue;
 import java.net.URI;
 import java.util.ArrayList;
@@ -46,8 +45,7 @@ import java.util.Objects;
  */
 public final class Address {
 
-    @XmlElement(name = "desc")
-    private final List<Description> descriptions = new ArrayList<>();
+    private final List<Description> desc = new ArrayList<>();
 
     @XmlAttribute
     private final URI uri;
@@ -62,7 +60,7 @@ public final class Address {
 
     public Address(URI uri, Description... descriptions) {
         this.uri = Objects.requireNonNull(uri);
-        this.descriptions.addAll(Arrays.asList(descriptions));
+        this.desc.addAll(Arrays.asList(descriptions));
     }
 
     public final URI getUri() {
@@ -70,7 +68,7 @@ public final class Address {
     }
 
     public final List<Description> getDescriptions() {
-        return Collections.unmodifiableList(descriptions);
+        return Collections.unmodifiableList(desc);
     }
 
     @Override
@@ -83,13 +81,13 @@ public final class Address {
         }
         Address other = (Address) o;
 
-        return Objects.equals(descriptions, other.descriptions)
+        return Objects.equals(desc, other.desc)
                 && Objects.equals(uri, other.uri);
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(descriptions, uri);
+        return Objects.hash(desc, uri);
     }
 
     @Override
@@ -105,8 +103,8 @@ public final class Address {
         @XmlValue
         private final String value;
 
-        @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private final String language;
+        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+        private final String lang;
 
         private Description() {
             this(null, null);
@@ -118,7 +116,7 @@ public final class Address {
          */
         public Description(String value, String language) {
             this.value = value;
-            this.language = language;
+            this.lang = language;
         }
 
         /**
@@ -136,7 +134,7 @@ public final class Address {
          * @return The language.
          */
         public final String getLanguage() {
-            return language;
+            return lang;
         }
 
         @Override
@@ -150,12 +148,12 @@ public final class Address {
             Description other = (Description) o;
 
             return Objects.equals(value, other.value)
-                    && Objects.equals(language, other.language);
+                    && Objects.equals(lang, other.lang);
         }
 
         @Override
         public final int hashCode() {
-            return Objects.hash(value, language);
+            return Objects.hash(value, lang);
         }
 
         @Override

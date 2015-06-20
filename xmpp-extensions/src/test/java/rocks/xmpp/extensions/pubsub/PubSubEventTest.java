@@ -26,9 +26,10 @@ package rocks.xmpp.extensions.pubsub;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
 
@@ -42,7 +43,7 @@ import java.net.URI;
 public class PubSubEventTest extends XmlTest {
 
     protected PubSubEventTest() throws JAXBException, XMLStreamException {
-        super(Message.class, Event.class);
+        super(ClientMessage.class, Event.class);
     }
 
     @Test

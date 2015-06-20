@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.sm.model;
 
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -32,5 +32,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "resumed")
-public final class Resumed extends AbstractResume implements ServerStreamElement {
+public final class Resumed extends AbstractResume implements StreamElement {
 }

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.privacy.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.roster.model.Contact;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -48,19 +48,18 @@ import java.util.Objects;
  */
 public final class PrivacyRule implements Comparable<PrivacyRule> {
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private final Type type;
 
-    @XmlAttribute(name = "value")
+    @XmlAttribute
     private final String value;
 
-    @XmlAttribute(name = "action")
+    @XmlAttribute
     private final Action action;
 
-    @XmlAttribute(name = "order")
+    @XmlAttribute
     private final long order;
 
-    @XmlElement(name = "message")
     private final String message;
 
     @XmlElement(name = "presence-in")
@@ -69,7 +68,6 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     @XmlElement(name = "presence-out")
     private final String presenceOut;
 
-    @XmlElement(name = "iq")
     private final String iq;
 
     private PrivacyRule() {

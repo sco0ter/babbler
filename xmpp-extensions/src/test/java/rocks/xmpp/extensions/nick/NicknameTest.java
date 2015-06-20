@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.nick;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.extensions.nick.model.Nickname;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class NicknameTest extends XmlTest {
     protected NicknameTest() throws JAXBException, XMLStreamException {
-        super(Presence.class, Nickname.class);
+        super(ClientPresence.class, Nickname.class);
     }
 
     @Test

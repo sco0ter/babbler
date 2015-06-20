@@ -27,16 +27,15 @@ package rocks.xmpp.extensions.rpc;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,7 @@ import java.util.Map;
 public class RpcMethodCallTest extends XmlTest {
 
     protected RpcMethodCallTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Rpc.class);
+        super(ClientIQ.class, Rpc.class);
     }
 
     @Test
@@ -72,6 +71,9 @@ public class RpcMethodCallTest extends XmlTest {
                 "        <param>\n" +
                 "          <value><struct><member><name>key</name><value><boolean>1</boolean></value></member></struct></value>\n" +
                 "        </param>" +
+                "        <param>\n" +
+                "          <value><dateTime.iso8601>2014-01-23T22:37:34+04:00</dateTime.iso8601></value>\n" +
+                "        </param>" +
                 "      </params>\n" +
                 "    </methodCall>\n" +
                 "  </query>\n" +
@@ -80,11 +82,12 @@ public class RpcMethodCallTest extends XmlTest {
         Rpc rpc = iq.getExtension(Rpc.class);
         Assert.assertNotNull(rpc);
         Assert.assertEquals(rpc.getMethodCall().getMethodName(), "examples.getStateName");
-        Assert.assertEquals(rpc.getMethodCall().getParameters().size(), 4);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().size(), 5);
         Assert.assertEquals(rpc.getMethodCall().getParameters().get(0).getAsInteger(), (Integer) 6);
         Assert.assertEquals(rpc.getMethodCall().getParameters().get(1).getAsBoolean(), Boolean.FALSE);
         Assert.assertEquals(rpc.getMethodCall().getParameters().get(2).getAsArray().get(0).getAsBoolean(), Boolean.TRUE);
         Assert.assertEquals(rpc.getMethodCall().getParameters().get(3).getAsMap().get("key").getAsBoolean(), Boolean.TRUE);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().get(4).getAsInstant(), OffsetDateTime.parse("2014-01-23T22:37:34+04:00"));
     }
 
     @Test
@@ -119,17 +122,10 @@ public class RpcMethodCallTest extends XmlTest {
 
     @Test
     public void marshalRpcMethodCallWithDate() throws JAXBException, XMLStreamException {
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(Calendar.YEAR, 2014);
-        calendar.set(Calendar.MONTH, Calendar.JANUARY);
-        calendar.set(Calendar.DATE, 23);
-        calendar.set(Calendar.HOUR_OF_DAY, 22);
-        calendar.set(Calendar.MINUTE, 37);
-        calendar.set(Calendar.SECOND, 34);
-        calendar.set(Calendar.MILLISECOND, 0);
-        Rpc rpc = new Rpc("testMethod", new Value(calendar.getTime()));
+        OffsetDateTime dateTime = OffsetDateTime.parse("2014-01-23T22:37:34+04:00");
+        Rpc rpc = new Rpc("testMethod", new Value(dateTime));
         String xml = marshal(rpc);
-        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><dateTime.iso8601>" + DatatypeConverter.printDateTime(calendar) + "</dateTime.iso8601></value></param></params></methodCall></query>");
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><dateTime.iso8601>" + dateTime.toString() + "</dateTime.iso8601></value></param></params></methodCall></query>");
     }
 
     @Test

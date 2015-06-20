@@ -24,21 +24,19 @@
 
 package rocks.xmpp.extensions.chatstates;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.chat.Chat;
-import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
+import rocks.xmpp.extensions.xhtmlim.model.Html;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * This class manages Chat State Notifications, which are used to communicate the status of a user in a chat session, thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused, inactive, or gone.
@@ -73,59 +71,55 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
  */
-public final class ChatStateManager extends ExtensionManager {
+public final class ChatStateManager extends Manager {
 
     private final Map<Chat, ChatState> chatMap = new ConcurrentHashMap<>();
 
     private final Map<Jid, Boolean> contactSupportsChatStateNotifications = new ConcurrentHashMap<>();
 
-    private ChatStateManager(final XmppSession xmppSession) {
-        super(xmppSession, ChatState.NAMESPACE);
-    }
+    private final Consumer<MessageEvent> messageListener;
 
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    chatMap.clear();
-                    contactSupportsChatStateNotifications.clear();
-                }
-            }
-        });
-        MessageListener messageListener = new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (isEnabled()) {
-                    Message message = e.getMessage();
-                    // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".
-                    if (message.getType() == AbstractMessage.Type.CHAT || message.getType() == AbstractMessage.Type.GROUPCHAT) {
-                        // For outbound messages append <active/>.
-                        boolean containsChatState = message.getExtension(ChatState.class) != null;
-                        if (!e.isInbound()) {
-                            // Append an <active/> chat state to every outbound content message, if it doesn't contain a chat state yet
-                            // and the recipient supports chat states or it is unknown if he supports them.
-                            if (!containsChatState) {
-                                // If either support of chat states is unknown (== null) or it's known to be supported (== true), include an active chat state.
-                                // (1. If the User desires chat state notifications, the message(s) that it sends to the Contact before receiving a reply MUST contain a chat state notification extension, which SHOULD be <active/>.)
-                                Boolean isSupportedByPeer = contactSupportsChatStateNotifications.get(message.getTo());
-                                if (isSupportedByPeer == null || isSupportedByPeer) {
-                                    message.getExtensions().add(ChatState.ACTIVE);
-                                }
-                            }
-                        } else if (message.getType() != AbstractMessage.Type.GROUPCHAT) {
-                            // Check if the contact supports chat states and update the map. If it does, it must include a chat state extension:
-                            // 2. If the Contact replies but does not include a chat state notification extension, the User MUST NOT send subsequent chat state notifications to the Contact.
-                            // 3. If the Contact replies and includes an <active/> notification (or sends a standalone notification to the User), the User and Contact SHOULD send subsequent notifications
-                            contactSupportsChatStateNotifications.put(message.getFrom(), containsChatState);
+    private ChatStateManager(final XmppSession xmppSession) {
+        super(xmppSession, true);
+        this.messageListener = e -> {
+            Message message = e.getMessage();
+            // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".
+            if (message.getType() == Message.Type.CHAT || message.getType() == Message.Type.GROUPCHAT) {
+                // For outbound messages append <active/>.
+                boolean containsChatState = message.getExtension(ChatState.class) != null;
+                if (!e.isInbound()) {
+                    // Append an <active/> chat state to every outbound content message (with <body> or <html> extension), if it doesn't contain a chat state yet
+                    // and the recipient supports chat states or it is unknown if he supports them.
+                    if (!containsChatState && (message.getBody() != null && !message.getBody().trim().equals("") || message.getExtension(Html.class) != null)) {
+                        // If either support of chat states is unknown (== null) or it's known to be supported (== true), include an active chat state.
+                        // (1. If the User desires chat state notifications, the message(s) that it sends to the Contact before receiving a reply MUST contain a chat state notification extension, which SHOULD be <active/>.)
+                        Boolean isSupportedByPeer = contactSupportsChatStateNotifications.get(message.getTo());
+                        if (isSupportedByPeer == null || isSupportedByPeer) {
+                            message.getExtensions().add(ChatState.ACTIVE);
                         }
                     }
+                } else if (message.getType() != Message.Type.GROUPCHAT) {
+                    // Check if the contact supports chat states and update the map. If it does, it must include a chat state extension:
+                    // 2. If the Contact replies but does not include a chat state notification extension, the User MUST NOT send subsequent chat state notifications to the Contact.
+                    // 3. If the Contact replies and includes an <active/> notification (or sends a standalone notification to the User), the User and Contact SHOULD send subsequent notifications
+                    contactSupportsChatStateNotifications.put(message.getFrom(), containsChatState);
                 }
             }
         };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
         xmppSession.addInboundMessageListener(messageListener);
         xmppSession.addOutboundMessageListener(messageListener);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(messageListener);
+        xmppSession.removeOutboundMessageListener(messageListener);
     }
 
     /**
@@ -150,5 +144,11 @@ public final class ChatStateManager extends ExtensionManager {
         message.getExtensions().add(chatState);
         chat.sendMessage(message);
         return true;
+    }
+
+    @Override
+    protected void dispose() {
+        chatMap.clear();
+        contactSupportsChatStateNotifications.clear();
     }
 }

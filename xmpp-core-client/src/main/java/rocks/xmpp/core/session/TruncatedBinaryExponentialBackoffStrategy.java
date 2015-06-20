@@ -24,8 +24,7 @@
 
 package rocks.xmpp.core.session;
 
-import java.security.SecureRandom;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
@@ -49,9 +48,7 @@ import java.util.Random;
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
  */
-public final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
-
-    private static final Random RANDOM = new SecureRandom();
+final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
 
     private final int slotTime;
 
@@ -61,19 +58,19 @@ public final class TruncatedBinaryExponentialBackoffStrategy implements Reconnec
      * @param slotTime The slot time (in seconds), usually 60.
      * @param ceiling  The ceiling, i.e. when the time is truncated. E.g. if the ceiling is 4, the back off is truncated at the 5th reconnection attempt (it starts at zero).
      */
-    public TruncatedBinaryExponentialBackoffStrategy(int slotTime, int ceiling) {
+    TruncatedBinaryExponentialBackoffStrategy(int slotTime, int ceiling) {
         this.slotTime = slotTime;
         this.ceiling = ceiling;
     }
 
     @Override
-    public int getNextReconnectionAttempt(int attempt) {
+    public long getNextReconnectionAttempt(int attempt, Throwable throwable) {
         // For the first attempt choose a random number between 0 and 60.
         // For the second attempt choose a random number between 0 and 180.
         // For the third attempt choose a random number between 0 and 420.
         // For the fourth attempt choose a random number between 0 and 900.
         // For the fifth attempt choose a random number between 0 and 1860.
         // ==> max wait time: 1860 seconds = 31 minutes. (if ceiling == 4)
-        return RANDOM.nextInt((int) (Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime);
+        return ThreadLocalRandom.current().nextInt((int) (Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime);
     }
 }

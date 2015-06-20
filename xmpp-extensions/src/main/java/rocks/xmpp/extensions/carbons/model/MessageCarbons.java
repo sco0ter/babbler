@@ -74,7 +74,7 @@ public final class MessageCarbons {
      *
      * @see #DISABLE
      */
-    @XmlRootElement(name = "disable")
+    @XmlRootElement
     @XmlType(factoryMethod = "create")
     public static final class Disable {
         private Disable() {
@@ -92,7 +92,7 @@ public final class MessageCarbons {
      *
      * @see #ENABLE
      */
-    @XmlRootElement(name = "enable")
+    @XmlRootElement
     @XmlType(factoryMethod = "create")
     public static final class Enable {
         private Enable() {
@@ -110,7 +110,7 @@ public final class MessageCarbons {
      *
      * @see #PRIVATE
      */
-    @XmlRootElement(name = "private")
+    @XmlRootElement
     @XmlType(factoryMethod = "create")
     public static final class Private {
         private Private() {
@@ -126,7 +126,7 @@ public final class MessageCarbons {
      * <p>
      * This class is immutable.
      */
-    @XmlRootElement(name = "received")
+    @XmlRootElement
     public static final class Received {
 
         @XmlElementRef
@@ -158,7 +158,7 @@ public final class MessageCarbons {
      * <p>
      * This class is immutable.
      */
-    @XmlRootElement(name = "sent")
+    @XmlRootElement
     public static final class Sent {
 
         @XmlElementRef

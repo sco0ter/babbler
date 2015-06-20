@@ -32,6 +32,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0167.html#info-hold">8.2 Hold</a>
  */
-@XmlRootElement(name = "hold")
+@XmlRootElement
 public final class Hold {
 }

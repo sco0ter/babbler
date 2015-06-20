@@ -31,12 +31,11 @@ import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.chat.ChatManager;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,13 +54,10 @@ public class ChatStateManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET.asBareJid(), mockServer);
 
         final Collection<ChatState> chatStatesReceived = new ArrayList<>();
-        xmppSession2.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                ChatState chatState = e.getMessage().getExtension(ChatState.class);
-                if (chatState != null) {
-                    chatStatesReceived.add(chatState);
-                }
+        xmppSession2.addInboundMessageListener(e -> {
+            ChatState chatState = e.getMessage().getExtension(ChatState.class);
+            if (chatState != null) {
+                chatStatesReceived.add(chatState);
             }
         });
 
@@ -76,7 +72,7 @@ public class ChatStateManagerTest extends ExtensionTest {
         // A new chat state should be sent again.
         Assert.assertTrue(chatStateManager.setChatState(ChatState.PAUSED, chat));
         Assert.assertFalse(chatStatesReceived.contains(ChatState.ACTIVE));
-        chat.sendMessage("chat message");
+        chat.sendMessage(ClientMessage.from(new Message(null, Message.Type.CHAT, "chat message")));
         // A <active/> extension should have been added.
         Assert.assertTrue(chatStatesReceived.contains(ChatState.ACTIVE));
     }
@@ -89,7 +85,7 @@ public class ChatStateManagerTest extends ExtensionTest {
         // By default, Chat States are disabled.
         Assert.assertFalse(chatStateManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("http://jabber.org/protocol/chatstates");
+        String feature = "http://jabber.org/protocol/chatstates";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         chatStateManager.setEnabled(true);
         Assert.assertTrue(chatStateManager.isEnabled());

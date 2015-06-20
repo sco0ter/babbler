@@ -24,15 +24,12 @@
 
 package rocks.xmpp.extensions.bob;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bob.model.Data;
 
@@ -42,25 +39,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Christian Schudt
  */
-class BitsOfBinaryManager extends ExtensionManager {
+class BitsOfBinaryManager extends Manager {
 
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 
     private BitsOfBinaryManager(final XmppSession xmppSession) {
-        super(xmppSession, Data.NAMESPACE);
+        super(xmppSession, true);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    dataCache.clear();
-                }
-            }
-        });
-        xmppSession.addIQHandler(Data.class, new AbstractIQHandler(this, AbstractIQ.Type.GET) {
+        xmppSession.addIQHandler(Data.class, new AbstractIQHandler(IQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 Data data = iq.getExtension(Data.class);
@@ -102,5 +91,10 @@ class BitsOfBinaryManager extends ExtensionManager {
      */
     public void put(Data data) {
         dataCache.put(data.getContentId(), data);
+    }
+
+    @Override
+    protected void dispose() {
+        dataCache.clear();
     }
 }

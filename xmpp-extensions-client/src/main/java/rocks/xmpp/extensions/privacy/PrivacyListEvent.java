@@ -25,12 +25,13 @@
 package rocks.xmpp.extensions.privacy;
 
 import java.util.EventObject;
+import java.util.function.Consumer;
 
 /**
  * This event notifies listeners, when a privacy list has been created or updated.
  *
  * @author Christian Schudt
- * @see PrivacyListListener
+ * @see PrivacyListManager#addPrivacyListListener(Consumer)
  */
 public final class PrivacyListEvent extends EventObject {
     private final String listName;

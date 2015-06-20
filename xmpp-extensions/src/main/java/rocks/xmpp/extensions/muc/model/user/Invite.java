@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model.user;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -37,13 +37,12 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public final class Invite {
 
-    @XmlElement(name = "reason")
     private String reason;
 
-    @XmlAttribute(name = "from")
+    @XmlAttribute
     private Jid from;
 
-    @XmlAttribute(name = "to")
+    @XmlAttribute
     private Jid to;
 
     @XmlElement(name = "continue")

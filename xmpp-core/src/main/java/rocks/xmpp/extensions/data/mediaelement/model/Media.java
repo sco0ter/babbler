@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.data.mediaelement.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import java.net.URI;
@@ -45,7 +44,7 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0221.html#schema">XML Schema</a>
  * @see rocks.xmpp.extensions.data.model.DataForm.Field#getMedia()
  */
-@XmlRootElement(name = "media")
+@XmlRootElement
 public final class Media {
 
     /**
@@ -53,13 +52,12 @@ public final class Media {
      */
     public static final String NAMESPACE = "urn:xmpp:media-element";
 
-    @XmlElement(name = "uri")
-    private final List<Location> locations = new ArrayList<>();
+    private final List<Location> uri = new ArrayList<>();
 
-    @XmlAttribute(name = "height")
+    @XmlAttribute
     private final int height;
 
-    @XmlAttribute(name = "width")
+    @XmlAttribute
     private final int width;
 
     private Media() {
@@ -73,7 +71,7 @@ public final class Media {
      * @param locations The location.
      */
     public Media(Location... locations) {
-        this.locations.addAll(Arrays.asList(locations));
+        this.uri.addAll(Arrays.asList(locations));
         this.height = 0;
         this.width = 0;
     }
@@ -88,7 +86,7 @@ public final class Media {
     public Media(int width, int height, Location... locations) {
         this.width = width;
         this.height = height;
-        this.locations.addAll(Arrays.asList(locations));
+        this.uri.addAll(Arrays.asList(locations));
     }
 
     /**
@@ -97,7 +95,7 @@ public final class Media {
      * @return The locations.
      */
     public final List<Location> getLocations() {
-        return Collections.unmodifiableList(locations);
+        return Collections.unmodifiableList(uri);
     }
 
     /**
@@ -128,7 +126,7 @@ public final class Media {
         @XmlValue
         private final URI uri;
 
-        @XmlAttribute(name = "type")
+        @XmlAttribute
         private final String type;
 
         /**

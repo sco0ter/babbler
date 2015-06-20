@@ -1,7 +1,7 @@
 # XEP-0203: Delayed Delivery
 ---
 
-[XEP-0203: Delayed Delivery][Delayed Delivery] is usually attached to messages, when they are sent from the server\'s offline storage.
+[XEP-0203: Delayed Delivery][Delayed Delivery] is usually attached to messages, when they are sent from the server's offline storage.
 
 Checking if a message has delayed delivery info attached is pretty simple:
 

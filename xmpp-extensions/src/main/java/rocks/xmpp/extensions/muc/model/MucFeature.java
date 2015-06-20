@@ -96,7 +96,7 @@ public enum MucFeature {
 
     private final String feature;
 
-    private MucFeature(String feature) {
+    MucFeature(String feature) {
         this.feature = feature;
     }
 

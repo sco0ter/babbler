@@ -23,14 +23,14 @@
  */
 
 /**
- * Provides <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> from the <a href="http://xmpp.org/rfcs/rfc6120.html#schemas-client">Client Namespace</a> ({@linkplain rocks.xmpp.core.stanza.model.client.Message}, {@linkplain rocks.xmpp.core.stanza.model.client.Presence} and {@linkplain rocks.xmpp.core.stanza.model.client.IQ}).
+ * Provides <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> from the <a href="http://xmpp.org/rfcs/rfc6120.html#schemas-client">Client Namespace</a> ({@linkplain rocks.xmpp.core.stanza.model.client.ClientMessage}, {@linkplain rocks.xmpp.core.stanza.model.client.ClientPresence} and {@linkplain rocks.xmpp.core.stanza.model.client.ClientIQ}).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = "jabber:client", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.core.stanza.model.client;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.bytestreams;
 
+import rocks.xmpp.addr.Jid;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,8 +36,8 @@ import java.io.OutputStream;
  * Both kind of sessions have a session id and are bidirectional, that's why this class has an {@linkplain #getInputStream() input} and {@linkplain #getOutputStream() output stream}.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager#initiateSession(rocks.xmpp.core.Jid, String, int)
- * @see rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager#initiateSession(rocks.xmpp.core.Jid, String)
+ * @see rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager#initiateSession(Jid, String, int)
+ * @see rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager#initiateSession(Jid, String)
  * @see ByteStreamEvent#accept()
  */
 public abstract class ByteStreamSession implements AutoCloseable {

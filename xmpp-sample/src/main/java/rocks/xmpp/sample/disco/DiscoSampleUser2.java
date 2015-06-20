@@ -24,11 +24,10 @@
 
 package rocks.xmpp.sample.disco;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
@@ -44,39 +43,34 @@ public class DiscoSampleUser2 {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .secure(false)
-                            .build();
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .secure(false)
+                        .build();
 
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(VisualDebugger.class)
-                            .defaultResponseTimeout(5000)
-                            .build();
+                XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                        .debugger(VisualDebugger.class)
+                        .defaultResponseTimeout(5000)
+                        .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("222", "222", "disco");
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("222", "222", "disco");
 
-                    ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-                    ItemNode itemNode = serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forLimit(10));
+                ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+                ItemNode itemNode = serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forLimit(10));
 
-                    serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forNextPage(10, itemNode.getResultSetManagement().getLastItem()));
+                serviceDiscoveryManager.discoverItems(new Jid("111", xmppSession.getDomain(), "disco"), ResultSetManagement.forNextPage(10, itemNode.getResultSetManagement().getLastItem()));
 
-                    serviceDiscoveryManager.discoverInformation(new Jid("111", xmppSession.getDomain(), "disco"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                serviceDiscoveryManager.discoverInformation(new Jid("111", xmppSession.getDomain(), "disco"));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

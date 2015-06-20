@@ -24,11 +24,10 @@
 
 package rocks.xmpp.extensions.rosterx.model;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -55,8 +54,7 @@ public final class ContactExchange {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/rosterx";
 
-    @XmlElement(name = "item")
-    private final List<Item> items = new ArrayList<>();
+    private final List<Item> item = new ArrayList<>();
 
     /**
      * Gets the contact exchange items.
@@ -64,7 +62,7 @@ public final class ContactExchange {
      * @return The items.
      */
     public final List<Item> getItems() {
-        return Collections.unmodifiableList(items);
+        return Collections.unmodifiableList(item);
     }
 
     /**
@@ -82,8 +80,7 @@ public final class ContactExchange {
         @XmlAttribute
         private final String name;
 
-        @XmlElement(name = "group")
-        private final List<String> groups = new ArrayList<>();
+        private final List<String> group = new ArrayList<>();
 
         private Item() {
             this.jid = null;
@@ -95,7 +92,7 @@ public final class ContactExchange {
             this.jid = Objects.requireNonNull(jid);
             this.name = name;
             if (groups != null) {
-                this.groups.addAll(groups);
+                this.group.addAll(groups);
             }
             this.action = action;
         }
@@ -133,7 +130,7 @@ public final class ContactExchange {
          * @return The roster groups.
          */
         public final List<String> getGroups() {
-            return Collections.unmodifiableList(groups);
+            return Collections.unmodifiableList(group);
         }
 
         /**

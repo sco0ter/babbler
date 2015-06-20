@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 /**
  * The {@code <destroy/>} element, which is used in both #owner and #user namespace and indicates a room destruction.

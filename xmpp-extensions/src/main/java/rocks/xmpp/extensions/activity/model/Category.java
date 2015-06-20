@@ -82,7 +82,7 @@ public enum Category {
 
     final Class<? extends Activity.AbstractCategory> categoryClass;
 
-    private Category(Class<? extends Activity.AbstractCategory> categoryClass) {
+    Category(Class<? extends Activity.AbstractCategory> categoryClass) {
         this.categoryClass = categoryClass;
     }
 }

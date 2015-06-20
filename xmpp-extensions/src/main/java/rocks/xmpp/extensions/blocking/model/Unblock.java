@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.blocking.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <unblock/>} element in the {@code urn:xmpp:blocking} namespace.
@@ -41,20 +41,16 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
  * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
  */
-@XmlRootElement(name = "unblock")
+@XmlRootElement
 public final class Unblock {
-    @XmlElement(name = "item")
-    private final List<Item> items = new ArrayList<>();
+
+    private final List<Item> item = new ArrayList<>();
 
     /**
      * @param unblockedItems The unblocked items.
      */
     public Unblock(List<Jid> unblockedItems) {
-        List<Item> items = new ArrayList<>();
-        for (Jid item : unblockedItems) {
-            items.add(new Item(item));
-        }
-        this.items.addAll(items);
+        this.item.addAll(unblockedItems.stream().map(Item::new).collect(Collectors.toList()));
     }
 
     private Unblock() {
@@ -66,15 +62,11 @@ public final class Unblock {
      * @return The unblocked items.
      */
     public final List<Jid> getItems() {
-        List<Jid> jids = new ArrayList<>();
-        for (Item item : items) {
-            jids.add(item.getJid());
-        }
-        return Collections.unmodifiableList(jids);
+        return Collections.unmodifiableList(item.stream().map(Item::getJid).collect(Collectors.toList()));
     }
 
     @Override
     public final String toString() {
-        return items.toString();
+        return item.toString();
     }
 }

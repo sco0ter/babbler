@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.URI;
@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roomconfig}, which can be used to configure a MUC room.
@@ -168,10 +169,7 @@ public final class RoomConfiguration {
     }
 
     private static Set<Role> valuesToRoles(Collection<String> values) {
-        Set<Role> roles = new LinkedHashSet<>();
-        for (String value : values) {
-            roles.add(Role.valueOf(value.toUpperCase()));
-        }
+        Set<Role> roles = values.stream().map(value -> Role.valueOf(value.toUpperCase())).collect(Collectors.toCollection(LinkedHashSet::new));
         return Collections.unmodifiableSet(roles);
     }
 

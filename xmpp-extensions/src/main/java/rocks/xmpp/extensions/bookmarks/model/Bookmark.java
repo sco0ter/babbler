@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @XmlTransient
 public abstract class Bookmark implements Comparable<Bookmark> {
-    @XmlAttribute(name = "name")
+    @XmlAttribute
     private final String name;
 
     protected Bookmark(String name) {

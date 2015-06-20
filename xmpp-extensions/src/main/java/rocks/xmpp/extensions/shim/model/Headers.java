@@ -24,12 +24,11 @@
 
 package rocks.xmpp.extensions.shim.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,7 +41,7 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0131.html#schema">XML Schema</a>
  * @see Header
  */
-@XmlRootElement(name = "headers")
+@XmlRootElement
 public final class Headers {
 
     /**
@@ -50,14 +49,13 @@ public final class Headers {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/shim";
 
-    @XmlElement(name = "header")
-    private final List<Header> headers = new ArrayList<>();
+    private final List<Header> header = new ArrayList<>();
 
     private Headers() {
     }
 
     public Headers(Header... headers) {
-        this.headers.addAll(Arrays.asList(headers));
+        this.header.addAll(Arrays.asList(headers));
     }
 
     /**
@@ -68,10 +66,10 @@ public final class Headers {
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
-    public static Headers timePeriod(Date start, Date stop) {
+    public static Headers timePeriod(OffsetDateTime start, OffsetDateTime stop) {
         // If both a start time and a stop time are specified, the stop time MUST be later than the start time.
-        if (start.after(stop)) {
-            throw new IllegalArgumentException("start date must not be later than the start date.");
+        if (start.isAfter(stop)) {
+            throw new IllegalArgumentException("start date must not be after the start date.");
         }
         return new Headers(Header.start(start), Header.stop(stop));
     }
@@ -82,11 +80,11 @@ public final class Headers {
      * @return The headers.
      */
     public final List<Header> getHeaders() {
-        return Collections.unmodifiableList(headers);
+        return Collections.unmodifiableList(header);
     }
 
     @Override
     public final String toString() {
-        return headers.toString();
+        return header.toString();
     }
 }

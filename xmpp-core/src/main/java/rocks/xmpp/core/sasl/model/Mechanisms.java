@@ -24,10 +24,9 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
@@ -44,9 +43,8 @@ import java.util.List;
  */
 @XmlRootElement
 @XmlSeeAlso({Abort.class, Auth.class, Challenge.class, Failure.class, Response.class, Success.class})
-public final class Mechanisms extends StreamFeature implements ServerStreamElement {
+public final class Mechanisms extends StreamFeature implements StreamElement {
 
-    @XmlElement
     private final List<String> mechanism = new ArrayList<>();
 
     private Mechanisms() {

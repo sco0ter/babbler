@@ -26,9 +26,10 @@ package rocks.xmpp.core.roster.model;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -40,7 +41,7 @@ import java.util.Arrays;
 public class RosterTest extends XmlTest {
 
     protected RosterTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Roster.class);
+        super(ClientIQ.class, Roster.class);
     }
 
     @Test

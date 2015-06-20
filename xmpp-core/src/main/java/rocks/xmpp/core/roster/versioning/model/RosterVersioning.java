@@ -51,9 +51,4 @@ public final class RosterVersioning extends StreamFeature {
     private static RosterVersioning create() {
         return INSTANCE;
     }
-
-    @Override
-    public final int getPriority() {
-        return 0;
-    }
 }

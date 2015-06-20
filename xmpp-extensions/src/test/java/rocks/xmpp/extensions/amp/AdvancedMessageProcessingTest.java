@@ -26,9 +26,10 @@ package rocks.xmpp.extensions.amp;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessing;
 import rocks.xmpp.extensions.amp.model.InvalidRules;
 import rocks.xmpp.extensions.amp.model.Rule;
@@ -36,12 +37,10 @@ import rocks.xmpp.extensions.amp.model.UnsupportedActions;
 import rocks.xmpp.extensions.amp.model.UnsupportedConditions;
 import rocks.xmpp.extensions.amp.model.errors.FailedRules;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.util.Calendar;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 
 /**
  * @author Christian Schudt
@@ -49,7 +48,7 @@ import java.util.Date;
 public class AdvancedMessageProcessingTest extends XmlTest {
 
     protected AdvancedMessageProcessingTest() throws JAXBException, XMLStreamException {
-        super(Message.class, AdvancedMessageProcessing.class);
+        super(ClientMessage.class, AdvancedMessageProcessing.class);
     }
 
     @Test
@@ -209,7 +208,7 @@ public class AdvancedMessageProcessingTest extends XmlTest {
 
     @Test
     public void marshalAmp() throws XMLStreamException, JAXBException {
-        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Collections.<Rule>emptyList());
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Collections.emptyList());
         String xml = marshal(amp);
         Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"></amp>");
     }
@@ -230,11 +229,9 @@ public class AdvancedMessageProcessingTest extends XmlTest {
 
     @Test
     public void marshalExpireAt() throws XMLStreamException, JAXBException {
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.ALERT, date));
+        Instant now = Instant.now();
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.ALERT, now));
         String xml = marshal(amp);
-        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"expire-at\" value=\"" + DatatypeConverter.printDateTime(calendar) + "\"></rule></amp>");
+        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"expire-at\" value=\"" + now.toString() + "\"></rule></amp>");
     }
 }

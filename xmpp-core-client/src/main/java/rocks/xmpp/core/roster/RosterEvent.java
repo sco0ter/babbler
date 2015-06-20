@@ -29,6 +29,7 @@ import rocks.xmpp.core.roster.model.Contact;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A roster event which holds information about added, updated and removed contacts of the roster.
@@ -38,7 +39,7 @@ import java.util.List;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see RosterListener
+ * @see RosterManager#addRosterListener(Consumer)
  */
 public final class RosterEvent extends EventObject {
 

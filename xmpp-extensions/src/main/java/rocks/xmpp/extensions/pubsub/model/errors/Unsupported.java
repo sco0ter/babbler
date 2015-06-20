@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "unsupported")
 public final class Unsupported extends PubSubError {
 
-    @XmlAttribute(name = "feature")
+    @XmlAttribute
     private PubSubFeature feature;
 
     private Unsupported() {

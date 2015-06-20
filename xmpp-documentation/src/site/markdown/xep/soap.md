@@ -1,7 +1,7 @@
 # XEP-0072: SOAP Over XMPP
 ---
 
-There\'s some very basic support for [XEP-0072: SOAP Over XMPP][SOAP Over XMPP]. For more details you should read the specification. Here are some examples.
+There's some very basic support for [XEP-0072: SOAP Over XMPP][SOAP Over XMPP]. For more details you should read the specification. Here are some examples.
 
 ## Discovering Support
 

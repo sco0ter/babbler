@@ -26,21 +26,22 @@ package rocks.xmpp.extensions.delay;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.time.Instant;
 
 /**
  * @author Christian Schudt
  */
 public class DelayedDeliveryTest extends XmlTest {
     protected DelayedDeliveryTest() throws JAXBException, XMLStreamException {
-        super(Message.class, DelayedDelivery.class);
+        super(ClientMessage.class, DelayedDelivery.class);
     }
 
     @Test
@@ -64,7 +65,7 @@ public class DelayedDeliveryTest extends XmlTest {
         DelayedDelivery delay = message.getExtension(DelayedDelivery.class);
         Assert.assertNotNull(delay);
         Assert.assertEquals(delay.getFrom(), new Jid("capulet.com"));
-        Assert.assertEquals(delay.getTimeStamp(), DatatypeConverter.parseDate("2002-09-10T23:08:25Z").getTime());
+        Assert.assertEquals(delay.getTimeStamp(), Instant.parse("2002-09-10T23:08:25Z"));
         Assert.assertEquals(delay.getReason(), "Offline Storage");
     }
 }

@@ -26,9 +26,10 @@ package rocks.xmpp.extensions.blocking;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Unblock;
@@ -43,7 +44,7 @@ import java.util.List;
  */
 public class BlockingTest extends XmlTest {
     protected BlockingTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, BlockList.class);
+        super(ClientIQ.class, BlockList.class);
     }
 
     @Test

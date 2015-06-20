@@ -24,17 +24,15 @@
 
 package rocks.xmpp.sample.muc;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.muc.ChatRoom;
 import rocks.xmpp.extensions.muc.ChatService;
 import rocks.xmpp.extensions.muc.MultiUserChatManager;
 import rocks.xmpp.extensions.muc.OccupantEvent;
-import rocks.xmpp.extensions.muc.OccupantListener;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -46,47 +44,39 @@ public class MucSampleUser1 {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .secure(false)
-                            .build();
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .secure(false)
+                        .build();
 
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(VisualDebugger.class)
-                            .defaultResponseTimeout(5000)
-                            .build();
+                XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                        .debugger(VisualDebugger.class)
+                        .defaultResponseTimeout(5000)
+                        .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
 
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("111", "111", "muc");
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("111", "111", "muc");
 
-                    MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChatManager.class);
-                    ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference." + xmppSession.getDomain()));
-                    ChatRoom chatRoom = chatService.createRoom("test");
-                    chatRoom.addOccupantListener(new OccupantListener() {
-                        @Override
-                        public void occupantChanged(OccupantEvent e) {
-                            if (e.getType() == OccupantEvent.Type.ENTERED) {
-                                System.out.println(e.getOccupant() + " has entered the room");
-                            }
-                        }
-                    });
-                    chatRoom.enter("user1");
-                    chatRoom.sendMessage("Hello World!");
+                MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChatManager.class);
+                ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference." + xmppSession.getDomain()));
+                ChatRoom chatRoom = chatService.createRoom("test");
+                chatRoom.addOccupantListener(e -> {
+                    if (e.getType() == OccupantEvent.Type.ENTERED) {
+                        System.out.println(e.getOccupant() + " has entered the room");
+                    }
+                });
+                chatRoom.enter("user1");
+                chatRoom.sendMessage("Hello World!");
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

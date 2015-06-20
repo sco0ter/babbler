@@ -24,13 +24,12 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import rocks.xmpp.core.stanza.model.AbstractPresence;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -167,10 +166,10 @@ public final class SubscribeOptions {
      *
      * @return The expiration date.
      */
-    public Date getExpire() {
+    public Instant getExpire() {
         DataForm.Field field = dataForm.findField(EXPIRE);
         if (!field.getValues().isEmpty() && field.getValues().get(0) != null && !field.getValues().get(0).equals("presence")) {
-            return field.getValueAsDate();
+            return field.getValueAsInstant();
         }
         return null;
     }
@@ -191,14 +190,14 @@ public final class SubscribeOptions {
      *
      * @return The show values.
      */
-    public List<AbstractPresence.Show> getShowValues() {
+    public List<Presence.Show> getShowValues() {
         List<String> values = dataForm.findValues(SHOW_VALUES);
-        List<AbstractPresence.Show> list = new ArrayList<>();
+        List<Presence.Show> list = new ArrayList<>();
         for (String value : values) {
             if ("online".equals(value)) {
                 list.add(null);
             } else {
-                list.add(AbstractPresence.Show.valueOf(value.toUpperCase()));
+                list.add(Presence.Show.valueOf(value.toUpperCase()));
             }
         }
         return list;
@@ -274,7 +273,7 @@ public final class SubscribeOptions {
 
         private Collection<Presence.Show> showValues;
 
-        private Date expireAt;
+        private Instant expireAt;
 
         private Boolean temporary;
 
@@ -336,7 +335,7 @@ public final class SubscribeOptions {
          * @param showValues The presence states for which an entity wants to receive notifications.
          * @return The builder.
          */
-        public Builder showValues(Collection<AbstractPresence.Show> showValues) {
+        public Builder showValues(Collection<Presence.Show> showValues) {
             this.showValues = showValues;
             return this;
         }
@@ -348,7 +347,7 @@ public final class SubscribeOptions {
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
          */
-        public Builder expireAt(Date expireAt) {
+        public Builder expireAt(Instant expireAt) {
             this.expireAt = expireAt;
             return this;
         }
@@ -422,7 +421,7 @@ public final class SubscribeOptions {
             if (showValues != null && !showValues.isEmpty()) {
                 DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().var(SHOW_VALUES);
                 List<String> values = new ArrayList<>();
-                for (AbstractPresence.Show show : showValues) {
+                for (Presence.Show show : showValues) {
                     if (show != null) {
                         values.add(show.name().toLowerCase());
                     } else {

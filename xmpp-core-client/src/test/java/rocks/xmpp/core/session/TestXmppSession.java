@@ -24,27 +24,28 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQListener;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.core.stream.model.StreamElement;
 
-import javax.xml.stream.XMLOutputFactory;
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
  */
-public class TestXmppSession extends XmppSession {
+public final class TestXmppSession extends XmppSession {
 
-    private MockServer mockServer;
+    private final MockServer mockServer;
+
+    private final Jid connectedResource;
 
     public TestXmppSession() {
         this(Jid.valueOf("test@domain/resource"), new MockServer());
@@ -57,17 +58,7 @@ public class TestXmppSession extends XmppSession {
     public TestXmppSession(Jid jid, MockServer mockServer, XmppSessionConfiguration configuration) {
         super(null, configuration);
         connectedResource = jid;
-        //getExtensionManager(Socks5ByteStreamManager.class).setLocalHostEnabled(false);
 
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-
-//        XMLStreamWriter xmlStreamWriter = null;
-//        try {
-//            xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(System.out), true);
-//
-//        } catch (XMLStreamException e) {
-//        }
-//        final XMLStreamWriter finalXmlStreamWriter = xmlStreamWriter;
         activeConnection = new Connection("hostname", 5222, Proxy.NO_PROXY) {
 
             @Override
@@ -76,21 +67,11 @@ public class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void send(ClientStreamElement clientStreamElement) {
-//                try {
-//                    TestXmppSession.this.getMarshaller().marshal(clientStreamElement, finalXmlStreamWriter);
-//                } catch (JAXBException e) {
-//                    e.printStackTrace();
-//                }
+            public void send(StreamElement clientStreamElement) {
             }
 
             @Override
-            public void connect() throws IOException {
-
-            }
-
-            @Override
-            public void connect(Jid from) throws IOException {
+            public void connect(Jid from, String namespace, Consumer<String> onConnected) throws IOException {
 
             }
 
@@ -106,10 +87,9 @@ public class TestXmppSession extends XmppSession {
 
             @Override
             public void close() throws IOException {
-
             }
         };
-        stanzaListenerExecutor = iqHandlerExecutor= new SameThreadExecutorService();
+        stanzaListenerExecutor = iqHandlerExecutor = new SameThreadExecutorService();
         this.mockServer = mockServer;
         mockServer.registerConnection(this);
 
@@ -118,23 +98,25 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public void send(ClientStreamElement element) {
-        super.send(element);
-        if (mockServer != null && element instanceof Stanza) {
-            mockServer.receive(((Stanza) element).withFrom(connectedResource));
+    public StreamElement send(StreamElement element) {
+        StreamElement sent = super.send(element);
+        if (mockServer != null && sent instanceof Stanza) {
+            mockServer.receive(((Stanza) sent).withFrom(connectedResource));
         }
+        return element;
     }
 
     @Override
-    public IQ query(final IQ iq) throws StanzaException, NoResponseException {
+    public void connect(Jid from) throws XmppException {
+    }
+
+    @Override
+    public IQ query(final IQ iq) throws XmppException {
         final IQ[] result = new IQ[1];
 
-        final IQListener iqListener = new IQListener() {
-            @Override
-            public void handleIQ(IQEvent e) {
-                if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
-                    result[0] = e.getIQ();
-                }
+        final Consumer<IQEvent> iqListener = e -> {
+            if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
+                result[0] = e.getIQ();
             }
         };
 
@@ -150,14 +132,13 @@ public class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public IQ query(final IQ iq, long timeout) throws StanzaException, NoResponseException {
+    public IQ query(final IQ iq, long timeout) throws XmppException {
         // Ignore timeout for tests.
         return query(iq);
     }
 
     @Override
-    public void close() throws XmppException {
-        super.close();
-        updateStatus(Status.CLOSED, null);
+    public Jid getConnectedResource() {
+        return connectedResource;
     }
 }

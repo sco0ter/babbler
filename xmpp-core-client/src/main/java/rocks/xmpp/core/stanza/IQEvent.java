@@ -24,7 +24,9 @@
 
 package rocks.xmpp.core.stanza;
 
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+
+import java.util.function.Consumer;
 
 /**
  * An IQ event is fired whenever an IQ stanza is received or sent.
@@ -32,15 +34,16 @@ import rocks.xmpp.core.stanza.model.client.IQ;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see IQListener
+ * @see rocks.xmpp.core.session.XmppSession#addInboundIQListener(Consumer)
+ * @see rocks.xmpp.core.session.XmppSession#addOutboundIQListener(Consumer)
  */
 public final class IQEvent extends StanzaEvent<IQ> {
 
     /**
      * Constructs an IQ event.
      *
-     * @param source   The object on which the event initially occurred.
-     * @param iq       The IQ stanza.
+     * @param source  The object on which the event initially occurred.
+     * @param iq      The IQ stanza.
      * @param inbound True, if the stanza is inbound.
      * @throws IllegalArgumentException if source is null.
      */

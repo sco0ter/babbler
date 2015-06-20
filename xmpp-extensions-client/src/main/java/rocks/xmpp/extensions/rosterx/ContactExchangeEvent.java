@@ -24,18 +24,19 @@
 
 package rocks.xmpp.extensions.rosterx;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This event notifies listeners, when an entity suggests to add, delete or modify a contact.
  *
  * @author Christian Schudt
- * @see ContactExchangeListener
+ * @see ContactExchangeManager#addContactExchangeListener(Consumer)
  */
 public final class ContactExchangeEvent extends EventObject {
 
@@ -45,9 +46,9 @@ public final class ContactExchangeEvent extends EventObject {
 
     private final Jid from;
 
-    private final Date date;
+    private final Instant date;
 
-    ContactExchangeEvent(Object source, List<ContactExchange.Item> items, Jid from, String message, Date date) {
+    ContactExchangeEvent(Object source, List<ContactExchange.Item> items, Jid from, String message, Instant date) {
         super(source);
         this.items = items;
         this.message = message;
@@ -87,7 +88,7 @@ public final class ContactExchangeEvent extends EventObject {
      *
      * @return The send date.
      */
-    public Date getDate() {
+    public Instant getDate() {
         return date;
     }
 }

@@ -24,21 +24,19 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.XmppUtils;
-import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
+import rocks.xmpp.util.XmppUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,48 +47,32 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * @author Christian Schudt
  */
-public final class FileTransferManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(FileTransferManager.class.getName());
+public final class FileTransferManager extends Manager {
 
     private final StreamInitiationManager streamInitiationManager;
 
     private final EntityCapabilitiesManager entityCapabilitiesManager;
 
-    private final Set<FileTransferOfferListener> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<FileTransferOfferEvent>> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
 
     private final ExecutorService fileTransferOfferExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Offer Thread"));
 
     private FileTransferManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, true);
         this.streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
-    }
-
-    @Override
-    protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    fileTransferOfferListeners.clear();
-                    fileTransferOfferExecutor.shutdown();
-                }
-            }
-        });
     }
 
     /**
@@ -154,7 +136,7 @@ public final class FileTransferManager extends ExtensionManager {
         if (Files.notExists(requireNonNull(source, "source must not be null."))) {
             throw new NoSuchFileException(source.getFileName().toString());
         }
-        return offerFile(Files.newInputStream(source), source.getFileName().toString(), Files.size(source), new Date(Files.getLastModifiedTime(source).toMillis()), description, recipient, timeout);
+        return offerFile(Files.newInputStream(source), source.getFileName().toString(), Files.size(source), Files.getLastModifiedTime(source).toInstant(), description, recipient, timeout);
     }
 
     /**
@@ -174,7 +156,7 @@ public final class FileTransferManager extends ExtensionManager {
      * @throws rocks.xmpp.core.session.NoResponseException If the recipient did not downloaded the file within the timeout.
      * @throws java.io.IOException                         If the file could not be read.
      */
-    public final FileTransfer offerFile(final InputStream source, final String fileName, final long fileSize, Date lastModified, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
+    public final FileTransfer offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
         if (!requireNonNull(recipient, "jid must not be null.").isFullJid()) {
             throw new IllegalArgumentException("recipient must be a full JID (including resource)");
         }
@@ -200,28 +182,16 @@ public final class FileTransferManager extends ExtensionManager {
     }
 
     public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {
-        fileTransferOfferExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                FileTransferOfferEvent fileTransferRequestEvent = new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator);
-                for (FileTransferOfferListener fileTransferOfferListener : fileTransferOfferListeners) {
-                    try {
-                        fileTransferOfferListener.fileTransferOffered(fileTransferRequestEvent);
-                    } catch (Exception e) {
-                        logger.log(Level.WARNING, e.getMessage(), e);
-                    }
-                }
-            }
-        });
+        fileTransferOfferExecutor.execute(() -> XmppUtils.notifyEventListeners(fileTransferOfferListeners, new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator)));
     }
 
     /**
      * Adds a file transfer listener, which allows to listen for inbound file transfer requests.
      *
      * @param fileTransferOfferListener The listener.
-     * @see #removeFileTransferOfferListener(FileTransferOfferListener)
+     * @see #removeFileTransferOfferListener(Consumer)
      */
-    public void addFileTransferOfferListener(FileTransferOfferListener fileTransferOfferListener) {
+    public void addFileTransferOfferListener(Consumer<FileTransferOfferEvent> fileTransferOfferListener) {
         fileTransferOfferListeners.add(fileTransferOfferListener);
     }
 
@@ -229,9 +199,15 @@ public final class FileTransferManager extends ExtensionManager {
      * Removes a previously added file transfer listener.
      *
      * @param fileTransferOfferListener The listener.
-     * @see #addFileTransferOfferListener(FileTransferOfferListener)
+     * @see #addFileTransferOfferListener(Consumer)
      */
-    public void removeFileTransferOfferListener(FileTransferOfferListener fileTransferOfferListener) {
+    public void removeFileTransferOfferListener(Consumer<FileTransferOfferEvent> fileTransferOfferListener) {
         fileTransferOfferListeners.remove(fileTransferOfferListener);
+    }
+
+    @Override
+    protected void dispose() {
+        fileTransferOfferListeners.clear();
+        fileTransferOfferExecutor.shutdown();
     }
 }

@@ -22,18 +22,18 @@ Since this project is quite young, the API might change. Comments on the API are
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.1</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.1</version>
 </dependency>
 ```
 
 ## Snapshots
 
-Developing snapshots are availble on OSS Sonatype nexus:
+Development snapshots are availble on OSS Sonatype nexus:
 
 ```xml
 <repositories>
@@ -55,12 +55,12 @@ Developing snapshots are availble on OSS Sonatype nexus:
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.6.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.6.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -145,6 +145,7 @@ Developing snapshots are availble on OSS Sonatype nexus:
 * ![supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
 * ![in development][in development] [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
+* ![supported][supported]           [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
 
 Supported experimental XEPs:
 
@@ -165,6 +166,7 @@ Additionally following informational XEP documents are respected:
 * ![supported][supported]           [XEP-0170: Recommended Order of Stream Feature Negotiation](http://xmpp.org/extensions/xep-0170.html)
 * ![supported][supported]           [XEP-0175: Best Practices for Use of SASL ANONYMOUS](http://xmpp.org/extensions/xep-0175.html)
 * ![supported][supported]           [XEP-0201: Best Practices for Message Threads](http://xmpp.org/extensions/xep-0201.html)
+* ![supported][supported]           [XEP-0205: Best Practices to Discourage Denial of Service Attacks](http://xmpp.org/extensions/xep-0205.html)
 * ![supported][supported]           [XEP-0222: Persistent Storage of Public Data via PubSub](http://xmpp.org/extensions/xep-0222.html)
 * ![supported][supported]           [XEP-0223: Persistent Storage of Private Data via PubSub](http://xmpp.org/extensions/xep-0223.html)
 
@@ -177,20 +179,20 @@ This project is licensed under [MIT License](http://opensource.org/licenses/MIT)
 
 ## Establishing an XMPP Session
 
-The first thing you want to do in order to connect to an XMPP server is creating a `XmppSession` object:
+The first thing you want to do in order to connect to an XMPP server is creating a `XmppClient` object:
 
 ```java
-XmppSession xmppSession = new XmppSession("domain");
+XmppClient xmppClient = new XmppClient("domain");
 ```
 
-The `XmppSession` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+The `XmppClient` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
 
 A session to an XMPP server can be established in at least two ways:
 
 1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
 2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
 
-By default, the `XmppSession` will try to establish a connection via TCP first during the connection process.
+By default, the `XmppClient` will try to establish a connection via TCP first during the connection process.
 If the connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually BOSH).
 The hostname and port is determined by doing a DNS lookup.
 
@@ -224,7 +226,7 @@ BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.buil
 Now let's pass them to the session to tell it that it should use them:
 
 ```java
-XmppSession xmppSession = new XmppSession("domain", tcpConfiguration, boshConfiguration);
+XmppClient xmppClient = new XmppClient("domain", tcpConfiguration, boshConfiguration);
 ```
 
 During connecting, the session will try all configured connections in order, until a connection is established.
@@ -262,25 +264,16 @@ Here are some examples:
 
 ```java
 // Listen for presence changes
-xmppSession.addInboundPresenceListener(new PresenceListener() {
-    @Override
-    public void handlePresence(PresenceEvent e) {
-        // Handle inbound presence.
-    }
+xmppClient.addInboundPresenceListener(e -> {
+    // Handle inbound presence.
 });
 // Listen for messages
-xmppSession.addInboundMessageListener(new MessageListener() {
-    @Override
-    public void handleMessage(MessageEvent e) {
-        // Handle inbound message
-    }
+xmppClient.addInboundMessageListener(e -> {
+    // Handle inbound message
 });
 // Listen for roster pushes
-xmppSession.getManager(RosterManager.class).addRosterListener(new RosterListener() {
-    @Override
-    public void rosterChanged(RosterEvent e) {
+xmppClient.getManager(RosterManager.class).addRosterListener(e -> {
 
-    }
 });
 ```
 
@@ -290,7 +283,7 @@ If you have prepared your session, you are now ready to connect to the server:
 
 ```java
 try {
-   xmppSession.connect();
+   xmppClient.connect();
 } catch (XmppException e) {
    // ...
 }
@@ -307,28 +300,20 @@ After connecting, you have to authenticate and bind a resource, in order to beco
 
 ```java
 try {
-   xmppSession.login("username", "password", "resource");
+   xmppClient.login("username", "password", "resource");
 } catch (AuthenticationException e) {
    // Login failed
 }
 ```
 
-## Establishing a Presence Session
-
-After you are connected, authenticated and have bound a resource, you should now establish a [presence session](http://xmpp.org/rfcs/rfc6121.html#presence-fundamentals), by sending [initial presence](http://xmpp.org/rfcs/rfc6121.html#presence-initial):
-
-```java
-xmppSession.send(new Presence());
-```
-
-You are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
+Initial presence is sent automatically, so that you are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
 
 ## Sending a Message
 
 Sending a simple chat message works like this:
 
 ```java
-xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
+xmppClient.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
 ```
 
 ## Changing Availability
@@ -336,7 +321,7 @@ xmppSession.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHA
 If you want to change your presence availability, just send a new presence with a \"show\" value.
 
 ```java
-xmppSession.send(new Presence(Presence.Show.AWAY));
+xmppClient.send(new Presence(Presence.Show.AWAY));
 ```
 
 ## Closing the Session
@@ -344,19 +329,19 @@ xmppSession.send(new Presence(Presence.Show.AWAY));
 Closing a session is simply done with:
 
 ```java
-xmppSession.close();
+xmppClient.close();
 ```
 
-Note, that `XmppSession` implements `java.lang.AutoCloseable`, which means you can also use the try-with-resources statement, which automatically closes the session:
+Note, that `XmppClient` implements `java.lang.AutoCloseable`, which means you can also use the try-with-resources statement, which automatically closes the session:
 
 ```java
-try (XmppSession xmppSession = new XmppSession("domain")) {
-    xmppSession.connect();
-} catch (Exception e) {
+try (XmppClient xmppClient = new XmppClient("domain")) {
+    xmppClient.connect();
+} catch (XmppException e) {
     // handle exception
 }
 ```
 
-[supported]: /sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/supported.png "Is supported"
-[not supported]: /sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/notsupported.png "Is not supported"
-[in development]: /sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/development.png "Is in development or planned"
+[supported]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/supported.png "Is supported"
+[not supported]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/notsupported.png "Is not supported"
+[in development]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/development.png "Is in development or planned"

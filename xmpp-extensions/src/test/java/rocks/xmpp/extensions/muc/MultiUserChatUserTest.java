@@ -26,10 +26,12 @@ package rocks.xmpp.extensions.muc;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.Message;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.user.Invite;
@@ -44,7 +46,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class MultiUserChatUserTest extends XmlTest {
     protected MultiUserChatUserTest() throws JAXBException, XMLStreamException {
-        super(Presence.class, Message.class, MucUser.class);
+        super(ClientPresence.class, ClientMessage.class, MucUser.class);
     }
 
     @Test

@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.sm.model;
 
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "failed")
-public final class Failed implements ServerStreamElement {
+public final class Failed implements StreamElement {
 
     @XmlElementRef
     private Condition stanzaError;

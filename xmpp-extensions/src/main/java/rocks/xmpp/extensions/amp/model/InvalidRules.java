@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.amp.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,8 +42,7 @@ import java.util.List;
 @XmlRootElement(name = "invalid-rules")
 public final class InvalidRules {
 
-    @XmlElement(name = "rule")
-    private final List<Rule> rules = new ArrayList<>();
+    private final List<Rule> rule = new ArrayList<>();
 
     /**
      * Gets the invalid rules.
@@ -52,6 +50,6 @@ public final class InvalidRules {
      * @return The invalid rules.
      */
     public final List<Rule> getRules() {
-        return Collections.unmodifiableList(rules);
+        return Collections.unmodifiableList(rule);
     }
 }

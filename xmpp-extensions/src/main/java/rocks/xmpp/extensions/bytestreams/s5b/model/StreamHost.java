@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
@@ -36,13 +36,13 @@ import java.util.Objects;
  */
 public final class StreamHost {
 
-    @XmlAttribute(name = "jid")
+    @XmlAttribute
     private final Jid jid;
 
-    @XmlAttribute(name = "host")
+    @XmlAttribute
     private final String host;
 
-    @XmlAttribute(name = "port")
+    @XmlAttribute
     private final int port;
 
     private StreamHost() {

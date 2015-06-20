@@ -26,8 +26,8 @@ package rocks.xmpp.sample.geolocation;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.core.session.XmppClient;
+import rocks.xmpp.extensions.geoloc.GeoLocationManager;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -39,37 +39,31 @@ public class GeolocationReceiver {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .secure(false)
-                            .build();
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .secure(false)
+                        .build();
 
-                    XmppSession xmppSession = new XmppSession("localhost", tcpConfiguration);
+                XmppClient xmppSession = new XmppClient("localhost", tcpConfiguration);
 
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("222", "222", "geolocation");
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("222", "222", "geolocation");
 
-//                    GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
-//                    geoLocationManager.setEnabled(true);
-//                    geoLocationManager.addGeoLocationListener(new GeoLocationListener() {
-//                        @Override
-//                        public void geoLocationUpdated(GeoLocationEvent e) {
-//                            System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());
-//                        }
-//                    });
+                GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
+                geoLocationManager.setEnabled(true);
+                geoLocationManager.addGeoLocationListener(e -> {
+                    System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());
 
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                });
 
-                } catch (XmppException e) {
-                    e.printStackTrace();
-                }
+                // Send initial presence
+
+            } catch (XmppException e) {
+                e.printStackTrace();
             }
         });
     }

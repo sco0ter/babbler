@@ -25,7 +25,6 @@
 package rocks.xmpp.core.stanza;
 
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
 
 import java.util.EventObject;
 
@@ -34,7 +33,7 @@ import java.util.EventObject;
  *
  * @author Christian Schudt
  */
-public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extends EventObject {
+public abstract class StanzaEvent<S extends Stanza> extends EventObject {
 
     protected final S stanza;
 
@@ -50,31 +49,9 @@ public abstract class StanzaEvent<S extends Stanza & ClientStreamElement> extend
      * Indicates, whether the stanza has been received (inbound) or is about to being sent (outbound).
      *
      * @return True, if the stanza is inbound; false if it is outbound.
-     * @deprecated Use {@link #isInbound()}
-     */
-    @Deprecated
-    public final boolean isIncoming() {
-        return inbound;
-    }
-
-    /**
-     * Indicates, whether the stanza has been received (inbound) or is about to being sent (outbound).
-     *
-     * @return True, if the stanza is inbound; false if it is outbound.
      */
     public final boolean isInbound() {
         return inbound;
-    }
-
-    /**
-     * Gets the stanza.
-     *
-     * @return The stanza.
-     * @deprecated Use getMessage(), getPresence() or getIQ().
-     */
-    @Deprecated
-    public final S getStanza() {
-        return stanza;
     }
 
     @Override

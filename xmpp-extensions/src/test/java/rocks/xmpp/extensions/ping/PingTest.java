@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.ping;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.ping.model.Ping;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
 public class PingTest extends XmlTest {
 
     protected PingTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Ping.class);
+        super(ClientIQ.class, Ping.class);
     }
 
     @Test

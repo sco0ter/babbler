@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.featureneg;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
 public class FeatureNegotiationTest extends XmlTest {
 
     protected FeatureNegotiationTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, FeatureNegotiation.class);
+        super(ClientIQ.class, FeatureNegotiation.class);
     }
 
     @Test

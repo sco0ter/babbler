@@ -27,8 +27,10 @@ package rocks.xmpp.extensions.oob;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.oob.model.x.OobX;
 
@@ -42,7 +44,7 @@ import java.net.URL;
  */
 public class OutOfBandTest extends XmlTest {
     protected OutOfBandTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Message.class, OobIQ.class, OobX.class);
+        super(ClientIQ.class, ClientMessage.class, OobIQ.class, OobX.class);
     }
 
     @Test

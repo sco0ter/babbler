@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -37,11 +37,11 @@ import java.util.List;
 /**
  * A chat service hosts chat rooms. It allows you to discover public chat rooms or create new (instant) rooms, if allowed by the service.
  * <p>
- * You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(rocks.xmpp.core.Jid)} method or by {@linkplain MultiUserChatManager#getChatServices() discovering} the chat services at your connected domain.
+ * You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(Jid)} method or by {@linkplain rocks.xmpp.extensions.muc.MultiUserChatManager#discoverChatServices() discovering} the chat services at your connected domain.
  * </p>
  *
  * @author Christian Schudt
- * @see MultiUserChatManager#createChatService(rocks.xmpp.core.Jid)
+ * @see MultiUserChatManager#createChatService(Jid)
  */
 public final class ChatService implements Comparable<ChatService> {
 
@@ -61,19 +61,6 @@ public final class ChatService implements Comparable<ChatService> {
         this.name = name;
         this.serviceDiscoveryManager = serviceDiscoveryManager;
         this.multiUserChatManager = multiUserChatManager;
-    }
-
-    /**
-     * Gets the list of public chat rooms hosted by this chat service.
-     *
-     * @return The public rooms.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
-     * @deprecated Use {@link #discoverRooms()}
-     */
-    @Deprecated
-    public List<ChatRoom> getPublicRooms() throws XmppException {
-        return discoverRooms();
     }
 
     /**

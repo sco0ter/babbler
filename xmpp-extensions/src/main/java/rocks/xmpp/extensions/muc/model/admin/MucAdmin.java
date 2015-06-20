@@ -24,14 +24,13 @@
 
 package rocks.xmpp.extensions.muc.model.admin;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.muc.model.Actor;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Item;
 import rocks.xmpp.extensions.muc.model.Role;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,8 +46,7 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class MucAdmin {
 
-    @XmlElement(name = "item")
-    private final List<MucAdminItem> items = new ArrayList<>();
+    private final List<MucAdminItem> item = new ArrayList<>();
 
     private MucAdmin() {
     }
@@ -60,7 +58,7 @@ public final class MucAdmin {
      */
     private MucAdmin(Item... items) {
         for (Item item : items) {
-            this.items.add(new MucAdminItem(item));
+            this.item.add(new MucAdminItem(item));
         }
     }
 
@@ -287,27 +285,25 @@ public final class MucAdmin {
      * @return The items.
      */
     public List<? extends Item> getItems() {
-        return Collections.unmodifiableList(items);
+        return Collections.unmodifiableList(item);
     }
 
     private static final class MucAdminItem implements Item {
 
-        @XmlElement(name = "actor")
         private MucAdminActor actor;
 
-        @XmlElement(name = "reason")
         private String reason;
 
-        @XmlAttribute(name = "affiliation")
+        @XmlAttribute
         private Affiliation affiliation;
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "nick")
+        @XmlAttribute
         private String nick;
 
-        @XmlAttribute(name = "role")
+        @XmlAttribute
         private Role role;
 
         private MucAdminItem() {
@@ -374,10 +370,10 @@ public final class MucAdmin {
         }
 
         private static final class MucAdminActor implements Actor {
-            @XmlAttribute(name = "jid")
+            @XmlAttribute
             private Jid jid;
 
-            @XmlAttribute(name = "nick")
+            @XmlAttribute
             private String nick;
 
             private MucAdminActor() {

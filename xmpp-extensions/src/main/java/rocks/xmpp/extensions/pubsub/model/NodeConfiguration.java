@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.MalformedURLException;
@@ -380,10 +380,10 @@ public final class NodeConfiguration {
      *
      * @return The notification type.
      */
-    public AbstractMessage.Type getNotificationType() {
+    public Message.Type getNotificationType() {
         String value = dataForm.findValue(NOTIFICATION_TYPE);
         if (value != null) {
-            return AbstractMessage.Type.valueOf(value.toUpperCase());
+            return Message.Type.valueOf(value.toUpperCase());
         }
         return null;
     }
@@ -564,7 +564,7 @@ public final class NodeConfiguration {
 
         private NodeType nodeType;
 
-        private AbstractMessage.Type notificationType;
+        private Message.Type notificationType;
 
         private Boolean notifyConfig;
 
@@ -807,8 +807,8 @@ public final class NodeConfiguration {
          * @param notificationType The notification type.
          * @return The builder.
          */
-        public Builder notificationType(AbstractMessage.Type notificationType) {
-            if (notificationType != AbstractMessage.Type.HEADLINE && notificationType != AbstractMessage.Type.NORMAL) {
+        public Builder notificationType(Message.Type notificationType) {
+            if (notificationType != Message.Type.HEADLINE && notificationType != Message.Type.NORMAL) {
                 throw new IllegalArgumentException("only 'normal' and 'headline' type allowed.");
             }
             this.notificationType = notificationType;

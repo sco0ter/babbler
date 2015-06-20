@@ -24,8 +24,7 @@
 
 package rocks.xmpp.extensions.compress.model;
 
-import rocks.xmpp.core.stream.model.ClientStreamElement;
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -65,8 +64,8 @@ public abstract class StreamCompression {
      * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
      * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
-    @XmlRootElement(name = "failure")
-    public static final class Failure extends StreamCompression implements ServerStreamElement {
+    @XmlRootElement
+    public static final class Failure extends StreamCompression implements StreamElement {
 
         @XmlElements({@XmlElement(name = "setup-failed", type = SetupFailed.class),
                 @XmlElement(name = "processing-failed", type = ProcessingFailed.class),
@@ -176,10 +175,9 @@ public abstract class StreamCompression {
      * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
      * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
-    @XmlRootElement(name = "compress")
-    public static final class Compress implements ClientStreamElement {
+    @XmlRootElement
+    public static final class Compress implements StreamElement {
 
-        @XmlElement
         private final String method;
 
         private Compress() {
@@ -207,9 +205,9 @@ public abstract class StreamCompression {
      * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
      * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
-    @XmlRootElement(name = "compressed")
+    @XmlRootElement
     @XmlType(factoryMethod = "create")
-    static final class Compressed extends StreamCompression implements ServerStreamElement {
+    static final class Compressed extends StreamCompression implements StreamElement {
         private Compressed() {
         }
 

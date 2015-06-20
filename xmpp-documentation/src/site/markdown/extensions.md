@@ -38,7 +38,7 @@ entityCapabilitiesManager.setEnabled(true);
 ```
 
 This will enable support for [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html), which means Entity Capabilities are included in every presence being sent.
-Furthermore, it will analyze inbound presence stanzas for a \"caps\" extension and manage a cache of capabilities.
+Furthermore, it will analyze inbound presence stanzas for a "caps" extension and manage a cache of capabilities.
 
 ---
 
@@ -48,7 +48,7 @@ entityTimeManager.setEnabled(false);
 ```
 
 This manager manages [XEP-0202: Entity Time](http://xmpp.org/extensions/xep-0202.html) and is enabled by default.
-Inbound \"time\" requests are automatically replied to with the current time, while enabled.
+Inbound "time" requests are automatically replied to with the current time, while enabled.
 
 ---
 

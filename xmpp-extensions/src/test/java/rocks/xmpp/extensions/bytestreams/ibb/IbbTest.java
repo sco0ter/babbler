@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.bytestreams.ibb;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class IbbTest extends XmlTest {
     protected IbbTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, InBandByteStream.class);
+        super(ClientIQ.class, InBandByteStream.class);
     }
 
     @Test
@@ -79,7 +80,7 @@ public class IbbTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
         Assert.assertNotNull(open);
-        Assert.assertEquals((int) open.getBlockSize(), 4096);
+        Assert.assertEquals(open.getBlockSize(), 4096);
         Assert.assertEquals(open.getSessionId(), "i781hf64");
         Assert.assertEquals(open.getStanzaType(), InBandByteStream.Open.StanzaType.IQ);
     }

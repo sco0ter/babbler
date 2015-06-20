@@ -11,13 +11,13 @@ PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
 
 ## Discovering PubSub Services
 
-If you don\'t know the address of your server\'s pubsub service, you can discover pubsub services like that:
+If you don't know the address of your server's pubsub service, you can discover pubsub services like that:
 
 ```java
 Collection<PubSubService> pubSubServices = pubSubManager.discoverPubSubServices();
 ```
 
-The resulting list will contain the available PubSub services on your server. Most often it\'s probably only one: \"pubsub.yourxmppdomain\".
+The resulting list will contain the available PubSub services on your server. Most often it's probably only one: "pubsub.yourxmppdomain".
 
 ## Using a PubSub Service
 
@@ -69,7 +69,7 @@ The following publishes a [Tune][Tune] to the node.
 pubSubNode.publish(new Tune("Artist", "Title"));
 ```
 
-*(Note, that this works, because `Tune` is known to the JAXB Context. Unknown objects won\'t work)*
+*(Note, that this works, because `Tune` is known to the JAXB Context. Unknown objects won't work)*
 
 ### Subscribing to a Node
 
@@ -92,15 +92,12 @@ pubSubNode.unsubscribe();
 For now, you have to just deal directly with the messages. This may change in the future.
 
 ```java
-xmppSession.addInboundMessageListener(new MessageListener() {
-    @Override
-    public void handleMessage(MessageEvent e) {
-        Message message = e.getMessage();
-        Event event = message.getExtension(Event.class);
-        if (event != null) {
-            for (Item item : event.getItems()) {
-                // ...
-            }
+xmppSession.addInboundMessageListener(e -> {
+    Message message = e.getMessage();
+    Event event = message.getExtension(Event.class);
+    if (event != null) {
+        for (Item item : event.getItems()) {
+            // ...
         }
     }
 });
@@ -117,13 +114,10 @@ try {
     PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.yourdomain"));
     PubSubNode pubSubNode = pubSubService.node("princely_musings");
     pubSubNode.subscribe();
-} catch (XmppException e) {
-    if (e instanceof StanzaException) {
-        StanzaException stanzaException = (StanzaException) e;
-        Object extension = stanzaException.getStanza().getError().getExtension();
-        if (extension instanceof PresenceSubscriptionRequired) {
-            // PubSub error <presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/> occurred.
-        }
+}  catch (StanzaException e) {
+    Object extension = e.getStanza().getError().getExtension();
+    if (extension instanceof PresenceSubscriptionRequired) {
+        // PubSub error <presence-subscription-required xmlns='http://jabber.org/protocol/pubsub#errors'/> occurred.
     }
 }
 ```

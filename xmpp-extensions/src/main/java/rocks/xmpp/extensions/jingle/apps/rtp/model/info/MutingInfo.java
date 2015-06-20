@@ -34,10 +34,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlTransient
 abstract class MutingInfo {
 
-    @XmlAttribute(name = "creator")
+    @XmlAttribute
     private Creator creator;
 
-    @XmlAttribute(name = "name")
+    @XmlAttribute
     private String name;
 
     public Creator getCreator() {

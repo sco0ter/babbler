@@ -24,8 +24,7 @@
 
 package rocks.xmpp.extensions.sm.model;
 
-import rocks.xmpp.core.stream.model.ClientStreamElement;
-import rocks.xmpp.core.stream.model.ServerStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -33,5 +32,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "r")
-public final class Request implements ClientStreamElement, ServerStreamElement {
+public final class Request implements StreamElement {
 }

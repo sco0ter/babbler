@@ -42,7 +42,7 @@ public final class S5bTransportNegotiator extends TransportNegotiator<S5bTranspo
 
     private final Socks5ByteStreamManager socks5ByteStreamManager;
 
-    private XmppSession xmppSession;
+    private final XmppSession xmppSession;
 
     protected S5bTransportNegotiator(JingleSession jingleSession, XmppSession xmppSession) {
         super(jingleSession);

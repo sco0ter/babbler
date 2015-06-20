@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppClient;
 
 /**
  * @author Christian Schudt
@@ -44,7 +44,7 @@ public class CompressionIT extends IntegrationTest {
                 .secure(false)
                 .build();
 
-        try (XmppSession xmppSession = new XmppSession(DOMAIN, tcpConfiguration)) {
+        try (XmppClient xmppSession = new XmppClient(DOMAIN, tcpConfiguration)) {
             xmppSession.connect();
             xmppSession.loginAnonymously();
             CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);

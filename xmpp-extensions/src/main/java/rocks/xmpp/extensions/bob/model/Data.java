@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.bob.model;
 
-import rocks.xmpp.core.XmppUtils;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;

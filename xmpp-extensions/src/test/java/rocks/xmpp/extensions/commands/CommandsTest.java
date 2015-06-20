@@ -28,7 +28,8 @@ package rocks.xmpp.extensions.commands;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.model.DataForm;
 
@@ -42,7 +43,7 @@ import java.util.Collections;
  */
 public class CommandsTest extends XmlTest {
     protected CommandsTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Command.class, DataForm.class);
+        super(ClientIQ.class, Command.class, DataForm.class);
     }
 
     @Test
@@ -244,7 +245,7 @@ public class CommandsTest extends XmlTest {
 
     @Test
     public void marshalCommand() throws XMLStreamException, JAXBException {
-        Command command = new Command("node", "sid", Command.Status.CANCELED, Arrays.asList(Command.Action.PREV), Command.Action.NEXT, Collections.emptyList());
+        Command command = new Command("node", "sid", Command.Status.CANCELED, Collections.singletonList(Command.Action.PREV), Command.Action.NEXT, Collections.emptyList());
         String xml = marshal(command);
         Assert.assertEquals(xml, "<command xmlns=\"http://jabber.org/protocol/commands\" node=\"node\" sessionid=\"sid\" status=\"canceled\"><actions execute=\"next\"><prev></prev></actions></command>");
     }

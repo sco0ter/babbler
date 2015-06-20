@@ -24,21 +24,19 @@
 
 package rocks.xmpp.extensions.jingle;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.model.errors.UnknownSession;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -47,40 +45,28 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
  */
-public final class JingleManager extends ExtensionManager {
-
-    private static final Logger logger = Logger.getLogger(JingleManager.class.getName());
+public final class JingleManager extends Manager {
 
     private final Set<Class<? extends ApplicationFormat>> supportedApplicationFormats = new HashSet<>();
 
-    private final Set<JingleListener> jingleListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<JingleEvent>> jingleListeners = new CopyOnWriteArraySet<>();
 
-    private Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
+    private final Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
 
     private JingleManager(final XmppSession xmppSession) {
-        super(xmppSession);
+        super(xmppSession, true);
 
         supportedApplicationFormats.add(JingleFileTransfer.class);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    jingleListeners.clear();
-                    jingleSessionMap.clear();
-                }
-            }
-        });
-        xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(IQ.Type.SET) {
             @Override
             public IQ processRequest(IQ iq) {
                 Jingle jingle = iq.getExtension(Jingle.class);
@@ -143,7 +129,7 @@ public final class JingleManager extends ExtensionManager {
                                 // Everything is fine, create the session and notify the listeners.
                                 JingleSession jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
                                 jingleSessionMap.put(jingle.getSessionId(), jingleSession);
-                                notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                                XmppUtils.notifyEventListeners(jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                             }
                             // If the request was ok, immediately acknowledge the initiation request.
                             // See 6.3.1 Acknowledgement
@@ -161,7 +147,7 @@ public final class JingleManager extends ExtensionManager {
                         // return <item-not-found/> and <unknown-session/>
                         return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession()));
                     } else {
-                        jingleSession.notifyJingleListeners(new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                        XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                         return iq.createResult();
                     }
                 }
@@ -191,9 +177,9 @@ public final class JingleManager extends ExtensionManager {
      * Adds a Jingle listener, which allows to listen for Jingle events.
      *
      * @param jingleListener The listener.
-     * @see #removeJingleListener(JingleListener)
+     * @see #removeJingleListener(Consumer)
      */
-    public final void addJingleListener(JingleListener jingleListener) {
+    public final void addJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.add(jingleListener);
     }
 
@@ -201,25 +187,15 @@ public final class JingleManager extends ExtensionManager {
      * Removes a previously added Jingle listener.
      *
      * @param jingleListener The listener.
-     * @see #addJingleListener(JingleListener)
+     * @see #addJingleListener(Consumer)
      */
-    public final void removeJingleListener(JingleListener jingleListener) {
+    public final void removeJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.remove(jingleListener);
     }
 
-
-    /**
-     * Notifies the Jingle listeners.
-     *
-     * @param jingleEvent The Jingle event.
-     */
-    void notifyJingleListeners(JingleEvent jingleEvent) {
-        for (JingleListener jingleListener : jingleListeners) {
-            try {
-                jingleListener.jingleReceived(jingleEvent);
-            } catch (Exception exc) {
-                logger.log(Level.WARNING, exc.getMessage(), exc);
-            }
-        }
+    @Override
+    protected void dispose() {
+        jingleListeners.clear();
+        jingleSessionMap.clear();
     }
 }

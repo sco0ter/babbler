@@ -29,13 +29,10 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.model.AbstractMessage;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.attention.model.Attention;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Feature;
 
 /**
  * @author Christian Schudt
@@ -51,13 +48,10 @@ public class AttentionManagerTest extends ExtensionTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         final boolean[] attentionReceived = {false};
-        xmppSession2.addInboundMessageListener(new MessageListener() {
-            @Override
-            public void handleMessage(MessageEvent e) {
-                if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == AbstractMessage.Type.HEADLINE) {
-                    attentionReceived[0] = true;
-                    Assert.assertEquals(e.getMessage().getType(), AbstractMessage.Type.HEADLINE);
-                }
+        xmppSession2.addInboundMessageListener(e -> {
+            if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == Message.Type.HEADLINE) {
+                attentionReceived[0] = true;
+                Assert.assertEquals(e.getMessage().getType(), Message.Type.HEADLINE);
             }
         });
 
@@ -75,7 +69,7 @@ public class AttentionManagerTest extends ExtensionTest {
         AttentionManager attentionManager = connection1.getManager(AttentionManager.class);
         Assert.assertFalse(attentionManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        Feature feature = new Feature("urn:xmpp:attention:0");
+        String feature = "urn:xmpp:attention:0";
         Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
         attentionManager.setEnabled(true);
         Assert.assertTrue(attentionManager.isEnabled());

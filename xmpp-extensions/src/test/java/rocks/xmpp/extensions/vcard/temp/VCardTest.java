@@ -26,24 +26,25 @@ package rocks.xmpp.extensions.vcard.temp;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalDate;
+import java.time.Month;
 
 /**
  * @author Christian Schudt
  */
 public class VCardTest extends XmlTest {
     protected VCardTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, VCard.class);
+        super(ClientIQ.class, VCard.class);
     }
 
     @Test
@@ -110,13 +111,11 @@ public class VCardTest extends XmlTest {
         Assert.assertEquals(vCard.getName().getFamilyName(), "Saint-Andre");
         Assert.assertEquals(vCard.getName().getGivenName(), "Peter");
         Assert.assertEquals(vCard.getName().getMiddleName(), "");
-        Assert.assertEquals(vCard.getNickName(), "stpeter");
+        Assert.assertEquals(vCard.getNickname(), "stpeter");
         Assert.assertEquals(vCard.getUrl().toString(), new URL("http://www.xmpp.org/xsf/people/stpeter.shtml").toString());
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(vCard.getBirthday());
-        Assert.assertEquals(calendar.get(Calendar.YEAR), 1966);
-        Assert.assertEquals(calendar.get(Calendar.MONTH), Calendar.AUGUST);
-        Assert.assertEquals(calendar.get(Calendar.DATE), 6);
+        Assert.assertEquals(vCard.getBirthday().getYear(), 1966);
+        Assert.assertEquals(vCard.getBirthday().getMonth(), Month.AUGUST);
+        Assert.assertEquals(vCard.getBirthday().getDayOfMonth(), 6);
         Assert.assertNotNull(vCard.getOrganization());
         Assert.assertEquals(vCard.getOrganization().getOrganizationName(), "XMPP Standards Foundation");
         Assert.assertEquals(vCard.getOrganization().getOrgUnits().size(), 1);
@@ -163,13 +162,9 @@ public class VCardTest extends XmlTest {
     @Test
     public void marshalBirthDayVCard() throws JAXBException, XMLStreamException {
         VCard vCard = new VCard();
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(Calendar.YEAR, 2004);
-        calendar.set(Calendar.MONTH, Calendar.MARCH);
-        calendar.set(Calendar.DATE, 19);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        vCard.setBirthday(calendar.getTime());
+        LocalDate localDate = LocalDate.of(2004, Month.MARCH, 19);
+        vCard.setBirthday(localDate);
         String xml = marshal(vCard);
-        Assert.assertEquals("<vCard xmlns=\"vcard-temp\" version=\"3.0\"><BDAY>2004-03-19Z</BDAY></vCard>", xml);
+        Assert.assertEquals("<vCard xmlns=\"vcard-temp\" version=\"3.0\"><BDAY>2004-03-19</BDAY></vCard>", xml);
     }
 }

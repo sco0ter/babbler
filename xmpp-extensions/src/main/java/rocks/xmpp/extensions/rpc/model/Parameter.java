@@ -24,14 +24,11 @@
 
 package rocks.xmpp.extensions.rpc.model;
 
-import javax.xml.bind.annotation.XmlElement;
-
 /**
  * @author Christian Schudt
  */
 final class Parameter {
 
-    @XmlElement(name = "value")
     private final Value value;
 
     private Parameter() {

@@ -24,19 +24,18 @@
 
 package rocks.xmpp.extensions.receipts;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.EventObject;
 
 /**
  * This event notifies listeners, when a message has been successfully delivered.
  *
  * @author Christian Schudt
- * @see MessageDeliveredListener
  */
 public final class MessageDeliveredEvent extends EventObject {
     private final String messageId;
 
-    private final Date deliveryDate;
+    private final Instant deliveryDate;
 
     /**
      * Constructs a message delivered event.
@@ -46,7 +45,7 @@ public final class MessageDeliveredEvent extends EventObject {
      * @param deliveryDate The date of the delivery.
      * @throws IllegalArgumentException if source is null.
      */
-    MessageDeliveredEvent(Object source, String messageId, Date deliveryDate) {
+    MessageDeliveredEvent(Object source, String messageId, Instant deliveryDate) {
         super(source);
         this.messageId = messageId;
         this.deliveryDate = deliveryDate;
@@ -66,7 +65,7 @@ public final class MessageDeliveredEvent extends EventObject {
      *
      * @return The delivery date.
      */
-    public Date getDeliveryDate() {
+    public Instant getDeliveryDate() {
         return deliveryDate;
     }
 }

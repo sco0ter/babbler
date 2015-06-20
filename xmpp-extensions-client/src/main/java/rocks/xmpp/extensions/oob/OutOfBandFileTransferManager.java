@@ -24,22 +24,19 @@
 
 package rocks.xmpp.extensions.oob;
 
-import rocks.xmpp.core.session.ExtensionManager;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.filetransfer.FileTransferNegotiator;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.FileTransferStatusEvent;
-import rocks.xmpp.extensions.filetransfer.FileTransferStatusListener;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
-import rocks.xmpp.extensions.oob.model.x.OobX;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,25 +44,25 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt
  */
-public final class OutOfBandFileTransferManager extends ExtensionManager implements FileTransferNegotiator {
+public final class OutOfBandFileTransferManager extends Manager implements FileTransferNegotiator {
     private final FileTransferManager fileTransferManager;
 
     private OutOfBandFileTransferManager(final XmppSession xmppSession) {
-        super(xmppSession, OobIQ.NAMESPACE, OobX.NAMESPACE);
+        super(xmppSession);
         fileTransferManager = xmppSession.getManager(FileTransferManager.class);
-        setEnabled(true);
     }
 
     @Override
     protected void initialize() {
-        xmppSession.addIQHandler(OobIQ.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        xmppSession.addIQHandler(OobIQ.class, new AbstractIQHandler(IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 OobIQ oobIQ = iq.getExtension(OobIQ.class);
@@ -90,7 +87,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                             length = connection.getContentLength();
                             lastModified = connection.getLastModified();
 
-                            final Date date = lastModified > 0 ? new Date(lastModified) : null;
+                            final Instant date = lastModified > 0 ? Instant.ofEpochMilli(lastModified) : null;
                             final String name = url.toString();
                             fileTransferManager.fileTransferOffered(iq, null, mimeType, null, new FileTransferOffer() {
                                 @Override
@@ -104,7 +101,7 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
                                 }
 
                                 @Override
-                                public Date getDate() {
+                                public Instant getDate() {
                                     return date;
                                 }
 
@@ -147,9 +144,9 @@ public final class OutOfBandFileTransferManager extends ExtensionManager impleme
             URL url = new URL(fileTransferOffer.getName());
             URLConnection urlConnection = url.openConnection();
             final FileTransfer fileTransfer = new FileTransfer(urlConnection.getInputStream(), outputStream, fileTransferOffer.getSize());
-            fileTransfer.addFileTransferStatusListener(new FileTransferStatusListener() {
+            fileTransfer.addFileTransferStatusListener(new Consumer<FileTransferStatusEvent>() {
                 @Override
-                public void fileTransferStatusChanged(FileTransferStatusEvent e) {
+                public void accept(FileTransferStatusEvent e) {
                     if (e.getStatus() == FileTransfer.Status.COMPLETED) {
                         xmppSession.send(iq.createResult());
                         fileTransfer.removeFileTransferStatusListener(this);

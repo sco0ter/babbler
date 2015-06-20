@@ -27,10 +27,12 @@ package rocks.xmpp.extensions.soap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Element;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Message;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.MessageFactory;
@@ -50,7 +52,7 @@ import javax.xml.transform.dom.DOMSource;
 public class SoapTest extends XmlTest {
 
     protected SoapTest() throws JAXBException, XMLStreamException {
-        super(Message.class, IQ.class);
+        super(ClientMessage.class, ClientIQ.class);
     }
 
     @Test

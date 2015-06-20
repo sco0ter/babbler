@@ -24,16 +24,17 @@
 
 package rocks.xmpp.extensions.blocking;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * This event notifies listeners, when a block or unblock "push" occurs.
  *
  * @author Christian Schudt
- * @see BlockingListener
+ * @see BlockingManager#addBlockingListener(Consumer)
  */
 public final class BlockingEvent extends EventObject {
     private final List<Jid> blockedContacts;

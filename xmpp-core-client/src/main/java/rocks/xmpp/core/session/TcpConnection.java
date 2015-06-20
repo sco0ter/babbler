@@ -24,11 +24,10 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stream.StreamFeatureListener;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
-import rocks.xmpp.core.stream.model.ClientStreamElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
@@ -56,10 +55,9 @@ import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
@@ -110,55 +108,43 @@ public final class TcpConnection extends Connection {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
         StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, new StreamFeatureListener() {
-            @Override
-            public void featureSuccessfullyNegotiated() throws StreamNegotiationException {
-                try {
-                    secureConnection();
-                } catch (Exception e) {
-                    throw new StreamNegotiationException(e);
-                }
+        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, () -> {
+            try {
+                secureConnection();
+            } catch (Exception e) {
+                throw new StreamNegotiationException(e);
             }
         }, configuration.isSecure()));
 
         final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
         compressionManager.getConfiguredCompressionMethods().addAll(configuration.getCompressionMethods());
-        compressionManager.addFeatureListener(new StreamFeatureListener() {
-            @Override
-            public void featureSuccessfullyNegotiated() throws StreamNegotiationException {
-                CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
-                // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
-                // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
-                InputStream iStream;
-                OutputStream oStream;
+        compressionManager.addFeatureListener(() -> {
+            CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
+            // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
+            // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
+            InputStream iStream;
+            OutputStream oStream;
+            synchronized (TcpConnection.this) {
+                iStream = inputStream;
+                oStream = outputStream;
+            }
+            try {
+                iStream = compressionMethod.decompress(iStream);
+                oStream = compressionMethod.compress(oStream);
                 synchronized (TcpConnection.this) {
-                    iStream = inputStream;
-                    oStream = outputStream;
+                    inputStream = iStream;
+                    outputStream = oStream;
                 }
-                try {
-                    iStream = compressionMethod.decompress(iStream);
-                    oStream = compressionMethod.compress(oStream);
-                    synchronized (TcpConnection.this) {
-                        inputStream = iStream;
-                        outputStream = oStream;
-                    }
-                } catch (IOException e) {
-                    throw new StreamNegotiationException(e);
-                }
+            } catch (IOException e) {
+                throw new StreamNegotiationException(e);
             }
         });
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
     }
 
-    @Override
-    @Deprecated
-    public final synchronized void connect() throws IOException {
-        connect(null);
-    }
-
     /**
      * Connects to the specified XMPP server using a socket connection.
-     * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppSession#login(String, String)} method.
+     * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppClient#login(String, String)} method.
      * <p>If only a XMPP service domain has been specified, it is tried to resolve the FQDN via SRV lookup.<br>
      * If that fails, it is tried to connect directly the XMPP service domain on port 5222.<br>
      * If a hostname and port have been specified, these are used to establish the connection.<br>
@@ -169,7 +155,7 @@ public final class TcpConnection extends Connection {
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public final synchronized void connect(Jid from) throws IOException {
+    public final synchronized void connect(Jid from, String namespace, Consumer<String> onStreamOpened) throws IOException {
 
         if (socket != null) {
             // Already connected.
@@ -196,12 +182,12 @@ public final class TcpConnection extends Connection {
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
         XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        xmppStreamWriter = new XmppStreamWriter(this.getXmppSession(), xmlOutputFactory);
+        xmppStreamWriter = new XmppStreamWriter(namespace, this.getXmppSession(), xmlOutputFactory);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 
         // Start reading from the input stream.
-        xmppStreamReader = new XmppStreamReader(this, this.getXmppSession(), xmlOutputFactory);
+        xmppStreamReader = new XmppStreamReader(namespace, this, this.getXmppSession(), xmlOutputFactory, onStreamOpened);
         xmppStreamReader.startReading(inputStream);
     }
 
@@ -268,12 +254,13 @@ public final class TcpConnection extends Connection {
 
         synchronized (this) {
             outputStream = new BufferedOutputStream(socket.getOutputStream());
-            inputStream = new BufferedInputStream(socket.getInputStream());
+            // http://java-performance.info/java-io-bufferedinputstream-and-java-util-zip-gzipinputstream/
+            inputStream = new BufferedInputStream(socket.getInputStream(), 65536);
         }
     }
 
     @Override
-    public final synchronized void send(ClientStreamElement element) {
+    public final synchronized void send(StreamElement element) {
         if (xmppStreamWriter != null) {
             xmppStreamWriter.send(element);
         }
@@ -371,17 +358,14 @@ public final class TcpConnection extends Connection {
                 }
 
                 // Sort the entries, so that the best one is tried first.
-                Collections.sort(dnsSrvRecords, new Comparator<DnsResourceRecord>() {
-                    @Override
-                    public int compare(DnsResourceRecord o1, DnsResourceRecord o2) {
-                        int result = Integer.compare(o1.priority, o2.priority);
-                        if (result == 0) {
-                            result = Integer.compare(o2.weight, o1.weight);
-                        }
-                        return result;
+                dnsSrvRecords.sort((o1, o2) -> {
+                    int result = Integer.compare(o1.priority, o2.priority);
+                    if (result == 0) {
+                        result = Integer.compare(o2.weight, o1.weight);
                     }
+                    return result;
                 });
-
+                IOException ex = null;
                 for (DnsResourceRecord dnsResourceRecord : dnsSrvRecords) {
                     try {
                         // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
@@ -392,11 +376,12 @@ public final class TcpConnection extends Connection {
                         return true;
                     } catch (IOException e) {
                         // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
+                        ex = e;
                     }
                 }
                 // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP connection using the data received in the response, it SHOULD NOT attempt the fallback process described in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
                 if (dnsSrvRecords.size() > 0) {
-                    throw new IOException("Could not connect to any host.");
+                    throw new IOException("Could not connect to any host.", ex);
                 }
             }
         } catch (NamingException e) {

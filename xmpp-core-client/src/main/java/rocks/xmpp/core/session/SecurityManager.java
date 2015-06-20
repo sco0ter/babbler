@@ -39,15 +39,12 @@ import rocks.xmpp.core.tls.model.StartTls;
  */
 final class SecurityManager extends StreamFeatureNegotiator {
 
-    private final XmppSession xmppSession;
-
     private final boolean isSecure;
 
     public SecurityManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, boolean isSecure) {
-        super(StartTls.class);
+        super(xmppSession, StartTls.class);
         this.isSecure = isSecure;
         addFeatureListener(streamFeatureListener);
-        this.xmppSession = xmppSession;
     }
 
     @Override

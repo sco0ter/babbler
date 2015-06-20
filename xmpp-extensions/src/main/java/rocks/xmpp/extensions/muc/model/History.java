@@ -24,8 +24,11 @@
 
 package rocks.xmpp.extensions.muc.model;
 
+import rocks.xmpp.util.adapters.InstantAdapter;
+
 import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Date;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.Instant;
 
 /**
  * The discussion history.
@@ -35,17 +38,18 @@ import java.util.Date;
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-managehistory">7.2.15 Managing Discussion History</a>
  */
 public final class History {
-    @XmlAttribute(name = "maxchars")
-    private Integer maxChars;
+    @XmlAttribute
+    private Integer maxchars;
 
-    @XmlAttribute(name = "maxstanzas")
-    private Integer maxStanzas;
+    @XmlAttribute
+    private Integer maxstanzas;
 
-    @XmlAttribute(name = "seconds")
+    @XmlAttribute
     private Integer seconds;
 
-    @XmlAttribute(name = "since")
-    private Date since;
+    @XmlAttribute
+    @XmlJavaTypeAdapter(InstantAdapter.class)
+    private Instant since;
 
     private History() {
     }
@@ -58,7 +62,7 @@ public final class History {
      */
     public static History forMaxChars(int maxChars) {
         History history = new History();
-        history.maxChars = maxChars;
+        history.maxchars = maxChars;
         return history;
     }
 
@@ -70,7 +74,7 @@ public final class History {
      */
     public static History forMaxMessages(int maxMessages) {
         History history = new History();
-        history.maxStanzas = maxMessages;
+        history.maxstanzas = maxMessages;
         return history;
     }
 
@@ -92,7 +96,7 @@ public final class History {
      * @param date The date.
      * @return The history.
      */
-    public static History since(Date date) {
+    public static History since(Instant date) {
         History history = new History();
         history.since = date;
         return history;
@@ -105,7 +109,7 @@ public final class History {
      */
     public static History none() {
         History history = new History();
-        history.maxChars = 0;
+        history.maxchars = 0;
         return history;
     }
 }

@@ -25,11 +25,11 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.XmppUtils;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
+import rocks.xmpp.util.XmppUtils;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -66,45 +66,35 @@ public final class ReconnectionManager extends Manager {
 
     private final ScheduledExecutorService scheduledExecutorService;
 
-    private final XmppSession xmppSession;
-
     private ReconnectionStrategy reconnectionStrategy;
 
     private ScheduledFuture<?> scheduledFuture;
 
-    private Date nextReconnectionAttempt;
+    private Instant nextReconnectionAttempt;
 
     private ReconnectionManager(final XmppSession xmppSession) {
-        this.xmppSession = xmppSession;
-        this.reconnectionStrategy = new TruncatedBinaryExponentialBackoffStrategy(60, 5);
-
-        // Enable by default.
-        setEnabled(true);
-
+        super(xmppSession, false, true);
+        this.reconnectionStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 5);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
     }
 
-
     @Override
     protected final void initialize() {
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                switch (e.getStatus()) {
-                    case DISCONNECTED:
-                        // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
-                        if ((!(e.getThrowable() instanceof StreamErrorException) || !(((StreamErrorException) e.getThrowable()).getStreamError().getCondition() == Condition.CONFLICT)) && e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
-                            scheduleReconnection(0);
-                        }
-                        break;
-                    case CONNECTED:
-                        cancel();
-                        break;
-                    case CLOSED:
-                        cancel();
-                        scheduledExecutorService.shutdown();
-                        break;
-                }
+        xmppSession.addSessionStatusListener(e -> {
+            switch (e.getStatus()) {
+                case DISCONNECTED:
+                    // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
+                    if ((!(e.getThrowable() instanceof StreamErrorException) || !(((StreamErrorException) e.getThrowable()).getStreamError().getCondition() == Condition.CONFLICT)) && e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
+                        scheduleReconnection(0, e.getThrowable());
+                    }
+                    break;
+                case CONNECTED:
+                    cancel();
+                    break;
+                case CLOSED:
+                    cancel();
+                    scheduledExecutorService.shutdown();
+                    break;
             }
         });
     }
@@ -120,26 +110,23 @@ public final class ReconnectionManager extends Manager {
         }
     }
 
-    private synchronized void scheduleReconnection(final int attempt) {
+    private synchronized void scheduleReconnection(final int attempt, Throwable throwable) {
         if (isEnabled()) {
-            int seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt);
+            long seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt, throwable);
             if (attempt == 0) {
                 logger.log(Level.FINE, "Disconnect detected. Next reconnection attempt in {0} seconds.", seconds);
             } else {
                 logger.log(Level.FINE, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", new Object[]{attempt, seconds});
             }
 
-            nextReconnectionAttempt = new Date(System.currentTimeMillis() + seconds * 1000);
-            scheduledFuture = scheduledExecutorService.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        xmppSession.connect();
-                        logger.log(Level.FINE, "Reconnection successful.");
-                    } catch (XmppException e) {
-                        logger.log(Level.FINE, "Reconnection failed.", e);
-                        scheduleReconnection(attempt + 1);
-                    }
+            nextReconnectionAttempt = Instant.now().plusSeconds(seconds);
+            scheduledFuture = scheduledExecutorService.schedule(() -> {
+                try {
+                    xmppSession.connect();
+                    logger.log(Level.FINE, "Reconnection successful.");
+                } catch (XmppException e) {
+                    logger.log(Level.FINE, "Reconnection failed.", e);
+                    scheduleReconnection(attempt + 1, e);
                 }
             }, seconds, TimeUnit.SECONDS);
         }
@@ -168,15 +155,13 @@ public final class ReconnectionManager extends Manager {
      *
      * @return The next reconnection attempt or null if there is none.
      */
-    public final synchronized Date getNextReconnectionAttempt() {
+    public final synchronized Instant getNextReconnectionAttempt() {
         return nextReconnectionAttempt;
     }
 
     @Override
-    public final void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
-        if (!enabled) {
-            cancel();
-        }
+    protected final void onDisable() {
+        super.onDisable();
+        cancel();
     }
 }

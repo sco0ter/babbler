@@ -26,11 +26,12 @@ package rocks.xmpp.core.stanza;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.roster.model.Roster;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.JAXBException;
@@ -42,7 +43,7 @@ import javax.xml.stream.XMLStreamException;
 public class IQTest extends XmlTest {
 
     protected IQTest() throws JAXBException, XMLStreamException {
-        super(IQ.class);
+        super(ClientIQ.class);
     }
 
     @Test

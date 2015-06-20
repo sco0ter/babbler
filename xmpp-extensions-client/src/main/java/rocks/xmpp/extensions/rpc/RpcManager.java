@@ -24,23 +24,21 @@
 
 package rocks.xmpp.extensions.rpc;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.ExtensionManager;
-import rocks.xmpp.core.session.SessionStatusEvent;
-import rocks.xmpp.core.session.SessionStatusListener;
+import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.AbstractIQ;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.
@@ -51,28 +49,18 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
-public final class RpcManager extends ExtensionManager {
+public final class RpcManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(RpcManager.class.getName());
+
+    private final IQHandler iqHandler;
 
     private RpcHandler rpcHandler;
 
     private RpcManager(final XmppSession xmppSession) {
-        super(xmppSession, Rpc.NAMESPACE);
-    }
+        super(xmppSession);
 
-    @Override
-    protected void initialize() {
-        // Reset the rpcHandler, when the connection is closed, to avoid memory leaks.
-        xmppSession.addSessionStatusListener(new SessionStatusListener() {
-            @Override
-            public void sessionStatusChanged(SessionStatusEvent e) {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
-                    rpcHandler = null;
-                }
-            }
-        });
-        xmppSession.addIQHandler(Rpc.class, new AbstractIQHandler(this, AbstractIQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 Rpc rpc = iq.getExtension(Rpc.class);
@@ -83,10 +71,7 @@ public final class RpcManager extends ExtensionManager {
                 }
                 if (rpcHandler1 != null) {
                     final Rpc.MethodCall methodCall = rpc.getMethodCall();
-                    final List<Value> parameters = new ArrayList<>();
-                    for (Value parameter : methodCall.getParameters()) {
-                        parameters.add(parameter);
-                    }
+                    final List<Value> parameters = methodCall.getParameters().stream().collect(Collectors.toList());
 
                     try {
                         Value value = rpcHandler1.process(iq.getFrom(), methodCall.getMethodName(), parameters);
@@ -100,7 +85,19 @@ public final class RpcManager extends ExtensionManager {
                 }
                 return iq.createError(Condition.SERVICE_UNAVAILABLE);
             }
-        });
+        };
+    }
+
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        xmppSession.addIQHandler(Rpc.class, iqHandler);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        xmppSession.removeIQHandler(Rpc.class);
     }
 
     /**
@@ -139,5 +136,10 @@ public final class RpcManager extends ExtensionManager {
     public synchronized void setRpcHandler(RpcHandler rpcHandler) {
         this.rpcHandler = rpcHandler;
         setEnabled(rpcHandler != null);
+    }
+
+    @Override
+    protected void dispose() {
+        rpcHandler = null;
     }
 }

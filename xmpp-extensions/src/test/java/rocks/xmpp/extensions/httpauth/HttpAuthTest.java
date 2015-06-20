@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.httpauth;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 
 import javax.xml.bind.JAXBException;
@@ -41,7 +42,7 @@ import java.net.URL;
 public class HttpAuthTest extends XmlTest {
 
     protected HttpAuthTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, ConfirmationRequest.class);
+        super(ClientIQ.class, ConfirmationRequest.class);
     }
 
     @Test

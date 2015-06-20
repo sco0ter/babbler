@@ -28,10 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.client.Presence;
-import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
-import rocks.xmpp.extensions.bytestreams.ByteStreamListener;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 
 import java.io.ByteArrayOutputStream;
@@ -51,60 +48,55 @@ public class InBandByteStreamIT extends IntegrationTest {
     @Test
     public void test() throws XmppException, IOException {
 
-        final XmppSession xmppSession1 = new XmppSession(DOMAIN);
-        final XmppSession xmppSession2 = new XmppSession(DOMAIN);
+        final XmppClient xmppSession1 = new XmppClient(DOMAIN);
+        final XmppClient xmppSession2 = new XmppClient(DOMAIN);
 
         xmppSession1.connect();
         xmppSession1.login(USER_1, PASSWORD_1);
-        xmppSession1.send(new Presence());
 
         xmppSession2.connect();
         xmppSession2.login(USER_2, PASSWORD_2);
-        xmppSession2.send(new Presence());
 
         final Lock lock = new ReentrantLock();
         final Condition condition = lock.newCondition();
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getManager(InBandByteStreamManager.class);
-        inBandBytestreamManager2.addByteStreamListener(new ByteStreamListener() {
-            @Override
-            public void byteStreamRequested(final ByteStreamEvent e) {
-                final ByteStreamSession ibbSession;
+        inBandBytestreamManager2.addByteStreamListener(e -> {
+            final ByteStreamSession ibbSession;
 
-                try {
-                    ibbSession = e.accept();
+            try {
+                ibbSession = e.accept();
 
-                    new Thread() {
-                        @Override
-                        public void run() {
+                new Thread() {
+                    @Override
+                    public void run() {
 
-                            InputStream inputStream;
+                        InputStream inputStream;
+                        try {
+                            inputStream = ibbSession.getInputStream();
+                            int b;
+                            while ((b = inputStream.read()) > -1) {
+                                outputStream.write(b);
+                            }
+                            outputStream.flush();
+                            outputStream.close();
+                            inputStream.close();
+
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        } finally {
                             try {
-                                inputStream = ibbSession.getInputStream();
-                                int b;
-                                while ((b = inputStream.read()) > -1) {
-                                    outputStream.write(b);
-                                }
-                                outputStream.flush();
-                                outputStream.close();
-                                inputStream.close();
-
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
+                                lock.lock();
+                                condition.signal();
                             } finally {
-                                try {
-                                    lock.lock();
-                                    condition.signal();
-                                } finally {
-                                    lock.unlock();
-                                }
+                                lock.unlock();
                             }
                         }
-                    }.start();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+                    }
+                }.start();
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         });
 

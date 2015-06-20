@@ -26,9 +26,9 @@ package rocks.xmpp.extensions.bytestreams.s5b;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 
 import javax.xml.bind.JAXBException;
@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class Socks5ByteStreamsTest extends XmlTest {
     protected Socks5ByteStreamsTest() throws JAXBException, XMLStreamException {
-        super(IQ.class, Socks5ByteStream.class);
+        super(ClientIQ.class, Socks5ByteStream.class);
     }
 
     @Test

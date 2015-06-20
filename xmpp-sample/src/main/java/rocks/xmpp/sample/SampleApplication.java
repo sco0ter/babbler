@@ -26,18 +26,14 @@ package rocks.xmpp.sample;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.MessageListener;
-import rocks.xmpp.core.stanza.model.client.Presence;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
@@ -60,85 +56,70 @@ public class SampleApplication {
 
     public static void main(String[] args) throws IOException {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    Handler consoleHandler = new ConsoleHandler();
-                    consoleHandler.setLevel(Level.FINE);
-                    consoleHandler.setFormatter(new LogFormatter());
+                Handler consoleHandler = new ConsoleHandler();
+                consoleHandler.setLevel(Level.FINE);
+                consoleHandler.setFormatter(new LogFormatter());
 
-                    final Logger logger = Logger.getLogger("rocks.xmpp");
-                    logger.addHandler(consoleHandler);
+                final Logger logger = Logger.getLogger("rocks.xmpp");
+                logger.addHandler(consoleHandler);
 
-                    SSLContext sslContext = SSLContext.getInstance("TLS");
-                    sslContext.init(null, new TrustManager[]{
-                            new X509TrustManager() {
-                                @Override
-                                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                                }
-
-                                @Override
-                                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                                }
-
-                                @Override
-                                public X509Certificate[] getAcceptedIssuers() {
-                                    return new X509Certificate[0];
-                                }
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, new TrustManager[]{
+                        new X509TrustManager() {
+                            @Override
+                            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
                             }
-                    }, new SecureRandom());
 
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .port(5222)
-                            .sslContext(sslContext)
-                            .compressionMethods(CompressionManager.ZLIB)
-                            .secure(true)
-                            .build();
+                            @Override
+                            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                            }
 
-
-                    BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
-                            .hostname("localhost")
-                            .port(7070)
-                                    //.secure(true)
-                                    //.sslContext(sslContext)
-                            .hostnameVerifier(new HostnameVerifier() {
-                                @Override
-                                public boolean verify(String s, SSLSession sslSession) {
-                                    return true;
-                                }
-                            })
-                            .file("/http-bind/")
-                            .build();
-
-                    Class<?>[] extensions = new Class<?>[0];
-                    Arrays.asList(extensions, XmppSession.class);
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(VisualDebugger.class)
-                            .defaultResponseTimeout(5000)
-                            .build();
-
-                    XmppSession xmppSession = new XmppSession("localhost", configuration, tcpConfiguration);
-
-                    // Listen for inbound messages.
-                    xmppSession.addInboundMessageListener(new MessageListener() {
-                        @Override
-                        public void handleMessage(MessageEvent e) {
-                            System.out.println(e.getMessage());
+                            @Override
+                            public X509Certificate[] getAcceptedIssuers() {
+                                return new X509Certificate[0];
+                            }
                         }
-                    });
-                    // Connect
-                    xmppSession.connect();
-                    // Login
-                    xmppSession.login("admin", "admin", "xmpp");
-                    // Send initial presence
-                    xmppSession.send(new Presence());
+                }, new SecureRandom());
 
-                    System.out.println(xmppSession.getActiveConnection());
-                } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {
-                    e.printStackTrace();
-                }
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .port(5222)
+                        .sslContext(sslContext)
+                        .compressionMethods(CompressionManager.ZLIB)
+                        .secure(true)
+                        .build();
+
+
+                BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
+                        .hostname("localhost")
+                        .port(7070)
+                                //.secure(true)
+                                //.sslContext(sslContext)
+                        .hostnameVerifier((s, sslSession) -> true)
+                        .file("/http-bind/")
+                        .build();
+
+                Class<?>[] extensions = new Class<?>[0];
+                Arrays.asList(extensions, XmppSession.class);
+                XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                        .debugger(VisualDebugger.class)
+                        .defaultResponseTimeout(5000)
+                        .build();
+
+                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
+
+                // Listen for inbound messages.
+                xmppSession.addInboundMessageListener(e -> System.out.println(e.getMessage()));
+                // Connect
+                xmppSession.connect();
+                // Login
+                xmppSession.login("admin", "admin", "xmpp");
+
+                System.out.println(xmppSession.getActiveConnection());
+            } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {
+                e.printStackTrace();
             }
         });
     }

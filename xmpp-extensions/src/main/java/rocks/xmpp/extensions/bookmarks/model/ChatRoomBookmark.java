@@ -24,10 +24,9 @@
 
 package rocks.xmpp.extensions.bookmarks.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import java.util.Objects;
 
 /**
@@ -38,21 +37,20 @@ import java.util.Objects;
  * @author Christian Schudt
  */
 public final class ChatRoomBookmark extends Bookmark {
-    @XmlElement(name = "nick")
+
     private final String nick;
 
-    @XmlElement(name = "password")
     private final String password;
 
-    @XmlAttribute(name = "autojoin")
+    @XmlAttribute
     private final Boolean autojoin;
 
-    @XmlAttribute(name = "jid")
-    private final Jid room;
+    @XmlAttribute
+    private final Jid jid;
 
     private ChatRoomBookmark() {
         super(null);
-        this.room = null;
+        this.jid = null;
         this.nick = null;
         this.password = null;
         this.autojoin = null;
@@ -66,7 +64,7 @@ public final class ChatRoomBookmark extends Bookmark {
      */
     public ChatRoomBookmark(String name, Jid room) {
         super(name);
-        this.room = Objects.requireNonNull(room);
+        this.jid = Objects.requireNonNull(room);
         this.nick = null;
         this.password = null;
         this.autojoin = null;
@@ -83,7 +81,7 @@ public final class ChatRoomBookmark extends Bookmark {
      */
     public ChatRoomBookmark(String name, Jid room, String nick, String password, boolean autojoin) {
         super(name);
-        this.room = room;
+        this.jid = room;
         this.nick = nick;
         this.password = password;
         this.autojoin = autojoin;
@@ -122,7 +120,7 @@ public final class ChatRoomBookmark extends Bookmark {
      * @return The room.
      */
     public final Jid getRoom() {
-        return room;
+        return jid;
     }
 
     @Override
@@ -135,17 +133,17 @@ public final class ChatRoomBookmark extends Bookmark {
         }
         ChatRoomBookmark other = (ChatRoomBookmark) o;
 
-        return Objects.equals(room, other.room);
+        return Objects.equals(jid, other.jid);
 
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(room);
+        return Objects.hash(jid);
     }
 
     @Override
     public final String toString() {
-        return getName() + ": " + (room != null ? room.toString() : "");
+        return getName() + ": " + (jid != null ? jid.toString() : "");
     }
 }

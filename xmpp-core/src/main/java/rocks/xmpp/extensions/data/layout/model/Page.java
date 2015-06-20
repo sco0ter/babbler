@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.data.layout.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +48,7 @@ import java.util.List;
  * @see FieldReference
  * @see rocks.xmpp.extensions.data.model.DataForm#getPages()
  */
-@XmlRootElement(name = "page")
+@XmlRootElement
 public final class Page {
 
     /**
@@ -57,24 +56,20 @@ public final class Page {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/xdata-layout";
 
-    @XmlElement(name = "text")
     private final List<String> text = new ArrayList<>();
 
-    @XmlElement(name = "fieldref")
-    private final List<FieldReference> fieldReferences = new ArrayList<>();
+    private final List<FieldReference> fieldref = new ArrayList<>();
 
-    @XmlElement(name = "section")
-    private final List<Section> sections = new ArrayList<>();
+    private final List<Section> section = new ArrayList<>();
 
-    @XmlAttribute(name = "label")
+    @XmlAttribute
     private final String label;
 
-    @XmlElement(name = "reportedref")
-    private final FieldReference reportedReference;
+    private final FieldReference reportedref;
 
     private Page() {
         label = null;
-        reportedReference = null;
+        reportedref = null;
     }
 
     /**
@@ -112,9 +107,9 @@ public final class Page {
             this.text.addAll(text);
         }
         if (fieldReferences != null) {
-            this.fieldReferences.addAll(fieldReferences);
+            this.fieldref.addAll(fieldReferences);
         }
-        this.reportedReference = reportedReference;
+        this.reportedref = reportedReference;
     }
 
     /**
@@ -132,7 +127,7 @@ public final class Page {
      * @return The field references.
      */
     public final List<FieldReference> getFieldReferences() {
-        return Collections.unmodifiableList(fieldReferences);
+        return Collections.unmodifiableList(fieldref);
     }
 
     /**
@@ -141,7 +136,7 @@ public final class Page {
      * @return The sections.
      */
     public final List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
+        return Collections.unmodifiableList(section);
     }
 
     /**
@@ -150,7 +145,7 @@ public final class Page {
      * @return The reported field reference.
      */
     public final FieldReference getReportedReference() {
-        return reportedReference;
+        return reportedref;
     }
 
     /**

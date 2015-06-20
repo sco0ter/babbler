@@ -27,8 +27,6 @@ package rocks.xmpp.debug.gui;
 import javafx.application.Platform;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -52,9 +50,9 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.stanza.model.client.IQ;
-import rocks.xmpp.core.stanza.model.client.Presence;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Presence;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -74,10 +72,10 @@ import java.awt.datatransfer.StringSelection;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
-import java.text.DateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ResourceBundle;
-import java.util.function.Predicate;
 
 /**
  * @author Christian Schudt
@@ -148,7 +146,7 @@ public final class DebugController implements Initializable {
     private TableColumn<StanzaEntry, Boolean> columnInbound;
 
     @FXML
-    private TableColumn<StanzaEntry, Date> columnDate;
+    private TableColumn<StanzaEntry, LocalDateTime> columnDate;
 
     @FXML
     private TableColumn<StanzaEntry, String> columnStanza;
@@ -263,31 +261,28 @@ public final class DebugController implements Initializable {
 
         circlePresence.setRadius(10);
         circlePresence.getStyleClass().addAll(CSS_PRESENCE, CSS_UNAVAILABLE);
-        viewModel.presence.addListener(new ChangeListener<Presence>() {
-            @Override
-            public void changed(ObservableValue<? extends Presence> observable, Presence oldValue, Presence newValue) {
-                circlePresence.getStyleClass().removeAll(CSS_UNAVAILABLE, CSS_AVAILABLE);
-                Presence presence = viewModel.presence.get();
-                if (presence != null) {
-                    if (presence.isAvailable()) {
-                        if (presence.getShow() != null) {
-                            switch (presence.getShow()) {
-                                case AWAY:
-                                    circlePresence.getStyleClass().add(CSS_AWAY);
-                                    break;
-                                default:
-                                    circlePresence.getStyleClass().add(CSS_AVAILABLE);
-                                    break;
-                            }
-                        } else {
-                            circlePresence.getStyleClass().add(CSS_AVAILABLE);
+        viewModel.presence.addListener((observable, oldValue, newValue) -> {
+            circlePresence.getStyleClass().removeAll(CSS_UNAVAILABLE, CSS_AVAILABLE);
+            Presence presence = viewModel.presence.get();
+            if (presence != null) {
+                if (presence.isAvailable()) {
+                    if (presence.getShow() != null) {
+                        switch (presence.getShow()) {
+                            case AWAY:
+                                circlePresence.getStyleClass().add(CSS_AWAY);
+                                break;
+                            default:
+                                circlePresence.getStyleClass().add(CSS_AVAILABLE);
+                                break;
                         }
                     } else {
-                        circlePresence.getStyleClass().add(CSS_UNAVAILABLE);
+                        circlePresence.getStyleClass().add(CSS_AVAILABLE);
                     }
                 } else {
                     circlePresence.getStyleClass().add(CSS_UNAVAILABLE);
                 }
+            } else {
+                circlePresence.getStyleClass().add(CSS_UNAVAILABLE);
             }
         });
 //        circlePresence.fillProperty().bind(new ObjectBinding<Paint>() {
@@ -307,86 +302,72 @@ public final class DebugController implements Initializable {
 //            }
 //        });
 
-        filteredList = new FilteredList<>(viewModel.stanzas, new Predicate<StanzaEntry>() {
-            @Override
-            public boolean test(StanzaEntry stanzaEntry) {
-                return isVisible(stanzaEntry);
-            }
-        });
+        filteredList = new FilteredList<>(viewModel.stanzas, this::isVisible);
 
-        searchField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                filter();
-            }
-        });
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> filter());
 
         SortedList<StanzaEntry> sortedList = new SortedList<>(filteredList);
         stanzaTableView.setItems(sortedList);
 
         sortedList.comparatorProperty().bind(stanzaTableView.comparatorProperty());
 
-        stanzaTableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<StanzaEntry>() {
-            @Override
-            public void changed(ObservableValue<? extends StanzaEntry> observable, StanzaEntry oldValue, StanzaEntry newValue) {
-                viewModel.highlightedItems.clear();
-                stanzaView.getStyleClass().removeAll(CSS_INBOUND_STANZA, CSS_OUTBOUND_STANZA, CSS_ERROR_STANZA);
-                if (newValue != null) {
-                    if (newValue.isInbound()) {
-                        stanzaView.getStyleClass().add(CSS_INBOUND_STANZA);
+        stanzaTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            viewModel.highlightedItems.clear();
+            stanzaView.getStyleClass().removeAll(CSS_INBOUND_STANZA, CSS_OUTBOUND_STANZA, CSS_ERROR_STANZA);
+            if (newValue != null) {
+                if (newValue.isInbound()) {
+                    stanzaView.getStyleClass().add(CSS_INBOUND_STANZA);
+                } else {
+                    stanzaView.getStyleClass().add(CSS_OUTBOUND_STANZA);
+                }
+
+                try {
+                    if (newValue.getStanza() != null) {
+                        StreamResult result = new StreamResult(new StringWriter());
+                        Source source = new SAXSource(parser.getXMLReader(), new InputSource(new StringReader(newValue.getXml())));
+                        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+                        transformer.transform(source, result);
+                        stanzaView.setText(result.getWriter().toString());
                     } else {
-                        stanzaView.getStyleClass().add(CSS_OUTBOUND_STANZA);
+                        stanzaView.setText(newValue.getXml());
                     }
+                } catch (TransformerException | SAXException e) {
 
                     try {
-                        if (newValue.getStanza() != null) {
-                            StreamResult result = new StreamResult(new StringWriter());
-                            Source source = new SAXSource(parser.getXMLReader(), new InputSource(new StringReader(newValue.getXml())));
-                            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-                            transformer.transform(source, result);
-                            stanzaView.setText(result.getWriter().toString());
+                        StreamResult result = new StreamResult(new StringWriter());
+                        String streamEndTag = "</stream:stream>";
+                        SAXSource source = new SAXSource(parser.getXMLReader(), new InputSource(new StringReader(newValue.getXml() + streamEndTag)));
+                        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+                        transformer.transform(source, result);
+                        String stream = result.getWriter().toString().trim();
+                        if (stream.endsWith("/>")) {
+                            stanzaView.setText(stream);
                         } else {
-                            stanzaView.setText(newValue.getXml());
+                            stanzaView.setText(stream.substring(0, stream.length() - 1 - streamEndTag.length()));
                         }
-                    } catch (TransformerException | SAXException e) {
-
-                        try {
-                            StreamResult result = new StreamResult(new StringWriter());
-                            String streamEndTag = "</stream:stream>";
-                            SAXSource source = new SAXSource(parser.getXMLReader(), new InputSource(new StringReader(newValue.getXml() + streamEndTag)));
-                            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-                            transformer.transform(source, result);
-                            String stream = result.getWriter().toString().trim();
-                            if (stream.endsWith("/>")) {
-                                stanzaView.setText(stream);
-                            } else {
-                                stanzaView.setText(stream.substring(0, stream.length() - 1 - streamEndTag.length()));
-                            }
-                        } catch (SAXException | TransformerException e1) {
-                            stanzaView.setText(newValue.getXml());
-                        }
+                    } catch (SAXException | TransformerException e1) {
+                        stanzaView.setText(newValue.getXml());
                     }
-
-                    for (StanzaEntry entry : stanzaTableView.getItems()) {
-                        if (newValue.getStanza() instanceof IQ && entry.getStanza() instanceof IQ) {
-                            IQ selectedIQ = (IQ) newValue.getStanza();
-                            IQ otherIQ = (IQ) entry.getStanza();
-                            if (otherIQ.getId() != null && otherIQ.getId().equals(selectedIQ.getId())
-                                    && ((selectedIQ.isRequest() && otherIQ.isResponse())
-                                    || selectedIQ.isResponse() && otherIQ.isRequest())
-                                    && newValue.isInbound() != entry.isInbound()) {
-                                // Add the highlighted items.
-                                viewModel.highlightedItems.add(entry);
-                            }
-                        }
-                    }
-                    // Workaround to refresh table:
-                    // http://stackoverflow.com/questions/11065140/javafx-2-1-tableview-refresh-items
-                    stanzaTableView.getColumns().get(0).setVisible(false);
-                    stanzaTableView.getColumns().get(0).setVisible(true);
-                } else {
-                    stanzaView.setText(null);
                 }
+
+                // Add the highlighted items.
+                stanzaTableView.getItems().stream().filter(entry -> newValue.getStanza() instanceof IQ && entry.getStanza() instanceof IQ).forEach(entry -> {
+                    IQ selectedIQ = (IQ) newValue.getStanza();
+                    IQ otherIQ = (IQ) entry.getStanza();
+                    if (otherIQ.getId() != null && otherIQ.getId().equals(selectedIQ.getId())
+                            && ((selectedIQ.isRequest() && otherIQ.isResponse())
+                            || selectedIQ.isResponse() && otherIQ.isRequest())
+                            && newValue.isInbound() != entry.isInbound()) {
+                        // Add the highlighted items.
+                        viewModel.highlightedItems.add(entry);
+                    }
+                });
+                // Workaround to refresh table:
+                // http://stackoverflow.com/questions/11065140/javafx-2-1-tableview-refresh-items
+                stanzaTableView.getColumns().get(0).setVisible(false);
+                stanzaTableView.getColumns().get(0).setVisible(true);
+            } else {
+                stanzaView.setText(null);
             }
         });
 
@@ -426,12 +407,7 @@ public final class DebugController implements Initializable {
 
         // Do not use PropertyValueFactory for columns, because it requires the item class to be public
 
-        columnInbound.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StanzaEntry, Boolean>, ObservableValue<Boolean>>() {
-            @Override
-            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<StanzaEntry, Boolean> param) {
-                return new SimpleObjectProperty<>(param.getValue().isInbound());
-            }
-        });
+        columnInbound.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().isInbound()));
         columnInbound.setCellFactory(new Callback<TableColumn<StanzaEntry, Boolean>, TableCell<StanzaEntry, Boolean>>() {
             @Override
             public TableCell<StanzaEntry, Boolean> call(TableColumn<StanzaEntry, Boolean> booleanStanzaEntryTableColumn) {
@@ -458,27 +434,22 @@ public final class DebugController implements Initializable {
             }
         });
 
-        columnDate.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StanzaEntry, Date>, ObservableValue<Date>>() {
+        columnDate.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getDate()));
+        columnDate.setCellFactory(new Callback<TableColumn<StanzaEntry, LocalDateTime>, TableCell<StanzaEntry, LocalDateTime>>() {
             @Override
-            public ObservableValue<Date> call(TableColumn.CellDataFeatures<StanzaEntry, Date> param) {
-                return new SimpleObjectProperty<>(param.getValue().getDate());
-            }
-        });
-        columnDate.setCellFactory(new Callback<TableColumn<StanzaEntry, Date>, TableCell<StanzaEntry, Date>>() {
-            @Override
-            public TableCell<StanzaEntry, Date> call(TableColumn<StanzaEntry, Date> dateStanzaEntryTableColumn) {
-                TableCell<StanzaEntry, Date> cell = new TableCell<StanzaEntry, Date>() {
+            public TableCell<StanzaEntry, LocalDateTime> call(TableColumn<StanzaEntry, LocalDateTime> dateStanzaEntryTableColumn) {
+                TableCell<StanzaEntry, LocalDateTime> cell = new TableCell<StanzaEntry, LocalDateTime>() {
                     @Override
-                    protected void updateItem(Date item, boolean empty) {
+                    protected void updateItem(LocalDateTime item, boolean empty) {
                         super.updateItem(item, empty);
                         setText(null);
                         setTooltip(null);
 
                         if (!empty) {
-                            DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
-                            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-                            setText(timeFormat.format(item));
-                            setTooltip(new Tooltip(dateFormat.format(item)));
+
+                            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+                            setText(formatter.format(item));
+                            setTooltip(new Tooltip(formatter.format(item)));
                         }
                     }
                 };
@@ -488,12 +459,7 @@ public final class DebugController implements Initializable {
         });
 
         columnStanza.setMaxWidth(Double.MAX_VALUE);
-        columnStanza.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StanzaEntry, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<StanzaEntry, String> param) {
-                return new SimpleObjectProperty<>(param.getValue().getXml());
-            }
-        });
+        columnStanza.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getXml()));
         columnStanza.setCellFactory(new Callback<TableColumn<StanzaEntry, String>, TableCell<StanzaEntry, String>>() {
             @Override
             public TableCell<StanzaEntry, String> call(TableColumn<StanzaEntry, String> columnStanza) {
@@ -521,12 +487,7 @@ public final class DebugController implements Initializable {
             }
         });
 
-        columnFrom.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StanzaEntry, Jid>, ObservableValue<Jid>>() {
-            @Override
-            public ObservableValue<Jid> call(TableColumn.CellDataFeatures<StanzaEntry, Jid> param) {
-                return new SimpleObjectProperty<>(param.getValue().getFrom());
-            }
-        });
+        columnFrom.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getFrom()));
         columnFrom.setCellFactory(new Callback<TableColumn<StanzaEntry, Jid>, TableCell<StanzaEntry, Jid>>() {
             @Override
             public TableCell<StanzaEntry, Jid> call(TableColumn<StanzaEntry, Jid> columnStanza) {
@@ -543,12 +504,7 @@ public final class DebugController implements Initializable {
             }
         });
 
-        columnTo.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<StanzaEntry, Jid>, ObservableValue<Jid>>() {
-            @Override
-            public ObservableValue<Jid> call(TableColumn.CellDataFeatures<StanzaEntry, Jid> param) {
-                return new SimpleObjectProperty<>(param.getValue().getTo());
-            }
-        });
+        columnTo.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getTo()));
         columnTo.setCellFactory(new Callback<TableColumn<StanzaEntry, Jid>, TableCell<StanzaEntry, Jid>>() {
             @Override
             public TableCell<StanzaEntry, Jid> call(TableColumn<StanzaEntry, Jid> columnStanza) {
@@ -570,12 +526,7 @@ public final class DebugController implements Initializable {
 
     @FXML
     public void filter() {
-        filteredList.setPredicate(new Predicate<StanzaEntry>() {
-            @Override
-            public boolean test(StanzaEntry stanzaEntry) {
-                return isVisible(stanzaEntry);
-            }
-        });
+        filteredList.setPredicate(this::isVisible);
     }
 
     @FXML
@@ -597,21 +548,11 @@ public final class DebugController implements Initializable {
 
 
     void appendTextInbound(final String s) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                txtInbound.appendText(s);
-            }
-        });
+        Platform.runLater(() -> txtInbound.appendText(s));
     }
 
     void appendTextOutbound(final String s) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                txtOutbound.appendText(s);
-            }
-        });
+        Platform.runLater(() -> txtOutbound.appendText(s));
     }
 
     public void clearOutbound(ActionEvent actionEvent) {

@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Manages SASL authentication as described in <a href="http://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
@@ -69,8 +68,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
         });
     }
 
-    private final XmppSession xmppSession;
-
     /**
      * Stores the supported and preferred SASL mechanisms of the server.
      */
@@ -83,13 +80,18 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     private SaslClient saslClient;
 
     /**
+     * The additional data returned by the {@code <success/>} element.
+     * Guarded by "this".
+     */
+    private byte[] successData;
+
+    /**
      * Creates the authentication manager. Usually only the {@link rocks.xmpp.core.session.XmppSession} should create it implicitly.
      *
      * @param xmppSession The session.
      */
-    public AuthenticationManager(final XmppSession xmppSession) {
-        super(Mechanisms.class);
-        this.xmppSession = Objects.requireNonNull(xmppSession, "xmppSession must not be null.");
+    AuthenticationManager(final XmppSession xmppSession) {
+        super(xmppSession, Mechanisms.class);
         this.supportedMechanisms = new ArrayList<>();
     }
 
@@ -99,7 +101,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
      * @param callbackHandler The callback handler.
      * @throws StreamNegotiationException If an exception occurred, while starting authentication.
      */
-    public final void startAuthentication(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler) throws StreamNegotiationException {
+    final void startAuthentication(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler) throws StreamNegotiationException {
         synchronized (this) {
             try {
                 Collection<String> clientMechanisms = new ArrayList<>(mechanisms);
@@ -110,8 +112,8 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                 if (clientMechanisms.isEmpty()) {
                     throw new StreamNegotiationException(String.format("Server doesn't support any of the requested SASL mechanisms: %s.", mechanisms));
                 }
-
-                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<String, Object>(), callbackHandler);
+                successData = null;
+                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain(), new HashMap<>(), callbackHandler);
 
                 if (saslClient == null) {
                     throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);
@@ -147,6 +149,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                     }
                     throw new AuthenticationException(failureText, authenticationFailure);
                 } else if (element instanceof Success) {
+                    successData = ((Success) element).getAdditionalData();
                     status = Status.SUCCESS;
                 }
             }
@@ -165,5 +168,9 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     @Override
     public final boolean canProcess(Object element) {
         return element instanceof Challenge || element instanceof Failure || element instanceof Success;
+    }
+
+    synchronized byte[] getSuccessData() {
+        return successData;
     }
 }

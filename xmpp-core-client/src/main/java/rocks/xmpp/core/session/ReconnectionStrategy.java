@@ -24,18 +24,62 @@
 
 package rocks.xmpp.core.session;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * A strategy for reconnection logic, i.e. when and in which interval reconnection attempts will happen. You can provide your own strategy by implementing this interface.
+ * <p>
+ * Alternatively you can use some of the predefined strategies which you can retrieve by one of the static methods.
+ * <p>
+ * E.g. {@link #after(long, TimeUnit)} always tries to reconnect after a fix amount of time.
  *
  * @author Christian Schudt
  * @see ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
  */
+@FunctionalInterface
 public interface ReconnectionStrategy {
     /**
      * Gets the time (in seconds) until the next reconnection is attempted.
      *
      * @param attempt The current reconnection attempt. The first attempt is 0, the second attempt is 1, etc...
+     * @param cause   The cause for the disconnection.
      * @return The number of seconds before the next reconnection is attempted.
      */
-    int getNextReconnectionAttempt(int attempt);
+    long getNextReconnectionAttempt(int attempt, Throwable cause);
+
+    /**
+     * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
+     * <p>
+     * It exponentially increases the time span from which a random value for the next reconnection attempt is chosen.
+     * The formula for doing this, is: <code>(2<sup>n</sup> - 1) * s</code>, where <code>n</code> is the number of reconnection attempt and <code>s</code> is the slot time, which is 60 seconds by default.
+     * <p>
+     * In practice this means, the first reconnection attempt occurs after a random period of time between 0 and 60 seconds.<br>
+     * The second attempt chooses a random number between 0 and 180 seconds.<br>
+     * The third attempt chooses a random number between 0 and 420 seconds.<br>
+     * The fourth attempt chooses a random number between 0 and 900 seconds.<br>
+     * The fifth attempt chooses a random number between 0 and 1860 seconds (= 31 minutes)<br>
+     * <p>
+     * The strategy is called "truncated", because it won't increase the time span after the nth iteration, which means in the example above, the sixth and any further attempt
+     * behaves equally to the fifth attempt.
+     * <p>
+     * This "truncated binary exponential backoff" is the <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">recommended reconnection strategy by the XMPP specification</a>.
+     *
+     * @param slotTime The slot time (in seconds), usually 60.
+     * @param ceiling  The ceiling, i.e. when the time is truncated. E.g. if the ceiling is 4, the back off is truncated at the 5th reconnection attempt (it starts at zero).
+     * @return The truncated binary exponential backoff strategy.
+     */
+    static ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy(int slotTime, int ceiling) {
+        return new TruncatedBinaryExponentialBackoffStrategy(slotTime, ceiling);
+    }
+
+    /**
+     * Reconnects always after a fix amount of time, e.g. after 10 seconds.
+     *
+     * @param duration The fix duration after which a reconnection is attempted.
+     * @param timeUnit The time unit.
+     * @return The reconnection strategy.
+     */
+    static ReconnectionStrategy after(long duration, TimeUnit timeUnit) {
+        return (attempt, cause) -> timeUnit.toSeconds(duration);
+    }
 }

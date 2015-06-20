@@ -24,14 +24,16 @@
 
 package rocks.xmpp.extensions.delay.model;
 
-import rocks.xmpp.core.Jid;
-import rocks.xmpp.core.JidAdapter;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.JidAdapter;
+import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -64,7 +66,8 @@ public final class DelayedDelivery {
     private final Jid from;
 
     @XmlAttribute
-    private final Date stamp;
+    @XmlJavaTypeAdapter(InstantAdapter.class)
+    private final Instant stamp;
 
     @XmlValue
     private final String reason;
@@ -83,7 +86,7 @@ public final class DelayedDelivery {
      *
      * @param timestamp The timestamp.
      */
-    public DelayedDelivery(Date timestamp) {
+    public DelayedDelivery(Instant timestamp) {
         this(timestamp, null, null);
     }
 
@@ -94,10 +97,25 @@ public final class DelayedDelivery {
      * @param from      The sender.
      * @param reason    The reason.
      */
-    public DelayedDelivery(Date timestamp, Jid from, String reason) {
+    public DelayedDelivery(Instant timestamp, Jid from, String reason) {
         this.stamp = Objects.requireNonNull(timestamp);
         this.from = from;
         this.reason = reason;
+    }
+
+    /**
+     * Gets the original send date of a stanza, i.e. <code>Instant.now()</code>, if no delayed deliver information is available or the timestamp of delayed delivery.
+     *
+     * @param stanza The stanza.
+     * @return The original send date of a stanza or <code>Instant.now()</code>.
+     */
+    public static Instant sendDate(Stanza stanza) {
+        DelayedDelivery delayedDelivery = stanza.getExtension(DelayedDelivery.class);
+        if (delayedDelivery != null) {
+            return delayedDelivery.getTimeStamp();
+        } else {
+            return Instant.now();
+        }
     }
 
     /**
@@ -114,7 +132,7 @@ public final class DelayedDelivery {
      *
      * @return The time when the XML stanza was originally sent.
      */
-    public final Date getTimeStamp() {
+    public final Instant getTimeStamp() {
         return stamp;
     }
 

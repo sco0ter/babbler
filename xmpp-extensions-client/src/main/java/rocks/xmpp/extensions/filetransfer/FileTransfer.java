@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
 
 /**
  * A class for managing a single file transfer.
@@ -37,14 +38,14 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author Christian Schudt
  */
 public final class FileTransfer {
-	
+
     private final long length;
 
     private final InputStream inputStream;
 
     private final OutputStream outputStream;
 
-    private final Set<FileTransferStatusListener> fileTransferStatusListeners = new CopyOnWriteArraySet<>();
+    private final Set<Consumer<FileTransferStatusEvent>> fileTransferStatusListeners = new CopyOnWriteArraySet<>();
 
     private volatile Status status;
 
@@ -62,9 +63,9 @@ public final class FileTransfer {
      * Adds a file transfer status listener, which allows to listen for file transfer status changes.
      *
      * @param fileTransferStatusListener The listener.
-     * @see #removeFileTransferStatusListener(FileTransferStatusListener)
+     * @see #removeFileTransferStatusListener(Consumer)
      */
-    public void addFileTransferStatusListener(FileTransferStatusListener fileTransferStatusListener) {
+    public void addFileTransferStatusListener(Consumer<FileTransferStatusEvent> fileTransferStatusListener) {
         fileTransferStatusListeners.add(fileTransferStatusListener);
     }
 
@@ -72,16 +73,16 @@ public final class FileTransfer {
      * Removes a previously added file transfer status listener.
      *
      * @param fileTransferStatusListener The listener.
-     * @see #addFileTransferStatusListener(FileTransferStatusListener)
+     * @see #addFileTransferStatusListener(Consumer)
      */
-    public void removeFileTransferStatusListener(FileTransferStatusListener fileTransferStatusListener) {
+    public void removeFileTransferStatusListener(Consumer<FileTransferStatusEvent> fileTransferStatusListener) {
         fileTransferStatusListeners.remove(fileTransferStatusListener);
     }
-    
+
     private final void notifyFileTransferStatusListeners(final FileTransferStatusEvent fileTransferStatusEvent) {
-        for (final FileTransferStatusListener fileTransferStatusListener : fileTransferStatusListeners) {
+        for (final Consumer<FileTransferStatusEvent> fileTransferStatusListener : fileTransferStatusListeners) {
             try {
-                fileTransferStatusListener.fileTransferStatusChanged(fileTransferStatusEvent);
+                fileTransferStatusListener.accept(fileTransferStatusEvent);
             } catch (final Exception e) {
                 e.printStackTrace();
             }
@@ -89,11 +90,11 @@ public final class FileTransfer {
     }
 
     private final void notifyFileTransferStatusListeners(final Status status, final long bytesTransferred) {
-    	notifyFileTransferStatusListeners(new FileTransferStatusEvent(this, status, bytesTransferred));
+        notifyFileTransferStatusListeners(new FileTransferStatusEvent(this, status, bytesTransferred));
     }
-    
+
     private final void notifyFileTransferStatusListeners() {
-    	notifyFileTransferStatusListeners(status, bytesTransferred);
+        notifyFileTransferStatusListeners(status, bytesTransferred);
     }
 
     /**
@@ -126,18 +127,18 @@ public final class FileTransfer {
     }
 
     private final void setBytesTransferred(final long bytesTransferred) {
-    	if (this.bytesTransferred == bytesTransferred)
-    		return;
-    	
-    	this.bytesTransferred = bytesTransferred;
-    	
-    	notifyFileTransferStatusListeners();
+        if (this.bytesTransferred == bytesTransferred)
+            return;
+
+        this.bytesTransferred = bytesTransferred;
+
+        notifyFileTransferStatusListeners();
     }
-    
+
     private final void addBytesTransferred(final long bytesTransferredAdditionally) {
-    	setBytesTransferred(bytesTransferred + bytesTransferredAdditionally);
+        setBytesTransferred(bytesTransferred + bytesTransferredAdditionally);
     }
-    
+
     /**
      * Gets the progress of the file transfer.
      *
@@ -149,7 +150,7 @@ public final class FileTransfer {
         }
         return -1;
     }
-    
+
     /**
      * Transfers the file in its own thread.
      */

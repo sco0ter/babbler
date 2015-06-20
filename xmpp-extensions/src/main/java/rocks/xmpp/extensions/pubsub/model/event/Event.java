@@ -24,11 +24,12 @@
 
 package rocks.xmpp.extensions.pubsub.model.event;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -36,10 +37,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -166,7 +168,6 @@ public final class Event {
 
     private static final class Delete extends PubSubEventChildElement {
 
-        @XmlElement(name = "redirect")
         private Redirect redirect;
 
         private Delete() {
@@ -186,7 +187,7 @@ public final class Event {
         }
 
         private static final class Redirect {
-            @XmlAttribute(name = "uri")
+            @XmlAttribute
             private URI uri;
 
             private Redirect() {
@@ -204,16 +205,14 @@ public final class Event {
 
     private static final class Items extends PubSubEventChildElement {
 
-        @XmlElement(name = "item")
-        private final List<ItemElement> items = new ArrayList<>();
+        private final List<ItemElement> item = new ArrayList<>();
 
         @XmlAttribute(name = "max_items")
         private Long maxItems;
 
-        @XmlAttribute(name = "subid")
+        @XmlAttribute
         private String subid;
 
-        @XmlElement(name = "retract")
         private Retract retract;
 
         private Items() {
@@ -230,11 +229,11 @@ public final class Event {
 
         private Items(String node, ItemElement item) {
             super(node);
-            this.items.add(item);
+            this.item.add(item);
         }
 
         private List<? extends Item> getItems() {
-            return items;
+            return item;
         }
 
         private Retract getRetract() {
@@ -253,13 +252,12 @@ public final class Event {
     }
 
     private static final class Retract {
-        @XmlAttribute(name = "node")
+        @XmlAttribute
         private String node;
 
-        @XmlAttribute(name = "notify")
+        @XmlAttribute
         private Boolean notify;
 
-        @XmlElement
         private ItemElement item;
 
         @XmlAttribute
@@ -281,17 +279,18 @@ public final class Event {
 
     private static final class SubscriptionInfo extends PubSubEventChildElement implements Subscription {
 
-        @XmlAttribute(name = "expiry")
-        private Date expiry;
+        @XmlAttribute
+        @XmlJavaTypeAdapter(InstantAdapter.class)
+        private Instant expiry;
 
-        @XmlAttribute(name = "jid")
+        @XmlAttribute
         private Jid jid;
 
-        @XmlAttribute(name = "subid")
+        @XmlAttribute
         private String subid;
 
-        @XmlAttribute(name = "subscription")
-        private SubscriptionState subscriptionState;
+        @XmlAttribute
+        private SubscriptionState subscription;
 
         @Override
         public Jid getJid() {
@@ -305,11 +304,11 @@ public final class Event {
 
         @Override
         public SubscriptionState getSubscriptionState() {
-            return subscriptionState;
+            return subscription;
         }
 
         @Override
-        public Date getExpiry() {
+        public Instant getExpiry() {
             return expiry;
         }
 
@@ -329,13 +328,13 @@ public final class Event {
         @XmlAnyElement(lax = true)
         private Object object;
 
-        @XmlAttribute(name = "id")
+        @XmlAttribute
         private String id;
 
-        @XmlAttribute(name = "node")
+        @XmlAttribute
         private String node;
 
-        @XmlAttribute(name = "publisher")
+        @XmlAttribute
         private String publisher;
 
         private ItemElement() {
@@ -372,7 +371,7 @@ public final class Event {
 
     private abstract static class PubSubEventChildElement {
 
-        @XmlAttribute(name = "node")
+        @XmlAttribute
         private String node;
 
         private PubSubEventChildElement() {

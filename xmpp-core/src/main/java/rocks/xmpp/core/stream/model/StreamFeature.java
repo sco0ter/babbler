@@ -24,11 +24,14 @@
 
 package rocks.xmpp.core.stream.model;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * A base class for a stream feature, which is advertised by the server in its {@code <stream:features/>} element.
  *
  * @author Christian Schudt
  */
+@XmlTransient
 public abstract class StreamFeature implements Comparable<StreamFeature> {
 
     /**
@@ -47,7 +50,9 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
      *
      * @return The priority.
      */
-    public abstract int getPriority();
+    public int getPriority() {
+        return 0;
+    }
 
     /**
      * Compares two features by their priority and mandatory-to-negotiate flag.

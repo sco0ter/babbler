@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.conference.model;
 
-import rocks.xmpp.core.Jid;
+import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -45,16 +45,16 @@ public final class DirectInvitation {
     @XmlAttribute(name = "continue")
     private Boolean aContinue;
 
-    @XmlAttribute(name = "jid")
+    @XmlAttribute
     private Jid jid;
 
-    @XmlAttribute(name = "password")
+    @XmlAttribute
     private String password;
 
-    @XmlAttribute(name = "reason")
+    @XmlAttribute
     private String reason;
 
-    @XmlAttribute(name = "thread")
+    @XmlAttribute
     private String thread;
 
     private DirectInvitation() {

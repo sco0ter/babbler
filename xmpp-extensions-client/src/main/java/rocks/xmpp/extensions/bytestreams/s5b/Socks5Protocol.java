@@ -28,6 +28,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -96,7 +97,7 @@ final class Socks5Protocol {
 
              */
 
-            byte[] dstAddr = destinationAddress.getBytes();
+            byte[] dstAddr = destinationAddress.getBytes(StandardCharsets.UTF_8);
             byte[] dstPort = new byte[]{(byte) (destinationPort >>> 8), (byte) destinationPort};
             byte[] requestDetails = new byte[]{
                     (byte) 0x05, // protocol version: X'05'

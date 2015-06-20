@@ -31,7 +31,6 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.util.XmppUtils;

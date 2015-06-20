@@ -25,7 +25,6 @@
 package rocks.xmpp.core.stanza;
 
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 
 import java.util.function.Consumer;
 

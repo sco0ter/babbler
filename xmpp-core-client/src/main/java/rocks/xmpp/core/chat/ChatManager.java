@@ -30,7 +30,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.util.XmppUtils;
 
 import java.util.HashMap;

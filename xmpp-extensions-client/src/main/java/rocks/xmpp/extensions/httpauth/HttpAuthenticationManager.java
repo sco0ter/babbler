@@ -31,7 +31,6 @@ import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import rocks.xmpp.util.XmppUtils;

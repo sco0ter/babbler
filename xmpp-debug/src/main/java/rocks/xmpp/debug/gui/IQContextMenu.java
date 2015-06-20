@@ -28,7 +28,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableView;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 
 /**
  * @author Christian Schudt

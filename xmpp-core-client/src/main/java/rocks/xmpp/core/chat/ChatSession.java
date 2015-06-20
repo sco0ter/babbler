@@ -27,7 +27,6 @@ package rocks.xmpp.core.chat;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 
 import java.util.EventObject;
 import java.util.Objects;

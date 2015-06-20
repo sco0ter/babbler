@@ -53,7 +53,6 @@ import org.xml.sax.SAXParseException;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;

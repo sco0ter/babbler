@@ -85,7 +85,7 @@ final class IbbInputStream extends InputStream {
                 }
                 InBandByteStream.Data data = null;
                 if (timeout <= 0) {
-                    while (data == null) {
+                    while (data == null || data.getSequence() == -1) {
                         synchronized (this) {
                             // If the stream has been closed and there's no more data to process, return -1.
                             if (closed && queue.isEmpty()) {
@@ -97,7 +97,7 @@ final class IbbInputStream extends InputStream {
                     }
                 } else {
                     data = queue.poll(timeout, TimeUnit.MILLISECONDS);
-                    if (data == null) {
+                    if (data == null || data.getSequence() == -1) {
                         synchronized (this) {
                             if (closed) {
                                 return -1;
@@ -123,7 +123,6 @@ final class IbbInputStream extends InputStream {
             // Store the nth byte (as int) of the buffer. Then increment n.
             // Also convert the signed int value into an unsigned int by applying the & 0xFF bit operator.
             int b = (int) buffer[n++] & 0xFF;
-
             // If n is bigger than the buffer, reset n to 0 so that a new packet will be retrieved during the next read.
             if (n >= buffer.length) {
                 n = 0;
@@ -146,5 +145,14 @@ final class IbbInputStream extends InputStream {
         } catch (Exception e) {
             throw new IOException(e);
         }
+        // Add a "poison object" to indicate the end of stream and to release the blocking read() method.
+
+        // From BlockingQueue JavaDoc:
+        // A BlockingQueue does not intrinsically support any kind of "close" or "shutdown" operation
+        // to indicate that no more items will be added.
+        // The needs and usage of such features tend to be implementation-dependent.
+        // For example, a common tactic is for producers to insert special end-of-stream or poison objects,
+        // that are interpreted accordingly when taken by consumers.
+        queue.add(new InBandByteStream.Data(new byte[0], ibbSession.getSessionId(), -1));
     }
 }

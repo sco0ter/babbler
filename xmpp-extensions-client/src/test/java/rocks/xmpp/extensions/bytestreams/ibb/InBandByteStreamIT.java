@@ -86,8 +86,8 @@ public class InBandByteStreamIT extends IntegrationTest {
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         } finally {
+                            lock.lock();
                             try {
-                                lock.lock();
                                 condition.signal();
                             } finally {
                                 lock.unlock();
@@ -96,7 +96,7 @@ public class InBandByteStreamIT extends IntegrationTest {
                     }
                 }.start();
             } catch (IOException e1) {
-                e1.printStackTrace();
+                Assert.fail(e1.getMessage(), e1);
             }
         });
 
@@ -107,9 +107,11 @@ public class InBandByteStreamIT extends IntegrationTest {
         os.flush();
         os.close();
 
+        lock.lock();
         try {
-            lock.lock();
-            condition.await(5, TimeUnit.SECONDS);
+            if (outputStream.toByteArray().length == 0) {
+                condition.await(5, TimeUnit.SECONDS);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {

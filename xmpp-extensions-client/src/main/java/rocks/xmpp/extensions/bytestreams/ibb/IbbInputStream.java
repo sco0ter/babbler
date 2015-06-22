@@ -78,7 +78,7 @@ final class IbbInputStream extends InputStream {
             try {
                 int timeout;
                 synchronized (this) {
-                    if (closed) {
+                    if (closed && queue.isEmpty()) {
                         return -1;
                     }
                     timeout = readTimeout;
@@ -99,7 +99,7 @@ final class IbbInputStream extends InputStream {
                     data = queue.poll(timeout, TimeUnit.MILLISECONDS);
                     if (data == null || data.getSequence() == -1) {
                         synchronized (this) {
-                            if (closed) {
+                            if (closed && queue.isEmpty()) {
                                 return -1;
                             } else {
                                 throw new SocketTimeoutException();

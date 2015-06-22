@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
+import rocks.xmpp.util.XmppUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,13 +52,13 @@ public final class FileTransfer {
 
     private final Set<Consumer<FileTransferStatusEvent>> fileTransferStatusListeners = new CopyOnWriteArraySet<>();
 
+    private final ExecutorService executorService;
+
     private volatile Status status;
 
     private volatile Exception exception;
 
     private volatile long bytesTransferred;
-
-    private final ExecutorService executorService;
 
     public FileTransfer(InputStream inputStream, OutputStream outputStream, long length) {
         this.inputStream = inputStream;
@@ -71,7 +73,7 @@ public final class FileTransfer {
      * @param fileTransferStatusListener The listener.
      * @see #removeFileTransferStatusListener(Consumer)
      */
-    public void addFileTransferStatusListener(Consumer<FileTransferStatusEvent> fileTransferStatusListener) {
+    public final void addFileTransferStatusListener(Consumer<FileTransferStatusEvent> fileTransferStatusListener) {
         fileTransferStatusListeners.add(fileTransferStatusListener);
     }
 
@@ -81,26 +83,12 @@ public final class FileTransfer {
      * @param fileTransferStatusListener The listener.
      * @see #addFileTransferStatusListener(Consumer)
      */
-    public void removeFileTransferStatusListener(Consumer<FileTransferStatusEvent> fileTransferStatusListener) {
+    public final void removeFileTransferStatusListener(Consumer<FileTransferStatusEvent> fileTransferStatusListener) {
         fileTransferStatusListeners.remove(fileTransferStatusListener);
     }
 
-    private final void notifyFileTransferStatusListeners(final FileTransferStatusEvent fileTransferStatusEvent) {
-        for (final Consumer<FileTransferStatusEvent> fileTransferStatusListener : fileTransferStatusListeners) {
-            try {
-                fileTransferStatusListener.accept(fileTransferStatusEvent);
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private final void notifyFileTransferStatusListeners(final Status status, final long bytesTransferred) {
-        notifyFileTransferStatusListeners(new FileTransferStatusEvent(this, status, bytesTransferred));
-    }
-
     private final void notifyFileTransferStatusListeners() {
-        notifyFileTransferStatusListeners(status, bytesTransferred);
+        XmppUtils.notifyEventListeners(fileTransferStatusListeners, new FileTransferStatusEvent(this, status, bytesTransferred));
     }
 
     /**
@@ -108,7 +96,7 @@ public final class FileTransfer {
      *
      * @return The status.
      */
-    public Status getStatus() {
+    public final Status getStatus() {
         return status;
     }
 
@@ -119,7 +107,7 @@ public final class FileTransfer {
         }
     }
 
-    public boolean isDone() {
+    public final boolean isDone() {
         return status != Status.IN_PROGRESS;
     }
 
@@ -150,7 +138,7 @@ public final class FileTransfer {
      *
      * @return A value between 0 and 1 indicating the progress or -1 if the progress is unknown.
      */
-    public double getProgress() {
+    public final double getProgress() {
         if (length != 0) {
             return (double) getBytesTransferred() / length;
         }
@@ -162,7 +150,7 @@ public final class FileTransfer {
      *
      * @return The future which is done when transferring is complete.
      */
-    public Future<?> transfer() {
+    public final Future<?> transfer() {
 
         return executorService.submit(() -> {
                     byte[] buffer = new byte[8192];
@@ -201,7 +189,7 @@ public final class FileTransfer {
         );
     }
 
-    public void cancel() {
+    public final void cancel() {
         updateStatus(Status.CANCELED);
     }
 
@@ -210,7 +198,7 @@ public final class FileTransfer {
      *
      * @return The exception or null.
      */
-    public Exception getException() {
+    public final Exception getException() {
         return exception;
     }
 

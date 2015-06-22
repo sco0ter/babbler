@@ -29,6 +29,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 /**
@@ -53,10 +56,13 @@ public final class FileTransfer {
 
     private volatile long bytesTransferred;
 
+    private final ExecutorService executorService;
+
     public FileTransfer(InputStream inputStream, OutputStream outputStream, long length) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
         this.length = length;
+        this.executorService = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -153,47 +159,46 @@ public final class FileTransfer {
 
     /**
      * Transfers the file in its own thread.
+     *
+     * @return The future which is done when transferring is complete.
      */
-    public void transfer() {
+    public Future<?> transfer() {
 
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                byte[] buffer = new byte[8192];
-                int len;
-                bytesTransferred = 0;
+        return executorService.submit(() -> {
+                    byte[] buffer = new byte[8192];
+                    int len;
+                    bytesTransferred = 0;
 
-                updateStatus(Status.IN_PROGRESS);
+                    updateStatus(Status.IN_PROGRESS);
 
-                try {
-                    while ((len = inputStream.read(buffer)) > -1 && status != Status.CANCELED) {
-                        outputStream.write(buffer, 0, len);
-                        addBytesTransferred(len);
-                    }
-
-                    if (bytesTransferred != length) {
-                        updateStatus(Status.FAILED);
-                    }
-                } catch (IOException e) {
-                    exception = e;
-                    updateStatus(Status.FAILED);
-                } finally {
-                    // Close the stream
                     try {
-                        inputStream.close();
-                        outputStream.close();
+                        while ((len = inputStream.read(buffer)) > -1 && status != Status.CANCELED) {
+                            outputStream.write(buffer, 0, len);
+                            addBytesTransferred(len);
+                        }
+
+                        if (bytesTransferred != length) {
+                            updateStatus(Status.FAILED);
+                        }
                     } catch (IOException e) {
                         exception = e;
                         updateStatus(Status.FAILED);
                     } finally {
-                        if (status == Status.IN_PROGRESS) {
-                            updateStatus(Status.COMPLETED);
+                        // Close the stream
+                        try {
+                            inputStream.close();
+                            outputStream.close();
+                        } catch (IOException e) {
+                            exception = e;
+                            updateStatus(Status.FAILED);
+                        } finally {
+                            if (status == Status.IN_PROGRESS) {
+                                updateStatus(Status.COMPLETED);
+                            }
                         }
                     }
                 }
-            }
-        };
-        thread.start();
+        );
     }
 
     public void cancel() {

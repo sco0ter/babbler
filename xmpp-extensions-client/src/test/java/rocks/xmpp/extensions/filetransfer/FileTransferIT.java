@@ -38,7 +38,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -71,21 +73,21 @@ public class FileTransferIT extends IntegrationTest {
     }
 
     @Test
-    public void testInBandFileTransfer() throws XmppException, IOException, InterruptedException {
+    public void testInBandFileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
         // Disable SOCKS 5 transfer method, so that IBB will be used.
         xmppSession[1].disableFeature(Socks5ByteStream.NAMESPACE);
         testFileTransfer();
     }
 
     @Test
-    public void testSocks5FileTransfer() throws XmppException, IOException, InterruptedException {
+    public void testSocks5FileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
         // Enable SOCKS 5 transfer method.
         xmppSession[1].enableFeature(Socks5ByteStream.NAMESPACE);
         testFileTransfer();
     }
 
 
-    private void testFileTransfer() throws XmppException, IOException, InterruptedException {
+    private void testFileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
         // The data we want to send (representing a file).
         byte[] data = new byte[]{1, 2, 3, 4};
         Lock lock = new ReentrantLock();
@@ -99,18 +101,14 @@ public class FileTransferIT extends IntegrationTest {
                 Assert.assertEquals(e.getName(), "test.txt");
                 Assert.assertEquals(e.getSize(), 4);
 
-                fileTransfer.addFileTransferStatusListener(ev -> {
-                    if (ev.getStatus() == FileTransfer.Status.COMPLETED) {
-                        lock.lock();
-                        try {
-                            transferCompleted.signal();
-                        } finally {
-                            lock.unlock();
-                        }
-                    }
-                });
-                fileTransfer.transfer();
-            } catch (IOException e1) {
+                fileTransfer.transfer().get();
+                lock.lock();
+                try {
+                    transferCompleted.signal();
+                } finally {
+                    lock.unlock();
+                }
+            } catch (IOException | InterruptedException | ExecutionException e1) {
                 Assert.fail(e1.getMessage(), e1);
             }
         };

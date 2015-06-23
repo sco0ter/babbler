@@ -24,14 +24,19 @@
 
 package rocks.xmpp.sample;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.compress.CompressionManager;
+import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
+import rocks.xmpp.extensions.langtrans.LanguageTranslationManager;
+import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -43,6 +48,8 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -85,6 +92,7 @@ public class SampleApplication {
                 }, new SecureRandom());
 
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .hostname("localhost")
                         .port(5222)
                         .sslContext(sslContext)
                         .compressionMethods(CompressionManager.ZLIB)
@@ -116,6 +124,19 @@ public class SampleApplication {
                 xmppSession.connect();
                 // Login
                 xmppSession.login("admin", "admin", "xmpp");
+
+                LanguageTranslationManager languageTranslationManager = xmppSession.getManager(LanguageTranslationManager.class);
+
+                Collection<Item> services = languageTranslationManager.discoverTranslationProviders(Jid.valueOf(xmppSession.getDomain()));
+                if (!services.isEmpty()) {
+
+                    Jid serviceAddress = services.iterator().next().getJid();
+//                    LanguageTranslation.Source source = new LanguageTranslation.Source("Hello World", "en");
+//                    LanguageTranslation languageTranslation = new LanguageTranslation(source, Collections.emptyList());
+//
+//                    xmppSession.query(new IQ(serviceAddress, IQ.Type.GET, languageTranslation));
+                    languageTranslationManager.discoverLanguageSupport(serviceAddress);
+                }
 
                 System.out.println(xmppSession.getActiveConnection());
             } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {

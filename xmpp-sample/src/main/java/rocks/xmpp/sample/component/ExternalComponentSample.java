@@ -24,12 +24,23 @@
 
 package rocks.xmpp.sample.component;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.debug.gui.VisualDebugger;
+import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.component.accept.ExternalComponent;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
+import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
+import rocks.xmpp.extensions.muc.model.Muc;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 /**
@@ -45,14 +56,46 @@ public class ExternalComponentSample {
                         .debugger(VisualDebugger.class)
                         .build();
 
-                ExternalComponent myComponent = new ExternalComponent("test", "test", configuration, "localhost", 5275);
+                ExternalComponent myComponent = new ExternalComponent("translation", "test", configuration, "localhost", 5275);
 
-                // Listen for inbound messages.
-                myComponent.addInboundMessageListener(e -> System.out.println(e.getMessage()));
+                ServiceDiscoveryManager serviceDiscoveryManager = myComponent.getManager(ServiceDiscoveryManager.class);
+
+                // Add an identity for the component. This will be used by clients who want to discover the translation service.
+                serviceDiscoveryManager.addIdentity(Identity.automationTranslation().withName("Translation Provider Service"));
+                // Our component supports the XEP-0171 protocol, let's advertise it by including the protocol name in the feature list,
+                // so that clients can discover our component as language translation service and can send queries to it.
+                serviceDiscoveryManager.addFeature(LanguageTranslation.NAMESPACE);
+                // Don't advertise the MUC feature. We are no chat service.
+                serviceDiscoveryManager.removeFeature(Muc.NAMESPACE);
+                // Don't advertise the SOCKS bytestreams feature. We are no stream proxy.
+                serviceDiscoveryManager.removeFeature(Socks5ByteStream.NAMESPACE);
+
+                myComponent.addIQHandler(LanguageSupport.class, new AbstractIQHandler(IQ.Type.GET) {
+                    @Override
+                    protected IQ processRequest(IQ iq) {
+                        List<LanguageSupport.Item> items = new ArrayList<>();
+                        items.add(new LanguageSupport.Item("en", Jid.valueOf(myComponent.getDomain()), "de", "testEngine", true, null));
+                        return iq.createResult(new LanguageSupport(items));
+                    }
+                });
+
+                myComponent.addIQHandler(LanguageTranslation.class, new AbstractIQHandler(IQ.Type.GET) {
+                    @Override
+                    protected IQ processRequest(IQ iq) {
+
+                        List<LanguageTranslation.Translation> translations = new ArrayList<>();
+                        LanguageTranslation translation = iq.getExtension(LanguageTranslation.class);
+
+                        for (LanguageTranslation.Translation t : translation.getTranslations()) {
+                            translations.add(LanguageTranslation.Translation.ofDestinationLanguage(t.getDestinationLanguage()).withSourceLanguage(translation.getSourceLanguage()).withTranslatedText("HALLO"));
+                        }
+                        LanguageTranslation languageTranslation = new LanguageTranslation(translations);
+                        return iq.createResult(languageTranslation);
+                    }
+                });
+
                 // Connect
                 myComponent.connect();
-
-
             } catch (XmppException e) {
                 e.printStackTrace();
             }

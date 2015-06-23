@@ -15,7 +15,7 @@ Generally speaking all enabled extensions will be added to the feature list of s
 You discover information about another XMPP entity by sending a request to it:
 
 ```java
-ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+ServiceDiscoveryManager serviceDiscoveryManager = xmppClient.getManager(ServiceDiscoveryManager.class);
 InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf("example.net"));
 ```
 
@@ -25,10 +25,10 @@ InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf("exa
 
 For most use cases you are probably only interested if another entity supports a specific feature.
 
-Because that use case is specified by nearly every XEP ("determining support"), there's a convenience method for it directly on `XmppSession`, which internally also uses [XEP-0115: Entity Capabilities][Entity Capabilities] (for optimization and caching):
+Because that use case is specified by nearly every XEP ("determining support"), there's a convenience method for it directly on `XmppClient`, which internally also uses [XEP-0115: Entity Capabilities][Entity Capabilities] (for optimization and caching):
 
 ```
-boolean supportsChatStates = xmppSession.isSupported(ChatState.NAMESPACE, Jid.valueOf("romeo@example.net/park"));
+boolean supportsChatStates = xmppClient.isSupported(ChatState.NAMESPACE, Jid.valueOf("romeo@example.net/park"));
 ```
 
 Note that the passed JID should be a full JID in most cases (if you want to check client capabilities).

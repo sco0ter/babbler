@@ -36,6 +36,7 @@
 * ![supported][supported]           [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
 * ![supported][supported]           [XEP-0107: User Mood](http://xmpp.org/extensions/xep-0107.html)
 * ![supported][supported]           [XEP-0108: User Activity](http://xmpp.org/extensions/xep-0108.html)
+* ![supported][supported]           [XEP-0114: Jabber Component Protocol](http://xmpp.org/extensions/xep-0114.html)
 * ![supported][supported]           [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
 * ![supported][supported]           [XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)
 * ![supported][supported]           [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
@@ -79,7 +80,7 @@
 * ![not supported][not supported]   [XEP-0262: Use of ZRTP in Jingle RTP Sessions](http://xmpp.org/extensions/xep-0262.html)
 * ![not supported][not supported]   [XEP-0266: Codecs for Jingle Audio](http://xmpp.org/extensions/xep-0266.html)
 * ![supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
-* ![in development][in development] [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
+* ![supported][supported]           [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
 * ![supported][supported]           [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
 

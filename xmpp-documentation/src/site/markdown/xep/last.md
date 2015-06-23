@@ -15,7 +15,7 @@ This XEP defines three use cases:
 If you want to find out how long ago a user logged out, you query for the user's bare JID. The server should then answer on behalf of the user with the last logout date.
 
 ```java
-LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
+LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
 LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@im.example.com"));
 // user logged out lastActivity.getSeconds() ago
 ```
@@ -25,7 +25,7 @@ LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("jul
 In order to query a connected user for its idle time you must query for its full JID, so that the XMPP server routes the query directly to the resource.
 
 ```java
-LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
+LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
 LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@im.example.com/resource"));
 ```
 
@@ -45,7 +45,7 @@ lastActivityManager.setLastActivityStrategy(() -> {
 If you don't want your XMPP session to respond to last activiy queries, you have to disable `LastActivityManager`, otherwise keep it enabled.
 
 ```java
-LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
+LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
 lastActivityManager.setEnabled(false);
 ```
 
@@ -54,7 +54,7 @@ lastActivityManager.setEnabled(false);
 When querying a server or component the result is the uptime of it.
 
 ```java
-LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
+LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
 LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("im.example.com"));
 ```
 
@@ -74,7 +74,7 @@ By default this information is automatically attached to your outbound presence 
 If you don't want it, disable the manager:
 
 ```java
-LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
+LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
 lastActivityManager.setEnabled(true);
 ```
 

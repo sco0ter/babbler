@@ -8,7 +8,7 @@
 If your client supports this feature it should be advertising support for it. You can do it by simple enabling the manager.
 
 ```java
-MessageCorrectionManager messageCorrectionManager = xmppSession.getManager(MessageCorrectionManager.class);
+MessageCorrectionManager messageCorrectionManager = xmppClient.getManager(MessageCorrectionManager.class);
 messageCorrectionManager.setEnabled(true);
 ```
 
@@ -19,13 +19,13 @@ Let's say you send a message with a typo in it:
 ```java
 Message message = new Message(Jid.valueOf("juliet@example.net/balcony"), Message.Type.CHAT, "Hello, my frind");
 message.setId("123");
-xmppSession.send(message);
+xmppClient.send(message);
 ```
 
 You then recognize the typo in it and want to correct it. You would send a replacement message, replacing the old message:
 
 ```java
-MessageCorrectionManager messageCorrectionManager = xmppSession.getManager(MessageCorrectionManager.class);
+MessageCorrectionManager messageCorrectionManager = xmppClient.getManager(MessageCorrectionManager.class);
 messageCorrectionManager.correctMessage("123", new Message(Jid.valueOf("juliet@example.net/balcony"), Message.Type.CHAT, "Hello, my friend"));
 ```
 

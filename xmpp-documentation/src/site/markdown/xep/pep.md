@@ -12,7 +12,7 @@ Therefore it can be used, if you want to publish your [location][GeoLocation], [
 First you have to create the personal eventing service. Since it's just a subset of PubSub, you have to use the `PubSubManager` and the personal eventing service is just a `PubSubService`.
 
 ```java
-PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
+PubSubManager pubSubManager = xmppClient.getManager(PubSubManager.class);
 PubSubService personalEventingService = pubSubManager.createPersonalEventingService();
 ```
 
@@ -37,7 +37,7 @@ By default (i.e. if not otherwise configured) all your contacts now receive an e
 Now that you have published your geo location all your contacts will receive notifications about it. This is just a message with a "PubSub event" extension.
 
 ```java
-xmppSession.addInboundMessageListener(e -> {
+xmppClient.addInboundMessageListener(e -> {
     Message message = e.getMessage();
     Event event = message.getExtension(Event.class);
     if (event != null) {

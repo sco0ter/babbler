@@ -9,7 +9,7 @@ If you enable the `MessageDeliverReceiptsManager`, your XMPP session automatical
 
 
 ```java
-MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
+MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppClient.getManager(MessageDeliveryReceiptsManager.class);
 messageDeliveryReceiptsManager.setEnabled(true);
 
 messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> {

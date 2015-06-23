@@ -17,7 +17,7 @@ Publishing means, it is published to your vCard (XEP-0153) as well as to the Per
 ```java
 try {
     // Get the avatar manager
-    AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
+    AvatarManager avatarManager = xmppClient.getManager(AvatarManager.class);
     avatarManager.setEnabled(true);
 
     // Choose a file with JavaFX file dialog.
@@ -31,13 +31,11 @@ try {
         BufferedImage bufferedImage = ImageIO.read(file);
         Image thumbnail = bufferedImage.getScaledInstance(64, -1, Image.SCALE_SMOOTH);
         BufferedImage bufferedThumbnail = new BufferedImage(thumbnail.getWidth(null),
-        thumbnail.getHeight(null),
-        BufferedImage.TYPE_INT_RGB);
+            thumbnail.getHeight(null),
+            BufferedImage.TYPE_INT_RGB);
         bufferedThumbnail.getGraphics().drawImage(thumbnail, 0, 0, null);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedThumbnail, "png", byteArrayOutputStream);
         // Publish the image as your avatar.
-        avatarManager.publishAvatar(byteArrayOutputStream.toByteArray());
+        avatarManager.publishAvatarImage(bufferedThumbnail);
     }
 } catch (IOException | XmppException e) {
     // Deal with it. Chosen file was probably no image file.
@@ -49,10 +47,10 @@ try {
 You can listen for your contacts' avatar updates by adding a listener to the manager:
 
 ```java
-AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
+AvatarManager avatarManager = xmppClient.getManager(AvatarManager.class);
 avatarManager.setEnabled(true);
 avatarManager.addAvatarChangeListener(e -> {
-    BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(e.getAvatar()));
+    BufferedImage bufferedImage = e.getAvatarImage();
     // ...
 });
 ```

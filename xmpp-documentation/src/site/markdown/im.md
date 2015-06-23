@@ -1,12 +1,10 @@
 # Contacts, Presence and Messaging
 ---
 
-For XMPP core aspects like roster and presence management, there's a corresponding manager class, directly on the `XmppSession` instance.
-
 ## Adding Contacts to Your Roster
 
 ```java
-xmppSession.getManager(RosterManager.class).addContact(new Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
+xmppClient.getManager(RosterManager.class).addContact(new Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
 ```
 
 This will create a contact on your roster and subsequently sends a presence subscription request to the user.
@@ -18,10 +16,11 @@ The roster manager also provides other methods, e.g. for deleting and updating a
 You can listen for roster pushes like this:
 
 ```java
-xmppSession.getManager(RosterManager.class).addRosterListener(e -> {
+RosterManager rosterManager = xmppClient.getManager(RosterManager.class);
+rosterManager.addRosterListener(e -> {
     // The roster event contains information about added, updated or deleted contacts.
     // TODO: Update your roster!
-    Collection<Contact> contacts = xmppSession.getManager(RosterManager.class).getContacts();
+    Collection<Contact> contacts = rosterManager.getContacts();
     for (Contact contact : contacts) {
         System.out.println(contact.getName());
     }
@@ -30,10 +29,10 @@ xmppSession.getManager(RosterManager.class).addRosterListener(e -> {
 
 ## Dealing with Presence Updates and Subscription Requests
 
-Whenever one of your contacts updates his presence (e.g. comes offline, goes away, goes offline, ...), you can react to it with:
+Whenever one of your contacts updates his presence (e.g. comes online, goes away, goes offline, ...), you can react to it with:
 
 ```java
-xmppSession.addInboundPresenceListener(e -> {
+xmppClient.addInboundPresenceListener(e -> {
     Presence presence = e.getPresence();
     Contact contact = xmppSession.getManager(RosterManager.class).getContact(presence.getFrom());
     if (contact != null) {
@@ -45,7 +44,7 @@ xmppSession.addInboundPresenceListener(e -> {
 Presence is also used for requesting subscription to your presence status.
 
 ```java
-xmppSession.addInboundPresenceListener(e -> {
+xmppClient.addInboundPresenceListener(e -> {
     Presence presence = e.getPresence();
     if (presence.getType() == Presence.Type.SUBSCRIBE) {
         // presence.getFrom() wants to subscribe to your presence.
@@ -65,7 +64,7 @@ xmppSession.getManager(PresenceManager.class).denySubscription(presence.getFrom(
 
 ## Listening for Inbound Messages
 
-Listening for messages is done by adding a message listener to the session.
+Listening for messages is done by adding a message listener.
 
 ```java
 xmppSession.addInboundMessageListener(e -> {
@@ -73,6 +72,8 @@ xmppSession.addInboundMessageListener(e -> {
     // Handle message.
 });
 ```
+
+*Note:* All listeners should be added *before* you login to the session. Otherwise you might miss messages and presences sent directly after login.
 
 ## Intercepting Outbound Messages (or Stanzas in General)
 

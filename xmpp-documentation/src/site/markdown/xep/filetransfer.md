@@ -63,6 +63,7 @@ If accepted, you can transfer the file.
 
 ```java
 try {
+    FileTransferManager fileTransferManager = xmppClient.getManager(FileTransferManager.class);
     FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("test.png"), "Description", Jid.valueOf("juliet@exampl.net/balcony"), 60000);
     fileTransfer.transfer();
 } catch (FileTransferRejectedException e) {
@@ -75,7 +76,6 @@ try {
 ### Listening for File Transfer Offers
 
 ```java
-FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
 fileTransferManager.addFileTransferOfferListener(e -> {
     try {
         FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
@@ -88,19 +88,12 @@ fileTransferManager.addFileTransferOfferListener(e -> {
 
 ### Monitoring the Progress
 
-If you are using JavaFX, you could use the `AnimationTimer` class to periodically ask the `fileTransfer` object for the progress:
-
 ```java
-AnimationTimer animationTimer = new AnimationTimer() {
-    @Override
-    public void handle(long now) {
-        System.out.println(fileTransfer.getProgress());
-        if (fileTransfer.isDone()) {
-            stop();
-        }
-    }
-};
-animationTimer.start();
+fileTransfer.addFileTransferStatusListener(e -> {
+    updateMessage(e.toString());
+    updateProgress(e.getBytesTransferred(), file.length());
+});
+fileTransfer.transfer();
 ```
 
 [In-Band Bytestreams]: http://xmpp.org/extensions/xep-0047.html "XEP-0047: In-Band Bytestreams"

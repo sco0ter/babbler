@@ -12,7 +12,7 @@ Here's a simple example, which allows one entity to request the sum of two integ
 First write your payload class and annotate it with JAXB annotations. Make sure to mark it with `@XmlRootElement`:
 
 ```java
-@XmlRootElement(name = "addition", namespace = "rocks:xmpp:sample")
+@XmlRootElement(name = "addition", namespace = "http://xmpp.rocks")
 public final class Addition {
 
     @XmlElement(name = "summand1")
@@ -82,7 +82,7 @@ XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
 Then create the session with that configuration:
 
 ```java
-XmppSession xmppSession = new XmppSession("domain", configuration);
+XmppClient xmppClient = new XmppClient("domain", configuration);
 ```
 
 
@@ -94,7 +94,7 @@ After having established an XMPP session the requester can then query the respon
 Addition addition = new Addition(52, 22);
 
 // Request the sum of two values (52 + 22). The requester will calculate it for you and return a result.
-IQ resultIQ = xmppSession.query(new IQ(Jid.valueOf("responder@domain/resource")), AbstractIQ.Type.GET, addition));
+IQ resultIQ = xmppClient.query(new IQ(Jid.valueOf("responder@domain/resource")), IQ.Type.GET, addition));
 
 System.out.println(resultIQ.getExtension(Addition.class));
 ```
@@ -106,7 +106,7 @@ which will handle inbound requests (of type `Addition`) and return either an err
 
 ```java
 // Reqister an IQ Handler, which will return the sum of two values.
-xmppSession.addIQHandler(Addition.class, new IQHandler() {
+xmppClient.addIQHandler(Addition.class, new IQHandler() {
     @Override
     public IQ handleRequest(IQ iq) {
         Addition addition = iq.getExtension(Addition.class);
@@ -121,13 +121,13 @@ xmppSession.addIQHandler(Addition.class, new IQHandler() {
 
 Preferably this should be done before connecting.
 
-Each IQ Handler is invoked in its own thread, so the result calculation could take some time without blocking any other communication.
+Each `IQHandler` is invoked in its own thread, so the result calculation could take some time without blocking any other communication.
 
 The result IQ will look like this on the XMPP stream and will eventually arrive at the requester:
 
 ```xml
 <iq from="responder@domain/resource" id="123" to="requester@domain/resource" type="result">
-    <addition xmlns="rocks:xmpp:sample">
+    <addition xmlns="http://xmpp.rocks">
         <sum>74</sum>
     </addition>
 </iq>

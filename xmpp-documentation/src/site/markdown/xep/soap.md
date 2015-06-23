@@ -6,7 +6,7 @@ There's some very basic support for [XEP-0072: SOAP Over XMPP][SOAP Over XMPP]. 
 ## Discovering Support
 
 ```java
-SoapManager soapManager = xmppSession.getManager(SoapManager.class);
+SoapManager soapManager = xmppClient.getManager(SoapManager.class);
 boolean isSupported = soapManager.isSupported(Jid.valueOf("responder@example.com/soap-server"));
 ```
 

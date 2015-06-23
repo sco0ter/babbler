@@ -3,7 +3,7 @@
 
 There is one abstract `XmppException` for most kind of exceptions, which are related to XMPP.
 
-For now, there are three subclasses of it:
+Mainly, there are three subclasses of it:
 
 * `StreamErrorException`  for [Stream Errors][Stream Errors].
 * `StanzaException` for [Stanza Errors][Stanza Errors].
@@ -17,8 +17,8 @@ XMPP Stream Errors are unrecoverable, which means the session will get disconnec
 Here's an example how to react to stream errors.
 
 ```java
-xmppSession.addSessionStatusListener(e -> {
-    if (e.getThrowable() instanceof StreamErrorException){
+xmppClient.addSessionStatusListener(e -> {
+    if (e.getThrowable() instanceof StreamErrorException) {
         StreamErrorException streamException = (StreamErrorException) e.getThrowable();
         if (streamException.getStreamError().getCondition() == Condition.SYSTEM_SHUTDOWN) {
             // Server was shut down.
@@ -31,7 +31,7 @@ xmppSession.addSessionStatusListener(e -> {
 
 Most stanza errors are returned in response to an IQ-get or IQ-set query.
 
-For querying another XMPP entity, there's a `query` method on the `XmppSession` class, which queries another entity for information and which is used by most methods.
+For querying another XMPP entity, there's a `query` method on the `XmppClient` class, which queries another entity for information and which is used by most methods.
 
 Now two things can happen:
 
@@ -47,15 +47,15 @@ Here's an example:
 ```java
 try {
     EntityTime entityTime = entityTimeManager.getEntityTime(Jid.valueOf("juliet@example.net/balcony"));
-} catch (XmppException e) {
-    if (e instanceof NoResponseException) {
-        // The entity did not respond
-    } else if (e instanceof StanzaException) {
-        StanzaError stanzaError = ((StanzaException) e).getStanza().getError();
-        if (stanzaError.getCondition() == Condition.SERVICE_UNAVAILABLE) {
-            // The entity returned a <service-unavailable/> stanza error.
-        }
+} catch (NoResponseException e) {
+    // The entity did not respond
+} catch (StanzaException e) {
+    StanzaError stanzaError = e.getStanza().getError();
+    if (stanzaError.getCondition() == Condition.SERVICE_UNAVAILABLE) {
+        // The entity returned a <service-unavailable/> stanza error.
     }
+} catch (XmppException e) {
+    // everything else
 }
 ```
 

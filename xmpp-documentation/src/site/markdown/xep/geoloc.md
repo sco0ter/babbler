@@ -11,7 +11,7 @@ One of your contacts publishes its location to its [Personal Eventing Service][X
 Publishing your location to the [Personal Eventing Service][XEP-0163: Personal Eventing Protocol] is as simple as that:
 
 ```java
-GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
+GeoLocationManager geoLocationManager = xmppClient.getManager(GeoLocationManager.class);
 geoLocationManager.publish(new GeoLocation(50.35, 7.59));
 ```
 
@@ -22,7 +22,7 @@ Enabling the manager indicates, that you are interested in receiving geo locatio
 Here's a sample, how to listen for location updates:
 
 ```
-GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
+GeoLocationManager geoLocationManager = xmppClient.getManager(GeoLocationManager.class);
 geoLocationManager.setEnabled(true);
 geoLocationManager.addGeoLocationListener(e -> {
     System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation());

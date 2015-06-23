@@ -8,7 +8,7 @@
 If you want to respond to requests, you have to set an `RpcHandler`, which handles inbound requests. Here's an example:
 
 ```java
-RpcManager rpcManager = xmppSession.getManager(RpcManager.class);
+RpcManager rpcManager = xmppClient.getManager(RpcManager.class);
 rpcManager.setRpcHandler((requester, methodName, parameters) -> {
     if (methodName.equals("examples.getStateName")) {
         if (!parameters.isEmpty()) {
@@ -59,7 +59,7 @@ We now consider the requester's side, i.e. if you want to call a remote procedur
 Assume you want to call the above remote procedure (`examples.getStateName`), you can do it like this:
 
 ```java
-RpcManager rpcManager = xmppSession.getManager(RpcManager.class);
+RpcManager rpcManager = xmppClient.getManager(RpcManager.class);
 try {
     Value response = rpcManager.call(Jid.valueOf("responder@company-a.com/jrpc-server"), "examples.getStateName", new Value(6));
     System.out.println(response.getAsString()); // Colorado

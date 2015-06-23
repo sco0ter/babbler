@@ -1,10 +1,10 @@
 # XEP-0045: Multi-User Chat
 ---
 
-For all MUC-related operations, you will need the ```MultiUserChatManager```, which you can get like this:
+For all MUC-related operations, you will need the `MultiUserChatManager`, which you can get like this:
 
 ```java
-MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChatManager.class);
+MultiUserChatManager multiUserChatManager = xmppClient.getManager(MultiUserChatManager.class);
 ```
 
 ## Chat Services

@@ -19,31 +19,23 @@ EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities
 
 Most extensions need some kind of logic or have to implement business rules defined in the respective XEP.
 
-Therefore extensions need to have a manager, which handles their business rules.
+Therefore extensions are associated with a `Manager` class, which handles their business rules.
 
-While reading through the specifications, you quickly notice that nearly all extensions have one thing in common: They can be either enabled or disabled, e.g. you can either enable or disable
+Nearly all extensions have one thing in common: They can be either enabled or disabled, e.g. you can either enable or disable
 support for [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html) or [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html).
+
+Extensions are also associated with an identifier, usually a namespace, e.g. `urn:xmpp:receipts`.
 
 By enabling an extension, support for it will be automatically advertised by [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html).
 
-All so-called extension managers are therefore derived from `ExtensionManager` (which provides the enabling/disabling logic).
+To get a manager for a specific extension, you use the `getManager` method of the `XmppClient`.
 
-To get an extension manager for a specific extension, you use the `getExtensionManager` method of the `XmppSession`.
+This allows you to enable/disable an extension, but also to configure behavior of the extension.
 
-**Examples:**
-
-```java
-EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
-entityCapabilitiesManager.setEnabled(true);
-```
-
-This will enable support for [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html), which means Entity Capabilities are included in every presence being sent.
-Furthermore, it will analyze inbound presence stanzas for a "caps" extension and manage a cache of capabilities.
-
----
+### Examples
 
 ```
-EntityTimeManager entityTimeManager = xmppSession.getManager(EntityTimeManager.class);
+EntityTimeManager entityTimeManager = xmppClient.getManager(EntityTimeManager.class);
 entityTimeManager.setEnabled(false);
 ```
 
@@ -53,7 +45,7 @@ Inbound "time" requests are automatically replied to with the current time, whil
 ---
 
 ```
-SoftwareVersionManager softwareVersionManager = xmppSession.getManager(SoftwareVersionManager.class);
+SoftwareVersionManager softwareVersionManager = xmppClient.getManager(SoftwareVersionManager.class);
 softwareVersionManager.setSoftwareVersion(new SoftwareVersion("Babbler", "1.0"));
 ```
 
@@ -64,6 +56,24 @@ If an entity requests your software version, this manager automatically replies 
 Managers usually also allow to interact with other entities, e.g. retrieving the time, software version, or last activity of another entity:
 
 ```
-LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
+LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
 LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@example.net"));
 ```
+
+(This will get the last activity of the user, i.e. the last logout date.)
+
+## Enabling or Disabling Extensions
+
+In order to enable or disable an extension, you can either use the approach described above (using the `Manager` class) or use a more convenient method:
+
+```
+xmppClient.enableFeature(EntityTimeManager.class);
+```
+
+or by providing the Extension namespace, e.g. `urn:xmpp:time`:
+
+```
+xmppClient.enableFeature(EntityTime.NAMESPACE);
+```
+
+In both cases, the extension will either be included or excluded from service discovery and the business logic of the extension will either be executed or not.

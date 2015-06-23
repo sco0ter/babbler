@@ -8,7 +8,7 @@ The `BookmarkManager` facilitates the access to the private storage by providing
 ## Adding a Bookmark
 
 ```java
-BookmarkManager bookmarkManager = xmppSession.getManager(BookmarkManager.class);
+BookmarkManager bookmarkManager = xmppClient.getManager(BookmarkManager.class);
 bookmarkManager.addBookmark(new ChatRoomBookmark("chatroom", Jid.valueOf("chat@conference.domain")));
 ```
 

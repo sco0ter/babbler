@@ -1,7 +1,7 @@
 # Getting Started
 ---
 
-## Establishing an XMPP Session
+## Establishing an XMPP Client Session
 
 The first thing you want to do in order to connect to an XMPP server is creating a `XmppClient` object:
 
@@ -11,7 +11,7 @@ XmppClient xmppClient = new XmppClient("domain");
 
 The `XmppClient` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
 
-A session to an XMPP server can be established in at least two ways:
+A session to an XMPP server can be established in at least two ways (connection methods):
 
 1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
 2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
@@ -47,13 +47,13 @@ BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.buil
     .build();
 ```
 
-Now let's pass them to the session to tell it that it should use them:
+Now let's pass them to the `XmppClient` to tell it that it should use them:
 
 ```java
 XmppClient xmppClient = new XmppClient("domain", tcpConfiguration, boshConfiguration);
 ```
 
-During connecting, the session will try all configured connections in order, until a connection is established.
+During connecting, the client will try all configured connections in order, until a connection is established.
 
 Here's an overview over the relation between the session and connections:
 
@@ -81,7 +81,6 @@ Before connecting to a server, you should configure your XMPP session.
 You might want to do one of the following:
 
 * Adding event listeners in order to listen for inbound messages, roster and presence changes or to modify outbound messages.
-* Setting up a custom SSL context
 * Configuring extensions, e.g.
     * Enable or disable certain extensions
     * Setting an identity for the connection (Service Discovery)

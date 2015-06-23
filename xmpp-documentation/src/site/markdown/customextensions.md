@@ -8,7 +8,7 @@ Let's consider the following example, where you want to send a message with some
 First you have to write the Product class with JAXB annotations:
 
 ```
-@XmlRootElement(name = "product", namespace = "com:mycompany:product")
+@XmlRootElement(name = "product", namespace = "http://xmpp.rocks")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Product {
 
@@ -59,7 +59,7 @@ Create a `package-info.java` and put JAXB annotations in it, like this:
 
 ```
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "yournamespace", elementFormDefault = XmlNsForm.QUALIFIED)
+@XmlSchema(namespace = "http://xmpp.rocks", elementFormDefault = XmlNsForm.QUALIFIED)
 package yourpackage;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -91,7 +91,7 @@ This will create the `JAXBContext` with your class (in addition to all other XMP
 Then create the session with that configuration:
 
 ```java
-XmppSession xmppSession = new XmppSession("domain", configuration);
+XmppClient xmppClient = new XmppClient("domain", configuration);
 ```
 
 You can then simply send a message with that extension:
@@ -99,14 +99,14 @@ You can then simply send a message with that extension:
 ```java
 Message message = new Message(Jid.valueOf("romeo@example.net"));
 message.getExtensions().add(new Product("1", "5.99 €", "New product", "A very cool product!!"));
-xmppSession.send(message);
+xmppClient.send(message);
 ```
 
 Which will result in the following stanza on the XMPP stream:
 
 ```xml
 <message to="romeo@example.net">
-    <product xmlns="com:mycompany:product" id="1" price="5.99 €">
+    <product xmlns="http://xmpp.rocks" id="1" price="5.99 €">
         <name>New product</name>
         <description>A very cool product!!</description>
     </product>

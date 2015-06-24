@@ -67,6 +67,7 @@
             <item href="customiq.html" name="Custom IQs"/>
             <item href="errors.html" name="Exceptions and XMPP Errors"/>
             <item href="debugging.html" name="Debugging XMPP Traffic"/>
+            <item href="prebind.html" name="HTTP Pre-Binding"/>
             <item href="buildinstructions.html" name="Build Instructions"/>
         </menu>
         <menu name="Extension Guide">

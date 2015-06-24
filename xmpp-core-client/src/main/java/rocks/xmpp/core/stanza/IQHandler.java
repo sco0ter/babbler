@@ -25,11 +25,11 @@
 package rocks.xmpp.core.stanza;
 
 import rocks.xmpp.core.stanza.model.IQ;
-
+import rocks.xmpp.core.stanza.model.IQ.Type;
 import java.util.function.Consumer;
 
 /**
- * Handles an inbound IQ request, (IQ stanzas of type {@link IQ.Type#GET get} or {@link IQ.Type#SET set}) by processing the request and returning an IQ response of type {@link IQ.Type#RESULT result} or {@link IQ.Type#ERROR error}.
+ * Handles an inbound IQ request, (IQ stanzas of type {@link Type#GET} or {@link Type#SET}) by processing the request and returning an IQ response of type {@link Type#RESULT result} or {@link Type#ERROR error}.
  * <p>
  * In contrast to {@link rocks.xmpp.core.session.XmppSession#addInboundIQListener(Consumer)} which merely listens to IQ stanzas, IQ handlers facilitate the proper handling of IQ requests by enforcing the semantics of IQs, especially:
  * <blockquote>
@@ -46,9 +46,9 @@ import java.util.function.Consumer;
 public interface IQHandler {
 
     /**
-     * Handles an inbound IQ stanza of type {@link IQ.Type#GET get} or {@link IQ.Type#SET set}.
+     * Handles an inbound IQ stanza of type {@link Type#GET get} or {@link Type#SET set}.
      * <p>
-     * The returned IQ must be of type {@link IQ.Type#RESULT result} or {@link IQ.Type#ERROR error}.
+     * The returned IQ must be of type {@link Type#RESULT result} or {@link Type#ERROR error}.
      * If <code>null</code> is returned, no response is returned to the requester and you must take responsibility of sending a response manually. However, this approach is not recommended.
      * <p>
      * Use {@link IQ#createResult()} or {@link IQ#createError(rocks.xmpp.core.stanza.model.StanzaError)} to generate the response IQ (i.e. an IQ with the same id).

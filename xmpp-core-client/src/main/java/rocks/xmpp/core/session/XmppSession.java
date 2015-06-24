@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.IQ.Type;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
@@ -388,7 +389,7 @@ public abstract class XmppSession implements AutoCloseable {
      * @param type      The payload type.
      * @param iqHandler The IQ handler.
      * @see #removeIQHandler(Class)
-     * @see #addIQHandler(Class, rocks.xmpp.core.stanza.IQHandler, boolean)
+     * @see #addIQHandler(Class, IQHandler, boolean)
      */
     public final void addIQHandler(Class<?> type, IQHandler iqHandler) {
         addIQHandler(type, iqHandler, true);
@@ -416,7 +417,7 @@ public abstract class XmppSession implements AutoCloseable {
      * Removes an IQ handler.
      *
      * @param type The payload type.
-     * @see #addIQHandler(Class, rocks.xmpp.core.stanza.IQHandler)
+     * @see #addIQHandler(Class, IQHandler)
      */
     public final void removeIQHandler(Class<?> type) {
         synchronized (iqHandlerMap) {
@@ -452,7 +453,7 @@ public abstract class XmppSession implements AutoCloseable {
      * This method blocks until a result was received or a timeout occurred.
      * </p>
      *
-     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain IQ.Type#GET get} or {@linkplain IQ.Type#SET set}.
+     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET set}.
      * @return The result {@code <iq/>} stanza.
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
@@ -467,7 +468,7 @@ public abstract class XmppSession implements AutoCloseable {
      * This method blocks until a result was received or a timeout occurred.
      * </p>
      *
-     * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain IQ.Type#GET get} or {@linkplain IQ.Type#SET set}.
+     * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET set}.
      * @param timeout The timeout.
      * @return The result {@code <iq/>} stanza.
      * @throws StanzaException     If the entity returned a stanza error.

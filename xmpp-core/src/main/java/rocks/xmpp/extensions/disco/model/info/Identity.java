@@ -37,8 +37,39 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/registrar/disco-categories.html">Service Discovery Identities</a>
  */
 public final class Identity implements Comparable<Identity> {
+
+    private static final String ACCOUNT = "account";
+
+    private static final String AUTH = "auth";
+
+    private static final String AUTOMATION = "automation";
+
+    private static final String CLIENT = "client";
+
+    private static final String COLLABORATION = "collaboration";
+
+    private static final String COMPONENT = "component";
+
+    private static final String CONFERENCE = "conference";
+
+    private static final String DIRECTORY = "directory";
+
+    private static final String GATEWAY = "gateway";
+
+    private static final String HEADLINE = "headline";
+
+    private static final String HIERARCHY = "hierarchy";
+
+    private static final String PROXY = "proxy";
+
+    private static final String PUBSUB = "pubsub";
+
+    private static final String SERVER = "server";
+
+    private static final String STORE = "store";
 
     @XmlAttribute
     private final String category;
@@ -153,7 +184,6 @@ public final class Identity implements Comparable<Identity> {
         return Objects.equals(category, other.category)
                 && Objects.equals(type, other.type)
                 && Objects.equals(lang, other.lang);
-
     }
 
     @Override
@@ -225,6 +255,690 @@ public final class Identity implements Comparable<Identity> {
     @Override
     public final String toString() {
         return String.format("Category: %s / Type: %s / Name: %s", category, type, name);
+    }
+
+    /**
+     * The user@host is an administrative account.
+     *
+     * @return The identity.
+     */
+    public static Identity accountAdmin() {
+        return new Identity(ACCOUNT, "admin");
+    }
+
+    /**
+     * The user@host is a "guest" account that allows anonymous login by any user.
+     *
+     * @return The identity.
+     */
+    public static Identity accountAnonymous() {
+        return new Identity(ACCOUNT, "anonymous");
+    }
+
+    /**
+     * The user@host is a registered or provisioned account associated with a particular non-administrative user.
+     *
+     * @return The identity.
+     */
+    public static Identity accountRegistered() {
+        return new Identity(ACCOUNT, "registered");
+    }
+
+    /**
+     * A server component that authenticates based on external certificates.
+     *
+     * @return The identity.
+     */
+    public static Identity authCert() {
+        return new Identity(AUTH, "cert");
+    }
+
+    /**
+     * A server authentication component other than one of the registered types.
+     *
+     * @return The identity.
+     */
+    public static Identity authGeneric() {
+        return new Identity(AUTH, "generic");
+    }
+
+    /**
+     * A server component that authenticates against an LDAP database.
+     *
+     * @return The identity.
+     */
+    public static Identity authLdap() {
+        return new Identity(AUTH, "ldap");
+    }
+
+    /**
+     * A server component that authenticates against an NT domain.
+     *
+     * @return The identity.
+     */
+    public static Identity authNtlm() {
+        return new Identity(AUTH, "ntlm");
+    }
+
+    /**
+     * A server component that authenticates against a PAM system.
+     *
+     * @return The identity.
+     */
+    public static Identity authPam() {
+        return new Identity(AUTH, "pam");
+    }
+
+    /**
+     * The node for a list of commands; valid only for the node "http://jabber.org/protocol/commands".
+     *
+     * @return The identity.
+     */
+    public static Identity automationCommandList() {
+        return new Identity(AUTOMATION, "command-list");
+    }
+
+    /**
+     * A node for a specific command; the "node" attribute uniquely identifies the command.
+     *
+     * @return The identity.
+     */
+    public static Identity automationCommandNode() {
+        return new Identity(AUTOMATION, "command-node");
+    }
+
+    /**
+     * An entity that supports Jabber-RPC.
+     *
+     * @return The identity.
+     */
+    public static Identity automationRpc() {
+        return new Identity(AUTOMATION, "rpc");
+    }
+
+    /**
+     * An entity that supports the SOAP XMPP Binding.
+     *
+     * @return The identity.
+     */
+    public static Identity automationSoap() {
+        return new Identity(AUTOMATION, "soap");
+    }
+
+    /**
+     * An entity that provides automated translation services.
+     *
+     * @return The identity.
+     */
+    public static Identity automationTranslation() {
+        return new Identity(AUTOMATION, "translation");
+    }
+
+    /**
+     * An automated client that is not controlled by a human user.
+     *
+     * @return The identity.
+     */
+    public static Identity clientBot() {
+        return new Identity(CLIENT, "bot");
+    }
+
+    /**
+     * Minimal non-GUI client used on dumb terminals or text-only screens.
+     *
+     * @return The identity.
+     */
+    public static Identity clientConsole() {
+        return new Identity(CLIENT, "console");
+    }
+
+    /**
+     * A client running on a gaming console.
+     *
+     * @return The identity.
+     */
+    public static Identity clientGame() {
+        return new Identity(CLIENT, "game");
+    }
+
+    /**
+     * A client running on a PDA, RIM device, or other handheld.
+     *
+     * @return The identity.
+     */
+    public static Identity clientHandheld() {
+        return new Identity(CLIENT, "handheld");
+    }
+
+    /**
+     * Standard full-GUI client used on desktops and laptops.
+     *
+     * @return The identity.
+     */
+    public static Identity clientPc() {
+        return new Identity(CLIENT, "pc");
+    }
+
+    /**
+     * A client running on a mobile phone or other telephony device.
+     *
+     * @return The identity.
+     */
+    public static Identity clientPhone() {
+        return new Identity(CLIENT, "phone");
+    }
+
+    /**
+     * A client that is not actually using an instant messaging client; however, messages sent to this contact will be delivered as Short Message Service (SMS) messages.
+     *
+     * @return The identity.
+     */
+    public static Identity clientSms() {
+        return new Identity(CLIENT, "sms");
+    }
+
+    /**
+     * A client operated from within a web browser.
+     *
+     * @return The identity.
+     */
+    public static Identity clientWeb() {
+        return new Identity(CLIENT, "web");
+    }
+
+    /**
+     * Multi-user whiteboarding service.
+     *
+     * @return The identity.
+     */
+    public static Identity collaborationWhiteboard() {
+        return new Identity(COLLABORATION, "whiteboard");
+    }
+
+    /**
+     * A server component that archives traffic.
+     *
+     * @return The identity.
+     */
+    public static Identity componentArchive() {
+        return new Identity(COMPONENT, "archive");
+    }
+
+    /**
+     * A server component that handles client connections.
+     *
+     * @return The identity.
+     */
+    public static Identity componentClientToServer() {
+        return new Identity(COMPONENT, "c2s");
+    }
+
+    /**
+     * A server component other than one of the registered types.
+     *
+     * @return The identity.
+     */
+    public static Identity componentGeneric() {
+        return new Identity(COMPONENT, "generic");
+    }
+
+    /**
+     * A server component that handles load balancing.
+     *
+     * @return The identity.
+     */
+    public static Identity componentLoadBalancing() {
+        return new Identity(COMPONENT, "load");
+    }
+
+    /**
+     * A server component that logs server information.
+     *
+     * @return The identity.
+     */
+    public static Identity componentLog() {
+        return new Identity(COMPONENT, "log");
+    }
+
+    /**
+     * A server component that provides presence information.
+     *
+     * @return The identity.
+     */
+    public static Identity componentPresence() {
+        return new Identity(COMPONENT, "presence");
+    }
+
+    /**
+     * A server component that handles core routing logic.
+     *
+     * @return The identity.
+     */
+    public static Identity componentRouter() {
+        return new Identity(COMPONENT, "router");
+    }
+
+    /**
+     * A server component that handles server connections	.
+     *
+     * @return The identity.
+     */
+    public static Identity componentServerToServer() {
+        return new Identity(COMPONENT, "s2s");
+    }
+
+    /**
+     * A server component that manages user sessions.
+     *
+     * @return The identity.
+     */
+    public static Identity componentSessionManagement() {
+        return new Identity(COMPONENT, "sm");
+    }
+
+    /**
+     * A server component that provides server statistics.
+     *
+     * @return The identity.
+     */
+    public static Identity componentStatistics() {
+        return new Identity(COMPONENT, "stats");
+    }
+
+    /**
+     * Internet Relay Chat service.
+     *
+     * @return The identity.
+     */
+    public static Identity conferenceIrc() {
+        return new Identity(CONFERENCE, "irc");
+    }
+
+    /**
+     * Text conferencing service.
+     *
+     * @return The identity.
+     */
+    public static Identity conferenceText() {
+        return new Identity(CONFERENCE, "text");
+    }
+
+    /**
+     * A directory of chatrooms.
+     *
+     * @return The identity.
+     */
+    public static Identity directoryChatRoom() {
+        return new Identity(DIRECTORY, "chatroom");
+    }
+
+    /**
+     * A directory that provides shared roster groups.
+     *
+     * @return The identity.
+     */
+    public static Identity directoryGroup() {
+        return new Identity(DIRECTORY, "group");
+    }
+
+    /**
+     * A directory of end users (e.g., JUD).
+     *
+     * @return The identity.
+     */
+    public static Identity directoryUser() {
+        return new Identity(DIRECTORY, "user");
+    }
+
+    /**
+     * A directory of waiting list entries.
+     *
+     * @return The identity.
+     */
+    public static Identity directoryWaitingList() {
+        return new Identity(DIRECTORY, "waitinglist");
+    }
+
+    /**
+     * Gateway to AOL Instant Messenger.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayAIM() {
+        return new Identity(GATEWAY, "aim");
+    }
+
+    /**
+     * Gateway to the Facebook IM service.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayFacebook() {
+        return new Identity(GATEWAY, "facebook");
+    }
+
+    /**
+     * Gateway to the Gadu-Gadu IM service.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayGaduGadu() {
+        return new Identity(GATEWAY, "gadu-gadu");
+    }
+
+    /**
+     * Gateway that provides HTTP Web Services access.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayHttpWs() {
+        return new Identity(GATEWAY, "http-ws");
+    }
+
+    /**
+     * Gateway to ICQ.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayICQ() {
+        return new Identity(GATEWAY, "icq");
+    }
+
+    /**
+     * Gateway to IRC.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayIRC() {
+        return new Identity(GATEWAY, "irc");
+    }
+
+    /**
+     * Gateway to Microsoft Live Communications Server.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayLCS() {
+        return new Identity(GATEWAY, "lcs");
+    }
+
+    /**
+     * Gateway to MSN Messenger.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayMSN() {
+        return new Identity(GATEWAY, "msn");
+    }
+
+    /**
+     * Gateway to the MySpace IM service.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayMySpaceIM() {
+        return new Identity(GATEWAY, "myspaceim");
+    }
+
+    /**
+     * Gateway to Microsoft Office Communications Server.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayOCS() {
+        return new Identity(GATEWAY, "ocs");
+    }
+
+    /**
+     * Gateway to the QQ IM service.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayQQ() {
+        return new Identity(GATEWAY, "qq");
+    }
+
+    /**
+     * Gateway to IBM Lotus Sametime.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewaySametime() {
+        return new Identity(GATEWAY, "sametime");
+    }
+
+    /**
+     * Gateway to SIP for Instant Messaging and Presence Leveraging Extensions (SIMPLE).
+     *
+     * @return The identity.
+     */
+    public static Identity gatewaySimple() {
+        return new Identity(GATEWAY, "simple");
+    }
+
+    /**
+     * Gateway to the Skype service.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewaySkype() {
+        return new Identity(GATEWAY, "skype");
+    }
+
+    /**
+     * Gateway to Short Message Service.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewaySMS() {
+        return new Identity(GATEWAY, "sms");
+    }
+
+    /**
+     * Gateway to the SMTP (email) network.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewaySMTP() {
+        return new Identity(GATEWAY, "smtp");
+    }
+
+    /**
+     * Gateway to the Tlen IM service.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayTlen() {
+        return new Identity(GATEWAY, "tlen");
+    }
+
+    /**
+     * Gateway to the Xfire gaming and IM service.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayXfire() {
+        return new Identity(GATEWAY, "xfire");
+    }
+
+    /**
+     * Gateway to another XMPP service (NOT via native server-to-server communication).
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayXMPP() {
+        return new Identity(GATEWAY, "xmpp");
+    }
+
+    /**
+     * Gateway to Yahoo! Instant Messenger.
+     *
+     * @return The identity.
+     */
+    public static Identity gatewayYahoo() {
+        return new Identity(GATEWAY, "yahoo");
+    }
+
+    /**
+     * Service that notifies a user of new email messages.
+     *
+     * @return The identity.
+     */
+    public static Identity headlineNewMail() {
+        return new Identity(HEADLINE, "newmail");
+    }
+
+    /**
+     * RSS notification service.
+     *
+     * @return The identity.
+     */
+    public static Identity headlineRss() {
+        return new Identity(HEADLINE, "rss");
+    }
+
+    /**
+     * Service that provides weather alerts..
+     *
+     * @return The identity.
+     */
+    public static Identity headlineWeather() {
+        return new Identity(HEADLINE, "weather");
+    }
+
+    /**
+     * A service discovery node that contains further nodes in the hierarchy.
+     *
+     * @return The identity.
+     */
+    public static Identity hierarchyBranch() {
+        return new Identity(HIERARCHY, "branch");
+    }
+
+    /**
+     * A service discovery node that does not contain further nodes in the hierarchy.
+     *
+     * @return The identity.
+     */
+    public static Identity hierarchyLeaf() {
+        return new Identity(HIERARCHY, "leaf");
+    }
+
+    /**
+     * SOCKS5 bytestreams proxy service.
+     *
+     * @return The identity.
+     */
+    public static Identity proxyByteStreams() {
+        return new Identity(PROXY, "bytestreams");
+    }
+
+    /**
+     * A pubsub node of the "collection" type.
+     *
+     * @return The identity.
+     */
+    public static Identity pubsubCollection() {
+        return new Identity(PUBSUB, "collection");
+    }
+
+    /**
+     * A pubsub node of the "leaf" type.
+     *
+     * @return The identity.
+     */
+    public static Identity pubsubLeaf() {
+        return new Identity(PUBSUB, "leaf");
+    }
+
+    /**
+     * A personal eventing service that supports the publish-subscribe subset defined in XEP-0163..
+     *
+     * @return The identity.
+     */
+    public static Identity pubsubPersonalEventingService() {
+        return new Identity(PUBSUB, "pep");
+    }
+
+    /**
+     * A pubsub service that supports the functionality defined in XEP-0060.
+     *
+     * @return The identity.
+     */
+    public static Identity pubsubService() {
+        return new Identity(PUBSUB, "service");
+    }
+
+    /**
+     * Standard Jabber/XMPP server used for instant messaging and presence.
+     *
+     * @return The identity.
+     */
+    public static Identity serverInstantMessaging() {
+        return new Identity(SERVER, "im");
+    }
+
+    /**
+     * A server component that stores data in a Berkeley database.
+     *
+     * @return The identity.
+     */
+    public static Identity storeBerkeley() {
+        return new Identity(STORE, "berkeley");
+    }
+
+    /**
+     * A server component that stores data on the file system.
+     *
+     * @return The identity.
+     */
+    public static Identity storeFile() {
+        return new Identity(STORE, "file");
+    }
+
+    /**
+     * A server data storage component other than one of the registered types.
+     *
+     * @return The identity.
+     */
+    public static Identity storeGeneric() {
+        return new Identity(STORE, "generic");
+    }
+
+    /**
+     * A server component that stores data in an LDAP database.
+     *
+     * @return The identity.
+     */
+    public static Identity storeLdap() {
+        return new Identity(STORE, "ldap");
+    }
+
+    /**
+     * A server component that stores data in a MySQL database.
+     *
+     * @return The identity.
+     */
+    public static Identity storeMySQL() {
+        return new Identity(STORE, "mysql");
+    }
+
+    /**
+     * A server component that stores data in an Oracle database.
+     *
+     * @return The identity.
+     */
+    public static Identity storeOracle() {
+        return new Identity(STORE, "oracle");
+    }
+
+    /**
+     * A server component that stores data in a PostgreSQL database.
+     *
+     * @return The identity.
+     */
+    public static Identity storePostgreSQL() {
+        return new Identity(STORE, "postgres");
     }
 }
 

@@ -258,6 +258,27 @@ public final class Identity implements Comparable<Identity> {
     }
 
     /**
+     * Creates a new identity with a name.
+     *
+     * @param name The name.
+     * @return The identity.
+     */
+    public Identity withName(String name) {
+        return new Identity(category, type, name);
+    }
+
+    /**
+     * Creates a new identity with a name and a language.
+     *
+     * @param name     The name.
+     * @param language The language.
+     * @return The identity.
+     */
+    public Identity withName(String name, String language) {
+        return new Identity(category, type, name, language);
+    }
+
+    /**
      * The user@host is an administrative account.
      *
      * @return The identity.

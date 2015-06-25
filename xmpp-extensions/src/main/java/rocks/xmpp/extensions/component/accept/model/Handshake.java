@@ -25,13 +25,11 @@
 package rocks.xmpp.extensions.component.accept.model;
 
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Christian Schudt
@@ -67,13 +65,6 @@ public final class Handshake implements StreamElement {
      * @return The handshake element.
      */
     public static Handshake create(String streamId, String sharedSecret) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-            messageDigest.update(streamId.getBytes(StandardCharsets.UTF_8));
-            messageDigest.update(sharedSecret.getBytes(StandardCharsets.UTF_8));
-            return new Handshake(new BigInteger(1, messageDigest.digest()).toString(16));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        return new Handshake(XmppUtils.hash((streamId + sharedSecret).getBytes(StandardCharsets.UTF_8)));
     }
 }

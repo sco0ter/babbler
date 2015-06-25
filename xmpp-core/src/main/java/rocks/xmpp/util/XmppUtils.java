@@ -141,12 +141,10 @@ public final class XmppUtils {
      * @return The hash.
      */
     public static String hash(byte[] bytes) {
-        MessageDigest messageDigest;
         try {
-            messageDigest = MessageDigest.getInstance("sha-1");
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
             messageDigest.reset();
-            messageDigest.update(bytes);
-            return String.format("%040x", new BigInteger(1, messageDigest.digest()));
+            return String.format("%040x", new BigInteger(1, messageDigest.digest(bytes)));
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

@@ -25,15 +25,13 @@
 package rocks.xmpp.extensions.bytestreams.s5b.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -123,15 +121,7 @@ public final class Socks5ByteStream {
      * @see <a href="http://xmpp.org/extensions/xep-0065.html#mediated-proto-establish">6.3.2 Target Establishes SOCKS5 Connection with Proxy</a>
      */
     public static String hash(String sessionId, Jid requesterJid, Jid targetJid) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-            messageDigest.update(sessionId.getBytes(StandardCharsets.UTF_8));
-            messageDigest.update(requesterJid.toEscapedString().getBytes(StandardCharsets.UTF_8));
-            messageDigest.update(targetJid.toEscapedString().getBytes(StandardCharsets.UTF_8));
-            return new BigInteger(1, messageDigest.digest()).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        return XmppUtils.hash((sessionId + requesterJid.toEscapedString() + targetJid.toEscapedString()).getBytes(StandardCharsets.UTF_8));
     }
 
     /**

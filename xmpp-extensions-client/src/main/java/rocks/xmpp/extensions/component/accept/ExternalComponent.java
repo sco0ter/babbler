@@ -106,6 +106,10 @@ public final class ExternalComponent extends XmppSession {
             } finally {
                 lock.unlock();
             }
+
+            // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
+            Thread.sleep(20);
+
             // Check if the server returned a stream error, e.g. conflict.
             throwAsXmppExceptionIfNotNull(exception);
 

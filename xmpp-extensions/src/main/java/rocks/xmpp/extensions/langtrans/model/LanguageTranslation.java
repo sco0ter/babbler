@@ -53,6 +53,11 @@ public final class LanguageTranslation {
         this.translations.addAll(translations);
     }
 
+    /**
+     * Gets the translations.
+     *
+     * @return The translations.
+     */
     public final List<Translation> getTranslations() {
         return Collections.unmodifiableList(translations);
     }
@@ -62,7 +67,7 @@ public final class LanguageTranslation {
      *
      * @return The source text.
      */
-    public String getSourceText() {
+    public final String getSourceText() {
         return source != null ? source.getText() : null;
     }
 
@@ -71,7 +76,7 @@ public final class LanguageTranslation {
      *
      * @return The source language.
      */
-    public String getSourceLanguage() {
+    public final String getSourceLanguage() {
         return source != null ? source.getLanguage() : null;
     }
 
